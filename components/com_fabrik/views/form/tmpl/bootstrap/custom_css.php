@@ -80,7 +80,7 @@ echo <<<EOT
     border: none !important;
     box-shadow: none !important;
 }
-.calendarbutton {
+.calendarbutton, .timeButton {
     height: 41px;
 }
 
@@ -173,10 +173,6 @@ form .optional {
 label {
     line-height: normal;
     margin-bottom: 0;
-}
-
-.dbjoin-description .notice {
-    display: none;
 }
 
 #system-message {
@@ -275,6 +271,7 @@ form legend a, form legend a:hover, form legend a:focus {
     border-bottom: 4px solid #ddd;
     display: inline-flex;
 }
+
 /* PERSONAL_DETAILS */
 .list-striped, .row-striped {
     border: 0;
@@ -771,7 +768,7 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
     background: #fff;
 }
 .fbDateTime .close-time{
-  float:right!important;
+    float: right !important;
 }
 .fbDateTime .btn-group a {
     width: auto !important;
@@ -779,14 +776,14 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
     margin: 0 5px 5px 0 !important;
     padding: 0 3px !important;
     background: #ddd;
-   border:1px solid #ddd;
+    border: 1px solid #ddd;
 }
-.fbDateTime .btn-group{
-  width:100%!important;
+.fbDateTime .btn-group {
+    width:100% !important;
 }
 /* tiny mce wysiwyg */
 .mce-container-body.mce-abs-layout {
-    overflow: visible!important;
+    overflow: visible !important;
 }
 
 input:not([type]).mce-textbox {
@@ -800,33 +797,34 @@ input:not([type]).mce-textbox {
     text-align: left;
     color: #000;
 }
+
 .btn {
-border-radius: 0 !important;
+	border-radius: 0 !important;
 }
-.form-horizontal .control-group .btn-group label.btn-default{
-    background: #bababa;
+
+.form-horizontal .control-group .btn-group label.btn-default {
     color: white;
     border-radius: 0 !important;
     padding: 6px 8px;
-    text-shadow: none!important ;
-    line-height: normal!important ;
-    background-image: none!important ;
-    display: inline-flex!important ;
-    align-items: center!important;
-    text-transform: initial!important ;
+    text-shadow: none !important;
+    line-height: normal !important;
+    background-image: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    text-transform: initial !important;
     font-weight: 400;
-    letter-spacing: normal!important;
+    letter-spacing: normal !important;
 }
 .form-horizontal .control-group .btn-group label.btn-default:hover{
     background: #ababab;
 }
+
 button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn,
 .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save),
 .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
-  background-color: #29d4ff !important;
-  background: #29d4ff !important;
-  border: 1px solid #29d4ff !important;
-  color:white;
+  background: #4e5b6d;
+  border: 1px solid #4e5b6d;
+  color: white;
   text-shadow: none;
   text-transform: none;
 }
@@ -845,20 +843,20 @@ button#back:hover, button#back:active, button#back:focus,
 .fabrikUploadDelete .btn:hover, .fabrikUploadDelete .btn:active, .fabrikUploadDelete .btn:focus,
 #em_select_filter #del-filter:hover, #em_select_filter #del-filter:active, #em_select_filter #del-filter:focus,
 .btn-toolbar .btn-group:nth-child(2) .btn:hover, .btn-toolbar .btn-group:nth-child(2) .btn:active, .btn-toolbar .btn-group:nth-child(2) .btn:focus {
-  background-color: transparent !important;
-  color: #29d4ff;
-  outline: none;
+	  background-color: transparent;
+	  color: #4e5b6d;
+	  outline: none;
 }
 button.save-btn, .btn-success, button.save, button.save_continue, button.send, a.btn-attach, #trombi_preview, #trombi_generate,
 .indicateurs-page .btn, .fabrik_filter_submit, button.importation, a.btn-warning, a.btn-info, .header-right .btn-danger, button.btn-primary,
 .em-generated-docs .em-doc-zip, .xclsform .panel-body button#savefilter, .modal-dialog #chargement a.btn, a#em-doc-zip,
 .btn.advanced-search-apply, .toggle-addoption.btn, .candidacy-files-list a#send, .choice-statut-btn {
-  background-color: #e03c32;
-  background: #e03c32;
-  border: 1px solid #e03c32;
-  color:white;
-  text-shadow: none;
-  text-transform: none;
+	  background-color: #4e5b6d;
+	  background: #4e5b6d;
+	  border: 1px solid #4e5b6d;
+	  color:white;
+	  text-shadow: none;
+	  text-transform: none;
 }
 
 button.save-btn:hover, button.save-btn:active, button.save-btn:focus,
@@ -884,36 +882,36 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
 .toggle-addoption.btn:hover, .toggle-addoption.btn:active, .toggle-addoption.btn:focus,
 .candidacy-files-list a#send:hover, .candidacy-files-list a#send:active, .candidacy-files-list a#send:focus,
 .choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
-  background-color: transparent !important;
-  color: #e03c32 !important;
+  background-color: transparent;
+  color: #4e5b6d;
   outline: none;
 }
 .span4 > .btn-group > button.save-btn, .span4 > .btn-group > button.save {
-    background: #e03c32;
-    background-color: #e03c32;
-    border: 1px solid #e03c32;
-    border-radius: 0!important;
-    padding: 10px 12px!important;
+    background: #4e5b6d;
+    background-color: #4e5b6d;
+    border: 1px solid #4e5b6d;
+    border-radius: 0 !important;
+    padding: 10px 12px !important;
 }
 .span4 > .btn-group > button.save-btn:hover, .span4 > .btn-group > button.save:hover {
-    background-color: transparent !important;
-    color: #e03c32;
+    background-color: transparent;
+    color: #4e5b6d;
     outline: none;
 }
 .span4.offset1 > .btn-group > button.button {
-    background: #29d4ff;
-    background-color: #29d4ff !important;
-    border: 1px solid #29d4ff !important;
-    border-radius: 0!important;
-    padding: 8px 12px!important;
+    background: #4e5b6d;
+    background-color: #4e5b6d;
+    border: 1px solid #4e5b6d;
+    border-radius: 0 !important;
+    padding: 8px 12px !important;
 }
 .span4.offset1 > .btn-group > button.button:hover{
-    background-color: transparent !important;
-    color: #29d4ff !important;
+    background-color: transparent;
+    color: #4e5b6d;
     outline: none;
 }
 footer#g-footer {
-	padding: 20px !important;
+	padding: 20px;
 }
 footer#g-footer {
 	background: transparent;

@@ -360,11 +360,13 @@ class EmundusModelEmails extends JModelList
         $app            = JFactory::getApplication();
         $current_user   = JFactory::getUser();
         $user           = JFactory::getUser($user_id);
+        $config         = JFactory::getConfig();
 
         //get logo
         $template   = $app->getTemplate(true);
         $params     = $template->params;
         $logo       = $params->get('logo');
+        $sitename   = $config->get('sitename');
 
         if (!empty($logo)) {
             $logo   = json_decode(str_replace("'", "\"", $logo->custom->image), true);
@@ -374,12 +376,12 @@ class EmundusModelEmails extends JModelList
 
         $patterns = array(
             '/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[SENDER_MAIL\]/', '/\[USERNAME\]/', '/\[USER_ID\]/', '/\[USER_NAME\]/', '/\[USER_EMAIL\]/', '/\n/', '/\[USER_USERNAME\]/', '/\[PASSWORD\]/',
-            '/\[ACTIVATION_URL\]/', '/\[SITE_URL\]/',
+            '/\[ACTIVATION_URL\]/', '/\[ACTIVATION_URL_RELATIVE\]/' ,'/\[SITE_URL\]/' ,'/\[SITE_NAME\]/',
             '/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/', '/\[LOGO\]/'
         );
         $replacements = array(
             $user->id, $user->name, $user->email, $user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
-            JURI::base()."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(),
+            JURI::base()."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), "index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(), $sitename, 
             $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
         );
 

@@ -1,0 +1,18 @@
+.em-deleteFile{
+    float: right;
+}
+.em-fileAttachment{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.em-fileAttachment-link{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 10px;
+}
+.em-fileAttachment-link > a {
+    align-self: center;
+}

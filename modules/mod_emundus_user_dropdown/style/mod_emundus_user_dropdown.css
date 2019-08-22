@@ -21,9 +21,9 @@
     margin: 0 !important;
 }
 #userDropdownIcon {
-    background-color: #29d4ff !important;
-    border: 2px solid #29d4ff !important;
-    color: #ffffff !important;
+    background-color: #29d4ff;
+    border: 2px solid #29d4ff;
+    color: #ffffff;
     margin:0;
     box-shadow: none !important;
     cursor: pointer;
@@ -31,12 +31,12 @@
 #userDropdownIcon:hover,
 #userDropdownIcon.active,
 #userDropdownIcon:hover:active {
-    background-color:transparent !important;
-    color: #29d4ff !important;
+    background-color:transparent;
+    color: #29d4ff;
 }
 
 #userDropdownMenu li>a:hover,
 #userDropdownMenu .active>a {
-    background: #29d4ff !important;
+    background: #29d4ff;
     color: #ffffff;
 }

@@ -1,9 +1,9 @@
 <?php
 defined( '_JEXEC' ) or die();
 /**
- * @version 3: isApplicationSent.php 89 2015-02-26 Benjamin Rivalland
+ * @version 3: isApplicationSent.php 89 2019-08-02 Benjamin Rivalland
  * @package Fabrik
- * @copyright Copyright (C) 2014 D�cision Publique. All rights reserved.
+ * @copyright Copyright (C) 2019 eMundus. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
  * Joomla! is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or

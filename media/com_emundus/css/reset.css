@@ -58,7 +58,7 @@ form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
 }
 
 .fabrikgrid_radio, .fabrikgrid_radio label span {
-    display: flex ! importaant;
+    display: flex !important;
     align-items: center !important;
 }
 
@@ -242,7 +242,7 @@ table {
 
 .modal {
     position: relative;
-    background-color: #fff !important;
+    background-color: #fff;
     margin: 0;
     width: 100%;
     left: 0;
@@ -278,16 +278,12 @@ legend {
     width: 100%;
 }
 
-.profile {
-    display: none;
-}
-
 .table-striped tbody tr:nth-child(2n+1) td, .table-striped tbody tr:nth-child(2n+1) th {
     background: #f2f2f2;
 }
 
 .radio input[type="radio"], .checkbox input[type="checkbox"] {
-    margin-left: 0px;
+    margin-left: 0;
 }
 
 .row-fluid .span3 {
@@ -300,7 +296,7 @@ legend {
 [class^="icon-"], [class*=" icon-"] {
     margin-right:0;
 }
-​
+
 #g-page-surround {
     min-height: auto;
 }
