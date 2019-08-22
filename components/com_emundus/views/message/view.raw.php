@@ -37,51 +37,81 @@ class EmundusViewMessage extends JViewLegacy {
 
 		$current_user = JFactory::getUser();
 
-    	if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-			die (JText::_('RESTRICTED_ACCESS'));
+    	if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+		    die (JText::_('RESTRICTED_ACCESS'));
+	    }
 
 		// List of fnum is sent via GET in JSON format.
 	    $jinput = JFactory::getApplication()->input;
-		$fnums = $jinput->getString('fnums', null);
-		$fnums = (array) json_decode($fnums);
+	    $layout = $jinput->getString('layout', null);
 
 	    $document = JFactory::getDocument();
-		$document->addStyleSheet('media/com_emundus/css/emundus.css');
+	    $document->addStyleSheet('media/com_emundus/css/emundus.css');
 
-		$m_files = new EmundusModelFiles();
-		$m_application = new EmundusModelApplication();
+	    switch ($layout) {
 
-		// If we are selecting all fnums: we get them using the files model
-		if (!is_array($fnums) || count($fnums) == 0 || $fnums[0] == "all") {
-			$fnums = $m_files->getAllFnums();
-			$formatted_fnums = [];
-			foreach ($fnums as $fnum) {
-				$tmp = new stdClass();
-				$tmp->fnum = $fnum;
-				$tmp->cid = substr($fnum, 14, 7);
-				$tmp->sid = substr($fnum, 21, 7);
-				$formatted_fnums[] = $tmp;
-			}
-			$fnums = $formatted_fnums;
-		}
+	    	// Sending an email directly to a user.
+		    case 'user_message':
+			    $m_users = new EmundusModelUsers();
 
-		$fnum_array = [];
+		    	$users = $jinput->getString('users', null);
+			    if ($users === 'all') {
 
-		$tables = array('jos_users.name', 'jos_users.username', 'jos_users.email', 'jos_users.id');
-		foreach ($fnums as $fnum) {
-			if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
-				$user = $m_application->getApplicantInfos($fnum->sid, $tables);
-				$user['campaign_id'] = $fnum->cid;
-				$fnum_array[] = $fnum->fnum;
-				$users[] = $user;
-			}
-		}
+				    $us = $m_users->getUsers(0,0);
+				    $users = array();
+				    foreach ($us as $u) {
+					    $users[] = $u->id;
+				    }
 
-		$this->assignRef('users', $users);
-		$this->assignRef('fnums', $fnum_array);
+			    } else {
+			    	$users = (array) json_decode(stripslashes($users));
+			    }
+
+			    $users = $m_users->getUsersByIds($users);
+			    $this->assignRef('users', $users);
+	        break;
+
+
+	        // Default = sending an email to an FNUM.
+		    default:
+			    $fnums = $jinput->getString('fnums', null);
+			    $fnums = (array) json_decode($fnums);
+
+			    $m_files = new EmundusModelFiles();
+			    $m_application = new EmundusModelApplication();
+
+			    // If we are selecting all fnums: we get them using the files model
+			    if (!is_array($fnums) || count($fnums) == 0 || $fnums[0] == "all") {
+				    $fnums = $m_files->getAllFnums();
+				    $formatted_fnums = [];
+				    foreach ($fnums as $fnum) {
+					    $tmp = new stdClass();
+					    $tmp->fnum = $fnum;
+					    $tmp->cid = substr($fnum, 14, 7);
+					    $tmp->sid = substr($fnum, 21, 7);
+					    $formatted_fnums[] = $tmp;
+				    }
+				    $fnums = $formatted_fnums;
+			    }
+
+			    $fnum_array = [];
+
+			    $tables = array('jos_users.name', 'jos_users.username', 'jos_users.email', 'jos_users.id');
+			    foreach ($fnums as $fnum) {
+				    if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
+					    $user = $m_application->getApplicantInfos($fnum->sid, $tables);
+					    $user['campaign_id'] = $fnum->cid;
+					    $fnum_array[] = $fnum->fnum;
+					    $users[] = $user;
+				    }
+			    }
+
+			    $this->assignRef('users', $users);
+			    $this->assignRef('fnums', $fnum_array);
+	        break;
+
+	    }
 
 		parent::display($tpl);
-
     }
 }
-?>
