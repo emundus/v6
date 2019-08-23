@@ -79,6 +79,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         if (!empty($uploadResult)) {
             if ($nbMax == 1) {
                 $fileNameUpdate = $jinput->post->get($name.'_filename0');
+                if(!empty($fileNameUpdate))
                 $this->updateFile($current_user->fnum, $cid, $attachId, $fileNameUpdate);
             }
             if ($nbMax > 1 && count($uploadResult) < $nbMax) {
@@ -1004,20 +1005,25 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 	 *
 	 * @throws Exception
 	 */
-    public function insertFile($values) {
-        $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        $columns = array('user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed');
+    public function insertFile($values)
+    {
+        if (!empty($values)) {
 
-        $query->insert($db->quoteName('#__emundus_uploads'))
-            ->columns($db->quoteName($columns))
-            ->values($values);
-        $db->setQuery($query);
 
-        try {
-            $db->execute();
-        } catch (Exception $e) {
-            JFactory::getApplication()->enqueueMessage('Probrème survenu au téléchargement des fichiers', 'message');
+            $db = JFactory::getDBO();
+            $query = $db->getQuery(true);
+            $columns = array('user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed');
+
+            $query->insert($db->quoteName('#__emundus_uploads'))
+                ->columns($db->quoteName($columns))
+                ->values($values);
+            $db->setQuery($query);
+
+            try {
+                $db->execute();
+            } catch (Exception $e) {
+                JFactory::getApplication()->enqueueMessage('Probrème survenu au téléchargement des fichiers', 'message');
+            }
         }
     }
 
