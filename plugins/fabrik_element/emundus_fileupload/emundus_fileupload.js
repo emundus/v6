@@ -155,6 +155,14 @@
                 if (xhr.readyState==4 && xhr.status==200) {
 
                     var result = JSON.parse(xhr.responseText);
+                    console.log(result.status);
+                    if(result.status == false){
+                        Swal.fire({
+                            type: 'error',
+                            title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
+                            text: Joomla.JText._('PLG_ELEMENT_FIELD_ACCESS')
+                        });
+                    }
                     for (var j = 0; j <= result.length; j++) {
 
                         if (result[j].ext == true && result[j].size == true && result[j].nbMax == true) {
@@ -175,7 +183,7 @@
                         if (result[j].ext == false) {
                             Swal.fire({
                                 type: 'error',
-                                title: 'Error',
+                                title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
                                 text: Joomla.JText._('PLG_ELEMENT_FIELD_EXTENSION')
                             });
 
@@ -236,32 +244,36 @@
 
                 if (xhr.readyState == 4 && xhr.status == 200) {
 
-                    var result = JSON.parse(xhr.responseText);
-                    for (var i = 0; i < result.length; i++) {
+                    if(xhr.responseText != '') {
 
-                        var divLink = document.createElement('div');
-                        divLink.setAttribute("id", elementId + '_attachment_link'+i);
-                        divLink.setAttribute("class", 'em-fileAttachment-link');
-                        divAttachment.appendChild(divLink);
+                        var result = JSON.parse(xhr.responseText);
 
-                        var link = document.createElement('a');
-                        var linkText = document.createTextNode(result[i].filename);
-                        link.setAttribute("href", result[i].target);
+                        for (var i = 0; i < result.length; i++) {
 
-                        divLink.appendChild(link);
-                        link.appendChild(linkText);
+                            var divLink = document.createElement('div');
+                            divLink.setAttribute("id", elementId + '_attachment_link' + i);
+                            divLink.setAttribute("class", 'em-fileAttachment-link');
+                            divAttachment.appendChild(divLink);
 
-                        var deleteButton = document.createElement('a');
-                        deleteButton.setAttribute("class", 'btn goback-btn em-deleteFile far fa-times-circle');
-                        deleteButton.setAttribute('value' , result[i].filename);
+                            var link = document.createElement('a');
+                            var linkText = document.createTextNode(result[i].filename);
+                            link.setAttribute("href", result[i].target);
 
-                        var icon = document.createElement('i');
-                        icon.setAttribute("class", 'far fa-times-circle');
+                            divLink.appendChild(link);
+                            link.appendChild(linkText);
 
-                        divLink.appendChild(deleteButton);
+                            var deleteButton = document.createElement('a');
+                            deleteButton.setAttribute("class", 'btn goback-btn em-deleteFile far fa-times-circle');
+                            deleteButton.setAttribute('value', result[i].filename);
 
-                        var button = document.querySelector('#'+elementId + '_attachment_link'+i+ ' > a.em-deleteFile');
-                        button.addEventListener('click', (event) => FbFileUpload.delete(elementId,attachId));
+                            var icon = document.createElement('i');
+                            icon.setAttribute("class", 'far fa-times-circle');
+
+                            divLink.appendChild(deleteButton);
+
+                            var button = document.querySelector('#' + elementId + '_attachment_link' + i + ' > a.em-deleteFile');
+                            button.addEventListener('click', (event) => FbFileUpload.delete(elementId, attachId));
+                        }
                     }
                 }
             };

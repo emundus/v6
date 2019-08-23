@@ -668,6 +668,7 @@ $(document).ready(function () {
 	//
 	// Menu action
 	//
+	$(document).off('click', '.em-actions');
 	$(document).on('click', '.em-actions', function (e) {
 
 		e.preventDefault();
@@ -689,18 +690,20 @@ $(document).ready(function () {
 
 		var view = $('#view').val();
 		var sid = 0;
-		if ($('.em-check:checked').length != 0)
+		if ($('.em-check:checked').length != 0) {
 			sid = $('.em-check:checked').attr('id').split('_')[0];
+		}
 
 		var url = $(this).children('a').attr('href');
-		var view = $('#view').val();
 
 		String.prototype.fmt = function (hash) {
 			var string = this,
 				key;
-			for (key in hash) string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
+			for (key in hash) {
+				string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
+			}
 			return string
-		}
+		};
 
 		url = url.fmt({
 			applicant_id: sid,
@@ -728,7 +731,7 @@ $(document).ready(function () {
 					error: function (jqXHR, textStatus, errorThrown) {
 						console.log(jqXHR.responseText);
 					}
-				})
+				});
 				break;
 			case 24:
 				// edit user
@@ -746,7 +749,7 @@ $(document).ready(function () {
 					error: function (jqXHR, textStatus, errorThrown) {
 						console.log(jqXHR.responseText);
 					}
-				})
+				});
 				break;
 
 			/*case 29:
@@ -797,8 +800,7 @@ $(document).ready(function () {
 						}
 
 					},
-					error: function (jqXHR, textStatus, errorThrown) {
-						console.log(jqXHR.responseText);
+					error: function (jqXHR) {
 						if (jqXHR.status === 302) {
 							Swal.fire({
 								position: 'center',
@@ -836,8 +838,7 @@ $(document).ready(function () {
 						}
 
 					},
-					error: function (jqXHR, textStatus, errorThrown) {
-						console.log(jqXHR.responseText);
+					error: function (jqXHR) {
 						if (jqXHR.status === 302) {
 							Swal.fire({
 								position: 'center',
@@ -866,10 +867,9 @@ $(document).ready(function () {
 						$('.modal-body').empty();
 						$('.modal-body').append(result);
 					},
-					error: function (jqXHR, textStatus, errorThrown) {
-						console.log(jqXHR.responseText);
+					error: function (jqXHR) {
 					}
-				})
+				});
 				break;
 
 			case 26:
@@ -883,11 +883,32 @@ $(document).ready(function () {
 				$('.modal-body').empty();
 				$('.modal-body').append('<div style="display: flex; flex-direction: row; justify-content: center;"><strong>' + Joomla.JText._('ARE_YOU_SURE_TO_REGENERATE_PASSWORD') + '</strong></div>');
 				break;
-		}
 
+			case 34:
+				// Send user an email
+				// TODO: What right to we use? "email applicant"?
+				$('.modal-dialog').addClass('modal-lg');
+				var checkInput = getUserCheck();
+				$.ajax({
+					type: 'POST',
+					url: url,
+					dataType: 'html',
+					data: {
+						users: checkInput,
+					},
+					success: result => {
+						$('.modal-body').empty();
+						$('.modal-body').append(result);
+					},
+					error: jqXHR => {
+					}
+				});
+				break;
+		}
 	});
 
 	// Button on Actions
+	$(document).off('click', '#em-modal-actions .btn.btn-success');
 	$(document).on('click', '#em-modal-actions .btn.btn-success', function (e) {
 		var id = parseInt($('.modal-body').attr('act-id'));
 		if ($('#em-check-all-all').is(':checked')) {
@@ -993,7 +1014,6 @@ $(document).ready(function () {
 					}
 				});
 
-
 				actionsCheck = JSON.stringify(actionsCheck);
 				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
 
@@ -1041,6 +1061,7 @@ $(document).ready(function () {
 					}
 				});
 				break;
+
 			case 20:
 				var groups = "";
 				var campaigns = "";
@@ -1136,7 +1157,6 @@ $(document).ready(function () {
 						console.log(jqXHR.responseText);
 					}
 				});
-
 				break;
 
 			case 23:
@@ -1199,6 +1219,7 @@ $(document).ready(function () {
 					}
 				});
 				break;
+
 			case 24:
 				var groups = "";
 				var campaigns = "";
@@ -1293,8 +1314,8 @@ $(document).ready(function () {
 						console.log(jqXHR.responseText);
 					}
 				});
-
 				break;
+
 			case 26:
 				var checkInput = getUserCheck();
 				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
@@ -1346,6 +1367,7 @@ $(document).ready(function () {
 					}
 				});
 				break;
+
 			case 33 :
 				var usersData = getUserCheck();// get objectJson with id et uid
 				var uid = JSON.parse(usersData);// parsing in json to get only the uid
@@ -1366,8 +1388,7 @@ $(document).ready(function () {
 								'<strong>' + result.msg + '</strong>' +
 								'</div>');
 
-						}
-						else{
+						} else {
 							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
 								'<strong>' + result.msg + '</strong> ' +
@@ -1379,13 +1400,91 @@ $(document).ready(function () {
 					}
 
 				});
+			break;
+
+
+			// Send an email to a user.
+			case 34:
+				// update the textarea with the WYSIWYG content.
+				tinymce.triggerSave();
+
+				// Get all form elements.
+				let data = {
+					recipients 		: $('#uids').val(),
+					template		: $('#message_template :selected').val(),
+					Bcc 			: $('#sendUserACopy').prop('checked'),
+					mail_from_name 	: $('#mail_from_name').text(),
+					mail_from 		: $('#mail_from').text(),
+					mail_subject 	: $('#mail_subject').text(),
+					message			: $('#mail_body').val(),
+					attachments		: []
+				};
+
+				$("#em-attachment-list li").each((idx, li) => {
+					let attachment = $(li);
+					data.attachments.push(attachment.find('.value').text());
+				});
+
+				$('#em-email-messages').empty();
+				$('#em-modal-sending-emails').css('display', 'block');
+
+				$.ajax({
+					type: "POST",
+					url: "index.php?option=com_emundus&controller=messages&task=useremail",
+					data: data,
+					success: result => {
+
+						$('#em-modal-sending-emails').css('display', 'none');
+
+						result = JSON.parse(result);
+						if (result.status) {
+
+							if (result.sent.length > 0) {
+
+								var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+								result.sent.forEach(element => {
+									sent_to += '<li class="list-group-item alert-success">'+element+'</li>';
+								});
+
+								Swal.fire({
+									type: 'success',
+									title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
+									html:  sent_to + '</ul>'
+								});
+
+							} else {
+								Swal.fire({
+									type: 'error',
+									title: Joomla.JText._('NO_EMAILS_SENT')
+								})
+							}
+
+							if (result.failed.length > 0) {
+								// Block containing the email adresses of the failed emails.
+								$("#em-email-messages").append('<div class="alert alert-danger">'+Joomla.JText._('EMAILS_FAILED')+'<span class="badge">'+result.failed.length+'</span>'+
+									'<ul class="list-group" id="em-mails-failed"></ul>');
+
+								result.failed.forEach(element => {
+									$('#em-mails-sent').append('<li class="list-group-item alert-danger">'+element+'</li>');
+								});
+
+								$('#em-email-messages').append('</div>');
+							}
+
+						} else {
+							$("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+						}
+					},
+					error : () => {
+						$("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+					}
+				});
 
 			break;
 		}
 	});
 
 	//action fin
-
 	$(document).on('change', '#em-modal-actions #em-export-form', function (e) {
 		if (e.handle !== true) {
 			e.handle = true;

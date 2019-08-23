@@ -89,7 +89,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		jimport('joomla.log.log');
 		JLog::addLogger(['text_file' => 'com_emundus.filerequest.php'], JLog::ALL, ['com_emundus']);
 
-		include_once (JPATH_BASE.'/components/com_emundus/models/profile.php');
+		include_once (JPATH_BASE.'/components/com_emundus/models/files.php');
 		include_once (JPATH_BASE.'/components/com_emundus/models/emails.php');
 
 		$baseurl    = JURI::root();
@@ -135,10 +135,10 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		//////////////////////////  SET FILES REQUEST  /////////////////////////////
 		//
 		// Génération de l'id du prochain fichier qui devra être ajouté par le referent
-		$m_profile = new EmundusModelProfile;
+		$m_files = new EmundusModelFiles;
 		$m_emails = new EmundusModelEmails;
 
-		$fnum_detail = $m_profile->getFnumDetails($current_user->fnum);
+		$fnum_detail = $m_files->getFnumInfos($current_user->fnum);
 
 		// setup mail
 		$email_from_sys = $app->getCfg('mailfrom');
@@ -184,18 +184,18 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 						'EMAIL'          => $student->email,
 						'UPLOAD_URL'     => $link_upload,
 						'PROGRAMME_NAME' => $fnum_detail['label'],
-						'FNUM'           => $fnum_detail['fnum'],
+						'FNUM'           => $fnum,
 						'USER_NAME'      => $fnum_detail['name'],
 						'CAMPAIGN_LABEL' => $fnum_detail['label'],
 						'SITE_URL'       => JURI::base(),
 						'USER_EMAIL'     => $fnum_detail['email']
 					];
-					$tags = $m_emails->setTags($fnum['applicant_id'], $post);
+					$tags = $m_emails->setTags($fnum_detail['applicant_id'], $post, $fnum);
 					$subject = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->subject);
 					$body = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->message);
 
-					$body = $m_emails->setTagsFabrik($body, [$fnum['fnum']]);
-					$subject = $m_emails->setTagsFabrik($subject, [$fnum['fnum']]);
+					$body = $m_emails->setTagsFabrik($body, [$fnum_detail['fnum']]);
+					$subject = $m_emails->setTagsFabrik($subject, [$fnum_detail['fnum']]);
 
 					$to = array($recipient['email']);
 

@@ -1752,10 +1752,17 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObjectList();
     }
 
-    public function getUsersById($id){ //user of application
+    public function getUsersById($id) { //user of application
         $db = JFactory::getDBO();
         $query = 'SELECT * FROM #__users WHERE id = '.$id;
         $db->setQuery($query);
         return $db->loadObjectList();
     }
+
+	public function getUsersByIds($ids) { //users of application
+		$db = JFactory::getDBO();
+		$query = 'SELECT * FROM #__users WHERE id IN ('.implode(',', $ids).')';
+		$db->setQuery($query);
+		return $db->loadObjectList();
+	}
 }

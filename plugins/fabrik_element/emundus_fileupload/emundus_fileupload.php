@@ -51,7 +51,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $jinput = JFactory::getApplication()->input;
         $db = JFactory::getDBO();
 
-        if (EmundusHelperAccess::asApplicantAccessLevel($current_user->id)) {
+        if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
             return false;
         }
 
@@ -94,15 +94,18 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 	 * @return bool
 	 */
     public function onAjax_upload() {
+
         jimport('joomla.filesystem.file');
 
         $jinput = $this->app->input;
         $current_user = JFactory::getSession()->get('emundusUser');
 
-        if (EmundusHelperAccess::asApplicantAccessLevel($current_user->id)) {
-		    return false;
-	    }
-
+        if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
+            $status='false';
+            $result = array('status' => $status);
+            echo json_encode($result);
+            return false;
+        }
         $attachId = $jinput->post->get('attachId');
         $can_submit_encrypted = $jinput->post->get('encrypt');
 
@@ -118,6 +121,21 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $nbMaxFile = (int)$attachmentResult->nbmax;
 
         $acceptedExt = [];
+        
+        if (!file_exists(EMUNDUS_PATH_ABS.$current_user->id)) {
+            // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
+            if (!file_exists(EMUNDUS_PATH_ABS.'index.html'))
+                touch(EMUNDUS_PATH_ABS.'index.html');
+
+            if (!mkdir(EMUNDUS_PATH_ABS.$current_user->id) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$current_user->id.DS.'index.html')){
+                $error = JUri::getInstance().' :: USER ID : '.$current_user->id.' -> Unable to create user file';
+                JLog::add($error, JLog::ERROR, 'com_emundus');
+
+
+                return false;
+            }
+        }
+        chmod(EMUNDUS_PATH_ABS.$current_user->id, 0755);
 
         foreach ($files as $file) {
 
@@ -167,12 +185,13 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                 if ($lengthFile > $nbMaxFile) {
                     $nbMax = false;
                 }
-
+                $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $nbMax, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt);
             } else {
                 $ext = false;
+                $result[] = array('size' => $size, 'ext' => $ext,  'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment);
             }
 
-            $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $nbMax, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt);
+
         }
 
         echo json_encode($result);
@@ -188,7 +207,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $jinput = $this->app->input;
 
         $current_user = JFactory::getSession()->get('emundusUser');
-	    if (EmundusHelperAccess::asApplicantAccessLevel($current_user->id)) {
+        if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
 		    return false;
 	    }
 
@@ -196,17 +215,18 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $cid = $this->getCampaignId($current_user->fnum);
         $uploadResult = $this->getUploads($attachId, $current_user->id, $cid);
 
-        foreach ($uploadResult as $upload) {
-            if (!empty($upload->filename)) {
-                $fileName = $upload->filename;
+            foreach ($uploadResult as $upload) {
+                if (!empty($upload->filename)) {
+                    $fileName = $upload->filename;
+                }
+
+                $target = '/images'.DS.'emundus'.DS.'files'.DS.$current_user->id.DS.$fileName;
+                $result[] = array('filename' => $fileName, 'target' => $target);
             }
 
-            $target = '/images'.DS.'emundus'.DS.'files'.DS.$current_user->id.DS.$fileName;
-            $result[] = array('filename' => $fileName, 'target' => $target);
-        }
+            echo json_encode($result);
+            return true;
 
-        echo json_encode($result);
-		return true;
     }
 
 
@@ -221,7 +241,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $fileName = $jinput->post->get('filename');
         $attachId = $jinput->post->get('attachId');
 
-	    if (EmundusHelperAccess::asApplicantAccessLevel($current_user->id)) {
+        if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
 		    return false;
 	    }
 
@@ -229,13 +249,16 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $uploadResult = $this->getUploads($attachId, $current_user->id, $cid);
         $target = $this->getPath($current_user->id, $fileName);
 
-        if (file_exists($target)) {
+        if (file_exists($target) && !empty($uploadResult)) {
             unlink($target);
-            if (!empty($uploadResult)) {
-                $this->deleteFile($fileName, $current_user->fnum, $cid, $attachId);
-            }
+            $this->deleteFile($fileName, $current_user->fnum, $cid, $attachId);
             $status = true;
-        } else {
+        }
+        if (!file_exists($target) && !empty($uploadResult)) {
+            $this->deleteFile($fileName, $current_user->fnum, $cid, $attachId);
+            $status = true;
+        }
+        if (!file_exists($target) && empty($uploadResult)) {
             $status = false;
         }
 
@@ -244,7 +267,20 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         return true;
     }
 
+    public function dataConsideredEmptyForValidation($data, $repeatCounter) {
+        $current_user = JFactory::getSession()->get('emundusUser');
 
+        $attachId = $this->getAttachId();
+        $cid = $this->getCampaignId($current_user->fnum);
+        $uploadResult = $this->getUploads($attachId,$current_user->id,$cid);
+
+        if(empty($uploadResult) && $data == ""){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 	/**
 	 * @return String
 	 * @throws Exception
