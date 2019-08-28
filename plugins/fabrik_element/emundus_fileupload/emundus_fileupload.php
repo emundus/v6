@@ -79,8 +79,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         if (!empty($uploadResult)) {
             if ($nbMax == 1) {
                 $fileNameUpdate = $jinput->post->get($name.'_filename0');
-                if(!empty($fileNameUpdate))
-                $this->updateFile($current_user->fnum, $cid, $attachId, $fileNameUpdate);
+                if(!empty($fileNameUpdate)){
+                    $this->updateFile($current_user->fnum, $cid, $attachId, $fileNameUpdate);
+                }
+
             }
             if ($nbMax > 1 && count($uploadResult) < $nbMax) {
              	$this->insertFile($insert);
