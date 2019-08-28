@@ -2446,7 +2446,7 @@ $(document).ready(function() {
                                 '</div>'+
                             '</div>' );
 
-                            $('#data').append('<div class="panel panel-default xclsform"><div class="panel-body"> <select class="chzn-select" id="filt_save" name="filt_save" >'+
+                            $('#data').append('<div class="panel panel-default xclsform xclsform-filters"><div class="panel-body"> <select class="chzn-select" id="filt_save" name="filt_save" >'+
                                 '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option></select>'+
 
                                 '<button class="w3-button w3-tiny btn-warning" id="savefilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+
