@@ -1527,24 +1527,49 @@ $(document).ready(function() {
         var view = $('#view').val();
         var url = $(this).children('a').attr('href');
         var formid = 29;
-
-        // get formid by fnum
-        $.ajax({
-            type:'post',
-            url:'index.php?option=com_emundus&controller=files&task=getformid&Itemid='+itemId,
-            data: {
-                fnum: fnum
-            },
-            dataType:'json',
-            async: false,
-            success: function(result) {
-                if (result.status)
-                    formid = result.formid;
-            },
-            error: function (jqXHR) {
-                console.log(jqXHR.responseText);
-            }
-        });
+        
+        switch (id) {
+            case 5 :
+                // get formid by fnum
+                $.ajax({
+                    type:'post',
+                    url:'index.php?option=com_emundus&controller=files&task=getformid&Itemid='+itemId,
+                    data: {
+                        fnum: fnum
+                    },
+                    dataType:'json',
+                    async: false,
+                    success: function(result) {
+                        if (result.status)
+                            formid = result.formid;
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+            break;
+            case 29 :
+                // get formid by fnum
+                $.ajax({
+                    type:'post',
+                    url:'index.php?option=com_emundus&controller=files&task=getdecisionformid&Itemid='+itemId,
+                    data: {
+                        fnum: fnum
+                    },
+                    dataType:'json',
+                    async: false,
+                    success: function(result) {
+                        if (result.status)
+                            formid = result.formid;
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+            break;
+            default:
+            break;
+        } 
 
         String.prototype.fmt = function (hash) {
             var string = this, key;

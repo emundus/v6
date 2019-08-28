@@ -2554,6 +2554,38 @@ die();*/
     }
 
     /*
+    *   Get Decision Fabrik formid from fnum
+    *   @param fnum     fnum to evaluate
+    *   @return int     Fabrik formid
+    */
+    /**
+     * @param $fnum
+     * @return bool|mixed
+     */
+    public function getDecisionFormidByFnum($fnum)
+    {
+        try
+        {
+            $db = $this->getDbo();
+            $query = "SELECT form_id
+                        FROM `#__fabrik_formgroup`
+                        WHERE group_id IN (
+                            SELECT esp.fabrik_decision_group_id
+                            FROM  `#__emundus_campaign_candidature` AS ecc
+                            LEFT JOIN `#__emundus_setup_campaigns` AS esc ON esc.id = ecc.campaign_id
+                            LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.code = esc.training
+                            WHERE ecc.fnum LIKE  " . $db->quote($fnum) .")";
+            $db->setQuery($query);
+            $res = $db->loadResult();
+            return $res;
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
+    }
+
+    /*
     *   Get admission Fabrik formid from fnum
     *   @param fnum     fnum to evaluate
     *   @return int     Fabrik formid
