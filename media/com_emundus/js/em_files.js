@@ -1558,11 +1558,13 @@ $(document).ready(function() {
             // 1:new application file
             // 4:attachments
             // 5:evaluation
+            // 29:decision
             // 32: Admission
             // Export PDF
             case 1 : $('#can-val').empty();
             case 4 : $('#can-val').empty();
             case 5 : $('#can-val').empty();
+            case 29 : $('#can-val').empty();
             case 32 :
                 $('#can-val').empty();
                 $('.modal-body').append('<div><img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/></div>');
