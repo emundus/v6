@@ -2780,9 +2780,8 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     /*
-    *   Get evaluation Fabrik formid by fnum
-    */
-    /**
+     *   Get evaluation Fabrik formid by fnum
+     *
      *
      */
     function getformid() {
@@ -2796,6 +2795,30 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $m_files = $this->getModel('Files');
         $res    = $m_files->getFormidByFnum($fnum);
+
+        $formid = ($res>0)?$res:29;
+
+        $result = array('status' => true, 'formid' => $formid);
+        echo json_encode((object) $result);
+        exit();
+    }
+
+   /*
+     *   Get evaluation Fabrik formid by fnum
+     *
+     *
+     */
+    function getdecisionformid() {
+        $current_user = JFactory::getUser();
+
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+            die( JText::_('RESTRICTED_ACCESS') );
+
+        $jinput = JFactory::getApplication()->input;
+        $fnum   = $jinput->getString('fnum', null);
+
+        $m_files = $this->getModel('Files');
+        $res    = $m_files->getDecisionFormidByFnum($fnum);
 
         $formid = ($res>0)?$res:29;
 
