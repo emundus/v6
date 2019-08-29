@@ -1873,12 +1873,12 @@ class EmundusModelUsers extends JModelList {
 		$data['mailfrom'] = $config->get('mailfrom');
 		$data['sitename'] = $config->get('sitename');
 		$data['link_text'] = JRoute::_($link, false, $mode);
-		$data['link_html'] = JRoute::_($link, true, $mode);
+		$data['link_html'] = '<a href='.JRoute::_($link, true, $mode).'> '.JRoute::_($link, true, $mode).'</a>';
 		$data['token'] = $token;
 
 		// Build the translated email.
 		$subject = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $data['sitename']);
-		$body = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_BODY', $data['sitename'], $data['token'], $data['link_text']);
+		$body = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_BODY', $data['sitename'], $data['token'], $data['link_html']);
 
 		// Get and apply the template.
 		$query->clear()
