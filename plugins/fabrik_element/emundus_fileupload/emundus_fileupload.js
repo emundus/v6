@@ -160,7 +160,8 @@
                         Swal.fire({
                             type: 'error',
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
-                            text: Joomla.JText._('PLG_ELEMENT_FIELD_ACCESS')
+                            text: Joomla.JText._('PLG_ELEMENT_FIELD_ACCESS'),
+                            confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue'
                         });
                     }
                     for (var j = 0; j <= result.length; j++) {
@@ -173,8 +174,10 @@
                             div.appendChild(inputHidden);
 
                             Swal.fire({
-                                type: 'success',
+
                                 title: Joomla.JText._('PLG_ELEMENT_FIELD_SUCCESS'),
+                                text: Joomla.JText._('PLG_ELEMENT_FIELD_UPLOAD'),
+                                type: 'success',
                                 showConfirmButton: false,
                                 timer: 1500
                             });
@@ -184,7 +187,8 @@
                             Swal.fire({
                                 type: 'error',
                                 title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
-                                text: Joomla.JText._('PLG_ELEMENT_FIELD_EXTENSION')
+                                text: Joomla.JText._('PLG_ELEMENT_FIELD_EXTENSION'),
+                                confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue'
                             });
 
                             input.value = '';
@@ -195,7 +199,8 @@
                             Swal.fire({
                                 type: 'error',
                                 title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
-                                text: Joomla.JText._('PLG_ELEMENT_FIELD_ENCRYPT')
+                                text: Joomla.JText._('PLG_ELEMENT_FIELD_ENCRYPT'),
+                                confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue'
                             });
                             input.value = '';
                         }
@@ -205,6 +210,7 @@
                                 type: 'error',
                                 title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
                                 text: Joomla.JText._('PLG_ELEMENT_FIELD_SIZE'),
+                                confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue'
                             });
                             input.value = '';
                             deleteButton.style.display = 'none';
@@ -214,7 +220,8 @@
                             Swal.fire({
                                 type: 'error',
                                 title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
-                                text: Joomla.JText._('PLG_ELEMENT_FIELD_LIMIT')
+                                text: Joomla.JText._('PLG_ELEMENT_FIELD_LIMIT'),
+                                confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue'
                             });
                             input.value = '';
                             deleteButton.style.display = 'none';
@@ -303,7 +310,9 @@
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CONFIRM'),
-                cancelButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CANCEL')
+                confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue',
+                cancelButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CANCEL'),
+                cancelButtonClass: 'btn goback-btn button',
             }).then(answser => {
 
                 if (answser.value) {
@@ -314,11 +323,12 @@
                             var result = JSON.parse(xhr.responseText);
                             if (result.status == true) {
                                 parentDiv.remove();
-                                Swal.fire(
-                                    Joomla.JText._('PLG_ELEMENT_FIELD_DELETE'),
-                                    Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT'),
-                                    'success'
-                                )
+                                Swal.fire({
+                                    title: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE'),
+                                    text: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT'),
+                                    type: 'success',
+                                    confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue'
+                                });
                             }
                         }
                     };

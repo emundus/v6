@@ -39,10 +39,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     public $storage = null;
 
 
-	/**
-	 * @return bool
-	 * @throws Exception
-	 */
+    /**
+     * @return bool
+     * @throws Exception
+     */
     public function onBeforeStore() {
 
         jimport('joomla.filesystem.file');
@@ -51,7 +51,11 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $jinput = JFactory::getApplication()->input;
         $db = JFactory::getDBO();
 
-        if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
+        if (JFactory::getUser()->guest) {
+
+            $status='false';
+            $result = array('status' => $status);
+            echo json_encode($result);
             return false;
         }
 
@@ -79,13 +83,13 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         if (!empty($uploadResult)) {
             if ($nbMax == 1) {
                 $fileNameUpdate = $jinput->post->get($name.'_filename0');
-                if(!empty($fileNameUpdate)){
+                if (!empty($fileNameUpdate)) {
                     $this->updateFile($current_user->fnum, $cid, $attachId, $fileNameUpdate);
                 }
 
             }
             if ($nbMax > 1 && count($uploadResult) < $nbMax) {
-             	$this->insertFile($insert);
+                $this->insertFile($insert);
             }
         }
 
@@ -93,9 +97,9 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
 
-	/**
-	 * @return bool
-	 */
+    /**
+     * @return bool
+     */
     public function onAjax_upload() {
 
         jimport('joomla.filesystem.file');
@@ -103,7 +107,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $jinput = $this->app->input;
         $current_user = JFactory::getSession()->get('emundusUser');
 
-        if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
+        if (JFactory::getUser()->guest) {
+            
             $status='false';
             $result = array('status' => $status);
             echo json_encode($result);
@@ -124,7 +129,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $nbMaxFile = (int)$attachmentResult->nbmax;
 
         $acceptedExt = [];
-        
+
         if (!file_exists(EMUNDUS_PATH_ABS.$current_user->id)) {
             // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
             if (!file_exists(EMUNDUS_PATH_ABS.'index.html'))
@@ -175,8 +180,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                     if ($nbAttachment < $nbMaxFile) {
                         $nbMax = true;
                         if ($fileSize < $sizeMax) {
-	                        move_uploaded_file($tmp_name, $target);
-	                        $size = true;
+                            move_uploaded_file($tmp_name, $target);
+                            $size = true;
                         } else {
                             $size = false;
                         }
@@ -202,40 +207,44 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
 
-	/**
-	 * @return bool
-	 */
+    /**
+     * @return bool
+     */
     public function onAjax_attachment() {
 
         $jinput = $this->app->input;
 
         $current_user = JFactory::getSession()->get('emundusUser');
-        if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
-		    return false;
-	    }
+        if (JFactory::getUser()->guest) {
+
+            $status='false';
+            $result = array('status' => $status);
+            echo json_encode($result);
+            return false;
+        }
 
         $attachId = $jinput->post->get('attachId');
         $cid = $this->getCampaignId($current_user->fnum);
         $uploadResult = $this->getUploads($attachId, $current_user->id, $cid);
 
-            foreach ($uploadResult as $upload) {
-                if (!empty($upload->filename)) {
-                    $fileName = $upload->filename;
-                }
-
-                $target = '/images'.DS.'emundus'.DS.'files'.DS.$current_user->id.DS.$fileName;
-                $result[] = array('filename' => $fileName, 'target' => $target);
+        foreach ($uploadResult as $upload) {
+            if (!empty($upload->filename)) {
+                $fileName = $upload->filename;
             }
 
-            echo json_encode($result);
-            return true;
+            $target = '/images'.DS.'emundus'.DS.'files'.DS.$current_user->id.DS.$fileName;
+            $result[] = array('filename' => $fileName, 'target' => $target);
+        }
+
+        echo json_encode($result);
+        return true;
 
     }
 
 
-	/**
-	 * @return bool
-	 */
+    /**
+     * @return bool
+     */
     public function onAjax_delete() {
 
         $jinput = $this->app->input;
@@ -245,8 +254,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $attachId = $jinput->post->get('attachId');
 
         if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
-		    return false;
-	    }
+            return false;
+        }
 
         $cid = $this->getCampaignId($current_user->fnum);
         $uploadResult = $this->getUploads($attachId, $current_user->id, $cid);
@@ -284,40 +293,40 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
             return false;
         }
     }
-	/**
-	 * @return String
-	 * @throws Exception
-	 */
+    /**
+     * @return String
+     * @throws Exception
+     */
     public function getFormId() {
         $jinput = JFactory::getApplication()->input;
         return $jinput->get('formid');
     }
 
 
-	/**
-	 * @return String
-	 * @throws Exception
-	 */
+    /**
+     * @return String
+     * @throws Exception
+     */
     public function getItemId() {
         $jinput = JFactory::getApplication()->input;
         return $jinput->get('Itemid', null);
     }
 
 
-	/**
-	 * @return mixed
-	 */
+    /**
+     * @return mixed
+     */
     public function getAttachId() {
         $params = $this->getParams();
         return $params->get('attachmentId');
     }
 
 
-	/**
-	 * @param $fnum
-	 *
-	 * @return Int
-	 */
+    /**
+     * @param $fnum
+     *
+     * @return Int
+     */
     public function getCampaignId($fnum) {
 
         $db = JFactory::getDBO();
@@ -332,11 +341,11 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
 
-	/**
-	 * @param $attachId
-	 *
-	 * @return mixed
-	 */
+    /**
+     * @param $attachId
+     *
+     * @return mixed
+     */
     public function getAttachment($attachId) {
         $db = JFactory::getDBO();
 
@@ -350,45 +359,45 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
 
-	/**
-	 * @param $attachId
-	 * @param $uid
-	 * @param $cid
-	 *
-	 * @return mixed
-	 */
+    /**
+     * @param $attachId
+     * @param $uid
+     * @param $cid
+     *
+     * @return mixed
+     */
     public function getUploads($attachId, $uid, $cid) {
         $db = JFactory::getDBO();
 
         $query = $db->getQuery(true);
         $query->select(array($db->quoteName('id'),$db->quoteName('filename')))
-	        ->from($db->quoteName('#__emundus_uploads'))
-	        ->where($db->quoteName('attachment_id') . ' = ' . $attachId . ' AND ' . $db->quoteName('user_id') . ' = ' . $uid . " AND " . $db->quoteName('campaign_id') . " = " . $cid);
+            ->from($db->quoteName('#__emundus_uploads'))
+            ->where($db->quoteName('attachment_id') . ' = ' . $attachId . ' AND ' . $db->quoteName('user_id') . ' = ' . $uid . " AND " . $db->quoteName('campaign_id') . " = " . $cid);
         $db->setQuery($query);
 
         return $db->loadObjectList();
     }
 
 
-	/**
-	 * @param $uid
-	 * @param $fileName
-	 *
-	 * @return string
-	 */
+    /**
+     * @param $uid
+     * @param $fileName
+     *
+     * @return string
+     */
     public function getPath($uid, $fileName) {
         return EMUNDUS_PATH_ABS.$uid.DS.$fileName;
     }
 
 
-	/**
-	 * @param $user
-	 * @param $attachId
-	 * @param $label
-	 * @param $file
-	 *
-	 * @return mixed
-	 */
+    /**
+     * @param $user
+     * @param $attachId
+     * @param $label
+     * @param $file
+     *
+     * @return mixed
+     */
     public function getFileName($user, $attachId, $label, $file) {
         $fileName = strtolower(preg_replace(array('([\40])', '([^a-zA-Z0-9-])', '(-{2,})'), array('_', '', '_'), preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/', '$1', htmlentities(strtoupper($user->lastname) . '_' . ucfirst($user->firstname), ENT_NOQUOTES, 'UTF-8'))));
         $fileName .= '_' . $attachId . $label . '-' . rand() . '.' . pathinfo($file, PATHINFO_EXTENSION);
@@ -396,13 +405,13 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
 
-	/**
-	 * @param             $data
-	 * @param   stdClass  $thisRow
-	 * @param   array     $opts
-	 *
-	 * @return string
-	 */
+    /**
+     * @param             $data
+     * @param   stdClass  $thisRow
+     * @param   array     $opts
+     *
+     * @return string
+     */
     public function ListData($data, stdClass &$thisRow, $opts = array()) {
         $profiler = JProfiler::getInstance('Application');
         JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
@@ -476,7 +485,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      */
     public function render($data, $repeatCounter = 0) {
 
-    	JHTML::stylesheet('plugins/fabrik_element/emundus_fileupload/css/emundus_fileupload.css');
+        JHTML::stylesheet('plugins/fabrik_element/emundus_fileupload/css/emundus_fileupload.css');
         JHTML::script('plugins/fabrik_element/emundus_fileupload/emundus_fileupload.js');
 
         $params = $this->getParams();
@@ -683,6 +692,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         JText::script('PLG_ELEMENT_FIELD_CANCEL');
         JText::script('PLG_ELEMENT_FIELD_DELETE');
         JText::script('PLG_ELEMENT_FIELD_DELETE_TEXT');
+        JText::script('PLG_ELEMENT_FIELD_ACCESS');
+        JText::script('PLG_ELEMENT_FIELD_UPLOAD');
 
         return array('FbField', $id, $opts);
     }
@@ -745,7 +756,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         }
 
         switch ($p->get('text_format')) {
-	        default:
+            default:
             case 'text':
                 $objType = "VARCHAR(" . $p->get('maxlength', 255) . ")";
                 break;
@@ -1002,11 +1013,11 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
 
-	/**
-	 * @param $values
-	 *
-	 * @throws Exception
-	 */
+    /**
+     * @param $values
+     *
+     * @throws Exception
+     */
     public function insertFile($values)
     {
         if (!empty($values)) {
@@ -1030,14 +1041,14 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
 
-	/**
-	 * @param $fnum
-	 * @param $cid
-	 * @param $attachId
-	 * @param $fileName
-	 *
-	 * @throws Exception
-	 */
+    /**
+     * @param $fnum
+     * @param $cid
+     * @param $attachId
+     * @param $fileName
+     *
+     * @throws Exception
+     */
     public function updateFile($fnum, $cid, $attachId, $fileName) {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
@@ -1056,14 +1067,14 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
 
-	/**
-	 * @param $fileName
-	 * @param $fnum
-	 * @param $cid
-	 * @param $attachId
-	 *
-	 * @throws Exception
-	 */
+    /**
+     * @param $fileName
+     * @param $fnum
+     * @param $cid
+     * @param $attachId
+     *
+     * @throws Exception
+     */
     public function deleteFile($fileName,$fnum, $cid, $attachId) {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
@@ -1081,15 +1092,15 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
 
-	/**
-	 * @param $file
-	 *
-	 * @return bool|false|int
-	 */
+    /**
+     * @param $file
+     *
+     * @return bool|false|int
+     */
     public function isEncrypted($file) {
         $f = fopen($file, 'rb');
         if (!$f) {
-	        return false;
+            return false;
         }
 
         //Read the last 320KB

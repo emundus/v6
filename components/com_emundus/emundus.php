@@ -361,12 +361,13 @@ $task = $app->input->get('task', '', 'WORD');
 $json = $app->input->get('format', '', 'WORD');
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
-if ($task == 'getproductpdf')
-	$controller->execute($task);
+if ($task == 'getproductpdf') {
+    $controller->execute($task);
+}
 
 if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis')) {
     $controller->execute($task);
-} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json')) {
+} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest') {
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
 } else {
     if ($name != 'search_engine') {
