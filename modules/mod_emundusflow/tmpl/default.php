@@ -24,24 +24,29 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
   <p align="right"><?php echo ($show_deadline==1)?JText::_('MOD_EMUNDUSFLOW_DEADLINE').' : <b>'.$deadline->format(JText::_('DATE_FORMAT_LC2')).'</b>':''; ?> <?php echo $offset; ?></p>
 </div>
 <div class="ui tablet stackable bottom attached steps">
-  <div class="step">
-    <a href="index.php" title="<?php echo  JText::_('RETURN'); ?>">
-      <i class="large arrow left outline icon"></i> <?php echo  JText::_('RETURN'); ?>
-    </a>
-  </div>
+  <?php if($show_back_button == 1){ ?>
+    <div class="step">
+        <a href="index.php" title="<?php echo  JText::_('RETURN'); ?>">
+            <i class="large arrow left outline icon"></i> <?php echo  JText::_('RETURN'); ?>
+        </a>
+    </div>
+   <?php } ?>
+<?php if($show_form_step == 1){ ?>
   <div class="<?php echo ($view=="form")?"active":""; ?> <?php echo $step_form; ?> step">
     <i class="large text file outline icon"></i>
     <div class="content">
       <div class="description"><?php echo JText::sprintf('FORM_FILLED', $forms); ?></div>
     </div>
   </div>
+<?php } ?>
+    <?php if($show_document_step == 1){ ?>
   <div class="<?php echo ($view=="checklist")?"active":""; ?> <?php echo $step_attachment; ?> step">
     <i class="large attach outline icon"></i>
     <div class="content">
       <div class="description"><?php echo JText::sprintf('ATTACHMENT_SENT', $attachments); ?></div>
     </div>
   </div>
-
+    <?php } ?>
 <?php if ($application_fee == 1) { ?>
   <div class="<?php echo ($option=="com_hikashop")?"active":""; ?> <?php echo $step_paiement; ?> step">
     <?php if ($paid == 0 && !empty($sentOrder) && !$orderCancelled): ?>
@@ -76,12 +81,14 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
     </div>
   </div>
 <?php } ?>
+<?php if($show_status == 1){ ?>
   <div class="<?php echo $sent>0?'completed':''; ?> step">
     <i class="large time outline icon"></i>
     <div class="content">
       <div class="description"><span class="label label-<?php echo $current_application->class; ?>"> <?php echo @$current_application->value; ?></span></div>
     </div>
   </div>
+<?php } ?>
 </div>
 <?php
 if ($sent>0) {

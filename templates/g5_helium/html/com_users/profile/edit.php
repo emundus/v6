@@ -70,7 +70,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 						<?php if ($field->hidden) : ?>
 							<?php echo $field->input; ?>
 						<?php else : ?>
-                            <?php if($field->fieldname != "name" && $field->fieldname != "username") :?>
+                            <?php if ($field->fieldname != "name" && $field->fieldname != "username") :?>
                                 <div class="control-group">
                                     <div class="control-label">
                                         <?php echo $field->label; ?>
@@ -177,4 +177,10 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 <script type="text/javascript">
 	document.getElementById("jform_emundus_profile_lastname").value = "<?php echo $user->lastname; ?>";
 	document.getElementById("jform_emundus_profile_firstname").value = "<?php echo $user->firstname; ?>";
+
+
+    // Update username when you change your email.
+    jQuery('#jform_email1').keyup(function () {
+        jQuery('#jform_username').val(this.value);
+    });
 </script>
