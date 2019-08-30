@@ -80,13 +80,15 @@ class EmundusController extends JControllerLegacy {
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
             $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
+
         }
-//die(var_dump($campaign));
+
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.@$campaign['training'].'.php';
 
         if (!file_exists($file)) {
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
         }
+
         if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
             mkdir(EMUNDUS_PATH_ABS.$student_id);
             chmod(EMUNDUS_PATH_ABS.$student_id, 0755);
