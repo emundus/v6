@@ -150,6 +150,21 @@ echo <<<EOT
     text-shadow: none;
 }
 
+.label-lightpink {
+    background-color: #e08283;
+    text-shadow: none;
+}
+
+.label-pink {
+    background-color: #d2527f;
+    text-shadow: none;
+}
+
+.label-darkpink {
+    background-color: #db0a5b;
+    text-shadow: none;
+}
+
 /*Programms*/
 .programmes-page #g-container-main{
     padding: 0 20px;

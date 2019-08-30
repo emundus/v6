@@ -972,6 +972,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	.label-lightred { background-color: #EC644B }
 	.label-red { background-color: #CF000F }
 	.label-darkred { background-color: #96281B }
+	.label-lightpink { background-color: #e08283; }
+	.label-pink { background-color: #d2527f; }
+	.label-darkpink { background-color: #db0a5b; }
 
 	</style>';
 
@@ -1269,6 +1272,9 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 	.label-lightred { background-color: #EC644B }
 	.label-red { background-color: #CF000F }
 	.label-darkred { background-color: #96281B }
+	.label-lightpink { background-color: #e08283; }
+	.label-pink { background-color: #d2527f; }
+	.label-darkpink { background-color: #db0a5b; }
 
 	</style>';
 
