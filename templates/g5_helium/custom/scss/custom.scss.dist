@@ -1,6 +1,7 @@
 @import "dependencies";
 
-h1::after, .swal2-title:after {
+h1::after,
+.swal2-title:after {
   content: '';
   position: absolute;
   margin-top: 45px;
@@ -9,80 +10,150 @@ h1::after, .swal2-title:after {
   background: $base-primary-color !important;
   left: 0;
 }
+
 /***************** BOUTONS *****************/
-button.btn-primary{
-  background: $base-secondary-color;
-  background-color: $base-secondary-color !important;
+button.btn-primary {
+  background: $base-secondary-color !important;
   border: 1px solid $base-secondary-color !important;
-  border-radius: 0!important;
-  padding: 8px 12px!important;
-  &:hover{
+  border-radius: 0 !important;
+  padding: 8px 12px !important;
+
+  &:hover {
     background-color: transparent !important;
     color: $base-secondary-color !important;
     outline: none;
   }
 }
 
-a.btn, , span.btn {
-  background: $base-primary-color;
-  background-color: $base-primary-color !important;
+a.btn,
+span.btn {
+  background: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
-  border-radius: 0!important;
-  padding: 8px 12px!important;
+  border-radius: 0 !important;
+  padding: 8px 12px !important;
+
   :hover {
     background-color: transparent !important;
     color: $base-primary-color !important;
     outline: none;
   }
 }
-*.btn, a.btn-attach, .xclsform .panel-body button, button.close {
+
+*.btn,
+a.btn-attach,
+.xclsform .panel-body button,
+button.close {
   color: #fff !important;
 }
 
-button.save-btn, .btn-success, button.save, button.save_continue, button.send, a.btn-attach, #trombi_preview, #trombi_generate,
-.indicateurs-page .btn, .fabrik_filter_submit, button.importation, a.btn-warning, a.btn-info, .header-right .btn-danger, button.btn-primary,
-.em-generated-docs .em-doc-zip, .xclsform .panel-body button#savefilter, .modal-dialog #chargement a.btn, a#em-doc-zip,
-.btn.advanced-search-apply, .toggle-addoption.btn, .candidacy-files-list a#send, .choice-statut-btn {
-  background: $base-secondary-color;
-  background-color: $base-secondary-color !important;
+button.save-btn,
+.btn-success,
+button.save,
+button.save_continue,
+button.send,
+a.btn-attach,
+#trombi_preview,
+#trombi_generate,
+.indicateurs-page .btn,
+.fabrik_filter_submit,
+button.importation,
+a.btn-warning,
+a.btn-info,
+.header-right .btn-danger,
+button.btn-primary,
+.em-generated-docs .em-doc-zip,
+.xclsform .panel-body button#savefilter,
+.modal-dialog #chargement a.btn,
+a#em-doc-zip,
+.btn.advanced-search-apply,
+.toggle-addoption.btn,
+.candidacy-files-list a#send,
+.choice-statut-btn {
+  background: $base-secondary-color !important;
   border: 1px solid $base-secondary-color !important;
   text-shadow: none;
   text-transform: none;
 }
 
-button.save-btn:hover,  button.save-btn:active, button.save-btn:focus,
-.btn-success:hover, .btn-success:focus, .btn-success:active,
-button.save:hover, button.save:active, button.save:focus,
-button.save_continue:hover, button.save_continue:active, button.save_continue:focus,
-button.send:hover, button.send:active, button.send:focus,
-a.btn-attach:hover, a.btn-attach:active, a.btn-attach:focus,
-#trombi_preview:hover, #trombi_preview:active, #trombi_preview:focus,
-#trombi_generate:hover, #trombi_generate:active, #trombi_generate:focus,
-.indicateurs-page .btn:hover, .indicateurs-page .btn:active, .indicateurs-page .btn:focus,
-.fabrik_filter_submit:hover, .fabrik_filter_submit:active, .fabrik_filter_submit:focus,
-button.importation:hover, button.importation:active, button.importation:focus,
-a.btn-warning:hover, a.btn-warning:active, a.btn-warning:focus,
-a.btn-info:hover, a.btn-info:active, a.btn-info:focus,
-.header-right .btn-danger:hover, .header-right .btn-danger:focus, .header-right .btn-danger:active,
-button.btn-primary:hover, button.btn-primary:active, button.btn-primary:focus,
-.em-generated-docs .em-doc-zip:hover, .em-generated-docs .em-doc-zip:active, .em-generated-docs .em-doc-zip:focus,
-.xclsform .panel-body button#savefilter:hover, .xclsform .panel-body button#savefilter:active, .xclsform .panel-body button#savefilter:focus,
-.modal-dialog #chargement a.btn:hover, .modal-dialog #chargement a.btn:active, .modal-dialog #chargement a.btn:focus,
-a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
-.btn.advanced-search-apply:hover, .btn.advanced-search-apply:active, .btn.advanced-search-apply:focus,
-.toggle-addoption.btn:hover, .toggle-addoption.btn:active, .toggle-addoption.btn:focus,
-.candidacy-files-list a#send:hover, .candidacy-files-list a#send:active, .candidacy-files-list a#send:focus,
-.choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
+button.save-btn:hover,
+button.save-btn:active,
+button.save-btn:focus,
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active,
+button.save:hover,
+button.save:active,
+button.save:focus,
+button.save_continue:hover,
+button.save_continue:active,
+button.save_continue:focus,
+button.send:hover,
+button.send:active,
+button.send:focus,
+a.btn-attach:hover,
+a.btn-attach:active,
+a.btn-attach:focus,
+#trombi_preview:hover,
+#trombi_preview:active,
+#trombi_preview:focus,
+#trombi_generate:hover,
+#trombi_generate:active,
+#trombi_generate:focus,
+.indicateurs-page .btn:hover,
+.indicateurs-page .btn:active,
+.indicateurs-page .btn:focus,
+.fabrik_filter_submit:hover,
+.fabrik_filter_submit:active,
+.fabrik_filter_submit:focus,
+button.importation:hover,
+button.importation:active,
+button.importation:focus,
+a.btn-warning:hover,
+a.btn-warning:active,
+a.btn-warning:focus,
+a.btn-info:hover,
+a.btn-info:active,
+a.btn-info:focus,
+.header-right .btn-danger:hover,
+.header-right .btn-danger:focus,
+.header-right .btn-danger:active,
+button.btn-primary:hover,
+button.btn-primary:active,
+button.btn-primary:focus,
+.em-generated-docs .em-doc-zip:hover,
+.em-generated-docs .em-doc-zip:active,
+.em-generated-docs .em-doc-zip:focus,
+.xclsform .panel-body button#savefilter:hover,
+.xclsform .panel-body button#savefilter:active,
+.xclsform .panel-body button#savefilter:focus,
+.modal-dialog #chargement a.btn:hover,
+.modal-dialog #chargement a.btn:active,
+.modal-dialog #chargement a.btn:focus,
+a#em-doc-zip:hover,
+a#em-doc-zip:active,
+a#em-doc-zip:focus,
+.btn.advanced-search-apply:hover,
+.btn.advanced-search-apply:active,
+.btn.advanced-search-apply:focus,
+.toggle-addoption.btn:hover,
+.toggle-addoption.btn:active,
+.toggle-addoption.btn:focus,
+.candidacy-files-list a#send:hover,
+.candidacy-files-list a#send:active,
+.candidacy-files-list a#send:focus,
+.choice-statut-btn:hover,
+.choice-statut-btn:active,
+.choice-statut-btn:focus {
   background-color: transparent !important;
   color: $base-secondary-color !important;
   outline: none;
 }
 
-.span4.offset1 > .btn-group > button.button {
-  background: $base-primary-color;
-  background-color: $base-primary-color !important;
+.span4.offset1>.btn-group>button.button {
+  background: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
   border-radius: 0 !important;
+
   &:hover {
     background-color: transparent !important;
     color: $base-primary-color !important;
@@ -95,22 +166,35 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
   background-color: $base-secondary-color !important;
   border: 1px solid $base-secondary-color !important;
   text-shadow: none;
-  &:hover{
+
+  &:hover {
     background-color: transparent !important;
     color: $base-secondary-color !important;
     outline: none;
   }
 }
 
-button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn,
-.xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save),
-.documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
-  background-color: $base-primary-color !important;
-  background: $base-primary-color;
+button.goback-btn,
+.btn-danger,
+.pull-right .btn:not(.dropdown-toggle),
+.below-content a,
+#member-profile .controls a,
+.toggle-editor .btn,
+.xclsform .panel-body button#delfilter,
+button#back,
+.btn.advanced-search-clearall,
+.emails-setup-page .form-actions button:not(.save),
+.documents-type-candidacy-page .fabrikDetails .btn,
+.fabrikUploadDelete .btn,
+#em_select_filter #del-filter,
+.btn-toolbar .btn-group:nth-child(2) .btn {
+  background: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
   text-shadow: none;
   text-transform: none;
-  &:hover, &:focus {
+
+  &:hover,
+  &:focus {
     background-color: transparent !important;
     color: $base-primary-color !important;
     outline: none;
@@ -126,15 +210,23 @@ input[type="email"]:hover,
 input[type="month"]:hover,
 input[type="number"]:hover,
 input[type="password"]:hover,
-input[type="search"]:hover, input[type="tel"]:hover,
-input[type="text"]:hover, input[type="time"]:hover,
-input[type="url"]:hover, input[type="week"]:hover,
-input:not([type]):hover, textarea:hover{
+input[type="search"]:hover,
+input[type="tel"]:hover,
+input[type="text"]:hover,
+input[type="time"]:hover,
+input[type="url"]:hover,
+input[type="week"]:hover,
+input:not([type]):hover,
+textarea:hover {
   border-color: $base-secondary-color;
-  box-shadow: 0 0 4px rgba(62,138,197,0.5);
+  box-shadow: 0 0 4px rgba(62, 138, 197, 0.5);
 }
 
-.mceToolbar button, .timeButton, .calendarbutton, .btn-mini, .fbdateTime-hour {
+.mceToolbar button,
+.timeButton,
+.calendarbutton,
+.btn-mini,
+.fbdateTime-hour {
   border-radius: initial !important;
   padding: initial !important;
   color: initial;
@@ -144,7 +236,8 @@ input:not([type]):hover, textarea:hover{
   width: auto !important;
 }
 
-.btn span.icon-ok, .btn span.icon-cancel {
+.btn span.icon-ok,
+.btn span.icon-cancel {
   margin-right: 5px !important;
 }
 
@@ -152,7 +245,10 @@ input:not([type]):hover, textarea:hover{
   margin: 0 !important;
 }
 
-.btn a, .btn a:focus, .btn a:active, .btn a:hover {
+.btn a,
+.btn a:focus,
+.btn a:active,
+.btn a:hover {
   text-decoration: none !important;
 }
 
@@ -164,41 +260,55 @@ input:not([type]):hover, textarea:hover{
   color: #000;
 }
 
-#em-last-open .list-group-item, #em-see-files, #em-delete-files,
-.panel-body .content .btn-info, .panel-body .content .btn-sm {
+#em-last-open .list-group-item,
+#em-see-files,
+#em-delete-files,
+.panel-body .content .btn-info,
+.panel-body .content .btn-sm {
   background-color: $base-primary-color !important;
   border: 1px solid darken($base-primary-color, 10%);
+
   &:hover {
-    background-color: darken($base-primary-color,10%)!important;
+    background-color: darken($base-primary-color, 10%) !important;
     color: #fff !important;
-    border: 1px solid darken($base-primary-color,10%)!important;
+    border: 1px solid darken($base-primary-color, 10%) !important;
   }
 }
-.em-personalInfo>a{
+
+.em-personalInfo>a {
   background-color: $base-primary-color !important;
   border: none !important;
 }
 
 .g-back-office-emundus-tableau #em-hide-filters {
-  border: 0px solid $base-primary-color;
+  border: 0 solid $base-primary-color;
   background-color: $base-primary-color;
-  &:hover, &:focus, &:active {
+
+  &:hover,
+  &:focus,
+  &:active {
     border: darken($base-primary-color, 10%);
     background-color: darken($base-primary-color, 10%);
   }
 }
 
-.panel-body .content .btn-info, .panel-body .content .btn-sm {
+.panel-body .content .btn-info,
+.panel-body .content .btn-sm {
   display: inline-flex !important;
 }
 
-a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
+a.btn-attach:hover,
+a.btn-attach:focus,
+a.btn-attach:active {
   text-decoration: none;
 }
 
 .indicateurs-page .btn a {
   color: #fff !important;
-  &:hover, &:focus, &:active {
+
+  &:hover,
+  &:focus,
+  &:active {
     color: $base-secondary-color !important;
   }
 }
@@ -207,13 +317,21 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
   border-top: 4px solid #fff !important;
 }
 
-.btn:hover .caret, .btn:focus .caret, .btn:hover .active {
+.btn:hover .caret,
+.btn:focus .caret,
+.btn:hover .active {
   border-top: 4px solid $base-secondary-color !important;
 }
 
-.btn-info, .fabrik__rowlink, a.delete, a.copy-0 {
+.btn-info,
+.fabrik__rowlink,
+a.delete,
+a.copy-0 {
   background-color: #aaa;
-  &:hover, &:focus, &:active {
+
+  &:hover,
+  &:focus,
+  &:active {
     background-color: #000;
   }
 }
@@ -224,9 +342,9 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
 .btn-warning:active.focus,
 .btn-warning:active:focus,
 .btn-warning:active:hover,
-.open > .dropdown-toggle.btn-warning.focus,
-.open > .dropdown-toggle.btn-warning:focus,
-.open > .dropdown-toggle.btn-warning:hover {
+.open>.dropdown-toggle.btn-warning.focus,
+.open>.dropdown-toggle.btn-warning:focus,
+.open>.dropdown-toggle.btn-warning:hover {
   color: #ffffff;
   background-color: #D5855A;
   border-color: #D5855A;
@@ -236,6 +354,7 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
   table button {
     border: none !important;
   }
+
   .panel-body button i {
     margin: 0 !important;
   }
@@ -249,7 +368,22 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
   text-align: center;
 }
 
-.edit.item-page .btn-toolbar .btn, .pager.pagenav a, p.readmore .btn, .contact .form-actions .btn, #contact-form .controls .btn-primary.validate, .profile .btn, .login .btn, .logout .btn, .registration .btn, .profile-edit .btn, .remind .btn, .reset .btn, .search #searchForm .btn, .finder #searchForm .btn, .search #search-form .btn, .finder #search-form .btn {
+.edit.item-page .btn-toolbar .btn,
+.pager.pagenav a,
+p.readmore .btn,
+.contact .form-actions .btn,
+#contact-form .controls .btn-primary.validate,
+.profile .btn,
+.login .btn,
+.logout .btn,
+.registration .btn,
+.profile-edit .btn,
+.remind .btn,
+.reset .btn,
+.search #searchForm .btn,
+.finder #searchForm .btn,
+.search #search-form .btn,
+.finder #search-form .btn {
   font-family: inherit;
   font-weight: 400;
   font-size: 14px;
@@ -273,7 +407,10 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
   border: 1px solid $base-primary-color !important;
   color: #fff !important;
   background: $base-primary-color !important;
-  &:hover, &:focus, &:active {
+
+  &:hover,
+  &:focus,
+  &:active {
     border: 1px solid $base-primary-color !important;
     color: $base-primary-color !important;
     background: transparent !important;
@@ -293,10 +430,12 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
   font-size: 1rem !important;
   color: #ffffff !important;
   border: 1px solid $base-secondary-color !important;
-  text-shadow: none !important;
   display: flex !important;
   justify-content: center;
-  &:hover, &:focus, &:active {
+
+  &:hover,
+  &:focus,
+  &:active {
     background: transparent !important;
     color: $base-secondary-color !important;
     border: 1px solid $base-secondary-color !important;
@@ -308,6 +447,7 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
   display: block;
   width: 100%;
   padding: 0;
+
   a i {
     margin: 5px 8px !important;
   }
@@ -316,18 +456,20 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
 /* HEADER */
 #g-navigation {
   border-bottom: 1px solid #eeeeee;
+
   .g-container {
     padding: 10px !important;
   }
 }
 
-#g-container-main  .g-container {
+#g-container-main .g-container {
   padding: 0 10px !important;
 }
 
 #header-a {
   display: flex;
   align-items: center;
+
   .logo {
     max-height: 64px;
   }
@@ -357,7 +499,9 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
   content: '';
   transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
   top: 0;
-  &::before, &::after {
+
+  &::before,
+  &::after {
     border-radius: 1px;
     height: 5px;
     width: 32px;
@@ -374,14 +518,19 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
   border: 2px solid $base-primary-color !important;
   color: #ffffff !important;
   box-shadow: none !important;
-  &:hover, &.active, &:hover:active {
-    background-color:transparent !important;
+
+  &:hover,
+  &.active,
+  &:hover:active {
+    background-color: transparent !important;
     color: $base-primary-color !important;
   }
 }
 
 #userDropdownMenu {
-  li>a:hover, .active>a {
+
+  li>a:hover,
+  .active>a {
     background: $base-primary-color !important;
     color: #ffffff;
   }
@@ -394,7 +543,10 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
     color: #000;
     text-decoration: none;
   }
-  li:hover a, li:active a, li:focus a {
+
+  li:hover a,
+  li:active a,
+  li:focus a {
     color: $base-primary-color;
   }
 }
@@ -403,7 +555,7 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
   color: $base-primary-color !important;
 }
 
-.g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator::after {
+.g-main-nav .g-toplevel>li.g-parent .g-menu-parent-indicator::after {
   width: auto;
   padding: 0;
   height: auto;
@@ -411,8 +563,9 @@ a.btn-attach:hover, a.btn-attach:focus, a.btn-attach:active {
   opacity: inherit;
 }
 
-.g-main-nav .g-toplevel > li.active .g-menu-parent-indicator::after, .g-main-nav .g-toplevel > li:hover .g-menu-parent-indicator::after {
-  color:$base-primary-color !important;
+.g-main-nav .g-toplevel>li.active .g-menu-parent-indicator::after,
+.g-main-nav .g-toplevel>li:hover .g-menu-parent-indicator::after {
+  color: $base-primary-color !important;
 }
 
 
@@ -420,16 +573,21 @@ ul.g-dropdown.g-dropdown-right.g-fade {
   background: #fff !important;
   border: 1px solid #ddd !important;
   border-radius: 0 !important;
+
   a {
     color: #000 !important;
   }
-  &:hover, &:focus, &:active, &:focus-within {
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:focus-within {
     color: $base-primary-color !important;
   }
 }
 
 .g-main-nav .g-standard .g-sublevel .current a span {
-  color:$base-primary-color;
+  color: $base-primary-color;
 }
 
 .navsearch-content input[type="text"]:focus,
@@ -444,8 +602,12 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 
 ul.nav.nav-tabs.nav-stacked span {
   color: $base-primary-color;
-  cursor:pointer;
-  &:hover, &:focus, &:active, &:focus-within {
+  cursor: pointer;
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:focus-within {
     color: $base-primary-color;
     text-decoration: underline;
   }
@@ -453,32 +615,36 @@ ul.nav.nav-tabs.nav-stacked span {
 
 /* Module Campagnes */
 .campaign-title {
-  color:#292929;
+  color: #292929;
   font-weight: 600;
   margin-bottom: 20px !important;
   padding-left: 0;
 }
+
 #navfilter {
   .navrowtabs #tabslist a {
     color: $base-secondary-color;
   }
+
   .navorder a {
     color: $base-secondary-color;
   }
+
   .navsearch .navsearch-content {
     .input-group-btn button {
       margin-left: -5px !important;
       height: 34px !important;
-      background-color: $base-secondary-color;
       background: $base-secondary-color;
       margin-bottom: 0;
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
+
       &:hover {
-        background-color: darken($base-secondary-color,10%);
+        background-color: darken($base-secondary-color, 10%);
       }
     }
-    .input-group label input{
+
+    .input-group label input {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
@@ -513,6 +679,7 @@ ul.nav.nav-tabs.nav-stacked span {
 /*MOT DE PASSE OUBLIÉ*/
 #user-registration fieldset {
   background: transparent;
+
   p {
     margin-bottom: 20px !important;
   }
@@ -521,12 +688,17 @@ ul.nav.nav-tabs.nav-stacked span {
 ul.nav.nav-tabs.nav-stacked span {
   color: $base-primary-color;
   cursor: pointer;
+
   &::before {
     content: "\f101";
     font-family: FontAwesome;
     margin-right: 3px;
   }
-  &:hover, &:focus, &:active, &:focus-within {
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:focus-within {
     color: $base-primary-color;
     text-decoration: underline;
   }
@@ -538,6 +710,7 @@ ul.nav.nav-tabs.nav-stacked span {
   border-color: $base-primary-color !important;
   color: $base-primary-color !important;
   margin: 10px !important;
+
   &::before {
     height: 105% !important;
   }
@@ -557,9 +730,11 @@ ul.nav.nav-tabs.nav-stacked span {
     border-radius: 0;
     color: #ffffff;
   }
+
   fieldset {
     background: #4e5b6F;
   }
+
   button {
     display: inline-block;
     font-weight: 600;
@@ -574,6 +749,7 @@ ul.nav.nav-tabs.nav-stacked span {
     -moz-transition: all 0.2s;
     transition: all 0.2s;
     margin-right: 20px;
+
     &:hover {
       color: #ffffff;
       background: none;
@@ -604,6 +780,7 @@ form#member-registration div a {
   border-radius: 0;
   padding: 8px 12px;
   background-color: #7ab956;
+
   &:hover {
     background-color: #6ea74e;
   }
@@ -619,10 +796,11 @@ form#member-registration div a {
   form {
     background: #fcfcfc;
     border: none;
-    margin-bottom: 0!important;
+    margin-bottom: 0 !important;
     border-radius: 0;
-    padding:20px!important;
+    padding: 20px !important;
   }
+
   .well label {
     color: #000;
   }
@@ -638,11 +816,16 @@ ul.nav.nav-tabs.nav-stacked {
   border-radius: 0;
   display: flex;
   justify-content: space-evenly;
+
   a {
     color: $base-primary-color;
-    &:hover, &:focus, &:active, &:focus-within {
+
+    &:hover,
+    &:focus,
+    &:active,
+    &:focus-within {
       color: $base-primary-color;
-      text-decoration:underline;
+      text-decoration: underline;
     }
   }
 }
@@ -652,7 +835,7 @@ ul.nav.nav-tabs.nav-stacked {
   select {
     border: 1px solid $base-primary-color;
     background-color: #eee;
-    color:#666;
+    color: #666;
   }
 }
 
@@ -673,13 +856,17 @@ div#em-panel legend {
   color: $base-primary-color;
   font-weight: 600;
   padding-left: 0;
-  margin-bottom:10px!important;
+  margin-bottom: 10px !important;
 }
 
 /* 3 Cercles Accueil Coordinateur */
 .element_home_emundus a {
   color: $base-secondary-color;
-  &:hover, &:focus, &:active, &:focus-within {
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:focus-within {
     color: $base-secondary-color;
   }
 }
@@ -688,8 +875,11 @@ i.inverted.bordered.blue.icon,
 i.inverted.circular.blue.icon {
   background: $base-secondary-color !important;
   margin: 0 0 10px 0;
-  &:hover, &:focus, &:active {
-    background: darken($base-secondary-color,10%) !important;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background: darken($base-secondary-color, 10%) !important;
   }
 }
 
@@ -710,8 +900,9 @@ i.inverted.circular.blue.icon {
   padding: 20px;
 }
 
-#attachment_list_mand legend a, .applicant-form #attachment_list_opt legend a{
-  color: #000!important;
+#attachment_list_mand legend a,
+.applicant-form #attachment_list_opt legend a {
+  color: #000 !important;
 }
 
 .need_missing.active a::before {
@@ -750,7 +941,8 @@ i.inverted.circular.blue.icon {
   margin-right: 10px;
 }
 
-.need_missing a::before, #attachment_list #legend .need_missing::before {
+.need_missing a::before,
+#attachment_list #legend .need_missing::before {
   font-family: FontAwesome;
   content: "\f057";
   font-size: 20px;
@@ -777,11 +969,16 @@ i.inverted.circular.blue.icon {
   border-top: 2px solid $base-primary-color !important;
 }
 
-.applicant-form fieldset, .view-checklist fieldset, body:not(.g-back-office-emundus-tableau) .ui.attached.warning.message, body:not(.g-back-office-emundus-tableau) .ui.warning.message{
-  box-shadow: 2px 2px 10px 0px #c0c0c0;
+.applicant-form fieldset,
+.view-checklist fieldset,
+body:not(.g-back-office-emundus-tableau) .ui.attached.warning.message,
+body:not(.g-back-office-emundus-tableau) .ui.warning.message {
+  box-shadow: 2px 2px 10px 0 #c0c0c0;
 }
 
-form legend a, form legend a:hover, form legend a:focus {
+form legend a,
+form legend a:hover,
+form legend a:focus {
   background: #fcfcfc;
   padding-left: 2rem;
   padding-top: 1rem;
@@ -792,7 +989,7 @@ form legend a, form legend a:hover, form legend a:focus {
   line-height: 1.5;
 }
 
-.groupintro h2{
+.groupintro h2 {
   font-weight: 300;
   font-size: 2em;
   border-bottom: 4px solid #ddd;
@@ -808,17 +1005,27 @@ form legend a, form legend a:hover, form legend a:focus {
     padding-bottom: 10px;
     color: #333;
   }
-  .platform-content li:hover, #g-sidebar .platform-content li.active {
-    background:#f2f2f2!important;
+
+  .platform-content li:hover,
+  #g-sidebar .platform-content li.active {
+    background: #f2f2f2 !important;
   }
 }
 
 /*CONTENT*/
 .control-group.success {
-  .checkbox, .radio, input, select, textarea {
+
+  .checkbox,
+  .radio,
+  input,
+  select,
+  textarea {
     color: $base-secondary-color;
   }
-  input, select, textarea {
+
+  input,
+  select,
+  textarea {
     border-color: $base-secondary-color;
   }
 }
@@ -852,6 +1059,7 @@ form legend a, form legend a:hover, form legend a:focus {
 
 .logout .form-horizontal {
   margin-top: 20px;
+
   .control-group {
     margin-top: 20px;
   }
@@ -878,9 +1086,12 @@ form legend a, form legend a:hover, form legend a:focus {
 }
 
 .alert {
-  .close, a:hover, .alert-link, .alert-link:hover {
+
+  .close,
+  a:hover,
+  .alert-link,
+  .alert-link:hover {
     font-size: xx-large;
-    color: #4E5B6D;
     opacity: 1;
     top: unset;
     left: unset;
@@ -892,27 +1103,28 @@ form legend a, form legend a:hover, form legend a:focus {
     background: transparent !important;
     color: $base-primary-color !important;
   }
+
   h4 {
     font-weight: 500;
   }
+
   &:not(.em-alert-filter) {
     background-color: #ffffff;
     border-color: #4E5B6D;
     padding: 0.938rem;
-    margin: 0;
-    margin-bottom: 0px;
     display: inline-flex;
     width: 100%;
     align-items: center;
     flex-direction: row-reverse;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin: 0 0 10px;
   }
 }
 
 .addGroup,
 .deleteGroup {
   cursor: pointer;
+
   .tooltip {
     display: none !important;
   }
@@ -921,18 +1133,19 @@ form legend a, form legend a:hover, form legend a:focus {
 .addGroup {
   color: $base-secondary-color;
   text-align: right;
-  padding: 8px 15px 0px 0px;
+  padding: 8px 15px 0 0;
+
   &:hover {
     color: #26729B;
-  }  
+  }
 }
 
 .deleteGroup {
-  padding: 8px 16px 0px 0px;
+  padding: 8px 16px 0 0;
 }
 
 /**** PRINT BUTTON IN SIDE BAR ****/
-.em-send-print-button > .em-print-button {
+.em-send-print-button>.em-print-button {
   display: none;
 }
 
@@ -944,12 +1157,15 @@ form legend a, form legend a:hover, form legend a:focus {
     float: unset;
     justify-content: center;
     margin: 0;
+
     li {
       margin-left: 15px;
     }
   }
+
   #g-container-main {
     padding: 0 20px;
+
     h1 {
       text-align: center;
     }
@@ -959,11 +1175,13 @@ form legend a, form legend a:hover, form legend a:focus {
 body.error-page p {
   padding: 20px 0 !important;
 }
+
 /* Nouveau dossier */
 .view-renew_application #g-main-mainbody {
   h2 {
     color: #2a363b;
   }
+
   .button {
     display: block;
     width: 200px;
@@ -971,6 +1189,7 @@ body.error-page p {
     border-radius: 0;
     padding: 8px 12px;
     font-size: 1rem;
+
     &:hover {
       text-decoration: none;
     }
@@ -980,6 +1199,7 @@ body.error-page p {
 .form-actions .span4 {
   margin: 0 !important;
 }
+
 /* FOOTER */
 
 #g-footer .platform-content {
@@ -989,6 +1209,7 @@ body.error-page p {
 
 footer#g-footer {
   padding: 20px !important;
+
   a {
     color: #404B5A;
     text-decoration: underline;
@@ -999,7 +1220,12 @@ footer#g-footer {
   text-align: center;
 }
 
-.view-login, .view-form, .view-article, .view-details, .view-contact, .view-programme {
+.view-login,
+.view-form,
+.view-article,
+.view-details,
+.view-contact,
+.view-programme {
   #g-footer {
     margin-top: 20px !important;
   }
@@ -1008,19 +1234,25 @@ footer#g-footer {
 #g-footer .notes {
   font-size: 0.8em;
 }
-.g-back-office-emundus-tableau .footer-b .custom, .g-back-office-emundus-tableau .footer-c .custom{
+
+.g-back-office-emundus-tableau .footer-b .custom,
+.g-back-office-emundus-tableau .footer-c .custom {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 /* color in emundus files */
 
 /*TABLEAU USER*/
 .nav .dropdown-toggle {
-  &:hover .caret, &:focus .caret {
+
+  &:hover .caret,
+  &:focus .caret {
     border-top-color: #8a1739;
     border-bottom-color: #8a1739;
   }
+
   .caret {
     border-top-color: #8a1739;
     border-bottom-color: #8a1739;
@@ -1033,23 +1265,28 @@ footer#g-footer {
 
 ul.pagination.pagination-sm a {
   color: #4E5B6D;
-  &:hover, &:focus, &:active {
+
+  &:hover,
+  &:focus,
+  &:active {
     color: #404B5A;
   }
 }
 
 /* EM PANEL */
-#em-appli-menu .panel-body .list-group-item:hover, #em-appli-menu .panel-body .list-group-item:active, #em-appli-menu .panel-body .list-group-item:focus {
-  color:$base-primary-color!important;
+#em-appli-menu .panel-body .list-group-item:hover,
+#em-appli-menu .panel-body .list-group-item:active,
+#em-appli-menu .panel-body .list-group-item:focus {
+  color: $base-primary-color !important;
 }
 
 .g-back-office-emundus-tableau #em-hide-filters {
-  border: 0px solid $base-primary-color;
+  border: 0 solid $base-primary-color;
   background-color: $base-primary-color;
 }
 
-.glyphicon-ban-circle{
-  color:#d94633;
+.glyphicon-ban-circle {
+  color: #d94633;
 }
 
 /* Menu Actions */
@@ -1069,7 +1306,10 @@ button#em-close-file {
   background-image: none;
   margin-top: -3px;
   height: 36px;
-  &:hover, &:focus, &:active {
+
+  &:hover,
+  &:focus,
+  &:active {
     background: #404B5A !important;
     border-color: #404B5A !important;
   }
@@ -1081,13 +1321,16 @@ div#em-appli-block {
     padding-top: 5px;
     border-radius: 0;
   }
+
   button.btn.btn-default {
     background-color: $base-secondary-color;
     border: none !important;
-    &:hover{
-      background-color: darken($base-secondary-color,10%);
+
+    &:hover {
+      background-color: darken($base-secondary-color, 10%);
     }
   }
+
   span.label.label-info {
     background: #ffffff !important;
     text-shadow: none !important;
@@ -1100,28 +1343,30 @@ table#groups-table a {
   box-shadow: none;
   border: 1px solid #4E5B6D !important;
   color: #ffffff;
+
   &:hover {
     background: #404B5A !important;
     box-shadow: none;
     border: 1px solid #404B5A !important;
     color: #ffffff;
-  }  
+  }
 }
 
 .modal-header {
   background: #4E5B6D;
   padding: 10px 20px;
   border-bottom: 1px solid #eee;
-  min-height:90px;
+  min-height: 90px;
 }
 
 div#em-modal-actions {
-  .panel-default > .panel-heading {
+  .panel-default>.panel-heading {
     border: none !important;
     box-shadow: none;
     color: #2a363b !important;
     background: transparent;
   }
+
   .panel-heading h5 {
     color: #2a363b;
   }
@@ -1129,25 +1374,31 @@ div#em-modal-actions {
 
 /* FILES */
 .g-back-office-emundus-tableau {
-  button, input {
-    &#search, &#clear-search, &#save-filter, &#add-filter {
-      background: $base-primary-color !important;
-      background-color: $base-primary-color !important;
-      background-image: none !important;
+
+  button,
+  input {
+
+    &#search,
+    &#clear-search,
+    &#save-filter,
+    &#add-filter {
+      background: $base-primary-color none !important;
       box-shadow: none !important;
       text-shadow: none;
       color: #FFFFFF;
       padding: 6px 8px !important;
-      border-radius:5px!important;
-      &:hover, &:focus, &:active { 
-        background: darken($base-primary-color,10%) !important;
-        background-color: darken($base-primary-color,10%) !important;
-        background-image: none !important;
+      border-radius: 5px !important;
+
+      &:hover,
+      &:focus,
+      &:active {
+        background: darken($base-primary-color, 10%) none !important;
         box-shadow: none !important;
         text-shadow: none;
         color: #ffffff !important;
       }
     }
+
     &#showhide {
       font-size: 14px !important;
       border-radius: 0 0 5px 5px !important;
@@ -1157,19 +1408,23 @@ div#em-modal-actions {
       margin-top: -28px !important;
       justify-content: center;
       background-color: $base-primary-color;
+
       &:hover {
-        background-color: darken($base-primary-color,10%);
+        background-color: darken($base-primary-color, 10%);
       }
     }
   }
+
   .panel-body {
     background-color: #4e5b6d;
   }
+
   .panel-info {
     border-color: #4E5B6D;
     box-shadow: none;
-    border-radius:0;
-    > .panel-heading {
+    border-radius: 0;
+
+    >.panel-heading {
       border-bottom: 2px #FFFFFF dashed;
       height: 50px !important;
       border-radius: 0;
@@ -1179,19 +1434,22 @@ div#em-modal-actions {
   }
 }
 
-.table-hover tbody tr > td, .table-hover tbody tr > th {
+.table-hover tbody tr>td,
+.table-hover tbody tr>th {
   background: #eceff3 !important;
 }
 
-.table-hover tbody tr:hover > td, .table-hover tbody tr:hover > th {
+.table-hover tbody tr:hover>td,
+.table-hover tbody tr:hover>th {
   background: #e3e7ed !important;
 }
 
 .chosen-container .chosen-results li {
   &.highlighted {
     background-color: $base-primary-color;
-    background-image: none!important;
+    background-image: none !important;
   }
+
   &.disabled-result {
     color: #868686;
   }
@@ -1205,34 +1463,40 @@ div#em-modal-actions {
 .list-group-item:nth-last-child(even) {
   background-color: #404B5A;
   color: #ffffff;
-  border: 0px;
+  border: 0;
 }
 
 .list-group-item:nth-last-child(odd) {
   background: #4E5B6D;
   color: #ffffff;
-  border: 0px;
+  border: 0;
 }
 
 div#em-assoc-files {
-  .panel.panel-primary, .panel.panel-default {
+
+  .panel.panel-primary,
+  .panel.panel-default {
     border: none;
     color: #ffffff;
     background: #6E7887;
+
     ul {
       margin: 1px 1px 1px 5px;
     }
   }
+
   .panel-collapse.collapse {
     border: 2px solid #404B5A !important;
-    border-top: 0px !important;
+    border-top: 0 !important;
   }
+
   .panel-body .panel-body {
     border: none !important;
     background: #6E7887;
     padding-bottom: 5px !important;
     padding-top: 5px !important;
   }
+
   .panel>.panel-heading {
     background: #404B5A;
     border-radius: 5px 5px 0 0;
@@ -1241,24 +1505,34 @@ div#em-assoc-files {
 }
 
 .has-error {
-  .help-block,.control-label,.radio,.checkbox,.radio-inline,.checkbox-inline {
+
+  .help-block,
+  .control-label,
+  .radio,
+  .checkbox,
+  .radio-inline,
+  .checkbox-inline {
     color: #b94a48 !important;
   }
+
   .form-control {
     border-color: #b94a48 !important;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) !important;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) !important;
+
     &:focus {
       border-color: #953b39 !important;
       -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392 !important;
       box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392 !important;
     }
   }
+
   .input-group-addon {
     color: #b94a48 !important;
     border-color: #b94a48 !important;
     background-color: #f2dede !important;
   }
+
   .form-control-feedback {
     color: #b94a48 !important;
   }
@@ -1290,28 +1564,31 @@ label {
 #em-modal-actions .modal-content .modal-header .btn-danger:hover {
   color: $base-primary-color !important;
   background-color: transparent !important;
-  border-color: darken($base-primary-color,10%) !important;
+  border-color: darken($base-primary-color, 10%) !important;
 }
 
 .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit {
   background: $base-secondary-color !important;
-  background-color: $base-secondary-color !important;
   border: 1px solid $base-secondary-color !important;
 }
 
 
 div:not(.header-right)>.btn-danger {
-  &:hover, &:focus, &:active, &.active {
+
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
     color: #ffffff !important;
-    background-color: darken($base-primary-color,10%) !important;
-    border-color: darken($base-primary-color,10%) !important;
+    background-color: darken($base-primary-color, 10%) !important;
+    border-color: darken($base-primary-color, 10%) !important;
   }
 }
 
 .open .dropdown-toggle.btn-danger {
   color: #ffffff !important;
-  background-color: darken($base-primary-color,10%) !important;
-  border-color: darken($base-primary-color,10%) !important;
+  background-color: darken($base-primary-color, 10%) !important;
+  border-color: darken($base-primary-color, 10%) !important;
 }
 
 /* gototop */
@@ -1415,4 +1692,50 @@ div:not(.header-right)>.btn-danger {
 .label-darkred {
   background-color: #e5283b !important;
   text-shadow: none;
+}
+
+.label-lightpink {
+  background-color: #e08283;
+  text-shadow: none;
+}
+
+.label-pink {
+  background-color: #d2527f;
+  text-shadow: none;
+}
+
+.label-darkpink {
+  background-color: #db0a5b;
+  text-shadow: none;
+}
+
+/* Responsive fixes */
+@media screen and (max-width: 958px) {
+
+  .view-login .form-horizontal .controls {
+    width: 100%;
+  }
+
+  .candidacy-files-list {
+    .btn-warning {
+      z-index: 5;
+      position: relative;
+    }
+
+    .main-page-file-progress {
+      top: 40px;
+      padding-bottom: 40px;
+    }
+  }
+
+  .applicant-form {
+    .fabrikActions.form-actions .span4:not(.offset1) {
+      justify-content: space-around;
+    }
+
+    .sauvegarder {
+      margin-left: 0 !important;
+    }
+  }
+
 }
