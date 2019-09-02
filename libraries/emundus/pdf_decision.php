@@ -126,6 +126,9 @@ $htmldata .=
 .label-lightred { background-color: #EC644B }
 .label-red { background-color: #CF000F }
 .label-darkred { background-color: #96281B }
+.label-lightpink { background-color: #e08283; }
+.label-pink { background-color: #d2527f; }
+.label-darkpink { background-color: #db0a5b; }
 </style>';
 
 if ( ! function_exists( 'exif_imagetype' ) ) {

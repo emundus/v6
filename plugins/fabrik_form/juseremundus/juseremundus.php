@@ -904,7 +904,7 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
 
 		$group = $db->loadColumn();
 
-		JUserHelper::addUserToGroup($user->user_id,$group[0]);
+		JUserHelper::addUserToGroup($user->id,$group[0]);
 	}
 
 	/**

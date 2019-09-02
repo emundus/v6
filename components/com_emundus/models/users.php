@@ -1752,10 +1752,161 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObjectList();
     }
 
-    public function getUsersById($id){ //user of application
+    public function getUsersById($id) { //user of application
         $db = JFactory::getDBO();
         $query = 'SELECT * FROM #__users WHERE id = '.$id;
         $db->setQuery($query);
         return $db->loadObjectList();
     }
+
+	public function getUsersByIds($ids) { //users of application
+		$db = JFactory::getDBO();
+		$query = 'SELECT * FROM #__users WHERE id IN ('.implode(',', $ids).')';
+		$db->setQuery($query);
+		return $db->loadObjectList();
+	}
+
+
+	/**
+	 * Method to start the password reset process. Taken from Joomla and modified to send email using template.
+	 *
+	 * @param   array  $data  The data expected for the form.
+	 *
+	 * @return  Object
+	 *
+	 * @throws Exception
+	 * @since  3.9.11
+	 */
+	public function passwordReset($data) {
+
+		$config = JFactory::getConfig();
+
+		// Load the com_users language tags in order to call the Joomla user JText.
+		$language =& JFactory::getLanguage();
+		$extension = 'com_users';
+		$base_dir = JPATH_SITE;
+		$language_tag = $language->getTag(); // loads the current language-tag
+		$language->load($extension, $base_dir, $language_tag, true);
+
+		$return = new stdClass();
+
+		$data['email'] = filter_var(JStringPunycode::emailToPunycode($data['email']), FILTER_VALIDATE_EMAIL);
+
+		// Check the validation results.
+		if (empty($data['email'])) {
+			$return->message = JText::_('COM_USERS_DESIRED_USERNAME');
+			$return->status = false;
+			return $return;
+		}
+
+		// Find the user id for the given email address.
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true)
+			->select('id')
+			->from($db->quoteName('#__users'))
+			->where($db->quoteName('email') . ' = ' . $db->quote($data['email']));
+
+		// Get the user object.
+		$db->setQuery($query);
+
+		try {
+			$userId = $db->loadResult();
+		} catch (RuntimeException $e) {
+			$return->message = JText::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage());
+			$return->status = false;
+			return $return;
+		}
+
+		// Check for a user.
+		if (empty($userId)) {
+			$return->message = JText::_('COM_USERS_INVALID_EMAIL');
+			$return->status = false;
+			return $return;
+		}
+
+		// Get the user object.
+		$user = JUser::getInstance($userId);
+
+		// Make sure the user isn't blocked.
+		if ($user->block) {
+			$return->message = JText::_('COM_USERS_USER_BLOCKED');
+			$return->status = false;
+			return $return;
+		}
+
+		// Make sure the user isn't a Super Admin.
+		if ($user->authorise('core.admin')) {
+			$return->message = JText::_('COM_USERS_REMIND_SUPERADMIN_ERROR');
+			$return->status = false;
+			return $return;
+		}
+
+		include_once (JPATH_SITE.DS.'components'.DS.'com_users'.DS.'models'.DS.'reset.php');
+		$m_juser_reset = new UsersModelReset();
+
+		// Make sure the user has not exceeded the reset limit
+		if (!$m_juser_reset->checkResetLimit($user)) {
+			$resetLimit = (int) JFactory::getApplication()->getParams()->get('reset_time');
+			$return->message = JText::plural('COM_USERS_REMIND_LIMIT_ERROR_N_HOURS', $resetLimit);
+			$return->status = false;
+			return $return;
+		}
+
+		// Set the confirmation token.
+		$token = JApplicationHelper::getHash(JUserHelper::genRandomPassword());
+		$hashedToken = JUserHelper::hashPassword($token);
+
+		$user->activation = $hashedToken;
+
+		// Save the user to the database.
+		if (!$user->save(true)) {
+			throw new JException(JText::sprintf('COM_USERS_USER_SAVE_FAILED', $user->getError()), 500);
+		}
+
+		// Assemble the password reset confirmation link.
+		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
+		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token;
+
+		// Put together the email template data.
+		$data = $user->getProperties();
+		$data['fromname'] = $config->get('fromname');
+		$data['mailfrom'] = $config->get('mailfrom');
+		$data['sitename'] = $config->get('sitename');
+		$data['link_text'] = JRoute::_($link, false, $mode);
+		$data['link_html'] = '<a href='.JRoute::_($link, true, $mode).'> '.JRoute::_($link, true, $mode).'</a>';
+		$data['token'] = $token;
+
+		// Build the translated email.
+		$subject = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $data['sitename']);
+		$body = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_BODY', $data['sitename'], $data['token'], $data['link_html']);
+
+		// Get and apply the template.
+		$query->clear()
+			->select($db->quoteName('Template'))
+			->from($db->quoteName('#__emundus_email_templates'))
+			->where($db->quoteName('id').' = 1');
+
+		$db->setQuery($query);
+
+		try {
+			$template = $db->loadResult();
+		} catch (RuntimeException $e) {
+			$return->message = JText::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage());
+			$return->status = false;
+			return $return;
+		}
+
+		$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template);
+
+		// Send the password reset request email.
+		$send = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $user->email, $subject, $body, true);
+
+		// Check for an error.
+		if ($send !== true) {
+			throw new JException(JText::_('COM_USERS_MAIL_FAILED'), 500);
+		}
+
+		$return->status = true;
+		return $return;
+	}
 }

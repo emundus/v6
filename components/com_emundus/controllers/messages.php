@@ -491,6 +491,149 @@ class EmundusControllerMessages extends JControllerLegacy {
         exit;
     }
 
+
+	/**
+	 * Send an email to a user, regardless of fnum.
+	 *
+	 * @since 3.8.10
+	 */
+	public function useremail() {
+
+
+		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+			die(JText::_("ACCESS_DENIED"));
+		}
+
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
+
+		$m_messages = new EmundusModelMessages();
+		$m_emails = new EmundusModelEmails();
+		$m_users = new EmundusModelUsers();
+
+		$current_user = JFactory::getUser();
+		$config = JFactory::getConfig();
+		$jinput = JFactory::getApplication()->input;
+
+		// Get default mail sender info
+		$mail_from_sys = $config->get('mailfrom');
+		$mail_from_sys_name = $config->get('fromname');
+
+		$uids  = explode(',',$jinput->post->get('recipients', null, null));
+		$bcc = $jinput->post->getString('Bcc', false);
+
+		// If no mail sender info is provided, we use the system global config.
+		$mail_from_name = $jinput->post->getString('mail_from_name', $mail_from_sys_name);
+		$mail_from = $jinput->post->getString('mail_from', $mail_from_sys);
+
+		$mail_subject = $jinput->post->getString('mail_subject', 'No Subject');
+		$template_id = $jinput->post->getInt('template', null);
+		$mail_message = $jinput->post->get('message', null, 'RAW');
+		$attachments = $jinput->post->get('attachments', null, null);
+
+		// Get additional info for the fnums such as the user email.
+		$users = $m_users->getUsersByIds($uids);
+
+		// This will be filled with the email adresses of successfully sent emails, used to give feedback to front end.
+		$sent = [];
+		$failed = [];
+
+		// Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
+		$template = $m_messages->getEmail($template_id);
+
+		foreach ($users as $user) {
+
+			$toAttach = [];
+			$post = [
+				'USER_NAME' => $user->name,
+				'SITE_URL' => JURI::base(),
+				'USER_EMAIL' => $user->email
+			];
+
+			$tags = $m_emails->setTags($user->id, $post);
+
+			// Tags are replaced with their corresponding values using the PHP preg_replace function.
+			$subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
+			$body = preg_replace($tags['patterns'], $tags['replacements'], $mail_message);
+			if ($template) {
+				$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+			}
+
+			$mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
+			$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
+
+			// If the email sender has the same domain as the system sender address.
+			if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+				$mail_from_address = $mail_from;
+			} else {
+				$mail_from_address = $mail_from_sys;
+			}
+
+			// Set sender
+			$sender = [
+				$mail_from_address,
+				$mail_from_name
+			];
+
+			// Configure email sender
+			$mailer = JFactory::getMailer();
+			$mailer->setSender($sender);
+			$mailer->addReplyTo($mail_from, $mail_from_name);
+			$mailer->addRecipient($user->email);
+			$mailer->setSubject($subject);
+			$mailer->isHTML(true);
+			$mailer->Encoding = 'base64';
+			$mailer->setBody($body);
+
+			if ($bcc === 'true') {
+				$mailer->addBCC($current_user->email);
+			}
+
+			$files = '';
+			// Files uploaded from the frontend.
+			if (!empty($attachments)) {
+
+				// Here we also build the HTML being logged to show which files were attached to the email.
+				$files = '<ul>';
+				foreach ($attachments as $upload) {
+					if (file_exists(JPATH_BASE.DS.$upload)) {
+						$toAttach[] = JPATH_BASE.DS.$upload;
+						$files .= '<li>'.basename($upload).'</li>';
+					}
+				}
+				$files .= '</ul>';
+
+			}
+
+			$mailer->addAttachment($toAttach);
+
+			// Send and log the email.
+			$send = $mailer->Send();
+			if ($send !== true) {
+				$failed[] = $user->email;
+				echo 'Error sending email: ' . $send->__toString();
+				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+			} else {
+				$sent[] = $user->email;
+				$log = [
+					'user_id_from' => $current_user->id,
+					'user_id_to' => $user->id,
+					'subject' => $subject,
+					'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user->email . '</i><br>' . $body . $files,
+					'type' => !empty($template)?$template->type:''
+				];
+				$m_emails->logEmail($log);
+				// Log the email in the eMundus logging system.
+				EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+			}
+
+		}
+		echo json_encode(['status' => true, 'sent' => $sent, 'failed' => $failed]);
+		exit;
+	}
+
 	/** The generic function used for sending emails.
 	 *
 	 * @param       $fnum

@@ -33,8 +33,7 @@ class EmundusModelMessages extends JModelList {
      * Gets all published message templates of a certain type.
      *
      * @param Int $type The type of email to get, type 2 is by default (Templates).
-     * @return Boolean False if the query fails and nothing can be loaded.
-     * @return array An array of objects describing the messages. (sender, subject, body, etc..)
+     * @return Mixed False if the query fails and nothing can be loaded. An array of objects describing the messages. (sender, subject, body, etc..)
      */
     function getAllMessages($type = 2) {
 
@@ -63,8 +62,7 @@ class EmundusModelMessages extends JModelList {
      * Gets all published message categories of a certain type.
      *
      * @param Int $type The type of category to get, type 2 is by default (Templates).
-     * @return Boolean False if the query fails and nothing can be loaded.
-     * @return array An array of the categories.
+     * @return Mixed False if the query fails and nothing can be loaded. An array of the categories.
      */
 	function getAllCategories($type = 2) {
 
@@ -93,7 +91,7 @@ class EmundusModelMessages extends JModelList {
      * Gets all published attachments unless a filter is active.
      *
      * @return Boolean False if the query fails and nothing can be loaded.
-     * @return Array An array of objects describing attachments.
+     * @return array An array of objects describing attachments.
      */
     function getAttachments() {
 

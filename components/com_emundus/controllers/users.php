@@ -810,4 +810,42 @@ class EmundusControllerUsers extends JControllerLegacy {
 		echo $response;
 		exit;
 	}
+
+	/**
+	 * Method to request a password reset. Taken from Joomla and adapted for eMundus.
+	 *
+	 * @return  boolean
+	 *
+	 * @throws Exception
+	 * @since   3.9.11
+	 */
+	public function passrequest() {
+
+		// Check the request token.
+		$this->checkToken('post');
+
+		$m_users = new EmundusModelusers();
+		$data = JFactory::getApplication()->input->post->get('jform', array(), 'array');
+
+		// Submit the password reset request.
+		$return	= $m_users->passwordReset($data);
+
+		// Check for a hard error.
+		if ($return->status === false) {
+
+			// The request failed.
+			// Go back to the request form.
+			$message = JText::sprintf('COM_USERS_RESET_REQUEST_FAILED', $return->message);
+			$this->setRedirect(JRoute::_('index.php?option=com_users&view=reset', false), $message, 'notice');
+			return false;
+
+		} else {
+
+			// The request succeeded.
+			// Proceed to step two.
+			$this->setRedirect(JRoute::_('index.php?option=com_users&view=reset&layout=confirm', false));
+			return true;
+
+		}
+	}
 }

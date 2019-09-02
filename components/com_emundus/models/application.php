@@ -1256,7 +1256,10 @@ class EmundusModelApplication extends JModelList {
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
 	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
     	$em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
-
+    	$bcTitle = $eMConfig->get('export_application_pdf_color', '#FFFFFF');
+    	$bcSubTitle = $eMConfig->get('export_application_pdf_color2', '#FFFFFF');
+    	$cTitle = $eMConfig->get('export_application_pdf_txt_color', '#000000');
+        
     	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list = new EmundusHelperList;
 
@@ -1268,6 +1271,14 @@ class EmundusModelApplication extends JModelList {
                         background-color: #f2f2f2;
                         width: 100%;
                     }
+                    h3{
+                        background-color: ".$bcTitle.";
+                        color:".$cTitle.";
+                    }
+                    h4{
+                        background-color: ".$bcSubTitle.";
+                        color:".$cTitle.";
+                    }
                     th {
                         border-spacing: 1px;
                         color: #000;
@@ -1278,6 +1289,7 @@ class EmundusModelApplication extends JModelList {
                         background-color: #FFFFFF;
                         padding:5px;
                     }
+                    
                     @media print {
                     	.breaker{ 
 							page-break-before: always;
@@ -1368,13 +1380,13 @@ class EmundusModelApplication extends JModelList {
 
                             $forms .= '<p><table class="adminlist">
                             <thead>
-                            <tr> ';
+                            <tr class="background"> ';
 
                             //-- Entrée du tableau -- */
                             $t_elt = array();
                             foreach ($elements as &$element) {
                                 $t_elt[] = $element->name;
-                                $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
+                                $forms .= '<th scope="col" class="background">'.JText::_($element->label).'</th>';
                             }
                             unset($element);
 

@@ -1527,24 +1527,49 @@ $(document).ready(function() {
         var view = $('#view').val();
         var url = $(this).children('a').attr('href');
         var formid = 29;
-
-        // get formid by fnum
-        $.ajax({
-            type:'post',
-            url:'index.php?option=com_emundus&controller=files&task=getformid&Itemid='+itemId,
-            data: {
-                fnum: fnum
-            },
-            dataType:'json',
-            async: false,
-            success: function(result) {
-                if (result.status)
-                    formid = result.formid;
-            },
-            error: function (jqXHR) {
-                console.log(jqXHR.responseText);
-            }
-        });
+        
+        switch (id) {
+            case 5 :
+                // get formid by fnum
+                $.ajax({
+                    type:'post',
+                    url:'index.php?option=com_emundus&controller=files&task=getformid&Itemid='+itemId,
+                    data: {
+                        fnum: fnum
+                    },
+                    dataType:'json',
+                    async: false,
+                    success: function(result) {
+                        if (result.status)
+                            formid = result.formid;
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+            break;
+            case 29 :
+                // get formid by fnum
+                $.ajax({
+                    type:'post',
+                    url:'index.php?option=com_emundus&controller=files&task=getdecisionformid&Itemid='+itemId,
+                    data: {
+                        fnum: fnum
+                    },
+                    dataType:'json',
+                    async: false,
+                    success: function(result) {
+                        if (result.status)
+                            formid = result.formid;
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+            break;
+            default:
+            break;
+        } 
 
         String.prototype.fmt = function (hash) {
             var string = this, key;
@@ -1558,11 +1583,13 @@ $(document).ready(function() {
             // 1:new application file
             // 4:attachments
             // 5:evaluation
+            // 29:decision
             // 32: Admission
             // Export PDF
             case 1 : $('#can-val').empty();
             case 4 : $('#can-val').empty();
             case 5 : $('#can-val').empty();
+            case 29 : $('#can-val').empty();
             case 32 :
                 $('#can-val').empty();
                 $('.modal-body').append('<div><img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/></div>');
@@ -2446,7 +2473,7 @@ $(document).ready(function() {
                                 '</div>'+
                             '</div>' );
 
-                            $('#data').append('<div class="panel panel-default xclsform"><div class="panel-body"> <select class="chzn-select" id="filt_save" name="filt_save" >'+
+                            $('#data').append('<div class="panel panel-default xclsform xclsform-filters"><div class="panel-body"> <select class="chzn-select" id="filt_save" name="filt_save" >'+
                                 '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option></select>'+
 
                                 '<button class="w3-button w3-tiny btn-warning" id="savefilter" style="margin-left:5%; margin-right:1%; border-radius: 4px;"><i class="icon-star"></i></button>'+

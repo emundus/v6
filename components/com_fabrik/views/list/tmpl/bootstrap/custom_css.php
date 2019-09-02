@@ -150,6 +150,21 @@ echo <<<EOT
     text-shadow: none;
 }
 
+.label-lightpink {
+    background-color: #e08283;
+    text-shadow: none;
+}
+
+.label-pink {
+    background-color: #d2527f;
+    text-shadow: none;
+}
+
+.label-darkpink {
+    background-color: #db0a5b;
+    text-shadow: none;
+}
+
 /*Programms*/
 .programmes-page #g-container-main{
     padding: 0 20px;
@@ -170,9 +185,6 @@ echo <<<EOT
 }
 .g-back-office-emundus-tableau #g-main-mainbody .platform-content .container-fluid{
     padding:0;
-}
-.g-back-office-emundus-tableau .g-container, .view-list .g-container{
-    width: 98%;
 }
 .g-back-office-emundus-tableau .header-c .open > .dropdown-menu {
     right: 0!important;
@@ -361,6 +373,10 @@ footer#g-footer {
 footer#g-footer {
 	background: transparent;
 	border-top: 1px solid #bbb;
+}
+
+.list-footer .input-prepend.input-append > span, .list-footer .input-prepend.input-append > select {
+    height: 41px;
 }
 /* END - Your CSS styling ends here */
 EOT;
