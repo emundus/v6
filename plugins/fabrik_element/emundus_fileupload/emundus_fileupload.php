@@ -193,7 +193,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                 if ($lengthFile > $nbMaxFile) {
                     $nbMax = false;
                 }
-                $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $nbMax, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt);
+                $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $nbMax, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt, 'maxSize' => $sizeMax);
             } else {
                 $ext = false;
                 $result[] = array('size' => $size, 'ext' => $ext,  'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment);
