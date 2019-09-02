@@ -158,12 +158,12 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 		<?php endif; ?>
 		<div class="control-group">
 			<div class="controls">
-				<button type="submit" class="btn btn-primary validate">
-					<?php echo JText::_('JSUBMIT'); ?>
-				</button>
 				<a class="btn" href="index.php" title="<?php echo JText::_('JCANCEL'); ?>">
 					<?php echo JText::_('JCANCEL'); ?>
 				</a>
+                <button type="submit" class="btn btn-primary validate">
+					<?php echo JText::_('JSUBMIT'); ?>
+                </button>
 				<input type="hidden" name="option" value="com_users" />
 				<input type="hidden" name="task" value="profile.save" />
 			</div>
