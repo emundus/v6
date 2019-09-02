@@ -58,11 +58,9 @@
     display: block;
     width: 100% !important;
 }
-
-.campaigntext.blue p {
-    padding-left: 45px;
+.campaigns-list i.icon-time {
+    display: none;
 }
-
 .campaingapplycontent {
     font-size: 15px;
     padding: 0;

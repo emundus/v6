@@ -190,10 +190,12 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                     }
                 }
 
+                $size = $this->formatBytes($size);
+
                 if ($lengthFile > $nbMaxFile) {
                     $nbMax = false;
                 }
-                $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $nbMax, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt);
+                $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $nbMax, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt, 'maxSize' => $sizeMax);
             } else {
                 $ext = false;
                 $result[] = array('size' => $size, 'ext' => $ext,  'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment);
@@ -205,6 +207,15 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         echo json_encode($result);
         return true;
     }
+
+	private function formatBytes($bytes, $precision = 2) {
+		$units = array('KB', 'MB', 'GB', 'TB');
+		$bytes = max($bytes, 0);
+		$pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+		$pow = min($pow, count($units) - 1);
+		$bytes /= pow(1024, $pow);
+		return round($bytes, $precision) . ' ' . $units[$pow];
+	}
 
 
     /**

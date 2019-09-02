@@ -209,7 +209,7 @@
                             Swal.fire({
                                 type: 'error',
                                 title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
-                                text: Joomla.JText._('PLG_ELEMENT_FIELD_SIZE'),
+                                text: Joomla.JText._('PLG_ELEMENT_FIELD_SIZE')+result[j].maxSize,
                                 confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue'
                             });
                             input.value = '';
