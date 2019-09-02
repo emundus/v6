@@ -190,7 +190,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                     }
                 }
 
-                $size = $this->formatBytes($sizeMax);
+	            $sizeMax = $this->formatBytes($sizeMax);
 
                 if ($lengthFile > $nbMaxFile) {
                     $nbMax = false;
