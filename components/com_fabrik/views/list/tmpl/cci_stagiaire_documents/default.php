@@ -123,7 +123,7 @@ echo $this->table->intro;
                             <div class="accordion-content">
                                 <?php foreach ($attachments as $attachment) :?>
                                     <?php if ($attachment->id == 102) :?>
-                                        <div class="em-attachement fiche-pedago" onclick="getProductPDF('<?php echo $row->data->jos_emundus_setup_campaigns___training_raw; ?>')">
+                                        <div class="em-attachement fiche-pedago" onclick="getProductPDF('<?php echo $row->data->jos_emundus_setup_programmes___code_raw; ?>')">
                                             <i class="far fa-file-pdf"></i>
                                             <p class="em-attachement-name"><?= $attachment->value ?></p>
                                         </div>
