@@ -100,8 +100,8 @@ catch(Exception $e)
    JError::raiseError(500, $query);
 }
 
-$mprofile->initEmundusSession();
+//$mprofile->initEmundusSession();
 
-$app->redirect("index.php",  JText::_('FILE_OK'));
+$app->redirect('index.php?fnum='.$fnum,  JText::_('FILE_OK'));
 
 ?>
