@@ -21,6 +21,8 @@ class modEmundusUserDropdownHelper {
 
 		$items = $menu->getItems('menutype', $menu_name);
 
+		$levels = JFactory::getUser()->getAuthorisedViewLevels();
+
 		if ($items) {
 			foreach ($items as $i => $item) {
 
@@ -30,6 +32,10 @@ class modEmundusUserDropdownHelper {
 					continue;
 				}
 
+				// Check if user can access menu item.
+				if (!in_array($item->access, $levels)) {
+					continue;
+				}
 
 				$item->flink = $item->link;
 
@@ -62,16 +68,17 @@ class modEmundusUserDropdownHelper {
 						break;
 				}
 
-				if (strcasecmp(substr($item->flink, 0, 4), 'http') && (strpos($item->flink, 'index.php?') !== false))
+				if (strcasecmp(substr($item->flink, 0, 4), 'http') && (strpos($item->flink, 'index.php?') !== false)) {
 					$item->flink = JRoute::_($item->flink, true, $item->params->get('secure'));
-				else
+				} else {
 					$item->flink = JRoute::_($item->flink);
+				}
 
-				$item->title        = htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8', false);
-				$item->anchor_css   = htmlspecialchars($item->params->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
+				$item->title = htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8', false);
+				$item->anchor_css = htmlspecialchars($item->params->get('menu-anchor_css', ''), ENT_COMPAT, 'UTF-8', false);
 				$item->anchor_title = htmlspecialchars($item->params->get('menu-anchor_title', ''), ENT_COMPAT, 'UTF-8', false);
-				$item->anchor_rel   = htmlspecialchars($item->params->get('menu-anchor_rel', ''), ENT_COMPAT, 'UTF-8', false);
-				$item->menu_image   = $item->params->get('menu_image', '') ?
+				$item->anchor_rel = htmlspecialchars($item->params->get('menu-anchor_rel', ''), ENT_COMPAT, 'UTF-8', false);
+				$item->menu_image = $item->params->get('menu_image', '') ?
 				htmlspecialchars($item->params->get('menu_image', ''), ENT_COMPAT, 'UTF-8', false) : '';
 			}
 		}

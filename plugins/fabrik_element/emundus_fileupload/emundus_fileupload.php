@@ -23,12 +23,6 @@ use Joomla\Utilities\ArrayHelper;
  * @since       3.0
  */
 class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
-    /**
-     * Is the element an upload element
-     *
-     * @var bool
-     */
-    //protected $is_upload = true;
 
     /**
      * Storage method adaptor object (filesystem/amazon s3)
@@ -52,11 +46,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $db = JFactory::getDBO();
 
         if (JFactory::getUser()->guest) {
-
-            $status='false';
-            $result = array('status' => $status);
-            echo json_encode($result);
-            return false;
+	        echo json_encode(['status' => 'false']);
+	        return false;
         }
 
         $attachId = $this->getAttachId();
@@ -108,12 +99,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $current_user = JFactory::getSession()->get('emundusUser');
 
         if (JFactory::getUser()->guest) {
-            
-            $status='false';
-            $result = array('status' => $status);
-            echo json_encode($result);
+            echo json_encode(['status' => 'false']);
             return false;
         }
+
         $attachId = $jinput->post->get('attachId');
         $can_submit_encrypted = $jinput->post->get('encrypt');
 
@@ -132,14 +121,13 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         if (!file_exists(EMUNDUS_PATH_ABS.$current_user->id)) {
             // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
-            if (!file_exists(EMUNDUS_PATH_ABS.'index.html'))
-                touch(EMUNDUS_PATH_ABS.'index.html');
+            if (!file_exists(EMUNDUS_PATH_ABS.'index.html')) {
+	            touch(EMUNDUS_PATH_ABS.'index.html');
+            }
 
             if (!mkdir(EMUNDUS_PATH_ABS.$current_user->id) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$current_user->id.DS.'index.html')){
                 $error = JUri::getInstance().' :: USER ID : '.$current_user->id.' -> Unable to create user file';
                 JLog::add($error, JLog::ERROR, 'com_emundus');
-
-
                 return false;
             }
         }
@@ -151,17 +139,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
             $tmp_name = $file['tmp_name'];
             $fileSize = $file['size'];
             $target = $this->getPath($current_user->id,$fileName);
-            $size = $jinput->post->get('size');
 
             $extension = explode('.', $fileName);
             $extensionAttachment = $attachmentResult->allowed_types;
             $typeExtension = $extension[1];
-
-            if (empty($size)) {
-                $sizeMax = ini_get("upload_max_filesize");
-            } else {
-                $sizeMax = $jinput->post->getInt('size');
-            }
 
             $acceptedExt[] = stristr($extensionAttachment, $typeExtension);
 
@@ -175,6 +156,11 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                         $encrypt = true;
                     }
                 }
+
+	            // The maximum size is equal to the smallest of the two sizes, either the size configured in the plugin or in the server itself.
+	            $postSize = $jinput->post->getInt('size', 0);
+	            $iniSize = ini_get("upload_max_filesize");
+	            $sizeMax = ($postSize>=$iniSize)?$iniSize:$postSize;
 
                 if ($lengthFile <= $nbMaxFile) {
                     if ($nbAttachment < $nbMaxFile) {
@@ -197,10 +183,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                 }
                 $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $nbMax, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt, 'maxSize' => $sizeMax);
             } else {
+            	$size = true;
                 $ext = false;
                 $result[] = array('size' => $size, 'ext' => $ext,  'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment);
             }
-
 
         }
 
@@ -227,11 +213,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         $current_user = JFactory::getSession()->get('emundusUser');
         if (JFactory::getUser()->guest) {
-
-            $status='false';
-            $result = array('status' => $status);
-            echo json_encode($result);
-            return false;
+	        echo json_encode(['status' => 'false']);
+	        return false;
         }
 
         $attachId = $jinput->post->get('attachId');
@@ -253,9 +236,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
 
-    /**
-     * @return bool
-     */
+	/**
+	 * @return bool
+	 * @throws Exception
+	 */
     public function onAjax_delete() {
 
         $jinput = $this->app->input;
@@ -285,8 +269,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
             $status = false;
         }
 
-        $result = array('status' => $status);
-        echo json_encode($result);
+	    echo json_encode(['status' => $status]);
         return true;
     }
 
@@ -297,12 +280,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $cid = $this->getCampaignId($current_user->fnum);
         $uploadResult = $this->getUploads($attachId,$current_user->id,$cid);
 
-        if(empty($uploadResult) && $data == ""){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return (empty($uploadResult) && $data == "");
     }
     /**
      * @return String
@@ -1029,8 +1007,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      *
      * @throws Exception
      */
-    public function insertFile($values)
-    {
+    public function insertFile($values) {
         if (!empty($values)) {
 
 
