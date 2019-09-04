@@ -22,13 +22,15 @@ $site_offset = $config->get('offset');
     <div class = "depositor">
         <select id = "depositor_select">
         <option value=""><?php echo JText::_('SELECT_DEPOSITOR');?></option>
-            <option value="1"><?php echo JText::_('RESEAUX');?></option>
             <option value="2"><?php echo JText::_('HORS_RESEAUX');?></option>
+            <option value="1"><?php echo JText::_('RESEAUX');?></option>
         </select>
     </div>
+    <!--
     <div class = "result-counter">
         <span><?php echo (sizeof($currentCampaign) == 1) ? sizeof($currentCampaign) . " " . JText::_('CURRENT_CAMPAIGN') : sizeof($currentCampaign) . " " . JText::_('CURRENT_CAMPAIGNS'); ?></span>
     </div>
+    -->
     <div class = "type"> 
         <select id= "program_type">
             <option value=""><?php echo JText::_('SELECT_PROG_TYPE');?></option>
@@ -36,7 +38,7 @@ $site_offset = $config->get('offset');
             <?php 
             $programs = array_unique(array_column($programs, 'programmes'));
             foreach($programs as $program => $value) :?>
-                    <option value = "<?=$value;?>"><?=$value;?></option>
+                    <option value = "<?=$value;?>"><?= ucfirst(strtolower($value)); ?></option>
             <?php endforeach ;?>
         </select>
     </div>
@@ -68,7 +70,7 @@ $site_offset = $config->get('offset');
                         </div>
                         <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                             <div class="campaingapplycontent">
-                                <b class="campaingap    plycontent-bold"><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br class="campaingapplycontent-breaker"/>
+                                <b class="campaingapplycontent-bold"><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br class="campaingapplycontent-breaker"/>
 
                                 <?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
                                     <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
@@ -93,6 +95,9 @@ $site_offset = $config->get('offset');
                                     <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                     <br/>
                                 <?php endif; ?>
+
+                                <hr>
+	                            <?= JText::_('TIMEZONE').$offset; ?>
                             </div>
                             <div class="below-content">
                             <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course='.$result->code.'&cid='.$result->id); ?>
