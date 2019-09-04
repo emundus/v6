@@ -57,9 +57,7 @@ $site_offset = $config->get('offset');
                     <div class="campaign-content" data-row="<?php echo $result->prog_type;?>" data-reseaux1="<?php echo $resaux->reseaux_cult; ?>" data-reseaux2="<?php echo $resaux->hors_reseaux; ?>">
                         <div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
                             <h4>
-                                <a href="<?php echo !empty($result->link) ? $result->link : JURI::base()."index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
-                                    <?php echo $result->label; ?>
-                                </a>
+                                <?php echo $result->label; ?>
                             </h4>
                             <div class = "em-disciplines">
                                 <?php echo '<div class = "em-discipline label">'.implode('</div><div class = "em-discipline label">', $helper->getCampaignDiscipline($result->id)).'</div>';?>
