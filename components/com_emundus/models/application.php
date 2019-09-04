@@ -1676,7 +1676,13 @@ class EmundusModelApplication extends JModelList {
                                     if (!empty($element->label) && $element->label!=' ') {
 
                                         if ($element->plugin=='date' && $element->content>0) {
-	                                        $dt = new DateTime($element->content, new DateTimeZone('UTC'));
+
+                                        	// Empty date elements are set to 0000-00-00 00:00:00 in DB.
+                                        	if ($show_empty_fields == 0 && $element->content == '0000-00-00 00:00:00') {
+                                        		continue;
+	                                        }
+
+                                        	$dt = new DateTime($element->content, new DateTimeZone('UTC'));
 	                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
 	                                        $elt = $dt->format($params->date_form_format);
                                         }

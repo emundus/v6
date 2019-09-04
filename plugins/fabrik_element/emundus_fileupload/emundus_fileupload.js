@@ -255,31 +255,33 @@
 
                         var result = JSON.parse(xhr.responseText);
 
-                        for (var i = 0; i < result.length; i++) {
+                        if (result != null) {
+                            for (var i = 0; i < result.length; i++) {
 
-                            var divLink = document.createElement('div');
-                            divLink.setAttribute("id", elementId + '_attachment_link' + i);
-                            divLink.setAttribute("class", 'em-fileAttachment-link');
-                            divAttachment.appendChild(divLink);
+                                var divLink = document.createElement('div');
+                                divLink.setAttribute("id", elementId + '_attachment_link' + i);
+                                divLink.setAttribute("class", 'em-fileAttachment-link');
+                                divAttachment.appendChild(divLink);
 
-                            var link = document.createElement('a');
-                            var linkText = document.createTextNode(result[i].filename);
-                            link.setAttribute("href", result[i].target);
+                                var link = document.createElement('a');
+                                var linkText = document.createTextNode(result[i].filename);
+                                link.setAttribute("href", result[i].target);
 
-                            divLink.appendChild(link);
-                            link.appendChild(linkText);
+                                divLink.appendChild(link);
+                                link.appendChild(linkText);
 
-                            var deleteButton = document.createElement('a');
-                            deleteButton.setAttribute("class", 'btn goback-btn em-deleteFile far fa-times-circle');
-                            deleteButton.setAttribute('value', result[i].filename);
+                                var deleteButton = document.createElement('a');
+                                deleteButton.setAttribute("class", 'btn goback-btn em-deleteFile far fa-times-circle');
+                                deleteButton.setAttribute('value', result[i].filename);
 
-                            var icon = document.createElement('i');
-                            icon.setAttribute("class", 'far fa-times-circle');
+                                var icon = document.createElement('i');
+                                icon.setAttribute('class', 'far fa-times-circle');
 
-                            divLink.appendChild(deleteButton);
+                                divLink.appendChild(deleteButton);
 
-                            var button = document.querySelector('#' + elementId + '_attachment_link' + i + ' > a.em-deleteFile');
-                            button.addEventListener('click', (event) => FbFileUpload.delete(elementId, attachId));
+                                var button = document.querySelector('#' + elementId + '_attachment_link' + i + ' > a.em-deleteFile');
+                                button.addEventListener('click', () => FbFileUpload.delete(elementId, attachId));
+                            }
                         }
                     }
                 }
