@@ -3,7 +3,7 @@
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
 		<fieldset name="plg-form-emunduscampaign" label="PLG_FABRIK_FORM_EMUNDUSCAMPAIGN_FIELDS">
 
-			<field name="emunduscampaign_redirect_url" type="field" default="index.php" description="PLG_FABRIK_FORM_EMUNDUSCAMPAIGN_REDIRECT_URL_DESC" label="PLG_FABRIK_FORM_EMUNDUSCAMPAIGN_REDIRECT_URL_LABEL" />
+			<field name="emunduscampaign_redirect_url" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUSCAMPAIGN_REDIRECT_URL_DESC" label="PLG_FABRIK_FORM_EMUNDUSCAMPAIGN_REDIRECT_URL_LABEL" />
 			<field name="form_type" type="list" default="cc" description="PLG_FABRIK_FORM_EMUNDUSCAMPAIGN_FORM_TYPE_DESC" label="PLG_FABRIK_FORM_EMUNDUSCAMPAIGN_FORM_TYPE_LABEL" >
 				<option value="cc">Campaign candidature</option>
 				<option value="user">User</option>

@@ -223,7 +223,11 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
 
 			$url = $this->getParam('emunduscampaign_redirect_url', null);
 			if (empty($url)) {
-				$url = 'index.php?option=com_emundus&task=openfile&fnum=' . $fnum;
+
+				include_once(JPATH_BASE.'/components/com_emundus/models/application.php');
+				$m_application = new EmundusModelApplication();
+				$url = 'index.php?option=com_emundus&task=openfile&fnum='.$fnum.'&redirect='.base64_encode($m_application->getFirstPage($fnum)[$fnum]['link']);
+
 			}
 			$app->redirect($url, JText::_('FILE_OK'));
 		}
