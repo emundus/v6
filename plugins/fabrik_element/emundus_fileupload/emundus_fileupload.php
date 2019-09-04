@@ -77,7 +77,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                 if (!empty($fileNameUpdate)) {
                     $this->updateFile($current_user->fnum, $cid, $attachId, $fileNameUpdate);
                 }
-
             }
             if ($nbMax > 1 && count($uploadResult) < $nbMax) {
                 $this->insertFile($insert);
@@ -104,7 +103,9 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         }
 
         $attachId = $jinput->post->get('attachId');
-        $can_submit_encrypted = $jinput->post->get('encrypt');
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $can_submit_encrypted = ($jinput->post->get('encrypt') == 2)?$eMConfig->get('can_submit_encrypted', 1):$jinput->post->get('encrypt');
 
         $attachmentResult = $this->getAttachment($attachId);
         $label = $attachmentResult->lbl;
@@ -159,7 +160,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
 	            // The maximum size is equal to the smallest of the two sizes, either the size configured in the plugin or in the server itself.
 	            $postSize = $jinput->post->getInt('size', 0);
-	            $iniSize = ini_get("upload_max_filesize");
+	            $iniSize = $this->file_upload_max_size();
 	            $sizeMax = ($postSize>=$iniSize)?$iniSize:$postSize;
 
                 if ($lengthFile <= $nbMaxFile) {
@@ -193,6 +194,39 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         echo json_encode($result);
         return true;
     }
+
+	// Returns a file size limit in bytes based on the PHP upload_max_filesize
+	// and post_max_size
+	private function file_upload_max_size() {
+		static $max_size = -1;
+
+		if ($max_size < 0) {
+			// Start with post_max_size.
+			$post_max_size = $this->parse_size(ini_get('post_max_size'));
+			if ($post_max_size > 0) {
+				$max_size = $post_max_size;
+			}
+
+			// If upload_max_size is less, then reduce. Except if upload_max_size is
+			// zero, which indicates no limit.
+			$upload_max = $this->parse_size(ini_get('upload_max_filesize'));
+			if ($upload_max > 0 && $upload_max < $max_size) {
+				$max_size = $upload_max;
+			}
+		}
+		return $max_size;
+	}
+
+	private function parse_size($size) {
+		$unit = preg_replace('/[^bkmgtpezy]/i', '', $size); // Remove the non-unit characters from the size.
+		$size = preg_replace('/[^0-9\.]/', '', $size); // Remove the non-numeric characters from the size.
+		if ($unit) {
+			// Find the position of the unit in the ordered string which is the power of magnitude to multiply a kilobyte by.
+			return round($size * pow(1024, stripos('bkmgtpezy', $unit[0])));
+		} else {
+			return round($size);
+		}
+	}
 
 	private function formatBytes($bytes, $precision = 2) {
 		$units = array('KB', 'MB', 'GB', 'TB');
@@ -282,6 +316,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         return (empty($uploadResult) && $data == "");
     }
+
+
     /**
      * @return String
      * @throws Exception
@@ -406,16 +442,9 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
         $data = FabrikWorker::JSONtoData($data, true);
-        $params = $this->getParams();
 
         foreach ($data as &$d) {
             $d = $this->format($d);
-
-            $this->_guessLinkType($d, $thisRow);
-
-            if ($params->get('render_as_qrcode', '0') === '1' && !empty($d)) {
-                $d = $this->qrCodeLink($thisRow);
-            }
         }
 
         return parent::renderListData($data, $thisRow, $opts);
@@ -431,20 +460,9 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      * @return string
      */
     protected function format(&$d, $doNumberFormat = true) {
-        $params = $this->getParams();
-        $format = $params->get('text_format_string');
-        $formatBlank = $params->get('field_format_string_blank', true);
 
         if ($doNumberFormat) {
             $d = $this->numberFormat($d);
-        }
-
-        if ($format != '' && ($formatBlank || $d != '')) {
-            $d = sprintf($format, $d);
-        }
-
-        if ($params->get('password') == '1') {
-            $d = str_pad('', JString::strlen($d), '*');
         }
 
         return $d;
@@ -491,21 +509,12 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         }
 
         if (!$this->isEditable()) {
-            if ($params->get('render_as_qrcode', '0') === '1') {
-                if (!empty($value)) {
-                    $value = $this->qrCodeLink($data);
-                }
-            } else {
-                $this->_guessLinkType($value, $data);
-                $value = $this->format($value, false);
-                $value = $this->getReadOnlyOutput($value, $value);
-            }
 
-            return ($element->hidden == '1') ? "<!-- " . $value . " -->" : $value;
+	        $value = $this->format($value, false);
+	        $value = $this->getReadOnlyOutput($value, $value);
 
-        } elseif ($params->get('autocomplete', '0') === '3') {
-            $bits['class'] .= ' fabrikGeocomplete';
-            $bits['autocomplete'] = 'off';
+	        return ($element->hidden == '1') ? "<!-- ".$value." -->" : $value;
+
         }
 
         if (version_compare(phpversion(), '5.2.3', '<')) {
@@ -517,11 +526,9 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $bits['class'] .= ' ' . $params->get('text_format');
         $bits['attachmentId'] = $params->get('attachmentId');
         $bits['size'] = $params->get('size');
-        $bits['encrypted'] = $params->get('can_submit_encrypted');
 
-        if ($params->get('speech', 0)) {
-            $bits['x-webkit-speech'] = 'x-webkit-speech';
-        }
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+        $bits['encrypted'] = ($params->get('encrypt') == 2)?$eMConfig->get('can_submit_encrypted', 1):$params->get('encrypt');
 
         $layout = $this->getLayout('form');
         $layoutData = new stdClass;
@@ -549,54 +556,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         }
 
         return $value;
-    }
-
-
-    /**
-     * Format guess link type
-     *
-     * @param string  &$value Original field value
-     * @param array $data Record data
-     *
-     * @return  void
-     */
-    protected function _guessLinkType(&$value, $data) {
-        $params = $this->getParams();
-
-        if ($params->get('guess_linktype') == '1') {
-            $w = new FabrikWorker;
-            $opts = $this->linkOpts();
-            $title = $params->get('link_title', '');
-            $attrs = $params->get('link_attributes', '');
-
-            if (!empty($attrs)) {
-                $attrs = $w->parseMessageForPlaceHolder($attrs);
-                $attrs = explode(' ', $attrs);
-
-                foreach ($attrs as $attr) {
-                    list($k, $v) = explode('=', $attr);
-                    $opts[$k] = trim($v, '"');
-                }
-            } else {
-                $attrs = array();
-            }
-
-            if ((new MediaHelper)->isImage($value)) {
-                $alt = empty($title) ? '' : 'alt="' . strip_tags($w->parseMessageForPlaceHolder($title, $data)) . '"';
-                $value = '<img src="' . $value . '" ' . $alt . ' ' . implode(' ', $attrs) . ' />';
-            } else {
-                if (!FabrikWorker::isEmail($value) && !JString::stristr($value, 'http') && JString::stristr($value, 'www.')) {
-                    $value = 'http://' . $value;
-                }
-
-                if ($title !== '') {
-                    $opts['title'] = strip_tags($w->parseMessageForPlaceHolder($title, $data));
-                }
-
-                $label = FArrayHelper::getValue($opts, 'title', '') !== '' ? $opts['title'] : $value;
-                $value = FabrikHelperHTML::a($value, $label, $opts);
-            }
-        }
     }
 
 
@@ -640,34 +599,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      * @return  array
      */
     public function elementJavascript($repeatCounter) {
-        $params = $this->getParams();
         $id = $this->getHTMLId($repeatCounter);
         $opts = $this->getElementJSOptions($repeatCounter);
-
-        $inputMask = trim($params->get('text_input_mask', ''));
-
-        if (!empty($inputMask)) {
-            $opts->use_input_mask = true;
-            $opts->input_mask = $inputMask;
-            $opts->input_mask_definitions = $params->get('text_input_mask_definitions', '{}');
-            $opts->input_mask_autoclear = $params->get('text_input_mask_autoclear', '0') === '1';
-        } else {
-            $opts->use_input_mask = false;
-            $opts->input_mask = '';
-        }
-
-        $opts->geocomplete = $params->get('autocomplete', '0') === '3';
-
-        $config = JComponentHelper::getParams('com_fabrik');
-        $apiKey = trim($config->get('google_api_key', ''));
-        $opts->mapKey = empty($apiKey) ? false : $apiKey;
-
-        if ($this->getParams()->get('autocomplete', '0') == '2') {
-            $autoOpts = array();
-            $autoOpts['max'] = $this->getParams()->get('autocomplete_rows', '10');
-            $autoOpts['storeMatchedResultsOnly'] = false;
-            FabrikHelperHTML::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'field', $autoOpts);
-        }
 
         JText::script('PLG_ELEMENT_FIELD_SUCCESS');
         JText::script('PLG_ELEMENT_FIELD_EXTENSION');
@@ -699,9 +632,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      */
     public function formJavascriptClass(&$srcs, $script = '', &$shim = array()) {
         $key = FabrikHelperHTML::isDebug() ? 'element/field/field' : 'element/field/field-min';
-        $params = $this->getParams();
-        $inputMask = trim($params->get('text_input_mask', ''));
-        $geoComplete = $params->get('autocomplete', '0') === '3';
 
         $s = new stdClass;
 
@@ -711,16 +641,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         // Seems OK now - reverting to empty array
         $s->deps = array();
 
-        if (!empty($inputMask)) {
-            $folder = 'components/com_fabrik/libs/masked_input/';
-            $s->deps[] = $folder . 'jquery.maskedinput';
-        }
-
-        if ($geoComplete) {
-            $folder = 'components/com_fabrik/libs/googlemaps/geocomplete/';
-            $s->deps[] = $folder . 'jquery.geocomplete';
-        }
-
         if (array_key_exists($key, $shim)) {
             $shim[$key]->deps = array_merge($shim[$key]->deps, $s->deps);
         } else {
@@ -729,65 +649,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         parent::formJavascriptClass($srcs, $script, $shim);
         return false;
-    }
-
-
-    /**
-     * Get database field description
-     *
-     * @return  string  db field type
-     */
-    public function getFieldDescription() {
-        $p = $this->getParams();
-
-        if ($this->encryptMe()) {
-            return 'BLOB';
-        }
-
-        switch ($p->get('text_format')) {
-            default:
-            case 'text':
-                $objType = "VARCHAR(" . $p->get('maxlength', 255) . ")";
-                break;
-            case 'integer':
-                $objType = "INT(" . $p->get('integer_length', 11) . ")";
-                break;
-            case 'decimal':
-                $total = (int)$p->get('integer_length', 11) + (int)$p->get('decimal_length', 2);
-                $objType = "DECIMAL(" . $total . "," . $p->get('decimal_length', 2) . ")";
-                break;
-        }
-
-        return $objType;
-    }
-
-
-    /**
-     * Get Joomfish options
-     *
-     * @return  array    key=>value options
-     * @deprecated - not supporting joomfish
-     *
-     */
-    public function getJoomfishOptions() {
-        $params = $this->getParams();
-        $return = array();
-        $size = (int)$this->getElement()->width;
-        $maxLength = (int)$params->get('maxlength');
-
-        if ($size !== 0) {
-            $return['length'] = $size;
-        }
-
-        if ($maxLength === 0) {
-            $maxLength = $size;
-        }
-
-        if ($params->get('textarea-showmax') && $maxLength !== 0) {
-            $return['maxlength'] = $maxLength;
-        }
-
-        return $return;
     }
 
 
@@ -833,158 +694,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      */
     protected function _indStoreDatabaseFormat($val) {
         return $this->unNumberFormat($val);
-    }
-
-
-    /**
-     * Get the element's cell class
-     *
-     * @return  string    css classes
-     * @since 3.0.4
-     *
-     */
-    public function getCellClass() {
-        $params = $this->getParams();
-        $classes = parent::getCellClass();
-        $format = $params->get('text_format');
-
-        if ($format == 'decimal' || $format == 'integer') {
-            $classes .= ' ' . $format;
-        }
-
-        return $classes;
-    }
-
-
-    /**
-     * Output a QR Code image
-     *
-     * @since 3.1
-     */
-    public function onAjax_renderQRCode() {
-        $input = $this->app->input;
-        $this->setId($input->getInt('element_id'));
-        $this->loadMeForAjax();
-        $this->getElement();
-        $url = 'index.php';
-        $this->lang->load('com_fabrik.plg.element.field', JPATH_ADMINISTRATOR);
-
-        if (!$this->getListModel()->canView() || !$this->canView()) {
-            $this->app->enqueueMessage(FText::_('JERROR_ALERTNOAUTHOR'));
-            $this->app->redirect($url);
-            exit;
-        }
-
-        $rowId = $input->get('rowid', '', 'string');
-
-        if (empty($rowId)) {
-            $this->app->redirect($url);
-            exit;
-        }
-
-        $listModel = $this->getListModel();
-        $row = $listModel->getRow($rowId, false);
-
-        if (empty($row)) {
-            $this->app->redirect($url);
-            exit;
-        }
-
-        $elName = $this->getFullName(true, false);
-        $value = $row->$elName;
-
-        if (!empty($value)) {
-            require JPATH_SITE . '/components/com_fabrik/libs/phpqrcode/phpqrcode.php';
-
-            ob_start();
-            QRCode::png($value);
-            $img = ob_get_contents();
-            ob_end_clean();
-        }
-
-        if (empty($img)) {
-            $img = file_get_contents(JPATH_SITE . '/media/system/images/notice-note.png');
-        }
-
-        // Some time in the past
-        header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-        header("Cache-Control: no-store, no-cache, must-revalidate");
-        header("Cache-Control: post-check=0, pre-check=0", false);
-        header("Pragma: no-cache");
-        header('Accept-Ranges: bytes');
-        header('Content-Length: ' . strlen($img));
-
-        // Serve up the file
-        echo $img;
-
-        // And we're done.
-        exit();
-    }
-
-
-    /**
-     * Get a link to this element which will call onAjax_renderQRCode().
-     *
-     * @param array|object $thisRow Row data
-     *
-     * @return   string  QR code link
-     * @since 3.1
-     *
-     */
-    protected function qrCodeLink($thisRow) {
-        if (is_object($thisRow)) {
-            $thisRow = ArrayHelper::fromObject($thisRow);
-        }
-
-        $formModel = $this->getFormModel();
-        $formId = $formModel->getId();
-        $rowId = $formModel->getRowId();
-
-        if (empty($rowId)) {
-
-            $rowId = FArrayHelper::getValue($thisRow, '__pk_val', '');
-
-            if (empty($rowId)) {
-                $rowId = $formModel->getListModel()->lastInsertId;
-                if (empty($rowId)) {
-                    return '';
-                }
-            }
-        }
-
-        $elementId = $this->getId();
-        $src = COM_FABRIK_LIVESITE
-            . 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode&amp;'
-            . 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
-
-        $layout = $this->getLayout('qr');
-        $displayData = new stdClass;
-        $displayData->src = $src;
-        $displayData->data = $thisRow;
-
-        return $layout->render($displayData);
-    }
-
-
-    /**
-     * Turn form value into email formatted value
-     *
-     * @param mixed $value Element value
-     * @param array $data Form data
-     * @param int $repeatCounter Group repeat counter
-     *
-     * @return  string  email formatted value
-     */
-    protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0) {
-        $params = $this->getParams();
-
-        if ($params->get('render_as_qrcode', '0') === '1') {
-            return html_entity_decode($this->qrCodeLink($data));
-        } else {
-            $value = $this->format($value);
-            return parent::getIndEmailValue($value, $data, $repeatCounter);
-        }
     }
 
 
@@ -1049,7 +758,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         try {
             $db->execute();
         } catch (Exception $e) {
-            JFactory::getApplication()->enqueueMessage('Probrème survenu à la mise à jour des fichiers', 'message');
+            JFactory::getApplication()->enqueueMessage('Problème survenu à la mise à jour des fichiers', 'message');
         }
 
     }
@@ -1074,7 +783,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         try {
             $db->execute();
         } catch (Exception $e) {
-            JFactory::getApplication()->enqueueMessage('Probrème survenu à la suppression des fichiers', 'message');
+            JFactory::getApplication()->enqueueMessage('Problème survenu à la suppression des fichiers', 'message');
         }
 
     }
