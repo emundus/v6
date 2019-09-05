@@ -73,3 +73,15 @@
 .other-em-element {
     margin: 10px 0;
 }
+
+#em-select-program,
+#em-select-campaign {
+    margin-bottom: 40px;
+}
+
+#em-select-program h2,
+#program-categories h2,
+#result h1,
+#other-result h1 {
+    font-size: 20px;
+}
