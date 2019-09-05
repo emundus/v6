@@ -796,9 +796,10 @@ form#member-registration div a {
   form {
     background: #fcfcfc;
     border: none;
-    margin-bottom: 0 !important;
+    margin-bottom: 0!important;
     border-radius: 0;
-    padding: 20px !important;
+    padding:20px!important;
+    width: 50%;
   }
 
   .well label {
@@ -1707,6 +1708,32 @@ div:not(.header-right)>.btn-danger {
 .label-darkpink {
   background-color: #db0a5b;
   text-shadow: none;
+}
+
+.view-login .form-horizontal {
+  .control-group {
+    flex-direction: column;
+  }
+
+  .controls {
+    width: 100% !important;
+  }
+
+  .control-label {
+    width: auto;
+    text-align: left;
+    margin-right: 30px;
+  }
+}
+
+.em-formRegistrationCenter {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+}
+
+#form_307 {
+  width: 50%;
 }
 
 /* Responsive fixes */
