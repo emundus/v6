@@ -3743,6 +3743,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function getValueByFabrikElts($fabrikElts, $fnumsArray) {
         $m_files = $this->getModel('Files');
+
+        $fabrikValues = null;
         foreach ($fabrikElts as $elt) {
 
             $params = json_decode($elt['params']);
