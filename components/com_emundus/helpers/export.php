@@ -41,8 +41,11 @@ class EmundusHelperExport
 			mkdir(EMUNDUS_PATH_ABS.$sid);
 			chmod(EMUNDUS_PATH_ABS.$sid, 0755);
 		}
-		
-		require_once($file);
+
+		// Prevent including PDF library twice.
+		if (!function_exists('application_form_pdf')) {
+			require_once($file);
+		}
         
         application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order);
         
