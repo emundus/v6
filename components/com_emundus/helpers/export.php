@@ -187,8 +187,8 @@ class EmundusHelperExport
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
             die(JText::_('ACCESS_DENIED'));
 
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
@@ -219,8 +219,8 @@ class EmundusHelperExport
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
             die(JText::_('ACCESS_DENIED'));
 
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
@@ -250,8 +250,8 @@ class EmundusHelperExport
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
             die(JText::_('ACCESS_DENIED'));
 
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
