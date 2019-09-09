@@ -6,41 +6,25 @@ function pdf_decision($user_id, $fnum = null, $output = true, $name = null, $opt
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
-	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-	//require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-	//require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
-	//require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
-	include_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
+	require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'files.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 
-	$m_profile 		= new EmundusModelProfile;
-	//$m_users 		= new EmundusModelUsers;
-	//$menu 			= new EmundusHelperMenu;
-	$application 	= new EmundusModelApplication;
-	//$evaluation 	= new EmundusModelEvaluation;
-	$m_files 			= new EmundusModelFiles;
+	$m_profile = new EmundusModelProfile;
+	$m_files = new EmundusModelFiles;
 
-	$db 			= JFactory::getDBO();
-	$app 			= JFactory::getApplication();
-	$config 		= JFactory::getConfig();
-	//$eMConfig 		= JComponentHelper::getParams('com_emundus');
-	//$current_user 	= JFactory::getUser();
-	$user 			= $m_profile->getEmundusUser($user_id);
-	$fnum 			= empty($fnum)?$user->fnum:$fnum;
-
-	//$export_pdf = $eMConfig->get('export_pdf');
-
-	//$user_profile = $m_users->getCurrentUserProfile($user_id);
+	$db = JFactory::getDBO();
+	$app = JFactory::getApplication();
+	$config = JFactory::getConfig();
+	$user = $m_profile->getEmundusUser($user_id);
+	$fnum = empty($fnum)?$user->fnum:$fnum;
 	
 	$infos = $m_profile->getFnumDetails($fnum);
 	$campaign_id = $infos['campaign_id'];
 
 	// Get form HTML
 	$htmldata = '';
-
-	//$forms = $application->getFormsPDF($user_id, $fnum);
 
 	// Create PDF object
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -64,7 +48,6 @@ function pdf_decision($user_id, $fnum = null, $output = true, $name = null, $opt
 				ORDER BY esc.id DESC';
 	$db->setQuery($query);
 	$item = $db->loadObject();
-//die(str_replace("#_", "jos", $query));
 
 	//get logo
 	$template 	= $app->getTemplate(true);
