@@ -13,10 +13,10 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'files.php');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
+require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'files.php');
+require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'list.php');
+require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
 
 
 class EmundusModelEvaluation extends JModelList {
@@ -1213,7 +1213,7 @@ class EmundusModelEvaluation extends JModelList {
 
 	public function getUsers($current_fnum = null)
 	{
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 
 		//$userModel = new EmundusModelUsers();
 		$session = JFactory::getSession();
