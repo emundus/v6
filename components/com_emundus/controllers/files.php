@@ -2531,7 +2531,6 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-        require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'pdf.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 
         $m_emails = new EmundusModelEmails;
@@ -2669,7 +2668,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                         }
                                     }
                                 } elseif (empty($files)) {
-                                    foreach ($setup_attachments as $att){
+                                    foreach ($setup_attachments as $att) {
                                         $zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
                                     }
                                 }
