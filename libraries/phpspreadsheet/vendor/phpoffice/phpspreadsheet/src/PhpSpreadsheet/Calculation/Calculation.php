@@ -3237,9 +3237,10 @@ class Calculation
         return $formula;
     }
 
-    private static function mkMatrix(...$args)
+    private static function mkMatrix($args)
     {
-        return $args;
+    	// Sigh... Did this to solve things for a client using PHP 5.5 ugh.
+        return func_get_args();
     }
 
     //    Binary Operators
