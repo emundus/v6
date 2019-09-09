@@ -60,7 +60,6 @@ button.close {
 .g-back-office-emundus-tableau input#clear-search,
 .g-back-office-emundus-tableau input#save-filter,
 .g-back-office-emundus-tableau button#add-filter {
-    background: #29d4ff;
     background-image: none;
     box-shadow: none;
     text-shadow: none;
@@ -81,20 +80,18 @@ button.close {
 .g-back-office-emundus-tableau button#add-filter:hover,
 .g-back-office-emundus-tableau button#add-filter:active,
 .g-back-office-emundus-tableau button#add-filter:focus {
-    background: #00c4f5;
     background-image: none ;
     box-shadow: none ;
     text-shadow: none;
     color: #ffffff ;
 }
 .g-back-office-emundus-tableau #em-hide-filters {
-    border: 0px solid #29d4ff;
+    border: none;
     height: 100px;
     width: 15px;
     position: fixed;
     top: 25%;
     left: 0;
-    background-color: #29d4ff;
     cursor: pointer;
 }
 /*TABLEAUX*/
@@ -261,7 +258,6 @@ fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-
 }
 .navbar.navbar-inverse {
     height: auto;
-    border: #29d4ff;
     border-radius: 0;
     background: #4E5B6D;
     padding: 10px;
@@ -324,30 +320,24 @@ div#em-assoc-files .panel > .panel-heading h6 {
     margin: 0;
 }
 div#em-appli-block .panel-heading {
-    background: #29d4ff;
     border: 0;
     padding-top: 5px;
     border-radius: 0;
 }
 div#em-appli-block button.btn.btn-default {
-    background-color: #e03c32;
     border: none !important;
 }
-div#em-appli-block button.btn.btn-default:hover{
-    background-color: #b83229;
-}
-.em-personalInfo>a{
+
+.em-personalInfo > a {
     background-color: #29d4ff;
     display: -webkit-inline-box;
     display: -ms-inline-flexbox;
     display: inline-flex;
     height: -moz-fit-content;
     min-height: 0;
-    border: 1px solid #29d4ff;
 }
 .em-personalInfo > a:hover {
     background-color: transparent;
-    color: #29d4ff;
     outline: none;
 }
 .em-searchbar .btn-default{
@@ -1394,7 +1384,7 @@ thead th:hover {
 
 .table-left,
 .table-right {
-    padding: 0px !important;
+    padding: 0 !important;
 }
 
 #em-appli-block .table th,
