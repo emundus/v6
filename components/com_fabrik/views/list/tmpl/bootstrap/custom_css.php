@@ -326,16 +326,13 @@ echo <<<EOT
     display: inline!important;
     margin: 5px !important;
 }
-.fabrikFilterContainer .fabrik_actions .fabrik_filter_submit{
-    background: #29d4ff;
-    background-color: #29d4ff;
-    border: 1px solid #29d4ff;
+.fabrikFilterContainer .fabrik_actions .fabrik_filter_submit {
     border-radius: 0 !important;
     padding: 8px 12px !important;
     color:white;
 }
 .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit:hover{
-    background-color: transparent !important;
+    background-color: transparent;
     color: #29d4ff;
     outline: none;
 }
