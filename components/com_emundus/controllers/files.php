@@ -52,16 +52,15 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     public function __construct($config = array())
     {
-        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'emails.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'admission.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
 
         $this->_user = JFactory::getSession()->get('emundusUser');
 
@@ -103,7 +102,7 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     public function applicantemail()
     {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'emails.php');
         $h_emails = new EmundusHelperEmails;
         $h_emails->sendApplicantEmail();
     }
@@ -113,7 +112,7 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     public function groupmail()
     {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'emails.php');
         $h_emails = new EmundusHelperEmails;
         $h_emails->sendGroupEmail();
     }
@@ -1013,7 +1012,7 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     public function send_elements()
     {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
         $current_user = JFactory::getUser();
 
         if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
@@ -1053,7 +1052,7 @@ class EmundusControllerFiles extends JControllerLegacy
      *
      */
     public function zip() {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
         $current_user = JFactory::getUser();
 
@@ -1596,8 +1595,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function getformslist() {
 
-        require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once(JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
@@ -1648,8 +1647,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function getdoctype() {
 
-        require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once(JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $jinput  = JFactory::getApplication()->input;
         $code    = $jinput->getVar('code', null);
@@ -2531,9 +2530,9 @@ class EmundusControllerFiles extends JControllerLegacy
 	        die(JText::_('RESTRICTED_ACCESS'));
         }
 
-        require_once(JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
         require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'pdf.php');
-        require_once(JPATH_COMPONENT.DS.'models'.DS.'emails.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 
         $m_emails = new EmundusModelEmails;
 
@@ -2736,7 +2735,7 @@ class EmundusControllerFiles extends JControllerLegacy
         if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application')
             die( JText::_('RESTRICTED_ACCESS') );
 
-        require_once(JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
         require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'pdf.php');
         require_once(JPATH_BASE.DS.'libraries'.DS.'pclzip-2-8-2'.DS.'pclzip.lib.php');
 
@@ -3418,8 +3417,8 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     public function getPDFProgrammes() {
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $html = '';
         $session = JFactory::getSession();
         $jinput = JFactory::getApplication()->input;
@@ -3453,8 +3452,8 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     public function getPDFCampaigns() {
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $html = '';
         $session     = JFactory::getSession();
         $jinput      = JFactory::getApplication()->input;
@@ -3491,7 +3490,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
     public function getProgrammes(){
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
         $html = '';
         $session     = JFactory::getSession();
         $filt_params = $session->get('filt_params');
@@ -3612,7 +3611,7 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     public function getproductpdf() {
 
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
 
         $h_export = new EmundusHelperExport();
 
