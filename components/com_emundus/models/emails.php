@@ -517,12 +517,13 @@ class EmundusModelEmails extends JModelList
 
         if (count($tags) > 0) {
             
-            foreach ($tags as $i => $val) {
+            foreach ($tags as $val) {
                 $tag = strip_tags($val);
-                if (is_numeric($tag))
-                    $idFabrik[] = $tag;
-                else
-                    $setupTags[] = $tag;
+                if (is_numeric($tag)) {
+	                $idFabrik[] = $tag;
+                } else {
+	                $setupTags[] = $tag;
+                }
             }
         }
 
@@ -539,10 +540,11 @@ class EmundusModelEmails extends JModelList
                 if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
                     $fabrikValues[$elt['id']] = $file->getFabrikValueRepeat($elt, $fnumsArray, $params, @$groupParams->repeat_group_button == 1);
                 } else {
-                    if ($isDate)
-                        $fabrikValues[$elt['id']] = $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
-                    else
-                        $fabrikValues[$elt['id']] = $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                    if ($isDate) {
+	                    $fabrikValues[$elt['id']] = $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+                    } else {
+	                    $fabrikValues[$elt['id']] = $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                    }
                 }
                 
                 if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
@@ -560,7 +562,6 @@ class EmundusModelEmails extends JModelList
                             } else {
                                 $val[$k] = '';
                             }
-
                         }
                         $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                     }
@@ -595,17 +596,20 @@ class EmundusModelEmails extends JModelList
             }
             
             return $this->replace($preg, $str);
+        } else {
+        	return $str;
         }
-        else return $str;
     }
 
 
-    /**
-     * Gets the label of a CascadingDropdown element based on the value.
-     *
-     * @param $elt array the cascadingdropdown element.
-     * @param $val string the value of the element to be used for retrieving the label.
-     */
+	/**
+	 * Gets the label of a CascadingDropdown element based on the value.
+	 *
+	 * @param $elt array the cascadingdropdown element.
+	 * @param $val string the value of the element to be used for retrieving the label.
+	 *
+	 * @return mixed|string
+	 */
     private function getCddLabel($elt, $val) {
         $attribs = json_decode($elt['params']);
         $id = $attribs->cascadingdropdown_id;
@@ -621,7 +625,11 @@ class EmundusModelEmails extends JModelList
         $this->_db->setQuery($query);
         
         try {
-            return $this->_db->loadResult();
+        	$ret = $this->_db->loadResult();
+            if (empty($ret)) {
+            	return $val;
+            }
+            return $ret;
         } catch (Exception $e) {
             JLog::add('Error getting cascadingdropdown label in model/emails/getCddLabel at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return $val;
