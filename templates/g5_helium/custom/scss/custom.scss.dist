@@ -1,5 +1,9 @@
 @import "dependencies";
 
+body {
+  border-top: 5px solid $base-secondary-color !important;
+}
+
 h1::after,
 .swal2-title:after {
   content: '';
@@ -659,16 +663,24 @@ ul.nav.nav-tabs.nav-stacked span {
   font-size: 2rem;
 }
 
-.rotate-me.blue {
-  background: $base-secondary-color;
-  border-color: $base-secondary-color;
-  width: 1000vw;
-}
+.rotate-me {
 
-.rotate-me.orange {
-  background-color: #bf0e04;
-  border-color: #bf0e04;
-  color: #fff;
+  p {
+    margin: 0 !important;
+  }
+
+  &.orange {
+    background-color: #bf0e04;
+    border-color: #bf0e04;
+    color: #fff;
+  }
+
+  &.blue {
+    background: $base-secondary-color;
+    border-color: $base-secondary-color;
+    width: 1000vw;
+  }
+
 }
 
 /*IDENTIFIANT OUBLIÉ*/
@@ -794,11 +806,12 @@ form#member-registration div a {
 /* Connexion */
 .login {
   form {
-    background: #fcfcfc;
+    background: white;
     border: none;
-    margin-bottom: 0!important;
+    margin-bottom: 0 !important;
     border-radius: 0;
-    padding:20px!important;
+    padding: 20px !important;
+    box-shadow: none;
     width: 50%;
   }
 
@@ -813,7 +826,7 @@ form#member-registration div a {
 }
 
 ul.nav.nav-tabs.nav-stacked {
-  background: #fcfcfc;
+  background: white;
   border-radius: 0;
   display: flex;
   justify-content: space-evenly;
@@ -1197,8 +1210,18 @@ body.error-page p {
   }
 }
 
-.form-actions .span4 {
-  margin: 0 !important;
+.form-actions {
+
+  .row-fluid {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: row-reverse;
+  }
+
+  .span4 {
+    margin: 0 !important;
+  }
 }
 
 /* FOOTER */
@@ -1210,6 +1233,8 @@ body.error-page p {
 
 footer#g-footer {
   padding: 20px !important;
+  background: transparent;
+  border-top: 1px solid #bbb;
 
   a {
     color: #404B5A;
@@ -1710,19 +1735,46 @@ div:not(.header-right)>.btn-danger {
   text-shadow: none;
 }
 
-.view-login .form-horizontal {
+
+/**** VALIDATION STARS ****/
+.applicant-form, .em-formRegistrationCenter {
+  .icon-star.small {
+    display: none;
+  }
+}
+
+
+form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm label.radio {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.fabrikgrid_checkbox span {
+  padding-left: 5px;
+}
+
+/*** ALLOW * TO BE AT THE END OF TEXT ****/
+.applicant-form, .em-formRegistrationCenter {
+  form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip{
+    display: inline !important;
+  }
+}
+
+/*** REGISTRATION FORM ***/
+#form_307 .fb_el_jos_emundus_users___password > label[for="jos_emundus_users___password"] > i.icon-star.small {
+  color: transparent;
+}
+
+.fb_el_jos_emundus_users___terms_and_conditions>label:after {
+  content: '';
+}
+
+.view-login .form-horizontal,
+#form_307 .row-fluid,
+.form-validate {
   .control-group {
+    display: flex;
     flex-direction: column;
-  }
-
-  .controls {
-    width: 100% !important;
-  }
-
-  .control-label {
-    width: auto;
-    text-align: left;
-    margin-right: 30px;
   }
 }
 
@@ -1732,16 +1784,36 @@ div:not(.header-right)>.btn-danger {
   align-items: center;
 }
 
-#form_307 {
-  width: 50%;
+.view-login,
+.view-registration {
+
+  h1:after {
+    display:none;
+  }
+
+  .form-horizontal .controls {
+    width: 100%;
+  }
+}
+
+.form-horizontal {
+  .control-group {
+    justify-content: space-around;
+
+    .control-label {
+      text-align: left;
+    }
+  }
+  .controls {
+    margin: 0;
+    width: 70%;
+    display: inline-flex;
+    align-items: center;
+  }
 }
 
 /* Responsive fixes */
 @media screen and (max-width: 958px) {
-
-  .view-login .form-horizontal .controls {
-    width: 100%;
-  }
 
   .candidacy-files-list {
     .btn-warning {
