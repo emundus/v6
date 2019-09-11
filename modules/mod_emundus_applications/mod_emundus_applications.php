@@ -63,12 +63,14 @@ $show_state_files          = $params->get('show_state_files', 0);
 
 $file_status 	            = $params->get('file_status', 1);
 
+$cc_list_url = $params->get('cc_list_url', 'index.php?option=com_fabrik&view=form&formid=102');
+
 // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
 if ($layout == '_:ccirs-drh') {
-	$applications = modemundusApplicationsHelper::getDrhApplications();
 	$cc_list_url = $params->get('cc_list_url', 'index.php');
+	$applications = modemundusApplicationsHelper::getDrhApplications();
 } elseif ($layout == '_:ccirs') {
-    $cc_list_url = $params->get('cc_list_url', 'index.php');
+	$cc_list_url = $params->get('cc_list_url', 'index.php');
 	$applications = modemundusApplicationsHelper::getApplications($layout);
 } else {
 	// We send the layout as a param because Hesam needs different information.
