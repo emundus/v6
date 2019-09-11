@@ -58,7 +58,25 @@ foreach ($tmp as $customField)
 								<?php echo JHtml::_('users.' . $field->fieldname, $field->value); ?>
 							<?php elseif (JHtml::isRegistered('users.' . $field->type)) : ?>
 								<?php echo JHtml::_('users.' . $field->type, $field->value); ?>
-							<?php else : ?>
+							<?php else:?>
+								<?php
+
+                                if (empty($field->value)) {
+	                                // eMundus patch to get eM user data.
+	                                $query = $this->db->getQuery(true);
+	                                $query->select($this->db->quoteName('profile_value'))
+                                        ->from($this->db->quoteName('#__user_profiles'))
+                                        ->where($this->db->quoteName('profile_key').' LIKE '.$this->db->quote('emundus_profile.'.$field->fieldname).' AND '.$this->db->quoteName('user_id').' = '.$this->data->id);
+	                                $this->db->setQuery($query);
+
+	                                try {
+		                                $field->value = $this->db->loadResult();
+	                                } catch (Exception $e) {
+		                                Jlog::add('Error retrieving emundus user profile info at query -> '.$query->__toString(), 'com_profile', JLog::ERROR);
+	                                }
+                                }
+
+								?>
 								<?php echo JHtml::_('users.value', $field->value); ?>
 							<?php endif; ?>
 						</dd>
