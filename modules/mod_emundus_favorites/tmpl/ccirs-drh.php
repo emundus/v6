@@ -37,7 +37,7 @@ echo $description;
                         $signupURL = $params->get('signupURL');
                         
                         if (!empty($signupURL)) :?>
-                            <a href="<?php echo JRoute::_($signupURL.'?formation='.$favorite->code); ?>" >inscrire un collaborateur</a>
+                            <a href="<?php echo JRoute::_($signupURL.'?formation='.$favorite->code); ?>" ><?php echo JText::_('SIGNUP_USER');?></a>
                         <?php endif; ?>
                     </div>
                 </div>
