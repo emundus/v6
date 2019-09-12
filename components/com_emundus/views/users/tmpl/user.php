@@ -232,7 +232,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
     });
 </script>
 <script>
-    $('#selectAll').css('display','none');
+    $('#selectAll.selectAll').css('display','none');
     $('#selectDropdown').off('click');
     $('#selectDropdown').click(function() {
 

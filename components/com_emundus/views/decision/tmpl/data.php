@@ -262,7 +262,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
     });
 </script>
 <script>
-    $('#selectAll').css('display','none');
+    $('#selectAll.selectAll').css('display','none');
     $('#selectDropdown').click(function() {
 
         $('#selectContainer').removeClass('borderSelect');
