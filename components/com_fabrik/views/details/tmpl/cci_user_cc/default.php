@@ -198,10 +198,14 @@ echo $this->pluginend;
                         }),
                         success: function (result) {
                             if (result.status) {
-                                document.getElementById(fnum).hide();
+                                document.getElementById(fnum).remove();
                                 Swal.fire({
                                     type: 'success',
                                     title: "<?php echo JText::_('COM_EMUNDUS_ASSOCIATE_REMOVED'); ?>"
+                                }).then(function (result) {
+                                    if (document.querySelectorAll('.accordion-container').length <= 0) {
+                                        window.location = '/mon-espace-decideur-rh';
+                                    }
                                 });
                             } else {
                                 Swal.fire({
