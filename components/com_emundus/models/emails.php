@@ -40,7 +40,7 @@ class EmundusModelEmails extends JModelList
     public function getEmail($lbl)
     {
         try {
-            $query = 'SELECT * FROM #__emundus_setup_emails AS se LEFT JOIN #__emundus_email_templates AS et ON et.id = se.email_tmpl WHERE se.lbl like '.$this->_db->Quote($lbl);
+            $query = 'SELECT se.*, et.Template FROM #__emundus_setup_emails AS se LEFT JOIN #__emundus_email_templates AS et ON et.id = se.email_tmpl WHERE se.lbl like '.$this->_db->Quote($lbl);
             $this->_db->setQuery( $query );
 
             return $this->_db->loadObject();
