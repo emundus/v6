@@ -233,7 +233,12 @@ echo $this->table->intro;
 
 
     jQuery(document).ready(function(){
-        jQuery('.inner-accordion-content').slideToggle();
+        if(jQuery(this).find('.accordion-container').size() > 0 ) {
+            var first = document.querySelectorAll('.accordion-container')[0];
+            jQuery(first.getElementsByClassName('accordion-content')[0]).slideToggle();
+            first.classList.add('open');
+            jQuery(first).find('.fa-caret-right').addClass("down");
+        }
     });
 
 function getProductPDF(code) {

@@ -181,9 +181,12 @@ echo $this->table->intro;
 
 
     jQuery(document).ready(function(){
-        //var inner = document.querySelectorAll('.inner-accordion-container');
-        //jQuery('.inner-accordion-content').slideToggle();
-        //jQuery('.accordion-content').slideToggle();
+        if(jQuery(this).find('.accordion-container').size() > 0 ) {
+            var first = document.querySelectorAll('.accordion-container')[0];
+            jQuery(first.getElementsByClassName('accordion-content')[0]).slideToggle();
+            first.classList.add('open');
+            jQuery(first).find('.fa-caret-right').addClass("down");
+        }
     });
 
 function getProductPDF(code) {
