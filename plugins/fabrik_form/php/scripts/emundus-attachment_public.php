@@ -85,7 +85,7 @@ try {
 
 	$nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
 	if (!isset($attachement_params->displayed) || $attachement_params->displayed === '0') {
-		$nom.= "_locked";
+		$nom .= "_locked";
 	}
 	$nom .= $attachement_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
@@ -129,7 +129,7 @@ try {
 	$replyto = $obj->emailfrom;
 	$replytoname = $obj->name;
 
-	if ($template) {
+	if ($obj->Template) {
 		$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj->Template);
 	}
 
