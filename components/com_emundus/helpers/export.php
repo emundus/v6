@@ -32,9 +32,6 @@ class EmundusHelperExport
         
 		if (!file_exists($file)) {
 			$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
-			$application_form_pdf = 'application_form_pdf';
-		} else {
-			$application_form_pdf = 'application_form_pdf_'.str_replace('-', '_', $fnumInfos['training']);
 		}
 		
 		if (!file_exists(EMUNDUS_PATH_ABS.$sid)) {
@@ -48,8 +45,7 @@ class EmundusHelperExport
 		}
         
         application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order);
-        
-       
+
 		return EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_application.pdf';
     }
     public static function buildHeaderPDF($fnumInfos, $sid, $fnum, $options = null) {
@@ -57,9 +53,6 @@ class EmundusHelperExport
         
 		if (!file_exists($file)) {
 			$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
-			$application_header_pdf = 'application_header_pdf';
-		} else {
-			$application_header_pdf = 'application_header_pdf_'.str_replace('-', '_', $fnumInfos['training']);
 		}
 		
 		if (!file_exists(EMUNDUS_PATH_ABS.$sid)) {
@@ -74,53 +67,58 @@ class EmundusHelperExport
        
 		return EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_header.pdf';
     }
-    
 
-    /**
-     * Check whether pdf is encrypted or password protected.
-     * @param <type> $form
-     * @param <type> $form_state
-     */
-    public static function pdftest_is_encrypted($file)
-    {
+
+	/**
+	 * Check whether pdf is encrypted or password protected.
+	 *
+	 * @param String $file
+	 *
+	 * @return bool
+	 */
+    public static function pdftest_is_encrypted($file) {
         require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
 
         $pdf = new ConcatPdf();
         $pdf->setSourceFile($file);
 
-        if ($pdf->currentParser->isEncrypted())
-            return false;
-        else
-            return true;
+        if ($pdf->currentParser->isEncrypted()) {
+	        return false;
+        } else {
+	        return true;
+        }
     }
 
-    public static function get_pdf_prop($file)
-	{
+    public static function get_pdf_prop($file) {
 	    $f = fopen($file,'rb');
-	    if(!$f)
-	        return false;
+	    if (!$f) {
+		    return false;
+	    }
 
 	    //Read the last 16KB
 	    fseek($f, -16384, SEEK_END);
 	    $s = fread($f, 16384);
 
 	    //Extract cross-reference table and trailer
-	    if(!preg_match("/xref[\r\n]+(.*)trailer(.*)startxref/s", $s, $a))
-	        return false;
+	    if (!preg_match("/xref[\r\n]+(.*)trailer(.*)startxref/s", $s, $a)) {
+		    return false;
+	    }
 	    $xref = $a[1];
 	    $trailer = $a[2];
 
 	    //Extract Info object number
-	    if(!preg_match('/Info ([0-9]+) /', $trailer, $a))
-	        return false;
+	    if (!preg_match('/Info ([0-9]+) /', $trailer, $a)) {
+		    return false;
+	    }
 	    $object_no = @$a[1];
 
 	    //Extract Info object offset
 	    $lines = preg_split("/[\r\n]+/", $xref);
 	    $line = @$lines[1 + $object_no];
 	    $offset = (int)$line;
-	    if($offset == 0)
-	        return false;
+	    if ($offset == 0) {
+		    return false;
+	    }
 
 	    //Read Info object
 	    fseek($f, $offset, SEEK_SET);

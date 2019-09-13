@@ -156,7 +156,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
     <?php echo $cat_div; ?>
 
     <div class="g-block size-95">
-        <h1><?php echo $title; ?>
+        <h1>
             <?php if (!$user->guest) :?>
                 <?php if ($is_favorite) :?>
                     <i class="fas fa-star em-star-button" rel="tooltip" title="<?php echo JText::_('FAVORITE_CLICK_HERE'); ?>" id="em-favorite" onclick="unfavorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
@@ -164,6 +164,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
                     <i class="far fa-star em-star-button" rel="tooltip" title="<?php echo JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" id="em-favorite" onclick="favorite(<?php echo $this->data['jos_emundus_setup_programmes___id_raw']; ?>)"></i>
                 <?php endif; ?>
             <?php endif; ?>
+            <?php echo $title; ?>
         </h1>
             <p><?php echo JText::_('REF'). str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
             <?php if (!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) { echo JText::_('CODE')." : " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; } ?></p>

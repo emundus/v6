@@ -1155,42 +1155,60 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
+	/**
+	 * @param $gname
+	 * @param $gdesc
+	 * @param $actions
+	 * @param $progs
+	 *
+	 * @return bool|mixed|null
+	 *
+	 * @since version
+	 */
     public function addGroup($gname, $gdesc, $actions, $progs) {
+        $db = $this->getDbo();
+        $query = "insert into #__emundus_setup_groups (`label`,`description`, `published`) values (".$db->quote($gname).", ".$db->quote($gdesc).", 1)";
+
         try {
-	        $db = $this->getDbo();
-            $query = "insert into #__emundus_setup_groups (`label`,`description`, `published`) values (".$db->quote($gname).", ".$db->quote($gdesc).", 1)";
-
-            try {
-                $db->setQuery($query);
-                $db->query();
-                $gid = $db->insertid();
-                $str = "";
-
-                foreach ($progs as $prog) {
-                    $str .= "($gid, '$prog'),";
-                }
-                $str = rtrim($str, ",");
-                $query = "insert into #__emundus_setup_groups_repeat_course (`parent_id`, `course`) values $str";
-                $db->setQuery($query);
-                $db->query();
-                $str = "";
-
-                foreach ($actions as $action) {
-                    $act = (array) $action;
-                    $str .= "($gid, ".implode(',', $act)."),";
-                }
-                $str = rtrim($str, ",");
-                $query = "insert into #__emundus_acl (`group_id`, `action_id`, `c`, `r`, `u`, `d`) values $str";
-                $db->setQuery($query);
-
-                return $db->query();
-            } catch(Exception $e) {
-                echo $e->getMessage();
-                return null;
-            }
+            $db->setQuery($query);
+            $db->query();
+            $gid = $db->insertid();
+            $str = "";
         } catch(Exception $e) {
-            return false;
+	        JLog::add('Error on adding group: '.$e->getMessage().' at query -> '.$query, 'com_emundus', JLog::ERROR);
+	        return null;
         }
+
+        foreach ($progs as $prog) {
+            $str .= "($gid, '$prog'),";
+        }
+        $str = rtrim($str, ",");
+        $query = "insert into #__emundus_setup_groups_repeat_course (`parent_id`, `course`) values $str";
+
+        try {
+	        $db->setQuery($query);
+	        $db->query();
+	        $str = "";
+        } catch(Exception $e) {
+	        JLog::add('Error on adding group: '.$e->getMessage().' at query -> '.$query, 'com_emundus', JLog::ERROR);
+	        return null;
+        }
+
+        foreach ($actions as $action) {
+            $act = (array) $action;
+            $str .= "($gid, ".implode(',', $act)."),";
+        }
+        $str = rtrim($str, ",");
+        $query = "insert into #__emundus_acl (`group_id`, `action_id`, `c`, `r`, `u`, `d`) values $str";
+        $db->setQuery($query);
+
+        try {
+            return $db->query();
+        } catch(Exception $e) {
+	        JLog::add('Error on adding group: '.$e->getMessage().' at query -> '.$query, 'com_emundus', JLog::ERROR);
+	        return null;
+        }
+
     }
 
     public function changeBlock($users, $state) {

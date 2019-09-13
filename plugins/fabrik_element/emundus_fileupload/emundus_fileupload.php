@@ -425,7 +425,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      */
     public function getFileName($user, $attachId, $label, $file) {
         $fileName = strtolower(preg_replace(array('([\40])', '([^a-zA-Z0-9-])', '(-{2,})'), array('_', '', '_'), preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/', '$1', htmlentities(strtoupper($user->lastname) . '_' . ucfirst($user->firstname), ENT_NOQUOTES, 'UTF-8'))));
-        $fileName .= '_' . $attachId . $label . '-' . rand() . '.' . pathinfo($file, PATHINFO_EXTENSION);
+        $fileName .= $label . '-' . rand() . '.' . pathinfo($file, PATHINFO_EXTENSION);
         return JFile::makeSafe($fileName);
     }
 
