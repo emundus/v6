@@ -81,7 +81,7 @@ $m_formations = new EmundusModelFormations();
 // Check that the user is in the company
 if ($m_formations->checkCompanyUser($user, $cid)) {
     JLog::add('User: '.$user.' is not in the company: '.$cid, JLog::ERROR, 'com_emundus');
-    $mainframe->enqueueMessage('L\'utilisateur fait déjà parti de cette entreprise.', 'error');
+    $mainframe->enqueueMessage("<script>".JText::_('EM_ASSOCIATE_EXISTS')."</script>", 'error');
     $mainframe->redirect('/mon-espace-decideur-rh');
 }
 
