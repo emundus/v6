@@ -116,9 +116,9 @@ echo $this->table->intro;
                                 <div class="accordion-icons">
                                     <?php if ($d['fabrik_edit_url']) :?>
                                         <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="fa fa-pen"></i></a>
-                                    <?php elseif ($d['fabrik_view_url']) :?>
-                                        <a href="<?php echo $d['fabrik_view_url']; ?>"><i class="fa fa-eye"></i></a>
-                                    <?php endif; ?>
+                                        <?php elseif ($d['fabrik_view_url']) :?>
+                                            <?php echo ($this->table->db_table_name == 'jos_emundus_users') ? "<a class='em-consult-col' href='".$d['fabrik_view_url']."'><span>".JText::_("COM_EMUNDUS_CONSULT_FORMATION")."</span></a>" : "<a href='".$d['fabrik_view_url']."'><i class='fa fa-eye'></i></a>";?>
+                                        <?php endif; ?>
                                     <div style="display: inline" id="delete-row-<?php echo $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo $d['id']; ?>" <?php if (!empty($d['user_id'])) { echo 'data-cid= "'.$d['cid'].'"'; } ?>>
                                         <i class="fas fa-times"></i>
                                     </div>
