@@ -1158,11 +1158,6 @@ form legend a:focus {
   padding: 8px 16px 0 0;
 }
 
-/**** PRINT BUTTON IN SIDE BAR ****/
-.em-send-print-button>.em-print-button {
-  display: none;
-}
-
 /* ERROR PAGE 404 */
 .error-page {
   .lang-inline {
