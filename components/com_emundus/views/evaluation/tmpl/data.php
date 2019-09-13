@@ -256,9 +256,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 <script>
 
-    $('#selectContainer').on("mouseenter", function() {
+    $('.selectContainer').on("mouseenter", function() {
 
-        $('#tooltipSelect').css({
+        $('.tooltipSelect').css({
             'height':'30px',
             'width':'70px',
             'display':'flex',
@@ -267,43 +267,43 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
             'background':'#33332E',
             'border-radius':'10px'
         });
-        $('#tooltipSelect p').css({
+        $('.tooltipSelect p').css({
             'color':'white',
             'font-size':'0.6rem',
         });
 
     }).on("mouseleave", function() {
-        $('#tooltipSelect').css({
+        $('.tooltipSelect').css({
             'display':'none',
             'transiition':'display,500ms'
         })
     });
 </script>
 <script>
-    $('#selectAll').css('display','none');
-    $('#selectDropdown').click(function() {
+    $('.selectAll').css('display','none');
+    $('.selectContainer').click(function() {
 
-        $('#selectContainer').removeClass('borderSelect');
-        $('#selectAll').slideToggle(function() {
+        $('.selectContainer').removeClass('borderSelect');
+        $('.selectAll').slideToggle(function() {
 
             if ($(this).is(':visible')) {
 
-                $('#selectContainer').addClass('borderSelect');
+                $('.selectContainer').addClass('borderSelect');
                 $(document).click(function (e) {
 
-                    var container = $("#selectDropdown");
+                    var container = $(".selectDropdown");
 
                     if (!container.is(e.target) && container.has(e.target).length === 0){
-                        $('#selectAll').slideUp();
-                        $('#selectContainer').removeClass('borderSelect');
+                        $('.selectAll').slideUp();
+                        $('.selectContainer').removeClass('borderSelect');
                     }
                 });
             }
         });
     });
 
-    $('#selectAll>span').click(function() {
-        $('#selectAll').slideUp();
+    $('.selectAll>span').click(function() {
+        $('.selectAll').slideUp();
     });
 
     $('#span-check-all-all').click(function() {

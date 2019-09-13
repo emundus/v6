@@ -11,7 +11,7 @@ class JConfig {
 	public $access = '1';
 	public $debug = '0';
 	public $debug_lang = '0';
-	public $dbtype = 'mysql';
+	public $dbtype = 'mysqli';
 	public $host = 'localhost'; 		// Your DB host
 	public $user = 'root';				// Your DB user
 	public $password = '';				// Password for DB user

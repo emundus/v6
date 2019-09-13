@@ -123,7 +123,7 @@ echo $this->table->intro;
                             <div class="accordion-content">
                                 <?php foreach ($attachments as $attachment) :?>
                                     <?php if ($attachment->id == 102) :?>
-                                        <div class="em-attachement fiche-pedago" onclick="getProductPDF('<?php echo $row->data->jos_emundus_setup_campaigns___training_raw; ?>')">
+                                        <div class="em-attachement fiche-pedago" onclick="getProductPDF('<?php echo $row->data->jos_emundus_setup_programmes___code_raw; ?>')">
                                             <i class="far fa-file-pdf"></i>
                                             <p class="em-attachement-name"><?= $attachment->value ?></p>
                                         </div>
@@ -181,9 +181,12 @@ echo $this->table->intro;
 
 
     jQuery(document).ready(function(){
-        //var inner = document.querySelectorAll('.inner-accordion-container');
-        //jQuery('.inner-accordion-content').slideToggle();
-        //jQuery('.accordion-content').slideToggle();
+        if(jQuery(this).find('.accordion-container').size() > 0 ) {
+            var first = document.querySelectorAll('.accordion-container')[0];
+            jQuery(first.getElementsByClassName('accordion-content')[0]).slideToggle();
+            first.classList.add('open');
+            jQuery(first).find('.fa-caret-right').addClass("down");
+        }
     });
 
 function getProductPDF(code) {

@@ -232,33 +232,34 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
     });
 </script>
 <script>
-    $('#selectAll').css('display','none');
-    $('#selectDropdown').off('click');
-    $('#selectDropdown').click(function() {
+    $('.selectAll').css('display','none');
+    $('.selectContainer').click(function() {
 
-        $('#selectContainer').removeClass('borderSelect');
-        $('#selectAll').slideToggle(function() {
+        $('.selectContainer').removeClass('borderSelect');
+        $('.selectAll').slideToggle(function() {
 
             if ($(this).is(':visible')) {
 
-                $('#selectContainer').addClass('borderSelect');
+                $('.selectContainer').addClass('borderSelect');
                 $(document).click(function (e) {
 
-                    var container = $("#selectDropdown");
+                    var container = $(".selectDropdown");
 
                     if (!container.is(e.target) && container.has(e.target).length === 0){
-                        $('#selectAll').slideUp();
-                        $('#selectContainer').removeClass('borderSelect');
+                        $('.selectAll').slideUp();
+                        $('.selectContainer').removeClass('borderSelect');
                     }
                 });
             }
         });
     });
-
-    $('#selectAll>span').off('click');
-    $('#selectAll>span').click(function() {
-        $('#selectAll').slideUp();
+    $('.selectAll>span').off('click');
+    $('.selectAll>span').click(function() {
+        $('.selectAll').slideUp();
     });
+
+
+
 
     $('#span-check-all-all').off('click');
     $('#span-check-all-all').click(function() {

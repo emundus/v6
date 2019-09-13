@@ -961,7 +961,11 @@ class EmundusModelApplication extends JModelList {
 	                                        $query = preg_replace('#{thistable}#', $from, $query);
 	                                        $query = preg_replace('#{my->id}#', $aid, $query);
 	                                        $this->_db->setQuery( $query );
-	                                        $elt = $this->_db->loadResult();
+		                                    $ret = $this->_db->loadResult();
+		                                    if (empty($ret)) {
+			                                    $ret = $element->content;
+		                                    }
+		                                    $elt = JText::_($ret);
 	                                    }
 	                                    elseif ($element->plugin == 'checkbox') {
 	                                        $elt = implode(", ", json_decode (@$element->content));
@@ -1060,7 +1064,11 @@ class EmundusModelApplication extends JModelList {
 	                                                $query = preg_replace('#{thistable}#', $from, $query);
 	                                                $query = preg_replace('#{my->id}#', $aid, $query);
 	                                                $this->_db->setQuery( $query );
-	                                                $elt = $this->_db->loadResult();
+		                                            $ret = $this->_db->loadResult();
+		                                            if (empty($ret)) {
+			                                            $ret = $r_elt;
+		                                            }
+		                                            $elt = JText::_($ret);
 	                                            }
 
 	                                            elseif ($elements[$j]->plugin == 'cascadingdropdown') {
@@ -1095,7 +1103,11 @@ class EmundusModelApplication extends JModelList {
 	                                                $query = preg_replace('#{thistable}#', $from, $query);
 	                                                $query = preg_replace('#{my->id}#', $aid, $query);
 	                                                $this->_db->setQuery($query);
-	                                                $elt = JText::_($this->_db->loadResult());
+	                                                $ret = $this->_db->loadResult();
+	                                                if (empty($ret)) {
+	                                                	$ret = $r_elt;
+	                                                }
+	                                                $elt = JText::_($ret);
 	                                            }
 
 	                                            elseif ($elements[$j]->plugin == 'checkbox') {
@@ -1184,7 +1196,11 @@ class EmundusModelApplication extends JModelList {
 	                                            $query = preg_replace('#{thistable}#', $from, $query);
 	                                            $query = preg_replace('#{my->id}#', $aid, $query);
 	                                            $this->_db->setQuery( $query );
-	                                            $elt = $this->_db->loadResult();
+		                                        $ret = $this->_db->loadResult();
+		                                        if (empty($ret)) {
+			                                        $ret = $element->content;
+		                                        }
+		                                        $elt = JText::_($ret);
 	                                        }
 	                                    }
 	                                    elseif ($element->plugin=='cascadingdropdown') {
@@ -1200,7 +1216,11 @@ class EmundusModelApplication extends JModelList {
 	                                        $query = preg_replace('#{thistable}#', $from, $query);
 	                                        $query = preg_replace('#{my->id}#', $aid, $query);
 	                                        $this->_db->setQuery( $query );
-	                                        $elt = $this->_db->loadResult();
+		                                    $ret = $this->_db->loadResult();
+		                                    if (empty($ret)) {
+			                                    $ret = $element->content;
+		                                    }
+		                                    $elt = JText::_($ret);
 	                                    }
 	                                    elseif ($element->plugin == 'checkbox') {
 	                                        $elt = implode(", ", json_decode (@$element->content));
@@ -1676,7 +1696,13 @@ class EmundusModelApplication extends JModelList {
                                     if (!empty($element->label) && $element->label!=' ') {
 
                                         if ($element->plugin=='date' && $element->content>0) {
-	                                        $dt = new DateTime($element->content, new DateTimeZone('UTC'));
+
+                                        	// Empty date elements are set to 0000-00-00 00:00:00 in DB.
+                                        	if ($show_empty_fields == 0 && $element->content == '0000-00-00 00:00:00') {
+                                        		continue;
+	                                        }
+
+                                        	$dt = new DateTime($element->content, new DateTimeZone('UTC'));
 	                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
 	                                        $elt = $dt->format($params->date_form_format);
                                         }

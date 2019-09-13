@@ -286,6 +286,9 @@ JText::script('APPLICATION_SENT_ON');
 JText::script('DOCUMENT_PRINTED_ON');
 JText::script('ARE_YOU_SURE_TO_DELETE_USERS');
 
+// Submit application
+JText::script('CONGRATULATIONS');
+JText::script('YOUR_FILE_HAS_BEEN_SENT');
 
 //Export ZIP
 JText::script('COM_EMUNDUS_ZIP_GENERATION');

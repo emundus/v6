@@ -9,20 +9,18 @@
 $limitstart = JRequest::getVar('limitstart', null, 'GET', 'none',0);
 
 $s = JRequest::getVar( 's', null, 'get', 'none',0 );
-if ($s == '')
-	$s = JRequest::getVar( 'lastname', null, 'post', 'none', 0);
+if ($s == '') {
+	$s = JRequest::getVar('lastname', null, 'post', 'none', 0);
+}
 
 ?>
 
-<form action = "<?php if($this->edit == 1){echo "index.php?option=com_emundus&controller=users&task=edituser";}else{echo "index.php?option=com_emundus&controller=users&task=adduser";}?>" id="em-add-user" class="em-addUser" role="form" method="post">
+<form action = "<?= ($this->edit == 1)?"index.php?option=com_emundus&controller=users&task=edituser":"index.php?option=com_emundus&controller=users&task=adduser"; ?>" id="em-add-user" class="em-addUser" role="form" method="post">
 	<h3>
 		<?php
-			if($this->edit == 1)
-			{
+			if ($this->edit == 1) {
 				echo JText::_('EDIT_USER');
-			}
-			else
-			{
+			} else {
 				echo JText::_('ADD_USER');
 			}
 		?>
@@ -37,20 +35,20 @@ if ($s == '')
 		<?php endif; ?>
 		<div id="user-information" class="em-addUser-detail-info">
 			<div class="form-group em-addUser-detail-info-firstname">
-				<label class="control-label" for="firstname"><?php echo JText::_('FIRSTNAME_FORM'); ?></label>
-				<input type="text" class="form-control" id="fname" name="firstname" <?php if($this->edit == 1){echo 'value="'.$this->user['firstname'].'"';}?>/>
+				<label class="control-label" for="fname"><?= JText::_('FIRSTNAME_FORM'); ?></label>
+				<input type="text" class="form-control" id="fname" name="firstname" <?= ($this->edit == 1)?'value="'.$this->user['firstname'].'"':''; ?>/>
 			</div>
 			<div class="form-group em-addUser-detail-info-lastname">
-				<label class="control-label" for="lastname"><?php echo JText::_('LASTNAME_FORM'); ?></label>
-				<input type="text" class="form-control" id="lname" name = "lastname" <?php if($this->edit == 1){echo 'value="'.$this->user['lastname'].'"';}?>/>
+				<label class="control-label" for="lname"><?= JText::_('LASTNAME_FORM'); ?></label>
+				<input type="text" class="form-control" id="lname" name = "lastname" <?= ($this->edit == 1)?'value="'.$this->user['lastname'].'"':''; ?>/>
 			</div>
 			<div class="form-group em-addUser-detail-info-id">
-				<label class="control-label" for="login"><?php echo JText::_('LOGIN_FORM'); ?></label>
-				<input type="text" class="form-control"  id="login" name = "login" <?php if($this->edit == 1){echo 'value="'.$this->user['login'].'"';}?> />
+				<label class="control-label" for="login"><?= JText::_('LOGIN_FORM'); ?></label>
+				<input type="text" class="form-control"  id="login" name="login" <?= ($this->edit == 1)?'value="'.$this->user['login'].'"':''; ?> />
 			</div>
 			<div class="form-group em-addUser-detail-info-mail">
-				<label class="control-label" for="email"><?php echo JText::_('EMAIL_FORM'); ?></label>
-				<input type="text" class="form-control" id="mail" name = "email" <?php if($this->edit == 1){echo 'value="'.$this->user['email'].'"';}?>/>
+				<label class="control-label" for="mail"><?= JText::_('EMAIL_FORM'); ?></label>
+				<input type="text" class="form-control" id="mail" name="email" <?= $this->edit == 1?'value="'.$this->user['email'].'"':''; ?>/>
 			</div>
 		</div>
 	</fieldset>
@@ -59,65 +57,61 @@ if ($s == '')
 			<label class="control-label" for="profiles"><?php echo JText::_('PROFILE_FORM'); ?></label>
 			<br/>
 			<select id="profiles" name="profiles" class="em-chosen">
-				<option value="0"><?php echo JText::_('PLEASE_SELECT')?></option>
-				<?php foreach($this->profiles as $profile):?>
-					<option id="<?php echo $profile->acl_aro_groups?>" value="<?php echo $profile->id?>"  pub="<?php echo $profile->published?>" <?php if(($this->edit == 1) && ($profile->id == $this->user['profile'])){echo 'selected="true"';}?>><?php echo trim($profile->label);?></option>
-				<?php endforeach;?>
+				<option value="0"><?= JText::_('PLEASE_SELECT'); ?></option>
+				<?php foreach ($this->profiles as $profile) :?>
+					<option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"  pub="<?= $profile->published; ?>" <?php if(($this->edit == 1) && ($profile->id == $this->user['profile'])){echo 'selected="true"';}?>><?= trim($profile->label); ?></option>
+				<?php endforeach; ?>
 			</select>
 			<br/><br/>
 			<div class="em-addUser-profil-selectProfil-multiple">
-				<label class="control-label" for="otherprofile"><?php echo JText::_('ALL_PROFILES'); ?></label><br/>
+				<label class="control-label" for="oprofiles"><?= JText::_('ALL_PROFILES'); ?></label><br/>
 				<select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen">
-					<option value="0" disabled="disabled"><?php echo JText::_('PLEASE_SELECT')?></option>
-					<?php foreach($this->profiles as $otherprofile):?>
-						<option id="<?php echo $otherprofile->acl_aro_groups?>" value="<?php echo $otherprofile->id?>" <?php if(($this->edit == 1) && (array_key_exists($otherprofile->id, $this->uOprofiles))){echo 'selected="true"';}?>><?php echo trim($otherprofile->label);?></option>
+					<option value="0" disabled="disabled"><?= JText::_('PLEASE_SELECT'); ?></option>
+					<?php foreach ($this->profiles as $otherprofile) :?>
+						<option id="<?= $otherprofile->acl_aro_groups; ?>" value="<?= $otherprofile->id; ?>" <?= (($this->edit == 1) && (array_key_exists($otherprofile->id, $this->uOprofiles)))?'selected="true"':''; ?>><?= trim($otherprofile->label); ?></option>
 					<?php endforeach;?>
 				</select>
 			</div>
 		</div>
-		<div class="form-group em-hidden-nonapli-fields em-addUser-university" <?php if(($this->edit != 1) || ($this->user['university_id'] == 0)){echo 'style="display:none;"';}?>>
-			<label for="university_id"><?php echo JText::_('UNIVERSITY_FROM'); ?></label>
+		<div class="form-group em-hidden-nonapli-fields em-addUser-university" <?= (($this->edit != 1) || ($this->user['university_id'] == 0))?'style="display:none;"':''; ?>>
+			<label for="univ"><?= JText::_('UNIVERSITY_FROM'); ?></label>
 			<br/>
 			<select name="university_id" class="em-chosen" id="univ">
-				<option value="0"><?php echo JText::_('PLEASE_SELECT')?></option>
-				<?php foreach($this->universities as $university):?>
-					<option value="<?php echo  $university->id?>" <?php if(($this->edit == 1) && ($university->id == $this->user['university_id'])){echo 'selected="true"';}?>><?php echo trim($university->title)?></option>
+				<option value="0"><?= JText::_('PLEASE_SELECT'); ?></option>
+				<?php foreach ($this->universities as $university) :?>
+					<option value="<?= $university->id; ?>" <?= (($this->edit == 1) && ($university->id == $this->user['university_id']))?'selected="true"':''; ?>><?= trim($university->title); ?></option>
 				<?php endforeach;?>
 			</select>
 		</div>
-		<div class="form-group em-hidden-nonapli-fields em-addUser-groups" <?php if(($this->edit != 1) || (empty($this->uGroups))){echo 'style="display:none;"';}?>>
-			<label for="groups"><?php echo JText::_('GROUPS'); ?></label>
+		<div class="form-group em-hidden-nonapli-fields em-addUser-groups" <?= (($this->edit != 1) || (empty($this->uGroups)))?'style="display:none;"':''; ?>>
+			<label for="groups"><?= JText::_('GROUPS'); ?></label>
 			<br/>
-			<select class = "em-chosen" name = "groups" id = "groups" multiple="multiple">
-				<option value="0"><?php echo JText::_('PLEASE_SELECT')?></option>
-				<?php foreach($this->groups as $group):?>
-					<option value = "<?php echo $group->id?>" <?php if(($this->edit == 1) && (array_key_exists($group->id, $this->uGroups))){echo 'selected="true"';}?>><?php echo trim($group->label)?></option>
+			<select class = "em-chosen" name="groups" id="groups" multiple="multiple">
+				<option value="0" disabled="disabled"><?= JText::_('PLEASE_SELECT'); ?></option>
+				<?php foreach ($this->groups as $group) :?>
+					<option value="<?= $group->id; ?>" <?= (($this->edit == 1) && (array_key_exists($group->id, $this->uGroups)))?'selected="true"':''; ?>><?= trim($group->label); ?></option>
 				<?php endforeach;?>
 			</select>
 		</div>
 
-		<div class="form-group em-hidden-appli-fields em-addUser-campaign" <?php if(($this->edit != 1) || (empty($this->uCamps))){echo 'style="display:none;"';}?>>
-			<label for="campaigns"><?php echo JText::_('CAMPAIGN'); ?></label>
+		<div class="form-group em-hidden-appli-fields em-addUser-campaign" <?= (($this->edit != 1) || (empty($this->uCamps)))?'style="display:none;"':''; ?>>
+			<label for="campaigns"><?= JText::_('CAMPAIGN'); ?></label>
 			<br/>
 			<select name="campaigns" size="5" multiple="multiple" id="campaigns" class="em-chosen">
-				<option value="0"><?php echo JText::_('PLEASE_SELECT')?></option>
-				<?php foreach($this->campaigns as $campaign):?>
-				<option value="<?php echo $campaign->id?>" <?php if(($this->edit == 1) && (array_key_exists($campaign->id, $this->uCamps))){echo 'selected="true"';}?>><?php echo trim($campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('START_DATE').' : '.$campaign->start_date);?></option>
+				<option value="0"><?= JText::_('PLEASE_SELECT'); ?></option>
+				<?php foreach ($this->campaigns as $campaign) :?>
+				    <option value="<?= $campaign->id; ?>" <?= (($this->edit == 1) && (array_key_exists($campaign->id, $this->uCamps)))?'selected="true"':''; ?>><?= trim($campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('START_DATE').' : '.$campaign->start_date);?></option>
 				<?php endforeach;?>
 			</select>
 		</div>
-		<input type="checkbox" id="news" name="news" <?php if(($this->edit == 1) && ($this->user['newsletter']== '"1"')){echo "checked";}?> style="margin-bottom: 5px; width: 20px !important">
-		<label for="news">
-		 <?php echo JText::_('NEWSLETTER'); ?>
-		</label>
-		</div>
-		
+		<input type="checkbox" id="news" name="news" <?= (($this->edit == 1) && ($this->user['newsletter']== '"1"'))?"checked":''; ?> style="margin-bottom: 5px; width: 20px !important">
+		<label for="news"><?= JText::_('NEWSLETTER'); ?></label>
 		
 		<!-- LDAP registration will go inside the div -->
 		<div id="ldap-form" class="em-addUser-searchLdap" style="display : none;">
 			<div id="ldap-errors"></div>
-			<label for="s"><strong><?php echo JText::_( 'COM_EMUNDUS_SEARCH_IN_LDAP');?> </strong></label><br/>
-			<input type="text" class="input-xxlarge" name="s" id="s" value="<?php echo $s; ?>" /><div id="sldap" type="button" class="button" style="margin-bottom:10px;"> <?php echo JText::_('SEARCH');?></div>
+			<label for="s"><strong><?= JText::_( 'COM_EMUNDUS_SEARCH_IN_LDAP'); ?> </strong></label><br/>
+			<input type="text" class="input-xxlarge" name="s" id="s" value="<?= $s; ?>" /><div id="sldap" type="button" class="button" style="margin-bottom:10px;"> <?= JText::_('SEARCH'); ?></div>
 		</div>
 		<div id="ldapresult"></div>
 	</fieldset>
@@ -128,19 +122,15 @@ if ($s == '')
 	};
 	$(document).ready(function() {
 		var edit = '<?php echo $this->edit?>';
-		$('form').css({padding:"26px"})
-		$('alertes-details').css({padding:"30px"})
+		$('form').css({padding:"26px"});
+		$('alertes-details').css({padding:"30px"});
 		$('.em-chosen').chosen({width:'100%'});
 
-		if (edit == '1')
-		{
-			if($('#profiles option:selected').attr('pub') == 1)
-			{
+		if (edit == '1') {
+			if($('#profiles option:selected').attr('pub') == 1) {
 				$('.em-hidden-appli-fields').show();
 				$('.em-hidden-nonapli-fields').hide();
-			}
-			else
-			{
+			} else {
 				$('.em-hidden-nonapli-fields').show();
 				$('.em-hidden-appli-fields').hide();
 			}
@@ -149,21 +139,22 @@ if ($s == '')
 
 		$(document).on('change', '#ldap', function() {
 			if ($(this).is(':checked')) {
+
+                // Select the div where the search results will show.
+                let ldapResult = $('#ldapresult');
+
 				// If the LDAP registration option is selected, we need to modify the window with the LDAP registration interface.
 				$('#ldap-form').show();
-				$('#ldapresult').show();
+                ldapResult.show();
 				// Hide all inputs linked to standard user creation.
 				$('#user-information').children().hide();
-
-				// Select the div where the search results will show.
-				let ldapResult = $('#ldapresult');
 
 				// The LDAP elements to dipslay and use for the user cards.
 				// Due to the fact that we need the translated text and we dont know what the info to display will be in advance.
 				// We have to create an object containing the translated value and the real value.
 				let ldapElements = [
 				<?php
-					foreach(explode(',',$this->ldapElements) as $elt) {
+					foreach (explode(',',$this->ldapElements) as $elt) {
 						echo '["'.$elt.'","'.JText::_(strtoupper($elt)).'"],';
 					}
 				?>
@@ -179,7 +170,7 @@ if ($s == '')
 						url:'index.php?option=com_emundus&controller=users&task=ldapsearch&search='+search,
 						dataType: 'html',
 						beforeSend: function() {
-							ldapResult.text('<?php echo Jtext::_('SEARCHING'); ?> ['+$('#s')[0].value+']');
+							ldapResult.text('<?= Jtext::_('SEARCHING'); ?> ['+$('#s')[0].value+']');
 						},
 						success: function(result) {
 
@@ -311,7 +302,7 @@ if ($s == '')
 							}
 						},
 						error: function() {
-							ldapResult.text("<?php echo JText::_('AN_ERROR_OCCURED'); ?>");
+							ldapResult.text("<?= JText::_('AN_ERROR_OCCURED'); ?>");
 						}
 					});
 				}

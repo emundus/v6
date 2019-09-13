@@ -3,9 +3,6 @@
     color:#fff!important;
     margin:0!important;
 }
-.panel-primary.excel > .panel-heading {
-    background-color: #e5283b!important;
-}
 .component-content legend {
     border: 0px;
     padding: 0px;
@@ -75,4 +72,16 @@
 
 .other-em-element {
     margin: 10px 0;
+}
+
+#em-select-program,
+#em-select-campaign {
+    margin-bottom: 40px;
+}
+
+#em-select-program h2,
+#program-categories h2,
+#result h1,
+#other-result h1 {
+    font-size: 20px;
 }
