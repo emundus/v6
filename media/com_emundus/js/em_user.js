@@ -970,9 +970,9 @@ $(document).ready(function () {
 								title: result.msg,
 								showConfirmButton: false,
 								timer: 1500
+							}).then(function() {
+								window.location.replace('index.php?option=com_emundus&view=users&layout=showgrouprights&Itemid=1169&rowid='+result.status);
 							});
-
-							window.location.replace('index.php?option=com_emundus&view=users&layout=showgrouprights&Itemid=1169&rowid='+result.status);
 
 						} else {
 							Swal.fire({
