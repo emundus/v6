@@ -803,8 +803,9 @@ $(document).ready(function () {
 								position: 'center',
 								type: 'warning',
 								title: result.msg
+							}).then(function() {
+								window.location.replace('/user');
 							});
-							window.location.replace('/user');
 						}
 					}
 				});
