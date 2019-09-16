@@ -87,6 +87,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 	public function onAfterProcess() {
 
 		$db = JFactory::getDBO();
+		$app = JFactory::getApplication();
 		$student = JFactory::getSession()->get('emundusUser');
 
 		include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
@@ -95,18 +96,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
 
 		jimport('joomla.log.log');
-		JLog::addLogger(
-			array(
-				// Sets file name
-				'text_file' => 'com_emundus.submit.php'
-			),
-			// Sets messages of all log levels to be sent to the file
-			JLog::ALL,
-			// The log category/categories which should be recorded in this file
-			// In this case, it's just the one category from our extension, still
-			// we need to put it inside an array
-			array('com_emundus')
-		);
+		JLog::addLogger(array('text_file' => 'com_emundus.submit.php'), JLog::ALL, array('com_emundus'));
 
 		// Get params set in eMundus component configuration
 		$eMConfig = JComponentHelper::getParams('com_emundus');
@@ -116,10 +106,28 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 		$application_form_name      = $eMConfig->get('application_form_name', "application_form_pdf");
 		$export_pdf                 = $eMConfig->get('export_application_pdf', 0);
 		$export_path                = $eMConfig->get('export_path', null);
+		$id_applicants              = explode(',',$eMConfig->get('id_applicants', '0'));
 
 		$m_application  = new EmundusModelApplication;
 		$m_files        = new EmundusModelFiles;
 		$m_emails       = new EmundusModelEmails;
+
+		$offset = $app->get('offset', 'UTC');
+		try {
+			$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+			$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+			$now = $dateTime->format('Y-m-d H:i:s');
+		} catch (Exception $e) {
+			echo $e->getMessage() . '<br />';
+		}
+
+		$is_dead_line_passed = (strtotime(date($now)) > strtotime(@$student->end_date));
+
+		// If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
+		if ($is_dead_line_passed && !in_array($student->id, $id_applicants)) {
+			JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($student->start_date)), strftime("%d/%m/%Y %H:%M", strtotime($student->end_date))));
+			return null;
+		}
 
 		// Database UPDATE data
 		//// Applicant cannot delete this attachments now
