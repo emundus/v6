@@ -1165,7 +1165,7 @@ class EmundusModelUsers extends JModelList {
 	 *
 	 * @since version
 	 */
-    public function addGroup($gname, $gdesc, $actions, $progs) {
+    public function addGroup($gname, $gdesc, $actions, $progs, $returnGid = false) {
         $db = $this->getDbo();
         $query = "insert into #__emundus_setup_groups (`label`,`description`, `published`) values (".$db->quote($gname).", ".$db->quote($gdesc).", 1)";
 
@@ -1194,21 +1194,25 @@ class EmundusModelUsers extends JModelList {
 	        return null;
         }
 
-        foreach ($actions as $action) {
-            $act = (array) $action;
-            $str .= "($gid, ".implode(',', $act)."),";
-        }
-        $str = rtrim($str, ",");
-        $query = "insert into #__emundus_acl (`group_id`, `action_id`, `c`, `r`, `u`, `d`) values $str";
-        $db->setQuery($query);
+        if (!empty($actions)) {
+	        foreach ($actions as $action) {
+		        $act = (array) $action;
+		        $str .= "($gid, ".implode(',', $act)."),";
+	        }
+	        $str   = rtrim($str, ",");
+	        $query = "insert into #__emundus_acl (`group_id`, `action_id`, `c`, `r`, `u`, `d`) values $str";
+	        $db->setQuery($query);
 
-        try {
-            return $db->query();
-        } catch(Exception $e) {
-	        JLog::add('Error on adding group: '.$e->getMessage().' at query -> '.$query, 'com_emundus', JLog::ERROR);
-	        return null;
+	        try {
+	        	if (!$returnGid) {
+			        return $db->query();
+		        }
+	        } catch (Exception $e) {
+		        JLog::add('Error on adding group: '.$e->getMessage().' at query -> '.$query, 'com_emundus', JLog::ERROR);
+		        return null;
+	        }
         }
-
+        return $gid;
     }
 
     public function changeBlock($users, $state) {

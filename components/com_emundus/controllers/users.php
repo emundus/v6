@@ -501,19 +501,22 @@ class EmundusControllerUsers extends JControllerLegacy {
 	}
 
 	public function addgroup() {
-		$jinput 	= JFactory::getApplication()->input;
-		$gname 		= $jinput->getString('gname', null);
-		$actions 	= $jinput->getString('actions', null);
-		$progs 		= $jinput->getString('gprog', null);
-		$gdesc 		= $jinput->getString('gdesc', null);
-		$actions 	= (array) json_decode(stripslashes($actions));
-		$m_users 	= new EmundusModelUsers();
-		$res 		= $m_users->addGroup($gname, $gdesc, $actions, explode(',', $progs));
 
-		if ($res !== false)
+		$jinput = JFactory::getApplication()->input;
+		$gname = $jinput->getString('gname', null);
+		$actions = $jinput->getString('actions', null);
+		$progs = $jinput->getString('gprog', null);
+		$gdesc = $jinput->getString('gdesc', null);
+		$actions = (array) json_decode(stripslashes($actions));
+
+		$m_users = new EmundusModelUsers();
+		$res = $m_users->addGroup($gname, $gdesc, $actions, explode(',', $progs));
+
+		if ($res !== false) {
 			$msg = JText::_('GROUP_ADDED');
-		else
+		} else {
 			$msg = JText::_('AN_ERROR_OCCURED');
+		}
 
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
 		exit;
