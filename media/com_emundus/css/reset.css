@@ -276,10 +276,6 @@ legend {
     background: #f2f2f2;
 }
 
-.radio input[type="radio"], .checkbox input[type="checkbox"] {
-    margin-left: 0;
-}
-
 .row-fluid .span3 {
     display: flex !important;
     align-items: center;
