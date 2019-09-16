@@ -132,12 +132,12 @@ $i = 0;
                 <div class="em-button-see-formation">
                     <a href="<?php echo '/formation?rowid=' . $formation->program_id; ?>" target="_blank"><?php echo JText::_("COM_EMUNDUS_SEE_FORMATION"); ?></a>
                 </div>
-
-                <div class="em-delete-application"
-                     onclick="deleteApplication('<?php echo $formation->fnum; ?>')">
-                    <?php echo JText::_('COM_EMUNDUS_REMOVE_APPLICATION'); ?>
-                </div>
-
+                    <?php if (new DateTime($date_start) >= new DateTime("now") ) :?>
+                        <div class="em-delete-application"
+                             onclick="deleteApplication('<?php echo $formation->fnum; ?>')">
+                            <?php echo JText::_('COM_EMUNDUS_REMOVE_APPLICATION'); ?>
+                        </div>
+                    <?php endif; ?>
             </div>
 
         </div>
