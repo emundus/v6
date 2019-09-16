@@ -44,7 +44,7 @@ $query = 'SELECT se.id, se.subject, se.emailfrom, se.name, se.message, et.Templa
                 	WHERE se.lbl="referent_letter"';
 $db->setQuery($query);
 $db->execute();
-$obj = $db->loadResult();
+$obj = $db->loadObject();
 
 // Récupération de la pièce jointe : modele de lettre
 $query = 'SELECT esp.reference_letter
