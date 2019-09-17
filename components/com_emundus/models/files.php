@@ -3064,7 +3064,6 @@ die();*/
 		} catch (Exception $e) {
 			// Do not hard fail, delete file data anyways.
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-			die($query->__toString());
 		}
 
 
