@@ -41,10 +41,10 @@ $db = JFactory::getDBO();
 $query = 'SELECT se.id, se.subject, se.emailfrom, se.name, se.message, et.Template
 					FROM #__emundus_setup_emails AS se
 					LEFT JOIN #__emundus_email_templates AS et ON se.email_tmpl = et.id
-                	WHERE lbl="referent_letter"';
+                	WHERE se.lbl="referent_letter"';
 $db->setQuery($query);
 $db->execute();
-$obj = $db->loadResult();
+$obj = $db->loadObject();
 
 // Récupération de la pièce jointe : modele de lettre
 $query = 'SELECT esp.reference_letter
