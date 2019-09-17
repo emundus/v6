@@ -3050,18 +3050,50 @@ die();*/
 
 	    JPluginHelper::importPlugin('emundus');
 	    $dispatcher = JEventDispatcher::getInstance();
+	    $dispatcher->trigger('onBeforeDeleteFile', $fnum);
 
         $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+        $query->select($db->quoteName('filename'))
+	        ->from($db->quoteName('#__emundus_uploads'))
+	        ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
+        $db->setQuery($query);
+		try {
+			$files = $db->loadColumn();
+		} catch (Exception $e) {
+			// Do not hard fail, delete file data anyways.
+			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			die($query->__toString());
+		}
+
+
+		// Remove all files linked to the fnum.
+	    $user_id = (int)substr($fnum, -7);
+	    $dir = EMUNDUS_PATH_ABS.$user_id.DS;
+	    if ($dh = @opendir($dir)) {
+
+		    while (false !== ($obj = readdir($dh))) {
+			    if (in_array($obj, $files)) {
+			    	if (!unlink($dir.$obj)) {
+					    JLog::add(JUri::getInstance().' :: Could not delete file -> '.$obj.' for fnum -> '.$fnum, JLog::ERROR, 'com_emundus');
+				    }
+			    }
+		    }
+
+		    closedir($dh);
+	    }
+
+
         $query = 'DELETE FROM #__emundus_campaign_candidature
                     WHERE fnum like '.$db->Quote($fnum);
 
         try {
 
-            $dispatcher->trigger('onBeforeDeleteFile', $fnum);
+
 	        $db->setQuery($query);
 	        $res = $db->query();
 	        $dispatcher->trigger('onAfterDeleteFile', $fnum);
-
             return $res;
         } catch(Exception $e) {
             echo $e->getMessage();

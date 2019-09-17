@@ -6,6 +6,11 @@
  * Time: 11:24
  */
 JFactory::getSession()->set('application_layout', 'comment');
+
+$offset = JFactory::getApplication()->get('offset', 'UTC');
+$dateTime = new DateTime(gmdate('Y-m-d H:i:s'), new DateTimeZone($offset));
+$now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
+
 ?>
 
 <style type="text/css">
@@ -46,7 +51,7 @@ JFactory::getSession()->set('application_layout', 'comment');
                                     <a href="#" class="comment-name"><?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?></a>
                                     <input style="display: none;" name="cname" type="text" value="<?php echo htmlspecialchars($comment->reason, ENT_QUOTES, 'UTF-8'); ?>">
                                     <div class="mic-info comment-date em-list-status-date">
-                                        <a href="#"><?php echo $comment->name; ?></a> - <?php echo JHtml::_('date', $comment->date, JText::_('DATE_FORMAT_LC2')); ?>
+                                        <a href="#"><?php echo $comment->name; ?></a> - <?php echo $comment->date; ?>
                                     </div>
                                 </div>
                                 <div class="comment-text em-list-status-comment"><?php echo str_replace(["\r\n", "\r", "\n"], "<br/>", htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8')); ?></div>
@@ -137,7 +142,7 @@ $(document).on('click', '.comments .delete-comment', function(e) {
 	                    $('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
 	                }
 	            },
-	            error: function (jqXHR, textStatus, errorThrown) {
+	            error: function (jqXHR) {
 	                console.log(jqXHR.responseText);
 	            }
 		});
@@ -167,11 +172,10 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
 
 	    $('.modal-body').empty();
 	    $('.modal-body').append('<div>' +'<p>'+Joomla.JText._('COMMENT_SENT')+'</p>' +'<img src="'+loadingLine+'" alt="loading"/>' +'</div>');
-	    url = 'index.php?option=com_emundus&controller=files&task=addcomment';
 
 	    $.ajax({
 			type:'POST',
-			url:url,
+			url: 'index.php?option=com_emundus&controller=files&task=addcomment',
 			dataType:'json',
 			data:({id:1, fnums:'{"i":"'+$('#application_fnum').val()+'"}', title: title, comment:comment}),
 
@@ -188,7 +192,7 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
 									'<a href="#" class="comment-name">'+escapeHtml(title)+'</a>'+
                                     '<input style="display: none;" name="cname" type="text" value="'+escapeHtml(title)+'">'+
 									'<div class="mic-info comment-date">'+
-										'<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo JHtml::_('date', date('Y-m-d H:i:s'), JText::_('DATE_FORMAT_LC2')); ?>'+
+										'<a href="#"><?php echo $this->_user->name; ?></a> - <?php echo $now; ?>'+
 									'</div>'+
 								'</div>'+
 								'<div class="comment-text">'+escapeHtml(comment).replace(/(?:\r\n|\r|\n)/g, '<br>')+'</div>'+

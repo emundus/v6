@@ -19,8 +19,7 @@ defined('_JEXEC') or die();
  * @since       3.0
  */
 
-class PlgFabrik_ElementYears extends PlgFabrik_Element
-{
+class PlgFabrik_ElementYears extends PlgFabrik_Element {
 	/**
 	 * Does the element contain sub elements e.g checkboxes radio-buttons
 	 *
@@ -33,8 +32,7 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 	 *
 	 * @return  string
 	 */
-	public function getFieldDescription()
-	{
+	public function getFieldDescription() {
 		return 'VARCHAR(4)';
 	}
 
@@ -47,14 +45,10 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 	 *
 	 * @return  string	value
 	 */
-
-	public function getValue($data, $repeatCounter = 0, $opts = array())
-	{
+	public function getValue($data, $repeatCounter = 0, $opts = array()) {
 		$value = parent::getValue($data, $repeatCounter, $opts);
 
-		if (is_array($value))
-		{
-
+		if (is_array($value)) {
 			$year = FArrayHelper::getValue($value, 2);
 			$value = $year;
 		}
@@ -71,61 +65,33 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 	 * @return  string	elements html
 	 */
 
-	public function render($data, $repeatCounter = 0)
-	{
-		/**
-		 * Jaanus: needed also here to not to show 0000-00-00 in detail view;
-		 * see also 58, added && !in_array($value, $aNullDates) (same reason).
-		 */
+	public function render($data, $repeatCounter = 0) {
 		$aNullDates = array('0000', '', $this->_db->getNullDate());
 		$name = $this->getHTMLName($repeatCounter);
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
 		$element = $this->getElement();
-		$monthLabels = $this->_monthLabels();
-		$monthNumbers = array('01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-		$daySys = array('01', '02', '03', '04', '05', '06', '07', '08', '09');
-		$daySimple = array('1', '2', '3', '4', '5', '6', '7', '8', '9');
 
-		/**
-		 * $$$ rob - not sure why we are setting $data to the form's data
-		 * but in table view when getting read only filter value from url filter this
-		 * _form_data was not set to no readonly value was returned
-		 * added little test to see if the data was actually an array before using it
-		 */
-		if (is_array($this->getFormModel()->data))
-		{
+		if (is_array($this->getFormModel()->data)) {
 			$data = $this->getFormModel()->data;
 		}
 
 		$value = $this->getValue($data, $repeatCounter);
-		$fd = $params->get('details_date_format', 'd.m.Y');
-		$dateAndAge = (int) $params->get('details_dateandage', '0');
 
-		if (!$this->isEditable())
-		{
+		if (!$this->isEditable()) {
 		    
-			if (!in_array($value, $aNullDates))
-			{
-				if ($fd == 'Y')
-				{
-					$detailValue = $value;
-				}
+			if (!in_array($value, $aNullDates)) {
 
 				$layout = $this->getLayout('detail');
 				$layoutData = new stdClass;
-				$layoutData->text =  $this->replaceWithIcons($detailValue);
+				$layoutData->text =  $this->replaceWithIcons($value);
 				$layoutData->hidden = $element->hidden;
 
 				return $layout->render($layoutData);
-			}
-			else
-			{
+			} else {
 				return '';
 			}
-		}
-		else
-		{
+		} else {
 			// Weirdness for failed validation
 			$value = strstr($value, ',') ? array_reverse(explode(',', $value)) : explode('-', $value);
 			$yearValue = FArrayHelper::getValue($value, 0);
@@ -150,26 +116,13 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 			return $layout->render($layoutData);
 		}
 	}
-
-	/**
-	 * Get month labels
-	 *
-	 * @return array
-	 */
-	private function _monthLabels()
-	{
-		return array(FText::_('January'), FText::_('February'), FText::_('March'), FText::_('April'), FText::_('May'), FText::_('June'),
-		FText::_('July'), FText::_('August'), FText::_('September'), FText::_('October'), FText::_('November'), FText::_('December'));
-	}
 	
 	/**
 	 * Get select list year options
 	 * @return array
 	 */
-	private function _yearOptions()
-	{
+	private function _yearOptions() {
 		$params = $this->getParams();
-		$years = array(JHTML::_('select.option', '', FText::_($params->get('birthday_yearlabel', 'PLG_ELEMENT_BIRTHDAY_YEAR'))));
 		$years = array(
 			JHTML::_(
 				'select.option',
@@ -186,8 +139,7 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 		$yearStart = (int) $params->get('birthday_yearstart');
 		$yearDiff = $yearOpt == 'number' ? $yearStart : $date - $yearStart;
 
-		for ($i = $date; $i >= $date - $yearDiff; $i--)
-		{
+		for ($i = $date; $i >= $date - $yearDiff; $i--) {
 			$years[] = JHTML::_('select.option', (string) $i);
 		}
 
@@ -208,45 +160,18 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 		return $this->_indStoreDBFormat($val);
 	}
 
-	/**
-	 * Get the value to store the value in the db
-	 * Jaanus: stores the value if all its parts (day, month, year) are selected in form, otherwise stores
-	 * (or updates data to) null value. NULL is useful in many cases, e.g when using Fabrik for working
-	 * with data of such components as EventList, where in #___eventlist_events.enddates (times and endtimes as well)
-	 * empty data is always NULL otherwise nulldate is displayed in its views.
-	 *
-	 * @param   mixed  $val  (array normally but string on csv import)
-	 *
-	 * @TODO: if NULL value is the first in repeated group then in list view whole group is empty.
-	 * Could anyone find a solution? I give up :-(
-	 * Paul 20130904 I fixed the id fields and I am getting a string passed in as $val here yyyy-m-d.
-	 * Jaanus: saved data could be date or nothing (null). Previous return '' wrote always '0000-00-00' as DATE field doesn't know ''. 
-	 * such value as '' and therefore setting element to save null hadn't expected impact. Simple return; returns null as it should. 
-	 *
-	 *
-	 * @return  string	yyyy-mm-dd or null or 0000-00-00 if needed and set
-	 */
-
-	private function _indStoreDBFormat($val)
-	{
+	private function _indStoreDBFormat($val) {
 		$params = $this->getParams();
 
-		if (is_array($val))
-		{
-			if ($params->get('empty_is_null', '1') == 0 || !in_array('', $val))
-			{
+		if (is_array($val)) {
+			if ($params->get('empty_is_null', '1') == 0 || !in_array('', $val)) {
 				return $val[0];
 			}
-		}
-		else
-		{
-			if ($params->get('empty_is_null', '1') == '0' || !in_array('', explode('-',$val)))
-			{
+		} else {
+			if ($params->get('empty_is_null', '1') == '0' || !in_array('', explode('-',$val))) {
 				return $val;
 			}
 		}
-
-		return;
 	}
 
 	/**
@@ -259,22 +184,18 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 	 * @return  bool
 	 */
 
-	public function dataConsideredEmpty($data, $repeatCounter)
-	{
+	public function dataConsideredEmpty($data, $repeatCounter) {
 
 		$data = str_replace('-', ',', $data);
 
-		if (strstr($data, ','))
-		{
+		if (strstr($data, ',')) {
 			$data = explode(',', $data);
 		}
 
 		$data = (array) $data;
 
-		foreach ($data as $d)
-		{
-			if (trim($d) == '')
-			{
+		foreach ($data as $d) {
+			if (trim($d) == '') {
 				return true;
 			}
 		}
@@ -289,10 +210,7 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 	 *
 	 * @return  array
 	 */
-
-
-	public function renderListData_csv($data, &$thisRow)
-	{
+	public function renderListData_csv($data, &$thisRow) {
 		return $this->renderListData($data, $thisRow);
 	}
 
@@ -305,23 +223,14 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 	 *
 	 * @return  string	formatted value
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
-	{
+	public function renderListData($data, stdClass &$thisRow, $opts = array()) {
         $profiler = JProfiler::getInstance('Application');
         JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
         $groupModel = $this->getGroup();
-		/**
-		 * Jaanus: json_decode replaced with FabrikWorker::JSONtoData that made visible also single data in repeated group
-		 *
-		 * Jaanus: removed condition canrepeat() from renderListData: weird result such as 05",null,
-		 * "1940.07.["1940 (2011) when not repeating but still join and merged. Using isJoin() instead
-		*/
 		$data = $groupModel->isJoin() ? FabrikWorker::JSONtoData($data, true) : array($data);
 		$data = (array) $data;
-		$format = array();
-
-		$data = json_encode($format);
+		$data = json_encode($data);
 
 		return parent::renderListData($data, $thisRow, $opts);
 	}
@@ -335,38 +244,17 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 	 *
 	 * @return string|number
 	 */
-
-	private function listFormat($d)
-	{
-
+	private function listFormat($d) {
 
 		$params = $this->getParams();
-
-
-		$ft = $params->get('list_date_format', 'Y');
-
 		$fta = $params->get('list_age_format', 'no');
-
-		/**
-		 * $$$ rob default to a format date
-		 * $date = JFactory::getDate($d);
-		 * $dateDisplay = $date->toFormat($ft);
-		 * Jaanus: sorry, but in this manner the element doesn't work with dates earlier than 1901
-		*/
-
 		
-		list($year, $month, $day) = explode('-', $d);
-
+		list($year) = explode('-', $d);
 		$dYear = $year;
 
-		if ($ft == "Y")
-		{
-			$dateDisplay = $dYear;
-		}
+		$dateDisplay = $dYear;
 
-
-		if ($fta == 'no')
-		{
+		if ($fta == 'no') {
 			return $dateDisplay;
 		}
 		
@@ -386,29 +274,23 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 	 * @return  array  text/value objects
 	 */
 
-	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incjoin = true)
-	{
+	public function filterValueList($normal, $tableName = '', $label = '', $id = '', $incjoin = true) {
 		$rows = parent::filterValueList($normal, $tableName, $label, $id, $incjoin);
 		$return = array();
 
-		foreach ($rows as &$row)
-		{
+		foreach ($rows as &$row) {
 			$txt = $this->listFormat($row->text);
 
-			if ($txt !== '')
-			{
+			if ($txt !== '') {
 				$row->text = strip_tags($txt);
 			}
 			// Ensure unique values
-			if (!array_key_exists($row->text, $return))
-			{
+			if (!array_key_exists($row->text, $return)) {
 				$return[$row->text] = $row;
 			}
 		}
 
-		$return = array_values($return);
-
-		return $return;
+		return array_values($return);
 	}
 	/**
 	 * Get the list filter for the element
@@ -419,19 +301,15 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 	 *
 	 * @return  string	Filter html
 	 */
-	public function getFilter($counter = 0, $normal = true, $container = '')
-	{
+	public function getFilter($counter = 0, $normal = true, $container = '') {
 		$params = $this->getParams();
 		$element = $this->getElement();
 
-		if ($element->filter_type === 'dropdown' && $params->get('list_filter_layout', 'individual') === 'day_mont_year')
-		{
+		if ($element->filter_type === 'dropdown' && $params->get('list_filter_layout', 'individual') === 'day_mont_year') {
 			$layout = $this->getLayout('filter-select-day-month-year');
 			$elName = $this->getFullName(true, false);
 			$layoutData = new stdClass;
 			$layoutData->name = $this->filterName($counter, $normal);
-			$layoutData->days = $this->_dayOptions();
-			$layoutData->months = $this->_monthOptions();
 			$layoutData->years =  $this->_yearOptions();
 			$layoutData->default = (array) $this->getDefaultFilterVal($normal, $counter);
 			$layoutData->elementName = $this->getFullName(true, false);
@@ -442,9 +320,7 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 			$return[] = $normal ? $this->getFilterHiddenFields($counter, $elName, false, $normal) : $this->getAdvancedFilterHiddenFields();
 
 			return implode("\n", $return);
-		}
-		else
-		{
+		} else {
 			return parent::getFilter($counter, $normal);
 		}
 	}
@@ -459,26 +335,20 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 	 * @return  array  (value condition)
 	 */
 
-	protected function getRangedFilterValue($value, $condition = '')
-	{
+	protected function getRangedFilterValue($value, $condition = '') {
 		$db = FabrikWorker::getDbo();
 		$element = $this->getElement();
 
-		if ($element->filter_type === 'range' || strtoupper($condition) === 'BETWEEN')
-		{
-			if (strtotime($value[0]) > strtotime($value[1]))
-			{
+		if ($element->filter_type === 'range' || strtoupper($condition) === 'BETWEEN') {
+			if (strtotime($value[0]) > strtotime($value[1])) {
 				$tmp_value = $value[0];
 				$value[0] = $value[1];
 				$value[1] = $tmp_value;
 			}
 
-			if (is_numeric($value[0]) && is_numeric($value[1]))
-			{
+			if (is_numeric($value[0]) && is_numeric($value[1])) {
 				$value = $value[0] . ' AND ' . $value[1];
-			}
-			else
-			{
+			} else {
 				$today = $this->date;
 				$thisMonth = $today->format('m');
 				$thisDay = $today->format('d');
@@ -499,13 +369,9 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 			}
 
 			$condition = 'BETWEEN';
-		}
-		else
-		{
-			if (is_array($value) && !empty($value))
-			{
-				foreach ($value as &$v)
-				{
+		} else {
+			if (is_array($value) && !empty($value)) {
+				foreach ($value as &$v) {
 					$v = $db->quote($v);
 				}
 
@@ -528,19 +394,16 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element
 	 * @param   string  $originalValue  original filter value without quotes or %'s applied
 	 * @param   string  $type           filter type advanced/normal/prefilter/search/querystring/searchall
 	 * @param   string  $evalFilter     evaled
-	 *                                  
-	 * @return  string	sql query part e,g, "key = value"
+	 *
+	 * @return  string    sql query part e,g, "key = value"
+	 * @throws Exception
 	 */
-
-	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $evalFilter = '0')
-	{
+	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $evalFilter = '0') {
 		$params = $this->getParams();
 		$element = $this->getElement();
 
-		if ($type === 'prefilter' || $type === 'menuPrefilter')
-		{
-			switch ($condition)
-			{
+		if ($type === 'prefilter' || $type === 'menuPrefilter') {
+			switch ($condition) {
 				case 'earlierthisyear':
 					throw new UnexpectedValueException('The birthday element can not deal with "Earlier This Year" prefilters');
 					break;
