@@ -301,6 +301,13 @@ class EmundusViewApplication extends JViewLegacy
 						EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'r', 'COM_EMUNDUS_LOGS_COMMENTS_BACKOFFICE');
 
 						$userComments = $m_application->getFileComments($fnum);
+
+						$offset = $app->get('offset', 'UTC');
+						foreach ($userComments as $key => $comment) {
+							$dateTime = new DateTime($comment->date, new DateTimeZone($offset));
+							$userComments[$key]->date = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
+						}
+
 						$this->assignRef('userComments', $userComments);
 						$this->assignRef('fnum', $fnum);
 
