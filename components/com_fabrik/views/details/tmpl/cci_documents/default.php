@@ -52,8 +52,8 @@ $attachments = $h_files->getAttachmentsTypesByProfileID($this->data["jos_emundus
                 <?php
                 setlocale(LC_ALL, 'fr_FR.utf8');
 
-                $date_start = $this->data["jos_emundus_setup_campaigns___start_date"];
-                $date_end = $this->data["jos_emundus_setup_campaigns___end_date"];
+                $date_start = $this->data["jos_emundus_setup_teaching_unity___date_start_raw"];
+                $date_end = $this->data["jos_emundus_setup_teaching_unity___date_end_raw"];
 
                 $start_day = date('d', strtotime($date_start));
                 $end_day = date('d', strtotime($date_end));
