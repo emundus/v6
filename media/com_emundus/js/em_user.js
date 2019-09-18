@@ -100,10 +100,7 @@ function formCheck(id) {
 			$('#' + id + ' help-block').remove();
 		}
 		return true;
-
 	}
-
-
 }
 
 function reloadData() {
@@ -728,7 +725,7 @@ $(document).ready(function () {
 						$('.modal-body').empty();
 						$('.modal-body').append(result);
 					},
-					error: function (jqXHR, textStatus, errorThrown) {
+					error: function (jqXHR) {
 						console.log(jqXHR.responseText);
 					}
 				});
@@ -806,8 +803,9 @@ $(document).ready(function () {
 								position: 'center',
 								type: 'warning',
 								title: result.msg
+							}).then(function() {
+								window.location.replace('/user');
 							});
-							window.location.replace('/user');
 						}
 					}
 				});
@@ -928,8 +926,8 @@ $(document).ready(function () {
 			} else {
 				checkInput = myJSONObject;
 			}
-
 		}
+
 		if ($('.modal-body .em-dimmer').is(':visible')) {
 			return false;
 		}
@@ -937,84 +935,21 @@ $(document).ready(function () {
 		switch (id) {
 			case 19:
 
-				if (!formCheck('gname') || !formCheck('gdescription')) {
+				// Group name is required.
+				if (!formCheck('gname')) {
 					return false;
 				}
 
-				if ($('#gprogs') == null) {
-					$('#gprogs').parent('.form-group').addClass('has-error');
-					$('#gprogs').after('<span class="help-block">' + Joomla.JText._('SELECT_A_VALUE') + '</span>');
-					return false;
-				} else {
-					var progs = "";
-					for (var i = 0; i < $("#gprogs").val().length; i++) {
-						progs += $("#gprogs").val()[i];
+				var programs = $('#gprogs');
+				var progs = "";
+				if (programs.val() != null) {
+					for (var i = 0; i < programs.val().length; i++) {
+						progs += programs.val()[i];
 						progs += ',';
 					}
+					progs = progs.substr(0, progs.length - 1);
 				}
 
-
-				var actionsCheck = [];
-				var tableSize = parseInt($('.em-actions-table-line').parent('tbody').attr('size'));
-				$('.em-actions-table-line').each(function () {
-					var actLine = new Object();
-					$(this).children('td').each(function () {
-						if ($(this).hasClass('em-has-checkbox')) {
-							var id = $(this).attr('id').split('-');
-							switch (id[0]) {
-								case 'c':
-									id = id.join('-');
-									if ($(this).children('input[name="' + id + '"]').is(':checked')) {
-										actLine.c = 1;
-									} else {
-										actLine.c = 0;
-									}
-									break;
-								case 'r':
-									id = id.join('-');
-									if ($(this).children('input[name="' + id + '"]').is(':checked')) {
-										actLine.r = 1;
-									} else {
-										actLine.r = 0;
-									}
-									break;
-								case 'u':
-									id = id.join('-');
-									if ($(this).children('input[name="' + id + '"]').is(':checked')) {
-										actLine.u = 1;
-									} else {
-										actLine.u = 0;
-									}
-									break;
-								case 'd':
-									id = id.join('-');
-									if ($(this).children('input[name="' + id + '"]').is(':checked')) {
-										actLine.d = 1;
-									} else {
-										actLine.d = 0;
-									}
-									break;
-							}
-						} else if ($(this).hasClass('em-no')) {
-							if ($(this).hasClass('no-action-c'))
-								actLine.c = 0
-							else if ($(this).hasClass('no-action-r'))
-								actLine.r = 0;
-							else if ($(this).hasClass('no-action-u'))
-								actLine.u = 0;
-							else
-								actLine.d = 0;
-						} else {
-							actLine.id = $(this).attr('id');
-						}
-					})
-					actionsCheck.push(actLine);
-					if (actionsCheck.length == tableSize) {
-						return false;
-					}
-				});
-
-				actionsCheck = JSON.stringify(actionsCheck);
 				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
 
 				$.ajax({
@@ -1023,26 +958,22 @@ $(document).ready(function () {
 					data: {
 						gname: $('#gname').val(),
 						gdesc: $('#gdescription').val(),
-						actions: actionsCheck,
-						gprog: progs.substr(0, progs.length - 1)
+						gprog: progs
 					},
 					dataType: 'json',
 					success: function (result) {
 						$('.modal-body .em-dimmer').remove();
 						if (result.status) {
+
 							Swal.fire({
 								position: 'center',
 								type: 'success',
 								title: result.msg,
 								showConfirmButton: false,
 								timer: 1500
+							}).then(function() {
+								window.location.replace('index.php?option=com_emundus&view=users&layout=showgrouprights&Itemid=1169&rowid='+result.status);
 							});
-							/*$('#em-add-group').before('<div class="alert alert-dismissable alert-success">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');*/
-
-							$('#em-modal-actions').modal('hide');
 
 						} else {
 							Swal.fire({
@@ -1050,13 +981,9 @@ $(document).ready(function () {
 								type: 'warning',
 								title: result.msg
 							});
-							/*$('#em-add-group').before('<div class="alert alert-dismissable alert-danger">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');*/
 						}
 					},
-					error: function (jqXHR, textStatus, errorThrown) {
+					error: function (jqXHR) {
 						console.log(jqXHR.responseText);
 					}
 				});

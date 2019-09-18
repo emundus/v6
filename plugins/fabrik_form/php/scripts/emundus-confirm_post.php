@@ -48,12 +48,30 @@ $application_form_name      = $eMConfig->get('application_form_name', "applicati
 $export_pdf                 = $eMConfig->get('export_application_pdf', 0);
 $export_path                = $eMConfig->get('export_path', null);
 $scholarship_document       = $eMConfig->get('scholarship_document_id', NULL);
+$id_applicants              = explode(',',$eMConfig->get('id_applicants', '0'));
 
 $m_application  = new EmundusModelApplication;
 $m_files        = new EmundusModelFiles;
 $m_campaign     = new EmundusModelCampaign;
 $m_emails       = new EmundusModelEmails;
 
+
+$offset = $app->get('offset', 'UTC');
+try {
+	$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+	$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+	$now = $dateTime->format('Y-m-d H:i:s');
+} catch (Exception $e) {
+	echo $e->getMessage() . '<br />';
+}
+
+$is_dead_line_passed = (strtotime(date($now)) > strtotime(@$student->end_date));
+
+// If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
+if ($is_dead_line_passed && !in_array($student->id, $id_applicants)) {
+	JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($student->start_date)), strftime("%d/%m/%Y %H:%M", strtotime($student->end_date))));
+	return null;
+}
 
 // get current applicant course
 $campaign = $m_campaign->getCampaignByID($student->campaign_id);

@@ -364,6 +364,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             }
         });
     }
+
+    <?php if (isset($projects)) :?>
     // Project function
     function  afficheProjets() {
         if (projectChart != undefined || projectChart != null)
@@ -485,7 +487,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         });
         elem.height = 400;
     }
-
+    <?php endif; ?>
 
 
     // Account function uses 2 ajax functions, consultation and candidate

@@ -36,7 +36,7 @@ span.btn {
   border-radius: 0 !important;
   padding: 8px 12px !important;
 
-  :hover {
+  &:hover {
     background-color: transparent !important;
     color: $base-primary-color !important;
     outline: none;
