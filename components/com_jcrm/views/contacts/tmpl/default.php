@@ -48,7 +48,7 @@ ul li {
 <div class="app-container" id="app-container" ng-app="contactApp">
 	<div class="fluid-container main" ng-controller="contactsController">
 		<div class="row main-row">
-			<div class = "col-md-2 ct-list contact">
+			<div class="col-md-2 ct-list contact">
 				<div class="panel panel-info">
 					<div class="panel-heading">
 						<h3 class="panel-title"><?php echo JText::_('CONTACT_GROUPS')?></h3>
@@ -59,7 +59,7 @@ ul li {
 					<div class="panel-body">
 						<ul class="contact-group">
 							<li class="contact-group-item" ng-click="getContacts(0)"  ng-class="{'bg-warning': (0 == groupSelected)}" >
-								<a href="#"  class="row">
+								<a href="#" class="row">
 									<?php echo JText::_('CONTACT_GROUP_ALL')?>
 								</a>
 							</li>
@@ -70,7 +70,7 @@ ul li {
 									<span class="glyphicon glyphicon-remove red" ng-click="cancelGroup($index)"></span>
 								</div>
 								<div ng-show="group.id != 0 && !group.edit" class="contact-group-detail">
-									<a href="#"    class="row">
+									<a href="#" class="row">
 										{{group.name}}
 									</a>
 									<div class="pull-right actions-group-name">
@@ -78,7 +78,6 @@ ul li {
 										<span class="glyphicon glyphicon-remove red" ng-click="deleteGroup($index, group.id)"></span>
 									</div>
 								</div>
-
 							</li>
 						</ul>
 					</div>
@@ -88,7 +87,7 @@ ul li {
 				<div class="panel panel-info">
 					<div class="panel-heading">
 						<input type="text" ng-model="search" id="em-jcrm-search"  ui-event="{keyup:'searchContact($event)'}" placeholder="<?php echo JText::_('CONTACT_SEARCH_CONTACT')?>"  class="form-control group-input"/>
-						<a href="#" ng-click="showForm()"   class="btn btn-primary btn-xs pull-right">
+						<a href="#" ng-click="showForm()" class="btn btn-primary btn-xs pull-right">
 							<span class="glyphicon glyphicon-plus-sign"></span>
 						</a>
 						<a href="#" ng-click="switchSearch()" class="btn btn-primary btn-xs pull-right">
@@ -98,9 +97,9 @@ ul li {
 					</div>
 					<div class="panel-body" id="contact-list-panel">
 						<ul class="contact-list" jcrm-scroll>
-							<li class="contact-list-item" ng-class="{'bg-warning': (c.id == contact.id)}" ng-repeat="c in contacts | orderBy:'full_name'"  ng-click="getContact(c.id)">
-								<a href="#"  class="row">
-<span>
+							<li class="contact-list-item" ng-class="{'bg-warning': (c.id == contact.id)}" ng-repeat="c in contacts | orderBy:'full_name'" ng-click="getContact(c.id)">
+								<a href="#" class="row">
+                                    <span>
 										<img ng-show = "c.type == '0'" class="img-circle img-thumbnail" ng-src="/media/com_jcrm/images/contacts/user.svg" width="25px" alt="...">
 										<img ng-show = "c.type == '1'" class="img-circle img-thumbnail" ng-src="/media/com_jcrm/images/contacts/org.svg" width="25px" alt="...">   {{c.full_name | limitTo: 70}}
 									</span>
@@ -114,10 +113,12 @@ ul li {
 				<div class="panel panel-info" ng-controller="ModalDemoCtrl">
 					<div class="panel-heading">
 						<h3 class="panel-title"><?php echo JText::_('CONTACT_CONTACT_INFO')?></h3>
-						<div class = "btn btn-default btn xs pull-right"  ng-click="open('', contact, groupSelected, 'vcard')"><span
-								class = "glyphicon glyphicon-download-alt"></span></div>
-						<div class = "btn btn-default btn xs pull-right"  ng-click="open('lg', contact, groupSelected, 'mail')"><span
-								class = "glyphicon glyphicon-envelope"></span></div>
+						<div class="btn btn-default btn xs pull-right"  ng-click="open('', contact, groupSelected, 'vcard')">
+                            <span class="glyphicon glyphicon-download-alt"></span>
+                        </div>
+						<div class="btn btn-default btn xs pull-right"  ng-click="open('lg', contact, groupSelected, 'mail')">
+                            <span class="glyphicon glyphicon-envelope"></span>
+                        </div>
 						<div class="actions pull-right" ng-show="contact.id && !formVisible">
 							<button ng-click="showForm(contact.id)" class = "btn btn-primary btn-xs"><?php echo JText::_('CONTACT_EDIT')?></button>
 							<button ng-click="delete(contact.id)" class = "btn btn-default btn-xs"><?php echo JText::_('CONTACT_DELETE')?></button>
@@ -142,7 +143,6 @@ ul li {
 												<small ng-show="contact.type == 0">
 													{{contact.full_name}}
 												</small>
-
 											</h3>
 										</div>
 										<div class="orga" ng-show="!contact.organisation">
@@ -185,12 +185,12 @@ ul li {
 													{{address.array[0]}}
 												</div>
 											</div>
-											<div class = "row">
+											<div class="row">
 												<div class="col-md-8 col-md-offset-2">
 													{{address.array[1]}} {{address.array[2]}}
 												</div>
 											</div>
-											<div class = "row">
+											<div class="row">
 												<div class="col-md-8 col-md-offset-2">
 													{{address.array[3]}}
 												</div>
@@ -223,10 +223,10 @@ ul li {
 										<div class="col-md-8">
 											<ul class="contact-view-list">
 												<li class="contact-view-item"  ng-repeat="c in contact.contacts | orderBy:'c.full_name'">
-													<div class = "col-md-6">
-														<a href = "#" ng-click="getContact(c.id)">{{c.full_name}}</a>
+													<div class="col-md-6">
+														<a href="#" ng-click="getContact(c.id)">{{c.full_name}}</a>
 													</div>
-													<div class = "col-md-6">
+													<div class="col-md-6">
 														{{c.email}}
 													</div>
 												</li>
@@ -282,7 +282,7 @@ ul li {
 														</div>
 													</div>
 													<div class="col-md-12">
-														<label   for="contact-type">
+														<label for="contact-type">
 															<input type="checkbox" name="contact-type" id="contact-type" value="1" ng-model="contact.type"/>
 															<?php echo JText::_('CONTACT_ORGANISATION')?>
 														</label>
@@ -302,15 +302,15 @@ ul li {
 										</div>
 										<div class="jcrm-field col-md-10" ng-class="{'col-md-offset-2': $index > 0}" ng-repeat="phone in contact.phone track by $index">
 											<div class="col-md-2">
-												<select name = "" id = "" class="form-control" ng-model="phone.type">
-													<option value = "work"><?php echo JText::_('CONTACT_WORK')?></option>
-													<option value = "home"><?php echo JText::_('CONTACT_HOME')?></option>
-													<option value = "fax"><?php echo JText::_('CONTACT_FAX')?></option>
-													<option value = "cell"><?php echo JText::_('CONTACT_CELL')?></option>
+												<select name="" id="" class="form-control" ng-model="phone.type">
+													<option value="work"><?php echo JText::_('CONTACT_WORK')?></option>
+													<option value="home"><?php echo JText::_('CONTACT_HOME')?></option>
+													<option value="fax"><?php echo JText::_('CONTACT_FAX')?></option>
+													<option value="cell"><?php echo JText::_('CONTACT_CELL')?></option>
 												</select>
 											</div>
-											<div class = "col-md-9">
-												<input class = "form-control" placeholder="0600000000"  type = "text" ng-model="phone.tel"  name = "contact-phone" id = "contact-phone"/>
+											<div class="col-md-9">
+												<input class="form-control" placeholder="0600000000" type="text" ng-model="phone.tel" name="contact-phone" id="contact-phone"/>
 												<div class="btn btn-danger">
 													<span class="glyphicon glyphicon-remove" ng-click="deleteField($index, 'phone')"></span>
 												</div>
@@ -324,15 +324,15 @@ ul li {
 												<span class="glyphicon glyphicon-plus"></span>
 											</div>
 										</div>
-										<div class="jcrm-field col-md-10" ng-class="{'col-md-offset-2': $index > 0}"  ng-repeat="email in contact.email track by $index">
+										<div class="jcrm-field col-md-10" ng-class="{'col-md-offset-2': $index > 0}" ng-repeat="email in contact.email track by $index">
 											<div class="col-md-2">
-												<select ng-init="contact.email.type = 'work'"  name = "" id = "" class="form-control" ng-model="email.type">
-													<option value = "work"><?php echo JText::_('CONTACT_WORK')?></option>
-													<option value = "home"><?php echo JText::_('CONTACT_HOME')?></option>
+												<select ng-init="contact.email.type='work'" name="" id="" class="form-control" ng-model="email.type">
+													<option value="work"><?php echo JText::_('CONTACT_WORK')?></option>
+													<option value="home"><?php echo JText::_('CONTACT_HOME')?></option>
 												</select>
 											</div>
 											<div class="col-md-9">
-												<input type="email" ng-model="email.uri"  class="form-control" id="inputEmail" name="inputEmail" placeholder="<?php echo JText::_('CONTACT_EMAIL')?>">
+												<input type="email" ng-model="email.uri" class="form-control" id="inputEmail" name="inputEmail" placeholder="<?php echo JText::_('CONTACT_EMAIL')?>">
 												<div class="btn btn-danger">
 													<span class="glyphicon glyphicon-remove" ng-click="deleteField($index, 'email')"></span>
 												</div>
@@ -349,33 +349,33 @@ ul li {
 												<span class="glyphicon glyphicon-plus"></span>
 											</div>
 										</div>
-										<div class="jcrm-field col-md-10" ng-class="{'col-md-offset-2': $index > 0}"  ng-repeat="adr in contact.adr track by $index">
+										<div class="jcrm-field col-md-10" ng-class="{'col-md-offset-2': $index > 0}" ng-repeat="adr in contact.adr track by $index">
 											<div class="col-md-2">
-												<select name = "" id = "" class="form-control" ng-model="adr.type">
-													<option value = "work"><?php echo JText::_('CONTACT_WORK')?></option>
-													<option value = "home"><?php echo JText::_('CONTACT_HOME')?></option>
+												<select name="" id="" class="form-control" ng-model="adr.type">
+													<option value="work"><?php echo JText::_('CONTACT_WORK')?></option>
+													<option value="home"><?php echo JText::_('CONTACT_HOME')?></option>
 												</select>
 											</div>
-											<div class = "jcrm-field col-md-9">
-												<input class = "form-control" placeholder="<?php echo JText::_('CONTACT_ADDRESS')?>"   ng-model="adr.array[0]" type = "text" name = "contact-address" id = "contact-address"/>
+											<div class="jcrm-field col-md-9">
+												<input class="form-control" placeholder="<?php echo JText::_('CONTACT_ADDRESS')?>" ng-model="adr.array[0]" type="text" name="contact-address" id="contact-address"/>
 												<div class="btn btn-danger">
 													<span class="glyphicon glyphicon-remove" ng-click="deleteField($index, 'adr')"></span>
 												</div>
 											</div>
 
-											<div class="">
-												<div class = "jcrm-field col-md-9 col-md-offset-2">
-													<input class = "form-control" placeholder="<?php echo JText::_('CONTACT_ZIPCODE')?>" ng-model="adr.array[1]" type = "text" name = "contact-address" id = "contact-address"/>
+											<div>
+												<div class="jcrm-field col-md-9 col-md-offset-2">
+													<input class="form-control" placeholder="<?php echo JText::_('CONTACT_ZIPCODE')?>" ng-model="adr.array[1]" type="text" name="contact-address" id="contact-address"/>
 												</div>
 											</div>
-											<div class="">
-												<div class = "jcrm-field col-md-9 col-md-offset-2">
-													<input class = "form-control" ng-model="adr.array[2]" placeholder="<?php echo JText::_('CONTACT_CITY')?>"  type = "text" name = "contact-address" id = "contact-address"/>
+											<div>
+												<div class="jcrm-field col-md-9 col-md-offset-2">
+													<input class="form-control" ng-model="adr.array[2]" placeholder="<?php echo JText::_('CONTACT_CITY')?>"  type="text" name="contact-address" id="contact-address"/>
 												</div>
 											</div>
-											<div class="">
-												<div class = "jcrm-field col-md-9 col-md-offset-2">
-													<input class = "form-control" ng-model="adr.array[3]" placeholder="<?php echo JText::_('CONTACT_COUNTRY')?>"  type = "text" name = "contact-address" id = "contact-address"/>
+											<div>
+												<div class="jcrm-field col-md-9 col-md-offset-2">
+													<input class="form-control" ng-model="adr.array[3]" placeholder="<?php echo JText::_('CONTACT_COUNTRY')?>"  type="text" name="contact-address" id="contact-address"/>
 												</div>
 											</div>
 										</div>
@@ -389,7 +389,7 @@ ul li {
 											<div class="col-md-2">
 											</div>
 											<div class="col-md-9">
-												<textarea name = "contact-infos" id = "contact-infos" class="form-control add-contact" rows = "10" ng-model="contact.infos"></textarea>
+												<textarea name="contact-infos" id="contact-infos" class="form-control add-contact" rows="10" ng-model="contact.infos"></textarea>
 											</div>
 										</div>
 
@@ -397,13 +397,13 @@ ul li {
 									<div class="row">
 										<h5><?php echo JText::_('CONTACT_OTHER_HEADER')?></h5>
 
-										<div class = "col-md-2">
-											<div class = "btn btn-default" ng-click="addField('other')"><span class = "glyphicon glyphicon-plus"></span>
+										<div class="col-md-2">
+											<div class="btn btn-default" ng-click="addField('other')"><span class="glyphicon glyphicon-plus"></span>
 											</div>
 										</div>
 										<div class="jcrm-field col-md-10" ng-class="{'col-md-offset-2': $index > 0}"  ng-repeat="other in contact.other track by $index">
 											<div class="col-md-2">
-												<select name = "contact-other" class="form-control"  id = "contact-other" ng-model="contact.other[$index].type">
+												<select name="contact-other" class="form-control" id="contact-other" ng-model="contact.other[$index].type">
 													<option value="bday"> <?php echo  JText::_('BDAY');?></option>
 													<option value="categories"> <?php echo  JText::_('CATEGORIES');?></option>
 													<option value="geo"> <?php echo  JText::_('GEO');?></option>
@@ -428,8 +428,8 @@ ul li {
 									<div class="row">
 										<h5><?php echo JText::_('CONTACT_GROUPS_HEADER')?></h5>
 										<div class="col-md-2"></div>
-										<div class = "col-md-10">
-											<div class = "col-md-2"></div>
+										<div class="col-md-10">
+											<div class="col-md-2"></div>
 											<div class="jcrm-field col-md-9">
 												<select data-placeholder="<?php echo JText::_('CONTACT_ADD_TO_GROUP')?>"  name="contact-groups" multiple ng-model="contact.formGroup" class="chosen" id="contact-groups">
 													<option ng-models="contact.groups" ng-repeat="cgr in groups track by cgr.id"  value = "{{cgr.id}}">{{cgr.name}}</option>
@@ -477,22 +477,22 @@ ul li {
 											<input type="radio" name="orgMail" value="both" ng-model="orgMail"> <?php echo JText::_('CONTACT_ORG_BOTH'); ?>
 										</div>
 									</div>
-									<div class = "row">
+									<div class="row">
 										<div class="col-md-12">
-											<select class="form-control" ng-model="bodyId"  name = "subject" id="subject" ng-change="getBody()">
+											<select class="form-control" ng-model="bodyId" name="subject" id="subject" ng-change="getBody()">
 												<option value = "-1" selected><?php echo JText::_('CONTACT_CHOOSE_MAIL_TEMPLATE')?></option>
-												<?php foreach($this->subjects as $subject):?>
-													<option value = "<?php echo $subject->id?>"><?php echo $subject->subject?></option>
-												<?php endforeach;?>
+												<?php foreach ($this->subjects as $subject) :?>
+													<option value="<?php echo $subject->id?>"><?php echo $subject->subject?></option>
+												<?php endforeach; ?>
 											</select>
 										</div>
 									</div>
-									<div class = "row">
-										<div class = "col-md-12">
-											<input class = "form-control" type = "text" name = "mail-subject" id = "mail-subject" ng-model="subject"/>
+									<div class="row">
+										<div class="col-md-12">
+											<input class="form-control" type="text" name="mail-subject" id="mail-subject" ng-model="subject"/>
 										</div>
 									</div>
-									<div class = "row">
+									<div class="row">
 										<div class="col-md-12">
 											<contact-tiny-mce ng-model="body"></contact-tiny-mce>
 										</div>
@@ -507,16 +507,16 @@ ul li {
 									<div class="my-alt-dime" ng-show="showDimeModal"></div>
 									<div class="row">
 										<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-										<a href = "{{dlButton.link}}" class="btn btn-success" ng-show="dlButton.link">{{dlButton.linkMsg}}</a>
+										<a href="{{dlButton.link}}" class="btn btn-success" ng-show="dlButton.link">{{dlButton.linkMsg}}</a>
 									</div>
 
-									<div class = "row">
+									<div class="row">
 										<div class="col-md-12" ng-controller="TypeaheadCtrl">
-											<input type="text" class="form-control" ng-model="contactGuest"  placeholder="<?php echo JText::_('CONTACT_SEARCH_CONTACT_OR_GROUP')?>" typeahead="result.contact for result in getMailContact($viewValue)" typeahead-on-select="onSelect($item, $model, $label)"  typeahead-loading="loadingLocations" />
+											<input type="text" class="form-control" ng-model="contactGuest" placeholder="<?php echo JText::_('CONTACT_SEARCH_CONTACT_OR_GROUP')?>" typeahead="result.contact for result in getMailContact($viewValue)" typeahead-on-select="onSelect($item, $model, $label)" typeahead-loading="loadingLocations" />
 											<i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
 											<div class="contact-guests">
 												<ul>
-													<li class = "label" ng-class="{'label-info': ct.type == 'contact', 'label-warning': ct.type == 'group'}"  ng-repeat="ct in guestList.items | orderBy: 'ct.name' track by $index" style="margin: 5px;">
+													<li class="label" ng-class="{'label-info': ct.type == 'contact', 'label-warning': ct.type == 'group'}" ng-repeat="ct in guestList.items | orderBy: 'ct.name' track by $index" style="margin: 5px;">
 														<span>{{ct.contact}}</span>
 														<span class="glyphicon glyphicon-remove pullright" ng-click="deleteGuest($index)"></span>
 													</li>
@@ -532,16 +532,15 @@ ul li {
 											<input type="radio" name="orgExport" value="both" ng-model="orgExport"> <?php echo JText::_('CONTACT_ORG_BOTH'); ?>
 										</div>
 									</div>
-									<div class = "row">
+									<div class="row">
 										<div class="col-md-12">
-											<select class = "form-control" name = "contact-export-select" ng-model="export.type"  id = "contact-export-select">
-												<option value = "0"><?php echo JText::_('CONTACT_EXPORT_CSV')?></option>
-												<option value = "1"><?php echo JText::_('CONTACT_EXPORT_VCARD')?></option>
+											<select class="form-control" name="contact-export-select" ng-model="export.type" id="contact-export-select">
+												<option value="0"><?php echo JText::_('CONTACT_EXPORT_CSV')?></option>
+												<option value="1"><?php echo JText::_('CONTACT_EXPORT_VCARD')?></option>
 											</select>
 										</div>
 									</div>
 								</div>
-
 							</div>
 
 							<div class="modal-footer">
@@ -554,22 +553,14 @@ ul li {
 			</div>
 		</div>
 		<div class="foot-row row">
-			<div class = "col-md-2"></div>
-			<div class = "col-md-2">
+			<div class="col-md-2"></div>
+			<div class="col-md-2">
 				<span>{{nbContacts}}</span> <span> contacts</span>
 			</div>
 		</div>
 	</div>
 </div>
 
-<!--
-<div class="form-group">
-	<label class="col-md-2 jcrm-control-label" for="contact-img"><?php echo JText::_('CONTACT_IMG')?></label>
-	<div class="col-md-8">
-		<input type="file" name="contact-img" nv-file-select uploader="uploader"/>
-	</div>
-</div>
->
 <?php
 $document->addStyleSheet('media/com_jcrm/css/contact.css');
 $document->addScript('media/com_jcrm/js/app.js')
@@ -597,22 +588,25 @@ $document->addScript('media/com_jcrm/js/app.js')
 
 </script>
 -->
-<script language="javascript">
-	function autoResizeDiv()
-	{
-		var footH = document.getElementById('rt-footer').offsetHeight;
-		var headH = document.getElementById('rt-top-surround').offsetHeight + 11;
-		console.log(footH);
-		console.log(headH);
-		console.log(window.innerHeight);
-		console.log(window.innerHeight - (headH + footH * 2));
+<script>
+	function autoResizeDiv() {
+
+        var footH = 0;
+        var headH = 0;
+
+        if (document.getElementById('rt-footer') !== null) {
+            footH = document.getElementById('rt-footer').offsetHeight;
+            headH = document.getElementById('rt-top-surround').offsetHeight + 11;
+        } else {
+            footH = document.getElementById('g-footer').offsetHeight;
+            headH = document.getElementById('g-navigation').offsetHeight + 11;
+        }
+
+        // Using the positions of the footer and header, we can calculate the maximum size our app can take up.
 		document.getElementById('app-container').style.height = (window.innerHeight - (headH + footH)) +'px';
-		/*var panelH = document.getElementById('contact-list-panel').offsetHeight;
-		document.getElementById('contact-list').style.height = panelH +'px';*/
 	}
 
-	$(document).ready(function()
-    {
+	$(document).ready(function() {
           autoResizeDiv();
      });
 </script>

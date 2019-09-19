@@ -17,12 +17,11 @@ require_once JPATH_COMPONENT.DS.'models'.DS.'contact.php';
 /**
  * Syncs list controller class.
  */
-class JcrmControllerSyncs extends JcrmController
-{
-	public function getdata()
-	{
+class JcrmControllerSyncs extends JcrmController {
+
+	public function getdata() {
 		$jinput = JFactory::getApplication()->input;
-		$page 	= $jinput->getInt('current', 1);
+		$page = $jinput->getInt('current', 1);
 
 		$params 	= JComponentHelper::getParams('com_jcrm');
 		$select 	= $params->get('sync_table_select');
@@ -32,74 +31,62 @@ class JcrmControllerSyncs extends JcrmController
 		$nbRef 		= $params->get('sync_nb_referees');
 
 		$m_syncs = new JcrmModelSyncs();
-		$nbItem = $m_syncs->getNbItems($tableName, $colContact, $colAccount, $nbRef);
 		$datas = $m_syncs->getData($select, $tableName, $colContact, $colAccount, $nbRef, $page);
 		$syncs = array();
 
-		foreach ($datas as $data)
-		{
-			for ($i = 1; $i <= $nbRef; $i++)
-			{
-				if (($data['id_account_'.$i] === "0") || ($data['id_contact_'.$i] === "0"))
-				{
-					if ($data['Email_'.$i])
-					{
-						$sync = new stdClass();
-						$sync->orga = new stdClass();
-						$sync->contact = new stdClass();
-						$sync->orga->orgaId = "new";
-						$sync->orga->synced = false;
+		if (!empty($datas)) {
+			foreach ($datas as $data) {
+				for ($i = 1; $i <= $nbRef; $i++) {
+					if (($data['id_account_'.$i] === "0") || ($data['id_contact_'.$i] === "0") && $data['Email_'.$i]) {
+						$sync                  = new stdClass();
+						$sync->orga            = new stdClass();
+						$sync->contact         = new stdClass();
+						$sync->orga->orgaId    = "new";
+						$sync->orga->synced    = false;
 						$sync->contact->synced = false;
-						$sync->contact->cId = "new";
+						$sync->contact->cId    = "new";
 
-                        // Suppression des " dans orga
-                        $neworga = str_replace('"', ' ', $data['Organisation_' . $i]);
-                        $data['Organisation_' . $i]=$neworga;
+						// Suppression des " dans orga
+						$neworga                  = str_replace('"', ' ', $data['Organisation_'.$i]);
+						$data['Organisation_'.$i] = $neworga;
 
-						if($data['id_account_'.$i] == 0)
-						{
+						if ($data['id_account_'.$i] == 0) {
 							$sync->orga->options = $m_syncs->getSiblingOrgs($data['Organisation_'.$i]);
-							if(!empty($sync->orga->options))
-							{
+							if (!empty($sync->orga->options)) {
 								$sync->orga->orgaId = $sync->orga->options[0]->id;
 							}
 						}
-						else
-						{
+						else {
 							$sync->orga->synced = true;
-							if($data['id_contact_'.$i] === "0")
-							{
+							if ($data['id_contact_'.$i] === "0") {
 								$contactCheck = $m_syncs->findContact($data['Email_'.$i]);
-								if(!empty($contactCheck))
-								{
+								if (!empty($contactCheck)) {
 									$sync->contact->options = $contactCheck;
-									$sync->contact->cId = intval($contactCheck[0]->id);
+									$sync->contact->cId     = intval($contactCheck[0]->id);
 								}
 							}
-							else
-							{
+							else {
 								$sync->contact->synced = true;
 							}
 						}
-						$sync->contact->index = $i;
-						$sync->contact->refId = $data['id'];
-						$sync->contact->firstName = $data['First_Name_'.$i];
-						$sync->contact->lastName = $data['Last_Name_'.$i];
+						$sync->contact->index        = $i;
+						$sync->contact->refId        = $data['id'];
+						$sync->contact->firstName    = $data['First_Name_'.$i];
+						$sync->contact->lastName     = $data['Last_Name_'.$i];
 						$sync->contact->organisation = $data['Organisation_'.$i];
-						$sync->contact->email = $data['Email_'.$i];
-						$syncs[] = $sync;
+						$sync->contact->email        = $data['Email_'.$i];
+						$syncs[]                     = $sync;
 					}
 				}
 			}
 		}
 		$offset = (($page - 1) * 20);
 		$res = array('nbItems' => count($syncs), 'nbPages' => intval((count($syncs)/ 20) + 1), 'toSyncs' => array_slice($syncs, $offset, 20));
-		echo json_encode((object)$res);
+		echo json_encode((object) $res);
 		exit();
 	}
 
-	public function syncorga()
-	{
+	public function syncorga() {
 		$input = (object) json_decode(file_get_contents('php://input'));
 		$m_syncs 	= new JcrmModelSyncs();
 		$m_contact 	= new JcrmModelContact();
