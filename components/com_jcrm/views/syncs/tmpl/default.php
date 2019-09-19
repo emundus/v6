@@ -35,9 +35,9 @@ $canDelete = $user->authorise('core.delete', 'com_jcrm');
 
 <div class="app-container" ng-app="syncApp">
 	<div ng-controller="mainCtrl">
-		<button class = "btn btn-primary" ng-click="refreshAll()"><?php echo JText::_('JCRM_SYNC_CHECK_ALL')?></button>
-		<button class = "btn btn-primary" ng-click="validAll()"><?php echo JText::_('JCRM_SYNC_VALID_ALL')?></button>
-		<button class = "btn btn-primary" ng-click="ignoreAll()"><?php echo JText::_('JCRM_SYNC_IGNORE_ALL')?></button>
+		<button class="btn btn-primary" ng-click="refreshAll()"><?php echo JText::_('JCRM_SYNC_CHECK_ALL')?></button>
+		<button class="btn btn-primary" ng-click="validAll()"><?php echo JText::_('JCRM_SYNC_VALID_ALL')?></button>
+		<button class="btn btn-primary" ng-click="ignoreAll()"><?php echo JText::_('JCRM_SYNC_IGNORE_ALL')?></button>
 		<div class="my-alt-dime" ng-show="showDime"></div>
 		<table class="table table-stripped" >
 			<thead>
@@ -56,8 +56,8 @@ $canDelete = $user->authorise('core.delete', 'com_jcrm');
 			<tr ng-repeat="ref in contactToSync track by $index">
 				<td>
 					<span>{{$index + 1}}</span>
-					<span class = "glyphicon glyphicon-refresh blue clickable" ng-click="refreshContact($index)"></span>
-					<span class = "glyphicon glyphicon-remove red clickable" ng-click="ignoreContact($index)"></span>
+					<span class="glyphicon glyphicon-refresh blue clickable" ng-click="refreshContact($index)"></span>
+					<span class="glyphicon glyphicon-remove red clickable" ng-click="ignoreContact($index)"></span>
 				</td>
 				<td ng-class="{'bg-danger': (ref.contact.options.length >= 2)}">
 					<p>{{ref.contact.lastName}} {{ref.contact.firstName}}</p>
@@ -67,9 +67,9 @@ $canDelete = $user->authorise('core.delete', 'com_jcrm');
 						<p class="text-success"><?php echo JText::_('CONTACT_IN')?></p>
 					</div>
 					<div ng-show="!ref.contact.synced && ref.orga.synced">
-						<select name = "select-contact-sync"  ng-model="ref.contact.cId">
-							<option value = "new"><?php echo JText::_('NEW_CONTACT')?></option>
-							<option ng-selected="ref.contact.cId == option.id"  value = "{{option.id}}" ng-repeat="option in ref.contact.options">
+						<select name="select-contact-sync"  ng-model="ref.contact.cId">
+							<option value="new"><?php echo JText::_('NEW_CONTACT')?></option>
+							<option ng-selected="ref.contact.cId == option.id" value="{{option.id}}" ng-repeat="option in ref.contact.options">
 								{{option.full_name}} {{option.email}}
 							</option>
 						</select>
@@ -82,11 +82,11 @@ $canDelete = $user->authorise('core.delete', 'com_jcrm');
 						<p class="text-success"><?php echo JText::_('ORGANISATION_IN_DB')?></p>
 					</div>
 					<div ng-hide="ref.orga.synced">
-						<select name = "select-orga" id = "" ng-model="ref.orga.orgaId">
-							<option value = "{{option.id}}" ng-selected="option.id == ref.orga.orgaId"  ng-repeat="option in ref.orga.options">
+						<select name="select-orga" id="" ng-model="ref.orga.orgaId">
+							<option value="{{option.id}}" ng-selected="option.id == ref.orga.orgaId"  ng-repeat="option in ref.orga.options">
 								{{option.organisation}}
 							</option>
-							<option value = "new"><?php echo JText::_('NEW_ACCOUNT')?></option>
+							<option value="new"><?php echo JText::_('NEW_ACCOUNT')?></option>
 						</select>
 						<span class="glyphicon glyphicon-ok green clickable" ng-click="validOrga($index)"></span>
 					</div>
@@ -97,7 +97,6 @@ $canDelete = $user->authorise('core.delete', 'com_jcrm');
 		</table>
 		<div ng-controller="PaginationDemoCtrl">
 			<pagination total-items="arrayConf.nbItems" ng-model="currentPage" max-size="maxSize" class="pagination-sm"items-per-page="itemsPerPage" boundary-links="true" rotate="true" num-pages="numPages" previous-text="<?php echo JText::_('PREVIOUS')?>" next-text="<?php echo JText::_('NEXT')?>" first-text="<?php echo JText::_('FIRST')?>" last-text="<?php echo JText::_('LAST')?>" ng-change="pageChanged()"></pagination>
-
 		</div>
 	</div>
 
