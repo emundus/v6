@@ -50,6 +50,7 @@ $bad_columns = [];
 $db = JFactory::getDbo();
 $query = $db->getQuery(true);
 $checked_tables = [];
+$repeat_tables = [];
 
 $profile = $formModel->data['jos_emundus_setup_csv_import___profile_raw'][0];
 
@@ -59,7 +60,7 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 	foreach ($data as $column_number => $column) {
 
 		// If the file name is not in the following format : table___element; mark column as bad.
-		$column = explode("___", preg_replace('/[^\PC\s]/u', '', $column));
+		$column = explode("___", trim(preg_replace('/[^\PC\s]/u', '', $column)));
 		if (count($column) !== 2) {
 
 			// Special columns such as the campaign ID can be inserted.
@@ -76,27 +77,90 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 			$bad_columns[] = $column_number;
 			continue;
 		}
-
+		
 		$table = $column[0];
 		$element = $column[1];
 
 		// Test the existence of the table and the fnum column.
-		if ($table != 'jos_emundus_users') {
+		if ($table !== 'jos_emundus_users' && $table !== 'jos_emundus_campaign_candidature') {
 
 			if (!in_array($table, $checked_tables)) {
 
-				$db->setQuery('SHOW COLUMNS FROM '.$db->quoteName($table).' LIKE '.$db->quote('fnum'));
-				try {
-					if (empty($db->loadResult())) {
+				// Check if we are dealing with a repeat table.
+				if (strpos($table, '_repeat') !== false) {
+
+					// If we are, we check for the presence of the parent_id column.
+					$db->setQuery('SHOW COLUMNS FROM '.$db->quoteName($table).' LIKE '.$db->quote('parent_id'));
+					try {
+						if (empty($db->loadResult())) {
+							$bad_columns[] = $column_number;
+							continue;
+						}
+					} catch (Exception $e) {
 						$bad_columns[] = $column_number;
 						continue;
 					}
-				} catch (Exception $e) {
-					$bad_columns[] = $column_number;
-					continue;
-				}
 
-				$checked_tables[] = $table;
+					// Parse parent table name from repeat table name using a RegEx.
+					$parent_table = preg_split('/_\d+_repeat$/', $table);
+
+					// If the result of the preg_split contains 2 elements (meaning the regex found a match) but the second is empty (meaning we correctly split on the end of the string), the table name matches the correct format.
+					if (sizeof($parent_table) === 2 && empty($parent_table[1])) {
+						$parent_table = $parent_table[0];
+					} else {
+
+						// In case our table is not a repeat group, we need to check the case of a repeat element (like a databasejoin with a multi-select)
+						$parent_table = preg_split('/_repeat_'.$element.'$/', $table);
+
+						// If the result of the preg_split contains 2 elements (meaning the regex found a match) but the second is empty (meaning we correctly split on the end of the string), the table name matches the correct format.
+						if (sizeof($parent_table) === 2 && empty($parent_table[1])) {
+							$parent_table = $parent_table[0];
+						} else {
+							$bad_columns[] = $column_number;
+							continue;
+						}
+					}
+
+					// If the parent table is not in the list of known parents, we need to check if it contains an fnum column.
+					if (!in_array($parent_table, array_keys($repeat_tables))) {
+
+						// Check for the presence of the fnum in the parent table.
+						$db->setQuery('SHOW COLUMNS FROM '.$db->quoteName($parent_table).' LIKE '.$db->quote('fnum'));
+						try {
+							if (empty($db->loadResult())) {
+								$bad_columns[] = $column_number;
+								continue;
+							}
+						} catch (Exception $e) {
+							$bad_columns[] = $column_number;
+							continue;
+						}
+
+					}
+
+					// We add the table to the repeat tables so we can later insert.
+					if (!in_array($table, $repeat_tables)) {
+						$repeat_tables[$column_number]->parent = $parent_table;
+						$repeat_tables[$column_number]->table = $table;
+					}
+
+					$repeat = true;
+
+				} else {
+
+					// If not, we check for the presence of the fnum.
+					$db->setQuery('SHOW COLUMNS FROM '.$db->quoteName($table).' LIKE '.$db->quote('fnum'));
+					try {
+						if (empty($db->loadResult())) {
+							$bad_columns[] = $column_number;
+							continue;
+						}
+					} catch (Exception $e) {
+						$bad_columns[] = $column_number;
+						continue;
+					}
+					$checked_tables[] = $table;
+				}
 			}
 
 			$db->setQuery('SHOW COLUMNS FROM '.$db->quoteName($table).' LIKE '.$db->quote($element));
@@ -123,7 +187,6 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 }
 
 $parsed_data = [];
-
 while (($data = fgetcsv($handle, 0, ';')) !== false) {
 
 	foreach ($data as $column_number => $column) {
@@ -160,9 +223,14 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 		if (in_array($column_number, $bad_columns)) {
 			continue;
 		}
-
-		// Build the complex data structure.
-		$parsed_data[$row][$database_elements[$column_number]->table][$database_elements[$column_number]->column] = preg_replace('/[^\PC\s]/u', '', $column);
+		
+		if (in_array($column_number, array_keys($repeat_tables))) {
+			// The repeat values are inserted into a separate array as they will be inserted into the DB AFTER their parent table.
+			$parsed_repeat[$row][$repeat_tables[$column_number]->parent][$repeat_tables[$column_number]->table][$database_elements[$column_number]->column] = preg_replace('/[^\PC\s]/u', '', $column);
+		} else {
+			// Build the complex data structure.
+			$parsed_data[$row][$database_elements[$column_number]->table][$database_elements[$column_number]->column] = preg_replace('/[^\PC\s]/u', '', $column);
+		}
 
 	}
 
@@ -230,7 +298,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	if (!empty($profile_row[$row_id]) && is_numeric($profile_row[$row_id])) {
 		$profile = $profile_row[$row_id];
-	} elseif (empty($profile)) {
+	} elseif (empty($profile) && !empty($campaign)) {
 
 		$query->clear()
 			->select($db->quoteName('profile_id'))
@@ -535,11 +603,17 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	foreach ($insert_row as $table_name => $element) {
 
+		$parent_ids = [];
+		$executed_parent_tables = [];
+
+		if ($table_name === 'jos_emundus_campaign_candidature') {
+			continue;
+		}
+
 		if (empty($element)) {
 			JLog::add('ERROR: Empty element : '.$table_name.'___'.array_keys($element)[0], JLog::ERROR, 'com_emundus');
 			continue;
 		}
-
 
 		$columns = ['fnum','user'];
 		$values = [$db->quote($fnum), $user];
@@ -551,19 +625,18 @@ foreach ($parsed_data as $row_id => $insert_row) {
 				$element_value = $db->quote($element_value);
 			}
 
-			if ($table_name == 'jos_emundus_users') {
+			if ($table_name === 'jos_emundus_users') {
 
 				$fields[] = $db->quoteName($element_name).' = '.$element_value;
 
 			} else {
-
 				$columns[] = $element_name;
 				$values[]  = trim($element_value);
 			}
 
 		}
 
-		if ($table_name == 'jos_emundus_users') {
+		if ($table_name === 'jos_emundus_users') {
 			$query->clear()
 				->update($db->quoteName($table_name))
 				->set($fields)
@@ -584,10 +657,46 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			JLog::add('ERROR inserting data in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
 		}
 
+		// Insert into child repeat tables.
+		if (isset($parsed_repeat) && !in_array($table_name, $executed_parent_tables) && in_array($table_name, array_keys($parsed_repeat[$row_id]))) {
+			$parent_id = $db->insertid();
+			foreach ($parsed_repeat[$row_id] as $parent_table => $repeat_table) {
+				foreach ($repeat_table as $repeat_table_name => $repeat_columns) {
+
+					$repeat_columns = array_merge(...array_map(function ($r_column, $k_key) {
+						return [$k_key => explode('|',trim($r_column))];
+					}, $repeat_columns, array_keys($repeat_columns)));
+
+					$query->clear()
+						->insert($db->quoteName($repeat_table_name))
+						->columns($db->quoteName(array_merge(['parent_id'],array_keys($repeat_columns))));
+
+					$i = 0;
+					foreach ($repeat_columns as $r_column) {
+						$insert_row = [];
+						if ($i == sizeof($r_column)) {
+							break;
+						}
+						foreach (array_keys($repeat_columns) as $r_key) {
+							$insert_row[] = is_numeric($repeat_columns[$r_key][$i])?$repeat_columns[$r_key][$i]:$db->quote($repeat_columns[$r_key][$i]);
+						}
+						$query->values($parent_id.', '.implode(',', $insert_row));
+						$i++;
+					}
+
+					$db->setQuery($query);
+					try {
+						$db->execute();
+						$executed_parent_tables[] = $table_name;
+						$totals['write']++;
+						JLog::add(' --- INSERTED REPEAT ROW :'.$db->insertid().' AT TABLE : '.$repeat_table_name, JLog::INFO, 'com_emundus');
+					} catch (Exception $e) {
+						JLog::add('ERROR inserting data in query : '.$query->__toString().' error text -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+					}
+				}
+			}
+		}
 	}
-
-	// TODO: Support repeat groups.
-
 }
 
 
