@@ -1393,33 +1393,34 @@ class EmundusControllerFiles extends JControllerLegacy
         if ($start == 0) {
             $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('PROGRAMME')."\t";
             $nbcol = 6;
-            foreach ($ordered_elements as $fKey => $fLine) {
+            foreach ($ordered_elements as $fLine) {
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
-                    if(count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted"){
-                        if(in_array("form-title", $opts) && in_array("form-group", $opts)){
+                    if (count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted") {
+                        if (in_array("form-title", $opts) && in_array("form-group", $opts)) {
                             $line .= JText::_($fLine->form_label)." > ".JText::_($fLine->group_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                             $nbcol++;
-                        }elseif(count($opts) == 1){
-                            if(in_array("form-title", $opts)){
+                        } elseif(count($opts) == 1) {
+                            if (in_array("form-title", $opts)) {
                                 $line .= JText::_($fLine->form_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                                 $nbcol++;
-                            }elseif(in_array("form-group", $opts)){
+                            } elseif(in_array("form-group", $opts)) {
                                 $line .= JText::_($fLine->group_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                                 $nbcol++;
                             }
                         }
-                    }else{
+                    } else {
                         $line .= preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                         $nbcol++;
                     }
                 }
             }
-            //var_dump($line);die;
+
             foreach ($colsup as $kOpt => $vOpt) {
-                if ($vOpt=="forms" || $vOpt=="attachment")
-                    $line .= $vOpt . "(%)\t";
-                else
-                    $line .= '"'.preg_replace("/\r|\n|\t/", "", $vOpt).'"' . "\t";
+                if ($vOpt=="forms" || $vOpt=="attachment") {
+	                $line .= $vOpt."(%)\t";
+                } else {
+	                $line .= '"'.preg_replace("/\r|\n|\t/", "", $vOpt).'"'."\t";
+                }
                 $nbcol++;
             }
 
@@ -1430,17 +1431,16 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         //check if evaluator can see others evaluators evaluations
-        if (@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)){
+        if (@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) {
             $user = $m_users->getUserById($current_user->id);
             $evaluator = $user[0]->lastname." ".$user[0]->firstname;
-            if($eval_can_see_eval == 0 && !empty($objclass) && in_array("emundusitem_evaluation otherForm", $objclass)){
+            if ($eval_can_see_eval == 0 && !empty($objclass) && in_array("emundusitem_evaluation otherForm", $objclass)) {
                 foreach ($fnumsArray as $idx => $d) {
                     foreach ($d as $k => $v) {
-                        if($k === 'jos_emundus_evaluations___user'){
-                            if(strcasecmp($v, $evaluator) != 0){
-                                foreach($fnumsArray[$idx] as $key => $value){
-                                    if(substr( $key, 0, 26 ) === "jos_emundus_evaluations___")
-                                        $fnumsArray[$idx][$key] = JText::_('NO_RIGHT');
+                        if ($k === 'jos_emundus_evaluations___user' && strcasecmp($v, $evaluator) != 0) {
+                            foreach($fnumsArray[$idx] as $key => $value){
+                                if (substr( $key, 0, 26 ) === "jos_emundus_evaluations___") {
+	                                $fnumsArray[$idx][$key] = JText::_('NO_RIGHT');
                                 }
                             }
                         }
@@ -1450,42 +1450,36 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         // On parcours les fnums
-
         foreach ($fnumsArray as $fnum) {
             // On traite les données du fnum
             foreach ($fnum as $k => $v) {
-                if ($k != 'code' && strpos($k, 'campaign_id')===false) {
+                if ($k != 'code' && strpos($k, 'campaign_id') === false) {
 
                     if ($k === 'fnum') {
-                        $line .= " ".$v."\t";
+                        $line .= "'".$v."\t";
                         $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
                         $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
                         $lastname = (!empty($userProfil['lastname']))?$userProfil['lastname']:JFactory::getUser($uid)->name;
                         $line .= $lastname."\t";
                         $line .= $userProfil['firstname']."\t";
-                    } else{
-                        if($v == "")
-                            $line .= " "."\t";
-                        elseif($v[0] == "=" || $v[0] == "-") {
-                            if(count($opts) > 0 && in_array("upper-case", $opts)) {
+                    } else {
+                        if ($v == "") {
+	                        $line .= " "."\t";
+                        } elseif ($v[0] == "=" || $v[0] == "-") {
+                            if (count($opts) > 0 && in_array("upper-case", $opts)) {
                                 $line .= " ".mb_strtoupper($v)."\t";
-                            }
-                            else {
+                            } else {
                                 $line .= " ".$v."\t";
                             }
-                        }
-                        else {
-                            if(count($opts) > 0 && in_array("upper-case", $opts)) {
+                        } else {
+                            if (count($opts) > 0 && in_array("upper-case", $opts)) {
                                 $line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
-                            }
-                            else {
+                            } else {
                                 $line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
                             }
                         }
-
                     }
-
                 }
             }
 
@@ -1493,30 +1487,16 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($colOpt as $kOpt => $vOpt) {
                 switch ($kOpt) {
                     case "PHOTO":
-                        //$line .= JText::_('photo') . "\t";
-                        if (array_key_exists($fnum['fnum'],$vOpt)) {
-                            $val = $vOpt[$fnum['fnum']];
-                            $line .= $val . "\t";
+	                case "forms":
+	                case "attachment":
+	                case 'evaluators':
+                        if (array_key_exists($fnum['fnum'], $vOpt)) {
+                            $line .= $vOpt[$fnum['fnum']]."\t";
                         } else {
                             $line .= "\t";
                         }
                         break;
-                    case "forms":
-                        if (array_key_exists($fnum['fnum'],$vOpt)) {
-                            $val = $vOpt[$fnum['fnum']];
-                            $line .= $val . "\t";
-                        } else {
-                            $line .= "\t";
-                        }
-                        break;
-                    case "attachment":
-                        if (array_key_exists($fnum['fnum'],$vOpt)) {
-                            $val = $vOpt[$fnum['fnum']];
-                            $line .= $val . "\t";
-                        } else {
-                            $line .= "\t";
-                        }
-                        break;
+
                     case "assessment":
                         $eval = '';
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
@@ -1530,6 +1510,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             $line .= "\t";
                         }
                         break;
+
                     case "comment":
                         $comments = "";
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
@@ -1543,12 +1524,6 @@ class EmundusControllerFiles extends JControllerLegacy
                             $line .= "\t";
                         }
                         break;
-                    case 'evaluators':
-                        if (array_key_exists($fnum['fnum'],$vOpt))
-                            $line .= $vOpt[$fnum['fnum']] . "\t";
-                        else
-                            $line .= "\t";
-                        break;
 
                     case "tags":
                         $tags = "";
@@ -1559,7 +1534,9 @@ class EmundusControllerFiles extends JControllerLegacy
                             }
                         }
                         $line .= $tags . "\t";
+                        break;
 
+	                default:
                         break;
                 }
             }
