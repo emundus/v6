@@ -34,6 +34,7 @@ $mod_em_campaign_show_formation_end_date = $params->get('mod_em_campaign_show_fo
 $showcampaign=$params->get('mod_em_campaign_param_showcampaign');
 $showprogramme=$params->get('mod_em_campaign_param_showprogramme');
 $redirect_url=$params->get('mod_em_campaign_link', 'registration');
+$program_code=$params->get('mod_em_program_code');
 $offset = JFactory::getConfig()->get('offset');
 $sef = JFactory::getConfig()->get('sef');
 
@@ -61,8 +62,18 @@ if (isset($order_time) && !empty($order_time)) {
 $order = $session->get('order_date');
 $ordertime = $session->get('order_time');
 
+if ($params->get('mod_em_campaign_layout') == "institut_fr") {
+    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
+    $m_progs = new EmundusModelProgramme;
+    $programs = $m_progs->getProgrammes(1, $program_code);
+}
+
 if (isset($searchword) && !empty($searchword)) {
-    $condition = ' AND (pr.code LIKE "%"'.$db->Quote($searchword).'"%" OR ca.label LIKE "%"'.$db->Quote($searchword).'"%" OR ca.description LIKE "%"'.$db->Quote($searchword).'"%" OR ca.short_description LIKE "%"'.$db->Quote($searchword).'"%")';
+    $condition = ' AND (pr.code LIKE "%"'.$db->Quote($searchword).'"%" OR ca.label LIKE "%"'.$db->Quote($searchword).'"%" OR ca.description LIKE "%"'.$db->Quote($searchword).'"%" OR ca.short_description LIKE "%"'.$db->Quote($searchword).'"%") ';
+}
+
+if (!empty($program_code)) {
+    $condition .= " AND pr.code IN(" . implode ( "','", explode(', ',$db->Quote($program_code)) ) . ") ";
 }
 
 switch ($mod_em_campaign_groupby) {
@@ -87,12 +98,6 @@ switch ($ordertime) {
 }
 
 $helper = new modEmundusCampaignHelper;
-
-if ($params->get('mod_em_campaign_layout') == "institut_fr") {
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
-    $m_progs = new EmundusModelProgramme;
-    $programs = $m_progs->getProgrammes(1);
-}
 
 $currentCampaign    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity);
 $pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity);
