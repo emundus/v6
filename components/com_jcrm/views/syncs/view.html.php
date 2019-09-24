@@ -25,16 +25,17 @@ class JcrmViewSyncs extends JViewLegacy {
     /**
      * Display the view
      */
-    public function display($tpl = null)
-    {
+    public function display($tpl = null) {
+
         $app = JFactory::getApplication();
         $this->state = $this->get('State');
         $this->params = $app->getParams('com_jcrm');
+
         // Check for errors.
-        if (count($errors = $this->get('Errors')))
-        {
+        if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
+
         JText::script('CONTACT_ARE_YOU_SURE');
         JText::script('CONTACT_ADD_CONTACT_PLEASE');
         JText::script('CONTACT_CHOOSE_EXPORT_TYPE_PLEASE');
@@ -76,6 +77,7 @@ class JcrmViewSyncs extends JViewLegacy {
         } else {
             $this->params->def('page_heading', JText::_('COM_JCRM_DEFAULT_PAGE_TITLE'));
         }
+
         $title = $this->params->get('page_title', '');
         if (empty($title)) {
             $title = $app->getCfg('sitename');

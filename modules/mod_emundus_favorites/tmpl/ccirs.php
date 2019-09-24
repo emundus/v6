@@ -34,7 +34,7 @@ echo $description;
 
                 <div class="col-md-2 main-page-file-progress">
                     <div class="main-page-file-progress-label">
-                        <a href="<?php echo JRoute::_(JURI::base().'formation?rowid='. $favorite->id.'-'.str_replace('.html', '', $favorite->url)); ?>" >s'inscrire</a>
+                        <a href="<?php echo JRoute::_(JURI::base().'formation?rowid='. $favorite->id.'-'.str_replace('.html', '', $favorite->url)); ?>" ><?php echo JText::_('SIGNUP');?></a>
                     </div>
                 </div>
                 <div class="col-md-1">
