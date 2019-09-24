@@ -38,7 +38,7 @@ $site_offset = $config->get('offset');
             <?php 
             $programs = array_unique(array_column($programs, 'programmes'));
             foreach($programs as $program => $value) :?>
-                    <option value = "<?=$value;?>"><?= ucfirst(strtolower($value)); ?></option>
+                <option value = "<?=$value;?>"><?= ucfirst(strtolower($value)); ?></option>
             <?php endforeach ;?>
         </select>
     </div>
