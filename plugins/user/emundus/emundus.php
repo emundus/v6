@@ -115,6 +115,14 @@ class plgUserEmundus extends JPlugin
 		        $ldapElements = explode(',', $params->get('ldapElements'));
 		        $details['firstname'] = $return->users[0][$ldapElements[2]];
 		        $details['name'] = $return->users[0][$ldapElements[3]];
+
+		        if (is_array($details['firstname'])) {
+			        $details['firstname'] = $details['firstname'][0];
+		        }
+		        if (is_array($details['name'])) {
+			        $details['name'] = $details['name'][0];
+		        }
+
 	        }
         }
 
@@ -125,7 +133,6 @@ class plgUserEmundus extends JPlugin
             $schoolyear = @isset($details['emundus_profile']['schoolyear'])?$details['emundus_profile']['schoolyear']:@$details['schoolyear'];
 
             if ($isnew) {
-                // @TODO    Suck in the frontend registration emails here as well. Job for a rainy day.
 
                 // Update name and firstname from #__users
                 $db->setQuery(' UPDATE #__users SET name="'.strtoupper($lastname).' '.ucfirst($firstname).'",
@@ -148,7 +155,7 @@ class plgUserEmundus extends JPlugin
                     $profile = $campaign[0]['profile_id'];
                 } else {
                     $schoolyear = "";
-                    $profile = 0;
+                    $profile = 1000;
                 }
 
                 // Insert data in #__emundus_users
