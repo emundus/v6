@@ -1327,11 +1327,12 @@ class EmundusModelUsers extends JModelList {
                       where g.user_id = " .$uid;
             $db = $this->getDbo();
             $db->setQuery($query);
-            if ($return == 'Column')
-                return $db->loadColumn();
-            else
-                return $db->loadAssocList('id', 'label');
-        } catch(Exeption $e) {
+            if ($return == 'Column') {
+	            return $db->loadColumn();
+            } else {
+	            return $db->loadAssocList('id', 'label');
+            }
+        } catch(Exception $e) {
             return false;
         }
     }

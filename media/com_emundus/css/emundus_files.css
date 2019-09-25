@@ -340,6 +340,11 @@ div#em-appli-block button.btn.btn-default {
     background-color: transparent;
     outline: none;
 }
+
+.em-restricted-group {
+    text-align: center;
+}
+
 .em-searchbar .btn-default{
     padding: 10px 15px;
 }

@@ -199,6 +199,23 @@ class EmundusHelperAccess {
 		}
 	}
 
+	public static function getUserFabrikGroups($user_id) {
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		$m_groups = new EmundusModelGroups();
+		$m_users = new EmundusModelUsers();
+
+		$group_ids = $m_users->getUserGroups($user_id);
+		// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
+		return $m_groups->getFabrikGroupsAssignedToEmundusGroups(array_keys(array_flip(array_keys($group_ids))));
+	}
+
+	/**
+	 *
+	 * @return JCrypt
+	 *
+	 * @since version
+	 */
 	public static function getCrypt() {
 		jimport('joomla.crypt.crypt');
 		jimport('joomla.crypt.key');
