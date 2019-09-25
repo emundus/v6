@@ -124,17 +124,17 @@ class plgUserEmundus extends JPlugin
 		        }
 
 		        // Give the user an LDAP param.
-		        $user = JFactory::getUser($user['id']);
+		        $o_user = JFactory::getUser($user['id']);
 
 		        // Store token in User's Parameters
-		        $user->setParam('ldap', '1');
+		        $o_user->setParam('ldap', '1');
 
 		        // Get the raw User Parameters
-		        $params = $user->getParameters();
+		        $params = $o_user->getParameters();
 
 		        // Set the user table instance to include the new token.
 		        $table = JTable::getInstance('user', 'JTable');
-		        $table->load($user['id']);
+		        $table->load($o_user->id);
 		        $table->params = $params->toString();
 
 		        // Save user data
@@ -143,8 +143,8 @@ class plgUserEmundus extends JPlugin
 		        }
 	        }
         }
-
-        if (count($details) > 0) {
+        
+	    if (count($details) > 0) {
             $campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
             $lastname = @isset($details['emundus_profile']['lastname'])?$details['emundus_profile']['lastname']:@$details['name'];
             $firstname = @isset($details['emundus_profile']['firstname'])?$details['emundus_profile']['firstname']:@$details['firstname'];

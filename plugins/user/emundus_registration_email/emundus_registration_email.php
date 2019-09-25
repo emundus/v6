@@ -112,8 +112,19 @@ class plgUserEmundus_registration_email extends JPlugin {
 		$userId = (int) $new['id'];
 		$user = JFactory::getUser($userId);
 
-		if (!$isnew || !JFactory::getUser()->guest || $user->getParam('ldap') === '1') {
+		if (!$isnew || !JFactory::getUser()->guest) {
 			return;
+		}
+
+		// If user is found in the LDAP system.
+		if (JPluginHelper::getPlugin('authentication','ldap')) {
+			require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+			$m_users = new EmundusModelusers();
+			$return = $m_users->searchLDAP($user->username);
+
+			if (!empty($return->users[0])) {
+				return;
+			}
 		}
 
 		// if saving user's data was successful
