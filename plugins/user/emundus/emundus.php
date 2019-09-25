@@ -113,9 +113,9 @@ class plgUserEmundus extends JPlugin
 	        if (!empty($return->users[0])) {
 		        $params = JComponentHelper::getParams('com_emundus');
 		        $ldapElements = explode(',', $params->get('ldapElements'));
+
 		        $details['firstname'] = $return->users[0][$ldapElements[2]];
 		        $details['name'] = $return->users[0][$ldapElements[3]];
-
 		        if (is_array($details['firstname'])) {
 			        $details['firstname'] = $details['firstname'][0];
 		        }
@@ -123,6 +123,24 @@ class plgUserEmundus extends JPlugin
 			        $details['name'] = $details['name'][0];
 		        }
 
+		        // Give the user an LDAP param.
+		        $user = JFactory::getUser($user['id']);
+
+		        // Store token in User's Parameters
+		        $user->setParam('ldap', '1');
+
+		        // Get the raw User Parameters
+		        $params = $user->getParameters();
+
+		        // Set the user table instance to include the new token.
+		        $table = JTable::getInstance('user', 'JTable');
+		        $table->load($user['id']);
+		        $table->params = $params->toString();
+
+		        // Save user data
+		        if (!$table->store()) {
+			        throw new RuntimeException($table->getError());
+		        }
 	        }
         }
 

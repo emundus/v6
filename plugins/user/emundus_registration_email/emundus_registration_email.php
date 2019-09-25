@@ -112,7 +112,7 @@ class plgUserEmundus_registration_email extends JPlugin {
 		$userId = (int) $new['id'];
 		$user = JFactory::getUser($userId);
 
-		if (!$isnew || !JFactory::getUser()->guest) {
+		if (!$isnew || !JFactory::getUser()->guest || $user->getParam('ldap') === '1') {
 			return;
 		}
 
@@ -170,9 +170,9 @@ class plgUserEmundus_registration_email extends JPlugin {
 	 */
 	private function sendActivationEmail($data, $token) {
 
-    $jinput = JFactory::getApplication()->input;
-    $civility = is_array($jinput->post->get('jos_emundus_users___civility')) ? $jinput->post->get('jos_emundus_users___civility')[0] : $jinput->post->get('jos_emundus_users___civility');
-    $password = !empty($data['password_clear']) ? $data['password_clear'] : $jinput->post->get('jos_emundus_users___password');
+	    $jinput = JFactory::getApplication()->input;
+	    $civility = is_array($jinput->post->get('jos_emundus_users___civility')) ? $jinput->post->get('jos_emundus_users___civility')[0] : $jinput->post->get('jos_emundus_users___civility');
+	    $password = !empty($data['password_clear']) ? $data['password_clear'] : $jinput->post->get('jos_emundus_users___password');
 
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
 		$c_messages = new EmundusControllerMessages();
