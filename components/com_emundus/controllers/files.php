@@ -1459,10 +1459,9 @@ class EmundusControllerFiles extends JControllerLegacy
                         $line .= "'".$v."\t";
                         $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
-                        $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
-                        $lastname = (!empty($userProfil['lastname']))?$userProfil['lastname']:JFactory::getUser($uid)->name;
-                        $line .= $lastname."\t";
-                        $line .= $userProfil['firstname']."\t";
+	                    $userProfil = $m_users->getUserById($uid);
+                        $line .= $userProfil->lastname."\t";
+                        $line .= $userProfil->firstname."\t";
                     } else {
                         if ($v == "") {
 	                        $line .= " "."\t";
