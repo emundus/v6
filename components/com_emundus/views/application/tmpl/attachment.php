@@ -15,7 +15,9 @@ defined('_JEXEC') or die('Restricted access');
 $offset = JFactory::getConfig()->get('offset');
 JFactory::getSession()->set('application_layout', 'attachment');
 
-$can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum)?true:false;
+$can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum);
+$can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
+
 ?>
 
 <!--<div class="title" id="em_application_attachments">
@@ -27,30 +29,30 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
             <h3 class="panel-title">
             <span class="glyphicon glyphicon-paperclip"></span>
                 <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
-                <?php if($can_export && count($this->userAttachments) > 0)
-                    echo '<button class="btn btn-default" id="em_export_pdf"  target="_blank" type="button" data-toggle="tooltip" data-placement="right" title="'.JText::_('EXPORT_FILE_ATTACHMENT').'">
+                <?php if ($can_export && count($this->userAttachments) > 0) :?>
+                    <button class="btn btn-default" id="em_export_pdf"  target="_blank" type="button" data-toggle="tooltip" data-placement="right" title="<?= JText::_('EXPORT_FILE_ATTACHMENT'); ?>">
                         <span class="glyphicon glyphicon-save" ></span>
-                    </button>';
-                ?>
+                    </button>
+                <?php endif; ?>
             </h3>
         </div>
 
         <?php $i = 1;
         $new_cat_id = ($this->userAttachments[0]->category == null) ?  0 : $this->userAttachments[0]->category;
         $cat_id = $this->userAttachments[0]->category;
-        //var_dump($this->nameCategory).die();
         $nameCategory = $this->nameCategory[$cat_id]; ?>
+
         <div class="em-collapse-container">
             <div class="em-utilitize">
                 <div class="em-select-all-files">
                     <input type="checkbox" name="em_application_attachments_all" id="em_application_attachments_all" />
-                    <p><?= JText::_('SELECT_ALL_FILES') ?></p>
+                    <p><?= JText::_('SELECT_ALL_FILES'); ?></p>
                 </div>
 
                 <div class="input-group em-searchbar">
-                    <input type="text" id="em-searchbar" class="form-control" placeholder="<?= JText::_('KEYWORDS') ?>">
+                    <input type="text" id="em-searchbar" class="form-control" placeholder="<?= JText::_('KEYWORDS'); ?>">
                     <span class="input-group-btn">
-                        <button id="btn-em-searchbar" class="btn btn-default" type="button"><?= JText::_('SEARCH') ?></button>
+                        <button id="btn-em-searchbar" class="btn btn-default" type="button"><?= JText::_('SEARCH'); ?></button>
                     </span>
                 </div>
             </div>
@@ -88,7 +90,9 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                                 </thead>
                                 <tbody>
                                 <?php
-                                } else echo JText::_('NO_ATTACHMENT');
+                                } else {
+	                                echo JText::_('NO_ATTACHMENT');
+                                }
 
                         foreach ($this->userAttachments as $cat => $attachment) {
                             $valueCategory = ($attachment->category == null) ?  0 : $attachment->category;
@@ -96,10 +100,14 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                                 $i = 1; ?>
                                     </tbody>
                                 </table>
-                                <?php if (count($this->userAttachments) > 0 && EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) {
-                                    echo '<div style="width:40px;  margin-top: -15px; text-align: center"><span class="glyphicon glyphicon-chevron-down"></span><br /><button class="btn btn-danger btn-xs btn-attach" data-title="' . JText::_('DELETE_SELECTED_ATTACHMENTS') . '" id="em_delete_attachments" name="em_delete_attachments" link="/index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=' . $this->fnum . '&student_id=' . $this->student_id . '">
-                                        <span class="glyphicon glyphicon-trash"></span></button></div> ';
-                                } ?>
+                                <?php if (count($this->userAttachments) > 0 && EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $this->fnum)) :?>
+                                    <div style="width:40px;  margin-top: -15px; text-align: center">
+                                        <span class="glyphicon glyphicon-chevron-down"></span><br />
+                                        <button class="btn btn-danger btn-xs btn-attach" data-title="<?= JText::_('DELETE_SELECTED_ATTACHMENTS'); ?>" id="em_delete_attachments" name="em_delete_attachments" link="/index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=<?= $this->fnum; ?>&student_id=<?= $this->student_id; ?>">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -140,41 +148,48 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
 
                         if (count($this->userAttachments) > 0) {
 
-                                $path = $attachment->lbl == "_archive" ? EMUNDUS_PATH_REL . "archives/" . $attachment->filename : EMUNDUS_PATH_REL . $this->student_id . '/' . $attachment->filename;
-                                $img_missing = (!file_exists($path)) ? '<img style="border:0;" src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="' . JText::_('FILE_NOT_FOUND') . '"/> ' : "";
-                                $img_dossier = (is_dir($path)) ? '<img style="border:0;" src="media/com_emundus/images/icones/dossier.png" width=20 height=20 title="' . JText::_('FILE_NOT_FOUND') . '"/> ' : "";
-                                $img_locked = (strpos($attachment->filename, "_locked") > 0) ? '<img src="media/com_emundus/images/icones/encrypted.png" />' : "";
+	                        $path = $attachment->lbl == "_archive" ? EMUNDUS_PATH_REL . "archives/" . $attachment->filename : EMUNDUS_PATH_REL . $this->student_id . '/' . $attachment->filename;
+                            $img_missing = (!file_exists($path)) ? '<img style="border:0;" src="media/com_emundus/images/icones/agt_update_critical.png" width=20 height=20 title="' . JText::_('FILE_NOT_FOUND') . '"/> ' : "";
+                            $img_dossier = (is_dir($path)) ? '<img style="border:0;" src="media/com_emundus/images/icones/dossier.png" width=20 height=20 title="' . JText::_('FILE_NOT_FOUND') . '"/> ' : "";
+                            $img_locked = (strpos($attachment->filename, "_locked") > 0) ? '<img src="media/com_emundus/images/icones/encrypted.png" />' : "";
 
-                                if ($can_export) {
-                                    $checkbox = '<input type="checkbox" name="attachments[]" class="em_application_attachments" id="aid' . $attachment->aid . '" value="' . $attachment->aid . '" />';
-                                }
+                            $class = "";
+                            $color = "";
+                            $meaning = "";
+                            if ($attachment->is_validated == -2 || $attachment->is_validated == null) {
+                                $class = "glyphicon-unchecked";
+                                $color = "gray";
+                                $meaning = JText::_('UNCHECKED');
+                            } elseif ($attachment->is_validated == 1) {
+                                $class = "glyphicon-ok";
+                                $color = "green";
+                                $meaning = JText::_('VALID');
+                            } else {
+                                $class = "glyphicon-warning-sign";
+                                $color = "orange";
+                                $meaning = JText::_('INVALID');
+                            }
 
-                                $class = "";
-                                $color = "";
-                                $meaning = "";
-                                if ($attachment->is_validated == -2 || $attachment->is_validated == null) {
-                                    $class = "glyphicon-unchecked";
-                                    $color = "gray";
-                                    $meaning = JText::_('UNCHECKED');
-                                } elseif ($attachment->is_validated == 1) {
-                                    $class = "glyphicon-ok";
-                                    $color = "green";
-                                    $meaning = JText::_('VALID');
-                                } else {
-                                    $class = "glyphicon-warning-sign";
-                                    $color = "orange";
-                                    $meaning = JText::_('INVALID');
-                                }
+                            $checkbox = '';
+                            $validation = '';
+                            $label = '<div>' . $img_dossier . ' ' . $img_locked . ' ' . $img_missing . ' ' . $attachment->value . '</div>';
+                            $blocked_class = 'em-file-blocked';
+                            if ($can_export && ($can_see_attachments !== true && in_array($attachment->attachment_id, $can_see_attachments))) {
+                                $checkbox = '<input type="checkbox" name="attachments[]" class="em_application_attachments" id="aid' . $attachment->aid . '" value="' . $attachment->aid . '" />';
+                                $label = '<a href="' . JURI::base() . $path . '" target="_blank">' . $img_dossier . ' ' . $img_locked . ' ' . $img_missing . ' ' . $attachment->value . '</a>';
+                                $blocked_class = '';
+                                $validation = '<p class="is-validated" id="' . $attachment->aid . '" title="' . $meaning . '"><span class="glyphicon ' . $class . '" style="color:' . $color . '"></span></p>';
+                            }
 
-                                echo '<tr class="em-tr-collapse">
-                                          <td>' . $checkbox . ' ' . $i . '</td>
-                                          <td><a href="' . JURI::base() . $path . '" target="_blank">' . $img_dossier . ' ' . $img_locked . ' ' . $img_missing . ' ' . $attachment->value . '</a></td>
-                                          <td>' . date('l, d F Y H:i', strtotime($attachment->timedate)) . '</td>
-                                          <td>' . $attachment->description . '</td>
-                                          <td>' . $attachment->campaign_label . '</td>
-                                          <td>' . $attachment->year . '</td>
-                                          <td><p class="is-validated" id="' . $attachment->aid . '" title="' . $meaning . '"><span class="glyphicon ' . $class . '" style="color:' . $color . '"></span></p></td>
-                                      </tr>';
+                            echo '<tr class="em-tr-collapse '.$blocked_class.'">
+                                      <td>' . $checkbox . ' ' . $i . '</td>
+                                      <td>'.$label.'</td>
+                                      <td>' . date('l, d F Y H:i', strtotime($attachment->timedate)) . '</td>
+                                      <td>' . $attachment->description . '</td>
+                                      <td>' . $attachment->campaign_label . '</td>
+                                      <td>' . $attachment->year . '</td>
+                                      <td>' . $validation . '</td>
+                                  </tr>';
 
                             $i++;
                             } else {
@@ -195,14 +210,14 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                     <div class="modal-content">
                         <div class="modal-header em-modal-actions-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('TITLE');?></h4>
+                            <h4 class="modal-title" id="em-modal-actions-title"><?= JText::_('TITLE'); ?></h4>
                         </div>
                         <div class="modal-body em-modal-actions-body">
 
                         </div>
                         <div class="modal-footer em-modal-actions-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
-                            <button type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?= JText::_('CANCEL'); ?></button>
+                            <button type="button" class="btn btn-success"><?= JText::_('OK'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -215,7 +230,7 @@ $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this
                             <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
                         </div>
                         <div class="modal-body em-modal-form-body">
-                            <img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif">
+                            <img src="<?= JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif" alt="loader">
                         </div>
                         <div class="modal-footer em-modal-form-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>

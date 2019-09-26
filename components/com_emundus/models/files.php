@@ -3089,7 +3089,6 @@ die();*/
 
         try {
 
-
 	        $db->setQuery($query);
 	        $res = $db->query();
 	        $dispatcher->trigger('onAfterDeleteFile', $fnum);
@@ -3112,8 +3111,7 @@ die();*/
             $db = JFactory::getDbo();
 
             $query = $db->getQuery(true);
-            $query
-            ->select('t.*, c.id AS cid')
+            $query->select('t.*, c.id AS cid')
                 ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
                 ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->quoteName('c.training') . ' = ' . $db->quoteName('p.code'))
                 ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))
@@ -3128,45 +3126,20 @@ die();*/
         }
     }
 
-    /*
-	public function unscheduledSessions($session) {
-		try {
-			$db = JFactory::getDbo();
-
-			$query = $db->getQuery(true);
-			$query
-				->select('t.id')
-				->from($db->quoteName('#__emundus_setup_teaching_unity', 't'))
-				->where($db->quoteName('t.session_code') . ' LIKE "' . $session .'"
-					 AND ' . $db->quoteName('t.published') . ' = ' . 1 .
-					' AND ((' . $db->quoteName('t.date_start') . ' IS NULL 
-					 AND ' . $db->quoteName('t.date_end') . ' IS NULL) OR '. $db->quoteName('t.date_start') .' <= NOW())');
-			$db->setQuery($query);
-			return $db->loadResult();
-		} catch(Exception $e) {
-			echo $e->getMessage();
-		}
-	}
-    */
-
     public function getAppliedSessions($program) {
         try {
             $current_user = JFactory::getUser();
-
             $db = JFactory::getDbo();
 
             $query = $db->getQuery(true);
-
-            $query
-                ->select('esc.session_code')
+            $query->select('esc.session_code')
                 ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
                 ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
                 ->where($db->quoteName('esc.training') . ' LIKE ' . $db->quote($program). 'and' .$db->quoteName('ecc.applicant_id') . ' = ' . $current_user->id);
 
             $db->setQuery($query);
-            return $db->loadColumn() ;
-        }
-        catch(Exception $e) {
+            return $db->loadColumn();
+        } catch (Exception $e) {
             echo $e->getMessage();
         }
     }
@@ -3211,21 +3184,18 @@ die();*/
     public function getDocumentCategory() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query
-            ->select($this->_db->quoteName('esa.*'))
+        $query->select($this->_db->quoteName('esa.*'))
             ->from($this->_db->quoteName('#__emundus_setup_attachments','esa'))
             ->order($this->_db->quoteName('esa.category').'ASC');
 
         $this->_db->setQuery($query);
-
         return $this->_db->loadObjectList();
     }
 
     public function getParamsCategory($idCategory) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query
-            ->select($db->quoteName('fe.params'))
+        $query->select($db->quoteName('fe.params'))
             ->from($db->quoteName('#__fabrik_elements' , 'fe'))
             ->where($db->quoteName('fe.group_id') . ' = 47');
 
@@ -3265,55 +3235,91 @@ die();*/
         }
         return $return;
     }
-    public function selectCity($insee){
-        $db = JFactory::getDBO();
 
+    public function selectCity($insee) {
+        $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
         $conditions = $db->quoteName('insee_code') . ' LIKE ' . $db->quote($insee);
 
-        $query
-            ->select($db->quoteName('name'))
+        $query->select($db->quoteName('name'))
             ->from($db->quoteName('#__emundus_french_cities'))
             ->where($conditions);
 
-
         $db->setQuery($query);
-
         return $db->loadResult();
     }
-    public function selectNameCity($name){
-        $db = JFactory::getDBO();
 
+    public function selectNameCity($name) {
+        $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
         $conditions = $db->quoteName('name') . ' LIKE ' . $db->quote($name);
 
-        $query
-            ->select($db->quoteName('insee_code'))
+        $query->select($db->quoteName('insee_code'))
             ->from($db->quoteName('#__emundus_french_cities'))
             ->where($conditions);
 
-
         $db->setQuery($query);
-
         return $db->loadResult();
     }
-    public function selectMultiplePayment($fnum){
-        $db = JFactory::getDBO();
 
+    public function selectMultiplePayment($fnum) {
+        $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
         $conditions = $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum);
 
-        $query
-            ->select('multiple_payment, method_payment, sampling_mode')
+        $query->select('multiple_payment, method_payment, sampling_mode')
             ->from($db->quoteName('#__emundus_declaration'))
             ->where($conditions);
 
-
         $db->setQuery($query);
-
         return $db->loadObject();
     }
+
+
+	/**
+	 * @param $group_ids
+	 *
+	 * @return array|bool
+	 *
+	 * @since version
+	 */
+	public function getAttachmentsAssignedToEmundusGroups($group_ids) {
+
+		if (!is_array($group_ids)) {
+			$group_ids = [$group_ids];
+		}
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$result = [];
+		foreach ($group_ids as $group_id) {
+			$query->select($db->quoteName('attachment_id_link'))
+				->from($db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
+				->where($db->quoteName('parent_id').' = '.$group_id);
+			$db->setQuery($query);
+
+			try {
+				$attachments = $db->loadColumn();
+
+				// In the case of a group having no assigned Fabrik groups, it can get them all.
+				if (empty($attachments)) {
+					return true;
+				}
+
+				$result = array_merge($result, $attachments);
+			} catch (Exception $e) {
+				return false;
+			}
+		}
+
+		if (empty($result)) {
+			return true;
+		} else {
+			return array_keys(array_flip($result));
+		}
+	}
 }

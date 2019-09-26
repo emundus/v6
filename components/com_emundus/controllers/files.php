@@ -1626,10 +1626,11 @@ class EmundusControllerFiles extends JControllerLegacy
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+	    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
-        $jinput  = JFactory::getApplication()->input;
-        $code    = $jinput->getVar('code', null);
-        $camp    = $jinput->getVar('camp', null);
+        $jinput = JFactory::getApplication()->input;
+        $code = $jinput->getVar('code', null);
+        $camp = $jinput->getVar('camp', null);
         $code = explode(',', $code);
         $camp = explode(',', $camp);
 
@@ -1637,23 +1638,33 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_campaign = new EmundusModelCampaign();
         $h_files = new EmundusHelperFiles();
 
-        $profile    = $m_profile->getProfileIDByCourse($code, $camp);
-        $docs       = $h_files->getAttachmentsTypesByProfileID((int)$profile[0]);
-        $campaign   = $m_campaign->getCampaignsByCourse($code[0]);
+        $profile = $m_profile->getProfileIDByCourse($code, $camp);
+        $docs = $h_files->getAttachmentsTypesByProfileID((int)$profile[0]);
 
-        if ($camp[0] != 0)
-            $campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
-        else
-            $campaign = $m_campaign->getCampaignsByCourse($code[0]);
+        // Sort the docs out that are not allowed to be exported by the user.
+	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+	    if ($allowed_attachments !== true) {
+		    foreach ($docs as $key => $doc) {
+			    if (!in_array($doc->id, $allowed_attachments)) {
+				    unset($docs[$key]);
+			    }
+		    }
+	    }
+
+        if ($camp[0] != 0) {
+	        $campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
+        } else {
+	        $campaign = $m_campaign->getCampaignsByCourse($code[0]);
+        }
 
         $html1 = '';
         $html2 = '';
-        //var_dump(count($pages));
         for ($i = 0; $i < count($docs); $i++) {
-            if ($i < count($docs)/2)
-                $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" /><label for="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'">'.JText::_($docs[$i]->value).'</label><br/>';
-            else
-                $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" /><label for="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'">'.JText::_($docs[$i]->value).'</label><br/>';
+            if ($i < count($docs) / 2) {
+	            $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" /><label for="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'">'.JText::_($docs[$i]->value).'</label><br/>';
+            } else {
+	            $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" /><label for="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'">'.JText::_($docs[$i]->value).'</label><br/>';
+            }
         }
 
         $html = '<div class="panel panel-default pdform">
@@ -1672,10 +1683,11 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    /**
-     * Add lines to temp PDF file
-     * @return String json
-     */
+	/**
+	 * Add lines to temp PDF file
+	 * @return String json
+	 * @throws Exception
+	 */
     public function generate_pdf() {
         $current_user = JFactory::getUser();
 

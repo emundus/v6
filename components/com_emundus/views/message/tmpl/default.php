@@ -3,6 +3,7 @@
  * @package    Joomla
  * @subpackage emundus
  * @link       http://www.emundus.fr
+ * @copyright  eMundus
  * @license    GNU/GPL
  * @author     Hugo Moracchini
  */
@@ -11,10 +12,10 @@
 defined('_JEXEC') or die('Restricted access');
 
 $current_user = JFactory::getUser();
-$itemid 	= JRequest::getVar('Itemid', null, 'GET', 'none',0);
-$view 		= JRequest::getVar('view', null, 'GET', 'none',0);
-$task 		= JRequest::getVar('task', null, 'GET', 'none',0);
-$tmpl 		= JRequest::getVar('tmpl', null, 'GET', 'none',0);
+$itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
+$view = JRequest::getVar('view', null, 'GET', 'none',0);
+$task = JRequest::getVar('task', null, 'GET', 'none',0);
+$tmpl = JRequest::getVar('tmpl', null, 'GET', 'none',0);
 
 // Load the WYSIWYG editor used to edit the mail body.
 $editor = JFactory::getEditor('tinymce');
@@ -24,13 +25,20 @@ $m_messages = new EmundusModelMessages();
 
 // load all of the available messages, categories (to sort messages),attachments, letters.
 $message_categories = $m_messages->getAllCategories();
-$message_templates 	= $m_messages->getAllMessages();
-$setup_attachments 	= $m_messages->getAttachments();
-$setup_letters 		= $m_messages->getLetters();
+$message_templates = $m_messages->getAllMessages();
+$setup_attachments = $m_messages->getAttachments();
+$setup_letters = $m_messages->getLetters();
 
 $email_list = array();
 
-
+$allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($current_user->id);
+if ($allowed_attachments !== true) {
+	foreach ($setup_attachments as $key => $att) {
+		if (!in_array($att->id, $allowed_attachments)) {
+			unset($setup_attachments[$key]);
+		}
+	}
+}
 ?>
 
 <!-- WYSIWYG Editor -->

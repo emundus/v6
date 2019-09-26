@@ -199,6 +199,13 @@ class EmundusHelperAccess {
 		}
 	}
 
+	/**
+	 * @param $user_id
+	 *
+	 * @return array|bool
+	 *
+	 * @since version
+	 */
 	public static function getUserFabrikGroups($user_id) {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
@@ -209,6 +216,26 @@ class EmundusHelperAccess {
 		// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
 		return $m_groups->getFabrikGroupsAssignedToEmundusGroups(array_keys(array_flip(array_keys($group_ids))));
 	}
+
+
+	/**
+	 * @param $user_id
+	 *
+	 * @return array|bool
+	 *
+	 * @since version
+	 */
+	public static function getUserAllowedAttachmentIDs($user_id) {
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		$m_files = new EmundusModelFiles();
+		$m_users = new EmundusModelUsers();
+
+		$group_ids = $m_users->getUserGroups($user_id);
+		// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
+		return $m_files->getAttachmentsAssignedToEmundusGroups(array_keys(array_flip(array_keys($group_ids))));
+	}
+
 
 	/**
 	 *

@@ -1385,6 +1385,10 @@ thead th:hover {
     padding: 15px !important;
 }
 
+.em-file-blocked {
+    color: #bbb;
+}
+
 .btn-attach {
     margin: 10px 8px !important;
 }
