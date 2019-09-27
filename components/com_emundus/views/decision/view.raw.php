@@ -26,10 +26,7 @@ class EmundusViewDecision extends JViewLegacy
 	protected $itemId;
 	protected $actions;
 
-	public function __construct($config = array())
-	{
-		/*require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');*/
+	public function __construct($config = array()) {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
@@ -44,10 +41,10 @@ class EmundusViewDecision extends JViewLegacy
 		parent::__construct($config);
 	}
 
-    public function display($tpl = null)
-    {
-        if( !EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) )
-            die( JText::_('RESTRICTED_ACCESS') );
+    public function display($tpl = null) {
+        if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+	        die(JText::_('RESTRICTED_ACCESS'));
+        }
 
 	    $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 
@@ -59,8 +56,7 @@ class EmundusViewDecision extends JViewLegacy
 		$jinput = JFactory::getApplication()->input;
 		$layout = $jinput->getString('layout', 0);
 
-		switch  ($layout)
-		{
+		switch  ($layout) {
 			case 'menuactions':
 				$display = JFactory::getApplication()->input->getString('display', 'none');
 
@@ -77,8 +73,9 @@ class EmundusViewDecision extends JViewLegacy
 							$item->action = $actions[$note[0]];
 							$menuActions[] = $item;
 						}
-					} else
+					} else {
 						$menuActions[] = $item;
+					}
 				}
 
 				$this->assignRef('items', $menuActions);
@@ -97,8 +94,6 @@ class EmundusViewDecision extends JViewLegacy
 				$m_files = new EmundusModelFiles();
 
                 $m_decision->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
-                //$m_decision->fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
-                // get all fnums manually associated to user
 		        $groups = $userModel->getUserGroups($this->_user->id, 'Column');
         		$fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
 		        $fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
@@ -123,9 +118,7 @@ class EmundusViewDecision extends JViewLegacy
 			    $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
 			    $this->assignRef('form_url_edit', $form_url_edit);
 
-				if(!empty($users))
-				{
-					//$i = 0;
+				if (!empty($users)) {
 					$taggedFile = $m_decision->getTaggedFile();
 
 					// Columns
@@ -135,8 +128,7 @@ class EmundusViewDecision extends JViewLegacy
 
 					// Get eval criterion
 					if (count($defaultElements)>0) {
-						foreach ($defaultElements as $key => $elt)
-						{
+						foreach ($defaultElements as $key => $elt) {
 							$fl[$elt->tab_name . '.' . $elt->element_name] = $elt->element_label;
 						}
 					}
@@ -147,11 +139,9 @@ class EmundusViewDecision extends JViewLegacy
 
 					$fnumArray = array();
 
-					foreach($columnSupl as $col)
-					{
+					foreach($columnSupl as $col) {
 						$col = explode('.', $col);
-						switch ($col[0])
-						{
+						switch ($col[0]) {
 							case 'evaluators':
 								$data[0]['EVALUATORS'] = JText::_('EVALUATORS');
 								$colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $m_decision);
@@ -173,7 +163,6 @@ class EmundusViewDecision extends JViewLegacy
 								break;
 						}
 					}
-
 
 					$i = 0;
 					foreach ($users as $user) {
@@ -206,22 +195,22 @@ class EmundusViewDecision extends JViewLegacy
 								$line['fnum'] = $userObj;
 							}
 
-							elseif ($key == 'name' || $key == 'status_class' || $key == 'step')
+							elseif ($key == 'name' || $key == 'status_class' || $key == 'step') {
 								continue;
+							}
 
 							elseif ($key == 'evaluator') {
-								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-									$userObj->val = !empty($value)?'<a href="#" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
+								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+									$userObj->val = !empty($value) ? '<a href="#" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
 											<span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span>
-										</a>'.$value:'';
-								else
+										</a>'.$value : '';
+								} else {
 									$userObj->val = $value;
+								}
 
 								$userObj->type = 'html';
 								$line['evaluator'] = $userObj;
-							}
-
-							else {
+							} else {
 								$userObj->val = $value;
 								$userObj->type = 'text';
 								$userObj->status_class = $user['status_class'];
@@ -229,22 +218,16 @@ class EmundusViewDecision extends JViewLegacy
 							}
 						}
 
-						if (count(@$colsSup)>0)
-						{
-							foreach($colsSup as $key => $obj)
-							{
+						if (is_array(@$colsSup) && count(@$colsSup)>0) {
+							foreach($colsSup as $key => $obj) {
 								$userObj = new stdClass();
-								if (!is_null($obj))
-								{
-									if(array_key_exists($user['fnum'], $obj))
-									{
+								if (!is_null($obj)) {
+									if (array_key_exists($user['fnum'], $obj)) {
 										$userObj->val = $obj[$user['fnum']];
 										$userObj->type = 'html';
 										$userObj->fnum = $user['fnum'];
 										$line[JText::_(strtoupper($key))] = $userObj;
-									}
-									else
-									{
+									} else {
 										$userObj->val = '';
 										$userObj->type = 'html';
 										$line[$key] = $userObj;
@@ -256,23 +239,18 @@ class EmundusViewDecision extends JViewLegacy
 						$i++;
 					}
 
-					if(isset($colsSup['id_tag']))
-					{
+					if (isset($colsSup['id_tag'])) {
 						$tags = $m_files->getTagsByFnum($fnumArray);
 						$colsSup['id_tag'] = @EmundusHelperFiles::createTagsList($tags);
 					}
 
-                    if(isset($colsSup['access']))
-				    {
+                    if (isset($colsSup['access'])) {
 					    $objAccess = $m_files->getAccessorByFnums($fnumArray);
 				    }
 
-				}
-			    else
-			    {
+				} else {
 				    $data = JText::_('NO_RESULT');
 			    }
-
 
 			/* Get the values from the state object that were inserted in the model's construct function */
 		    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );

@@ -1721,15 +1721,17 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $validFnums = array();
         foreach ($fnums_post as $fnum) {
-            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum))
-                $validFnums[] = $fnum;
+            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
+	            $validFnums[] = $fnum;
+            }
         }
 
         $fnumsInfo = $m_files->getFnumsInfos($validFnums);
-        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $file))
-            $files_list = array(JPATH_BASE . DS . 'tmp' . DS . $file);
-        else
-            $files_list = array();
+        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $file)) {
+	        $files_list = array(JPATH_BASE.DS.'tmp'.DS.$file);
+        } else {
+	        $files_list = array();
+        }
 
 
         for ($i = $start; $i < ($start+$limit) && $i < $totalfile; $i++) {
@@ -1740,14 +1742,15 @@ class EmundusControllerFiles extends JControllerLegacy
                     if (!empty($formids)) {
                         foreach ($formids as $fids) {
                             $detail = explode("|", $fids);
-                            if (!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training'])
-                                if ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
-                                    $forms_to_export[] = $detail[0];
+                            if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+                            	$forms_to_export[] = $detail[0];
+                            }
                         }
                     }
 
-                    if ($forms || !empty($forms_to_export))
-                        $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options);
+                    if ($forms || !empty($forms_to_export)) {
+	                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options);
+                    }
 
                 }
 
