@@ -1335,9 +1335,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     if (count($photos) > 0) {
                         $pictures = array();
                         foreach ($photos as $photo) {
-
                             $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-
                             $link = '=HYPERLINK("'.$folder.'/tn_'.$photo['filename'] . '","'.$photo['filename'].'")';
                             $pictures[$photo['fnum']] = $link;
                         }
@@ -1353,8 +1351,9 @@ class EmundusControllerFiles extends JControllerLegacy
                         $aid = $fnumInfos['applicant_id'];
                         $formsProgress[$fnum] = $m_application->getFormsProgress($aid, $pid, $fnum);
                     }
-                    if (!empty($formsProgress))
-                        $colOpt['forms'] = $formsProgress;
+                    if (!empty($formsProgress)) {
+	                    $colOpt['forms'] = $formsProgress;
+                    }
                     break;
                 case "attachment":
                     foreach ($fnums as $fnum) {
@@ -1363,8 +1362,9 @@ class EmundusControllerFiles extends JControllerLegacy
                         $aid = $fnumInfos['applicant_id'];
                         $attachmentProgress[$fnum] = $m_application->getAttachmentsProgress($aid, $pid, $fnum);
                     }
-                    if (!empty($attachmentProgress))
-                        $colOpt['attachment'] = $attachmentProgress;
+                    if (!empty($attachmentProgress)) {
+	                    $colOpt['attachment'] = $attachmentProgress;
+                    }
                     break;
                 case "assessment":
                     $colOpt['assessment'] = $h_files->getEvaluation('text', $fnums);
@@ -1384,11 +1384,19 @@ class EmundusControllerFiles extends JControllerLegacy
         $line = "";
         $element_csv = array();
         $i = $start;
-
-
+	    
+        
         // On traite les en-têtes
         if ($start == 0) {
-            $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('PROGRAMME')."\t";
+
+	        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+	        if ($anonymize_data) {
+		        $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('PROGRAMME')."\t";
+	        } else {
+		        $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('PROGRAMME')."\t";
+	        }
+            
+            
             $nbcol = 6;
             foreach ($ordered_elements as $fLine) {
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
@@ -1400,7 +1408,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             if (in_array("form-title", $opts)) {
                                 $line .= JText::_($fLine->form_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                                 $nbcol++;
-                            } elseif(in_array("form-group", $opts)) {
+                            } elseif (in_array("form-group", $opts)) {
                                 $line .= JText::_($fLine->group_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                                 $nbcol++;
                             }
@@ -1435,8 +1443,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 foreach ($fnumsArray as $idx => $d) {
                     foreach ($d as $k => $v) {
                         if ($k === 'jos_emundus_evaluations___user' && strcasecmp($v, $evaluator) != 0) {
-                            foreach($fnumsArray[$idx] as $key => $value){
-                                if (substr( $key, 0, 26 ) === "jos_emundus_evaluations___") {
+                            foreach($fnumsArray[$idx] as $key => $value) {
+                                if (substr($key, 0, 26) === "jos_emundus_evaluations___") {
 	                                $fnumsArray[$idx][$key] = JText::_('NO_RIGHT');
                                 }
                             }
@@ -1445,7 +1453,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
             }
         }
-
+        
         // On parcours les fnums
         foreach ($fnumsArray as $fnum) {
             // On traite les données du fnum
@@ -1456,9 +1464,11 @@ class EmundusControllerFiles extends JControllerLegacy
                         $line .= "'".$v."\t";
                         $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
-	                    $userProfil = $m_users->getUserById($uid);
-                        $line .= $userProfil->lastname."\t";
-                        $line .= $userProfil->firstname."\t";
+                        if (!$anonymize_data) {
+	                        $userProfil = $m_users->getUserById($uid);
+	                        $line .= $userProfil->lastname."\t";
+	                        $line .= $userProfil->firstname."\t";
+                        }
                     } else {
                         if ($v == "") {
 	                        $line .= " "."\t";

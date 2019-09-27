@@ -2169,10 +2169,17 @@ if (JFactory::getUser()->id == 63)
     *   @param elements     array of element to get value
     *   @return array
     */
-    public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1)
-    {
-        $db = $this->getDbo();
-        $query = 'select c.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
+    public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1) {
+
+    	$db = $this->getDbo();
+
+	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+	    if ($anonymize_data) {
+		    $query = 'select c.fnum, esc.label, sp.code, esc.id as campaign_id';
+	    } else {
+		    $query = 'select c.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
+	    }
+
         $leftJoin = '';
         $leftJoinMulti = '';
         $tableAlias = [
@@ -2191,11 +2198,13 @@ if (JFactory::getUser()->id == 63)
 
                 $tableAlias[$elt->tab_name] = $elt->tab_name;
 
-                if (!isset($lastTab))
-                    $lastTab = array();
+                if (!isset($lastTab)) {
+	                $lastTab = array();
+                }
 
-                if (!in_array($elt->tab_name, $lastTab))
-                    $leftJoin .= ' left join ' . $elt->tab_name .  ' on '. $elt->tab_name .'.fnum = c.fnum ';
+                if (!in_array($elt->tab_name, $lastTab)) {
+	                $leftJoin .= ' left join '.$elt->tab_name.' on '.$elt->tab_name.'.fnum = c.fnum ';
+                }
 
                 $lastTab[] = $elt->tab_name;
             }
@@ -2203,8 +2212,9 @@ if (JFactory::getUser()->id == 63)
             if ($params_group->repeat_group_button == 1) {
                 if ($methode == 1) {
                     $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
-                    if (!in_array($elt->table_join, $lastTab))
-                        $leftJoinMulti .= ' left join ' . $elt->table_join.' on '. $elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+                    if (!in_array($elt->table_join, $lastTab)) {
+	                    $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+                    }
                     $lastTab[] = $elt->table_join;
                 } else {
                     if ($elt->element_plugin == 'databasejoin') {
@@ -2249,26 +2259,25 @@ if (JFactory::getUser()->id == 63)
                     }
                 }
             } else {
-                //$select = $tableAlias[$elt->tab_name].'.'.$elt->element_name;
                 $select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
                 $if = array();
                 $endif = '';
 
-                if ($raw == 1)
-                    $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name.'_raw';
+                if ($raw == 1) {
+	                $query .= ', '.$select.' AS '.$tableAlias[$elt->tab_name].'___'.$elt->element_name.'_raw';
+                }
 
                 if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
                     $element_attribs = json_decode($elt->element_attribs);
                     foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                         $if[] = 'IF('.$select.'="'.$value.'","'.$element_attribs->sub_options->sub_labels[$key].'"';
                         $endif .= ')';
-                        //$select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
                     }
                     $select = implode(',', $if).','.$select.$endif;
-                }
-                elseif ($elt->element_plugin == 'databasejoin') {
-                    $element_attribs = json_decode($elt->element_attribs);
-                    //$elt_array = json_decode(json_encode($elt), true); /*object to array*/
+
+                } elseif ($elt->element_plugin == 'databasejoin') {
+
+                	$element_attribs = json_decode($elt->element_attribs);
 
                     if ($element_attribs->database_join_display_type == "checkbox") {
                         $t = $tableAlias[$elt->tab_name].'_repeat_'.$elt->element_name;
@@ -2284,9 +2293,10 @@ if (JFactory::getUser()->id == 63)
                             FROM '.$element_attribs->join_db_name.' as t
                             WHERE t.'.$element_attribs->join_key_column.'='.$tableAlias[$elt->tab_name].'.'.$elt->element_name.')';
                     }
-                }
-                elseif ($elt->element_plugin == 'cascadingdropdown') {
-	                $element_attribs = json_decode($elt->element_attribs);
+
+                } elseif ($elt->element_plugin == 'cascadingdropdown') {
+
+                	$element_attribs = json_decode($elt->element_attribs);
 	                $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
 	                $where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$elt->tab_name.'.'.$elt->element_name;
 	                $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->cascadingdropdown_label_concat).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
@@ -2316,8 +2326,6 @@ if (JFactory::getUser()->id == 63)
 	        $query .= ' LIMIT '.$pas.' OFFSET '.$start;
         }
 
-/*echo str_replace("#_", "jos", $query);
-die();*/
         try {
             $db->setQuery($query);
             return $db->loadAssocList();
