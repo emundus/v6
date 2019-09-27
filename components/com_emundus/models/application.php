@@ -170,7 +170,19 @@ class EmundusModelApplication extends JModelList {
         }
 
         $this->_db->setQuery($query);
-        return $this->_db->loadObjectList();
+        $attachments = $this->_db->loadObjectList();
+
+        // Filter out the attachments not visible to the user.
+	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+	    if ($allowed_attachments !== true) {
+		    foreach ($attachments as $key => $attachment) {
+			    if (!in_array($attachment->aid, $allowed_attachments)) {
+				    unset($attachments[$key]);
+			    }
+		    }
+	    }
+
+        return $attachments;
     }
 
     public function getUsersComments($id) {
