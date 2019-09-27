@@ -11,7 +11,8 @@
  * source software licenses. See COPYRIGHT.php for copyright notices and
  * details.
  */
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
+$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 ?>
 
 <input type="hidden" id="view" name="view" value="evaluation">
@@ -28,20 +29,20 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
         <table class="table table-striped table-hover" id="em-data">
             <thead>
             <tr>
-                <?php foreach($this->datas[0] as $kl => $v): ?>
+                <?php foreach ($this->datas[0] as $kl => $v) :?>
                 <th title="<?php echo strip_tags(JText::_($v)); ?>" id="<?php echo $kl?>" >
                     <div class="em-cell">
-                        <?php if(@$this->lists['order'] == $kl): ?>
-                            <?php if(@$this->lists['order_dir'] == 'desc'):?>
+                        <?php if (@$this->lists['order'] == $kl) :?>
+                            <?php if (@$this->lists['order_dir'] == 'desc') :?>
                                 <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                            <?php else:?>
+                            <?php else :?>
                                 <span class="glyphicon glyphicon-sort-by-attributes"></span>
-                            <?php endif;?>
+                            <?php endif; ?>
                             <strong>
                                 <?php echo JText::_($v); ?>
                             </strong>
 
-                        <?php elseif( $kl == 'check'):?>
+                        <?php elseif ($kl == 'check') :?>
                         <div class="selectContainer" id="selectContainer">
                             <div class="selectPage">
                                 <input type="checkbox" value="-1" id="em-check-all" class="em-hide em-check">
@@ -70,14 +71,14 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                             </div>
                         <!--<label for="em-check-all">
                                 <input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width:20px !important;"/>
-                                <span><?php echo JText::_('COM_EMUNDUS_CHECK_ALL')?></span>
+                                <span><?php echo JText::_('COM_EMUNDUS_CHECK_ALL'); ?></span>
                             </label>
                             <label class="em-hide em-check-all-all" for="em-check-all-all">
                                 <input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
                                 <span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
                             </label>-->
                         <?php else:?>
-                            <?php echo JText::_($v);?>
+                            <?php echo JText::_($v); ?>
                         <?php endif;?>
                     </div>
                 </th>
@@ -106,18 +107,24 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                                             <span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
                                         <?php elseif($k == 'fnum'):?>
                                             <a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
-                                                <div class="em_list_photo"><?php echo $value->photo; ?></div>
+	                                            <?php if (isset($value->photo) && !$anonymize_data) :?>
+                                                    <div class="em_list_photo"><?= $value->photo; ?></div>
+	                                            <?php endif; ?>
                                                 <div class="em_list_text">
-                                                    <span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
-                                                    <div class="em_list_email"><?php echo $value->user->email; ?></div>
-                                                    <div class="em_list_email"><?php echo $value->user->id; ?></div>
+		                                            <?php if ($anonymize_data) :?>
+                                                        <div class="em_list_fnum"><?= $value->val; ?></div>
+		                                            <?php else :?>
+                                                        <span class="em_list_text" title="<?= $value->val; ?>"> <strong> <?= $value->user->name; ?></strong></span>
+                                                        <div class="em_list_email"><?= $value->user->email; ?></div>
+                                                        <div class="em_list_email"><?= $value->user->id; ?></div>
+		                                            <?php endif; ?>
                                                 </div>
                                             </a>
-                                        <?php elseif($k == "access"):?>
+                                        <?php elseif ($k == "access") :?>
                                             <?php echo $this->accessObj[$line['fnum']->val]?>
-                                        <?php elseif($k == "id_tag"):?>
+                                        <?php elseif ($k == "id_tag") :?>
                                             <?php echo $this->colsSup['id_tag'][$line['fnum']->val]?>
-                                        <?php else:?>
+                                        <?php else :?>
                                             <?php if ($value->type == 'text' ) :?>
                                                 <?php echo strip_tags(JText::_($value->val)); ?>
                                             <?php elseif ($value->type == "textarea" && !empty($value->val) && strlen($value->val) > 200) :?>
