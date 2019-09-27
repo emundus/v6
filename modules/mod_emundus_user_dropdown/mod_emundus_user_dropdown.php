@@ -20,6 +20,7 @@ $jooomla_menu_name = $params->get('menu_name', 0);
 
 $primary_color = $params->get('primary_color', 'ECF0F1');
 $secondary_color = $params->get('secondary_color', 'F89406');
+$icon = $params->get('icon', 'big circular user outline icon');
 $show_logout = $params->get('show_logout', '1');
 
 $document = JFactory::getDocument();
