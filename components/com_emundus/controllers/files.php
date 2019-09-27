@@ -1272,10 +1272,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $eval_can_see_eval = $eMConfig->get('evaluators_can_see_other_eval', 0);
 
-        $m_files        = $this->getModel('Files');
-        $m_application  = $this->getModel('Application');
-        $m_profile      = $this->getModel('Profile');
-        $m_users        = $this->getModel('Users');
+        $m_files = $this->getModel('Files');
+        $m_application = $this->getModel('Application');
+        $m_profile = $this->getModel('Profile');
+        $m_users = $this->getModel('Users');
 
         $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
@@ -1331,7 +1331,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
             switch ($col[0]) {
                 case "photo":
-                    //$colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($m_files, JURI::base());
                     $photos = $m_files->getPhotos($fnums);
                     if (count($photos) > 0) {
                         $pictures = array();
@@ -1339,10 +1338,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
                             $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
 
-                            $link = '=HYPERLINK("'.JURI::base(). $folder.'/tn_'.$photo['filename'] . '","'.$photo['filename'].'")';
+                            $link = '=HYPERLINK("'.$folder.'/tn_'.$photo['filename'] . '","'.$photo['filename'].'")';
                             $pictures[$photo['fnum']] = $link;
-                            //$pictures[$photo['fnum']] = '<a href="'.$folder.'/'.$photo['filename'].'" target="_blank"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></a>';
-
                         }
                         $colOpt['PHOTO'] = $pictures;
                     } else {

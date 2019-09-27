@@ -932,17 +932,18 @@ class EmundusControllerDecision extends JControllerLegacy
     public function generate_array() {
         $current_user = JFactory::getUser();
 
-        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die( JText::_('RESTRICTED_ACCESS') );
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+	        die(JText::_('RESTRICTED_ACCESS'));
+        }
 
-        $model = $this->getModel('Files');
-        $modelApp = $this->getModel('Application');
-        $modelEval = $this->getModel('Evaluation');
+        $m_files = $this->getModel('Files');
+        $m_application = $this->getModel('Application');
 
         $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
-		if (count($fnums) == 0)
-            $fnums = array($session->get('application_fnum'));
+		if (count($fnums) == 0) {
+			$fnums = array($session->get('application_fnum'));
+		}
 		
         $jinput = JFactory::getApplication()->input;
 
@@ -956,13 +957,6 @@ class EmundusControllerDecision extends JControllerLegacy
 
         $col = $this->getcolumn($elts);
 
-        /*$eval_elements_id = array();
-        $show_in_list_summary = 0;
-        $hidden = 0;
-        $eval_elements_id = $modelEval->getEvaluationElements($show_in_list_summary, $hidden);
-        //die(var_dump($eval_elements_id));
-        $col = array_merge($col,  );
-        */
         $colsup  = $this->getcolumnSup($objs);
         $colOpt = array();
         if (!$csv = fopen(JPATH_BASE.DS.'tmp'.DS.$file, 'a')){
@@ -978,10 +972,10 @@ class EmundusControllerDecision extends JControllerLegacy
         foreach ($col as $c) {
             $ordered_elements[$c] = $elements[$c];
         }
-        $fnumsArray = $model->getFnumArray($fnums, $ordered_elements, 0, $start, $limit);
+        $fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, 0, $start, $limit);
 
         // On met a jour la liste des fnums traités
-        $fnums =array();
+        $fnums = array();
         foreach ($fnumsArray as $fnum) {
             array_push($fnums, $fnum['fnum']);
         }
@@ -989,35 +983,49 @@ class EmundusControllerDecision extends JControllerLegacy
             $col = explode('.', $col);
             switch ($col[0]) {
                 case "photo":
-                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos();
+	                $photos = $m_files->getPhotos($fnums);
+	                if (count($photos) > 0) {
+		                $pictures = array();
+		                foreach ($photos as $photo) {
+
+			                $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
+
+			                $link = '=HYPERLINK("'.$folder.'/tn_'.$photo['filename'] . '","'.$photo['filename'].'")';
+			                $pictures[$photo['fnum']] = $link;
+		                }
+		                $colOpt['PHOTO'] = $pictures;
+	                } else {
+		                $colOpt['PHOTO'] = array();
+	                }
                     break;
                 case "forms":
-                    $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);
+                    $colOpt['forms'] = $m_application->getFormsProgress(null, null, $fnums);
                     break;
                 case "attachment":
-                    $colOpt['attachment'] = $modelApp->getAttachmentsProgress(null, null, $fnums);
+                    $colOpt['attachment'] = $m_application->getAttachmentsProgress(null, null, $fnums);
                     break;
                 case "assessment":
                     $colOpt['assessment'] = @EmundusHelperFiles::getEvaluation('text', $fnums);
                     break;
                 case "comment":
-                    $colOpt['comment'] = $model->getCommentsByFnum($fnums);
+                    $colOpt['comment'] = $m_files->getCommentsByFnum($fnums);
                     break;
                 case 'evaluators':
-                    $colOpt['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
+                    $colOpt['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $m_files);
                     break;
             }
         }
-        $status = $model->getStatusByFnums($fnums);
-        $line ="";
+
+        $status = $m_files->getStatusByFnums($fnums);
+        $line = "";
         $element_csv=array();
         $i = $start;
 
         // On traite les en-têtes
-        if ($start==0) {
-            $line=JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
+        if ($start == 0) {
+            $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('CAMPAIGN')."\t";
             $nbcol = 6;
-            foreach ($ordered_elements as $fKey => $fLine) {
+            foreach ($ordered_elements as $fLine) {
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
                     $line .= $fLine->element_label . "\t";
                     $nbcol++;
@@ -1041,24 +1049,18 @@ class EmundusControllerDecision extends JControllerLegacy
         // On parcours les fnums
         foreach ($fnumsArray as $fnum) {
             // On traitre les données du fnum
-            foreach($fnum as $k => $v)
-            {
+            foreach($fnum as $k => $v) {
                 if ($k != 'code' && $k != 'campaign_id' && $k != 'jos_emundus_campaign_candidature___campaign_id' && $k != 'c___campaign_id') {
-                    if($k === 'fnum')
-                    {
+                    if ($k === 'fnum') {
                         $line .= $v."\t";
                         $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
                         $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
                         $line .= strtoupper($userProfil['lastname'])."\t";
                         $line .= $userProfil['firstname']."\t";
-                    }
-                    elseif($k === 'jos_emundus_evaluations___user')
-                    {
+                    } elseif ($k === 'jos_emundus_evaluations___user') {
                         $line .= strip_tags(JFactory::getUser($v)->name)."\t";
-                    }
-                    else
-                    {
+                    } else {
                         $line .= strip_tags($v)."\t";
                     }
                 }
@@ -1070,14 +1072,7 @@ class EmundusControllerDecision extends JControllerLegacy
                         $line .= JText::_('photo') . "\t";
                         break;
                     case "forms":
-                        if (array_key_exists($fnum['fnum'],$vOpt)) {
-                            $val = $vOpt[$fnum['fnum']];
-                            $line .= $val . "\t";
-                        } else {
-                            $line .= "\t";
-                        }
-                        break;
-                    case "attachment":
+	                case "attachment":
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $val = $vOpt[$fnum['fnum']];
                             $line .= $val . "\t";
@@ -1126,10 +1121,9 @@ class EmundusControllerDecision extends JControllerLegacy
             $i++;
         }
         // On remplit le fichier CSV
-        foreach ($element_csv as $data)
-        {
+        foreach ($element_csv as $data) {
             $res = fputcsv($csv, explode("\t",$data),"\t");
-            if( !$res) {
+            if (!$res) {
                 $result = array('status' => false, 'msg'=>JText::_('ERROR_CANNOT_WRITE_TO_FILE'.' : '.$csv));
                 echo json_encode((object) $result);
                 exit();
@@ -1145,9 +1139,10 @@ class EmundusControllerDecision extends JControllerLegacy
         $dataresult = array('start' => $start, 'limit'=>$limit, 'totalfile'=> $totalfile,'methode'=>0,'elts'=>$elts, 'objs'=> $objs, 'nbcol' => $nbcol,'file'=>$file );
         $result = array('status' => true, 'json' => $dataresult);
         echo json_encode((object) $result);
-        //var_dump($result);
         exit();
     }
+
+
     public function export_xls_from_csv()
     {
         /** PHPExcel */
