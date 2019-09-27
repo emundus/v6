@@ -1992,21 +1992,25 @@ if (JFactory::getUser()->id == 63)
      * @param $fnum
      * @return bool|mixed
      */
-    public static function getFnumInfos($fnum)
-    {
-        try
-        {
+    public static function getFnumInfos($fnum) {
+        try {
             $db = JFactory::getDBO();
             $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, c.*
                         from #__emundus_campaign_candidature as cc
                         left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id left join
                         #__users as u on u.id = cc.applicant_id where cc.fnum like '.$db->Quote($fnum);
             $db->setQuery($query);
+            $fnumInfos = $db->loadAssoc();
 
-            return $db->loadAssoc();
-        }
-        catch (Exception $e)
-        {
+	        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+	        if ($anonymize_data) {
+				$fnumInfos['name'] = $fnum;
+				$fnumInfos['email'] = $fnum;
+	        }
+
+	        return $fnumInfos;
+
+        } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
