@@ -176,7 +176,7 @@ class EmundusModelApplication extends JModelList {
 	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 	    if ($allowed_attachments !== true) {
 		    foreach ($attachments as $key => $attachment) {
-			    if (!in_array($attachment->aid, $allowed_attachments)) {
+			    if (!in_array($attachment->id, $allowed_attachments)) {
 				    unset($attachments[$key]);
 			    }
 		    }
