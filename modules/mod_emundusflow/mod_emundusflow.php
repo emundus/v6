@@ -49,6 +49,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $admission  = $params->get('admission', 0);
     $layout = $params->get('layout', 'default');
     $offset = JFactory::getConfig()->get('offset');
+    $home_link = $params->get('home_link', 'index.php');
 
 	// eMundus params
 	$params_emundus 		= JComponentHelper::getParams('com_emundus');
