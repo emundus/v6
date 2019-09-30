@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 echo $description;
 ?>
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-    <a id="add-application" class="btn btn-success em-add-file" href="<?= JURI::base().$cc_list_url; ?>">
+    <a id="add-application" class="btn btn-success" href="<?= JURI::base(); ?>index.php?option=com_fabrik&view=form&formid=102">
         <span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span>
     </a>
     <hr>
@@ -19,9 +19,28 @@ echo $description;
     <div class="<?= $moduleclass_sfx ?>">
     <?php foreach ($applications as $application) : ?>
 
-        <?php $state=$states[$application->fnum]['published'];?>
+        <?php $state=$states[$application->fnum]['published']; ?>
 
         <?php if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
+            <?php 
+            if ($file_tags != '') {
+
+                $post = array(
+                    'APPLICANT_ID'  => $user->id,
+                    'DEADLINE'      => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
+                    'CAMPAIGN_LABEL' => $application->label,
+                    'CAMPAIGN_YEAR'  => $application->year,
+                    'CAMPAIGN_START' => $application->start_date,
+                    'CAMPAIGN_END'  => $application->end_date,
+                    'CAMPAIGN_CODE' => $application->training,
+                    'FNUM'          => $application->fnum
+                );
+
+                $tags = $m_email->setTags($user->id, $post, $application->fnum);
+                $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
+                $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
+            }
+            ?>
             <div class="row" id="row<?= $application->fnum; ?>">
                 <div class="col-md-12 main-page-application-title">
                     <a href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>">
@@ -30,13 +49,13 @@ echo $description;
                 </div>
 
                 <div class="col-xs-12 col-md-6 main-page-file-info">
-                    <p><?= JText::_('FILE_NUMBER'); ?> : <i><?= $application->fnum; ?></i></p>
-                    <a class="btn btn-warning" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>" role="button">
+                    <p class="em-tags-display"><?= $file_tags_display; ?></i></p>
+                    <a class="btn btn-warning" href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>" role="button">
                         <i class="folder open outline icon"></i> <?= (in_array($application->status, $admission_status))?JText::_('OPEN_ADMISSION'):JText::_('OPEN_APPLICATION'); ?>
                     </a>
 
                     <?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
-                        <a id='send' class="btn btn-xs" href="<?= JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url[$application->fnum]['link'])); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
+                        <a id='send' class="btn btn-xs" href="<?= JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url)); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
                     <?php endif; ?>
 
                     <a id='print' class="btn btn-info btn-xs" href="<?= JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
@@ -145,7 +164,7 @@ echo $description;
 endif; ?>
 
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
-    <a class="btn btn-success em-add-file" href="<?= JURI::base().$cc_list_url; ?>"><span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+    <a class="btn btn-success" href="<?= JURI::base(); ?>index.php?option=com_fabrik&view=form&formid=102"><span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span></a>
 <?php endif; ?>
 
 <?php if (!empty($filled_poll_id) && !empty($poll_url) && $filled_poll_id == 0 && $poll_url != "") : ?>

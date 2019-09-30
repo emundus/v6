@@ -2,7 +2,7 @@
 /**
  * @package		Joomla
  * @subpackage	eMundus
- * @copyright	Copyright (C) 2015 emundus.fr. All rights reserved.
+ * @copyright	Copyright (C) 2019 emundus.fr. All rights reserved.
  * @license		GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -18,12 +18,12 @@ include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.p
 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
 $document->addStyleSheet("media/com_emundus/lib/jquery-plugin-circliful-master/css/material-design-iconic-font.min.css" );
 $document->addStyleSheet("modules/mod_emundus_applications/style/mod_emundus_applications.css" );
-
 
 $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
 $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
@@ -63,6 +63,8 @@ $show_state_files          = $params->get('show_state_files', 0);
 
 $file_status 	            = $params->get('file_status', 1);
 
+$file_tags		 			= JText::_($params->get('tags', ''));
+
 $cc_list_url = $params->get('cc_list_url', 'index.php?option=com_fabrik&view=form&formid=102');
 
 // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
@@ -96,6 +98,7 @@ if (empty($user->profile)) {
 $m_application 	= new EmundusModelApplication;
 $m_profile		= new EmundusModelProfile;
 $m_checklist 	= new EmundusModelChecklist;
+$m_email 		= new EmundusModelEmails;
 
 // show application files if applicant profile like current profile and nothing if not
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
