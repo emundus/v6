@@ -3658,28 +3658,30 @@ class EmundusControllerFiles extends JControllerLegacy
         setlocale(LC_ALL, 'fr_FR.utf8');
         $sessions = "<ul>";
         foreach ($product as $session) {
+            if(strtotime($session['date_end']) >= strtotime("now") ) {
 
-            $start_month = date('m',strtotime($session['date_start']));
-            $end_month = date('m',strtotime($session['date_end']));
-            $start_year = date('y',strtotime($session['date_start']));
-            $end_year = date('y',strtotime($session['date_end']));
+                $start_month = date('m',strtotime($session['date_start']));
+                $end_month = date('m',strtotime($session['date_end']));
+                $start_year = date('y',strtotime($session['date_start']));
+                $end_year = date('y',strtotime($session['date_end']));
 
-            if (intval($session['days']) == 1) {
+                if (intval($session['days']) == 1) {
 
-                $sessions .= '<li>Le '.strftime('%e',strtotime($session['date_start']))." ".strftime('%B',strtotime($session['date_end']))." ".date('Y',strtotime($session['date_end']));
+                    $sessions .= '<li>Le '.strftime('%e',strtotime($session['date_start']))." ".strftime('%B',strtotime($session['date_end']))." ".date('Y',strtotime($session['date_end']));
 
-            } else {
+                } else {
 
-                if ($start_month == $end_month && $start_year == $end_year) {
-                    $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                } elseif ($start_month != $end_month && $start_year == $end_year) {
-                    $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
-                    $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                    if ($start_month == $end_month && $start_year == $end_year) {
+                        $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                    } elseif ($start_month != $end_month && $start_year == $end_year) {
+                        $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                    } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
+                        $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                    }
                 }
-            }
 
-            $sessions .= ' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))).' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';
+                $sessions .= ' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))).' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';
+            }
         }
         $sessions .= '</ul>';
 
