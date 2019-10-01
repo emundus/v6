@@ -9,6 +9,7 @@ namespace Akeeba\AdminTools\Admin\Controller\Mixin;
 
 use Akeeba\AdminTools\Admin\Model\ConfigureWAF;
 use FOF30\Container\Container;
+use FOF30\Factory\Exception\ModelNotFound;
 use JFactory;
 
 defined('_JEXEC') or die;
@@ -27,8 +28,16 @@ trait SendTroubleshootingEmail
 		// Is sending this email blocked in the WAF configuration?
 		/** @var Container $container */
 		$container = $this->container;
-		/** @var ConfigureWAF $configModel */
-		$configModel = $container->factory->model('ConfigureWAF')->tmpInstance();
+		try
+		{
+			/** @var ConfigureWAF $configModel */
+			$configModel = $container->factory->model('ConfigureWAF')->tmpInstance();
+		}
+		catch (ModelNotFound $e)
+		{
+			// The Core version does not have the ConfigureWAF model and must therefore not send such emails.
+			return;
+		}
 		$wafConfig   = $configModel->getConfig();
 		$sendEmail   = isset($wafConfig['sendTroubleshootingEmail']) ? $wafConfig['sendTroubleshootingEmail'] : 1;
 

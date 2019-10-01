@@ -349,7 +349,7 @@ class Parser
 				{
 					foreach ($block->tags as $tag)
 					{
-						if (!is_string($tag) || $tag{0} != $this->lessc->mPrefix)
+						if (!is_string($tag) || $tag[0] != $this->lessc->mPrefix)
 						{
 							$hidden = false;
 							break;
@@ -432,7 +432,7 @@ class Parser
 		// Move @ tags out of variable namespace
 		foreach ($tags as &$tag)
 		{
-			if ($tag{0} == $this->lessc->vPrefix)
+			if ($tag[0] == $this->lessc->vPrefix)
 			{
 				$tag[0] = $this->lessc->mPrefix;
 			}

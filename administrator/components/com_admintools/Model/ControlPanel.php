@@ -608,4 +608,59 @@ class ControlPanel extends Model
 			\JFile::delete($file);
 		}
 	}
+
+	/**
+	 * Checks if the current contents of the server configuration file (ie .htaccess) match with the saved one.
+	 */
+	public function serverConfigEdited()
+	{
+		// Core version? No need to continue
+		if (!defined('ADMINTOOLS_PRO') || !ADMINTOOLS_PRO)
+		{
+			return false;
+		}
+
+		// User decided to ignore any warning about manual edits
+		if (!$this->container->params->get('serverconfigwarn', 1))
+		{
+			return false;
+		}
+
+		$storage = Storage::getInstance();
+		$configInfo = $storage->getValue('configInfo', []);
+
+		// Sanity checks
+		if (!$configInfo || !isset($configInfo->technology) || !isset($configInfo->contents))
+		{
+			return false;
+		}
+
+		// Sanity checks - part 2
+		if (!in_array($configInfo->technology, ['HtaccessMaker', 'NginXConfMaker', 'WebConfigMaker']) || !$configInfo->contents)
+		{
+			return false;
+		}
+
+		try
+		{
+			/** @var ServerConfigMaker $serverModel */
+			$serverModel = $this->container->factory->model($configInfo->technology)->tmpInstance();
+		}
+		catch (\Exception $e)
+		{
+			return false;
+		}
+
+		$serverFile = JPATH_ROOT.'/'.$serverModel->getConfigFileName();
+
+		if (!file_exists($serverFile))
+		{
+			return false;
+		}
+
+		$actualContents = md5(file_get_contents($serverFile));
+
+		// Is the hash of current file different from the saved one? If so, warn the user
+		return ($actualContents != $configInfo->contents);
+	}
 }

@@ -1,4 +1,17 @@
 <?php die() ?>
+Admin Tools 5.3.4
+================================================================================
++ Installer plugin to fix update issues after using Joomla's Rebuild Update Sites feature
++ Password-protect Administrator: option to reset custom error pages to avoid 404 errors accessing administrator
++ Admin Tools will warn the user if it detects that manual edits were performed on server configuration files (ie .htaccess, nginx.conf or web.config)
++ Allow editing own Joomla! user profile even when editing backend user information is forbidden
+~ Disable forgotten users no longer requires the user groups to give backend or Super User access to consider them
+~ Work towards future PHP 7.4 support
+~ Away Schedule is now more clear about the use of time zones
+# [HIGH] Core version: Administrator Password Protect would result in fatal error
+# [LOW] JDEBUG not defined under CLI
+# [LOW] Prevent fatal errors while scanning very large files
+
 Admin Tools 5.3.3
 ================================================================================
 + Added option to log usernames or not during failed logins (required by GDPR)

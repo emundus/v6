@@ -54,9 +54,13 @@ abstract class FEFHelperSelect
 	 */
 	public static function booleanlist($name, $attribs = array(), $selected = null, $yes = 'JYES', $no = 'JNO', $id = false)
 	{
-		$arr = array(JHtml::_('FEFHelper.select.option', '0', JText::_($no)), JHtml::_('FEFHelper.select.option', '1', JText::_($yes)));
+		$options     = [
+			JHtml::_('FEFHelper.select.option', '0', JText::_($no)),
+			JHtml::_('FEFHelper.select.option', '1', JText::_($yes)),
+		];
+		$attribs = array_merge(['forSelect' => 1], $attribs);
 
-		return JHtml::_('FEFHelper.select.radiolist', $arr, $name, $attribs, 'value', 'text', (int) $selected, $id);
+		return JHtml::_('FEFHelper.select.radiolist', $options, $name, $attribs, 'value', 'text', (int) $selected, $id);
 	}
 
 	/**
@@ -664,6 +668,14 @@ abstract class FEFHelperSelect
 	                                 $translate = false)
 	{
 
+		$forSelect = false;
+
+		if (isset($attribs['forSelect']))
+		{
+			$forSelect = (bool) ($attribs['forSelect']);
+			unset($attribs['forSelect']);
+		}
+
 		if (is_array($attribs))
 		{
 			$attribs = ArrayHelper::toString($attribs);
@@ -700,10 +712,20 @@ abstract class FEFHelperSelect
 				$extra .= ((string) $optionValue === (string) $selected ? ' checked="checked" ' : '');
 			}
 
-			$html .= "\n\t" . '<label for="' . $id . '" id="' . $id . '-lbl">';
-			$html .= "\n\t\n\t" . '<input type="radio" name="' . $name . '" id="' . $id . '" value="' . $optionValue . '" ' . $extra
-				. $attribs . ' />' . $labelText;
-			$html .= "\n\t" . '</label>';
+			if ($forSelect)
+			{
+				$html .= "\n\t" . '<input type="radio" name="' . $name . '" id="' . $id . '" value="' . $optionValue . '" ' . $extra
+					. $attribs . ' />';
+				$html .= "\n\t" . '<label for="' . $id . '" id="' . $id . '-lbl">' . $labelText . '</label>';
+			}
+			else
+			{
+				$html .= "\n\t" . '<label for="' . $id . '" id="' . $id . '-lbl">';
+				$html .= "\n\t\n\t" . '<input type="radio" name="' . $name . '" id="' . $id . '" value="' . $optionValue . '" ' . $extra
+					. $attribs . ' />' . $labelText;
+				$html .= "\n\t" . '</label>';
+
+			}
 		}
 
 		$html .= "\n";

@@ -222,6 +222,14 @@ class Html extends BaseView
 	public $formattedChangelog = '';
 
 	/**
+	 * Did the user manually changed the server configuration file (ie .htaccess)? If so, let's warn the user that he
+	 * should use the custom rule fields inside the Makers or their settings could be lost.
+	 *
+	 * @var bool
+	 */
+	public $serverConfigEdited = false;
+
+	/**
 	 * Main Control Panel task
 	 *
 	 * @return  void
@@ -290,6 +298,7 @@ class Html extends BaseView
 		$this->htMakerSupported      = ServerTechnology::isHtaccessSupported();
 		$this->nginxMakerSupported   = ServerTechnology::isNginxSupported();
 		$this->webConfMakerSupported = ServerTechnology::isWebConfigSupported();
+		$this->serverConfigEdited    = $controlPanelModel->serverConfigEdited();
 		$this->statsIframe           = $statsModel->collectStatistics(true);
 		$this->extension_id          = $controlPanelModel->getState('extension_id', 0, 'int');
 		$this->formattedChangelog    = $this->formatChangelog();
