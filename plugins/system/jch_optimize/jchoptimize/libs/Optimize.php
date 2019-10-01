@@ -21,19 +21,9 @@ namespace JchOptimize;
  *
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
-class Optimize
+class Optimize extends \JchOptimizeRegextokenizer
 {
 
-        //regex for double quoted strings
-        const DOUBLE_QUOTE_STRING = '"(?>(?:\\\\.)?[^\\\\"]*+)+?(?:"|(?=$))';
-        //regex for single quoted string
-        const SINGLE_QUOTE_STRING = "'(?>(?:\\\\.)?[^\\\\']*+)+?(?:'|(?=$))";
-        //regex for block comments
-        const BLOCK_COMMENTS = '/\*(?>[^/\*]++|//|\*(?!/)|(?<!\*)/)*+\*/';
-        //regex for line comments
-        const LINE_COMMENTS = '//[^\r\n]*+';
-	//regex for HTML comments
-	const HTML_COMMENTS = '(?:(?:<!?--|(?<=[\s/^])-->)[^\r\n]*+)';
 
         protected $_debug    = false;
         protected $_regexNum = -1;
@@ -105,8 +95,11 @@ class Optimize
                 }
                 
                 $this->_debug($rx, $code, $regex_num);
-		//$error = array_flip(get_defined_constants(true)['pcre'])[preg_last_error()];
-                if (preg_last_error() != PREG_NO_ERROR) throw new \Exception;
+		$error = @array_flip(get_defined_constants(true)['pcre'])[preg_last_error()];
+		if (preg_last_error() != PREG_NO_ERROR)
+		{
+			throw new \Exception($error);
+		}
 
                 return $op_code;
         }

@@ -21,17 +21,8 @@
  */
 defined('_JCH_EXEC') or die('Restricted access');
 
-class JchOptimizeCssParserBase extends JchOptimize\CSS_Optimize
+class JchOptimizeCssParserBase extends JchOptimize\Optimize
 {
-
-        /**
-         * 
-         * @return type
-         */
-        public static function staticFiles()
-        {
-                return array();
-        }
 
         /**
          * 
@@ -69,7 +60,7 @@ class JchOptimizeCssParser extends JchOptimizeCssParserBase
 
         public $sLnEnd      = '';
         public $params;
-        protected $bBackend = FALSE;
+        protected $bBackend = false;
         public $e           = '';
         public $u           = '';
 
@@ -81,11 +72,11 @@ class JchOptimizeCssParser extends JchOptimizeCssParserBase
         public function __construct($params = NULL, $bBackend = false)
         {
                 $this->sLnEnd = is_null($params) ? "\n" : JchPlatformUtility::lnEnd();
-                $this->params = is_null($params) ? NULL : $params;
+                $this->params = $params;
 
                 $this->bBackend = $bBackend;
-                $e              = self::DOUBLE_QUOTE_STRING . '|' . self::SINGLE_QUOTE_STRING . '|' . self::BLOCK_COMMENTS . '|'
-                        . self::LINE_COMMENTS;
+                $e              = self::DOUBLE_QUOTE_STRING . '|' . self::SINGLE_QUOTE_STRING . '|' . self::BLOCK_COMMENT . '|'
+                        . self::LINE_COMMENT;
                 $this->e        = "(?<!\\\\)(?:$e)|[\'\"/]";
                 $this->u        = '(?<!\\\\)(?:' . self::URI . '|' . $e . ')|[\'\"/(]';
         }
@@ -229,9 +220,10 @@ class JchOptimizeCssParser extends JchOptimizeCssParserBase
                                         }
                                         else
                                         {
-						//Two seperate media types are nested so we combine them to form an unknown type
-						//so the media query is treated as false but still syntactically correct
-                                                $sMediaQuery .= $aParentMediaQuery['media_type'] . $aChildMediaQuery['media_type'];
+						//Two different media types are nested and neither is 'all' then
+						//the enclosed rule will not be applied on any media type
+						//We put 'not all' to maintain a syntaticaly correct combined media type
+                                                $sMediaQuery .= 'not all';
                                         }
                                 }
 
@@ -322,15 +314,19 @@ class JchOptimizeCssParser extends JchOptimizeCssParserBase
          * @param string $sContent
          * @return string
          */
-        public function correctUrl($sContent, $aUrl)
+        public function correctUrl($sContent, $aUrl, $bInFontFace=false, $http2=false)
         {
-                $obj = $this;
-
-                $sCorrectedContent = preg_replace_callback(
-                        "#(?>[(]?[^('/\"]*+(?:{$this->e}|/)?)*?(?:(?<=url)\(\s*+\K['\"]?((?<!['\"])[^)]*+|(?<!')[^\"]*+|[^']*+)['\"]?|\K$)#i",
-                        function ($aMatches) use ($aUrl, $obj)
+		$regex = "(?>[(@]?[^('/\"@]*+(?:{$this->e}|/)?)*?(?:(?<=url)\(\s*+\K['\"]?((?<!['\"])[^)]*+|(?<!')[^\"]*+|[^']*+)['\"]?|\K@font-face\s*+({(?>[^{}]++|(?2))*+})|\K$)";
+                $sCorrectedContent = preg_replace_callback( "#{$regex}#i", function ($aMatches) use ($aUrl, $bInFontFace, $http2)
                 {
-                        return $obj->_correctUrlCB($aMatches, $aUrl);
+			if(preg_match('#^@font-face#i', $aMatches[0]))
+			{
+				return '@font-face' . $this->correctUrl($aMatches[2], $aUrl, true, $http2);
+			}
+			else
+			{
+				return $this->_correctUrlCB($aMatches, $aUrl, $bInFontFace, $http2);
+			}
                 }, $sContent);
 
                 if (is_null($sCorrectedContent))
@@ -349,9 +345,9 @@ class JchOptimizeCssParser extends JchOptimizeCssParserBase
          * @param array $aMatches Array of all matches
          * @return string         Correct url of images from aggregated css file
          */
-        public function _correctUrlCB($aMatches, $aUrl)
+        public function _correctUrlCB($aMatches, $aUrl, $bInFontFace, $http2)
         {
-                if (empty($aMatches[1]) || preg_match('#^(?:\(|/\*)#', $aMatches[0]))
+                if (empty($aMatches[1]) || $aMatches[1] == '/' || preg_match('#^(?:\(|/\*)#', $aMatches[0]))
                 {
                         return $aMatches[0];
                 }
@@ -361,25 +357,36 @@ class JchOptimizeCssParser extends JchOptimizeCssParserBase
 
                 if (JchOptimizeUrl::isHttpScheme($sImageUrl))
                 {
-                        if ((JchOptimizeUrl::isInternal($sCssFileUrl) || $sCssFileUrl == '') && JchOptimizeUrl::isInternal($sImageUrl))
+                        if (($sCssFileUrl == '' || JchOptimizeUrl::isInternal($sCssFileUrl)) && JchOptimizeUrl::isInternal($sImageUrl))
                         {
+				
+
                                 $sImageUrl = JchOptimizeUrl::toRootRelative($sImageUrl, $sCssFileUrl);
 
                                 $oImageUri = clone JchPlatformUri::getInstance($sImageUrl);
 
-                                $aFontFiles = $this->fontFiles();
-                                $sFontFiles = implode('|', $aFontFiles);
-
-				$sImageUrl = JchOptimizeHelper::cookieLessDomain($this->params, $oImageUri->toString(array('path')), $sImageUrl);
-
-                                if ($this->params->get('pro_cookielessdomain_enable', '0')
-                                        && preg_match('#\.(?>' . $sFontFiles . ')#', $oImageUri->getPath()))
+                                if ($this->params->get('pro_cookielessdomain_enable', '0') && $bInFontFace)
                                 {
                                         $oUri = clone JchPlatformUri::getInstance();
 
                                         $sImageUrl = '//' . $oUri->toString(array('host', 'port')) .
                                                 $oImageUri->toString(array('path', 'query', 'fragment'));
                                 }
+				else
+				{
+					$sImageUrlCdn = JchOptimizeHelper::cookieLessDomain($this->params, $oImageUri->toString(array('path')), $sImageUrl);
+					
+					//If CSS file will be loaded by CDN but image won't then return absolute url
+					if ($this->params->get('pro_cookielessdomain_enable', '0') && in_array('css', JchOptimizeHelper::getCdnFileTypes($this->params)) && $sImageUrlCdn == $sImageUrl)
+					{
+						$sImageUrl = JchOptimizeUrl::toAbsolute($sImageUrl);
+					}
+					else
+					{
+						$sImageUrl = $sImageUrlCdn;
+					}
+				}
+
                         }
                         else
                         {
@@ -414,9 +421,8 @@ class JchOptimizeCssParser extends JchOptimizeCssParserBase
          */
         public function sortImports($sCss)
         {
-		$i = "#(?>@?[^@('\"/]*+(?:{$this->u}|/|\()?)*?\K(?:@media\s([^{]++)({(?>[^{}]++|(?2))*+})|\K$)#i";
-                $sCssMediaImports = preg_replace_callback("#(?>@?[^@('\"/]*+(?:{$this->u}|/|\()?)*?\K(?:@media\s([^{]++)({(?>[^{}]++|(?2))*+})|\K$)#i",
-                                                          array($this, '_sortImportsCB'), $sCss);
+		$r = "#(?>@?[^@('\"/]*+(?:{$this->u}|/|\()?)*?\K(?:@media\s([^{]++)({(?>[^{}]++|(?2))*+})|\K$)#i";
+                $sCssMediaImports = preg_replace_callback($r, array($this, '_sortImportsCB'), $sCss);
 
                 if (is_null($sCssMediaImports))
                 {
@@ -486,5 +492,20 @@ $r = "#(?>[^{}'\"/(]*+(?:{$this->u})?)+?(?:(?<b>{(?>[^{}'\"/(]++|{$this->u}|(?&b
                 return $sRCss;
         }
 
+	public function removeFontFace($sCss)
+	{
+		$sCss = preg_replace_callback('#' . self::cssRulesRegex() . '#', function($aMatches){
+			if(preg_match('#^@(?:-[^-]+-)?font-face#i', ltrim($aMatches[0])))
+			{
+				return '';
+			}
+			else
+			{
+				return $aMatches[0];
+			}
+		}, $sCss);
+
+		return $sCss;
+	}
         
 }

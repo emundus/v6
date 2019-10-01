@@ -32,12 +32,12 @@ class JchOptimizeUrl
          */
         public static function isInternal($sUrl)
         {
-                $oUrl = clone JchPlatformUri::getInstance($sUrl);
-
                 if (self::isProtocolRelative($sUrl))
                 {
                         $sUrl = self::toAbsolute($sUrl);
                 }
+
+                $oUrl = clone JchPlatformUri::getInstance($sUrl);
 
                 $sUrlBase = $oUrl->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path'));
                 $sUrlHost = $oUrl->toString(array('scheme', 'user', 'pass', 'host', 'port'));
@@ -171,7 +171,7 @@ class JchOptimizeUrl
          * @param type $sUrl
          * @param type $sCurFile
          */
-        public static function toAbsolute($sUrl, $sCurFile=null)
+        public static function toAbsolute($sUrl, $sCurFile='SERVER')
         {
                 $oUri = clone JchPlatformUri::getInstance($sCurFile);
                 

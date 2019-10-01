@@ -34,7 +34,7 @@ class JFormFieldAjax extends JFormField
 
 		if (!defined('JCH_VERSION'))
 		{
-			define('JCH_VERSION', '5.2.5');
+			define('JCH_VERSION', '5.4.3');
 		}
 
 		$params = JchPlatformPlugin::getPluginParams();
@@ -48,7 +48,7 @@ class JFormFieldAjax extends JFormField
 
 		if($cnt == 1)
 		{
-			JHtml::script('jui/jquery.min.js', FALSE, TRUE);
+			JHtml::script('jui/jquery.min.js', false, true);
 
 			$oDocument = JFactory::getDocument();
 			$sScript   = '';

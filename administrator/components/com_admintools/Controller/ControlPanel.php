@@ -10,13 +10,13 @@ namespace Akeeba\AdminTools\Admin\Controller;
 defined('_JEXEC') or die;
 
 use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
+use Akeeba\AdminTools\Admin\Helper\ServerTechnology;
 use Akeeba\AdminTools\Admin\Model\MasterPassword;
 use Akeeba\AdminTools\Admin\Model\Updates;
 use Akeeba\Engine\Util\RandomValue;
 use AkeebaGeoipProvider;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
-use JFactory;
 use JText;
 use JUri;
 
@@ -42,6 +42,8 @@ class ControlPanel extends Controller
 		    'changelog',
 		    'endRescue',
 			'renameMainPhp',
+			'ignoreServerConfigWarn',
+			'regenerateServerConfig',
 		];
 	}
 
@@ -377,5 +379,50 @@ ENDRESULT;
 		$returnUrl = $customURL ? $customURL : 'index.php?option=com_admintools&view=ControlPanel';
 
 		$this->setRedirect($returnUrl);
+	}
+
+	/**
+	 * Put a flag inside component configuration so user won't be warned again if he manually edits any server
+	 * configuration file. He can enable it again by changing its value inside the component options
+	 */
+	public function ignoreServerConfigWarn()
+	{
+		$this->container->params->set('serverconfigwarn', 0);
+		$this->container->params->save();
+
+		$this->setRedirect('index.php?option=com_admintools&view=ControlPanel');
+	}
+
+	public function regenerateServerConfig()
+	{
+		$classModel = '';
+
+		if (ServerTechnology::isHtaccessSupported())
+		{
+			$classModel = 'HtaccessMaker';
+		}
+		elseif (ServerTechnology::isNginxSupported())
+		{
+			$classModel = 'NginXConfMaker';
+		}
+		elseif (ServerTechnology::isWebConfigSupported())
+		{
+			$classModel = 'WebConfigMaker';
+		}
+
+		if (!$classModel)
+		{
+
+			$this->setRedirect('index.php?option=com_admintools&view=ControlPanel', JText::_('COM_ADMINTOOLS_CPANEL_SERVERCONFIGWARN_ERR_REGENERATE'), 'error');
+
+			return;
+		}
+
+		/** @var \Akeeba\AdminTools\Admin\Model\ServerConfigMaker $model */
+		$model = $this->container->factory->model($classModel)->tmpInstance();
+
+		$model->writeConfigFile();
+
+		$this->setRedirect('index.php?option=com_admintools&view=ControlPanel', JText::_('COM_ADMINTOOLS_CPANEL_SERVERCONFIGWARN_REGENERATED'));
 	}
 }

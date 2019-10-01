@@ -121,6 +121,19 @@ if (version_compare(PHP_VERSION, '5.5.0', 'lt')):
 
 <div id="updateNotice"></div>
 
+<?php if ($this->serverConfigEdited): ?>
+    <div class="akeeba-block--warning">
+        <p><?php echo JText::_('COM_ADMINTOOLS_CPANEL_SERVERCONFIGWARN');?></p>
+
+        <a href="index.php?option=com_admintools&view=ControlPanel&task=regenerateServerConfig" class="akeeba-btn--green">
+		    <?php echo \JText::_('COM_ADMINTOOLS_CPANEL_SERVERCONFIGWARN_REGENERATE')?>
+        </a>
+        <a href="index.php?option=com_admintools&view=ControlPanel&task=ignoreServerConfigWarn" class="akeeba-btn--dark">
+		    <?php echo \JText::_('COM_ADMINTOOLS_CPANEL_SERVERCONFIGWARN_IGNORE')?>
+        </a>
+    </div>
+<?php endif; ?>
+
 <?php if ($this->isPro && !$this->hasplugin): ?>
 	<div class="akeeba-block--info">
 		<h3><?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_GEOIPPLUGINSTATUS'); ?></h3>

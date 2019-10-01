@@ -59,6 +59,13 @@
 			<option value="1">JYes</option>
 		</field>
 
+		<field name="serverconfigwarn" type="list" default="1"
+			   label="COM_ADMINTOOLS_JCONFIG_SERVERCONFIGWARN_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_SERVERCONFIGWARN_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
+
 		<field name="updatedb" type="hidden" default="" label=""/>
 		<field name="detected_exceptions_from_private_network" type="hidden" default="0" label=""/>
 		<field name="detected_proxy_header" type="hidden" default="0" label=""/>

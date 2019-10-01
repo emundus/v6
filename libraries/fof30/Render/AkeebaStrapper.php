@@ -262,7 +262,7 @@ JS;
 				if ($dropdown)
 				{
 					echo "<li";
-					$class = 'dropdown';
+					$class = 'nav-item dropdown';
 
 					if ($link['active'])
 					{
@@ -271,7 +271,7 @@ JS;
 
 					echo ' class="' . $class . '">';
 
-					echo '<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
+					echo '<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">';
 
 					if ($link['icon'])
 					{
@@ -286,14 +286,14 @@ JS;
 
 					foreach ($link['items'] as $item)
 					{
-						echo "<li";
+						echo "<li class=\"dropdown-item";
 
 						if ($item['active'])
 						{
-							echo ' class="active"';
+							echo ' active';
 						}
 
-						echo ">";
+						echo "\">";
 
 						if ($item['icon'])
 						{

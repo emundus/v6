@@ -94,10 +94,25 @@ interface JchInterfaceUtility
         
         /**
          * 
-         * @param type $path
-         * @param type $filter
-         * @param type $recurse
-         * @param type $exclude
+         * @param string	$path		Path of folder to read
+         * @param string 	$filter 	A regex filter for file names
+         * @param boolean 	$recurse	True to recurse into sub-folders
+         * @param array  	$exclude	An array of files to exclude
+	 *
+	 * @return array 	Full paths of files in the folder recursively
          */
         public static function lsFiles($path, $filter = '.', $recurse = false, $exclude = array('.svn', 'CVS', '.DS_Store', '__MACOSX'));
+	
+	/**
+	 *
+	 *
+	 *
+	 */
+	public static function isGuest();
+
+	/**
+	 *
+	 *
+	 */
+	public static function sendHeaders($headers);
 }

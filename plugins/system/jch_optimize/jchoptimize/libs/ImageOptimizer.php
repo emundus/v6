@@ -65,7 +65,7 @@ class ImageOptimizer
 		$aHeaders = array('Content-Type' => 'multipart/form-data');
 		$oFileRetriever = \JchOptimizeFileRetriever::getInstance(array('curl'));
 
-		$response = $oFileRetriever->getFileContents($url, $data, $aHeaders);
+		$response = $oFileRetriever->getFileContents($url, $data, $aHeaders, '', 30);
 
 		if($oFileRetriever->response_code === 0 && $oFileRetriever->response_error !== '')
 		{

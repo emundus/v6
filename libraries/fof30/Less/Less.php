@@ -2825,7 +2825,7 @@ class Less
 		/** FIF -- END CHANGE * */
 		foreach ($args as $name => $strValue)
 		{
-			if ($name{0} != '@')
+			if ($name[0] != '@')
 			{
 				$name = '@' . $name;
 			}

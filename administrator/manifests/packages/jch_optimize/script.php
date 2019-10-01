@@ -32,16 +32,16 @@ class Pkg_jch_optimizeInstallerScript
 
                 if ($type == 'install')
                 {
-                        if (version_compare(PHP_VERSION, '5.4.0', '<'))
+                        if (version_compare(PHP_VERSION, '5.6.0', '<'))
                         {
-                                $app->enqueueMessage('This plugin requires PHP 5.4.0 or greater to work. Your installed version is ' . PHP_VERSION, 'error');
+                                $app->enqueueMessage('This plugin requires PHP 5.6.0 or greater to work. Your installed version is ' . PHP_VERSION, 'error');
 
                                 return false;
                         }
                 }
                 
                 $compatible = TRUE;
-                $minimum_version = '3.3.0';
+                $minimum_version = '3.6.5';
 
                 if (version_compare(JVERSION, $minimum_version, '<'))
                 {

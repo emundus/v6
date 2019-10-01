@@ -116,14 +116,30 @@ class Assets extends Observer
 			return true;
 		}
 
+		$rawRules = [];
+
+		if (is_array($src) && array_key_exists('rules', $src) && is_array($src['rules']))
+		{
+			$rawRules = $src['rules'];
+		}
+		elseif (is_object($src) && isset($src->rules) && is_array($src->rules))
+		{
+			$rawRules = $src->rules;
+		}
+
+		if (empty($rawRules))
+		{
+			return true;
+		}
+
 		// Bind the rules.
-		if (isset($src['rules']) && is_array($src['rules']))
+		if (isset($rawRules) && is_array($rawRules))
 		{
 			// We have to manually remove any empty value, since they will be converted to int,
 			// and "Inherited" values will become "Denied". Joomla is doing this manually, too.
 			$rules = array();
 
-			foreach ($src['rules'] as $action => $ids)
+			foreach ($rawRules as $action => $ids)
 			{
 				// Build the rules array.
 				$rules[$action] = array();

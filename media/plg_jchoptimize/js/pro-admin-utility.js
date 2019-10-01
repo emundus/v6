@@ -19,7 +19,7 @@
 
 //Initialize timer object
 var timer = null;
-//Array of files to optimize
+//Array of file objects to optimize
 var files=[];
 //Array of subdirectories under expanded folder in file tree
 var subdirs=[];
@@ -45,7 +45,7 @@ function jchOptimizeImages(page) {
        
         params.pro_downloadid = jQuery("input[id$='pro_downloadid']").val();
         params.hidden_api_secret = jQuery("input[id$='hidden_api_secret']").val();
-        params.kraken_backup = jQuery("select[id$='kraken_backup']").val();
+        params.ignore_optimized = jQuery("input:radio[name*='ignore_optimized']:checked").val();
       
 	//Ensure Download ID is entered before proceeding
         if (params.pro_downloadid.length == 0)
@@ -67,7 +67,7 @@ function jchOptimizeImages(page) {
                         subdirs.push(jQuery(this).val());
                 });
 
-		//Iterate over each file in expanded directory
+		//Iterate over each selected file in expanded directory
                 jQuery("#files-container li.file input[type=checkbox]:checked").each(function () {
 			//Create file object
                         var file = {};
@@ -86,7 +86,7 @@ function jchOptimizeImages(page) {
                         };
                         
 			//Push file object in files array.
-                        files.push(file);
+			files.push(file);
                 });
 
 		//Load progress bar with log window
@@ -96,100 +96,101 @@ function jchOptimizeImages(page) {
                          <div><ul id="optimize-log"></ul></div>');
                 jQuery("#progressbar").progressbar({value: 0});
 
-		//Call function to get names of all files in Expanded folder and subdirectories
-                jQuery.when(updateStatus(page, dir, params, 'getfiles')).then(function(){
+		//Call function to get names of all files in selected subdirectories
+                jQuery.when(updateStatus(page, {}, params, 'getfiles')).then(function(){
 
-			jQuery("div#optimize-status").html(total.toLocaleString() + ' files found. Uploading files for optimization...');
+			var no_files_msg = ' files found.';
+
+			if (total > 0)
+			{
+				no_files_msg += ' Uploading files for optimization...';
+			}
+
+			jQuery("div#optimize-status").html(total.toLocaleString() + no_files_msg);
 
 			//call function to optimize files in array
-			optimizeImages(page);
-		});
-        } else {
-                alert(jch_message);
-        }
-}
-;
+			optimizeImages(page); }); } else { alert(jch_message);
+			} } ;
 
-function optimizeImages(page)
-{
+function optimizeImages(page) {
 	//array to hold ajax objects
 	var deferreds = [];
 	//Number of ajax requests to send before waiting for Ajax completion
 	var loops = 10; 
 	//Size of packets of files to send for optimization
-	var pkgsize = 10;
+	var filepacksize = 10;
 
-	for (i = 0; i < loops && cnt < total; i++)
-	{
+	for (i = 0; i < loops && cnt < total; i++) {
 		//Packets of files
-		var pkg = [];
+		var filepack = [];
 
-		for (j = 0; j < pkgsize && cnt < total; cnt++, j++)
-		{ 
-			pkg.push(files[cnt]);
-		}
+		for (j = 0; j < filepacksize && cnt < total; cnt++, j++) {
+			filepack.push(files[cnt]); }
 
-		deferreds.push(updateStatus(page, pkg, params, 'optimize'));
-	}
+		deferreds.push(updateStatus(page, filepack, params,
+			'optimize')); }
 
-	//When number of Ajax requests in loop is queued, wait until all Ajax requests are completed before 
-	//looping in another queue or print completion message
+	//When number of Ajax requests in loop is queued, wait until all Ajax
+	//requests are completed before looping in another queue or print
+	//completion message
 	jQuery.when.apply(jQuery, deferreds).then(function(){
 	
-		if(status === 'fail')
-		{
-			window.location.href = page + "&status=fail&msg=" + encodeURIComponent(authmessage);
+		if(status === 'fail') { window.location.href = page +
+				"&status=fail&msg=" +
+				encodeURIComponent(authmessage);
 
-			return false;
-		}
+			return false; }
 
-		if(cnt < total)
-		{
-			optimizeImages(page);
-		}
-		else
-		{
-			jQuery("ul#optimize-log").append('<li>Adding logs to ' + log_path + '/plg_jch_optimize.logs.php...</li>');
+		if(cnt < total) { optimizeImages(page); } else {
+			jQuery("ul#optimize-log").append('<li>Adding logs to '
+				+ log_path +
+				'/plg_jch_optimize.logs.php...</li>');
 
 			setTimeout(function () {
 				jQuery("ul#optimize-log").append('<li>Done!</li>');
 			}, 1000);
 
-			window.location.href = page + "&dir=" + encodeURIComponent(dir.path) + "&cnt=" + optimize;
-		}
+			window.location.href = page + "&dir=" +
+				encodeURIComponent(dir.path) + "&cnt=" +
+				optimize; }
 	
 	}); 
 	
-}
-;
+} ;
 
-function updateStatus(page, filepaths, params, task) {
+/** Communicates with the website server via ajax re the files to be optimized
+ *
+ * @param page		string 	Url of admin settings page @param filepack
+ * array   Package of files to be optimized 	@param params	object	Array
+ * of plugin parameters obtained via javascript from settings page @param task
+ * string 	Current task being completed (getfiles|optimize)
+ */
+function updateStatus(page, filepack, params, task) {
 
 	//create timestamp to append to ajax call to prevent caching
-        var timestamp = getTimeStamp();
+	var timestamp = getTimeStamp();
         
-        var xhr = jQuery.ajax({
-                dataType: 'json',
-                url: jch_ajax_optimizeimages + '&_=' + timestamp,
-                data: {'dir': filepaths, 'subdirs': subdirs, 'params': params, 'task': task},
-                success: function (response) {
+	var xhr = jQuery.ajax({ dataType: 'json', url: jch_ajax_optimizeimages
+	+ '&_=' + timestamp, data: {'filepack': filepack, 'subdirs': subdirs,
+	'params': params, 'task': task}, success: function (response) {
                        
-			//If we haven't started optimizing files then get the total amount to be optimized
-                        if (task == 'getfiles')
-                        {
-				//Add the amount of files in expanded directory to the amount in selected subdirectories recursively
-                                files = jQuery.merge(files, response.data.files);
-                                total = files.length;
+			//If we haven't started optimizing files then get the
+		//total amount to be optimized
+			if (task == 'getfiles') {
+				//Add the selected files in expanded directory
+		//to the files in selected subdirectories recursively
+				
+				//convert the data object to an array of objects
+				var dataArray = Object.keys(response.data.files).map(i => response.data.files[i])
+				files = jQuery.merge(files, dataArray); 
+				total = files.length;
                                 
-                                log_path = response.data.log_path;
-                        }
-                        else
-                        {
-				if(!response.success)
-				{
-					logMessage(response.message);
+				log_path = response.data.log_path; } else {
+					if(!response.success) {
+						logMessage(response.message);
 
-					//If authentication error abort with error message
+					//If authentication error abort with
+						//error message
 					if (response.code === 403)
 					{
 						status = 'fail';
