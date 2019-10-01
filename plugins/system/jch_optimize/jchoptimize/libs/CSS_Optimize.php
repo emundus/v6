@@ -24,8 +24,6 @@ namespace JchOptimize;
 class CSS_Optimize extends Optimize
 {
 
-        const URI = '(?<=url)\(\s*+(?:"[^"]*+"|\'[^\']*+\'|[^)]*+)\s*+\)';
-
         public $css;
         
         /**
@@ -85,8 +83,8 @@ class CSS_Optimize extends Optimize
                 $u  = self::URI;
                 $e  = '(?<!\\\\)(?:' . $es . '|' . $u . ')|[\'"(]';
 
-		$b = self::BLOCK_COMMENTS;
-		$c = self::LINE_COMMENTS;
+		$b = self::BLOCK_COMMENT;
+		$c = self::LINE_COMMENT;
 
                 // Remove all comments
                 $rx   = "#(?>/?[^/\"'(]*+(?:{$e})?)*?\K(?>{$b}|{$c}|$)#s";

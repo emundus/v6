@@ -34,6 +34,7 @@ function getSelector(int, state)
 			dataType: 'json',
 			url: jch_ajax_url + "&action=getmultiselect&_=" + timestamp,
 			data: {'data': datas},
+			method: 'POST',
 			success: function (response) {
 				$.each(response.data, function(id, obj){
 
@@ -50,7 +51,13 @@ function getSelector(int, state)
 					//append 'Add item' button'
 					$('div#div-' + field).append('<button type="button" class="btn" onclick="addJchOption(\'' + id + '\')">Add item</button>');
 				});
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+				console.error('Error returned from ajax function \'getmultiselect\'');
+				console.error('textStatus: ' + textStatus);
+				console.error('errorThrown: ' + errorThrown);
 			}
+
 		});
 	});
 })( jQuery );

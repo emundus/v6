@@ -24,9 +24,6 @@ defined('_JEXEC') or die('Restricted access');
 
 class JchPlatformCache implements JchInterfaceCache
 {
-	/*Lifetime of the cache files in minutes, hardcoded to one day */
-	protected static $lifetime = 1440;
-
 	/* Array of instances of cache objects */
 	protected static $aCacheObject = array();
         /**
@@ -35,7 +32,7 @@ class JchPlatformCache implements JchInterfaceCache
          * @param type $lifetime
          * @return type
          */
-        public static function getCache($id)
+        public static function getCache($id, $checkexpire=false)
         {
                 $oCache = self::getCacheObject();
                 $aCache = $oCache->get($id);
@@ -97,12 +94,13 @@ class JchPlatformCache implements JchInterfaceCache
 				$cachebase = JPATH_SITE . '/cache/plg_jch_optimize';
 				$type = 'output';
 				$group = '';
-
-				if (!file_exists($cachebase))
-				{
-					JPlatformUtility::createFolder($cachebase);
-				}
 			}
+
+			if (!file_exists($cachebase))
+			{
+				JchPlatformUtility::createFolder($cachebase);
+			}
+			
 
 			$aOptions = array(
 				'defaultgroup' => $group,
@@ -116,13 +114,27 @@ class JchPlatformCache implements JchInterfaceCache
 			$oCache = JCache::getInstance($type, $aOptions);
 
 			$oCache->setCaching(true);
-			$oCache->setLifeTime(self::$lifetime);
+			$oCache->setLifeTime(self::getLifetime());
 
 			self::$aCacheObject[$argtype] = $oCache;
 		}
 
                 return self::$aCacheObject[$argtype];
-        }
+	}
+	
+	protected static function getLifetime()
+	{
+		static $lifetime;
+
+		if(!$lifetime)
+		{
+			$params = JchPlatformPlugin::getPluginParams();
+
+			$lifetime = $params->get('cache_lifetime', '15');
+		}
+
+		return (int) $lifetime;
+	}
         
 
         /**
@@ -137,9 +149,8 @@ class JchPlatformCache implements JchInterfaceCache
 		$oStaticCache = self::getCacheObject('static');
 		$oStaticCache->gc();
 
-		//Delete page cache
-		$oJcache = JCache::getInstance();
-		$oJcache->clean('page');
+		//Only delete page cache
+		self::deleteCache(true);
         }
 
 	/**
@@ -156,17 +167,29 @@ class JchPlatformCache implements JchInterfaceCache
 	 *
 	 *
 	 */
-	public static function deleteCache()
+	public static function deleteCache($page=false)
 	{
 		$return = false;
 
-		$oJchCache = JchPlatformCache::getCacheObject();
-		$oStaticCache = JchPlatformCache::getCacheObject('static');
+		//Don't delete if we're only deleting page cache
+		if(!$page)
+		{
+			$oJchCache = JchPlatformCache::getCacheObject();
+			$oStaticCache = JchPlatformCache::getCacheObject('static');
+			
+			$return |= $oJchCache->clean('plg_jch_optimize');
+			$return |= $oStaticCache->clean();
+		}
+
 		$oJCache = JCache::getInstance();
 
-		$return |= $oJchCache->clean('plg_jch_optimize');
-		$return |= $oStaticCache->clean();
 		$return |= $oJCache->clean('page');
+
+		//Clean LiteSpeed cache
+		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher->trigger('onLSCacheExpired');
+
+		header('X-LiteSpeed-Purge: *');
 
 		return (bool) $return;
 	}

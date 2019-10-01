@@ -20,41 +20,22 @@
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
 
-
-defined('_JCH_EXEC') or die('Restricted access');
-
-interface JchInterfaceCache
+class JchOptimizeRegextokenizer
 {
-        /**
-         * 
-         * @param type $id
-         * @param type $function
-         * @param type $args
-         */
-        public static function getCallbackCache($id, $function, $args);
+        //regex for double quoted strings
+        const DOUBLE_QUOTE_STRING = '"(?>(?:\\\\.)?[^\\\\"]*+)+?(?:"|(?=$))';
+        //regex for single quoted string
+        const SINGLE_QUOTE_STRING = "'(?>(?:\\\\.)?[^\\\\']*+)+?(?:'|(?=$))";
+        //regex for block comments
+        const BLOCK_COMMENT = '/\*(?>[^/\*]++|//|\*(?!/)|(?<!\*)/)*+\*/';
+        //regex for line comments
+        const LINE_COMMENT = '//[^\r\n]*+';
+	//regex for HTML comments
+	const HTML_COMMENT = '(?:(?:<!--|(?<=[\s/^])-->)[^\r\n]*+)';
 
-        /**
-         * 
-         * @param type $id
-         * @param type $lifetime
-         */
-        public static function getCache($id, $checkexpire=false);
-        
-        /**
-         * 
-         * 
-         */
-        public static function gc();
+	const HTML_ATTRIBUTE = '[^\s/"\'=<>]*+(?:\s*=(?>\s*+"[^">]*+"|\s*+\'[^\'>]*+\'|[^\s>]*+[\s>]))?';
+	
+	const ATTRIBUTE_VALUE = '(?>(?<=")[^">]*+|(?<=\')[^\'>]*+|(?<==)[^\s*+>]*+)'; 
 
-	/**
-	 *
-	 *
-	 */
-	public static function saveCache($content, $id);
-
-	/**
-	 *
-	 *
-	 */
-	public static function deleteCache();
+        const URI = '(?<=url)\(\s*+(?:"[^"]*+"|\'[^\']*+\'|[^)]*+)\s*+\)';
 }

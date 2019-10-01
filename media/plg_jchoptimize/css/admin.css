@@ -134,23 +134,27 @@ div.icon.enabled[class*="settings"] a i#toggle.on:before{
 }
 
 
-fieldset[id^=jform_params_pro_staticfiles]{
+fieldset[id^=jform_params_pro_staticfiles],
+fieldset[id^=jform_params_pro_http2_file_types]{
         padding:0;
         margin: 0;
         display:table;
         width: 300px;
 }
 
-fieldset[id^=jform_params_pro_staticfiles] ul{
+fieldset[id^=jform_params_pro_staticfiles] ul,
+fieldset[id^=jform_params_pro_http2_file_types] ul{
         margin: 0;
 }
 
-fieldset[id^=jform_params_pro_staticfiles] ul li{
+fieldset[id^=jform_params_pro_staticfiles] ul li,
+fieldset[id^=jform_params_pro_http2_file_types] ul li{
         display:inline-table;
         width: 20%;
 }
 
-fieldset[id^=jform_params_pro_staticfiles] label{
+fieldset[id^=jform_params_pro_staticfiles] label,
+fieldset[id^=jform_params_pro_http2_file_types] label{
         display:inline-table;
         width: 12%;
 }

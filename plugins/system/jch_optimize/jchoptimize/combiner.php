@@ -26,17 +26,6 @@ defined('_JCH_EXEC') or die('Restricted access');
 
 class JchOptimizeCombinerBase
 {
-
-        /**
-         * 
-         * @param type $sPath
-         * @return boolean
-         */
-        protected function loadAsync()
-        {
-                return false;
-        }
-
         /**
          * 
          * @param type $sContent
@@ -112,7 +101,6 @@ class JchOptimizeCombiner extends JchOptimizeCombinerBase
 
                 $oCssParser   = $this->oCssParser;
                 $aSpriteCss   = array();
-                $aFontFace    = array();
 
                 $aContentsArray = array();
 
@@ -121,11 +109,6 @@ class JchOptimizeCombiner extends JchOptimizeCombinerBase
                         $sContents = $this->combineFiles($aUrlInnerArray, $sType, $oCssParser);
                         $sContents = $this->prepareContents($sContents);
 
-                        if($sType == 'js')
-                        {
-                                $sContents .= $this->minifyContent($this->sAsyncContent, 'js', 'async');
-                        }
-                        
                         $aContentsArray[$index] = $sContents;
                 }
 
@@ -151,6 +134,7 @@ class JchOptimizeCombiner extends JchOptimizeCombinerBase
                         'etag'        => md5($this->$sType),
                         'file'        => $aContentsArray,
                         'spritecss'   => $aSpriteCss,
+			'optimizecssdelivery' => $this->params->get('pro_optimizeCssDelivery_enable', '0')
                 );
 
                 JCH_DEBUG ? JchPlatformProfiler::stop('GetContents - ' . $sType) : null;
@@ -170,9 +154,6 @@ class JchOptimizeCombiner extends JchOptimizeCombinerBase
         {
                 $sContents = '';
 
-                $this->bAsync    = FALSE;
-                $this->sAsyncContent = '';
-
                 $oFileRetriever = JchOptimizeFileRetriever::getInstance();
 
 		//Iterate through each file/script to optimize and combine
@@ -182,19 +163,6 @@ class JchOptimizeCombiner extends JchOptimizeCombinerBase
                         $sUrl = $this->prepareFileUrl($aUrl, $sType);
 
                         JCH_DEBUG ? JchPlatformProfiler::start('CombineFile - ' . $sUrl) : null;
-
-                        if ($sType == 'js')
-                        {
-				/* Depracated - To be removed */
-                                $sJsContents = $this->handleAsyncUrls($aUrl);
-                                
-                                if($sJsContents != '')
-                                {
-                                        $sContents .= $sJsContents;
-                                        
-                                        continue;
-                                }
-                        }
 
 			//If a cache id is present then cache this individual file to avoid
 			//optimizing it again if it's present on another page
@@ -225,11 +193,6 @@ class JchOptimizeCombiner extends JchOptimizeCombinerBase
                         }
 
                         JCH_DEBUG ? JchPlatformProfiler::stop('CombineFile - ' . $sUrl, TRUE) : null;
-                }
-
-                if ($this->bAsync)
-                {
-                        $sContents = $this->getLoadScript() . $sContents;
                 }
 
                 return $sContents;
@@ -276,6 +239,7 @@ class JchOptimizeCombiner extends JchOptimizeCombinerBase
                                 $sContent = mb_convert_encoding($sContent, 'utf-8', $sEncoding);
                         }
 
+			//Remove quotations around imported urls
                         $sImportContent = preg_replace('#@import\s(?:url\()?[\'"]([^\'"]+)[\'"](?:\))?#', '@import url($1)', $sContent);
 
                         if (is_null($sImportContent))
@@ -319,28 +283,7 @@ class JchOptimizeCombiner extends JchOptimizeCombinerBase
                 return $sContent;
         }
 
-        /**
-         * 
-         * @param type $sUrl
-         */
-        protected function handleAsyncUrls($aUrl)
-        {
-                $sJsContents = '';
 
-                if (isset($aUrl['url']))
-                {
-                        if ($this->loadAsync($aUrl['url']))
-                        {
-                                $this->sAsyncContent .= $this->sLnEnd . '});';
-                                $this->bAsync    = TRUE;
-
-                                $sJsContents = $this->addCommentedUrl('js', $aUrl['url']) .
-                                        'loadScript("' . $aUrl['url'] . '", function(){  DELIMITER'; 
-                        }
-                }
-
-                return $sJsContents;
-        }
 
         /**
 	 * Minify contents of fil
@@ -473,5 +416,5 @@ class JchOptimizeCombiner extends JchOptimizeCombinerBase
         }
 
         
-        
+        ##<procode>##
 }

@@ -283,11 +283,14 @@ else
                                 'eorisis_jquery',
                                 'jqueryeasy',
                                 'jch_optimize',
+				'setcanonical',
+				'canonical',
                                 'plugin_googlemap3',
 				'jomcdn',
                                 'cdnforjoomla',
                                 'bigshotgoogleanalytics',
                                 'GoogleAnalytics',
+				'pixanalytic',
                                 'ykhoonhtmlprotector',
                                 'jat3',
 				'cache',
@@ -295,7 +298,9 @@ else
                                 'homepagecache',
                                 'jSGCache',
                                 'jotcache',
-                                'vmcache_last'
+				'lscache',
+				'vmcache_last',
+				'pixcookiesrestrict'
                         );
 
 			//Get an associative array of all installed system plugins with their extension id, ordering, and element

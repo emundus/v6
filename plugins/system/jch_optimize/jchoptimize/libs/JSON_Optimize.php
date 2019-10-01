@@ -59,13 +59,13 @@ class JSON_Optimize extends Optimize
                 $s2 = self::SINGLE_QUOTE_STRING;
 
                 //regex for block comments
-                $b = self::BLOCK_COMMENTS;
+                $b = self::BLOCK_COMMENT;
 
                 //regex for line comments
-                $c = self::LINE_COMMENTS;
+                $c = self::LINE_COMMENT;
 
 		//regex for HTML comments
-		$h = self::HTML_COMMENTS;
+		$h = self::HTML_COMMENT;
 
 		//remove all comments
 		$rx = "#(?>[^/\"'<]*+(?:$s1|$s2)?)*?\K(?>{$b}|{$c}|{$h}|$)#si";

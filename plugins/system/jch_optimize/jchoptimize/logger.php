@@ -37,10 +37,7 @@ class JchOptimizeLogger
          */
         public static function log($sMessage, JchPlatformSettings $params)
         {
-                if ($params->get('log', 0))
-                {
-                        JchPlatformUtility::log($sMessage, 'ERROR', 'plg_jch_optimize.errors.php');
-                }
+		JCH_DEBUG ? JchPlatformUtility::log($sMessage, 'ERROR', 'plg_jch_optimize.errors.php') : null;
         }
         
         /**

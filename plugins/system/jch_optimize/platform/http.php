@@ -56,7 +56,7 @@ class JchPlatformHttp implements JchInterfaceHttp
          * @return type
          * @throws Exception
          */
-        public function request($sPath, $aPost = null, $aHeaders = null, $sUserAgent='')
+        public function request($sPath, $aPost = null, $aHeaders = null, $sUserAgent='', $timeout=5)
         {
                 if (!$this->oHttpAdapter)
                 {
@@ -67,7 +67,7 @@ class JchPlatformHttp implements JchInterfaceHttp
                 
                 $method = !isset($aPost) ? 'GET' : 'POST';
 
-                $oResponse = $this->oHttpAdapter->request($method, $oUri, $aPost, $aHeaders, 5, $sUserAgent);
+                $oResponse = $this->oHttpAdapter->request($method, $oUri, $aPost, $aHeaders, $timeout, $sUserAgent);
 
 
                 $return = array('body' => $oResponse->body, 'code' => $oResponse->code);
