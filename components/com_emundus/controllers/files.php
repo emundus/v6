@@ -1331,18 +1331,22 @@ class EmundusControllerFiles extends JControllerLegacy
 
             switch ($col[0]) {
                 case "photo":
-                    $photos = $m_files->getPhotos($fnums);
-                    if (count($photos) > 0) {
-                        $pictures = array();
-                        foreach ($photos as $photo) {
-                            $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-                            $link = '=HYPERLINK("'.$folder.'/tn_'.$photo['filename'] . '","'.$photo['filename'].'")';
-                            $pictures[$photo['fnum']] = $link;
-                        }
-                        $colOpt['PHOTO'] = $pictures;
-                    } else {
-                        $colOpt['PHOTO'] = array();
-                    }
+	                $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+	                if (!$anonymize_data) {
+		                $photos = $m_files->getPhotos($fnums);
+		                if (count($photos) > 0) {
+			                $pictures = array();
+			                foreach ($photos as $photo) {
+				                $folder                   = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
+				                $link                     = '=HYPERLINK("'.$folder.'/tn_'.$photo['filename'].'","'.$photo['filename'].'")';
+				                $pictures[$photo['fnum']] = $link;
+			                }
+			                $colOpt['PHOTO'] = $pictures;
+		                }
+		                else {
+			                $colOpt['PHOTO'] = array();
+		                }
+	                }
                     break;
                 case "forms":
                     foreach ($fnums as $fnum) {
