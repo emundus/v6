@@ -63,7 +63,6 @@ $document->addStyleSheet("modules/mod_emundus_user_dropdown/style/mod_emundus_us
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
         <i class="<?= $icon;?>" id="userDropdownIcon"></i>
     </div>
-    <!--
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
         <li class="dropdown-header"><?php echo $user->name; ?></li>
         <li class="dropdown-header"><?php echo $user->email; ?></li>
@@ -77,7 +76,7 @@ $document->addStyleSheet("modules/mod_emundus_user_dropdown/style/mod_emundus_us
             <li role="separator" class="divider"></li>
             <?= '<li><a href="index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
         <?php endif; ?>
-    </ul> -->
+    </ul>
 </div>
 
 <script>

@@ -991,7 +991,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     } else {
 
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-	    if (!$anonymize_data) {
+	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+	    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
 		    $htmldata .= '<div class="card">
 					<table width="100%"><tr>';
 		    if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar)) {
