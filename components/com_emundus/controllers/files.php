@@ -1272,10 +1272,10 @@ class EmundusControllerFiles extends JControllerLegacy
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $eval_can_see_eval = $eMConfig->get('evaluators_can_see_other_eval', 0);
 
-        $m_files        = $this->getModel('Files');
-        $m_application  = $this->getModel('Application');
-        $m_profile      = $this->getModel('Profile');
-        $m_users        = $this->getModel('Users');
+        $m_files = $this->getModel('Files');
+        $m_application = $this->getModel('Application');
+        $m_profile = $this->getModel('Profile');
+        $m_users = $this->getModel('Users');
 
         $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
@@ -1331,23 +1331,22 @@ class EmundusControllerFiles extends JControllerLegacy
 
             switch ($col[0]) {
                 case "photo":
-                    //$colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos($m_files, JURI::base());
-                    $photos = $m_files->getPhotos($fnums);
-                    if (count($photos) > 0) {
-                        $pictures = array();
-                        foreach ($photos as $photo) {
-
-                            $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-
-                            $link = '=HYPERLINK("'.JURI::base(). $folder.'/tn_'.$photo['filename'] . '","'.$photo['filename'].'")';
-                            $pictures[$photo['fnum']] = $link;
-                            //$pictures[$photo['fnum']] = '<a href="'.$folder.'/'.$photo['filename'].'" target="_blank"><img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></a>';
-
-                        }
-                        $colOpt['PHOTO'] = $pictures;
-                    } else {
-                        $colOpt['PHOTO'] = array();
-                    }
+	                $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+	                if (!$anonymize_data) {
+		                $photos = $m_files->getPhotos($fnums);
+		                if (count($photos) > 0) {
+			                $pictures = array();
+			                foreach ($photos as $photo) {
+				                $folder                   = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
+				                $link                     = '=HYPERLINK("'.$folder.'/tn_'.$photo['filename'].'","'.$photo['filename'].'")';
+				                $pictures[$photo['fnum']] = $link;
+			                }
+			                $colOpt['PHOTO'] = $pictures;
+		                }
+		                else {
+			                $colOpt['PHOTO'] = array();
+		                }
+	                }
                     break;
                 case "forms":
                     foreach ($fnums as $fnum) {
@@ -1356,8 +1355,9 @@ class EmundusControllerFiles extends JControllerLegacy
                         $aid = $fnumInfos['applicant_id'];
                         $formsProgress[$fnum] = $m_application->getFormsProgress($aid, $pid, $fnum);
                     }
-                    if (!empty($formsProgress))
-                        $colOpt['forms'] = $formsProgress;
+                    if (!empty($formsProgress)) {
+	                    $colOpt['forms'] = $formsProgress;
+                    }
                     break;
                 case "attachment":
                     foreach ($fnums as $fnum) {
@@ -1366,8 +1366,9 @@ class EmundusControllerFiles extends JControllerLegacy
                         $aid = $fnumInfos['applicant_id'];
                         $attachmentProgress[$fnum] = $m_application->getAttachmentsProgress($aid, $pid, $fnum);
                     }
-                    if (!empty($attachmentProgress))
-                        $colOpt['attachment'] = $attachmentProgress;
+                    if (!empty($attachmentProgress)) {
+	                    $colOpt['attachment'] = $attachmentProgress;
+                    }
                     break;
                 case "assessment":
                     $colOpt['assessment'] = $h_files->getEvaluation('text', $fnums);
@@ -1387,11 +1388,19 @@ class EmundusControllerFiles extends JControllerLegacy
         $line = "";
         $element_csv = array();
         $i = $start;
-
-
+	    
+        
         // On traite les en-têtes
         if ($start == 0) {
-            $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('PROGRAMME')."\t";
+
+	        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+	        if ($anonymize_data) {
+		        $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('PROGRAMME')."\t";
+	        } else {
+		        $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('PROGRAMME')."\t";
+	        }
+            
+            
             $nbcol = 6;
             foreach ($ordered_elements as $fLine) {
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
@@ -1403,7 +1412,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             if (in_array("form-title", $opts)) {
                                 $line .= JText::_($fLine->form_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                                 $nbcol++;
-                            } elseif(in_array("form-group", $opts)) {
+                            } elseif (in_array("form-group", $opts)) {
                                 $line .= JText::_($fLine->group_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                                 $nbcol++;
                             }
@@ -1438,8 +1447,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 foreach ($fnumsArray as $idx => $d) {
                     foreach ($d as $k => $v) {
                         if ($k === 'jos_emundus_evaluations___user' && strcasecmp($v, $evaluator) != 0) {
-                            foreach($fnumsArray[$idx] as $key => $value){
-                                if (substr( $key, 0, 26 ) === "jos_emundus_evaluations___") {
+                            foreach($fnumsArray[$idx] as $key => $value) {
+                                if (substr($key, 0, 26) === "jos_emundus_evaluations___") {
 	                                $fnumsArray[$idx][$key] = JText::_('NO_RIGHT');
                                 }
                             }
@@ -1448,7 +1457,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
             }
         }
-
+        
         // On parcours les fnums
         foreach ($fnumsArray as $fnum) {
             // On traite les données du fnum
@@ -1459,10 +1468,11 @@ class EmundusControllerFiles extends JControllerLegacy
                         $line .= "'".$v."\t";
                         $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
-                        $userProfil = JUserHelper::getProfile($uid)->emundus_profile;
-                        $lastname = (!empty($userProfil['lastname']))?$userProfil['lastname']:JFactory::getUser($uid)->name;
-                        $line .= $lastname."\t";
-                        $line .= $userProfil['firstname']."\t";
+                        if (!$anonymize_data) {
+	                        $userProfil = $m_users->getUserById($uid);
+	                        $line .= $userProfil->lastname."\t";
+	                        $line .= $userProfil->firstname."\t";
+                        }
                     } else {
                         if ($v == "") {
 	                        $line .= " "."\t";
@@ -1626,10 +1636,11 @@ class EmundusControllerFiles extends JControllerLegacy
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+	    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
-        $jinput  = JFactory::getApplication()->input;
-        $code    = $jinput->getVar('code', null);
-        $camp    = $jinput->getVar('camp', null);
+        $jinput = JFactory::getApplication()->input;
+        $code = $jinput->getVar('code', null);
+        $camp = $jinput->getVar('camp', null);
         $code = explode(',', $code);
         $camp = explode(',', $camp);
 
@@ -1637,23 +1648,33 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_campaign = new EmundusModelCampaign();
         $h_files = new EmundusHelperFiles();
 
-        $profile    = $m_profile->getProfileIDByCourse($code, $camp);
-        $docs       = $h_files->getAttachmentsTypesByProfileID((int)$profile[0]);
-        $campaign   = $m_campaign->getCampaignsByCourse($code[0]);
+        $profile = $m_profile->getProfileIDByCourse($code, $camp);
+        $docs = $h_files->getAttachmentsTypesByProfileID((int)$profile[0]);
 
-        if ($camp[0] != 0)
-            $campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
-        else
-            $campaign = $m_campaign->getCampaignsByCourse($code[0]);
+        // Sort the docs out that are not allowed to be exported by the user.
+	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+	    if ($allowed_attachments !== true) {
+		    foreach ($docs as $key => $doc) {
+			    if (!in_array($doc->id, $allowed_attachments)) {
+				    unset($docs[$key]);
+			    }
+		    }
+	    }
+
+        if ($camp[0] != 0) {
+	        $campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
+        } else {
+	        $campaign = $m_campaign->getCampaignsByCourse($code[0]);
+        }
 
         $html1 = '';
         $html2 = '';
-        //var_dump(count($pages));
         for ($i = 0; $i < count($docs); $i++) {
-            if ($i < count($docs)/2)
-                $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" /><label for="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'">'.JText::_($docs[$i]->value).'</label><br/>';
-            else
-                $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" /><label for="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'">'.JText::_($docs[$i]->value).'</label><br/>';
+            if ($i < count($docs) / 2) {
+	            $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" /><label for="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'">'.JText::_($docs[$i]->value).'</label><br/>';
+            } else {
+	            $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" name="'.$docs[$i]->value.'" id="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'" /><label for="'.$docs[$i]->id."|".$code[0]."|".$camp[0].'">'.JText::_($docs[$i]->value).'</label><br/>';
+            }
         }
 
         $html = '<div class="panel panel-default pdform">
@@ -1672,10 +1693,11 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    /**
-     * Add lines to temp PDF file
-     * @return String json
-     */
+	/**
+	 * Add lines to temp PDF file
+	 * @return String json
+	 * @throws Exception
+	 */
     public function generate_pdf() {
         $current_user = JFactory::getUser();
 
@@ -1710,15 +1732,17 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $validFnums = array();
         foreach ($fnums_post as $fnum) {
-            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum))
-                $validFnums[] = $fnum;
+            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
+	            $validFnums[] = $fnum;
+            }
         }
 
         $fnumsInfo = $m_files->getFnumsInfos($validFnums);
-        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $file))
-            $files_list = array(JPATH_BASE . DS . 'tmp' . DS . $file);
-        else
-            $files_list = array();
+        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $file)) {
+	        $files_list = array(JPATH_BASE.DS.'tmp'.DS.$file);
+        } else {
+	        $files_list = array();
+        }
 
 
         for ($i = $start; $i < ($start+$limit) && $i < $totalfile; $i++) {
@@ -1729,14 +1753,15 @@ class EmundusControllerFiles extends JControllerLegacy
                     if (!empty($formids)) {
                         foreach ($formids as $fids) {
                             $detail = explode("|", $fids);
-                            if (!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training'])
-                                if ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
-                                    $forms_to_export[] = $detail[0];
+                            if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+                            	$forms_to_export[] = $detail[0];
+                            }
                         }
                     }
 
-                    if ($forms || !empty($forms_to_export))
-                        $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options);
+                    if ($forms || !empty($forms_to_export)) {
+	                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options);
+                    }
 
                 }
 
@@ -3633,28 +3658,30 @@ class EmundusControllerFiles extends JControllerLegacy
         setlocale(LC_ALL, 'fr_FR.utf8');
         $sessions = "<ul>";
         foreach ($product as $session) {
+            if(strtotime($session['date_end']) >= strtotime("now") ) {
 
-            $start_month = date('m',strtotime($session['date_start']));
-            $end_month = date('m',strtotime($session['date_end']));
-            $start_year = date('y',strtotime($session['date_start']));
-            $end_year = date('y',strtotime($session['date_end']));
+                $start_month = date('m',strtotime($session['date_start']));
+                $end_month = date('m',strtotime($session['date_end']));
+                $start_year = date('y',strtotime($session['date_start']));
+                $end_year = date('y',strtotime($session['date_end']));
 
-            if (intval($session['days']) == 1) {
+                if (intval($session['days']) == 1) {
 
-                $sessions .= '<li>Le '.strftime('%e',strtotime($session['date_start']))." ".strftime('%B',strtotime($session['date_end']))." ".date('Y',strtotime($session['date_end']));
+                    $sessions .= '<li>Le '.strftime('%e',strtotime($session['date_start']))." ".strftime('%B',strtotime($session['date_end']))." ".date('Y',strtotime($session['date_end']));
 
-            } else {
+                } else {
 
-                if ($start_month == $end_month && $start_year == $end_year) {
-                    $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                } elseif ($start_month != $end_month && $start_year == $end_year) {
-                    $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
-                } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
-                    $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                    if ($start_month == $end_month && $start_year == $end_year) {
+                        $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                    } elseif ($start_month != $end_month && $start_year == $end_year) {
+                        $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                    } elseif (($start_month != $end_month && $start_year != $end_year) || ($start_month == $end_month && $start_year != $end_year)) {
+                        $sessions .= '<li>'.strftime('%e',strtotime($session['date_start'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_start'])) . " au " . strftime('%e',strtotime($session['date_end'])) . " " . strftime('%B',strtotime($session['date_end'])) . " " . date('Y',strtotime($session['date_end']));
+                    }
                 }
-            }
 
-            $sessions .= ' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))).' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';
+                $sessions .= ' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))).' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';
+            }
         }
         $sessions .= '</ul>';
 

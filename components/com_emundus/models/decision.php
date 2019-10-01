@@ -192,15 +192,19 @@ class EmundusModelDecision extends JModelList
 				}
 			}
 		}
-		if (in_array('overall', $em_blocks_names))
-			$this->_elements_default[] = ' AVG(ee.overall) as overall ';
 
-		if (count($col_elt) == 0)
+		if (in_array('overall', $em_blocks_names)) {
+			$this->_elements_default[] = ' AVG(ee.overall) as overall ';
+		}
+		if (is_array($col_elt) && count($col_elt) == 0) {
 			$col_elt = array();
-		if (count($col_other) == 0)
+		}
+		if (is_array($col_other) && count($col_other) == 0) {
 			$col_other = array();
-		if (count(@$this->_elements_default_name) == 0)
+		}
+		if (empty(@$this->_elements_default_name)) {
 			$this->_elements_default_name = array();
+		}
 
 		$this->col = array_merge($col_elt, $col_other, $this->_elements_default_name);
 
@@ -210,8 +214,7 @@ class EmundusModelDecision extends JModelList
 		$result = @EmundusHelperFiles::insertValuesInQueryResult($result, array("sub_values", "sub_labels"));
 
 		$this->details = new stdClass();
-		foreach ($result as $res)
-		{
+		foreach ($result as $res) {
 			$this->details->{$res->tab_name . '__' . $res->element_name} = array('element_id' => $res->element_id,
 			                                                                     'plugin' => $res->element_plugin,
 			                                                                     'attribs' => $res->params,

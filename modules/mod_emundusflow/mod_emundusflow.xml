@@ -103,6 +103,8 @@
 					<option value="1">JYES</option>
 				</field>
 
+				<field type="text" name="home_link" default="index.php" label="MOD_EMUNDUSFLOW_HOMELINK" description="MOD_EMUNDUSFLOW_HOMELINK_DESC"/>
+
 			</fieldset>
 		</fields>
 	</config>

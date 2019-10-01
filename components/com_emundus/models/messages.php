@@ -90,8 +90,7 @@ class EmundusModelMessages extends JModelList {
     /**
      * Gets all published attachments unless a filter is active.
      *
-     * @return Boolean False if the query fails and nothing can be loaded.
-     * @return array An array of objects describing attachments.
+     * @return Boolean|array False if the query fails and nothing can be loaded. or An array of objects describing attachments.
      */
     function getAttachments() {
 

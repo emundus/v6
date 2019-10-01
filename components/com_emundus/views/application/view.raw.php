@@ -27,16 +27,14 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
 
 
-class EmundusViewApplication extends JViewLegacy
-{
+class EmundusViewApplication extends JViewLegacy {
 	protected $_user = null;
 	var $_db = null;
 	var $student = null;
 
 	protected $synthesis;
 
-	function __construct($config = array()){
-		// require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
+	function __construct($config = array()) {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
@@ -50,9 +48,9 @@ class EmundusViewApplication extends JViewLegacy
 	}
 
 	function display($tpl = null) {
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			die(JText::_('RESTRICTED_ACCESS'));
-
+		}
 
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_emundus');

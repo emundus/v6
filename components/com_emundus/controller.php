@@ -75,12 +75,10 @@ class EmundusController extends JControllerLegacy {
         $fnum = !empty($fnum)?$fnum:$user->fnum;
         $m_profile = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
-        //$profile = $model->getProfileByApplicant($student_id);
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
             $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
-
         }
 
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.@$campaign['training'].'.php';
@@ -98,19 +96,16 @@ class EmundusController extends JControllerLegacy {
 
         // Here we call the profile by fnum function, which will get the candidate's profile in the status table
         $profile_id = $m_profile->getProfileByFnum($fnum);
-        //die($file);
-        
-
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, null, null, $profile_id);
             exit;
-        } elseif(EmundusHelperAccess::isApplicant($user->id)) {
+        } elseif (EmundusHelperAccess::isApplicant($user->id)) {
             application_form_pdf($user->id, $fnum, true, 1, null, null, null, $profile_id);
             exit;
-        } else die(JText::_('ACCESS_DENIED'));
-
-        exit();
+        } else {
+        	die(JText::_('ACCESS_DENIED'));
+        }
     }
 
     function pdf_emploi(){

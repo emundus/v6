@@ -6,13 +6,17 @@
  * @subpackage Components
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
+ * @copyright  eMundus
  * @author     Yoan Durand
  */
+$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+if ($anonymize_data) :?>
 
-?>
+    <div class="em-hidden-synthesis"><?= JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP'); ?></div>
 
-<?php echo $this->synthesis->block; ?>
+<?php else :?>
 
-<input type="hidden" id="application_fnum" value="<?php echo $this->synthesis->fnum?>">
+    <?php echo $this->synthesis->block; ?>
+    <input type="hidden" id="application_fnum" value="<?= $this->synthesis->fnum; ?>">
 
-
+<?php endif; ?>

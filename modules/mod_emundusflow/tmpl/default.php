@@ -26,7 +26,7 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
 <div class="ui tablet stackable bottom attached steps">
   <?php if($show_back_button == 1){ ?>
     <div class="step">
-        <a href="index.php" title="<?php echo  JText::_('RETURN'); ?>">
+        <a href="<?= $home_link; ?>>" title="<?php echo  JText::_('RETURN'); ?>">
             <i class="large arrow left outline icon"></i> <?php echo  JText::_('RETURN'); ?>
         </a>
     </div>

@@ -821,19 +821,20 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $m_files        = $this->getModel('Files');
         $m_application  = $this->getModel('Application');
 
-        $session    = JFactory::getSession();
-        $fnums      = $session->get('fnums_export');
-		if (count($fnums) == 0)
-            $fnums = array($session->get('application_fnum'));
+        $session = JFactory::getSession();
+        $fnums = $session->get('fnums_export');
+		if (count($fnums) == 0) {
+			$fnums = array($session->get('application_fnum'));
+		}
 
-        $jinput     = JFactory::getApplication()->input;
-        $file       = $jinput->getVar('file', null, 'STRING');
-        $totalfile  = $jinput->getVar('totalfile', null);
-        $start      = $jinput->getInt('start', 0);
-        $limit      = $jinput->getInt('limit', 0);
-        $nbcol      = $jinput->getVar('nbcol', 0);
-        $elts       = $jinput->getString('elts', null);
-        $objs       = $jinput->getString('objs', null);
+        $jinput = JFactory::getApplication()->input;
+        $file = $jinput->getVar('file', null, 'STRING');
+        $totalfile = $jinput->getVar('totalfile', null);
+        $start = $jinput->getInt('start', 0);
+        $limit = $jinput->getInt('limit', 0);
+        $nbcol = $jinput->getVar('nbcol', 0);
+        $elts = $jinput->getString('elts', null);
+        $objs = $jinput->getString('objs', null);
 
         $col = $this->getcolumn($elts);
 
@@ -864,7 +865,20 @@ class EmundusControllerAdmission extends JControllerLegacy {
             $col = explode('.', $col);
             switch ($col[0]) {
                 case "photo":
-                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos();
+	                $photos = $m_files->getPhotos($fnums);
+	                if (count($photos) > 0) {
+		                $pictures = array();
+		                foreach ($photos as $photo) {
+
+			                $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
+
+			                $link = '=HYPERLINK("'.$folder.'/tn_'.$photo['filename'] . '","'.$photo['filename'].'")';
+			                $pictures[$photo['fnum']] = $link;
+		                }
+		                $colOpt['PHOTO'] = $pictures;
+	                } else {
+		                $colOpt['PHOTO'] = array();
+	                }
                     break;
                 case "forms":
                     $colOpt['forms'] = $m_application->getFormsProgress(null, null, $fnums);

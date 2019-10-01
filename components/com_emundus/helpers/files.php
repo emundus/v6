@@ -525,9 +525,9 @@ class EmundusHelperFiles
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
-        $h_menu     = new EmundusHelperMenu;
-        $m_user     = new EmundusModelUsers;
-        $m_profile  = new EmundusModelProfile;
+        $h_menu = new EmundusHelperMenu;
+        $m_user = new EmundusModelUsers;
+        $m_profile = new EmundusModelProfile;
         $m_campaign = new EmundusModelCampaign;
 
         $db = JFactory::getDBO();
@@ -583,7 +583,7 @@ class EmundusHelperFiles
                     LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
                     INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
                     INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
-            $where = 'WHERE tab.published = 1';
+            $where = 'WHERE tab.published = 1 AND groupe.published = 1 ';
 
             if (count($fabrik_elements) > 0 ) {
 
@@ -609,8 +609,12 @@ class EmundusHelperFiles
                 $elements = $db->loadObjectList('id');
                 
                 $elts = array();
+                $allowed_groups = EmundusHelperAccess::getUserFabrikGroups(JFactory::getUser()->id);
                 if (count($elements) > 0) {
                     foreach ($elements as $key => $value) {
+	                    if ($allowed_groups !== true && !in_array($value->group_id, $allowed_groups)) {
+		                    continue;
+	                    }
                         $value->id = $key;
                         $value->table_label = JText::_($value->table_label);
                         $value->group_label = JText::_($value->group_label);

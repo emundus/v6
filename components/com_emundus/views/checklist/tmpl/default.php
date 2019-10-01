@@ -112,7 +112,7 @@ if (!empty($this->custom_title)) :?>
             }
             $div = '<fieldset id="a'.$attachment->id.'" class="em-fieldset-attachment">
                 <legend id="l'.$attachment->id.'" class="'.$class.'">
-                    <a href="javascript:toggleVisu(\''.$attachment->id .'\')">'.$attachment->value .' <i class="resize vertical icon"></i></a>
+                    <a class="'.$class.'">'.$attachment->value .'</a>
                 </legend>
                 <p class="description em-fieldset-attachment-description">'.$attachment->description .'</p>
                 <div class="table-responsive em-fieldset-attachment-table-responsive">

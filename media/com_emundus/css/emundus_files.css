@@ -340,6 +340,11 @@ div#em-appli-block button.btn.btn-default {
     background-color: transparent;
     outline: none;
 }
+
+.em-restricted-group {
+    text-align: center;
+}
+
 .em-searchbar .btn-default{
     padding: 10px 15px;
 }
@@ -680,8 +685,20 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .g-back-office-emundus-tableau .panel-body .em_label label, .g-back-office-emundus-tableau div#em_adv_filters label {
-    color: #ffffff;
+    color: #ffffff !important;
     margin: 5px 0 5px 5px !important;
+}
+.g-back-office-emundus-tableau .em_filters_filedset .em-filter{
+    margin-bottom: 10px;
+}
+.g-back-office-emundus-tableau .em_filters_filedset .em-filter .em_label{
+    margin-bottom: 5px;
+}
+.g-back-office-emundus-tableau .em_filters_adv_filter .em_filters.em-filter{
+    margin-bottom: 10px;
+}
+.g-back-office-emundus-tableau .em_filters_adv_filter .em_filters.em-filter .em_filters_adv_filter_addColumn{
+    margin-top: 5px;
 }
 
 .g-back-office-emundus-tableau div#filters .selectize-control.input-tags.demo-default.multi.plugin-remove_button .selectize-input.items.not-full {
@@ -1368,6 +1385,10 @@ thead th:hover {
     padding: 15px !important;
 }
 
+.em-file-blocked {
+    color: #bbb;
+}
+
 .btn-attach {
     margin: 10px 8px !important;
 }
@@ -1916,4 +1937,10 @@ footer#g-footer {
 footer#g-footer {
     background: transparent;
     border-top: 1px solid #bbb;
+}
+
+.em-hidden-synthesis {
+    text-align: center;
+    padding: 10px;
+    color: white;
 }

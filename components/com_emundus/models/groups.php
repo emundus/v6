@@ -426,17 +426,14 @@ class EmundusModelGroups extends JModelList
      * @return boolean
      * Add new groups
      */
-    public function addGroupsByProgrammes($programmes)
-    {
+    public function addGroupsByProgrammes($programmes) {
 
         if (count($programmes) > 0) {
 
 	        $db = $this->getDbo();
 
-        	$column = array_keys($programmes[0]);
-
         	try{
-	          foreach ($programmes as $key => $v) {
+	          foreach ($programmes as $v) {
 	          // Check if a group is already declared for the organisation
 	        	$query = 'SELECT * FROM `#__emundus_setup_groups`
 	        				WHERE  label LIKE "%'.$v['organisation'].'%"
@@ -446,7 +443,7 @@ class EmundusModelGroups extends JModelList
 	        	$groups = $db->loadObjectList();
 
 	        	if (count($groups) > 0) {
-	        		foreach ($groups as $key => $group) {
+	        		foreach ($groups as $group) {
 	        			$query = 'DELETE FROM `#__emundus_setup_groups_repeat_course` WHERE parent_id='.$group->id.' AND course LIKE '.$db->Quote($v['code']);
 	        			$db->setQuery($query);
 	        			$db->execute();
@@ -471,7 +468,7 @@ class EmundusModelGroups extends JModelList
 					$actions_evaluators = json_decode($default_actions);
 
 					$values = array();
-					foreach ($actions_evaluators as $key => $action) {
+					foreach ($actions_evaluators as $action) {
 						$values[] = '('.$lastid.', "'.implode('","', (array)$action).'")';
 					}
 
@@ -486,9 +483,7 @@ class EmundusModelGroups extends JModelList
     			$db->execute();
 
 	          }
-         	}
-         	catch(Exception $e)
-          	{
+         	} catch(Exception $e) {
               JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
               return $e->getMessage();
           	}
@@ -500,5 +495,48 @@ class EmundusModelGroups extends JModelList
         return true;
     }
 
+
+	/**
+	 * @param $group_ids
+	 *
+	 * @return array|bool
+	 *
+	 * @since version
+	 */
+	public function getFabrikGroupsAssignedToEmundusGroups($group_ids) {
+
+		if (!is_array($group_ids)) {
+			$group_ids = [$group_ids];
+		}
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$result = [];
+		foreach ($group_ids as $group_id) {
+			$query->select($db->quoteName('fabrik_group_link'))
+				->from($db->quoteName('#__emundus_setup_groups_repeat_fabrik_group_link'))
+				->where($db->quoteName('parent_id').' = '.$group_id);
+			$db->setQuery($query);
+
+			try {
+				$f_groups = $db->loadColumn();
+
+				// In the case of a group having no assigned Fabrik groups, it can get them all.
+				if (empty($f_groups)) {
+					return true;
+				}
+
+				$result = array_merge($result, $f_groups);
+			} catch (Exception $e) {
+				return false;
+			}
+		}
+
+		if (empty($result)) {
+			return true;
+		} else {
+			return array_keys(array_flip($result));
+		}
+	}
 }
-?>

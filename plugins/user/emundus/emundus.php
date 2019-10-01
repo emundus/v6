@@ -80,6 +80,56 @@ class plgUserEmundus extends JPlugin
     }
 
 	/**
+	 * @param $user
+	 * @param $isnew
+	 *
+	 * @return bool
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function onUserBeforeSave($user, $isnew) {
+
+		$db = JFactory::getDBO();
+		$app = JFactory::getApplication();
+		$jinput = $app->input;
+		$fabrik = $jinput->post->get('listid', null);
+
+		// In case we are signing up a new user via Fabrik, check that the profile ID is either an applicant, or one of the allowed non-applicant profiles.
+		if ($isnew && !empty($fabrik)) {
+
+			$params = JComponentHelper::getParams('com_emundus');
+			$allowed_special_profiles = explode(',', $params->get('allowed_non_applicant_profiles', ''));
+
+			$profile = $jinput->post->get('jos_emundus_users___profile');
+			if (is_array($profile)) {
+				$profile = $profile[0];
+			}
+
+			$query = $db->getQuery(true);
+			$query->select($db->quoteName('id'))
+				->from($db->quoteName('#__emundus_setup_profiles'))
+				->where($db->quoteName('published').' = 0');
+			$db->setQuery($query);
+			try {
+				$non_applicant_profiles = $db->loadColumn();
+			} catch (Exception $e) {
+				// TODO: Handle error handling in this plugin...
+				return false;
+			}
+
+			// If the user's profile is in the list of special profiles and NOT in the allowed profiles.
+			if (in_array($profile, array_diff($non_applicant_profiles, $allowed_special_profiles))) {
+				$app->enqueueMessage('Restricted profile', 'error');
+				$app->redirect('/index.php');
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Utility method to act on a user after it has been saved.
 	 *
 	 * This method sends a registration email to new users created in the backend.
@@ -113,19 +163,44 @@ class plgUserEmundus extends JPlugin
 	        if (!empty($return->users[0])) {
 		        $params = JComponentHelper::getParams('com_emundus');
 		        $ldapElements = explode(',', $params->get('ldapElements'));
+
 		        $details['firstname'] = $return->users[0][$ldapElements[2]];
 		        $details['name'] = $return->users[0][$ldapElements[3]];
+		        if (is_array($details['firstname'])) {
+			        $details['firstname'] = $details['firstname'][0];
+		        }
+		        if (is_array($details['name'])) {
+			        $details['name'] = $details['name'][0];
+		        }
+
+		        // Give the user an LDAP param.
+		        $o_user = JFactory::getUser($user['id']);
+
+		        // Store token in User's Parameters
+		        $o_user->setParam('ldap', '1');
+
+		        // Get the raw User Parameters
+		        $params = $o_user->getParameters();
+
+		        // Set the user table instance to include the new token.
+		        $table = JTable::getInstance('user', 'JTable');
+		        $table->load($o_user->id);
+		        $table->params = $params->toString();
+
+		        // Save user data
+		        if (!$table->store()) {
+			        throw new RuntimeException($table->getError());
+		        }
 	        }
         }
 
-        if (count($details) > 0) {
+	    if (count($details) > 0) {
             $campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
             $lastname = @isset($details['emundus_profile']['lastname'])?$details['emundus_profile']['lastname']:@$details['name'];
             $firstname = @isset($details['emundus_profile']['firstname'])?$details['emundus_profile']['firstname']:@$details['firstname'];
             $schoolyear = @isset($details['emundus_profile']['schoolyear'])?$details['emundus_profile']['schoolyear']:@$details['schoolyear'];
 
             if ($isnew) {
-                // @TODO    Suck in the frontend registration emails here as well. Job for a rainy day.
 
                 // Update name and firstname from #__users
                 $db->setQuery(' UPDATE #__users SET name="'.strtoupper($lastname).' '.ucfirst($firstname).'",
@@ -148,7 +223,7 @@ class plgUserEmundus extends JPlugin
                     $profile = $campaign[0]['profile_id'];
                 } else {
                     $schoolyear = "";
-                    $profile = 0;
+                    $profile = 1000;
                 }
 
                 // Insert data in #__emundus_users

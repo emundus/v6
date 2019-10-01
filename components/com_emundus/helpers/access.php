@@ -199,6 +199,82 @@ class EmundusHelperAccess {
 		}
 	}
 
+	/**
+	 * @param $user_id
+	 *
+	 * @return array|bool
+	 *
+	 * @since version
+	 */
+	public static function getUserFabrikGroups($user_id) {
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		$m_groups = new EmundusModelGroups();
+		$m_users = new EmundusModelUsers();
+
+		$group_ids = $m_users->getUserGroups($user_id);
+		// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
+		return $m_groups->getFabrikGroupsAssignedToEmundusGroups(array_keys(array_flip(array_keys($group_ids))));
+	}
+
+
+	/**
+	 * @param $user_id
+	 *
+	 * @return array|bool
+	 *
+	 * @since version
+	 */
+	public static function getUserAllowedAttachmentIDs($user_id) {
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		$m_files = new EmundusModelFiles();
+		$m_users = new EmundusModelUsers();
+
+		$group_ids = $m_users->getUserGroups($user_id);
+		// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
+		return $m_files->getAttachmentsAssignedToEmundusGroups(array_keys(array_flip(array_keys($group_ids))));
+	}
+
+
+	/**
+	 * @param $user_id
+	 *
+	 * @return bool
+	 *
+	 * @since version
+	 */
+	public static function isDataAnonymized($user_id) {
+		JLog::addLogger(['text_file' => 'com_emundus.access.error.php'], JLog::ERROR, 'com_emundus');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		$m_users = new EmundusModelUsers();
+
+		$group_ids = $m_users->getUserGroups($user_id);
+		// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
+		$group_ids = array_keys(array_flip(array_keys($group_ids)));
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select($db->quoteName('anonymize'))
+			->from($db->quoteName('#__emundus_setup_groups'))
+			->where($db->quoteName('id').' IN ('.implode(',', $group_ids).')');
+		$db->setQuery($query);
+
+		try {
+			return in_array('1', $db->loadColumn());
+		} catch (Exception $e) {
+			JLog::add('Error seeing if user can access non anonymous data. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+
+	/**
+	 *
+	 * @return JCrypt
+	 *
+	 * @since version
+	 */
 	public static function getCrypt() {
 		jimport('joomla.crypt.crypt');
 		jimport('joomla.crypt.key');

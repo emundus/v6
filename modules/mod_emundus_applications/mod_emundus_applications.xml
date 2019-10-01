@@ -114,7 +114,7 @@
 						default="#EA5012" />
 				<field
 						name="cc_list_url"
-						type="text"
+						type="URL"
 						label="MOD_EMUNDUS_CC_LIST_URL"
 						description=""
 						default="index.php" />
@@ -164,6 +164,13 @@
 							value="0">JNo</option>
 					<option
 							value="1">JYes</option>
+				</field>
+				<field
+						name="tags"
+						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+						default="N° [FNUM]"
+						label="MOD_EMUNDUS_TAGS"
+						description="MOD_EMUNDUS_TAGS_DESC">
 				</field>
 			</fieldset>
 			<fieldset
