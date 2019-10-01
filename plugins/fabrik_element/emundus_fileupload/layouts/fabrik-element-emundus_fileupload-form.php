@@ -24,7 +24,6 @@
 
 <script>
     var target = document.getElementById('<?= $d->attributes['name']; ?>');
-    console.log(target);
     target.addEventListener('change', () => {FbFileUpload.upload('<?= $d->attributes['name']; ?>', '<?= $attachId; ?>','<?= $size; ?>','<?= $encrypt; ?>');} );
 </script>
 
