@@ -930,7 +930,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-	    if (!$anonymize_data) {
+	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+	    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
 
 	        $htmldata .= '<div class="card">
 						<table width="100%"><tr>';
