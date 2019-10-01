@@ -15,7 +15,7 @@ defined('_JEXEC') or die;
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown' id="userDropdown">
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-        <i class="big circular user outline icon" id="userDropdownIcon"></i>
+        <i class="<?= $icon;?>" id="userDropdownIcon"></i>
     </div>
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
         <li class="dropdown-header"><?= $user->name; ?></li>

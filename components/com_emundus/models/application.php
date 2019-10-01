@@ -170,7 +170,19 @@ class EmundusModelApplication extends JModelList {
         }
 
         $this->_db->setQuery($query);
-        return $this->_db->loadObjectList();
+        $attachments = $this->_db->loadObjectList();
+
+        // Filter out the attachments not visible to the user.
+	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+	    if ($allowed_attachments !== true) {
+		    foreach ($attachments as $key => $attachment) {
+			    if (!in_array($attachment->id, $allowed_attachments)) {
+				    unset($attachments[$key]);
+			    }
+		    }
+	    }
+
+        return $attachments;
     }
 
     public function getUsersComments($id) {
@@ -863,6 +875,8 @@ class EmundusModelApplication extends JModelList {
 
 	        if (isset($tableuser)) {
 
+		        $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
+
 	            $allowEmbed = $this->allowEmbed(JURI::base().'index.php?lang=en');
 
 	            foreach ($tableuser as $key => $itemt) {
@@ -913,6 +927,17 @@ class EmundusModelApplication extends JModelList {
 
 	                /*-- Liste des groupes -- */
 	                foreach ($groupes as $itemg) {
+
+	                	if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
+			                $forms .= '<fieldset class="em-personalDetail">
+											<legend class="legend">'.JText::_($itemg->label).'</legend>
+											<table class="em-restricted-group">
+												<thead><tr><td>'.JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP').'</td></tr></thead>
+											</table>
+										</fieldset>';
+	                		continue;
+		                }
+
 	                    // liste des items par groupe
 	                    $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
 	                                FROM #__fabrik_elements fe
@@ -992,14 +1017,14 @@ class EmundusModelApplication extends JModelList {
 	                              <tr> ';
 
 	                            //-- Entrée du tableau -- */
-	                            //$nb_lignes = 0;
+
 	                            $t_elt = array();
 	                            foreach($elements as &$element) {
 	                                $t_elt[] = $element->name;
 	                                $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
 	                            }
 	                            unset($element);
-	                            //$table = $itemt->db_table_name.'_'.$itemg->group_id.'_repeat';
+
 	                            $query = 'SELECT table_join FROM #__fabrik_joins WHERE list_id='.$itemt->table_id.' AND group_id='.$itemg->group_id.' AND table_join_key like "parent_id"';
 	                            $this->_db->setQuery($query);
 	                            $table = $this->_db->loadResult();
@@ -1286,16 +1311,16 @@ class EmundusModelApplication extends JModelList {
         $tableuser  = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
 
         $forms = "<style>
-                    table{
+                    table {
                         border-spacing: 1px;
                         background-color: #f2f2f2;
                         width: 100%;
                     }
-                    h3{
+                    h3 {
                         background-color: ".$bcTitle.";
                         color:".$cTitle.";
                     }
-                    h4{
+                    h4 {
                         background-color: ".$bcSubTitle.";
                         color:".$cTitle.";
                     }
@@ -1318,8 +1343,12 @@ class EmundusModelApplication extends JModelList {
                     </style>";
 
         if (isset($tableuser)) {
+
+	        $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
+
             foreach ($tableuser as $key => $itemt) {
-            	$breaker= ($em_breaker) ? ($key === 0) ? '' : 'class="breaker"' : '';
+
+            	$breaker = ($em_breaker) ? ($key === 0) ? '' : 'class="breaker"' : '';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
@@ -1357,6 +1386,14 @@ class EmundusModelApplication extends JModelList {
 
                 /*-- Liste des groupes -- */
                 foreach ($groupes as $itemg) {
+
+	                if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
+		                $forms .= '<hr><h4>'.JText::_($itemg->label).'</h4>';
+		                $forms .= '<table>
+										<thead><tr><td>'.JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP').'</td></tr></thead>
+									</table>';
+		                continue;
+	                }
 
                 	// liste des items par groupe
                     $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params

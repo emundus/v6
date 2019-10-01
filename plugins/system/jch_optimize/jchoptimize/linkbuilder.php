@@ -86,15 +86,11 @@ class JchOptimizeLinkBuilder extends JchOptimizelinkBuilderBase
 
                 if (!JchOptimizeHelper::isMsieLT10() && $this->params->get('combine_files_enable', '1') && !$this->oParser->bAmpPage)
                 {
-                       // if ($this->params->get('htaccess', 2) == 2)
-                       // {
-                       //         JchOptimizeHelper::checkModRewriteEnabled($this->params);
-                       // }
 			$bCombineCss = (bool)$this->params->get('css', 1);
 			$bCombineJs  = (bool)$this->params->get('js', 1);
 
 
-			if ($bCombineCss || $bCombinejs)
+			if ($bCombineCss || $bCombineJs)
 			{
 				$this->runCronTasks();
 			}
@@ -106,25 +102,36 @@ class JchOptimizeLinkBuilder extends JchOptimizelinkBuilderBase
                                 $sCssCacheId = $this->getCacheId($aLinks['css']);
 				//Optimize and cache css files
                                 $sCssCache   = $this->getCombinedFiles($aLinks['css'], $sCssCacheId, 'css');
+				
 
-                                if ($this->params->get('pro_optimizeCssDelivery_enable', '0'))
+				$css_delivery_enabled = $this->params->get('pro_optimizeCssDelivery_enable', '0');
+
+                                if ($css_delivery_enabled || $this->params->get('pro_http2_push_enable', '0'))
                                 {
-                                        $sCriticalCss = '<style type="text/css">' . $this->sLnEnd .
-                                                $this->getCriticalCss($sCssCacheId) . $this->sLnEnd .
-                                                '</style>' . $this->sLnEnd .
-                                                '</head>';
+					$oCssParser = new JchOptimizeCssParser($this->params, false);
+					$sCriticalCss = $this->getCriticalCss($sCssCache, $oCssParser);
+					//Http2 push 
+					$oCssParser->correctUrl($sCriticalCss, '', false, true);
 
-                                        $sHeadHtml = preg_replace(
-                                                '#' . self::getEndHeadTag() . '#i', JchOptimizeHelper::cleanReplacement($sCriticalCss), $this->oParser->getHeadHtml(), 1);
+					if ($css_delivery_enabled)
+					{
+						$sCriticalStyle = '<style type="text/css">' . $this->sLnEnd .
+							$sCriticalCss . $this->sLnEnd .
+							'</style>' . $this->sLnEnd .
+							'</head>';
 
-                                        $this->oParser->setHeadHtml($sHeadHtml);
+						$sHeadHtml = preg_replace( '#' . self::getEndHeadTag() . '#i', JchOptimizeHelper::cleanReplacement($sCriticalStyle), $this->oParser->getHeadHtml(), 1); 
+						$this->oParser->setHeadHtml($sHeadHtml);
 
-                                        $sUrl = $this->buildUrl($sCssCacheId, 'css');
-                                        $sUrl = str_replace('JCHI', '0', $sUrl);
+						$sUrl = $this->buildUrl($sCssCacheId, 'css');
+						$sUrl = str_replace('JCHI', '0', $sUrl);
+						JchOptimizeHelper::addHttp2Push($sUrl, 'style', true);
 
-                                        $this->loadCssAsync($sUrl);
+						$this->loadCssAsync($sUrl);
+					}
                                 }
-                                else
+				
+                                if(!$css_delivery_enabled)
                                 {
 					//If Optimize CSS Delivery feature not enabled then we'll need to insert the link to
 					//the combined css file in the HTML
@@ -132,14 +139,31 @@ class JchOptimizeLinkBuilder extends JchOptimizelinkBuilderBase
                                 }
                         }
 
-                        if ($bCombineJs && !empty($aLinks['js']))
+                        if ($bCombineJs)
                         {
-                                $sJsCacheId = $this->getCacheId($aLinks['js']);
-				//Optimize and cache javascript files
-                                $this->getCombinedFiles($aLinks['js'], $sJsCacheId, 'js');
+				$sSection = $this->params->get('pro_bottom_js', '0') == '1' ? 'body' : 'head';
 
-				//Insert link to combined javascript file in HTML
-                                $this->replaceLinks($sJsCacheId, 'js');
+				if (!empty ($aLinks['js']))
+				{
+					$sJsCacheId = $this->getCacheId($aLinks['js']);
+					//Optimize and cache javascript files
+					$this->getCombinedFiles($aLinks['js'], $sJsCacheId, 'js');
+
+					//Insert link to combined javascript file in HTML
+					$this->replaceLinks($sJsCacheId, 'js', $sSection);
+				}
+				
+				//We also now append any deferred javascript files below the 
+				//last combined javascript file
+				$aDefers = $this->oParser->getDeferredFiles();
+
+				if(!empty($aDefers))
+				{
+					$sDefers = implode($this->sLnEnd, $aDefers);
+					$sSearchArea = preg_replace('#' . self::{'getEnd' . ucFirst($sSection) . 'Tag'}() . '#i', $this->sTab . $sDefers . $this->sLnEnd . '</' . $sSection . '>', $this->oParser->getFullHtml(), 1);
+
+					$this->oParser->setFullHtml($sSearchArea);
+				}
                         }
 
                         if ($replace_css_links)
@@ -160,18 +184,23 @@ class JchOptimizeLinkBuilder extends JchOptimizelinkBuilderBase
 	 *
 	 *
 	 */
-	protected function getCriticalCss($sCssId)
+	protected function getCriticalCss($sCssCache, $oCssParser)
 	{
-		$sId = md5($this->oParser->getHtmlHash() . $this->oParser->params->get('pro_optimizeCssDelivery', '200'));
+                JCH_DEBUG ? JchPlatformProfiler::start('GetCriticalCss') : null;
 
-                return $this->loadCache(array($this, 'processCriticalCss'), array($sCssId), $sId);
+		$sId = md5($this->oParser->getHtmlHash() . $this->oParser->params->get('pro_optimizeCssDelivery', '200'));
+                $sCriticalCss = $this->loadCache(array($this, 'processCriticalCss'), array($sCssCache, $oCssParser), $sId);
+
+                JCH_DEBUG ? JchPlatformProfiler::stop('GetCriticalCss', true) : null;
+
+		return $sCriticalCss;
 	}
 	
 	/**
 	 *
 	 *
 	 */
-	public function processCriticalCss($sCssId)
+	public function processCriticalCss($sCssCache, $oCssParser)
 	{
 		$oParser = $this->oParser;
 		$oParser->params->set('pro_InlineScripts', '0');
@@ -179,15 +208,7 @@ class JchOptimizeLinkBuilder extends JchOptimizelinkBuilderBase
 
 		$sHtml = $oParser->cleanHtml();
 
-		$oCssParser = new JchOptimizeCssParser($this->params, false);
-		$aGet = array(
-			'f' => $sCssId,
-			'i' => 0,
-			'type' => 'css'
-		);
-
-		$sCss = JchOptimizeOutput::getCombinedFile($aGet, false);
-		$aCssContents = $oCssParser->optimizeCssDelivery($sCss, $sHtml);
+		$aCssContents = $oCssParser->optimizeCssDelivery($sCssCache['file'][0], $sHtml);
 		$sCriticalCss = $oCssParser->sortImports($aCssContents['criticalcss']);
 
 		return $sCriticalCss;
@@ -479,10 +500,11 @@ class JchOptimizeLinkBuilder extends JchOptimizelinkBuilderBase
          *
          * @param string $sNewLink   Url of aggregated file
          */
-        protected function replaceLinks($sId, $sType)
+        protected function replaceLinks($sId, $sType, $sSection='head')
         {
                 JCH_DEBUG ? JchPlatformProfiler::start('ReplaceLinks - ' . $sType) : null;
 
+		$oParser = $this->oParser;
                 $sSearchArea = $this->oParser->getFullHtml();
 
                 $sLink = $this->{'getNew' . ucfirst($sType) . 'Link'}();
@@ -490,34 +512,37 @@ class JchOptimizeLinkBuilder extends JchOptimizelinkBuilderBase
 
                 $sNewLink = str_replace('URL', $sUrl, $sLink);
 
-		//If files were excluded while preserving execution order and a combined js file falls below the last excluded file,
-		//or if no files were excluded, we may need to add the async attribute or place it at the bottom 
+		//If the last javascript file on the HTML page was not excluded while preserving 
+		//execution order, we may need to place it at the bottom and add the async
+		//or defer attribute 
 		if($sType == 'js' && !$this->oParser->bExclude_js)
 		{
 			//Get last js index
 			$iIndex = $this->oParser->iIndex_js;
 			$sNewLinkLast = str_replace('JCHI', $iIndex, $sNewLink);
 
-			//Place last combined js file at bottom of page if option is set
-			if ($this->params->get('pro_bottom_js', '0') == '1')
+			//If last combined file is being inserted at the bottom of the page then
+			//add the async or defer attribute
+			if ($sSection == 'body')
 			{
 				//Add async attribute to last combined js file if option is set
 				$sNewLinkLast = str_replace('></script>', $this->getAsyncAttribute($iIndex) . '></script>', $sNewLinkLast);
-				$sSearchArea = preg_replace('#' . self::getEndBodyTag() . '#i', $this->sTab . $sNewLinkLast . $this->sLnEnd . '</body>', 
-					$sSearchArea, 1);
 			}
-			//Or put it at the bottom of the HEAD section
-			else
-			{
-				$sSearchArea = preg_replace('#' . self::getEndHeadTag() . '#i', $this->sTab . $sNewLinkLast . $this->sLnEnd . '</head>', 
-					$sSearchArea, 1);
-			}
+
+			//Insert script tag at the appropriate section in the HTML
+			$sSearchArea = preg_replace('#' . self::{'getEnd'. ucfirst($sSection) . 'Tag'}() . '#i', $this->sTab . $sNewLinkLast . $this->sLnEnd . '</'. $sSection . '>', $sSearchArea, 1); 
+
+			
 		}
 
-		$sSearchArea = preg_replace_callback('#<JCH_' . strtoupper($sType) . '([^>]++)>#',
-									   function($aM) use ($sNewLink)
+		//Replace placeholders in HTML with combined files
+		$sSearchArea = preg_replace_callback('#<JCH_' . strtoupper($sType) . '([^>]++)>#', function($aM) use ($sNewLink, $sUrl, $sType)
 		{
-			return str_replace('JCHI', $aM[1], $sNewLink);
+			$file = str_replace('JCHI', $aM[1], $sNewLink);
+
+			
+
+			return $file;
 		}, $sSearchArea);
 
                 $this->oParser->setFullHtml($sSearchArea);
@@ -575,8 +600,8 @@ class JchOptimizeLinkBuilder extends JchOptimizelinkBuilderBase
         {
                 if (!JchOptimizeHelper::isXhtml($this->oParser->sHtml))
                 {
-                        $sScript = str_replace(array('<script type="text/javascript"><![CDATA[', ']]></script>'),
-                                               array('<script type="text/javascript">', '</script>'), $sScript);
+                        $sScript = str_replace(array('<script type="text/javascript"><![CDATA[', '<script><![CDATA[',']]></script>'),
+                                               array('<script type="text/javascript">', '<script>', '</script>'), $sScript);
                 }
 
                 return $sScript;

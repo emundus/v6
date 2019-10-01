@@ -36,6 +36,10 @@ class JchOptimizeHelperBase
                 return $domains_only ? array() : $orig_path;
         }
 
+	public static function addHttp2Push($url, $type)
+	{
+		return $url;
+	}
 }
 
 /**
@@ -44,6 +48,7 @@ class JchOptimizeHelperBase
  */
 class JchOptimizeHelper extends JchOptimizeHelperBase
 {
+	public static $preloads = array();
 
         /**
          * Checks if file (can be external) exists
@@ -304,6 +309,16 @@ class JchOptimizeHelper extends JchOptimizeHelperBase
         }
 
         /**
+         * Determines if document is of html5 doctype
+         * 
+         * @return boolean	True if doctype is html5
+         */
+        public static function isHtml5($sHtml)
+        {
+                return (bool) preg_match('#^<!DOCTYPE html>#i', trim($sHtml));
+        }
+
+        /**
          * Determine if document is of XHTML doctype
          * 
          * @return boolean
@@ -342,7 +357,7 @@ class JchOptimizeHelper extends JchOptimizeHelperBase
 			$aOptions['jsonMinifier'] = array('JchOptimize\JSON_Optimize', 'optimize');
                         $aOptions['minifyLevel'] = $oParams->get('html_minify_level', 2);
                         $aOptions['isXhtml']     = self::isXhtml($sHtml);
-                        $aOptions['isHtml5']     = (bool) $oParams->get('isHtml5', false);
+                        $aOptions['isHtml5']     = self::isHtml5($sHtml);
 
                         $sHtmlMin = HTML_Optimize::optimize($sHtml, $aOptions);
 
@@ -473,6 +488,6 @@ class JchOptimizeHelper extends JchOptimizeHelperBase
                 $params->set('hidden_containsgf', '');
                 JchPlatformPlugin::saveSettings($params);
         }
-
+	
 
 }

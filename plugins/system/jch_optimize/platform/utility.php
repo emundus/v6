@@ -85,7 +85,7 @@ class JchPlatformUtility implements JchInterfaceUtility
                 jimport('joomla.log.log');
                 JLog::addLogger(
                         array(
-                        'text_file' => $filename
+                        'text_file' => 'plg_jch_optimize.debug.php'
                         ), JLog::ALL,
                         array ('plg_jch_optimize')
                 );
@@ -215,19 +215,44 @@ class JchPlatformUtility implements JchInterfaceUtility
 
         /**
          * 
-         * @param type $path
-         * @param type $filter
-         * @param type $recurse
-         * @param type $exclude
-         * @return type
+         * @param string	$path		Path of folder to read
+         * @param string 	$filter 	A regex filter for file names
+         * @param boolean 	$recurse	True to recurse into sub-folders
+         * @param array  	$exclude	An array of files to exclude
+	 *
+	 * @return array 	Full paths of files in the folder recursively
          */
-        public static function lsFiles($path, $filter = '.', $recurse = FALSE, $exclude = array())
+        public static function lsFiles($path, $filter = '.', $recurse = true, $exclude = array())
         {
                 jimport('joomla.filesystem.folder');
                 
                 $path = rtrim($path, '/\\');
                 
-                return JFolder::files($path, $filter, $recurse, TRUE, $exclude);
+                return JFolder::files($path, $filter, $recurse, true, $exclude);
         }
 
+	/**
+	 *
+	 */
+	public static function isGuest()
+	{
+	}
+
+
+	/**
+	 *
+	 */
+	public static function sendHeaders($headers)
+	{
+	//	print_r($headers); exit();
+		if (!empty($headers))
+		{
+			$app = JFactory::getApplication();
+
+			foreach ($headers as $header => $value)
+			{
+				$app->setHeader($header, $value, true);
+			}
+		}
+	}
 }

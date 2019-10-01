@@ -63,7 +63,6 @@ class EmundusViewExport_select_columns extends JViewLegacy {
 	        die(JText::_('ACCESS_DENIED'));
         }
 
-
         $m_admission = new EmundusModelAdmission;
         $m_decision = new EmundusModelDecision;
         $m_eval = new EmundusModelEvaluation;
@@ -74,7 +73,6 @@ class EmundusViewExport_select_columns extends JViewLegacy {
 
         if ($form == "decision") {
 	        $elements = $m_decision->getDecisionElementsName(0, 0, $code, $all);
-	        //$elements = $m_admission->getAdmissionElementsName(0, 0, $code);
         } elseif ($form == "admission") {
 	        $elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code, $all);
         } elseif ($form == "evaluation") {
@@ -82,8 +80,17 @@ class EmundusViewExport_select_columns extends JViewLegacy {
         } else {
 	        $elements = EmundusHelperFiles::getElements($code, $camps);
         }
-        
-        $this->assignRef('elements', $elements);
+
+	    $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($current_user->id);
+	    if ($allowed_groups !== true) {
+	    	foreach ($elements as $key => $elt) {
+	    		if (!in_array($elt->group_id, $allowed_groups)) {
+					unset($elements[$key]);
+			    }
+		    }
+	    }
+
+	    $this->assignRef('elements', $elements);
         $this->assignRef('form', $form);
         $this->assignRef('program', $program->label);
 		parent::display($tpl);

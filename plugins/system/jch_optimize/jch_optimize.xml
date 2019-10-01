@@ -2,12 +2,12 @@
 <extension version="3.3.0" type="plugin" group="system" method="upgrade">
         <name>PLG_SYSTEM_JCH_OPTIMIZE</name>
         <author>Samuel Marshall</author>
-        <creationDate>July 2018</creationDate>
+        <creationDate>September 2019</creationDate>
         <copyright>Copyright (C) 2017 Samuel Marshall. All rights reserved.</copyright>
         <license>GNU/GPLv3 http://www.gnu.org/copyleft/gpl.html</license>
         <authorEmail>sdmarshall73@gmail.com</authorEmail>
         <authorUrl>http://www.jch-optimize.net</authorUrl>
-        <version>5.2.5</version>
+        <version>5.4.3</version>
         <variant>FREE</variant>
         <description>JCH_OPTIMIZE_DESCRIPTION</description>
         <files>
@@ -22,28 +22,6 @@
         <languages folder="language">
                 <language tag="en-GB">en-GB/en-GB.plg_system_jch_optimize.ini</language>
                 <language tag="en-GB">en-GB/en-GB.plg_system_jch_optimize.sys.ini</language>
-                <language tag="de-DE">de-DE/de-DE.plg_system_jch_optimize.ini</language>
-                <language tag="de-DE">de-DE/de-DE.plg_system_jch_optimize.sys.ini</language>
-                <language tag="es-ES">es-ES/es-ES.plg_system_jch_optimize.ini</language>
-                <language tag="es-ES">es-ES/es-ES.plg_system_jch_optimize.sys.ini</language>
-                <language tag="fr-FR">fr-FR/fr-FR.plg_system_jch_optimize.ini</language>
-                <language tag="fr-FR">fr-FR/fr-FR.plg_system_jch_optimize.sys.ini</language>
-                <language tag="he-IL">he-IL/he-IL.plg_system_jch_optimize.ini</language>
-                <language tag="he-IL">he-IL/he-IL.plg_system_jch_optimize.sys.ini</language>
-                <language tag="ru-RU">ru-RU/ru-RU.plg_system_jch_optimize.ini</language>
-                <language tag="ru-RU">ru-RU/ru-RU.plg_system_jch_optimize.sys.ini</language>
-                <language tag="uk-UA">uk-UA/uk-UA.plg_system_jch_optimize.ini</language>
-                <language tag="uk-UA">uk-UA/uk-UA.plg_system_jch_optimize.sys.ini</language>
-                <language tag="pt-PT">pt-PT/pt-PT.plg_system_jch_optimize.ini</language>
-                <language tag="pt-PT">pt-PT/pt-PT.plg_system_jch_optimize.sys.ini</language>
-                <language tag="pl-PL">pl-PL/pl-PL.plg_system_jch_optimize.ini</language>
-                <language tag="pl-PL">pl-PL/pl-PL.plg_system_jch_optimize.sys.ini</language>
-                <language tag="hu-HU">hu-HU/hu-HU.plg_system_jch_optimize.ini</language>
-                <language tag="hu-HU">hu-HU/hu-HU.plg_system_jch_optimize.sys.ini</language>
-                <language tag="zh-CN">zh-CN/zh-CN.plg_system_jch_optimize.ini</language>
-                <language tag="zh-CN">zh-CN/zh-CN.plg_system_jch_optimize.sys.ini</language>
-                <language tag="zh-TW">zh-TW/zh-TW.plg_system_jch_optimize.ini</language>
-                <language tag="zh-TW">zh-TW/zh-TW.plg_system_jch_optimize.sys.ini</language>
         </languages>
         <media folder="media" destination="plg_jchoptimize">
                 <folder>css</folder>
@@ -52,6 +30,7 @@
                 <folder>assets</folder>
                 <folder>assets2</folder>      
                 <folder>assets3</folder>           
+		<folder>cache</folder>
         </media>
 
         <config>
@@ -101,6 +80,22 @@
                                        type="autosettings" 
                                        label="JCH_PRO_AUTOSETTINGS_LABEL" 
                                        description="JCH_PRO_AUTOSETTINGS_DESC" >
+                                </field>
+                                <field name="cache_lifetime" 
+                                       type="list"
+                                       default="15" 
+                                       label="JCH_CACHE_LIFETIME_LABEL" 
+                                       description="JCH_CACHE_LIFETIME_DESCRIPTION">
+                                        <option value="15">JCH_15_MIN</option>
+                                        <option value="30">JCH_30_MIN</option>
+                                        <option value="60">JCH_1_HOUR</option>
+                                        <option value="180">JCH_3_HOURS</option>
+                                        <option value="360">JCH_6_HOURS</option>
+                                        <option value="720">JCH_12_HOURS</option>
+                                        <option value="1440">JCH_1_DAY</option>
+                                        <option value="2880">JCH_2_DAYS</option>
+                                        <option value="10080">JCH_7_DAYS</option>
+                                        <option value="20160">JCH_2_WEEKS</option>
                                 </field>
                                 <field name="html_minify_level" 
                                        type="list"
@@ -162,6 +157,7 @@
                                         <option value="0">JNO</option>
                                         <option value="1">JYES</option>
                                 </field>
+				<!--
                                 <field name="log" 
                                        type="radio" 
                                        class="btn-group" 
@@ -171,6 +167,7 @@
                                         <option value="0">JNO</option>
                                         <option value="1">JYES</option>
                                 </field>
+-->
                                 <field name="group_basic_misc_end"
                                        type="jchgroup"
                                        section="end">
@@ -181,7 +178,7 @@
                                        label="JCH_GROUP_AUTO_LABEL"
                                        description="JCH_GROUP_AUTO_DESC">
                                 </field>
-                                <field type="spacer" name="suto_basic_spacer" label="JCH_AUTO_BASIC_LABEL" />
+                                <field type="spacer" name="auto_basic_spacer" label="JCH_AUTO_BASIC_LABEL" />
                                 <field name="css"
                                        type="radio" 
                                        class="btn-group s1-on s2-on s3-on s4-on s5-on s6-on" 
@@ -255,7 +252,7 @@
                                         <option value="0">JNO</option>
                                         <option value="1">JYES</option>
                                 </field>
-                                <field type="spacer" name="suto_pro_spacer" label="JCH_AUTO_PRO_LABEL" />
+                                <field type="spacer" name="auto_pro_spacer" label="JCH_AUTO_PRO_LABEL" />
                                 <field name="pro_replaceImports" 
                                        type="ProOnly" 
                                        class="btn-group s1-on s2-on s3-on s4-on s5-on s6-on" 
@@ -371,6 +368,7 @@
                                        description="JCH_GROUP_EXCLUDE_PEO_DESC">
                                 </field>
                                 
+                                <field type="spacer" name="exclude_css_spacer" label="JCH_CSS_SPACER_LABEL" />
                                 <field name="excludeCss" 
                                        type="excludecss"  
                                        rows="3" 
@@ -379,14 +377,6 @@
                                        label="EXCLUDE_CSS_LABEL" 
                                        description="EXCLUDE_CSS_DESCRIPTION">
                                 </field>
-                                <field name="excludeJs_peo" 
-                                       type="excludejs" 
-                                       rows="3" 
-                                       default="" 
-                                       cols="20" 
-                                       label="EXCLUDE_JS_LABEL" 
-                                       description="EXCLUDE_JS_DESCRIPTION">
-                                </field>
                                 <field name="excludeCssComponents" 
                                        type="excludecssextns" 
                                        rows="3" 
@@ -394,6 +384,23 @@
                                        cols="20" 
                                        label="EXCLUDE_CSS_COMPONENTS_LABEL" 
                                        description="EXCLUDE_CSS_COMPONENTS_DESCRIPTION">
+                                </field>
+                                <field name="pro_excludeStyles" 
+                                       type="ProOnly"  
+                                       rows="3" 
+                                       default="" 
+                                       cols="20" 
+                                       label="JCH_PRO_EXCLUDE_STYLES_LABEL" 
+                                       description="JCH_PRO_EXCLUDE_STYLES_DESC">
+                                </field>
+                                <field type="spacer" name="exclude_js_spacer" label="JCH_JS_SPACER_LABEL" />
+                                <field name="excludeJs_peo" 
+                                       type="excludejs" 
+                                       rows="3" 
+                                       default="" 
+                                       cols="20" 
+                                       label="EXCLUDE_JS_LABEL" 
+                                       description="EXCLUDE_JS_DESCRIPTION">
                                 </field>
                                 <field name="excludeJsComponents_peo" 
                                        type="excludejsextns" 
@@ -411,14 +418,6 @@
                                        description="JCH_PRO_LOADFILESASYNC_DESC" 
                                        default="" >
 				</field> -->
-                                <field name="pro_excludeStyles" 
-                                       type="ProOnly"  
-                                       rows="3" 
-                                       default="" 
-                                       cols="20" 
-                                       label="JCH_PRO_EXCLUDE_STYLES_LABEL" 
-                                       description="JCH_PRO_EXCLUDE_STYLES_DESC">
-                                </field>
                                 <field name="pro_excludeScripts_peo" 
                                        type="ProOnly"  
                                        rows="3" 
@@ -427,6 +426,7 @@
                                        label="JCH_PRO_EXCLUDE_SCRIPT_LABEL" 
                                        description="JCH_PRO_EXCLUDE_SCRIPT_DESC">
                                 </field>
+                                <field type="spacer" name="exclude_all_scripts_spacer" label="JCH_ALL_SCRIPTS_SPACER_LABEL" />
                                 <field name="pro_excludeAllStyles" 
                                        type="ProOnly" 
 				       class="btn-group"
@@ -455,6 +455,7 @@
                                        label="JCH_GROUP_EXCLUDE_IEO_LABEL"
                                        description="JCH_GROUP_EXCLUDE_IEO_DESC">
                                 </field>
+                                <field type="spacer" name="exclude_js_ieo_spacer" label="JCH_JS_SPACER_LABEL" />
                                 <field name="excludeJs" 
                                        type="excludejs" 
                                        rows="3" 
@@ -632,6 +633,152 @@
                                        type="jchgroup"
                                        section="end">
                                 </field>
+				<field name="group_http2_push_start"
+					type="jchgroup"
+					section="start"
+					label="JCH_PRO_HTTP2_PUSH_LABEL"
+					description="JCH_PRO_HTTP2_PUSH_DESC">
+				</field>
+				<field name="pro_http2_push_enable"
+					type="ProOnly"
+					class="btn-group"
+					label="JCH_ENABLE"
+					default="0">
+                                        <option value="0">JNO</option>
+                                        <option value="1">JYES</option>
+                                </field>
+				<field name="pro_http2_exclude_deferred"
+					type="ProOnly"
+					class="btn-group"
+					label="JCH_PRO_HTTP2_EXCLUDE_DEFERRED_LABEL"
+					description="JCH_PRO_HTTP2_EXCLUDE_DEFERRED_DESC"
+				       	default="0">
+                                        <option value="0">JNO</option>
+                                        <option value="1">JYES</option>
+                                </field>
+				<field name="pro_http2_file_types"
+					type="ProOnly"
+					label="JCH_PRO_HTTP2_FILE_TYPES_LABEL"
+					description="JCH_PRO_HTTP2_FILE_TYPES_DESC"
+					checked="style,script,font,image">
+					<option value="style">style</option>
+					<option value="script">script</option>
+					<option value="font">font</option>
+					<option value="image">image</option>
+				</field>
+				<field name="group_http2_push_end"
+					type="jchgroup"
+					section="end">
+                                </field>
+                                <field name="group_pro_optimizecssdelivery_start"
+                                       type="jchgroup"
+                                       section="start"
+                                       label="JCH_PRO_OPTIMIZECSSDELIVERY_LABEL"
+                                       description="JCH_PRO_OPTIMIZECSSDELIVERY_DESC">
+                                </field>
+                                <field name="pro_optimizeCssDelivery_enable" 
+                                       type="ProOnly" 
+                                       class="btn-group"
+                                       label="JCH_ENABLE" 
+                                       default="0" >
+                                        <option value="0">JNO</option>
+                                        <option value="1">JYES</option>
+                                </field>
+                                <field name="pro_optimizeCssDelivery" 
+                                       type="ProOnly" 
+                                       label="JCH_PRO_NUMBERELEMENTS_LABEL" 
+                                       default="200" >
+                                        <option value="200">200</option>
+                                        <option value="400">400</option>
+                                        <option value="600">600</option>
+                                        <option value="800">800</option>
+                                </field>          
+				<!--<field name="pro_optimizeCssDelivery_loadFile" 
+                                       type="ProOnly" 
+                                       label="JCH_PRO_OCDLOADFILE_LABEL" 
+                                       description="JCH_PRO_OCDLOADFILE_DESC" 
+                                       default="0" >
+                                        <option value="0">JCH_PRO_AFTERLOAD</option>
+                                        <option value="1">JCH_PRO_AFTERPAINT</option>
+                                </field>                       
+			       --> 
+                                <field name="group_pro_optimizecssdelivery_end"
+                                       type="jchgroup"
+                                       section="end">
+                                </field>   
+                                <field name="group_pro_lazyload_start"
+                                       type="jchgroup"
+                                       section="start"
+                                       label="JCH_PRO_LAZYLOAD_LABEL"
+                                       description="JCH_PRO_LAZYLOAD_DESC">
+                                </field>
+                                <field name="pro_lazyload" 
+                                       type="ProOnly" 
+                                       class="btn-group"
+                                       label="JCH_ENABLE" 
+                                       description="JCH_PRO_LAZYLOAD_DESC" 
+                                       default="0" >
+                                        <option value="0">JNO</option>
+                                        <option value="1">JYES</option>
+                                </field>
+				<!--
+                                <field name="pro_lazyload_video" 
+                                       type="ProOnly" 
+                                       class="btn-group"
+                                       label="JCH_PRO_LAZYLOAD_VIDEO_LABEL" 
+                                       description="JCH_PRO_LAZYLOAD_VIDEO_DESC" 
+                                       default="0" >
+                                        <option value="0">JNO</option>
+                                        <option value="1">JYES</option>
+                                </field>
+			       --> 
+                                <field name="pro_excludeLazyLoad" 
+                                       type="ProOnly"  
+                                       rows="3" 
+                                       default="" 
+                                       cols="20" 
+                                       label="JCH_PRO_EXCLUDE_LAZYLOAD_LABEL" 
+                                       description="JCH_PRO_EXCLUDE_LAZYLOAD_DESC">
+                                </field> 
+                                <field name="pro_excludeLazyLoadFolders" 
+                                       type="ProOnly"  
+                                       rows="3" 
+                                       default="" 
+                                       cols="20" 
+                                       label="JCH_PRO_EXCLUDE_LAZYLOADFOLDER_LABEL" 
+                                       description="JCH_PRO_EXCLUDE_LAZYLOADFOLDER_DESC">
+                                </field> 
+                                <field name="pro_excludeLazyLoadClass" 
+                                       type="ProOnly"  
+                                       rows="3" 
+                                       default="" 
+                                       cols="20" 
+                                       label="JCH_PRO_EXCLUDE_LAZYLOADCLASS_LABEL" 
+                                       description="JCH_PRO_EXCLUDE_LAZYLOADCLASS_DESC">
+                                </field> 
+                                <field name="pro_lazyload_effects" 
+                                       type="ProOnly" 
+                                       class="btn-group"
+                                       label="JCH_PRO_LAZYLOAD_EFFECTS_LABEL" 
+                                       description="JCH_PRO_LAZYLOAD_EFFECTS_DESC" 
+                                       default="0" >
+                                        <option value="0">JNO</option>
+                                        <option value="1">JYES</option>
+                                </field>
+                                <field name="pro_lazyload_autosize" 
+                                       type="ProOnly" 
+                                       class="btn-group"
+                                       label="JCH_PRO_LAZYLOAD_AUTOSIZE_LABEL" 
+                                       description="JCH_PRO_LAZYLOAD_AUTOSIZE_DESC" 
+                                       default="0" >
+                                        <option value="0">JNO</option>
+                                        <option value="1">JYES</option>
+                                </field>
+                                <field name="group_pro_lazyload_end"
+                                       type="jchgroup"
+                                       section="end">
+                                </field>
+                                
                                 <field name="group_pro_cdn_start"
                                        type="jchgroup"
                                        section="start"
@@ -667,7 +814,7 @@
                                        type="ProOnly"
                                        label="JCH_PRO_STATICFILES_LABEL" 
                                        description="JCH_PRO_STATICFILES_DESC"
-                                       checked="css,js,jpe?g,gif,png,ico,bmp,pdf,tiff?,docx?">
+                                       checked="css,js,jpe?g,gif,png,ico,bmp,pdf,webp,svg">
                                         <option value="css">css</option>
                                         <option value="png">png</option>
                                         <option value="gif">gif</option>
@@ -676,9 +823,18 @@
                                         <option value="js">js</option>
                                         <option value="jpe?g">jp(e)g</option>
                                         <option value="bmp">bmp</option>
-                                        <option value="tiff?">tif(f)</option>
-                                        <option value="docx?">doc(x)</option>
+                                        <option value="webp">webp</option>
+                                        <option value="svg">svg</option>
                                 </field>
+				<field name="pro_customcdnextensions"
+					type="ProOnly"
+                                       rows="3" 
+                                       default="" 
+                                       cols="20" 
+				       label="JCH_PRO_CUSTOMEXTENSION_LABEL" 
+				       description="JCH_PRO_CUSTOMEXTENSION_DESC"
+					>
+				</field>
                                 <field name="pro_cookielessdomain_2" 
                                        type="ProOnly" 
                                        default="" 
@@ -699,8 +855,8 @@
                                         <option value="js">js</option>
                                         <option value="jpe?g">jp(e)g</option>
                                         <option value="bmp">bmp</option>
-                                        <option value="tiff?">tif(f)</option>
-                                        <option value="docx?">doc(x)</option>
+                                        <option value="webp">webp</option>
+                                        <option value="svg">svg</option>
                                 </field>
                                 <field name="pro_cookielessdomain_3" 
                                        type="ProOnly" 
@@ -722,104 +878,13 @@
                                         <option value="js">js</option>
                                         <option value="jpe?g">jp(e)g</option>
                                         <option value="bmp">bmp</option>
-                                        <option value="tiff?">tif(f)</option>
-                                        <option value="docx?">doc(x)</option>
+                                        <option value="webp">webp</option>
+                                        <option value="svg">svg</option>
                                 </field>
                                 <field name="group_pro_cdn_end"
                                        type="jchgroup"
                                        section="end">
                                 </field>
-                                <field name="group_pro_lazyload_start"
-                                       type="jchgroup"
-                                       section="start"
-                                       label="JCH_PRO_LAZYLOAD_LABEL"
-                                       description="JCH_PRO_LAZYLOAD_DESC">
-                                </field>
-                                <field name="pro_lazyload" 
-                                       type="ProOnly" 
-                                       class="btn-group"
-                                       label="JCH_ENABLE" 
-                                       description="JCH_PRO_LAZYLOAD_DESC" 
-                                       default="0" >
-                                        <option value="0">JNO</option>
-                                        <option value="1">JYES</option>
-                                </field>
-                                
-                                <field name="pro_excludeLazyLoad" 
-                                       type="ProOnly"  
-                                       rows="3" 
-                                       default="" 
-                                       cols="20" 
-                                       label="JCH_PRO_EXCLUDE_LAZYLOAD_LABEL" 
-                                       description="JCH_PRO_EXCLUDE_LAZYLOAD_DESC">
-                                </field> 
-                                <field name="pro_excludeLazyLoadFolders" 
-                                       type="ProOnly"  
-                                       rows="3" 
-                                       default="" 
-                                       cols="20" 
-                                       label="JCH_PRO_EXCLUDE_LAZYLOADFOLDER_LABEL" 
-                                       description="JCH_PRO_EXCLUDE_LAZYLOADFOLDER_DESC">
-                                </field> 
-                                <field name="pro_excludeLazyLoadClass" 
-                                       type="ProOnly"  
-                                       rows="3" 
-                                       default="" 
-                                       cols="20" 
-                                       label="JCH_PRO_EXCLUDE_LAZYLOADCLASS_LABEL" 
-                                       description="JCH_PRO_EXCLUDE_LAZYLOADCLASS_DESC">
-                                </field> 
-                                <field name="pro_lazyload_forceload" 
-                                       type="ProOnly" 
-                                       class="btn-group"
-                                       label="JCH_PRO_LAZYLOAD_FORCELOAD_LABEL" 
-                                       description="JCH_PRO_LAZYLOAD_FORCELOAD_DESC" 
-                                       default="0" >
-                                        <option value="0">JNO</option>
-                                        <option value="1">JYES</option>
-                                </field>
-                                <field name="group_pro_lazyload_end"
-                                       type="jchgroup"
-                                       section="end">
-                                </field>
-                                <field name="group_pro_optimizecssdelivery_start"
-                                       type="jchgroup"
-                                       section="start"
-                                       label="JCH_PRO_OPTIMIZECSSDELIVERY_LABEL"
-                                       description="JCH_PRO_OPTIMIZECSSDELIVERY_DESC">
-                                </field>
-                                <field name="pro_optimizeCssDelivery_enable" 
-                                       type="ProOnly" 
-                                       class="btn-group"
-                                       label="JCH_ENABLE" 
-                                       default="0" >
-                                        <option value="0">JNO</option>
-                                        <option value="1">JYES</option>
-                                </field>
-                                <field name="pro_optimizeCssDelivery" 
-                                       type="ProOnly" 
-                                       label="JCH_PRO_NUMBERELEMENTS_LABEL" 
-                                       description="JCH_PRO_NUMBERELEMENTS_DESC" 
-                                       default="200" >
-                                        <option value="200">200</option>
-                                        <option value="400">400</option>
-                                        <option value="600">600</option>
-                                        <option value="800">800</option>
-                                </field>          
-                                <field name="pro_optimizeCssDelivery_loadFile" 
-                                       type="ProOnly" 
-                                       label="JCH_PRO_OCDLOADFILE_LABEL" 
-                                       description="JCH_PRO_OCDLOADFILE_DESC" 
-                                       default="0" >
-                                        <option value="0">JCH_PRO_AFTERLOAD</option>
-                                        <option value="1">JCH_PRO_AFTERPAINT</option>
-                                </field>                       
-                                
-                                <field name="group_pro_optimizecssdelivery_end"
-                                       type="jchgroup"
-                                       section="end">
-                                </field>   
-                                
                         </fieldset>
                         <fieldset name="JCH_OPTIMIZE_IMAGES">
                                 <field name="group_optimize_images_start"
@@ -838,14 +903,14 @@
                                         <option value="0">JNO</option>
                                         <option value="1">JYES</option>
                                 </field>-->
-                                <field name="kraken_backup" 
-                                       type="list" 
-                                       default=""
-                                       size="1"
-                                       label="JCH_KRAKEN_BACKUP_LABEL" 
-                                       description="JCH_KRAKEN_BACKUP_DESCRIPTION">
-                                        <option value="1">JCH_KRAKEN_BACKUP_ALL</option>
-                                        <option value="0">JCH_KRAKEN_BACKUP_RESIZED</option>
+                                <field name="ignore_optimized" 
+                                       type="radio" 
+                                       class="btn-group"
+				       label="JCH_IGNORE_OPTIMIZED_LABEL" 
+				       description="JCH_IGNORE_OPTIMIZED_DESC"
+                                       default="1" >
+                                        <option value="0">JNO</option>
+                                        <option value="1">JYES</option>
                                 </field>
                                 <field name="group_optimize_images_end"
                                        type="jchgroup"

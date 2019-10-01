@@ -12,6 +12,7 @@
  * details.
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
+$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 ?>
 <input type="hidden" id="view" name="view" value="decision">
 <div class="panel panel-default em-data">
@@ -103,12 +104,18 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                                         <span class="label label-<?php echo $value->status_class ?>" title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
 									<?php elseif ($k == 'fnum') :?>
 										<a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>" class="em_file_open">
-											<div class="em_list_photo"><?php echo $value->photo; ?></div>
-											<div class="em_list_text">
-												<span class="em_list_text" title="<?php echo $value->val ?>"> <strong> <?php echo $value->user->name; ?></strong></span>
-												<div class="em_list_email"><?php echo $value->user->email; ?></div>
-												<div class="em_list_email"><?php echo $value->user->id; ?></div>
-											</div>
+											<?php if (isset($value->photo) && !$anonymize_data) :?>
+                                                <div class="em_list_photo"><?= $value->photo; ?></div>
+											<?php endif; ?>
+                                            <div class="em_list_text">
+												<?php if ($anonymize_data) :?>
+                                                    <div class="em_list_fnum"><?= $value->val; ?></div>
+												<?php else :?>
+                                                    <span class="em_list_text" title="<?= $value->val; ?>"> <strong> <?= $value->user->name; ?></strong></span>
+                                                    <div class="em_list_email"><?= $value->user->email; ?></div>
+                                                    <div class="em_list_email"><?= $value->user->id; ?></div>
+												<?php endif; ?>
+                                            </div>
 										</a>
 									<?php elseif ($k == "access") :?>
 										<?php echo $this->accessObj[$line['fnum']->val]?>

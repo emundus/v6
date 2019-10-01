@@ -12,6 +12,8 @@
  * details.
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
+
+$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 ?>
 
 <input type="hidden" id="view" name="view" value="files">
@@ -76,10 +78,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 										<span class="glyphicon glyphicon-sort-by-attributes"></span>
 									<?php endif;?>
 									<strong>
-										<?= JText::_($v)?>
+										<?= JText::_($v); ?>
 									</strong>
 								<?php else: ?>
-									<?= JText::_($v)?>
+									<?= JText::_($v); ?>
 								<?php endif;?>
 
 							</div>
@@ -92,32 +94,36 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 				<?php foreach ($this->datas as $key => $line):?>
 					<?php if ($key != 0): ?>
 						<tr>
-							<?php foreach ($line as $k => $value):?>
+							<?php foreach ($line as $k => $value) :?>
 								<td <?php if ($k == 'check'&& $value->class != null) { echo 'class="'.$value->class.'"'; } ?>>
 									<div class="em-cell" >
 										<?php if ($k == 'check'): ?>
-											<label for = "<?= $line['fnum']->val ?>_check">
-												<input type="checkbox" name="<?= $line['fnum']->val ?>_check" id="<?= $line['fnum']->val ?>_check" class='em-check' style="width:20px !important;"/>
+											<label for = "<?= $line['fnum']->val; ?>_check">
+												<input type="checkbox" name="<?= $line['fnum']->val; ?>_check" id="<?= $line['fnum']->val; ?>_check" class='em-check' style="width:20px !important;"/>
 												<?php
 													$tab = explode('-', $key);
-													echo ($tab[1] + $this->pagination->limitstart);
+													echo $tab[1] + $this->pagination->limitstart;
 												?>
 											</label>
 										<?php elseif ($k == 'status'):?>
-											<span class="label label-<?= $value->status_class ?>" title="<?= $value->val ?>"><?= $value->val ?></span>
+											<span class="label label-<?= $value->status_class; ?>" title="<?= $value->val; ?>"><?= $value->val; ?></span>
 										<?php elseif ($k == 'fnum'):?>
-											<a href="#<?= $value->val ?>|open" id="<?= $value->val ?>" class="em_file_open">
-												<?php if (isset($value->photo)) :?>
+											<a href="#<?= $value->val; ?>|open" id="<?= $value->val; ?>" class="em_file_open">
+												<?php if (isset($value->photo) && !$anonymize_data) :?>
 													<div class="em_list_photo"><?= $value->photo; ?></div>
 												<?php endif; ?>
 												<div class="em_list_text">
-													<span class="em_list_text" title="<?= $value->val ?>"> <strong> <?= $value->user->name; ?></strong></span>
-													<div class="em_list_email"><?= $value->user->email; ?></div>
-													<div class="em_list_email"><?= $value->user->id; ?></div>
+                                                    <?php if ($anonymize_data) :?>
+                                                        <div class="em_list_fnum"><?= $value->val; ?></div>
+                                                    <?php else :?>
+                                                        <span class="em_list_text" title="<?= $value->val; ?>"> <strong> <?= $value->user->name; ?></strong></span>
+                                                        <div class="em_list_email"><?= $value->user->email; ?></div>
+                                                        <div class="em_list_email"><?= $value->user->id; ?></div>
+                                                    <?php endif; ?>
 												</div>
 											</a>
 									<?php elseif ($k == "access"):?>
-										<?= $this->accessObj[$line['fnum']->val]?>
+										<?= $this->accessObj[$line['fnum']->val]; ?>
 									<?php elseif ($k == "id_tag"):?>
 										<?= @$this->colsSup['id_tag'][$line['fnum']->val]?>
                                     <?php elseif (array_key_exists($k, $this->colsSup)) :?>

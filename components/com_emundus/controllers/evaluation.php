@@ -1162,10 +1162,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
             die( JText::_('RESTRICTED_ACCESS') );
 
         $m_files = $this->getModel('Files');
-        $modelApp = $this->getModel('Application');
-        $modelEval = $this->getModel('Evaluation');
+        $m_application = $this->getModel('Application');
 
-        $session     = JFactory::getSession();
+        $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
 
         $jinput = JFactory::getApplication()->input;
@@ -1180,13 +1179,6 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         $col = $this->getcolumn($elts);
 
-        /*$eval_elements_id = array();
-        $show_in_list_summary = 0;
-        $hidden = 0;
-        $eval_elements_id = $modelEval->getEvaluationElements($show_in_list_summary, $hidden);
-        //die(var_dump($eval_elements_id));
-        $col = array_merge($col,  );
-        */
         $colsup  = $this->getcolumnSup($objs);
         $colOpt = array();
         if (!$csv = fopen(JPATH_BASE.DS.'tmp'.DS.$file, 'a')){
@@ -1199,13 +1191,13 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         // re-order elements
         $ordered_elements = array();
-        foreach($col as $c){
+        foreach ($col as $c) {
             $ordered_elements[$c] = $elements[$c];
         }
         $fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, 0, $start, $limit, 0);
 
         // On met a jour la liste des fnums traités
-        $fnums =array();
+        $fnums = array();
         foreach ($fnumsArray as $fnum) {
             array_push($fnums, $fnum['fnum']);
         }
@@ -1213,13 +1205,26 @@ class EmundusControllerEvaluation extends JControllerLegacy
             $col = explode('.', $col);
             switch ($col[0]) {
                 case "photo":
-                    $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos();
+	                $photos = $m_files->getPhotos($fnums);
+	                if (count($photos) > 0) {
+		                $pictures = array();
+		                foreach ($photos as $photo) {
+
+			                $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
+
+			                $link = '=HYPERLINK("'.$folder.'/tn_'.$photo['filename'] . '","'.$photo['filename'].'")';
+			                $pictures[$photo['fnum']] = $link;
+		                }
+		                $colOpt['PHOTO'] = $pictures;
+	                } else {
+		                $colOpt['PHOTO'] = array();
+	                }
                     break;
                 case "forms":
-                    $colOpt['forms'] = $modelApp->getFormsProgress(null, null, $fnums);
+                    $colOpt['forms'] = $m_application->getFormsProgress(null, null, $fnums);
                     break;
                 case "attachment":
-                    $colOpt['attachment'] = $modelApp->getAttachmentsProgress(null, null, $fnums);
+                    $colOpt['attachment'] = $m_application->getAttachmentsProgress(null, null, $fnums);
                     break;
                 case "assessment":
                     $colOpt['assessment'] = @EmundusHelperFiles::getEvaluation('text', $fnums);

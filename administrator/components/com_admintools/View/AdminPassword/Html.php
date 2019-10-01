@@ -17,16 +17,25 @@ class Html extends BaseView
 	/**
 	 * .htaccess username
 	 *
-	 * @var  string
+	 * @var   string
 	 */
 	public $username;
 
 	/**
 	 * .htaccess password
 	 *
-	 * @var  string
+	 * @var   string
 	 */
 	public $password;
+
+	/**
+	 * Should I reset custom error pages?
+	 *
+	 * @var   bool
+	 *
+	 * @since 5.3.4
+	 */
+	public $resetErrorPages;
 
 	/**
 	 * Is the backend locked?
@@ -40,8 +49,9 @@ class Html extends BaseView
 		/** @var AdminPassword $model */
 		$model = $this->getModel();
 
-		$this->username     = $this->input->get('username', '', 'raw', 2);
-		$this->password     = $this->input->get('password', '', 'raw', 2);
-		$this->adminLocked  = $model->isLocked();
+		$this->username        = $this->input->get('username', '', 'raw', 2);
+		$this->password        = $this->input->get('password', '', 'raw', 2);
+		$this->resetErrorPages = $this->input->get('resetErrorPages', 1, 'int');
+		$this->adminLocked     = $model->isLocked();
 	}
 }

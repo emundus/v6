@@ -51,9 +51,19 @@ class Pkg_AdmintoolsInstallerScript
 	 *
 	 * @var array
 	 */
-	protected $extensionsToEnable = array(
-		array('plugin', 'admintools', 1, 'system'),
-	);
+	protected $extensionsToEnable = [
+		['plugin', 'admintools', 1, 'system'],
+	];
+
+	/**
+	 * Like above, but enable these extensions on installation OR update. Use this sparringly. It overrides the
+	 * preferences of the user. Ideally, this should only be used for installer plugins.
+	 *
+	 * @var array
+	 */
+	protected $extensionsToAlwaysEnable = [
+		['plugin', 'admintools', 1, 'installer'],
+	];
 
 	/**
 	 * =================================================================================================================
@@ -103,11 +113,22 @@ class Pkg_AdmintoolsInstallerScript
 			return false;
 		}
 
-		// Try to install FOF. We need to do this in preflight to make sure that FOF is available when we install our
-		// component. The reason being that the component's installation script extends FOF's InstallScript class.
-		// We can't use a <file> tag in our package manifest because FOF's package is *supposed* to fail to install if
-		// a newer version is already installed. This would unfortunately cancel the installation of the entire package,
-		// so we have to get a bit tricky.
+		// HHVM made sense in 2013, now PHP 7 is a way better solution than an hybrid PHP interpreter
+		if (defined('HHVM_VERSION'))
+		{
+			$msg = "<p>We have detected that you are running HHVM instead of PHP. This software WILL NOT WORK properly on HHVM. Please switch to PHP 7 instead.</p>";
+			JLog::add($msg, JLog::WARNING, 'jerror');
+
+			return false;
+		}
+
+		/**
+		 * Try to install FOF. We need to do this in preflight to make sure that FOF is available when we install our
+		 * component. The reason being that the component's installation script extends FOF's InstallScript class.
+		 * We can't use a <file> tag in our package manifest because FOF's package is *supposed* to fail to install if
+		 * a newer version is already installed. This would unfortunately cancel the installation of the entire package,
+		 * so we have to get a bit tricky.
+		 */
 		$this->installOrUpdateFOF($parent);
 
 		return true;
@@ -123,6 +144,12 @@ class Pkg_AdmintoolsInstallerScript
 	 */
 	public function postflight($type, $parent)
 	{
+		// Always enable these extensions
+		if (isset($this->extensionsToAlwaysEnable) && !empty($this->extensionsToAlwaysEnable))
+		{
+			$this->enableExtensions($this->extensionsToAlwaysEnable);
+		}
+
 		/**
 		 * Try to install FEF. We only need to do this in postflight. A failure, while detrimental to the display of the
 		 * extension, is non-fatal to the installation and can be rectified by manual installation of the FEF package.
@@ -175,7 +202,7 @@ class Pkg_AdmintoolsInstallerScript
 	}
 
 	/**
-	 * Tuns on installation (but not on upgrade). This happens in install and discover_install installation routes.
+	 * Runs on installation (but not on upgrade). This happens in install and discover_install installation routes.
 	 *
 	 * @param   \JInstallerAdapterPackage  $parent  Parent object
 	 *
@@ -305,10 +332,10 @@ class Pkg_AdmintoolsInstallerScript
 		$db = $parent->getParent()->getDbo();
 
 		$query = $db->getQuery(true)
-		            ->select('extension_id')
-		            ->from('#__extensions')
-		            ->where('type = ' . $db->quote('library'))
-		            ->where('element = ' . $db->quote('lib_fof30'));
+			->select('extension_id')
+			->from('#__extensions')
+			->where('type = ' . $db->quote('library'))
+			->where('element = ' . $db->quote('lib_fof30'));
 
 		$db->setQuery($query);
 		$id = $db->loadResult();
@@ -404,12 +431,18 @@ class Pkg_AdmintoolsInstallerScript
 		}
 	}
 
+
 	/**
 	 * Enable modules and plugins after installing them
 	 */
-	private function enableExtensions()
+	private function enableExtensions($extensions = [])
 	{
-		foreach ($this->extensionsToEnable as $ext)
+		if (empty($extensions))
+		{
+			$extensions = $this->extensionsToEnable;
+		}
+
+		foreach ($extensions as $ext)
 		{
 			$this->enableExtension($ext[0], $ext[1], $ext[2], $ext[3]);
 		}
@@ -429,10 +462,10 @@ class Pkg_AdmintoolsInstallerScript
 		{
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true)
-			            ->update('#__extensions')
-			            ->set($db->qn('enabled') . ' = ' . $db->q(1))
-			            ->where('type = ' . $db->quote($type))
-			            ->where('element = ' . $db->quote($name));
+				->update('#__extensions')
+				->set($db->qn('enabled') . ' = ' . $db->q(1))
+				->where('type = ' . $db->quote($type))
+				->where('element = ' . $db->quote($name));
 		}
 		catch (\Exception $e)
 		{
@@ -486,9 +519,9 @@ class Pkg_AdmintoolsInstallerScript
 		$db = JFactory::getDbo();
 
 		$query = $db->getQuery(true)
-		            ->select($db->qn('value'))
-		            ->from($db->qn('#__akeeba_common'))
-		            ->where($db->qn('key') . ' = ' . $db->q($package));
+			->select($db->qn('value'))
+			->from($db->qn('#__akeeba_common'))
+			->where($db->qn('key') . ' = ' . $db->q($package));
 
 		try
 		{
@@ -519,8 +552,8 @@ class Pkg_AdmintoolsInstallerScript
 		$db = JFactory::getDbo();
 
 		$query = $db->getQuery(true)
-		            ->delete('#__akeeba_common')
-		            ->where($db->qn('key') . ' = ' . $db->q($package));
+			->delete('#__akeeba_common')
+			->where($db->qn('key') . ' = ' . $db->q($package));
 
 		try
 		{

@@ -1992,21 +1992,25 @@ if (JFactory::getUser()->id == 63)
      * @param $fnum
      * @return bool|mixed
      */
-    public static function getFnumInfos($fnum)
-    {
-        try
-        {
+    public static function getFnumInfos($fnum) {
+        try {
             $db = JFactory::getDBO();
             $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, c.*
                         from #__emundus_campaign_candidature as cc
                         left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id left join
                         #__users as u on u.id = cc.applicant_id where cc.fnum like '.$db->Quote($fnum);
             $db->setQuery($query);
+            $fnumInfos = $db->loadAssoc();
 
-            return $db->loadAssoc();
-        }
-        catch (Exception $e)
-        {
+	        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+	        if ($anonymize_data) {
+				$fnumInfos['name'] = $fnum;
+				$fnumInfos['email'] = $fnum;
+	        }
+
+	        return $fnumInfos;
+
+        } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
@@ -2165,10 +2169,17 @@ if (JFactory::getUser()->id == 63)
     *   @param elements     array of element to get value
     *   @return array
     */
-    public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1)
-    {
-        $db = $this->getDbo();
-        $query = 'select c.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
+    public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1) {
+
+    	$db = $this->getDbo();
+
+	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+	    if ($anonymize_data) {
+		    $query = 'select c.fnum, esc.label, sp.code, esc.id as campaign_id';
+	    } else {
+		    $query = 'select c.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
+	    }
+
         $leftJoin = '';
         $leftJoinMulti = '';
         $tableAlias = [
@@ -2187,11 +2198,13 @@ if (JFactory::getUser()->id == 63)
 
                 $tableAlias[$elt->tab_name] = $elt->tab_name;
 
-                if (!isset($lastTab))
-                    $lastTab = array();
+                if (!isset($lastTab)) {
+	                $lastTab = array();
+                }
 
-                if (!in_array($elt->tab_name, $lastTab))
-                    $leftJoin .= ' left join ' . $elt->tab_name .  ' on '. $elt->tab_name .'.fnum = c.fnum ';
+                if (!in_array($elt->tab_name, $lastTab)) {
+	                $leftJoin .= ' left join '.$elt->tab_name.' on '.$elt->tab_name.'.fnum = c.fnum ';
+                }
 
                 $lastTab[] = $elt->tab_name;
             }
@@ -2199,8 +2212,9 @@ if (JFactory::getUser()->id == 63)
             if ($params_group->repeat_group_button == 1) {
                 if ($methode == 1) {
                     $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
-                    if (!in_array($elt->table_join, $lastTab))
-                        $leftJoinMulti .= ' left join ' . $elt->table_join.' on '. $elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+                    if (!in_array($elt->table_join, $lastTab)) {
+	                    $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+                    }
                     $lastTab[] = $elt->table_join;
                 } else {
                     if ($elt->element_plugin == 'databasejoin') {
@@ -2245,26 +2259,25 @@ if (JFactory::getUser()->id == 63)
                     }
                 }
             } else {
-                //$select = $tableAlias[$elt->tab_name].'.'.$elt->element_name;
                 $select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
                 $if = array();
                 $endif = '';
 
-                if ($raw == 1)
-                    $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name.'_raw';
+                if ($raw == 1) {
+	                $query .= ', '.$select.' AS '.$tableAlias[$elt->tab_name].'___'.$elt->element_name.'_raw';
+                }
 
                 if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
                     $element_attribs = json_decode($elt->element_attribs);
                     foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                         $if[] = 'IF('.$select.'="'.$value.'","'.$element_attribs->sub_options->sub_labels[$key].'"';
                         $endif .= ')';
-                        //$select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
                     }
                     $select = implode(',', $if).','.$select.$endif;
-                }
-                elseif ($elt->element_plugin == 'databasejoin') {
-                    $element_attribs = json_decode($elt->element_attribs);
-                    //$elt_array = json_decode(json_encode($elt), true); /*object to array*/
+
+                } elseif ($elt->element_plugin == 'databasejoin') {
+
+                	$element_attribs = json_decode($elt->element_attribs);
 
                     if ($element_attribs->database_join_display_type == "checkbox") {
                         $t = $tableAlias[$elt->tab_name].'_repeat_'.$elt->element_name;
@@ -2280,9 +2293,10 @@ if (JFactory::getUser()->id == 63)
                             FROM '.$element_attribs->join_db_name.' as t
                             WHERE t.'.$element_attribs->join_key_column.'='.$tableAlias[$elt->tab_name].'.'.$elt->element_name.')';
                     }
-                }
-                elseif ($elt->element_plugin == 'cascadingdropdown') {
-	                $element_attribs = json_decode($elt->element_attribs);
+
+                } elseif ($elt->element_plugin == 'cascadingdropdown') {
+
+                	$element_attribs = json_decode($elt->element_attribs);
 	                $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
 	                $where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$elt->tab_name.'.'.$elt->element_name;
 	                $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->cascadingdropdown_label_concat).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
@@ -2312,8 +2326,6 @@ if (JFactory::getUser()->id == 63)
 	        $query .= ' LIMIT '.$pas.' OFFSET '.$start;
         }
 
-/*echo str_replace("#_", "jos", $query);
-die();*/
         try {
             $db->setQuery($query);
             return $db->loadAssocList();
@@ -3089,7 +3101,6 @@ die();*/
 
         try {
 
-
 	        $db->setQuery($query);
 	        $res = $db->query();
 	        $dispatcher->trigger('onAfterDeleteFile', $fnum);
@@ -3112,8 +3123,7 @@ die();*/
             $db = JFactory::getDbo();
 
             $query = $db->getQuery(true);
-            $query
-            ->select('t.*, c.id AS cid')
+            $query->select('t.*, c.id AS cid')
                 ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
                 ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->quoteName('c.training') . ' = ' . $db->quoteName('p.code'))
                 ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))
@@ -3128,45 +3138,20 @@ die();*/
         }
     }
 
-    /*
-	public function unscheduledSessions($session) {
-		try {
-			$db = JFactory::getDbo();
-
-			$query = $db->getQuery(true);
-			$query
-				->select('t.id')
-				->from($db->quoteName('#__emundus_setup_teaching_unity', 't'))
-				->where($db->quoteName('t.session_code') . ' LIKE "' . $session .'"
-					 AND ' . $db->quoteName('t.published') . ' = ' . 1 .
-					' AND ((' . $db->quoteName('t.date_start') . ' IS NULL 
-					 AND ' . $db->quoteName('t.date_end') . ' IS NULL) OR '. $db->quoteName('t.date_start') .' <= NOW())');
-			$db->setQuery($query);
-			return $db->loadResult();
-		} catch(Exception $e) {
-			echo $e->getMessage();
-		}
-	}
-    */
-
     public function getAppliedSessions($program) {
         try {
             $current_user = JFactory::getUser();
-
             $db = JFactory::getDbo();
 
             $query = $db->getQuery(true);
-
-            $query
-                ->select('esc.session_code')
+            $query->select('esc.session_code')
                 ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
                 ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
                 ->where($db->quoteName('esc.training') . ' LIKE ' . $db->quote($program). 'and' .$db->quoteName('ecc.applicant_id') . ' = ' . $current_user->id);
 
             $db->setQuery($query);
-            return $db->loadColumn() ;
-        }
-        catch(Exception $e) {
+            return $db->loadColumn();
+        } catch (Exception $e) {
             echo $e->getMessage();
         }
     }
@@ -3211,21 +3196,18 @@ die();*/
     public function getDocumentCategory() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query
-            ->select($this->_db->quoteName('esa.*'))
+        $query->select($this->_db->quoteName('esa.*'))
             ->from($this->_db->quoteName('#__emundus_setup_attachments','esa'))
             ->order($this->_db->quoteName('esa.category').'ASC');
 
         $this->_db->setQuery($query);
-
         return $this->_db->loadObjectList();
     }
 
     public function getParamsCategory($idCategory) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query
-            ->select($db->quoteName('fe.params'))
+        $query->select($db->quoteName('fe.params'))
             ->from($db->quoteName('#__fabrik_elements' , 'fe'))
             ->where($db->quoteName('fe.group_id') . ' = 47');
 
@@ -3265,55 +3247,91 @@ die();*/
         }
         return $return;
     }
-    public function selectCity($insee){
-        $db = JFactory::getDBO();
 
+    public function selectCity($insee) {
+        $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
         $conditions = $db->quoteName('insee_code') . ' LIKE ' . $db->quote($insee);
 
-        $query
-            ->select($db->quoteName('name'))
+        $query->select($db->quoteName('name'))
             ->from($db->quoteName('#__emundus_french_cities'))
             ->where($conditions);
 
-
         $db->setQuery($query);
-
         return $db->loadResult();
     }
-    public function selectNameCity($name){
-        $db = JFactory::getDBO();
 
+    public function selectNameCity($name) {
+        $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
         $conditions = $db->quoteName('name') . ' LIKE ' . $db->quote($name);
 
-        $query
-            ->select($db->quoteName('insee_code'))
+        $query->select($db->quoteName('insee_code'))
             ->from($db->quoteName('#__emundus_french_cities'))
             ->where($conditions);
 
-
         $db->setQuery($query);
-
         return $db->loadResult();
     }
-    public function selectMultiplePayment($fnum){
-        $db = JFactory::getDBO();
 
+    public function selectMultiplePayment($fnum) {
+        $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
         $conditions = $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum);
 
-        $query
-            ->select('multiple_payment, method_payment, sampling_mode')
+        $query->select('multiple_payment, method_payment, sampling_mode')
             ->from($db->quoteName('#__emundus_declaration'))
             ->where($conditions);
 
-
         $db->setQuery($query);
-
         return $db->loadObject();
     }
+
+
+	/**
+	 * @param $group_ids
+	 *
+	 * @return array|bool
+	 *
+	 * @since version
+	 */
+	public function getAttachmentsAssignedToEmundusGroups($group_ids) {
+
+		if (!is_array($group_ids)) {
+			$group_ids = [$group_ids];
+		}
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$result = [];
+		foreach ($group_ids as $group_id) {
+			$query->select($db->quoteName('attachment_id_link'))
+				->from($db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
+				->where($db->quoteName('parent_id').' = '.$group_id);
+			$db->setQuery($query);
+
+			try {
+				$attachments = $db->loadColumn();
+
+				// In the case of a group having no assigned Fabrik groups, it can get them all.
+				if (empty($attachments)) {
+					return true;
+				}
+
+				$result = array_merge($result, $attachments);
+			} catch (Exception $e) {
+				return false;
+			}
+		}
+
+		if (empty($result)) {
+			return true;
+		} else {
+			return array_keys(array_flip($result));
+		}
+	}
 }

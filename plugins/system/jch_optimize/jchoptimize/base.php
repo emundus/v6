@@ -25,7 +25,7 @@ defined('_JCH_EXEC') or die('Restricted access');
  * Some basic utility functions required by the plugin and shared by class
  * 
  */
-class JchOptimizeBase
+class JchOptimizeBase extends JchOptimizeRegextokenizer
 {
 
         /**
@@ -47,7 +47,7 @@ class JchOptimizeBase
 
 	protected function cleanRegexMarker($sHtml)
 	{
-		return preg_replace('#' . preg_quote($this->sRegexMarker) . '.*+$#', '', $sHtml);
+		return preg_replace('#' . preg_quote($this->sRegexMarker, '#') . '.*+$#', '', $sHtml);
 	}
 
 	public function setHeadHtml($sHtml)
