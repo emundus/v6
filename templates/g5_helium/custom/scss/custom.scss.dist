@@ -1951,6 +1951,11 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
   }
 }
 
+.radio input[type="radio"],
+.checkbox input[type="checkbox"] {
+  margin-top: 0;
+}
+
 /* Responsive fixes */
 @media screen and (max-width: 958px) {
 
