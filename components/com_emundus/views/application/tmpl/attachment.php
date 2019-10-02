@@ -174,7 +174,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                             $validation = '';
                             $label = '<div>' . $img_dossier . ' ' . $img_locked . ' ' . $img_missing . ' ' . $attachment->value . '</div>';
                             $blocked_class = 'em-file-blocked';
-                            if ($can_export && ($can_see_attachments !== true && in_array($attachment->attachment_id, $can_see_attachments))) {
+                            if ($can_export && ($can_see_attachments === true || in_array($attachment->attachment_id, $can_see_attachments))) {
                                 $checkbox = '<input type="checkbox" name="attachments[]" class="em_application_attachments" id="aid' . $attachment->aid . '" value="' . $attachment->aid . '" />';
                                 $label = '<a href="' . JURI::base() . $path . '" target="_blank">' . $img_dossier . ' ' . $img_locked . ' ' . $img_missing . ' ' . $attachment->value . '</a>';
                                 $blocked_class = '';
