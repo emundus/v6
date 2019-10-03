@@ -23,10 +23,10 @@ $student_id = $data['jos_emundus_references___user'];
 $fnum = $formModel->getElementData('jos_emundus_references___fnum', false, '');
 $time_date = $formModel->getElementData('jos_emundus_references___time_date', false, '');
 
-$recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_1', false, 4), 'email' => $formModel->getElementData('jos_emundus_references___Email_1', false, ''));
-$recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_2', false, 6), 'email' => $formModel->getElementData('jos_emundus_references___Email_2', false, ''));
-$recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_3', false, 21), 'email' => $formModel->getElementData('jos_emundus_references___Email_3', false, ''));
-$recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_4', false, 19), 'email' => $formModel->getElementData('jos_emundus_references___Email_4', false, ''));
+$recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_1', false, 4), 'email' => $formModel->getElementData('jos_emundus_references___Email_1', false, ''),'name' => $formModel->getElementData('jos_emundus_references___Last_Name_1', false, JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')));
+$recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_2', false, 6), 'email' => $formModel->getElementData('jos_emundus_references___Email_2', false, ''),'name' => $formModel->getElementData('jos_emundus_references___Last_Name_2', false, JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')));
+$recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_3', false, 21), 'email' => $formModel->getElementData('jos_emundus_references___Email_3', false, ''),'name' => $formModel->getElementData('jos_emundus_references___Last_Name_3', false, JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')));
+$recipients[] = array('attachment_id' => $formModel->getElementData('jos_emundus_references___attachment_id_4', false, 19), 'email' => $formModel->getElementData('jos_emundus_references___Email_4', false, ''),'name' => $formModel->getElementData('jos_emundus_references___Last_Name_4', false, JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')));
 
 $student = JFactory::getUser($student_id);
 $current_user = JFactory::getSession()->get('emundusUser');
@@ -71,7 +71,7 @@ function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789') {
 $profile = new EmundusModelProfile;
 $fnum_detail = $profile->getFnumDetails($current_user->fnum);
 
-$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', '/\[PROGRAMME_NAME\]/');
+$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', '/\[PROGRAMME_NAME\]/','/\[REFERENT_NAME\]/');
 
 // setup mail
 $app = JFactory::getApplication();
@@ -113,7 +113,7 @@ foreach ($recipients as $recipient) {
             $link_html = '<p>Click <a href="'.$link_upload.'">HERE</a> to upload reference letter<br><br>';
             $link_html .= 'If link does not work, please copy and paste that hyperlink in your browser : <br>'.$link_upload.'</p>';
 
-            $replacements = array($student->id, $student->name, $student->email, $link_upload, $fnum_detail['label']);
+            $replacements = array($student->id, $student->name, $student->email, $link_upload, $fnum_detail['label'], $recipient['name']);
             $subject = preg_replace($patterns, $replacements, $obj->subject);
             $body = preg_replace($patterns, $replacements, $obj->message);
 
