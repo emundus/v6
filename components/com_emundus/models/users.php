@@ -13,14 +13,14 @@
  */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
-jimport( 'joomla.application.component.model' );
+defined('_JEXEC') or die('Restricted access');
+jimport('joomla.application.component.model');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
 class EmundusModelUsers extends JModelList {
     var $_total = null;
     var $_pagination = null;
-    //var $filts_details = null;
 
     protected $data;
 
@@ -1225,13 +1225,14 @@ class EmundusModelUsers extends JModelList {
 
                 $db->setQuery($query);
                 $db->query();
-                if ($state == 0)
-                    $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.' WHERE user_id = '.$uid);
-
-                else
-                    $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.', disabled_date = NOW() WHERE user_id = '.$uid);
+                if ($state == 0) {
+	                $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.' WHERE user_id = '.$uid);
+                } else {
+	                $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.', disabled_date = NOW() WHERE user_id = '.$uid);
+                }
 
                 $res = $db->query();
+	            EmundusModelLogs::log(JFactory::getUser()->id, $uid, null, 20, 'u', 'COM_EMUNDUS_LOGS_UPDATE_USER_BLOCK');
             }
 
             return $res;
