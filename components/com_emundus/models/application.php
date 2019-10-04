@@ -2916,12 +2916,14 @@ td {
 
         if (!empty($fnums)) {
 
+            $fnums = is_array($fnums) ? implode(',', $fnums) : $fnums;
+
 	        $query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $db->quoteName('cc.fnum')])
 		        ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
 		        ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('cc.campaign_id'))
 		        ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp').' ON '.$db->quoteName('esp.id').' = '.$db->quoteName('esc.profile_id'))
 		        ->leftJoin($db->quoteName('#__menu', 'm').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype').' AND '.$db->quoteName('m.published').'=1 AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
-		        ->where($db->quoteName('cc.fnum').' IN('.implode(',', $fnums).')')
+		        ->where($db->quoteName('cc.fnum').' IN('.$fnums.')')
 		        ->order($db->quoteName('m.lft').' DESC');
 	        $db->setQuery($query);
 
