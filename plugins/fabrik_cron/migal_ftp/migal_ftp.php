@@ -37,8 +37,10 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 	/**
 	 * Do the plugin action
 	 *
-	 * @param   array &$data data
+	 * @param   array &  $data       data
 	 * @param   object  &$listModel  List model
+	 *
+	 * @return bool|int
 	 */
 	public function process(&$data, &$listModel) {
 
@@ -72,8 +74,9 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 				JLog::add('Created NEW session JSON file with filename: '.$session_filename, JLog::INFO, 'com_emundus');
 
 				// Delete the oldest file (if there are 5).
-				if (sizeof($session_files) >= 5)
+				if (sizeof($session_files) >= 5) {
 					unlink(min($session_files));
+				}
 
 				$query = $db->getQuery(true);
 
@@ -104,9 +107,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 				// To separate the data into 3 parts we need to organize the objects.
 				$to_create = array();
 				$to_update = array();
-				//$to_delete = $db_array;
 				$to_delete = array();
-
 				foreach ($json_array as $json_item) {
 
 					// If the item is in the JSON but not in the DB: mark as CREATE.
@@ -126,8 +127,9 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 
 					}
 
-					if ($create)
+					if ($create) {
 						$to_create[] = $json_item;
+					}
 
 				}
 
@@ -229,8 +231,9 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 
 						// Compare each field and update those which have differences.
 						// Product name = programme label
-						if ($db_item['product_name'] != $update_item['intituleproduit'])
+						if ($db_item['product_name'] != $update_item['intituleproduit']) {
 							$fields[] = $db->quoteName('p.label').' = '.$db->quote($update_item['intituleproduit']);
+						}
 
 						// Session label = Teaching unit & campaign label
 						if ($db_item['label'] != $update_item['libellestage']) {
@@ -239,13 +242,14 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						}
 
 						// Product url = programme url
-						if ($db_item['url'] != $update_item['libellestageurl'])
+						if ($db_item['url'] != $update_item['libellestageurl']) {
 							$fields[] = $db->quoteName('p.url').' = '.$db->quote($update_item['libellestageurl']);
+						}
 
 						// Product family = programme programmes
 						// Updating the category involves checking if the category exists in the other table.
-						$category = array_search(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['produit6'])))), $categories);
-						$multiple = explode(',-', str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $update_item['produit6'])))));
+						$category = array_search(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace([' ','/','\''],'-', $update_item['produit6'])))), $categories);
+						$multiple = explode(',-', str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace([' ','/','\''],'-', $update_item['produit6'])))));
 						if ($db_item['categ'] != $category ) {
 							$category_concat  = array();
 							foreach ($multiple as $t) {
@@ -256,18 +260,17 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 										$query
 											->insert($db->quoteName('#__emundus_setup_thematiques'))
 											->columns([$db->quoteName('title'), $db->quoteName('color'), $db->quoteName('published'), $db->quoteName('order'), $db->quoteName('label')])
-											->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $t))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1).', '.$db->quote($update_item['produit6']));
+											->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace([' ','/','\''],'-', $t))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1).', '.$db->quote($update_item['produit6']));
 										$db->setQuery($query);
 										try {
 											$db->execute();
 											$category = $db->insertid();
-											$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $t))));
+											$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace([' ','/','\''],'-', $t))));
 										} catch (Exception $e) {
 											JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 										}
 									}
-								}
-								else {
+								} else {
 									$query = $db->getQuery(true);
 									$query
 										->select($db->quoteName('id'))
@@ -304,8 +307,9 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						}
 
 						// Session price = teaching unit price
-						if ($db_item['price'] != $update_item['coutsession'])
+						if ($db_item['price'] != $update_item['coutsession']) {
 							$fields[] = $db->quoteName('t.price').' = '.$db->quote($update_item['coutsession']);
+						}
 
 						// Session start date = teaching unit start date and campaign end date (reminder: cmapaigns run until the session starts)
 						if ($db_item['date_start'].'.000000' != $update_item['datedebutsession']['date']) {
@@ -314,102 +318,127 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						}
 
 						// Session end date = teaching unit end date
-						if ($db_item['date_end'].'.000000' != $update_item['datefinsession']['date'])
+						if ($db_item['date_end'].'.000000' != $update_item['datefinsession']['date']) {
 							$fields[] = $db->quoteName('t.date_end').' = '.$db->quote($update_item['datefinsession']['date']);
+						}
 
 						// Session days = teaching unit days
-						if ($db_item['days'] != $update_item['nbjours'])
+						if ($db_item['days'] != $update_item['nbjours']) {
 							$fields[] = $db->quoteName('t.days').' = '.$db->quote($update_item['nbjours']);
+						}
 
 						// Session hours = teaching unit hours
-						if ($db_item['hours'] != $update_item['nbheures'])
+						if ($db_item['hours'] != $update_item['nbheures']) {
 							$fields[] = $db->quoteName('t.hours').' = '.$db->quote($update_item['nbheures']);
+						}
 
 						// Session hours per day = teaching unit hours per day
-						if ($db_item['hours_per_day'] != $update_item['nbheuresjoursession'])
+						if ($db_item['hours_per_day'] != $update_item['nbheuresjoursession']) {
 							$fields[] = $db->quoteName('t.hours_per_day').' = '.$db->quote($update_item['nbheuresjoursession']);
+						}
 
 						// Time spent in the company.
-						if ($db_item['time_in_company'] != $update_item['session1'])
+						if ($db_item['time_in_company'] != $update_item['session1']) {
 							$fields[] = $db->quoteName('t.time_in_company').' = '.$db->quote($update_item['session1']);
+						}
 
 						// Session minimum occupants = teaching unit minimum occupants
-						if ($db_item['min_occupants'] != $update_item['effectif_mini'])
+						if ($db_item['min_occupants'] != $update_item['effectif_mini']) {
 							$fields[] = $db->quoteName('t.min_occupants').' = '.$db->quote($update_item['effectif_mini']);
+						}
 
 						// Session maximum occupants = teaching unit maximum occupants
-						if ($db_item['max_occupants'] != $update_item['effectif_maxi'])
+						if ($db_item['max_occupants'] != $update_item['effectif_maxi']) {
 							$fields[] = $db->quoteName('t.max_occupants').' = '.$db->quote($update_item['effectif_maxi']);
+						}
 
 						// Session occupants = teaching unit occupants
-						if ($db_item['occupants'] != $update_item['placedispo']['nbInscrit'])
+						if ($db_item['occupants'] != $update_item['placedispo']['nbInscrit']) {
 							$fields[] = $db->quoteName('t.occupants').' = '.$db->quote($update_item['placedispo']['nbInscrit']);
+						}
 
 						// Session seo title = teaching unit seo title
-						if ($db_item['seo_title'] != $update_item['titleseo'])
+						if ($db_item['seo_title'] != $update_item['titleseo']) {
 							$fields[] = $db->quoteName('t.seo_title').' = '.$db->quote($update_item['titleseo']);
+						}
 
 						// Session address name = teaching unit address name
-						if ($db_item['location_title'] != $update_item['libellelieu'])
+						if ($db_item['location_title'] != $update_item['libellelieu']) {
 							$fields[] = $db->quoteName('t.location_title').' = '.$db->quote($update_item['libellelieu']);
+						}
 
 						// Session address1 address2 = teaching unit address
-						if ($db_item['location_address'] != $update_item['adresse1lieu'].' '.$update_item['adresse2lieu'])
+						if ($db_item['location_address'] != $update_item['adresse1lieu'].' '.$update_item['adresse2lieu']) {
 							$fields[] = $db->quoteName('t.location_address').' = '.$db->quote($update_item['adresse1lieu'].' '.$update_item['adresse2lieu']);
+						}
 
 						// Session address zip = teaching unit address zip
-						if ($db_item['location_zip'] != $update_item['cplieu'])
+						if ($db_item['location_zip'] != $update_item['cplieu']) {
 							$fields[] = $db->quoteName('t.location_zip').' = '.$db->quote($update_item['cplieu']);
+						}
 
 						// Session address city = teaching unit address city
-						if ($db_item['location_city'] != $update_item['villelieu'])
+						if ($db_item['location_city'] != $update_item['villelieu']) {
 							$fields[] = $db->quoteName('t.location_city').' = '.$db->quote($update_item['villelieu']);
+						}
 
 						// Session address city = teaching unit address city
-						if ($db_item['location_region'] != $update_item['region'])
+						if ($db_item['location_region'] != $update_item['region']) {
 							$fields[] = $db->quoteName('t.location_region').' = '.$db->quote($update_item['region']);
+						}
 
 						// Session prerequisites = teaching unit prerequisites
-						if ($db_item['prerequisite'] != $update_item['prerequis'])
+						if ($db_item['prerequisite'] != $update_item['prerequis']) {
 							$fields[] = $db->quoteName('p.prerequisite').' = '.$db->quote($update_item['prerequis']);
+						}
 
 						// Session public type = teaching unit audience
-						if ($db_item['audience'] != $update_item['typepublic'])
+						if ($db_item['audience'] != $update_item['typepublic']) {
 							$fields[] = $db->quoteName('p.audience').' = '.$db->quote($update_item['typepublic']);
+						}
 
 						// Session commercial tagline = teaching unit tagline
-						if ($db_item['tagline'] != $update_item['accrochecom'])
+						if ($db_item['tagline'] != $update_item['accrochecom']) {
 							$fields[] = $db->quoteName('p.tagline').' = '.$db->quote($update_item['accrochecom']);
+						}
 
 						// Session objectives = teaching unit objectives
-						if ($db_item['objectives'] != $update_item['objectifs'])
+						if ($db_item['objectives'] != $update_item['objectifs']) {
 							$fields[] = $db->quoteName('p.objectives').' = '.$db->quote($update_item['objectifs']);
+						}
 
 						// Session content = teaching unit content
-						if ($db_item['content'] != $update_item['contenu'])
+						if ($db_item['content'] != $update_item['contenu']) {
 							$fields[] = $db->quoteName('p.content').' = '.$db->quote($update_item['contenu']);
+						}
 
 						// CPF number
-						if ($db_item['numcpf'] != $update_item['numcpf'])
+						if ($db_item['numcpf'] != $update_item['numcpf']) {
 							$fields[] = $db->quoteName('p.numcpf').' = '.$db->quote($update_item['numcpf']);
+						}
 
 						// Manager name
-						if ($db_item['manager_lastname'] != $update_item['ur_nom'])
+						if ($db_item['manager_lastname'] != $update_item['ur_nom']) {
 							$fields[] = $db->quoteName('p.manager_lastname').' = '.$db->quote($update_item['ur_nom']);
-						if ($db_item['manager_firstname'] != $update_item['ur_prenom'])
+						}
+						if ($db_item['manager_firstname'] != $update_item['ur_prenom']) {
 							$fields[] = $db->quoteName('p.manager_firstname').' = '.$db->quote($update_item['ur_prenom']);
+						}
 
 						// Tax rate
-						if ($db_item['tax_rate'] != $update_item['tauxtvaproduit'])
+						if ($db_item['tax_rate'] != $update_item['tauxtvaproduit']) {
 							$fields[] = $db->quoteName('t.tax_rate').' = '.$db->quote($update_item['tauxtvaproduit']);
+						}
 
 						// Pedagogie
-						if ($db_item['pedagogie'] != $update_item['pedagogie'])
+						if ($db_item['pedagogie'] != $update_item['pedagogie']) {
 							$fields[] = $db->quoteName('p.pedagogie').' = '.$db->quote($update_item['pedagogie']);
+						}
 
 						// Intervenant
-						if ($db_item['intervenant'] != $update_item['typeintervenant'])
+						if ($db_item['intervenant'] != $update_item['typeintervenant']) {
 							$fields[] = $db->quoteName('t.intervenant').' = '.$db->quote($update_item['typeintervenant']);
+						}
 						
 						// Partner
 						if ($db_item['partner'] != $update_item['produit9'] || $db_item['partner'] != $update_item['produit8']) {
@@ -469,8 +498,9 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						JLog::add('Error getting max ID in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
 
-					if (empty($campaign_id))
+					if (empty($campaign_id)) {
 						$campaign_id = 0;
+					}
 
 					// Get the list of programme codes that already exist in order to avoid creating duplicates.
 					$query = $db->getQuery(true);
@@ -531,8 +561,8 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 
 						// Array search returns FALSE (0) if it does not find the key.
 						// Else it will return the ID of the category with the name in the JSON.
-						$category = array_search(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['produit6'])))), $categories);
-						$multiple = explode(',-', str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $item['produit6'])))));
+						$category = array_search(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace([' ','/','\''],'-', $item['produit6'])))), $categories);
+						$multiple = explode(',-', str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace([' ','/','\''],'-', $item['produit6'])))));
 						$category_concat  = array();
 						foreach ($multiple as $t) {
 							if (!in_array($t,$categories)){
@@ -542,12 +572,12 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 									$query
 										->insert($db->quoteName('#__emundus_setup_thematiques'))
 										->columns([$db->quoteName('title'), $db->quoteName('color'), $db->quoteName('published'), $db->quoteName('order'), $db->quoteName('label')])
-										->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $t))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1).', '.$db->quote($item['produit6']));
+										->values($db->quote(str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace([' ','/','\''],'-', $t))))).', '.$db->quote('default').', 0, '.(max(array_keys($categories))+1).', '.$db->quote($item['produit6']));
 									$db->setQuery($query);
 									try {
 										$db->execute();
 										$category = $db->insertid();
-										$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace(' ','-', $t))));
+										$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace([' ','/','\''],'-', $t))));
 									} catch (Exception $e) {
 										JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 									}

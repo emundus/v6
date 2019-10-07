@@ -115,7 +115,14 @@ button#back:hover, button#back:active, button#back:focus,
     width: 80% !important;
     float: left;
 }
-
+.view-checklist form .dz-message{
+    height: 150px;
+    border: 2px dashed grey;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 .need_ok {
     background: none;
 }
@@ -408,4 +415,31 @@ body.view-reset label#jform_username-lbl::after,
 
 .fabrikLabel[opts*="Validation"] > .icon-star{
     display: none !important;
+}
+@media screen and (max-width: 767px){
+    .applicant-form .fabrikActions.form-actions .span4:not(.offset1){
+        justify-content: flex-end;
+    }
+}
+@media screen and (max-width: 550px){
+    .view-checklist .input-group{
+        width: 66%;
+    }
+    .view-checklist .em-description{
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    #attachment_list_mand form .input-group .em-description input{
+        width: 60% !important;
+    }
+    .applicant-form form .input-group div:nth-child(2) .col-sm-12{
+        flex-direction: column;
+    }
+    .applicant-form form .input-group div:nth-child(2) .col-sm-12 input{
+        margin-top: 10px;
+    }
+    .applicant-form .fabrikActions.form-actions .span4:not(.offset1){
+        justify-content: flex-start;
+    }
+
 }

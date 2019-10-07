@@ -13,11 +13,11 @@ defined( '_JEXEC' ) or die();
  * @description Définie une nouvelle campagne pour le candidat
  */
 include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
-$mprofile 	= new EmundusModelProfile;
-$app 		= JFactory::getApplication();
-$db 		= JFactory::getDBO();
-$session 	= JFactory::getSession();
-$user 		= $session->get('emundusUser');
+$m_profile = new EmundusModelProfile;
+$app = JFactory::getApplication();
+$db = JFactory::getDBO();
+$session = JFactory::getSession();
+$user = $session->get('emundusUser');
 if (empty($user)) {
 	$user = JFactory::getUser();
 }
@@ -27,7 +27,7 @@ $fnum_tmp = $data['jos_emundus_campaign_candidature___fnum'];
 $id = $data['jos_emundus_campaign_candidature___id'];
 
 // create new fnum
-$fnum		 = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
+$fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
 try {
 	$query = 'UPDATE #__emundus_campaign_candidature
 				SET `fnum`='.$db->Quote($fnum). '
@@ -47,9 +47,7 @@ try {
 				WHERE esc.id='.$campaign_id;
 	$db->setQuery($query);
 	$campaign = $db->loadAssoc();
-}
-catch(Exception $e)
-{
+} catch(Exception $e) {
     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
    JError::raiseError(500, $query);
 }
@@ -69,8 +67,8 @@ $campaign_label = $campaign['label'];
 $menutype = $campaign['menutype'];
 
 // Insert data in #__emundus_users
-$p = $mprofile->isProfileUserSet($user->id);
-if( $p['cpt'] == 0 ){
+$p = $m_profile->isProfileUserSet($user->id);
+if ($p['cpt'] == 0) {
 	$query = 'INSERT INTO #__emundus_users (user_id, firstname, lastname, profile, schoolyear, registerDate)
 			values ('.$user->id.', '.$db->quote(ucfirst($firstname)).', '.$db->quote(strtoupper($lastname)).', '.$profile.', '.$db->quote($schoolyear).', '.$db->quote($user->registerDate).')';
 	/*else
@@ -79,29 +77,33 @@ if( $p['cpt'] == 0 ){
 	try {
 		$db->setQuery($query);
 		$db->execute();
-	}
-	catch(Exception $e)
-	{
-	JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-	JError::raiseError(500, $query);
+	} catch(Exception $e) {
+		JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+		JError::raiseError(500, $query);
 	}	
 }
-	
 
-// Insert data in #__emundus_users_profiles
-$query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user->id.','.$profile.')';
+
+$query = $db->getQuery(true);
+$query->select($db->quoteName('id'))
+	->from($db->quoteName('#__emundus_users_profiles'))
+	->where($db->quoteName('user_id').' = '.$user->id.' AND '.$db->quoteName('profile_id').' = '.$profile);
 $db->setQuery($query);
 try {
-	$db->execute();
+	if (empty($db->loadResult())) {
+		// Insert data in #__emundus_users_profiles
+		$query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user->id.','.$profile.')';
+		$db->setQuery($query);
+		try {
+			$db->execute();
+		} catch (Exception $e) {
+			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+			JError::raiseError(500, $query);
+		}
+	}
+} catch(Exception $e) {
+	JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+	JError::raiseError(500, $query);
 }
-catch(Exception $e)
-{
-   JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-   JError::raiseError(500, $query);
-}
-
-//$mprofile->initEmundusSession();
 
 $app->redirect('index.php?option=com_emundus&task=openfile&fnum='.$fnum.'&redirect='.base64_encode('index.php?fnum='.$fnum),  JText::_('FILE_OK'));
-
-?>
