@@ -87,10 +87,10 @@ class EmundusModelProgramme extends JModelList {
           $query .= ' AND published = '.$published;
         }
         if (count($codeList['IN']) > 0) {
-          $query .= ' AND code IN ('.implode('","', $db->Quote($codeList['IN'])).')';
+          $query .= ' AND code IN ('.implode(',', $db->Quote($codeList['IN'])).')';
         }
         if (count($codeList['NOT_IN']) > 0) {
-          $query .= ' AND code NOT IN ('.implode('","', $db->Quote($codeList['NOT_IN'])).')';
+          $query .= ' AND code NOT IN ('.implode(',', $db->Quote($codeList['NOT_IN'])).')';
         }
         try
         {
