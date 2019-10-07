@@ -170,50 +170,23 @@ class EmundusModelTrombinoscope extends JModelLegacy
 */
     // DOMPDF
     public function generate_pdf($html_value, $format) {
-        set_time_limit(0);
+
+    	set_time_limit(0);
+
         require_once(JPATH_LIBRARIES.DS.'dompdf'.DS.'dompdf_config.inc.php');
-        $attachmentsId = $this->selectHTMLLetters();
-        $templ = [];
-
-
-
         $lbl = $this->selectLabelSetupAttachments($format);
 
         $fileName = $lbl['lbl']."_".time().".pdf";
         $tmpName = JPATH_BASE.DS.'tmp'.DS.$fileName;
-
 
         $pdf = new DOMPDF();
         $pdf->set_paper("A4", "portrait");
         $pdf->set_option('enable_remote', TRUE);
         $pdf->set_option('enable_css_float', TRUE);
         $pdf->set_option('enable_html5_parser', TRUE);
-/*
-        //use Dompdf\Options;
-        //$options = new Options();
-        //$options->setIsRemoteEnabled(true);
-
-        //$pdf->setOptions($options);
-
-        $contxt = stream_context_create([
-            'ssl' => [
-                'verify_peer' => FALSE,
-                'verify_peer_name' => FALSE,
-                'allow_self_signed'=> TRUE
-            ]
-        ]);
-        $pdf->setHttpContext($contxt);
-*/
-
-
+        
         $pdf->load_html($html_value);
         $pdf->render();
-        $canvas = $pdf->get_canvas();
-        $font = Font_Metrics::get_font("helvetica", "bold");
-        $canvas->page_text(260, 800, "Page: {PAGE_NUM} of {PAGE_COUNT}", $font, 8, array(0,0,0));
-        //$title = ($format == 'trombi') ? JText::_('COM_EMUNDUS_TROMBI') : JText::_('COM_EMUNDUS_BADGES');
-
-        //$canvas->page_text(260, 20, $title, $font, 8, array(0,0,0));
 
         $output = $pdf->output();
         file_put_contents($tmpName, $output);
@@ -221,11 +194,10 @@ class EmundusModelTrombinoscope extends JModelLegacy
         return JURI::base().'tmp'.DS.$fileName;
     }
 
-    public function selectHTMLLetters(){
+    public function selectHTMLLetters() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query
-            ->select(array($db->quoteName('title'),$db->quoteName('attachment_id'),$db->quoteName('body'),$db->quoteName('header'),$db->quoteName('footer')))
+        $query->select(array($db->quoteName('title'),$db->quoteName('attachment_id'),$db->quoteName('body'),$db->quoteName('header'),$db->quoteName('footer')))
             ->from($db->quoteName('#__emundus_setup_letters'))
             ->where($db->quoteName('template_type') . ' = 2');
 
