@@ -101,10 +101,10 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		$fnum       = $jinput->get('jos_emundus_references___fnum');
 
 		$recipients = array();
-		$recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_1', 4), 'email' => $jinput->getString('jos_emundus_references___Email_1', ''));
-		$recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_2', 6), 'email' => $jinput->getString('jos_emundus_references___Email_2', ''));
-		$recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_3', 21), 'email' => $jinput->getString('jos_emundus_references___Email_3', ''));
-		$recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_4', 19), 'email' => $jinput->getString('jos_emundus_references___Email_4', ''));
+		$recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_1', 4), 'email' => $jinput->getString('jos_emundus_references___Email_1', ''),'name'=>$jinput->getString('jos_emundus_references___Last_Name_1', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')),'firstname'=>$jinput->getString('jos_emundus_references___First_Name_1', ''));
+		$recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_2', 6), 'email' => $jinput->getString('jos_emundus_references___Email_2', ''),'name'=>$jinput->getString('jos_emundus_references___Last_Name_2', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')),'firstname'=>$jinput->getString('jos_emundus_references___First_Name_1', ''));
+		$recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_3', 21), 'email' => $jinput->getString('jos_emundus_references___Email_3', ''),'name'=>$jinput->getString('jos_emundus_references___Last_Name_3', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')),'firstname'=>$jinput->getString('jos_emundus_references___First_Name_1', ''));
+		$recipients[] = array('attachment_id' => $jinput->get('jos_emundus_references___attachment_id_4', 19), 'email' => $jinput->getString('jos_emundus_references___Email_4', ''),'name'=>$jinput->getString('jos_emundus_references___Last_Name_4', JText::_('CIVILITY_MR').'/'.JText::_('CIVILITY_MRS')),'firstname'=>$jinput->getString('jos_emundus_references___First_Name_1', ''));
 
 		$student = JFactory::getUser($student_id);
 		$current_user = JFactory::getSession()->get('emundusUser');
@@ -188,7 +188,9 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 						'USER_NAME'      => $fnum_detail['name'],
 						'CAMPAIGN_LABEL' => $fnum_detail['label'],
 						'SITE_URL'       => JURI::base(),
-						'USER_EMAIL'     => $fnum_detail['email']
+						'USER_EMAIL'     => $fnum_detail['email'],
+                        'REFERENT_NAME'  => $recipient['name'],
+                        'REFERENT_FIRST_NAME'  => $recipient['firstname']
 					];
 					$tags = $m_emails->setTags($fnum_detail['applicant_id'], $post, $fnum);
 					$subject = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->subject);

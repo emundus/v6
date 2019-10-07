@@ -31,6 +31,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+		require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
 
 		$this->_user  = JFactory::getSession()->get('emundusUser');
 		$this->_db    = JFactory::getDBO();
@@ -646,8 +647,12 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	public function deleteusers() {
 
-		$jinput = JFactory::getApplication()->input;
+		if (!EmundusHelperAccess::asAccessAction(12, 'd') && !EmundusHelperAccess::asAccessAction(20, 'd')) {
+			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+			return;
+		}
 
+		$jinput = JFactory::getApplication()->input;
 		$users = $jinput->getString('users', null);
 
 		$m_users = new EmundusModelUsers();
@@ -659,7 +664,9 @@ class EmundusControllerUsers extends JControllerLegacy {
 				$users[] = $u->id;
 			}
 
-		} else $users = (array) json_decode(stripslashes($users));
+		} else {
+			$users = (array) json_decode(stripslashes($users));
+		}
 
 		$res = true;
 		$msg = JText::_('COM_EMUNDUS_USERS_DELETED');
@@ -674,15 +681,17 @@ class EmundusControllerUsers extends JControllerLegacy {
 					$m_users->changeBlock(array($user),1);
 					$users_id .= $user." ,";
 					$res = false;
-				} else
+				} else {
 					$u->delete();
-
+					EmundusModelLogs::log($this->_user->id, $user, null, 20, 'd', 'COM_EMUNDUS_LOGS_DELETE_USER');
+				}
 			}
 		}
-		if ($users_id != "")
+
+		if ($users_id != "") {
 			$msg = JText::sprintf('THIS_USER_CAN_NOT_BE_DELETED', $users_id);
-		echo
-			json_encode((object)array('status' => $res, 'msg' => $msg));
+		} 
+		echo json_encode((object) array('status' => $res, 'msg' => $msg));
 
 		exit;
 	}

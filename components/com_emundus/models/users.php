@@ -13,14 +13,14 @@
  */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
-jimport( 'joomla.application.component.model' );
+defined('_JEXEC') or die('Restricted access');
+jimport('joomla.application.component.model');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
 class EmundusModelUsers extends JModelList {
     var $_total = null;
     var $_pagination = null;
-    //var $filts_details = null;
 
     protected $data;
 
@@ -1225,13 +1225,14 @@ class EmundusModelUsers extends JModelList {
 
                 $db->setQuery($query);
                 $db->query();
-                if ($state == 0)
-                    $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.' WHERE user_id = '.$uid);
-
-                else
-                    $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.', disabled_date = NOW() WHERE user_id = '.$uid);
+                if ($state == 0) {
+	                $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.' WHERE user_id = '.$uid);
+                } else {
+	                $db->setQuery('UPDATE #__emundus_users SET disabled  = '.$state.', disabled_date = NOW() WHERE user_id = '.$uid);
+                }
 
                 $res = $db->query();
+	            EmundusModelLogs::log(JFactory::getUser()->id, $uid, null, 20, 'u', 'COM_EMUNDUS_LOGS_UPDATE_USER_BLOCK');
             }
 
             return $res;
@@ -1525,122 +1526,189 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
-    public function addProfileToUser($uid,$pid) {
+	/**
+	 * @param $uid Int User id
+	 * @param $pid Int Profile id
+	 *
+	 * @return bool
+	 *
+	 * @since version
+	 */
+    public function addProfileToUser($uid, $pid) {
+        $db = JFactory::getDBO();
+
+        $query = $db->getQuery(true);
+        $query->select($db->quoteName('id'))
+	        ->from($db->quoteName('#__emundus_users_profiles'))
+	        ->where($db->quoteName('user_id').' = '.$uid.' AND '.$db->quoteName('profile_id').' = '.$pid);
+	    $db->setQuery($query);
+	    try {
+		    if (!empty($db->loadResult())) {
+		    	// User already has the profile.
+		    	return true;
+		    }
+	    } catch(Exception $e) {
+		    error_log($e->getMessage(), 0);
+		    return false;
+	    }
+
+        $query = "INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$uid.",".$pid.",'','')";
+        $db->setQuery($query);
         try {
-            $db = JFactory::getDBO();
-
-            $query="INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$uid.",".$pid.",'','')";
-            $db->setQuery($query);
-            $db->Query();
-
-            $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.$pid;
-            $db->setQuery($query);
-            $group = $db->loadResult();
-
-            return JUserHelper::addUserToGroup($uid,$group);
-        } catch(Exeption $e) {
-            error_log($e->getMessage(), 0);
-            return false;
+	        $db->query();
+        } catch(Exception $e) {
+	        error_log($e->getMessage(), 0);
+	        return false;
         }
+
+        $query = 'SELECT `acl_aro_groups` FROM `#__emundus_setup_profiles` WHERE id='.$pid;
+        $db->setQuery($query);
+	    try {
+		    $group = $db->loadResult();
+	    } catch(Exception $e) {
+		    error_log($e->getMessage(), 0);
+		    return false;
+	    }
+
+        return JUserHelper::addUserToGroup($uid,$group);
     }
 
+
     public function editUser($user) {
-        try {
-            $u = JFactory::getUser($user['id']);
 
-            if (!$u->bind($user)) {
-                $res = array('msg' => $u->getError());
-                return $res;
-            }
-            if (!$u->save()) {
-                $res = array('msg' =>$u->getError());
-                return $res;
-            }
+        $u = JFactory::getUser($user['id']);
 
-            $db = JFactory::getDBO();
-            $db->setQuery('UPDATE #__emundus_users SET firstname = '.$db->Quote($user['firstname']).',
-                                                        lastname = '.$db->Quote($user['lastname']).',
-                                                        profile = '.(int)$user['profile'].',
-                                                        university_id = '.$user['university_id'].' WHERE user_id = '.(int)$user['id']);
-            $db->query();
-
-            $db->setQuery('UPDATE #__user_profiles SET profile_value = '.$db->Quote($user['firstname']).' WHERE user_id = '.(int)$user['id'] .' and profile_key like "emundus_profile.firstname"');
-            $db->query();
-            
-            $db->setQuery('UPDATE #__user_profiles SET profile_value = '.$db->Quote($user['lastname']).' WHERE user_id = '.(int)$user['id'] .' and profile_key like "emundus_profile.lastname"');
-            $db->query();
-
-            $db->setQuery('delete from #__emundus_groups where user_id = '. (int)$user['id']);
-            $db->query();
-
-            $db->setQuery('delete from #__user_profiles where user_id = ' .(int)$user['id'].' and profile_key like "emundus_profile.newsletter"');
-            $db->query();
-
-            $db->setQuery('delete from #__emundus_users_profiles WHERE user_id='.(int)$user['id']);
-            $db->query();
-
-
-            $this->addProfileToUser($user['id'],$user['profile']);
-
-            if (!empty($user['em_groups'])) {
-                $groups = explode(',', $user['em_groups']);
-                foreach ($groups as $group) {
-                    $query="INSERT INTO `#__emundus_groups` VALUES ('',".$user['id'].",".$group.")";
-                    $db->setQuery($query);
-                    $db->query() or die($db->getErrorMsg());
-                }
-            }
-            
-            if (!empty($user['em_campaigns'])) {
-                $connected = JFactory::getUser()->id;
-                $campaigns = explode(',', $user['em_campaigns']);
-
-                $query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id='.$user['id'];
-                $db->setQuery($query);
-                $campaigns_id = $db->loadColumn();
-
-                $query = 'SELECT profile_id FROM #__emundus_users_profiles WHERE user_id='.$user['id'];
-                $db->setQuery($query);
-                $profiles_id = $db->loadColumn();
-                foreach ($campaigns as $campaign) {
-                    //insert profile******
-                    $profile = $this->getProfileIDByCampaignID($campaign);
-                    if (!in_array($profile, $profiles_id))
-                        $this->addProfileToUser($user['id'],$profile);
-                    if (!in_array($campaign, $campaigns_id)) {
-                        $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
-                        $db->setQuery($query);
-                        $db->query();
-
-                    }
-                }
-            }
-
-            if (!empty($user['em_oprofiles'])) {
-                $oprofiles = explode(',', $user['em_oprofiles']);
-                $query = 'SELECT profile_id FROM #__emundus_users_profiles WHERE user_id='.$user['id'];
-                $db->setQuery($query);
-                $profiles_id = $db->loadColumn();
-                foreach ($oprofiles as $profile) {
-                    if (!in_array($profile, $profiles_id)) {
-                        $this->addProfileToUser($user['id'],$profile);
-                    }
-                }
-
-            }
-            
-            if ($user['news'] == "1") {
-                $query="INSERT INTO `#__user_profiles` (`user_id`, `profile_key`, `profile_value`, `ordering`) VALUES (".$user['id'].", 'emundus_profile.newsletter', '\"1\"', 4)";
-                $db->setQuery($query);
-                $db->query();
-            }
-
-            return true;
-
-        } catch(Exeption $e) {
-            error_log($e->getMessage(), 0);
-            return false;
+        if (!$u->bind($user)) {
+            return array('msg' => $u->getError());
         }
+        if (!$u->save()) {
+            return array('msg' =>$u->getError());
+        }
+
+        $db = JFactory::getDBO();
+        $db->setQuery('UPDATE #__emundus_users SET firstname = '.$db->Quote($user['firstname']).',
+                                                    lastname = '.$db->Quote($user['lastname']).',
+                                                    profile = '.(int)$user['profile'].',
+                                                    university_id = '.$user['university_id'].' WHERE user_id = '.(int)$user['id']);
+	    try {
+            $db->query();
+	    } catch(Exception $e) {
+		    error_log($e->getMessage(), 0);
+		    return false;
+	    }
+
+        $db->setQuery('UPDATE #__user_profiles SET profile_value = '.$db->Quote($user['firstname']).' WHERE user_id = '.(int)$user['id'] .' and profile_key like "emundus_profile.firstname"');
+	    try {
+		    $db->query();
+	    } catch(Exception $e) {
+		    error_log($e->getMessage(), 0);
+		    return false;
+	    }
+
+        $db->setQuery('UPDATE #__user_profiles SET profile_value = '.$db->Quote($user['lastname']).' WHERE user_id = '.(int)$user['id'] .' and profile_key like "emundus_profile.lastname"');
+	    try {
+		    $db->query();
+	    } catch(Exception $e) {
+		    error_log($e->getMessage(), 0);
+		    return false;
+	    }
+
+        $db->setQuery('delete from #__emundus_groups where user_id = '. (int)$user['id']);
+	    try {
+		    $db->query();
+	    } catch(Exception $e) {
+		    error_log($e->getMessage(), 0);
+		    return false;
+	    }
+
+        $db->setQuery('delete from #__user_profiles where user_id = ' .(int)$user['id'].' and profile_key like "emundus_profile.newsletter"');
+	    try {
+		    $db->query();
+	    } catch(Exception $e) {
+		    error_log($e->getMessage(), 0);
+		    return false;
+	    }
+
+        $db->setQuery('delete from #__emundus_users_profiles WHERE user_id='.(int)$user['id']);
+	    try {
+		    $db->query();
+	    } catch(Exception $e) {
+		    error_log($e->getMessage(), 0);
+		    return false;
+	    }
+
+        $this->addProfileToUser($user['id'], $user['profile']);
+
+        if (!empty($user['em_groups'])) {
+            $groups = explode(',', $user['em_groups']);
+            foreach ($groups as $group) {
+                $query="INSERT INTO `#__emundus_groups` VALUES ('',".$user['id'].",".$group.")";
+                $db->setQuery($query);
+	            try {
+		            $db->query();
+	            } catch(Exception $e) {
+		            error_log($e->getMessage(), 0);
+		            return false;
+	            }
+            }
+        }
+
+        if (!empty($user['em_campaigns'])) {
+            $connected = JFactory::getUser()->id;
+            $campaigns = explode(',', $user['em_campaigns']);
+
+            $query = 'SELECT campaign_id FROM #__emundus_campaign_candidature WHERE applicant_id='.$user['id'];
+            $db->setQuery($query);
+            $campaigns_id = $db->loadColumn();
+
+            $query = 'SELECT profile_id FROM #__emundus_users_profiles WHERE user_id='.$user['id'];
+            $db->setQuery($query);
+            $profiles_id = $db->loadColumn();
+            foreach ($campaigns as $campaign) {
+
+            	//insert profile******
+                $profile = $this->getProfileIDByCampaignID($campaign);
+                if (!in_array($profile, $profiles_id)) {
+	                $this->addProfileToUser($user['id'], $profile);
+                }
+
+                if (!in_array($campaign, $campaigns_id)) {
+                    $query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `user_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].', '. $connected .','.$campaign.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
+                    $db->setQuery($query);
+	                try {
+		                $db->query();
+	                } catch(Exception $e) {
+		                error_log($e->getMessage(), 0);
+		                return false;
+	                }
+                }
+            }
+        }
+
+        if (!empty($user['em_oprofiles'])) {
+            $oprofiles = explode(',', $user['em_oprofiles']);
+            $query = 'SELECT profile_id FROM #__emundus_users_profiles WHERE user_id='.$user['id'];
+            $db->setQuery($query);
+            $profiles_id = $db->loadColumn();
+            foreach ($oprofiles as $profile) {
+                if (!in_array($profile, $profiles_id)) {
+                    $this->addProfileToUser($user['id'],$profile);
+                }
+            }
+        }
+
+        if ($user['news'] == "1") {
+            $query = "INSERT INTO `#__user_profiles` (`user_id`, `profile_key`, `profile_value`, `ordering`) VALUES (".$user['id'].", 'emundus_profile.newsletter', '\"1\"', 4)";
+            $db->setQuery($query);
+	        try {
+		        $db->query();
+	        } catch(Exception $e) {
+		        error_log($e->getMessage(), 0);
+		        return false;
+	        }
+        }
+
+        return true;
     }
 
 

@@ -208,12 +208,24 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
 			}
 		}
 
-		// Insert data in #__emundus_users_profiles
-		$query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user->id.','.$profile.')';
+		$query = $db->getQuery(true);
+		$query->select($db->quoteName('id'))
+			->from($db->quoteName('#__emundus_users_profiles'))
+			->where($db->quoteName('user_id').' = '.$user->id.' AND '.$db->quoteName('profile_id').' = '.$profile);
 		$db->setQuery($query);
 		try {
-			$db->execute();
-		} catch (Exception $e) {
+			if (empty($db->loadResult())) {
+				// Insert data in #__emundus_users_profiles
+				$query = 'INSERT INTO #__emundus_users_profiles (user_id, profile_id) VALUES ('.$user->id.','.$profile.')';
+				$db->setQuery($query);
+				try {
+					$db->execute();
+				} catch (Exception $e) {
+					JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+					JError::raiseError(500, $query);
+				}
+			}
+		} catch(Exception $e) {
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
 			JError::raiseError(500, $query);
 		}
