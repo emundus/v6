@@ -1944,3 +1944,7 @@ footer#g-footer {
     padding: 10px;
     color: white;
 }
+
+.em-personalDetail-table-inline tr td {
+    width: 50%;
+}
