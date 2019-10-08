@@ -65,7 +65,8 @@ $ordertime = $session->get('order_time');
 if ($params->get('mod_em_campaign_layout') == "institut_fr") {
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
     $m_progs = new EmundusModelProgramme;
-    $programs = $m_progs->getProgrammes(1, $program_code);
+    $program_array['IN'] = explode(', ', $program_code);
+    $programs = $m_progs->getProgrammes(1, $program_array);
 }
 
 if (isset($searchword) && !empty($searchword)) {

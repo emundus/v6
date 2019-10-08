@@ -20,7 +20,7 @@
     margin: 0 !important;
 }
 p,legend,select,textarea,label,input[type="text"]{
-    color:#565656;
+    color:#000;
 }
 #search_program .rotate-me p, .view-checklist .attached p,.view-form .attached p,.view-details .attached p{
     color:white;
