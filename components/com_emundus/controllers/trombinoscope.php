@@ -18,25 +18,33 @@ jimport('joomla.application.component.controller');
 /**
  * Class EmundusControllerTrombinoscope
  */
-class EmundusControllerTrombinoscope extends EmundusController
-{
+class EmundusControllerTrombinoscope extends EmundusController {
+
+
     /**
      * @param array $config
      */
-    public function __construct($config = array())
-    {
+    public function __construct($config = array()) {
         parent::__construct($config);
     }
-    public function fnums_json_decode($string_fnums)
-    {
+
+
+	/**
+	 * @param $string_fnums
+	 *
+	 * @return array
+	 *
+	 * @since version
+	 */
+    public function fnums_json_decode($string_fnums) {
         $fnums_obj = (array) json_decode(stripslashes($string_fnums));
-        if(@$fnums_obj[0] == 'all'){
-            $model = $this->getmodel('Files');
+        if (@$fnums_obj[0] == 'all') {
+            $m_files = $this->getmodel('Files');
             $assoc_tab_fnums = true;
-            $fnums = $model->getAllFnums($assoc_tab_fnums);
+            $fnums = $m_files->getAllFnums($assoc_tab_fnums);
         } else {
             $fnums = array();
-            foreach ($fnums_obj as $key => $value) {
+            foreach ($fnums_obj as $value) {
                 if (@$value->sid > 0) {
                     $fnums[] = array( 'fnum' => @$value->fnum,
                         'applicant_id' => @$value->sid,
@@ -47,9 +55,14 @@ class EmundusControllerTrombinoscope extends EmundusController
         }
         return $fnums;
     }
-    /*
-     * Génération de code HTML pour l'affichage de la 1ère page de prévisualisation
-     */
+
+
+	/**
+	 * Génération de code HTML pour l'affichage de la 1ère page de prévisualisation
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
     public function generate_preview() {
         $jinput = JFactory::getApplication()->input;
         $gridL = $jinput->get('gridL');
@@ -61,35 +74,53 @@ class EmundusControllerTrombinoscope extends EmundusController
         $border = $jinput->get('border');
         $fnums = $this->fnums_json_decode($string_fnums);
         // Génération du HTML
-        $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, false, false, $generate, false, false,$border);
+        $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, false, false, $generate, false, false, $border);
         $value =  array(
             'html_content' => $html_content
         );
         $return = json_encode($value);
         echo $return;
-        //echo $html_content;
         exit;
     }
-    /*
-     * Génération du code HTML qui sera envoyé soit pour cosntruire le pdf, soit pour afficher la prévisualisation
-     */
+
+
+	/**
+	 * Génération du code HTML qui sera envoyé soit pour cosntruire le pdf, soit pour afficher la prévisualisation
+	 *
+	 * @param         $fnums
+	 * @param         $gridL
+	 * @param         $gridH
+	 * @param         $margin
+	 * @param         $template
+	 * @param         $templHeader
+	 * @param         $templFooter
+	 * @param         $generate
+	 * @param   bool  $preview
+	 * @param   bool  $checkHeader
+	 * @param         $border
+	 *
+	 * @return string
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
     public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter,  $generate, $preview = false, $checkHeader = false, $border) {
         // Traitement du nombre de colonnes max par ligne
         $nb_col_max = $gridL;
         $nb_li_max = $gridH;
         $tab_margin = explode(',', $margin);
         // Il faut ajouter px à la fin
-        for ($i=0; $i<count($tab_margin); $i++) {
+        for ($i = 0; $i < count($tab_margin); $i++) {
             $tab_margin[$i] .= 'px';
         }
+
         if (count($tab_margin) > 1) {
             // L'utilisateur a séparé les marges par des virgules, il faut les séparer par des espaces pour le css
             $marge_css_top = $tab_margin[0];
             $marge_css_left = $tab_margin[1];
             $marge_css_right = $tab_margin[2];
             $marge_css_bottom = $tab_margin[3];
-        }
-        else {
+        } else {
             $marge_css_top = $tab_margin[0];
             $marge_css_left = $tab_margin[0];
             $marge_css_right = $tab_margin[0];
@@ -106,7 +137,6 @@ class EmundusControllerTrombinoscope extends EmundusController
             $post = array('FNUM' => $fnum['fnum']);
             $tags = $emails->setTags($fnum["applicant_id"], $post);
             $body_tags = preg_replace($tags['patterns'], $tags['replacements'], $template);
-            //var_dump($body_tags);
             $body_tmp = $emails->setTagsFabrik($body_tags, array($fnum["fnum"]));
             $body .= $body_tmp;
             $tab_body[] = $body_tmp;
@@ -136,10 +166,9 @@ class EmundusControllerTrombinoscope extends EmundusController
         // Hauteur d'une cellule
         $cell_height = (int)(($hauteur_px - $marge_y - ( ($marge_css_bottom * $nb_li_max) + ($marge_css_top * $nb_li_max)) ) / $nb_li_max -10 );
         //border
-        if($border == 1){
+        if ($border == 1) {
             $borderCSS = '1px solid';
-        }
-        else {
+        } else {
             $borderCSS = '0';
         }
         $trombi = new EmundusModelTrombinoscope();
@@ -148,22 +177,20 @@ class EmundusControllerTrombinoscope extends EmundusController
         foreach ($htmlLetters as $letter){
             $templ[$letter['attachment_id']] = $letter;
         }
-        $jinput = JFactory::getApplication()->input;
-        $format = $jinput->get('format');
 
-        $header = '
+        $head = '
 <!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<meta name="author" lang="fr" content="EMUNDUS SAS - http://www.emundus.fr" />
-<meta name="generator" content="EMUNDUS SAS - http://www.emundus.fr" />
+<meta name="author" lang="fr" content="EMUNDUS SAS - https://www.emundus.fr" />
+<meta name="generator" content="EMUNDUS SAS - https://www.emundus.fr" />
 <title>'.$programme['label'].'</title>
 <style>
 body {  
     font-family: "Helvetica";
     font-size: 8pt;
-    margin: 0px;
+    margin: 0;
 }
 
 .div-cell {
@@ -205,20 +232,13 @@ footer {
 .title{text-align: center;}
 </style>
 </head>';
-        if($checkHeader == 1){
-            $body = '<body class="em-body">';
-        }
-        else{
-            $body = '<body>';
-        }
+        $body = '';
 
         $ind_cell = 0;
-        for ($cpt_page=0 ; $cpt_page<$nb_page_max ; $cpt_page++) {
+        for ($cpt_page = 0; $cpt_page < $nb_page_max; $cpt_page++) {
 
-            //$body .= '<h2>'.$programme['label'].'</h2>';
             for ($cpt_li=0 ; $cpt_li<$nb_li_max ; $cpt_li++) {
                 for ($cpt_col=0 ; $cpt_col<$nb_col_max && $ind_cell<$nb_cell ; $cpt_col++) {
-                    //$body .= '<div class="div-cell" style="page-break-inside:avoid;">' . $tab_body[$ind_cell] . '</div>';
                     $body .= '<div class="div-cell">'.$tab_body[$ind_cell].'</div>';
                     $ind_cell++;
                 }
@@ -228,10 +248,9 @@ footer {
             if ($cpt_page > 0) {
                 $body .= '<div style="page-break-after: always;"></div>';
             }
-            //$body .= '</div>';
         }
-        if($generate == 1) {
-            $header .= preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#',
+        if ($generate == 1) {
+            $header = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#',
                 function ($match) {
                     list(, $img, $type, $base64, $end) = $match;
                     $bin = base64_decode($base64);
@@ -249,15 +268,20 @@ footer {
                     file_exists($fn) or file_put_contents($fn, $bin);
                     return "$img$fn$end";  // new <img> tag
                 }, $templFooter);
-            $footer .= '</body></html>';
         }
-        if($checkHeader == 1){
-            return '<header>'.$header.'</header>'.$body.'<footer>'.$footer.'</footer>';
-        }
-        else{
-            return $header.$body.$footer;
+        if ($checkHeader == 1) {
+            return $head.'<body class="em-body"><header>'.$header.'</header><footer>'.$footer.'</footer><main>'.$body.'</main></body></html>';
+        } else {
+            return $head.'<body>'.$header.$body.$footer.'</body></html>';
         }
     }
+
+	/**
+	 *
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
     public function generate_pdf() {
         $jinput = JFactory::getApplication()->input;
         $gridL = $jinput->get('gridL');
@@ -271,14 +295,14 @@ footer {
         $checkHeader = $jinput->get('checkHeader');
         $format = $jinput->get('format');
         $border = $jinput->get('border');
-
-        $fnums_obj = (array) json_decode(stripslashes($string_fnums));
-
+        
         $fnums = $this->fnums_json_decode($string_fnums);
-        $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader,$border);
+        $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader, $border);
+
         require_once (JPATH_COMPONENT.DS.'models'.DS.'trombinoscope.php');
-        $trombi = new EmundusModelTrombinoscope();
-        $generated_pdf_url = $trombi->generate_pdf($html_content, $format);
+        $m_trombinoscrope = new EmundusModelTrombinoscope();
+        $generated_pdf_url = $m_trombinoscrope->generate_pdf($html_content, $format);
+
         $return_value = json_encode(array(
             'pdf_url' => $generated_pdf_url
         ));

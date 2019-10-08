@@ -1089,7 +1089,7 @@ textarea>.input-group-btn>.btn {
 }
 
 label {
-    color: #9EA4AB;
+    color: #000;
     margin-bottom: 5px !important;
     font-weight: bold !important;
     display: inline;
@@ -1943,4 +1943,8 @@ footer#g-footer {
     text-align: center;
     padding: 10px;
     color: white;
+}
+
+.em-personalDetail-table-inline tr td {
+    width: 50%;
 }
