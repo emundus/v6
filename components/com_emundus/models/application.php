@@ -1011,13 +1011,12 @@ class EmundusModelApplication extends JModelList {
 	                            $forms .='</table>';
 
 	                            // TABLEAU DE PLUSIEURS LIGNES
-	                        } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0){
+	                        } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0) {
 	                            $forms .= '<table class="table table-bordered table-striped em-personalDetail-table-multiplleLine">
 	                              <thead>
 	                              <tr> ';
 
-	                            //-- Entrée du tableau -- */
-
+	                            // -- Entrée du tableau --
 	                            $t_elt = array();
 	                            foreach($elements as &$element) {
 	                                $t_elt[] = $element->name;
@@ -1055,9 +1054,10 @@ class EmundusModelApplication extends JModelList {
 	                                    $forms .= '<tr>';
 	                                    $j = 0;
 	                                    foreach ($r_element as $key => $r_elt) {
-
+	                                    	
 		                                    // Do not display elements with no value inside them.
 		                                    if ($show_empty_fields == 0 && trim($r_elt) == '') {
+		                                    	$forms .= '<td></td>';
 			                                    continue;
 		                                    }
 
