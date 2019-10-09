@@ -1471,7 +1471,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         $line .= $status[$v]['value']."\t";
                         $uid = intval(substr($v, 21, 7));
                         if (!$anonymize_data) {
-	                        $userProfil = $m_users->getUserById($uid);
+	                        $userProfil = $m_users->getUserById($uid)[0];
 	                        $line .= $userProfil->lastname."\t";
 	                        $line .= $userProfil->firstname."\t";
                         }
