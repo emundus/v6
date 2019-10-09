@@ -250,24 +250,20 @@ footer {
             }
         }
         if ($generate == 1) {
-            $header = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#',
-                function ($match) {
-                    list(, $img, $type, $base64, $end) = $match;
-                    $bin = base64_decode($base64);
-                    $md5 = md5($bin);   // generate a new temporary filename
-                    $fn = "tmp/$md5.$type";
-                    file_exists($fn) or file_put_contents($fn, $bin);
-                    return "$img$fn$end";  // new <img> tag
-                }, $templHeader);
-            $footer = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#',
-                function ($match) {
-                    list(, $img, $type, $base64, $end) = $match;
-                    $bin = base64_decode($base64);
-                    $md5 = md5($bin);   // generate a new temporary filename
-                    $fn = "tmp/$md5.$type";
-                    file_exists($fn) or file_put_contents($fn, $bin);
-                    return "$img$fn$end";  // new <img> tag
-                }, $templFooter);
+            $header = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
+            	$src = $match[1];
+	            if (substr($src, 0, 1) === '/') {
+	            	$src = substr($src, 1);
+	            }
+                return '<img src="'.JURI::base().$src;
+            }, $templHeader);
+	        $footer = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
+		        $src = $match[1];
+		        if (substr($src, 0, 1) === '/') {
+			        $src = substr($src, 1);
+		        }
+		        return '<img src="'.JURI::base().$src;
+	        }, $templFooter);
         }
         if ($checkHeader == 1) {
             return $head.'<body class="em-body"><header>'.$header.'</header><footer>'.$footer.'</footer><main>'.$body.'</main></body></html>';
