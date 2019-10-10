@@ -359,7 +359,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
                     });
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR) {
                 console.log(jqXHR.responseText);
             }
         });
@@ -809,12 +809,17 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
         projectButton.append(ProjectClick);
         document.getElementById("summaryProjects").append(projectButton);
         document.getElementById("summaryProjects").append(document.createElement("br"));
-        afficheProjets();
+
+        <?php if (isset($projects)) :?>
+            afficheProjets();
+        <?php endif; ?>
+
         jQuery('#viewTable').each(function() {
             if (jQuery(this).find('tr').children("td").length < 2) {
                 jQuery(this).hide();
             }
         });
+
         if (<?php echo $nationality; ?>) {
             document.getElementById("nationRow").setAttribute("style", "display:block;");
             var button = document.createElement("div");
