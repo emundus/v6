@@ -4,6 +4,7 @@ button.save-btn, .btn-success, button.save, button.save_continue, button.send, a
 .btn.advanced-search-apply, .toggle-addoption.btn, .candidacy-files-list a#send, .choice-statut-btn {
     text-shadow: none;
     text-transform: none;
+    max-height: 38px;
 }
 button.save-btn:hover, button.save-btn:active, button.save-btn:focus,
 .btn-success:hover, .btn-success:focus, .btn-success:active,
@@ -122,7 +123,11 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 .homepage .candidacy-files-list .icon-plus-sign {
-    width: auto !important;
+     width: auto !important;
+ }
+
+.homepage .candidacy-files-list .btn i {
+    display: inline !important;
 }
 
 .candidacy-files-list .col-xs-6:nth-child(2) a {
