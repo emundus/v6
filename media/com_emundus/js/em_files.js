@@ -180,7 +180,7 @@ function reloadActions(view, fnum, onCheck, async) {
     //addDimmer();
 
     var multi = $('.em-check:checked').length;
-    if(multi === 0 && fnum != 0 ){
+    if (multi === 0 && fnum != 0 ) {
         multi = 1;
     }
 
@@ -216,8 +216,7 @@ function addElement() {
         url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getadvfilters&Itemid=' + itemId,
         dataType: 'json',
         success: function(result) {
-            if (result.status)
-            {
+            if (result.status) {
                 var ni = $('#advanced-filters');
                 var num = ($('#nb-adv-filter').val() - 1) + 2;
                 $('#nb-adv-filter').val(num);
@@ -326,6 +325,7 @@ function tableOrder(order) {
 
 // Open Application file
 function openFiles(fnum) {
+
     // Run the reload actions function without waiting for return.
     setTimeout(function(){reloadActions(undefined, fnum.fnum, false, true);},0);
 
@@ -376,8 +376,7 @@ function openFiles(fnum) {
                     url:firstMenu,
                     dataType:'html',
                     data:({fnum:fnum.fnum}),
-                    success: function(result)
-                    {
+                    success: function(result) {
                         $('.em-dimmer').remove();
                         $('#em-files-filters').hide();
                         $(".main-panel .panel.panel-default").hide();
@@ -1172,10 +1171,12 @@ $(document).ready(function() {
             e.handle = true;
             var fnum = {};
             fnum.fnum = $(this).attr('id');
+
             var sid = parseInt(fnum.fnum.substr(21, 7));
             var cid = parseInt(fnum.fnum.substr(14, 7));
-            $('.em-check:checked').prop('checked', false);
 
+            $('.em-check:checked').prop('checked', false);
+            $('#em-check-all:checked').prop('checked', false);
             $('#'+fnum.fnum+'_check').prop('checked', true);
 
             $.ajax({
