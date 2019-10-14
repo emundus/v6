@@ -1304,6 +1304,10 @@ ul.pagination.pagination-sm a {
   }
 }
 
+.pagination > li.active a {
+  font-weight: bold !important;
+}
+
 /* EM PANEL */
 #em-appli-menu .panel-body .list-group-item:hover,
 #em-appli-menu .panel-body .list-group-item:active,
