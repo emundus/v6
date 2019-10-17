@@ -31,7 +31,8 @@ try {
     echo $e->getMessage() . '<br />';
 }
 
-$is_dead_line_passed = strtotime(date($now)) > strtotime(@$user->end_date);
+$is_dead_line_passed = !empty($this->is_admission) ? strtotime(date($now)) > strtotime(@$user->fnums[$user->fnum]->admission_end_date) : strtotime(date($now)) > strtotime(@$user->end_date);
+
 $is_app_sent         = !in_array($user->status, $status_for_send);
 
 $block_upload = true;

@@ -131,6 +131,7 @@ class EmundusViewChecklist extends JViewLegacy
 			$show_info_legend 	  = $menu_params->get('show_info_legend', 1);
 			$show_nb_column 	  = $menu_params->get('show_nb_column', 1);
 			$custom_title         = $menu_params->get('custom_title', null);
+			$is_admission         = $menu_params->get('is_admission', 0);
 
 
 			$forms 				= $this->get('FormsList');
@@ -161,6 +162,7 @@ class EmundusViewChecklist extends JViewLegacy
 			$this->assignRef('show_info_panel', $show_info_panel);
 			$this->assignRef('show_info_legend', $show_info_legend);
 			$this->assignRef('show_nb_column', $show_nb_column);
+			$this->assignRef('is_admission', $is_admission);
 
 			$result = $this->get('Result');
 			$this->assignRef('result', $result);
