@@ -17,6 +17,8 @@ defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+
 
 /**
  * Create a Joomla user from the forms data
@@ -87,9 +89,11 @@ class PlgFabrik_FormEmundussetprofile extends plgFabrik_Form {
 
 		$status = $this->getParam('status');
 		$profile = $this->getParam('profile');
+		$redirect = $this->getParam('redirect');
 
-		if (($status !== '0' && empty($status)) || empty($profile))
+		if (($status !== '0' && empty($status)) || empty($profile)) {
 			return false;
+		}
 
 		$session = JFactory::getSession();
 		$current_user = $session->get('emundusUser');
@@ -127,6 +131,21 @@ class PlgFabrik_FormEmundussetprofile extends plgFabrik_Form {
 					JLog::add('Unable to set profile in plugin/emundusSetProfile at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 				}
 			}
+
+			if (!empty($redirect)) {
+                $m_application 	= new EmundusModelApplication;
+
+                $query
+                    ->clear()
+                    ->select('CONCAT(m.link,"&Itemid=", m.id) as link')
+                    ->from($db->quoteName('#__emundus_setup_profiles', 'esp'))
+                    ->leftJoin($db->quoteName('#__menu', 'm').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype').' AND '.$db->quoteName('m.published').'=1 AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
+                    ->where($db->quoteName('esp.menutype').'  LIKE "menu-profile'.$current_user->profile.'"')
+                    ->order($db->quoteName('m.lft').' ASC');
+                $db->setQuery($query);
+
+                JFactory::getApplication()->redirect(JRoute::_(JURI::base().$db->loadResult()));
+            }
 		}
 		return true;
 	}
