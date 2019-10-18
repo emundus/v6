@@ -138,13 +138,18 @@ class EmundusModelChecklist extends JModelList
 		return $cpt>0?true:false;
 	}
 
-	function getConfirmUrl()
-    {
+	function getConfirmUrl($profile = null) {
+
+	    if (empty($profile)) {
+	        $profile = $this->_user->profile;
+        }
+	    
         $db = JFactory::getDBO();
         $query = 'SELECT CONCAT(m.link,"&Itemid=", m.id) as link
         FROM #__emundus_setup_profiles as esp
         LEFT JOIN  #__menu as m on m.menutype = esp.menutype
-        WHERE esp.id='.$this->_user->profile.' AND m.published>=0 AND m.level=1 ORDER BY m.lft DESC';
+        WHERE esp.id='.$profile.' AND m.published>=0 AND m.level=1 ORDER BY m.lft DESC';
+
         $db->setQuery($query);
         return $db->loadResult();
 	}
