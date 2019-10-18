@@ -2610,16 +2610,27 @@ if (JFactory::getUser()->id == 63)
         try {
 
             $db = $this->getDbo();
-            $query = "SELECT form_id
-                        FROM `#__fabrik_formgroup`
-                        WHERE group_id IN (
-                            SELECT esp.fabrik_applicant_admission_group_id
-                            FROM  `#__emundus_campaign_candidature` AS ecc
-                            LEFT JOIN `#__emundus_setup_campaigns` AS esc ON esc.id = ecc.campaign_id
-                            LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.code = esc.training
-                            WHERE ecc.fnum LIKE  " . $db->quote($fnum) .")";
+            $query = $db->getQuery(true);
+
+            $query
+                ->select($db->qn('esp.fabrik_applicant_admission_group_id'))
+                ->from($db->qn('#__emundus_campaign_candidature', 'ecc'))
+                ->leftJoin($db->qn('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->qn('esc.id') . ' = ' . $db->qn('ecc.campaign_id'))
+                ->leftJoin($db->qn('#__emundus_setup_programmes', 'esp') . ' ON ' . $db->qn('esp.code') . ' = ' . $db->qn('esc.training'))
+                ->where($db->qn('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+
             $db->setQuery($query);
-            $res = $db->loadResult();
+
+            $groups = $db->loadColumn();
+
+            $query
+                ->clear()
+                ->select($db->qn('form_id'))
+                ->from($db->qn('#__fabrik_formgroup'))
+                ->where($db->qn('group_id') . ' IN (' . implode(',', $groups) . ')');
+
+            $db->setQuery($query);
+            $res = $db->loadColumn();
             return $res;
 
         } catch (Exception $e) {

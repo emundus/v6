@@ -282,7 +282,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $fileName = $jinput->post->get('filename');
         $attachId = $jinput->post->get('attachId');
 
-        if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id) || !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
+        if (!EmundusHelperAccess::isApplicant($current_user->id)) {
             return false;
         }
 

@@ -44,7 +44,11 @@
 	text-decoration: none;
 }
 
-.emundusreferent .fabrikElement div { float:left; vertical-align:middle; padding: 0 12px 0 1px;}
+.emundusreferent .fabrikElement div {
+	float:left;
+	vertical-align:middle;
+	padding: 0 12px 0 1px;
+}
 
 .emundusreferent_add {
 	background-position: -181px center;
@@ -61,7 +65,9 @@
 	width: 98%;
 }
 
-.emundusreferent_header {background: #2A2C2E url('../img/backgrounds.gif') repeat-x;}
+.emundusreferent_header {
+	background: #2A2C2E url('../img/backgrounds.gif') repeat-x;
+}
 .emundusreferent_header_content {
 	background: url('../img/backgrounds.gif') no-repeat 0 -317px;
 	min-height: 56px;
