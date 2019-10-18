@@ -143,7 +143,7 @@ class EmundusModelChecklist extends JModelList
 	    if (empty($profile)) {
 	        $profile = $this->_user->profile;
         }
-	    
+
         $db = JFactory::getDBO();
         $query = 'SELECT CONCAT(m.link,"&Itemid=", m.id) as link
         FROM #__emundus_setup_profiles as esp
