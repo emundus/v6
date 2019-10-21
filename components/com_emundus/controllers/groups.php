@@ -430,31 +430,25 @@ class EmundusControllerGroups extends JControllerLegacy {
 		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir, JText::_('ACTION_DONE'), 'message');
 	}
 
-	public function addgroups(){
+	public function addgroups() {
         $user = JFactory::getUser();
-        $view = JRequest::getVar('view', null, 'GET', 'none',0);
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         $data = JRequest::getVar('data', null, 'POST', 'none',0);
 
-        $model = $this->getModel('groups');
-
-        if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id) )
-        {
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id) ) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        }
-        else
-        {
-            $result = $model->addGroupsByProgrammes($data);
+        } else {
+	        $m_groups = $this->getModel('groups');
+            $result = $m_groups->addGroupsByProgrammes($data);
 
-            if($result === true)
-                $tab = array('status' => 1, 'msg' => JText::_('GROUPS_ADDED'), 'data' => $result);
-            else
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_GROUPS'), 'data' => $result);
+            if ($result === true) {
+	            $tab = array('status' => 1, 'msg' => JText::_('GROUPS_ADDED'), 'data' => $result);
+            } else {
+	            $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_GROUPS'), 'data' => $result);
+            }
         }
         echo json_encode((object)$tab);
         exit;
     }
 
-} //END CLASS
-?>
+}

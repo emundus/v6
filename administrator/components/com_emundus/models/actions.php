@@ -9,7 +9,16 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 class EmundusModelActions extends JModelList {
-	public function syncAllActions() {
+
+	/**
+	 * @param   bool  $echo  if true, echo output.
+	 *
+	 * @return bool
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function syncAllActions($echo = true) {
 		try {
 			$dbo = $this->getDbo();
 			$queryGetMissingGroups = 'SELECT id FROM jos_emundus_setup_groups WHERE id NOT IN (SELECT group_id FROM jos_emundus_acl)';
@@ -83,10 +92,9 @@ class EmundusModelActions extends JModelList {
 			if ($canInsert) {
 				$insert = rtrim($insert, ",");
 				$dbo->setQuery($insert);
-				echo "<pre>";
-				echo "group acl : ";
-				echo $insert;
-				echo "</pre>";
+				if ($echo) {
+					echo "<pre>group acl : ".$insert."</pre>";
+				}
 				$dbo->execute();
 			}
 			$canInsert = false;
@@ -105,10 +113,9 @@ class EmundusModelActions extends JModelList {
 			if ($canInsert) {
 				$insert = rtrim($insert, ",");
 				$dbo->setQuery($insert);
-				echo "<pre>";
-				echo "insert group assoc : ";
-				echo $insert;
-				echo "</pre>";
+				if ($echo) {
+					echo "<pre> insert group assoc : ".$insert."</pre>";
+				}
 				$dbo->execute();
 			}
 			$canInsert = false;
@@ -122,27 +129,31 @@ class EmundusModelActions extends JModelList {
 							if ($user->id > 0) {
 								$canInsert = true;
 								$insert .= "({$fnum}, {$aid}, {$uid}, 0, 0, 0, 0),";
-							}
-							else
+							} elseif ($echo) {
 								echo '<hr>'.JText::_('ERROR_USER_ID_NOT_FOUND').' : '.$uid;
+							}
 						}
 					}
 				}
 			}
+
 			if ($canInsert) {
 				$insert = rtrim($insert, ",");
 				$dbo->setQuery($insert);
-				echo "<pre>";
-				echo "insert users assoc : ";
-				echo $insert;
-				echo "</pre>";
+				if ($echo) {
+					echo "<pre>insert users assoc : ".$insert."</pre>";
+				}
 				$dbo->execute();
 			}
-			echo "END";
 
-		} catch (RuntimeException $e) {
+			if ($echo) {
+				echo "END";
+			}
+
+		} catch (Exception $e) {
 			JFactory::getApplication()->enqueueMessage($e->getMessage());
 			return false;
 		}
+		return true;
 	}
 }
