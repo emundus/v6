@@ -94,16 +94,16 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		if ($this->isReferentLetterUploaded($this->_attachment_id)) {
 			$str .= '<span class="emundusreferent_uploaded">'.JText::_('REFERENCE_LETTER_UPLOADED').'<span>';
 		} else {
-			$str .= "<input ";
+			$str .= '<input ' ;
 			foreach ($bits as $key => $val) {
-				$str.= "$key = \"$val\" ";
+				$str .= $key.' = "'.$val.'" ';
 			}
 			$str .= " />\n";
 			$txt_button = ($value>0)?JText::_('SEND_EMAIL_AGAIN'):JText::_('SEND_EMAIL');
-			$str .= "<div id=\"".$id."_response\"><input type=\"button\" class=\"fabrikinput button\" id=\"".$id."_btn\" name=\"$name\" value=\"$txt_button\" /></div>";
+			$str .= '<div id="'.$id.'_response"><input type="button" class="fabrikinput button btn-referent" id="'.$id.'_btn" name="'.$name.'" value="'.$txt_button.'" /></div>';
 			
-			$str .= "<img src=\"".COM_FABRIK_LIVESITE."media/com_fabrik/images/ajax-loader.gif\" class=\"loader\" id=\"".$id."_loader\" alt=\"" . JText::_('Loading') . "\" style=\"display:none;padding-left:10px;\" />";
-			$str .= "<div id=\"".$id."_error\"></div>";
+			$str .= '<img src="'.COM_FABRIK_LIVESITE.'media/com_fabrik/images/ajax-loader.gif" class="loader" id="'.$id.'_loader" alt="'.JText::_('Loading').'" style="display:none;padding-left:10px;" />';
+			$str .= '<div id="'.$id.'_error"></div>';
 		}
 
 		return $str."</div>";
@@ -257,7 +257,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			$response = array("result" => 0, "message" => '<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>');
 			die(json_encode($response));
 		}
-	
+
 		// Récupèration des données du mail
 		$query = 'SELECT se.id, se.subject, se.emailfrom, se.name, se.message, et.Template
 					FROM #__emundus_setup_emails AS se
