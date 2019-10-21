@@ -1212,6 +1212,11 @@ class EmundusModelUsers extends JModelList {
 		        return null;
 	        }
         }
+
+        require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'actions.php');
+        $m_actions = new EmundusModelActions();
+        $m_actions->syncAllActions(false);
+
         return $gid;
     }
 

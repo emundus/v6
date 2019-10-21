@@ -50,7 +50,7 @@ echo $description;
 
                 <div class="col-xs-12 col-md-6 main-page-file-info">
                     <p class="em-tags-display"><?= $file_tags_display; ?></i></p>
-                    <a class="btn btn-warning" href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>" role="button">
+                    <a class="btn btn-warning" href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>" role="button">
                         <i class="folder open outline icon"></i> <?= (in_array($application->status, $admission_status))?JText::_('OPEN_ADMISSION'):JText::_('OPEN_APPLICATION'); ?>
                     </a>
 

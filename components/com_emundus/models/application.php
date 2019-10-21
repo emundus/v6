@@ -505,14 +505,14 @@ class EmundusModelApplication extends JModelList {
 
         $form = '';
 
+
         // Get table by form ID
         $query = 'SELECT fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name
                     FROM #__fabrik_forms AS fbforms
                     LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
-                    WHERE fbforms.id = '.$formID;
+                    WHERE fbforms.id IN ('.implode(',', $formID) . ')';
 
         try {
-
             $this->_db->setQuery($query);
             $table = $this->_db->loadObjectList();
 
@@ -520,198 +520,285 @@ class EmundusModelApplication extends JModelList {
             return $e->getMessage();
         }
 
-        $form .= '<br><hr><div class="TitleAdmission"><h3>';
-        $title = explode('-', JText::_($table[0]->label));
+        
+        for($i = 0; $i < sizeof($table); $i++) {
+            $form .= '<br><hr><div class="TitleAdmission"><h3>';
+            $title = explode('-', JText::_($table[$i]->label));
 
-        if (empty($title[1])) {
-	        $form .= JText::_($table[0]->label);
-        } else {
-	        $form .= JText::_($title[1]);
-        }
-        $form .= '</h3>';
-        if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $table[0]->db_table_name != "#__emundus_training") {
 
-            $query = 'SELECT count(id) FROM `'.$table[0]->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
+                $form .= JText::_($table[$i]->label);
+
+            $form .= '</h3>';
+            if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $table[$i]->db_table_name != "#__emundus_training") {
+
+                $query = 'SELECT count(id) FROM `'.$table[$i]->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
+                try {
+
+                    $this->_db->setQuery( $query );
+                    $cpt = $this->_db->loadResult();
+
+                } catch (Exception $e) {
+                    return $e->getMessage();
+                }
+
+
+                if ($cpt > 0) {
+                    $form .= '<button type="button" id="'.$table[$i]->form_id.'" class="btn btn btn-info btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
+                } else {
+                    $form .= '<button type="button" id="'.$table[$i]->form_id.'" class="btn btn-default btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[$i]->form_id.'&'.$table[$i]->db_table_name.'___fnum='.$fnum.'&'.$table[$i]->db_table_name.'___user_raw='.$aid.'&'.$table[$i]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
+                }
+            }
+            $form .= '</div>';
+
+            // liste des groupes pour le formulaire d'une table
+            $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
+                                FROM #__fabrik_formgroup ff, #__fabrik_groups fg
+                                WHERE ff.group_id = fg.id AND
+                                    ff.form_id = '.$table[$i]->form_id.'
+                                ORDER BY ff.ordering';
             try {
 
-                $this->_db->setQuery( $query );
-                $cpt = $this->_db->loadResult();
-
-            } catch (Exception $e) {
-                return $e->getMessage();
-            }
-
-
-            if ($cpt > 0) {
-                $form .= '<button type="button" id="'.$table[0]->form_id.'" class="btn btn btn-info btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&usekey=fnum&rowid='.$fnum.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('EDIT').'</i></button>';
-            } else {
-                $form .= '<button type="button" id="'.$table[0]->form_id.'" class="btn btn-default btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid='.$table[0]->form_id.'&'.$table[0]->db_table_name.'___fnum='.$fnum.'&'.$table[0]->db_table_name.'___user_raw='.$aid.'&'.$table[0]->db_table_name.'___user='.$aid.'&sid='.$aid.'&tmpl=component" alt="'.JText::_('EDIT').'"><span class="glyphicon glyphicon-edit"></span><i> '.JText::_('ADD').'</i></button>';
-            }
-        }
-
-        $form .= '</div>';
-
-        // liste des groupes pour le formulaire d'une table
-        $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
-                            FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-                            WHERE ff.group_id = fg.id AND
-                                  ff.form_id = "'.$formID.'"
-                            ORDER BY ff.ordering';
-        try {
-
-            $this->_db->setQuery($query);
-            $groupes = $this->_db->loadObjectList();
-
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
-
-        /*-- Liste des groupes -- */
-        foreach ($groupes as $itemg) {
-            // liste des items par groupe
-            $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
-                        FROM #__fabrik_elements fe
-                        WHERE fe.published=1 AND fe.hidden=0 AND fe.group_id = "'.$itemg->group_id.'"
-                        ORDER BY fe.ordering';
-
-            try {
                 $this->_db->setQuery($query);
-                $elements = $this->_db->loadObjectList();
+                $groupes = $this->_db->loadObjectList();
+
             } catch (Exception $e) {
                 return $e->getMessage();
             }
 
-            if (count($elements) > 0) {
-                $form .= '<fieldset><legend class="legend">';
-                $form .= JText::_($itemg->label);
-                $form .= '</legend>';
+            /*-- Liste des groupes -- */
+            foreach ($groupes as $itemg) {
+                // liste des items par groupe
+                $query = 'SELECT fe.id, fe.name, fe.label, fe.plugin, fe.params
+                            FROM #__fabrik_elements fe
+                            WHERE fe.published=1 AND fe.hidden=0 AND fe.group_id = "'.$itemg->group_id.'"
+                            ORDER BY fe.ordering';
 
-                if ($itemg->group_id == 14) {
+                try {
+                    $this->_db->setQuery($query);
+                    $elements = $this->_db->loadObjectList();
+                } catch (Exception $e) {
+                    return $e->getMessage();
+                }
 
-                    foreach ($elements as &$element) {
-                        if (!empty($element->label) && $element->label!=' ') {
+                if (count($elements) > 0) {
+                    $form .= '<fieldset><legend class="legend">';
+                    $form .= JText::_($itemg->label);
+                    $form .= '</legend>';
 
-                            if ($element->plugin == 'date' && $element->content > 0) {
+                    if ($itemg->group_id == 14) {
 
-                                $date_params = json_decode($element->params);
-                                $elt = date($date_params->date_form_format, strtotime($element->content));
+                        foreach ($elements as &$element) {
+                            if (!empty($element->label) && $element->label!=' ') {
 
-                            } elseif ($element->plugin == 'birthday' && $element->content > 0) {
-                                $format = 'Y-n-j';
-                                $d = DateTime::createFromFormat($format, $element->content);
-                                if ($d && $d->format($format) == $element->content) {
-	                                $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                if ($element->plugin == 'date' && $element->content > 0) {
+
+                                    $date_params = json_decode($element->params);
+                                    $elt = date($date_params->date_form_format, strtotime($element->content));
+
+                                } elseif ($element->plugin == 'birthday' && $element->content > 0) {
+                                    $format = 'Y-n-j';
+                                    $d = DateTime::createFromFormat($format, $element->content);
+                                    if ($d && $d->format($format) == $element->content) {
+                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                    } else {
+                                        $elt = $element->content;
+                                    }
+
+                                } elseif ($element->plugin == 'databasejoin') {
+
+                                    $params = json_decode($element->params);
+                                    $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+                                    $from   = $params->join_db_name;
+                                    $where  = $params->join_key_column.'='.$this->_db->Quote($element->content);
+                                    $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+                                    $query  = preg_replace('#{thistable}#', $from, $query);
+                                    $query  = preg_replace('#{my->id}#', $aid, $query);
+
+                                    try {
+
+                                        $this->_db->setQuery($query);
+
+                                        $elt = $this->_db->loadResult();
+
+                                    } catch (Exception $e) {
+                                        return $e->getMessage();
+                                    }
+
+                                } elseif ($element->plugin == 'checkbox') {
+
+                                    $elt = implode(", ", json_decode (@$element->content));
+
                                 } else {
-	                                $elt = $element->content;
+                                    $elt = $element->content;
                                 }
 
-                            } elseif ($element->plugin == 'databasejoin') {
+                                $form .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
+                            }
+                        }
 
-                                $params = json_decode($element->params);
-                                $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
-                                $from   = $params->join_db_name;
-                                $where  = $params->join_key_column.'='.$this->_db->Quote($element->content);
-                                $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-                                $query  = preg_replace('#{thistable}#', $from, $query);
-                                $query  = preg_replace('#{my->id}#', $aid, $query);
+                        // TABLEAU DE PLUSIEURS LIGNES
+                    }
+                    elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0) {
+
+                        $form .= '<table class="table table-bordered table-striped">
+                            <thead>
+                            <tr> ';
+
+                        // Entrée du tableau
+                        $t_elt = array();
+
+                        foreach($elements as &$element) {
+                            $t_elt[] = $element->name;
+                            $form .= '<th scope="col">'.JText::_($element->label).'</th>';
+                        }
+                        unset($element);
+
+                        $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id='.$itemg->group_id.' AND table_join_key like "parent_id"';
+
+                        try {
+
+                            $this->_db->setQuery($query);
+                            $table = $this->_db->loadResult();
+
+                        } catch (Exception $e) {
+                            return $e->getMessage();
+                        }
+
+                        if ($itemg->group_id == 174) {
+                            $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.' WHERE parent_id=(SELECT id FROM '.$table['db_table_name'].' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id=' . $aid;
+                        } else {
+                            $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.' WHERE parent_id=(SELECT id FROM '.$table['db_table_name'].' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
+                        }
+
+                        try {
+
+                            $this->_db->setQuery($query);
+                            $repeated_elements = $this->_db->loadObjectList();
+
+                        } catch (Exception $e) {
+                            return $e->getMessage();
+                        }
+
+                        unset($t_elt);
+                        $form .= '</tr></thead>';
+
+                        // Ligne du tableau
+                        if (count($repeated_elements) > 0) {
+                            $form .= '<tbody>';
+
+                            foreach ($repeated_elements as $r_element) {
+                                $form .= '<tr>';
+                                $j = 0;
+
+                                foreach ($r_element as $key => $r_elt) {
+                                    if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
+
+                                        if ($elements[$j]->plugin == 'date') {
+
+                                            $date_params = json_decode($elements[$j]->params);
+                                            $elt = date($date_params->date_form_format, strtotime($r_elt));
+
+                                        } elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
+                                            $format = 'Y-n-j';
+                                            $d = DateTime::createFromFormat($format, $r_elt);
+                                            if ($d && $d->format($format) == $r_elt) {
+                                                $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                            } else {
+                                                $elt = $r_elt;
+                                            }
+
+                                        } elseif ($elements[$j]->plugin == 'databasejoin') {
+
+                                            $params = json_decode($elements[$j]->params);
+                                            $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
+                                            $from   = $params->join_db_name;
+                                            $where  = $params->join_key_column.'='.$this->_db->Quote($r_elt);
+                                            $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+                                            $query  = preg_replace('#{thistable}#', $from, $query);
+                                            $query  = preg_replace('#{my->id}#', $aid, $query);
+
+                                            try {
+                                                $this->_db->setQuery($query);
+                                                $elt = $this->_db->loadResult();
+                                            } catch (Exception $e) {
+                                                return $e->getMessage();
+                                            }
+
+                                        } elseif ($elements[$j]->plugin == 'checkbox') {
+
+                                            $elt = implode(", ", json_decode (@$r_elt));
+
+                                        } elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
+
+                                            $params = json_decode($elements[$j]->params);
+                                            $index = array_search($r_elt, $params->sub_options->sub_values);
+                                            if (strlen($index) > 0) {
+                                                $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                            } else {
+                                                $elt = "";
+                                            }
+
+                                        } else {
+                                            $elt = $r_elt;
+                                        }
+
+                                        $form .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'"> '.JText::_($elt).'</div></td>';
+                                    }
+                                    $j++;
+                                }
+                                $form .= '</tr>';
+                            }
+                            $form .= '</tbody>';
+                        }
+                        $form .= '</table>';
+
+                        // AFFICHAGE EN LIGNE
+                    } else {
+
+                        foreach ($elements as &$element) {
+
+                            if (!empty($element->label) && $element->label != ' ') {
+                                $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$table[$i]->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
 
                                 try {
 
                                     $this->_db->setQuery($query);
-                                    $elt = $this->_db->loadResult();
-
+                                    $res = $this->_db->loadRow();
                                 } catch (Exception $e) {
                                     return $e->getMessage();
                                 }
 
-                            } elseif ($element->plugin == 'checkbox') {
+                                $element->content = @$res[1];
+                                $element->content_id = @$res[0];
 
-                                $elt = implode(", ", json_decode (@$element->content));
+                                if ($element->plugin == 'date' && $element->content > 0) {
 
-                            } else {
-                            	$elt = $element->content;
-                            }
+                                    $date_params = json_decode($element->params);
+                                    $elt = date($date_params->date_form_format, strtotime($element->content));
 
-                            $form .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
-                        }
-                    }
+                                } elseif ($element->plugin == 'birthday' && $element->content > 0) {
+                                    $format = 'Y-n-j';
+                                    $d = DateTime::createFromFormat($format, $element->content);
+                                    if ($d && $d->format($format) == $element->content) {
+                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                    } else {
+                                        $elt = $element->content;
+                                    }
 
-                // TABLEAU DE PLUSIEURS LIGNES
-                } elseif ($itemg->repeated > 0 || $itemg->repeated_1 > 0) {
+                                }
+                                elseif ($element->plugin == 'databasejoin') {
 
-                    $form .= '<table class="table table-bordered table-striped">
-                        <thead>
-                        <tr> ';
+                                    $params = json_decode($element->params);
+                                    $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
 
-                    // Entrée du tableau
-                    $t_elt = array();
+                                    if ($params->database_join_display_type == 'checkbox') {
 
-                    foreach($elements as &$element) {
-                        $t_elt[] = $element->name;
-                        $form .= '<th scope="col">'.JText::_($element->label).'</th>';
-                    }
-                    unset($element);
+                                        $elt = implode(", ", json_decode (@$element->content));
 
-                    $query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id='.$itemg->group_id.' AND table_join_key like "parent_id"';
+                                    } else {
 
-                    try {
-
-                        $this->_db->setQuery($query);
-                        $table = $this->_db->loadResult();
-
-                    } catch (Exception $e) {
-                        return $e->getMessage();
-                    }
-
-                    if ($itemg->group_id == 174) {
-	                    $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.' WHERE parent_id=(SELECT id FROM '.$table['db_table_name'].' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id=' . $aid;
-                    } else {
-                        $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.' WHERE parent_id=(SELECT id FROM '.$table['db_table_name'].' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
-                    }
-
-                    try {
-
-                        $this->_db->setQuery($query);
-                        $repeated_elements = $this->_db->loadObjectList();
-
-                    } catch (Exception $e) {
-                        return $e->getMessage();
-                    }
-
-                    unset($t_elt);
-                    $form .= '</tr></thead>';
-
-                    // Ligne du tableau
-                    if (count($repeated_elements) > 0) {
-                        $form .= '<tbody>';
-
-                        foreach ($repeated_elements as $r_element) {
-                            $form .= '<tr>';
-                            $j = 0;
-
-                            foreach ($r_element as $key => $r_elt) {
-                                if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
-
-                                    if ($elements[$j]->plugin == 'date') {
-
-                                        $date_params = json_decode($elements[$j]->params);
-                                        $elt = date($date_params->date_form_format, strtotime($r_elt));
-
-                                    } elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
-                                        $format = 'Y-n-j';
-                                        $d = DateTime::createFromFormat($format, $r_elt);
-                                        if ($d && $d->format($format) == $r_elt) {
-	                                        $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
-                                        } else {
-	                                        $elt = $r_elt;
-                                        }
-
-                                    } elseif ($elements[$j]->plugin == 'databasejoin') {
-
-                                        $params = json_decode($elements[$j]->params);
-                                        $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
                                         $from   = $params->join_db_name;
-                                        $where  = $params->join_key_column.'='.$this->_db->Quote($r_elt);
+                                        $where  = $params->join_key_column.'='.$this->_db->Quote($element->content);
                                         $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                         $query  = preg_replace('#{thistable}#', $from, $query);
                                         $query  = preg_replace('#{my->id}#', $aid, $query);
@@ -722,80 +809,21 @@ class EmundusModelApplication extends JModelList {
                                         } catch (Exception $e) {
                                             return $e->getMessage();
                                         }
-
-                                    } elseif ($elements[$j]->plugin == 'checkbox') {
-
-                                        $elt = implode(", ", json_decode (@$r_elt));
-
-                                    } elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
-
-                                        $params = json_decode($elements[$j]->params);
-                                        $index = array_search($r_elt, $params->sub_options->sub_values);
-                                        if (strlen($index) > 0) {
-                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
-                                        } else {
-                                            $elt = "";
-                                        }
-
-                                    } else {
-                                    	$elt = $r_elt;
                                     }
 
-                                    $form .= '<td><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'"> '.JText::_($elt).'</div></td>';
-                                }
-                                $j++;
-                            }
-                            $form .= '</tr>';
-                        }
-                        $form .= '</tbody>';
-                    }
-                    $form .= '</table>';
+                                } elseif ($element->plugin == 'cascadingdropdown') {
 
-                // AFFICHAGE EN LIGNE
-                } else {
+                                    $params = json_decode($element->params);
+                                    $cascadingdropdown_id = $params->cascadingdropdown_id;
 
-                    foreach ($elements as &$element) {
+                                    $r1 = explode('___', $cascadingdropdown_id);
+                                    $cascadingdropdown_label = JText::_($params->cascadingdropdown_label);
 
-                        if (!empty($element->label) && $element->label != ' ') {
-                            $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$table[0]->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
+                                    $r2 = explode('___', $cascadingdropdown_label);
 
-                            try {
-                                $this->_db->setQuery($query);
-                                $res = $this->_db->loadRow();
-                            } catch (Exception $e) {
-                                return $e->getMessage();
-                            }
-
-                            $element->content = @$res[1];
-                            $element->content_id = @$res[0];
-
-                            if ($element->plugin == 'date' && $element->content > 0) {
-
-                                $date_params = json_decode($element->params);
-                                $elt = date($date_params->date_form_format, strtotime($element->content));
-
-                            } elseif ($element->plugin == 'birthday' && $element->content > 0) {
-                                $format = 'Y-n-j';
-                                $d = DateTime::createFromFormat($format, $element->content);
-                                if ($d && $d->format($format) == $element->content) {
-	                                $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-                                } else {
-	                                $elt = $element->content;
-                                }
-
-                            } elseif ($element->plugin == 'databasejoin') {
-
-                                $params = json_decode($element->params);
-                                $select = !empty($params->join_val_column_concat)?"CONCAT(".$params->join_val_column_concat.")":$params->join_val_column;
-
-                                if ($params->database_join_display_type == 'checkbox') {
-
-                                    $elt = implode(", ", json_decode (@$element->content));
-
-                                } else {
-
-                                    $from   = $params->join_db_name;
-                                    $where  = $params->join_key_column.'='.$this->_db->Quote($element->content);
+                                    $select = !empty($params->cascadingdropdown_label_concat)?"CONCAT(".$params->cascadingdropdown_label_concat.")":$r2[1];
+                                    $from   = $r2[0];
+                                    $where  = $r1[1].'='.$this->_db->Quote($element->content);
                                     $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                     $query  = preg_replace('#{thistable}#', $from, $query);
                                     $query  = preg_replace('#{my->id}#', $aid, $query);
@@ -806,55 +834,32 @@ class EmundusModelApplication extends JModelList {
                                     } catch (Exception $e) {
                                         return $e->getMessage();
                                     }
-                                }
 
-                            } elseif ($element->plugin == 'cascadingdropdown') {
+                                } elseif ($element->plugin == 'checkbox') {
 
-                                $params = json_decode($element->params);
-                                $cascadingdropdown_id = $params->cascadingdropdown_id;
+                                    $elt = implode(", ", json_decode (@$element->content));
 
-                                $r1 = explode('___', $cascadingdropdown_id);
-                                $cascadingdropdown_label = JText::_($params->cascadingdropdown_label);
+                                } elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
 
-                                $r2 = explode('___', $cascadingdropdown_label);
+                                    $params = json_decode($element->params);
+                                    $index  = array_search($element->content, $params->sub_options->sub_values);
+                                    if (strlen($index) > 0) {
+                                        $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                    } else {
+                                        $elt = "";
+                                    }
 
-                                $select = !empty($params->cascadingdropdown_label_concat)?"CONCAT(".$params->cascadingdropdown_label_concat.")":$r2[1];
-                                $from   = $r2[0];
-                                $where  = $r1[1].'='.$this->_db->Quote($element->content);
-                                $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-                                $query  = preg_replace('#{thistable}#', $from, $query);
-                                $query  = preg_replace('#{my->id}#', $aid, $query);
-
-                                try {
-                                    $this->_db->setQuery($query);
-                                    $elt = $this->_db->loadResult();
-                                } catch (Exception $e) {
-                                    return $e->getMessage();
-                                }
-
-                            } elseif ($element->plugin == 'checkbox') {
-
-                                $elt = implode(", ", json_decode (@$element->content));
-
-                            } elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
-
-                                $params = json_decode($element->params);
-                                $index  = array_search($element->content, $params->sub_options->sub_values);
-                                if (strlen($index) > 0) {
-                                    $elt = JText::_($params->sub_options->sub_labels[$index]);
                                 } else {
-                                    $elt = "";
+
+                                    $elt = $element->content;
                                 }
 
-                            } else {
-                            	$elt = $element->content;
+                                $form .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
                             }
-
-                            $form .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
                         }
                     }
+                    $form .= '</fieldset>';
                 }
-                $form .= '</fieldset>';
             }
         }
         return $form;
