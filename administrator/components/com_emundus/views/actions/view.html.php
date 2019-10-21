@@ -20,31 +20,31 @@ class EmundusViewActions extends JViewLegacy
 		parent::__construct($config);
 	}
 
-	function display($tpl = null)
-	{
-		if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) 
+	function display($tpl = null) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(JText::_("ACCESS_DENIED"));
+		}
 
-		JHTML::stylesheet( 'emundus.css', 'administrator/components/com_emundus/assets/css/' );
+		JHTML::stylesheet('emundus.css', 'administrator/components/com_emundus/assets/css/');
 
 		$document = JFactory::getDocument();
 		$document->setTitle(JText::_('COM_EMUNDUS_TITLE') . ' :: ' .JText::_('COM_EMUNDUS_CONTROL_PANEL'));
 		
 		// Set toolbar items for the page
-		JToolBarHelper::title( JText::_('COM_EMUNDUS_TITLE') .' :: '. JText::_( 'COM_EMUNDUS_HEADER' ), 'emundus' );
+		JToolBarHelper::title(JText::_('COM_EMUNDUS_TITLE') .' :: '. JText::_( 'COM_EMUNDUS_HEADER' ), 'emundus');
 		JToolBarHelper::preferences('com_emundus', '580', '750');
-		JToolBarHelper::help( 'screen.cpanel', true);
+		JToolBarHelper::help('screen.cpanel', true);
 
-		$model= $this->getModel('Actions');
+		$m_actions = $this->getModel('Actions');
 		echo "<h1>START SYNC...</h1>";
-		$model->syncAllActions();
+		$m_actions->syncAllActions();
 
 		/* Call the state object */
-		$state = $this->get( 'state' );
+		$state = $this->get('state');
 		/* Get the values from the state object that were inserted in the model's construct function */
 		$lists['order_Dir'] = $state->get( 'filter_order_Dir' );
 		$lists['order']     = $state->get( 'filter_order' );
-		$this->assignRef( 'lists', $lists );
+		$this->assignRef('lists', $lists);
 
 		parent::display($tpl);
 	}
