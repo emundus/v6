@@ -29,9 +29,7 @@ class EmundusViewUsers extends JViewLegacy
 	function __construct($config = array()){
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
@@ -56,12 +54,6 @@ class EmundusViewUsers extends JViewLegacy
 	}
 
     private function _loadFilter() {
-		$menu 		= JFactory::getApplication()->getMenu()->getActive();
-		$access 	= !empty($menu)?$menu->access : 0;
-		$state 		= EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access)  ? '' : NULL;
-		$session 	= JFactory::getSession();
-		$params 	= $session->get('filt_params');
-		$state 		= $params;
 
 		$filts_details	= [
 			'profile_users'		=> 1,
@@ -70,7 +62,6 @@ class EmundusViewUsers extends JViewLegacy
 			'schoolyear'		=> 1,
 			'campaign'			=> 1,
 			'programme'			=> 1,
-			//'finalgrade'		=> $state,
 			'newsletter'		=> 1,
 			'group'             => 1,
 			'institution'       => 1,
@@ -84,7 +75,6 @@ class EmundusViewUsers extends JViewLegacy
 			'schoolyear'		=> NULL,
 			'campaign'			=> NULL,
 			'programme'			=> NULL,
-			//'finalgrade'		=> NULL,
 			'newsletter'		=> NULL,
 			'spam_suspect'		=> NULL,
 			'not_adv_filter'	=> NULL,
