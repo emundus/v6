@@ -733,6 +733,12 @@ ul.nav.nav-tabs.nav-stacked span {
 }
 
 /* Inscription */
+form.fabrikForm label {
+    width: 100% !important;
+}
+#fabrikSubmit_307 {
+    height: 100% !important;
+}
 .registration {
   form {
     background: #4e5b6d;
