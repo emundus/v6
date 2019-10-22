@@ -95,5 +95,14 @@ jQuery(function ($) {
 
         $('.com_users .nav-tabs li:nth-of-type(2)').remove();
 
+
+
+        // Change fabrik question sign
+        if (document.querySelector('.icon-question-sign')) {
+            document.querySelector('.icon-question-sign').className = ('far fa-question-circle');
+        }
+
+
+
     });
 });
