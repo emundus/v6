@@ -472,6 +472,14 @@ class EmundusModelApplication extends JModelList {
         }
     }
 
+
+	/**
+	 * @param $aid
+	 *
+	 * @return bool|mixed
+	 *
+	 * @since version
+	 */
     public function getLogged ($aid) {
         $user = JFactory::getUser();
         $query = 'SELECT s.time, s.client_id, u.id, u.name, u.username
@@ -500,11 +508,20 @@ class EmundusModelApplication extends JModelList {
         return $results;
     }
 
+    
+	/**
+	 * @param        $formID
+	 * @param        $aid
+	 * @param   int  $fnum
+	 *
+	 * @return string|null
+	 *
+	 * @since version
+	 */
     public function getFormByFabrikFormID($formID, $aid, $fnum = 0) {
         $h_access = new EmundusHelperAccess;
 
         $form = '';
-
 
         // Get table by form ID
         $query = 'SELECT fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name
@@ -515,23 +532,20 @@ class EmundusModelApplication extends JModelList {
         try {
             $this->_db->setQuery($query);
             $table = $this->_db->loadObjectList();
-
         } catch (Exception $e) {
-            return $e->getMessage();
+            return null;
         }
 
         
-        for($i = 0; $i < sizeof($table); $i++) {
+        for ($i = 0; $i < sizeof($table); $i++) {
             $form .= '<br><hr><div class="TitleAdmission"><h3>';
-            $title = explode('-', JText::_($table[$i]->label));
 
-
-                $form .= JText::_($table[$i]->label);
+            $form .= JText::_($table[$i]->label);
 
             $form .= '</h3>';
             if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $table[$i]->db_table_name != "#__emundus_training") {
 
-                $query = 'SELECT count(id) FROM `'.$table[$i]->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
+                $query = 'SELECT count(id) FROM `'.$table[$i]->db_table_name.'` WHERE fnum like '.$this->_db->Quote($fnum);
                 try {
 
                     $this->_db->setQuery( $query );
@@ -665,9 +679,9 @@ class EmundusModelApplication extends JModelList {
                         }
 
                         if ($itemg->group_id == 174) {
-                            $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.' WHERE parent_id=(SELECT id FROM '.$table['db_table_name'].' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).') OR applicant_id=' . $aid;
+                            $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.' WHERE parent_id=(SELECT id FROM '.$table['db_table_name'].' WHERE fnum like '.$this->_db->Quote($fnum).') OR applicant_id=' . $aid;
                         } else {
-                            $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.' WHERE parent_id=(SELECT id FROM '.$table['db_table_name'].' WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum).')';
+                            $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.' WHERE parent_id=(SELECT id FROM '.$table['db_table_name'].' WHERE fnum like '.$this->_db->Quote($fnum).')';
                         }
 
                         try {
@@ -758,7 +772,7 @@ class EmundusModelApplication extends JModelList {
                         foreach ($elements as &$element) {
 
                             if (!empty($element->label) && $element->label != ' ') {
-                                $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$table[$i]->db_table_name.'` WHERE user='.$aid.' AND fnum like '.$this->_db->Quote($fnum);
+                                $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$table[$i]->db_table_name.'` WHERE fnum like '.$this->_db->Quote($fnum);
 
                                 try {
 
