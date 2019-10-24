@@ -110,7 +110,7 @@ try {
 	$query = 'SELECT se.id, se.subject, se.emailfrom, se.name, se.message, et.Template
 					FROM #__emundus_setup_emails AS se
 					LEFT JOIN #__emundus_email_templates AS et ON se.email_tmpl = et.id
-					WHERE lbl="attachment"';
+					WHERE se.lbl="attachment"';
 	$db->setQuery($query);
 	$obj = $db->loadObject();
 
