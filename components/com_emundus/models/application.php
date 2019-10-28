@@ -1514,7 +1514,7 @@ class EmundusModelApplication extends JModelList {
 
                                             if ($elements[$j]->plugin == 'date') {
                                                 $params = json_decode($elements[$j]->params);
-	                                            $dt = new DateTime($elements[$j]->content, new DateTimeZone('UTC'));
+	                                            $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
 	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
 	                                            $elt = $dt->format($params->date_form_format);
                                             }
