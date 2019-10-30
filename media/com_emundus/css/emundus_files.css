@@ -109,16 +109,16 @@ td:last-child > .em-cell {
 }
 
 #jos_emundus_campaign_candidature___date_time > .em-cell, #jos_emundus_campaign_candidature___date_submitted > .em-cell {
-    width:270px;
+    max-width:270px;
 }
 th[id='jos_emundus_personal_detail.profession'] > .em-cell {
-    width:120px;
+    max-width:120px;
 }
 #jos_emundus_personal_detail___activity > .em-cell{
-    width:140px;
+    max-width:140px;
 }
 #jos_emundus_campaign_candidature___campaign_id > .em-cell{
-    width:190px;
+    max-width:190px;
 }
 
 table .btn-group > .btn {
