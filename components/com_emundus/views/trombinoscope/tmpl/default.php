@@ -211,6 +211,8 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
 
     $('#trombi_generate').click(function (e) {
         e.preventDefault();
+        tinyMCE.execCommand('mceToggleEditor', false, 'trombi_head');
+        tinyMCE.execCommand('mceToggleEditor', false, 'trombi_foot');
 
         var string_fnums = JSON.stringify(<?= $this->string_fnums; ?>);
         var selected_grid_width = $('#trombi_grid_width').val();
