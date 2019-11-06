@@ -134,8 +134,9 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends JPlugin {
 						$insert_data['year'] = $this->db->quote($insert[$camp_year]);
 						$insert_data['aurion_id'] = $this->db->quote($insert[$camp_aurion_id]);
 
+
 						// Each insert can potentially become two lines in the DB as there is one for Fr and one for INT, if the dat is present.
-						if (!empty($insert[$camp_end_date_fr])) {
+						if (!empty($insert[$camp_end_date_fr]) && new DateTime($insert[$camp_end_date_fr]) > new DateTime()) {
 
 							// Profile is different based on if it's a bachelors or not.
 							// We can find this out by looking at the programme label.
@@ -150,7 +151,7 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends JPlugin {
 							$insert_values[] = implode(',', $insert_data);
 						}
 
-						if (!empty($insert[$camp_end_date_int])) {
+						if (!empty($insert[$camp_end_date_int]) && new DateTime($insert[$camp_end_date_int]) > new DateTime()) {
 							$insert_data['end_date'] = $this->db->quote(date("Y-m-d H:i:s", strtotime($insert[$camp_end_date_int])));
 							$insert_data['int_fr'] = $this->db->quote('int');
 							$insert_data['profile_id'] = 1002;
