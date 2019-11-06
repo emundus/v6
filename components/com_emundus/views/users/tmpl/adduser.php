@@ -162,12 +162,9 @@ if ($s == '') {
 
 				function searchLDAP() {
 
-					// Get the value of the search field.
-					search = $('#s')[0].value;
-
 					$.ajax({
 						type: "GET",
-						url:'index.php?option=com_emundus&controller=users&task=ldapsearch&search='+search,
+						url:'index.php?option=com_emundus&controller=users&task=ldapsearch&search='+$('#s')[0].value,
 						dataType: 'html',
 						beforeSend: function() {
 							ldapResult.text('<?= Jtext::_('SEARCHING'); ?> ['+$('#s')[0].value+']');
@@ -273,7 +270,7 @@ if ($s == '') {
 									let uid = $(this).find('.uid').text();
 
 									// using the login name: find the user card
-									let userCard = $('#ldap-user-'+uid);
+									let userCard = $('#ldap-user-'+uid.replace( /(:|\.|\[|\]|,|=|@)/g, "\\$1" )));
 
 									// The "create user" form is filled out using the values found in the user card.
 									// This is better than sending an Ajax because if the "create user" form is extended then we don't need to modify this code.
@@ -301,11 +298,11 @@ if ($s == '') {
 								});
 							}
 						},
-						error: function() {
-							ldapResult.text("<?= JText::_('AN_ERROR_OCCURED'); ?>");
-						}
+                        error: function() {
+                            ldapResult.text("<?= JText::_('AN_ERROR_OCCURED'); ?>");
+                        }
 					});
-				}
+				};
 
 				// The delay means that the function will not start until the user has stopped typing.
 				var delay = (function(){
@@ -351,7 +348,7 @@ if ($s == '') {
 					});
 				});
 			}
-		});
+		})
 
 		$(document).on('change', '#profiles', function() {
 			if ($('#profiles option[value="'+$(this).val()+'"]').attr('pub') == 1) {
@@ -388,5 +385,5 @@ if ($s == '') {
 				$(this).siblings('.help-block').remove();
 			}
 		});
-	});
+	})
 </script>

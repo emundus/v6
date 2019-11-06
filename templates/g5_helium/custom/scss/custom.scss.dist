@@ -733,6 +733,12 @@ ul.nav.nav-tabs.nav-stacked span {
 }
 
 /* Inscription */
+form.fabrikForm label {
+    width: 100% !important;
+}
+#fabrikSubmit_307 {
+    height: 100% !important;
+}
 .registration {
   form {
     background: #4e5b6d;
@@ -845,7 +851,66 @@ ul.nav.nav-tabs.nav-stacked {
     }
   }
 }
+/* Connexion candidater */
+.moduletable.em-formRegistrationCenter{
+  h1{
+    margin:27px 0 71px;
+  }
+  .icon-user{
+    display:none;
+  }
+  .icon-lock{
+    display:none;
+  }
+  #login-form{
+    width:50%;
+    .input-prepend .input-small, #login-form .input-append .input-small{
+      width:100%;
+    }
+    .control-group{
+      margin-bottom:20px;
+    }
+    .add-on{
+      background:transparent;
+      border:none;
+      height:unset;
+      label{
+        color:#565656!important;
+      }
+    }
+    .unstyled{
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      border:none;
+      padding:0.938rem 0;
 
+      li{
+        border:none;
+        a .icon-arrow-right{
+          display:none;
+        }
+        a::before{
+          content: "\f101";
+          font-family: FontAwesome;
+          margin-right: 3px;
+        }
+      }
+    }
+    .control-group .input-prepend{
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:baseline;
+      input{
+        border-left:1px solid #e0e0e5;
+        max-width:100%;
+        border-radius:6px;
+      }
+    }
+
+  }
+}
 /*Accueil connecté*/
 .select {
   select {
