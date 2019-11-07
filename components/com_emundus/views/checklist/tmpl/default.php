@@ -182,7 +182,7 @@ if (!empty($this->custom_title)) :?>
             var sFileExtension = sFileName.split(".")[sFileName.split(".").length - 1].toLowerCase();
 
             if (sFileExtension == "php") {
-              done("Naha, you do not.");
+              done("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
             }
             else {
                 var allowedExtension = "'.$attachment->allowed_types.'";

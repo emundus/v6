@@ -44,7 +44,7 @@ echo $description;
             if(!empty($m_profile->getProfileByFnum($application->fnum))) {
                 $confirm_form_url = $m_checklist->getConfirmUrl($m_profile->getProfileByFnum($application->fnum)).'&usekey=fnum&rowid='.$user->fnum;
             } else {
-                $confirm_form_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url);
+                $confirm_form_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url[$application->fnum]['link']);
             }
             ?>
             <div class="row" id="row<?= $application->fnum; ?>">
