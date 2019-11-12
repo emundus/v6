@@ -50,6 +50,7 @@ if (isset($this->filterlist) && count($this->filterlist)>0){
 
     <?php  echo $filterOptions; ?>
 
+
     <div class="clearfix"> </div>
     <table class="table table-striped">
     <thead>

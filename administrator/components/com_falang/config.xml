@@ -27,8 +27,8 @@
                class="btn-group btn-group-yesno"
                label="COM_FALANG_CONFIG_COPY_IMAGES_AND_URLS_LABEL"
                description="COM_FALANG_CONFIG_COPY_IMAGES_AND_URLS_DESC">
-            <option value="0">NO</option>
-            <option value="1">YES</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
 
         <field
@@ -132,8 +132,8 @@
                class="btn-group btn-group-yesno"
                label="COM_FALANG_CONFIG_ADM_DEFAULT_LANG_LABEL"
                description="COM_FALANG_CONFIG_ADM_DEFAULT_LANG_DESC">
-			<option value="0">NO</option>
-			<option value="1">YES</option>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
 		</field>
 
 		<field name="copyparams"
@@ -142,9 +142,18 @@
                class="btn-group btn-group-yesno"
                label="COM_FALANG_CONFIG_COPYPARAMS_LABEL"
                description="COM_FALANG_CONFIG_COPYPARAMS_DESC">
-			<option value="0">NO</option>
-			<option value="1">YES</option>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
 		</field>
+        <field name="copy_custom_fields"
+               type="radio"
+               default="0"
+               class="btn-group btn-group-yesno"
+               label="COM_FALANG_CONFIG_COPY_CUSTOM_FIELDS_LABEL"
+               description="COM_FALANG_CONFIG_COPY_CUSTOM_FIELDS_DESC">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
     </fieldset>
     <fieldset name="translators"
               label="COM_FALANG_CONFIG_TRANSLATORS"
@@ -175,8 +184,8 @@
                class="btn-group btn-group-yesno"
                label="COM_FALANG_CONFIG_DEBUG_LABEL"
                description="COM_FALANG_CONFIG_DEBUG_DESC">
-            <option value="0">NO</option>
-            <option value="1">YES</option>
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
 
          <field name="qacaching"
@@ -185,8 +194,8 @@
                 class="btn-group btn-group-yesno"
                 label="COM_FALANG_CONFIG_QA_CACHING_LABEL"
                 description="COM_FALANG_CONFIG_QA_CACHING_DESC">
-			<option value="0">NO</option>
-			<option value="1">YES</option>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
 		</field>
 
 		<field name="qalogging"
@@ -195,8 +204,8 @@
                class="btn-group btn-group-yesno"
                label="COM_FALANG_CONFIG_QA_LOGGING_LABEL"
                description="COM_FALANG_CONFIG_QA_LOGGING_DESC">
-			<option value="0">NO</option>
-			<option value="1">YES</option>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
 		</field>
 	</fieldset>
     <fieldset

@@ -321,7 +321,7 @@ class ContentElement {
 		$sqlFields[] = 'jfc.original_text as original_text';
 
 		$where=array();
-		$order=null;
+		$order=array();
 		$join=null;
 		$contentTable = $this->getTable();
 		foreach ($filters as $filter) {
