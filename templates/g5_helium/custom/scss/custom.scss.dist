@@ -3051,35 +3051,33 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
 
 /****** Add border style to applicant forms ****/
 .applicant-form {
-  input[type='text'],input[type='tel'],textarea,input[type='number']{
+
+  input[type='text'],input[type='tel'],textarea,input[type='number'] {
     border: 2px solid $base-secondary-color;
   }
-}
-​
-.applicant-form input[type='radio']{
-  margin-top:0;
-  -webkit-appearance: none;
-  border: 2px solid $base-secondary-color;
-  border-radius: 50%;
-  width:10px;
-  height: 10px;
 
-  &:checked{
-    box-shadow: inset 0px 0px 0px 3px $base-secondary-color;
-	height: 12px;
-	width: 12px;
+  input[type='radio'] {
+    margin-top:0;
+    -webkit-appearance: none;
+    border: 2px solid $base-secondary-color;
+    border-radius: 50%;
+    width:10px;
+    height: 10px;
+    &:checked {
+      box-shadow: inset 0 0 0 3px $base-secondary-color;
+      height: 12px;
+      width: 12px;
+    }
   }
-}
-.applicant-form .fabrikForm select {
-    background: transparent;
-    border: none;
+
+  .fabrikForm select {
     height:38px;
-    background-repeat: no-repeat;
     background-position-x: 98%;
     background-position-y: 58%;
     -webkit-appearance: none;
     border: 2px solid $base-secondary-color;
-    background-image: url(https://www.cfjparis.emundus.fr/images/custom/cfj/arrow-down.png);
+    background: transparent url(https://www.cfjparis.emundus.fr/images/custom/cfj/arrow-down.png) no-repeat;
     background-size: 10px;
     padding: 0 30px 0 10px;
+  }
 }
