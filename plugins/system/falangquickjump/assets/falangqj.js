@@ -1,5 +1,4 @@
-
-jQuery(function() {
+(jQuery)(function() {
   var tbl;
   if (typeof jFalangTable === 'undefined') {
     return;
@@ -113,8 +112,8 @@ jQuery(function() {
             case "1":statePublish = 'lang-published';break;
           }
 
-          var height = $(window).getSize().y - 50;
-          var width = $(window).getSize().x - 50;
+          var height = jQuery(window).height() - 50;
+          var width = jQuery(window).width() - 50;
 
           var x = jQuery('<a rel="{size: {x: '+width+', y: '+height+'},handler:\'iframe\' ,closable: true}" href="'+row['link-'+lang]+'" class="label quickjump quickmodal modal '+stateCss+'"><span rel="tooltip" data-original-title="'+lang+'">'+lang+'</span><span class="'+statePublish+'"></span></a>');
 

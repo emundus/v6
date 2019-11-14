@@ -515,4 +515,48 @@ class FalangManager {
 
 		return $cache[$hash];
 	}
+
+	public function getRawFieldOrigninal($refid)
+	{
+		$db      = JFactory::getDbo();
+		$dbQuery = $db->getQuery(true)
+			->select($db->quoteName(array('field_id', 'value')))
+			->from('#__fields_values')
+			->where('item_id = ' . $db->quote($refid));
+
+		$db->setQuery($dbQuery);
+
+		$myarray = $db->loadObjectList();
+		$pkey    = null;
+
+		$result = array();
+
+		foreach ($myarray as $key => $item)
+		{
+			if ($pkey != $item->field_id)
+			{
+				$result[$item->field_id] = $item->value;
+			}
+			else
+			{
+				//multiple item , need to be transformed as array
+				if (!is_array($result[$item->field_id]))
+				{
+
+					$first_item              = $result[$item->field_id];
+					$result[$item->field_id] = array($first_item, $item->value);
+
+				}
+				else
+				{
+					array_push($result[$item->field_id], $item->value);
+				}
+			}
+			$pkey = $item->field_id;
+		}
+
+		return $result;
+
+
+	}
 }

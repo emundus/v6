@@ -295,6 +295,13 @@ abstract class modFaLangHelper
                         }
 
 
+                        //fix for hikashop url with start on product page
+                        if (isset($vars['option']) && $vars['option'] == 'com_hikashop'){
+							  if (isset($vars['view']) && $vars['view'] == 'product'){
+								  unset($vars['start']);
+							  }
+						}						
+
                         $url = 'index.php?'.JURI::buildQuery($vars);
                         $language->link = JRoute::_($url);
 
@@ -555,6 +562,10 @@ abstract class modFaLangHelper
 		    	$link = $originalPath;
 		    }
 		    $link = $link . '&Itemid=' . (int) $vars['Itemid'] . '&lang=' . $language->sef;
+		    //fix com_mwosoby component who need the id
+		    if (!empty($vars['id'])){
+			    $link .= '&id='.(int)$vars['id'];
+		    }
 
 		    return $link;
 	    }

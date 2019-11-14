@@ -738,7 +738,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
             if (count($trigger_emails) > 0) {
 
-                foreach ($trigger_emails as $key => $trigger_email) {
+                foreach ($trigger_emails as $trigger_email) {
 
                     // Manage with default recipient by programme
                     foreach ($trigger_email as $code => $trigger) {
@@ -747,6 +747,11 @@ class EmundusControllerFiles extends JControllerLegacy
 
                             // Manage with selected fnum
                             foreach ($fnumsInfos as $file) {
+                            	
+                            	if ($file['training'] != $code) {
+                            		continue;
+	                            }
+                            	
                                 $mailer = JFactory::getMailer();
 
                                 $post = array('FNUM' => $file['fnum']);

@@ -36,7 +36,7 @@ class pkg_falangInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $maximumJoomlaVersion = '3.9.9';
+	protected $maximumJoomlaVersion = '3.9.99';
 	
 	 
     public function install($parent) {}
@@ -178,7 +178,7 @@ class pkg_falangInstallerScript
             </div> 
              <div class="faboba-installation-right span8">
                 <div class="faboba-installation-texts">
-	                <h2>Falang basic<span>3.0.0</span></h2>
+	                <h2>Falang basic<span>3.1.0</span></h2>
 	                <p>The easiest way to build a multilanguage site on Joomla</p>
                 </div>
                 <div class="faboba-installation-footer">

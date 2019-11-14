@@ -48,7 +48,7 @@ class TranslatorDefault {
 			'zh-cn' => 'CN', 	// Chine simplified
 			'zh-tw' => 'TW',	// Chinese traditional
 			'hr-hr' => 'CR', 	// Croation
-			'cs-cz' => 'CZ',	// Czech
+			'cs-cz' => 'CS',	// Czech
 			'da-dk' => 'DK', 	// Danish
 			// 'prs-AF' => '',		// Dari Persian
 			'nl-nl' => 'NL', 	// Dutch
@@ -64,8 +64,8 @@ class TranslatorDefault {
 			// 'fr-CA' => '',		// French Canadian
 			'gl-es' => 'GZ', 	// Galcian
 			'ka-ge' => 'KA',	// Georgian
-			'de-de' => 'DL', 	// German
-			'de-at' => 'DL',	// German
+			'de-de' => 'DE', 	// German
+			'de-at' => 'AT',	// German
 			'el-gr' => 'GR', 	// Greek
 			'he-il' => 'IL',	// Hebrew
 			'hi-in' => 'HI',	// Hindi
@@ -89,14 +89,14 @@ class TranslatorDefault {
 			'fa-ir' => 'FA',	// Persian
 			'pl-pl' => 'PL',	// Polish
 			'pt-br'	=> 'BR',	// Portuguese Brazil
-			'pt-pt' => 'BR',	// Portuuese
+			'pt-pt' => 'PT',	// Portuuese
 			'ro-ro' => 'RO',	// Romanian
 			'ru-ru' => 'RU', 	// Russian
 			'gd-gb' => 'GD', 	// Scottish Gaelic
 			'sr-rs'	=> 'SR',	// Serbian Cyrillic
 			'sr-yu' => 'SR',	// Serbian Latin
 			'sk-sk' => 'SK', 	// Slovak
-			'es-es' => 'SP',	// Spanish
+			'es-es' => 'ES',	// Spanish
 			'sw-ke' => 'SI',	// Swahili
 			'sv-se' => 'SW', 	// Swedish
 			'sy-iq' => 'SYR',	// Syriac

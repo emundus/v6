@@ -94,6 +94,28 @@ class FalangContentRouter extends ContentRouter
 				$db->setQuery($dbQuery);
 				$db->execute();
 				$num_rows = $db->getNumRows();
+				//case no alias translated by falang need to find the content alias
+				//TODO filter by catid too in case
+				if (empty($num_rows)){
+					//get category
+					if (isset($query['view']) && $query['view'] == 'category'){
+						$cat_id = $query['id'];
+					}
+
+					$dbQuery = $db->getQuery(true);
+					$dbQuery->select('c.id');
+					$dbQuery->from('#__content c');
+					$dbQuery->where('c.alias = ' . $dbQuery->q($segment));
+
+					if (isset($cat_id)){
+						$dbQuery->where('c.catid = ' . $dbQuery->q($cat_id));
+					}
+
+					$db->setQuery($dbQuery);
+					$db->execute();
+					$article_id = $db->loadResult();
+					return (int) $article_id;
+				}
 				//most case only 1 alias
 				if (isset($num_rows) && $num_rows == 1){
 					$article_id = $db->loadResult();
