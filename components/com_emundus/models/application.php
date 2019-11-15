@@ -1039,7 +1039,9 @@ class EmundusModelApplication extends JModelList {
 	                            $t_elt = array();
 	                            foreach($elements as &$element) {
 	                                $t_elt[] = $element->name;
-	                                $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
+		                            if ($element->plugin != 'internalid') {
+			                            $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
+		                            }
 	                            }
 	                            unset($element);
 
