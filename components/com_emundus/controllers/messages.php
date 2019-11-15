@@ -123,6 +123,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    exit;
 	    }
 
+	    // Sanitize filename.
+	    $file['name'] = preg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $file['name']);
+	    $file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
 	    $file['name'] = str_replace(array( '(', ')' ), '', $file['name']);
 
 	    // Check if file name is alphanumeric
@@ -151,10 +154,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         if (!is_dir('images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum)) {
             mkdir('images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fnum, 0777, true);
         }
-
-        // Sanitize filename.
-        $file['name'] = preg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $file['name']);
-        $file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
 
         // Move the uploaded file to the server directory.
 
