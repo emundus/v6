@@ -1039,7 +1039,9 @@ class EmundusModelApplication extends JModelList {
 	                            $t_elt = array();
 	                            foreach($elements as &$element) {
 	                                $t_elt[] = $element->name;
-	                                $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
+		                            if ($element->plugin != 'internalid') {
+			                            $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
+		                            }
 	                            }
 	                            unset($element);
 
@@ -1704,10 +1706,10 @@ class EmundusModelApplication extends JModelList {
                                             }
 
                                             if (!empty($elt)) {
-                                                if ($element->plugin == 'textarea') {
+                                                if ($elements[$j]->plugin == 'textarea') {
                                                     $forms .= '<tr><td colspan="2" style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span> <br>'.$elt.'</td></tr>';
                                                 } else {
-                                                    $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;"> '.$elt.'</td></tr>';
+                                                    $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span></td> <td style="padding-right:30px;"> '.$elt.'</td></tr>';
 												}
                                             }
                                         }

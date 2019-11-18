@@ -270,7 +270,7 @@ if ($s == '') {
 									let uid = $(this).find('.uid').text();
 
 									// using the login name: find the user card
-									let userCard = $('#ldap-user-'+uid.replace( /(:|\.|\[|\]|,|=|@)/g, "\\$1" )));
+									let userCard = $('#ldap-user-'+uid.replace( /(:|\.|\[|\]|,|=|@)/g, "\\$1" ));
 
 									// The "create user" form is filled out using the values found in the user card.
 									// This is better than sending an Ajax because if the "create user" form is extended then we don't need to modify this code.
@@ -302,7 +302,7 @@ if ($s == '') {
                             ldapResult.text("<?= JText::_('AN_ERROR_OCCURED'); ?>");
                         }
 					});
-				};
+				}
 
 				// The delay means that the function will not start until the user has stopped typing.
 				var delay = (function(){
