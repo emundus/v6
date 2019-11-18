@@ -83,8 +83,9 @@ class plgSystemFalangdriver extends JPlugin
         $lang = $uri->getVar('lang');
         $default_lang	= JComponentHelper::getParams('com_languages')->get('site', 'en-GB');
 
-        //we build the route for category list article
-        if ($lang != $default_lang && $uri->getVar('id') != null && $uri->getVar('catid') != null) {
+	    //we build the route for category list article
+	    if ($lang != $default_lang && $uri->getVar('id') != null && $uri->getVar('catid') != null &&
+		    $uri->getVar('option') == 'com_content' ) {//&& $uri->getVar('view') == 'article'
 
             $fManager = FalangManager::getInstance();
             $id_lang = $fManager->getLanguageID($lang);
@@ -132,30 +133,31 @@ class plgSystemFalangdriver extends JPlugin
             }
         }
 
-        //fix canonical if sef plugin is enabled
-        $sef_plugin = JPluginHelper::getPlugin('system', 'sef');
-        if (!empty($sef_plugin)) {
-            if ($lang != $default_lang && $uri->getVar('id') != null && $uri->getVar('catid') != null) {
-                $fManager = FalangManager::getInstance();
-                $id_lang = $fManager->getLanguageID($lang);
+	    //fix canonical if sef plugin is enabled
+	    $sef_plugin = JPluginHelper::getPlugin('system', 'sef');
+	    if (!empty($sef_plugin)) {
+		    if ($lang != $default_lang && $uri->getVar('id') != null && $uri->getVar('catid') != null &&
+			    $uri->getVar('option') == 'com_content' ) {//&& $uri->getVar('view') == 'article'
+			    $fManager = FalangManager::getInstance();
+			    $id_lang = $fManager->getLanguageID($lang);
 
-                // Make sure we have the id and the alias
-                if (strpos($uri->getVar('id'), ':') === false)
-                {
-                    //we use id in the query to be translated.
-                    $db = JFactory::getDbo();
-                    $dbQuery = $db->getQuery(true)
-                        ->select('alias,id')
-                        ->from('#__content')
-                        ->where('id=' . (int) $uri->getVar('id'));
-                    $db->setQuery($dbQuery);
-                    $alias = $db->loadResult();
-                    if (isset($alias)) {
-                        $uri->setVar('id',$uri->getVar('id') . ':' . $alias);
-                    }
-                }
-            }
-        }
+			    // Make sure we have the id and the alias
+			    if (strpos($uri->getVar('id'), ':') === false)
+			    {
+				    //we use id in the query to be translated.
+				    $db = JFactory::getDbo();
+				    $dbQuery = $db->getQuery(true)
+					    ->select('alias,id')
+					    ->from('#__content')
+					    ->where('id=' . (int) $uri->getVar('id'));
+				    $db->setQuery($dbQuery);
+				    $alias = $db->loadResult();
+				    if (isset($alias)) {
+					    $uri->setVar('id',$uri->getVar('id') . ':' . $alias);
+				    }
+			    }
+		    }
+	    }
 
         //build route for hikashop product
         if ( $uri->getVar('option') == 'com_hikashop' &&  $uri->getVar('ctrl') == 'product' &&  $uri->getVar('task')== 'show' ) {
@@ -546,13 +548,31 @@ class plgSystemFalangdriver extends JPlugin
 			//load com_fields values (json format)
 			$translations =  $fManager->getRawFieldTranslations($content_element->getTableName(),'com_fields',$reference_id,$language_id);
 
+
 			if (empty($translations)) {
-				return;
+				$params = JComponentHelper::getParams('com_falang');
+				$copy_cusom_fields = $params->get('copy_custom_fields',false);
+
+
+				if ($copy_cusom_fields == false){
+					return true;
+				}
+
+				$original = $fManager->getRawFieldOrigninal($reference_id);
+
+				//load orinal customfield to translation
+				foreach ($fields as $field)
+				{
+					if (isset($original[$field->id])){
+						$value  = $original[$field->id];
+						$form->setValue($field->name, 'com_fields', $value);
+					}
+
+				}
+
 			}
 
 			$json_value = json_decode($translations);
-
-
 			foreach ($fields as $field)
 			{
 				if (isset($json_value->{$field->name})) {

@@ -50,7 +50,7 @@ class plgSystemFalangquickjump extends JPlugin
             $falangManager = FalangManager::getInstance();
             $input = JFactory::getApplication()->input;
             $option = $input->get('option', null, 'cmd');
-            $view = $input->get('view', null, 'cmd');
+            $view = $input->get('view', 'default', 'cmd');
             $task = $input->get('task', null, 'cmd');
 
             jimport('joomla.application.component.helper');
@@ -281,7 +281,6 @@ class plgSystemFalangquickjump extends JPlugin
 	    if (isset($contentElement)){
 		    $quickjumps = $contentElement->getQuickjumps();
 	    }
-
 
 
         //load supported component

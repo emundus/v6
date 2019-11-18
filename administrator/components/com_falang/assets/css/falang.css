@@ -381,3 +381,14 @@ button .quicktranslate.unpublished{
 }
 .translation-field-fieldparams td div.btn-group,.translation-field-fieldparams th div.btn-group, .translation-field-fieldparams th:nth-child(3){display: none}
 /*end custom field*/
+
+@media (max-width: 1200px){
+	.com_falang .form-horizontal .control-label {
+		padding-top: 0;
+		width: 90px;
+		padding-right: 0;
+	}
+	.com_falang .form-horizontal .controls {
+		margin-left: 90px;
+	}
+}

@@ -563,12 +563,10 @@ class EmundusController extends JControllerLegacy {
         $ids = explode('.', $profile_fnum);
         $profile = $ids[0];
 
-        $current_user = JFactory::getUser();
         $session = JFactory::getSession();
         $aid = $session->get('emundusUser');
 
         $m_profile = new EmundusModelProfile;
-
         $applicant_profiles = $m_profile->getApplicantsProfilesArray();
         foreach ($aid->emProfiles as $emProfile) {
             if ($emProfile->id === $profile) {
@@ -604,9 +602,9 @@ class EmundusController extends JControllerLegacy {
                         $aid->profile       = $profile;
                         $aid->fnum          = $ids[1];
                         $profiles = $m_profile->getProfileById($profile);
-
-                        $aid->profile_label          = $profiles["label"];
-                        $aid->menutype               = $profiles["menutype"];
+	                    $aid->applicant     = 1;
+                        $aid->profile_label = $profiles["label"];
+                        $aid->menutype      = $profiles["menutype"];
                     }
                 } else {
                     if (isset($aid->start_date))

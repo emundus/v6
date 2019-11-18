@@ -50,7 +50,8 @@ class com_falangInstallerScript
 	                       'copy_images_and_urls' => 0,
 	                       'advanced_menu_show' => 0,
                            'advanced_router' => 0,
-	                       'update_caching' => 1
+	                       'update_caching' => 1,
+                           'copy_custom_fields' => 0
                    )
            )
         );
@@ -82,7 +83,7 @@ class com_falangInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $maximumJoomlaVersion = '3.9.9';
+	protected $maximumJoomlaVersion = '3.9.99';
 
     private $falangRemoveFilesPaid = array(
         'files'	=> array(
@@ -107,7 +108,7 @@ class com_falangInstallerScript
                 $params['component_list'] = $this->installation_params['components']['falang']['component_list'];
                 $this->setParams( $params );
             }
-            //update module params for advance dropdown and show_name value version 2.2.1
+            //update module params for advance dropdown and show_name value version 2.2.1+
             if (version_compare($this->_previous_version, '2.2.0', 'le')) {
                 $db = JFactory::getDbo();
                 $db->setQuery('SELECT params FROM #__extensions WHERE name = ' . $db->quote('mod_falang'));
@@ -148,6 +149,7 @@ class com_falangInstallerScript
         function preflight($type, $parent)
         {
         	//DONE in package script file
+	        $this->_previous_version = $this->getParam('version');
         }
 
 		/**

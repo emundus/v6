@@ -26,7 +26,7 @@ $version = new FalangVersion();
 
             <!-- Header Message DownloadId Free version -->
             <div class="row-fluid">
-                <div class="span10">
+                <div class="span12">
                     <?php if (empty($downloadid)) { ?>
                     <div class="alert alert-info">
                         <h4 class="alert-heading"><?php echo JText::_('COM_FALANG_CPANEL_NEEDSAUTH_NOTICE'); ?></h4>
@@ -49,7 +49,7 @@ $version = new FalangVersion();
             </div>
             <div class="row-fluid">
 
-                <div class="span4">
+                <div class="span5">
                     <div class="box box-success">
                         <div class="box-header with-border" style="height: 150px">
                             <h3 class="box-title"><?php echo JText::_('COM_FALANG_CPANEL_VERSION');?></h3>
@@ -60,7 +60,7 @@ $version = new FalangVersion();
                     </div>
                 </div>
 
-                <div class="span6">
+                <div class="span7">
                     <div class="box box-primary">
                         <div class="box-header with-border" style="height: 150px">
                             <h3 class="box-title"><?php echo JText::_('COM_FALANG_CPANEL_CONFIGURATION');?></h3>
@@ -75,7 +75,7 @@ $version = new FalangVersion();
 
             <div class="row-fluid">
 
-            <div class="span4">
+            <div class="span5">
                     <div class="box box-info">
                         <div class="box-header with-border" style="height: 150px">
                             <h3 class="box-title"><?php echo JText::_('COM_FALANG_CPANEL_TOOLS');?></h3>
@@ -97,7 +97,7 @@ $version = new FalangVersion();
                     </div>
                 </div>
 
-                <div class="span6">
+                <div class="span7">
                     <div class="box box-navy">
                         <div class="box-header with-border" >
                             <h3 class="box-title"><?php echo JText::_('COM_FALANG_CPANEL_PLUGINS');?></h3>

@@ -94,7 +94,7 @@ class FalangViewDefault extends JViewLegacy {
 				</a>
 			</div>
 			<br />
-			&copy; 2017 - Faboba.com All right Reserved
+			&copy; 2018 - Faboba.com All right Reserved
 			<p></p>
 		</div>
 		<?php
