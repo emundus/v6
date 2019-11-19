@@ -38,26 +38,30 @@ class EmundusViewChecklist extends JViewLegacy
 	}
 
     function display($tpl = null) {
-		$app 	= JFactory::getApplication();
-		$db 	= JFactory::getDbo();
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+		$app = JFactory::getApplication();
     	$layout = $app->input->getString('layout', null);
 
-    	$sent 				= $this->get('sent');
-		$confirm_form_url 	= $this->get('ConfirmUrl');
+    	$sent = $this->get('sent');
+		$confirm_form_url = $this->get('ConfirmUrl');
 
 		$this->assignRef('sent', $sent);
 		$this->assignRef('confirm_form_url', $confirm_form_url);
 
 		$end_date = new JDate($this->_user->fnums[$this->_user->fnum]->end_date);
 
-		$offset 	= $app->get('offset', 'UTC');
-		$dateTime 	= new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-		$now 		= $dateTime->setTimezone(new DateTimeZone($offset));
+		$offset = $app->get('offset', 'UTC');
+		$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+		$now = $dateTime->setTimezone(new DateTimeZone($offset));
 
 		if ($end_date < $now) {
 			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 			$m_checklist = new EmundusModelChecklist;
 			$m_checklist->setDelete(0, $this->_user);
+		} elseif (!empty($eMConfig->get('can_edit_until_deadline', 0))) {
+			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+			$m_checklist = new EmundusModelChecklist;
+			$m_checklist->setDelete(1, $this->_user);
 		}
 
     	switch  ($layout) {
@@ -67,14 +71,13 @@ class EmundusViewChecklist extends JViewLegacy
 			include_once(JPATH_BASE.'/components/com_emundus/models/application.php');
 
 			// 1. if application form not sent yet, send it // 2. trigger emails // 3. display reminder list
-			$m_application 		= new EmundusModelApplication;
-			$m_files            = new EmundusModelFiles;
-			$applications 		= $m_application->getApplications($this->_user->id);
-			$attachments 		= $m_application->getAttachmentsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
-			$forms 				= $m_application->getFormsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
+			$m_application 	= new EmundusModelApplication;
+			$m_files = new EmundusModelFiles;
+			$applications = $m_application->getApplications($this->_user->id);
+			$attachments = $m_application->getAttachmentsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
+			$forms = $m_application->getFormsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
 
 			if ((int)($attachments[$this->_user->fnum])>=100 && (int)($forms[$this->_user->fnum])>=100) {
-				$eMConfig = JComponentHelper::getParams('com_emundus');
 				$accept_created_payments = $eMConfig->get('accept_created_payments', 0);
 				$fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
 
@@ -113,17 +116,15 @@ class EmundusViewChecklist extends JViewLegacy
 
 			default :
 			$document = JFactory::getDocument();
-	        //$document->addScript("media/com_emundus/lib/jquery-1.10.2.min.js" );
 	        $document->addScript("media/jui/js/jquery.min.js" );
 	        $document->addScript("media/com_emundus/lib/dropzone/js/dropzone.min.js" );
 	        $document->addStyleSheet("media/com_emundus/lib/dropzone/css/dropzone.min.css" );
 	        $document->addStyleSheet("media/com_emundus/css/emundus.css" );
 	        $document->addStyleSheet("media/com_emundus/css/emundus_application.css" );
 
-			//$greeting = $this->get('Greeting');
-	        $menu 			= @JFactory::getApplication()->getMenu();
-	        $current_menu   = $menu->getActive();
-	        $menu_params    = $menu->getParams(@$current_menu->id);
+	        $menu = @JFactory::getApplication()->getMenu();
+	        $current_menu = $menu->getActive();
+	        $menu_params = $menu->getParams(@$current_menu->id);
 
 			$show_browse_button   = $menu_params->get('show_browse_button', 0);
 			$show_shortdesc_input = $menu_params->get('show_shortdesc_input', 0);
@@ -172,4 +173,3 @@ class EmundusViewChecklist extends JViewLegacy
 		parent::display($tpl);
     }
 }
-?>
