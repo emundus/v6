@@ -79,8 +79,8 @@ echo $description;
                     <?php if ($show_progress == 1) : ?>
                         <div id="file<?= $application->fnum; ?>"></div>
                         <script type="text/javascript">
-                            $(document).ready(function () {
-                                $("#file<?= $application->fnum; ?>").circliful({
+                            jQuery(document).ready(function () {
+                                jQuery("#file<?= $application->fnum; ?>").circliful({
                                     animation: 1,
                                     animationStep: 5,
                                     foregroundBorderWidth: 15,
@@ -97,8 +97,8 @@ echo $description;
                     <?php if ($show_progress_forms == 1) : ?>
                         <div id="forms<?= $application->fnum; ?>"></div>
                         <script type="text/javascript">
-                            $(document).ready(function () {
-                                $("#forms<?= $application->fnum; ?>").circliful({
+                            jQuery(document).ready(function () {
+                                jQuery("#forms<?= $application->fnum; ?>").circliful({
                                     animation: 1,
                                     animationStep: 5,
                                     foregroundBorderWidth: 15,
@@ -116,8 +116,8 @@ echo $description;
                     <?php if ($show_progress_documents == 1) : ?>
                         <div id="documents<?= $application->fnum; ?>"></div>
                         <script type="text/javascript">
-                            $(document).ready(function () {
-                                $("#documents<?= $application->fnum; ?>").circliful({
+                            jQuery(document).ready(function () {
+                                jQuery("#documents<?= $application->fnum; ?>").circliful({
                                     animation: 1,
                                     animationStep: 5,
                                     foregroundBorderWidth: 15,
@@ -194,10 +194,12 @@ endif; ?>
 
     <script type="text/javascript">
         var poll_url = "<?= $poll_url; ?>";
-        $(".modal-body").html('<iframe src="' + poll_url + '" style="width:' + window.getWidth() * 0.8 + 'px; height:' + window.getHeight() * 0.8 + 'px; border:none"></iframe>');
-        setTimeout(function () {
-            $('#em-modal-form').modal({backdrop: true, keyboard: true}, 'toggle');
-        }, 1000);
+        if ($poll_url !== "") {
+            jQuery(".modal-body").html('<iframe src="' + poll_url + '" style="width:' + window.getWidth() * 0.8 + 'px; height:' + window.getHeight() * 0.8 + 'px; border:none"></iframe>');
+            setTimeout(function () {
+                jQuery('#em-modal-form').modal({backdrop: true, keyboard: true}, 'toggle');
+            }, 1000);
+        }
     </script>
 
 <?php endif; ?>
@@ -210,7 +212,7 @@ endif; ?>
     }
 </script>
 <script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
+    jQuery(function () {
+        jQuery('[data-toggle="tooltip"]').tooltip()
     })
 </script>
