@@ -35,6 +35,8 @@ class EmundusModelApplication extends JModelList {
 
         $this->_db = JFactory::getDBO();
         $this->_user = JFactory::getSession()->get('emundusUser');
+
+        $this->locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
     }
 
     public function getApplicantInfos($aid, $param) {
@@ -626,6 +628,7 @@ class EmundusModelApplication extends JModelList {
                                     $where  = $params->join_key_column.'='.$this->_db->Quote($element->content);
                                     $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                     $query  = preg_replace('#{thistable}#', $from, $query);
+                                    $query  = preg_replace('#{shortlang}#', $this->locales, $query);
                                     $query  = preg_replace('#{my->id}#', $aid, $query);
 
                                     try {
@@ -730,6 +733,7 @@ class EmundusModelApplication extends JModelList {
                                             $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                             $query  = preg_replace('#{thistable}#', $from, $query);
                                             $query  = preg_replace('#{my->id}#', $aid, $query);
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
 
                                             try {
                                                 $this->_db->setQuery($query);
@@ -816,6 +820,7 @@ class EmundusModelApplication extends JModelList {
                                         $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                         $query  = preg_replace('#{thistable}#', $from, $query);
                                         $query  = preg_replace('#{my->id}#', $aid, $query);
+                                        $query  = preg_replace('#{shortlang}#', $this->locales, $query);
 
                                         try {
                                             $this->_db->setQuery($query);
@@ -841,6 +846,7 @@ class EmundusModelApplication extends JModelList {
                                     $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                     $query  = preg_replace('#{thistable}#', $from, $query);
                                     $query  = preg_replace('#{my->id}#', $aid, $query);
+                                    $query  = preg_replace('#{shortlang}#', $this->locales, $query);
 
                                     try {
                                         $this->_db->setQuery($query);
@@ -965,6 +971,9 @@ class EmundusModelApplication extends JModelList {
 	                                      fe.group_id = "'.$itemg->group_id.'"
 	                                ORDER BY fe.ordering';
 
+	                	if($itemg->group_id == 1376) {
+	                	    echo "<pre>";var_dump($this->_db->loadObjectList()); echo "</pre>"; die();
+                        }
 	                    $this->_db->setQuery( $query );
 	                    $elements = $this->_db->loadObjectList();
 	                    if (count($elements) > 0) {
@@ -1004,7 +1013,9 @@ class EmundusModelApplication extends JModelList {
 	                                        $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                        $query = preg_replace('#{thistable}#', $from, $query);
 	                                        $query = preg_replace('#{my->id}#', $aid, $query);
-	                                        $this->_db->setQuery( $query );
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
+                                            $this->_db->setQuery( $query );
 		                                    $ret = $this->_db->loadResult();
 		                                    if (empty($ret)) {
 			                                    $ret = $element->content;
@@ -1039,9 +1050,9 @@ class EmundusModelApplication extends JModelList {
 	                            $t_elt = array();
 	                            foreach($elements as &$element) {
 	                                $t_elt[] = $element->name;
-		                            if ($element->plugin != 'internalid') {
-			                            $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
-		                            }
+	                                if($element->plugin != 'id') {
+                                        $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
+                                    }
 	                            }
 	                            unset($element);
 
@@ -1075,8 +1086,8 @@ class EmundusModelApplication extends JModelList {
 	                                    $forms .= '<tr>';
 	                                    $j = 0;
 	                                    foreach ($r_element as $key => $r_elt) {
-	                                    	
-		                                    // Do not display elements with no value inside them.
+
+                                            // Do not display elements with no value inside them.
 		                                    if ($show_empty_fields == 0 && trim($r_elt) == '') {
 		                                    	$forms .= '<td></td>';
 			                                    continue;
@@ -1109,7 +1120,9 @@ class EmundusModelApplication extends JModelList {
 	                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                                $query = preg_replace('#{thistable}#', $from, $query);
 	                                                $query = preg_replace('#{my->id}#', $aid, $query);
-	                                                $this->_db->setQuery( $query );
+                                                    $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
+                                                    $this->_db->setQuery( $query );
 		                                            $ret = $this->_db->loadResult();
 		                                            if (empty($ret)) {
 			                                            $ret = $r_elt;
@@ -1148,6 +1161,8 @@ class EmundusModelApplication extends JModelList {
 	                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                                $query = preg_replace('#{thistable}#', $from, $query);
 	                                                $query = preg_replace('#{my->id}#', $aid, $query);
+                                                    $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
 	                                                $this->_db->setQuery($query);
 	                                                $ret = $this->_db->loadResult();
 	                                                if (empty($ret)) {
@@ -1228,7 +1243,7 @@ class EmundusModelApplication extends JModelList {
 	                                                    FROM `' . $itemt->db_table_name . '_repeat_' . $element->name . '`
 	                                                    WHERE parent_id=' . $parent_id . ' GROUP BY parent_id';
 	                                            try {
-	                                                $this->_db->setQuery($query);
+                                                    $this->_db->setQuery($query);
 	                                                $res = $this->_db->loadRow();
 	                                                $elt = $res[1];
 	                                            } catch (Exception $e) {
@@ -1241,6 +1256,8 @@ class EmundusModelApplication extends JModelList {
 	                                            $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                            $query = preg_replace('#{thistable}#', $from, $query);
 	                                            $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query = preg_replace('#{shortlang}#', $this->locales, $query);
+
 	                                            $this->_db->setQuery( $query );
 		                                        $ret = $this->_db->loadResult();
 		                                        if (empty($ret)) {
@@ -1261,6 +1278,8 @@ class EmundusModelApplication extends JModelList {
 	                                        $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                        $query = preg_replace('#{thistable}#', $from, $query);
 	                                        $query = preg_replace('#{my->id}#', $aid, $query);
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
 	                                        $this->_db->setQuery( $query );
 		                                    $ret = $this->_db->loadResult();
 		                                    if (empty($ret)) {
@@ -1536,6 +1555,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery($query);
                                                 $elt = $this->_db->loadResult();
                                             }
@@ -1571,6 +1592,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery($query);
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
@@ -1669,6 +1692,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery( $query );
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
@@ -1684,6 +1709,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery( $query );
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
@@ -1803,6 +1830,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery( $query );
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
@@ -1817,6 +1846,8 @@ class EmundusModelApplication extends JModelList {
                                             $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                             $query = preg_replace('#{thistable}#', $from, $query);
                                             $query = preg_replace('#{my->id}#', $aid, $query);
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                             $this->_db->setQuery( $query );
                                             $elt = JText::_($this->_db->loadResult());
 
@@ -1983,6 +2014,8 @@ td {
                                             $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                             $query = preg_replace('#{thistable}#', $from, $query);
                                             $query = preg_replace('#{my->id}#', $aid, $query);
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                             $this->_db->setQuery( $query );
                                             $elt = $this->_db->loadResult();
                                         }
@@ -2036,6 +2069,8 @@ td {
                                         $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                         $query = preg_replace('#{thistable}#', $from, $query);
                                         $query = preg_replace('#{my->id}#', $aid, $query);
+                                        $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                         $this->_db->setQuery( $query );
                                         $elt = $this->_db->loadResult();
                                     }
@@ -2051,6 +2086,8 @@ td {
                                         $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                         $query = preg_replace('#{thistable}#', $from, $query);
                                         $query = preg_replace('#{my->id}#', $aid, $query);
+                                        $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                         $this->_db->setQuery( $query );
                                         $elt = $this->_db->loadResult();
                                     }
