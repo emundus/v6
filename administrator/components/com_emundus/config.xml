@@ -128,6 +128,11 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="application_payment" menu="hide" type="list" default="user" label="COM_EMUNDUS_APPLICATION_PAYMENT" description="COM_EMUNDUS_APPLICATION_PAYMENT_DESC">
+			<option value="user">USER</option>
+			<option value="campaign">CAMPAIGN</option>
+			<option value="fnum">FNUM</option>
+		</field>
 	</fieldset>
 
 	<fieldset label="COM_EMUNDUS_EXPORTS" name="exports" description="COM_EMUNDUS_EXPORTS_DESC">

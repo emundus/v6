@@ -2552,6 +2552,8 @@ td {
      * @return bool|mixed
      */
     public function getHikashopOrder($fnumInfos, $sent = false, $admission = false) {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
         if ($admission) {
             $startDate = $fnumInfos['admission_start_date'];
             $endDate = $fnumInfos['admission_end_date'];
@@ -2562,28 +2564,89 @@ td {
 
         $dbo = $this->getDbo();
 
-        if ($sent) {
+        $em_application_payment = $eMConfig->get('application_payment', 'user');
 
-            $query = 'SELECT ho.*, hu.user_cms_id
-                FROM #__hikashop_order ho
-                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                AND ho.order_created >= '.strtotime($startDate).'
-                AND ho.order_created <= '.strtotime($endDate).'
-                ORDER BY ho.order_created desc';
+        switch ($em_application_payment) {
+            
+            
+            case 'user' :
+                if ($sent) {
 
-        } else {
+                    $query = 'SELECT ho.*, hu.user_cms_id
+                                FROM #__hikashop_order ho
+                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
 
-            $query = 'SELECT ho.*, hu.user_cms_id
-                FROM #__hikashop_order ho
-                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                AND ho.order_status like "confirmed"
-                AND ho.order_created >= '.strtotime($startDate).'
-                AND ho.order_created <= '.strtotime($endDate).'
-                ORDER BY ho.order_created desc';
+                }
+                else {
+
+                    $query = 'SELECT ho.*, hu.user_cms_id
+                                FROM #__hikashop_order ho
+                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                                AND ho.order_status like "confirmed"
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+
+                }
+            break;
+
+            case 'fnum' :
+                if ($sent) {
+                    $query = 'SELECT ho.*, eh.user as user_cms_id
+                                FROM #__emundus_hikashop eh
+                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
+                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+                }
+                else {
+                    $query = 'SELECT ho.*, eh.user as user_cms_id
+                                FROM #__emundus_hikashop eh
+                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
+                                AND ho.order_status like "confirmed"
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+                }
+            break;
+
+            case 'campaign' :
+                if ($sent) {
+                    $query = 'SELECT ho.*, hu.user_cms_id
+                                FROM #__emundus_hikashop eh
+                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                                WHERE eh.campaign_id = '.$fnumInfos['id'].' 
+                                AND hu.user_cms_id = '.$fnumInfos['applicant_id'].' 
+                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+                }
+                else {
+                    $query = 'SELECT ho.*, hu.user_cms_id
+                                FROM #__emundus_hikashop eh
+                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                                WHERE eh.campaign_id= '.$fnumInfos['id'].' 
+                                AND hu.user_cms_id = '.$fnumInfos['applicant_id'].' 
+                                AND ho.order_status like "confirmed"
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+                }
+                break;
         }
+
 
         try {
 
