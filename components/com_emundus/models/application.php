@@ -971,9 +971,6 @@ class EmundusModelApplication extends JModelList {
 	                                      fe.group_id = "'.$itemg->group_id.'"
 	                                ORDER BY fe.ordering';
 
-	                	if($itemg->group_id == 1376) {
-	                	    echo "<pre>";var_dump($this->_db->loadObjectList()); echo "</pre>"; die();
-                        }
 	                    $this->_db->setQuery( $query );
 	                    $elements = $this->_db->loadObjectList();
 	                    if (count($elements) > 0) {
