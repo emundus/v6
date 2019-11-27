@@ -35,6 +35,8 @@ class EmundusModelApplication extends JModelList {
 
         $this->_db = JFactory::getDBO();
         $this->_user = JFactory::getSession()->get('emundusUser');
+
+        $this->locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
     }
 
     public function getApplicantInfos($aid, $param) {
@@ -626,6 +628,7 @@ class EmundusModelApplication extends JModelList {
                                     $where  = $params->join_key_column.'='.$this->_db->Quote($element->content);
                                     $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                     $query  = preg_replace('#{thistable}#', $from, $query);
+                                    $query  = preg_replace('#{shortlang}#', $this->locales, $query);
                                     $query  = preg_replace('#{my->id}#', $aid, $query);
 
                                     try {
@@ -730,6 +733,7 @@ class EmundusModelApplication extends JModelList {
                                             $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                             $query  = preg_replace('#{thistable}#', $from, $query);
                                             $query  = preg_replace('#{my->id}#', $aid, $query);
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
 
                                             try {
                                                 $this->_db->setQuery($query);
@@ -816,6 +820,7 @@ class EmundusModelApplication extends JModelList {
                                         $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                         $query  = preg_replace('#{thistable}#', $from, $query);
                                         $query  = preg_replace('#{my->id}#', $aid, $query);
+                                        $query  = preg_replace('#{shortlang}#', $this->locales, $query);
 
                                         try {
                                             $this->_db->setQuery($query);
@@ -841,6 +846,7 @@ class EmundusModelApplication extends JModelList {
                                     $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                     $query  = preg_replace('#{thistable}#', $from, $query);
                                     $query  = preg_replace('#{my->id}#', $aid, $query);
+                                    $query  = preg_replace('#{shortlang}#', $this->locales, $query);
 
                                     try {
                                         $this->_db->setQuery($query);
@@ -1004,7 +1010,9 @@ class EmundusModelApplication extends JModelList {
 	                                        $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                        $query = preg_replace('#{thistable}#', $from, $query);
 	                                        $query = preg_replace('#{my->id}#', $aid, $query);
-	                                        $this->_db->setQuery( $query );
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
+                                            $this->_db->setQuery( $query );
 		                                    $ret = $this->_db->loadResult();
 		                                    if (empty($ret)) {
 			                                    $ret = $element->content;
@@ -1039,9 +1047,9 @@ class EmundusModelApplication extends JModelList {
 	                            $t_elt = array();
 	                            foreach($elements as &$element) {
 	                                $t_elt[] = $element->name;
-		                            if ($element->plugin != 'internalid') {
-			                            $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
-		                            }
+	                                if($element->plugin != 'id') {
+                                        $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
+                                    }
 	                            }
 	                            unset($element);
 
@@ -1075,8 +1083,8 @@ class EmundusModelApplication extends JModelList {
 	                                    $forms .= '<tr>';
 	                                    $j = 0;
 	                                    foreach ($r_element as $key => $r_elt) {
-	                                    	
-		                                    // Do not display elements with no value inside them.
+
+                                            // Do not display elements with no value inside them.
 		                                    if ($show_empty_fields == 0 && trim($r_elt) == '') {
 		                                    	$forms .= '<td></td>';
 			                                    continue;
@@ -1109,7 +1117,9 @@ class EmundusModelApplication extends JModelList {
 	                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                                $query = preg_replace('#{thistable}#', $from, $query);
 	                                                $query = preg_replace('#{my->id}#', $aid, $query);
-	                                                $this->_db->setQuery( $query );
+                                                    $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
+                                                    $this->_db->setQuery( $query );
 		                                            $ret = $this->_db->loadResult();
 		                                            if (empty($ret)) {
 			                                            $ret = $r_elt;
@@ -1148,6 +1158,8 @@ class EmundusModelApplication extends JModelList {
 	                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                                $query = preg_replace('#{thistable}#', $from, $query);
 	                                                $query = preg_replace('#{my->id}#', $aid, $query);
+                                                    $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
 	                                                $this->_db->setQuery($query);
 	                                                $ret = $this->_db->loadResult();
 	                                                if (empty($ret)) {
@@ -1228,7 +1240,7 @@ class EmundusModelApplication extends JModelList {
 	                                                    FROM `' . $itemt->db_table_name . '_repeat_' . $element->name . '`
 	                                                    WHERE parent_id=' . $parent_id . ' GROUP BY parent_id';
 	                                            try {
-	                                                $this->_db->setQuery($query);
+                                                    $this->_db->setQuery($query);
 	                                                $res = $this->_db->loadRow();
 	                                                $elt = $res[1];
 	                                            } catch (Exception $e) {
@@ -1241,6 +1253,8 @@ class EmundusModelApplication extends JModelList {
 	                                            $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                            $query = preg_replace('#{thistable}#', $from, $query);
 	                                            $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query = preg_replace('#{shortlang}#', $this->locales, $query);
+
 	                                            $this->_db->setQuery( $query );
 		                                        $ret = $this->_db->loadResult();
 		                                        if (empty($ret)) {
@@ -1261,6 +1275,8 @@ class EmundusModelApplication extends JModelList {
 	                                        $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                        $query = preg_replace('#{thistable}#', $from, $query);
 	                                        $query = preg_replace('#{my->id}#', $aid, $query);
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
 	                                        $this->_db->setQuery( $query );
 		                                    $ret = $this->_db->loadResult();
 		                                    if (empty($ret)) {
@@ -1536,6 +1552,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery($query);
                                                 $elt = $this->_db->loadResult();
                                             }
@@ -1571,6 +1589,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery($query);
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
@@ -1669,6 +1689,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery( $query );
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
@@ -1684,6 +1706,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery( $query );
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
@@ -1803,6 +1827,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery( $query );
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
@@ -1817,6 +1843,8 @@ class EmundusModelApplication extends JModelList {
                                             $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                             $query = preg_replace('#{thistable}#', $from, $query);
                                             $query = preg_replace('#{my->id}#', $aid, $query);
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                             $this->_db->setQuery( $query );
                                             $elt = JText::_($this->_db->loadResult());
 
@@ -1983,6 +2011,8 @@ td {
                                             $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                             $query = preg_replace('#{thistable}#', $from, $query);
                                             $query = preg_replace('#{my->id}#', $aid, $query);
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                             $this->_db->setQuery( $query );
                                             $elt = $this->_db->loadResult();
                                         }
@@ -2036,6 +2066,8 @@ td {
                                         $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                         $query = preg_replace('#{thistable}#', $from, $query);
                                         $query = preg_replace('#{my->id}#', $aid, $query);
+                                        $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                         $this->_db->setQuery( $query );
                                         $elt = $this->_db->loadResult();
                                     }
@@ -2051,6 +2083,8 @@ td {
                                         $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                         $query = preg_replace('#{thistable}#', $from, $query);
                                         $query = preg_replace('#{my->id}#', $aid, $query);
+                                        $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                         $this->_db->setQuery( $query );
                                         $elt = $this->_db->loadResult();
                                     }
@@ -2515,6 +2549,8 @@ td {
      * @return bool|mixed
      */
     public function getHikashopOrder($fnumInfos, $sent = false, $admission = false) {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
         if ($admission) {
             $startDate = $fnumInfos['admission_start_date'];
             $endDate = $fnumInfos['admission_end_date'];
@@ -2525,28 +2561,89 @@ td {
 
         $dbo = $this->getDbo();
 
-        if ($sent) {
+        $em_application_payment = $eMConfig->get('application_payment', 'user');
 
-            $query = 'SELECT ho.*, hu.user_cms_id
-                FROM #__hikashop_order ho
-                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                AND ho.order_created >= '.strtotime($startDate).'
-                AND ho.order_created <= '.strtotime($endDate).'
-                ORDER BY ho.order_created desc';
+        switch ($em_application_payment) {
+            
+            
+            case 'user' :
+                if ($sent) {
 
-        } else {
+                    $query = 'SELECT ho.*, hu.user_cms_id
+                                FROM #__hikashop_order ho
+                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
 
-            $query = 'SELECT ho.*, hu.user_cms_id
-                FROM #__hikashop_order ho
-                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                AND ho.order_status like "confirmed"
-                AND ho.order_created >= '.strtotime($startDate).'
-                AND ho.order_created <= '.strtotime($endDate).'
-                ORDER BY ho.order_created desc';
+                }
+                else {
+
+                    $query = 'SELECT ho.*, hu.user_cms_id
+                                FROM #__hikashop_order ho
+                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                                AND ho.order_status like "confirmed"
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+
+                }
+            break;
+
+            case 'fnum' :
+                if ($sent) {
+                    $query = 'SELECT ho.*, eh.user as user_cms_id
+                                FROM #__emundus_hikashop eh
+                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
+                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+                }
+                else {
+                    $query = 'SELECT ho.*, eh.user as user_cms_id
+                                FROM #__emundus_hikashop eh
+                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
+                                AND ho.order_status like "confirmed"
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+                }
+            break;
+
+            case 'campaign' :
+                if ($sent) {
+                    $query = 'SELECT ho.*, hu.user_cms_id
+                                FROM #__emundus_hikashop eh
+                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                                WHERE eh.campaign_id = '.$fnumInfos['id'].' 
+                                AND hu.user_cms_id = '.$fnumInfos['applicant_id'].' 
+                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+                }
+                else {
+                    $query = 'SELECT ho.*, hu.user_cms_id
+                                FROM #__emundus_hikashop eh
+                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                                WHERE eh.campaign_id= '.$fnumInfos['id'].' 
+                                AND hu.user_cms_id = '.$fnumInfos['applicant_id'].' 
+                                AND ho.order_status like "confirmed"
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+                }
+                break;
         }
+
 
         try {
 

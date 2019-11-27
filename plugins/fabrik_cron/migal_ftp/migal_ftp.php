@@ -550,6 +550,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					$programme_values = array();
 					$campaign_values = array();
 					$teaching_values = array();
+					$add_to_all_rights = array();
 					foreach ($to_create as $item) {
 
 						// If the product is not found in the list of programmes to import: skip.
@@ -582,8 +583,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 										JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 									}
 								}
-							}
-							else {
+							} else {
 								$query = $db->getQuery(true);
 								$query
 									->select($db->quoteName('id'))
@@ -630,6 +630,8 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								$db->quote($item['produit7']),
 								$db->quote($item['evaluation'])
 							]);
+
+							$add_to_all_rights[] = '1,'.$db->quote($item['codeproduit']);
 						}
 
 						if (!in_array($item['numsession'], $campaign_values) && !in_array($item['numsession'], $programme_codes)) {
@@ -692,6 +694,18 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						} catch (Exception $e) {
 							JLog::add('Error inserting programme data in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 						}
+
+						$query->clear()
+							->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
+							->columns(['parent_id', 'course'])
+							->values($add_to_all_rights);
+						$db->setQuery($query);
+						try {
+							$db->execute();
+						} catch (Exception $e) {
+							JLog::add('Error inserting programme code in all rights group: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+						}
+
 						$rows_updated += $db->getAffectedRows();
 						JLog::add('INSERT programme data with query: '.$query->__toString(), JLog::INFO, 'com_emundus');
 					}
