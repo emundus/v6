@@ -1409,6 +1409,7 @@ class EmundusControllerFiles extends JControllerLegacy
             
             
             $nbcol = 6;
+	        $date_elements = [];
             foreach ($ordered_elements as $fLine) {
                 if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
                     if (count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted") {
@@ -1425,6 +1426,12 @@ class EmundusControllerFiles extends JControllerLegacy
                             }
                         }
                     } else {
+
+                    	if ($fLine->element_plugin == 'date') {
+                    		$params = json_decode($fLine->element_attribs);
+                    		$date_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->date_form_format;
+	                    }
+                    	
                         $line .= preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                         $nbcol++;
                     }
@@ -1443,8 +1450,8 @@ class EmundusControllerFiles extends JControllerLegacy
             // On met les en-têtes dans le CSV
             $element_csv[] = $line;
             $line = "";
-
         }
+
 
         //check if evaluator can see others evaluators evaluations
         if (@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) {
@@ -1480,7 +1487,9 @@ class EmundusControllerFiles extends JControllerLegacy
 	                        $line .= $userProfil->lastname."\t";
 	                        $line .= $userProfil->firstname."\t";
                         }
+                        
                     } else {
+                    	
                         if ($v == "") {
 	                        $line .= " "."\t";
                         } elseif ($v[0] == "=" || $v[0] == "-") {
@@ -1490,7 +1499,15 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $line .= " ".$v."\t";
                             }
                         } else {
-                            if (count($opts) > 0 && in_array("upper-case", $opts)) {
+
+                        	if (!empty($date_elements[$k])) {
+		                        if ($v === '0000-00-00 00:00:00') {
+			                        $v = '';
+		                        } else {
+			                        $v = date($date_elements[$k], strtotime($v));
+		                        }
+								$line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+	                        } elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
                                 $line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v)))."\t";
                             } else {
                                 $line .= JText::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
