@@ -989,17 +989,25 @@ class EmundusModelApplication extends JModelList {
 		                            }
 
 	                                if (!empty(trim($element->label))) {
-	                                    if ($element->plugin=='date' && $element->content>0) {
-	                                        $date_params = json_decode($element->params);
-	                                        $elt = date($date_params->date_form_format, strtotime($element->content));
+	                                    if ($element->plugin=='date') {
+	                                    	if (!$element->content > 0) {
+	                                    		$elt = '';
+		                                    } else {
+			                                    $date_params = json_decode($element->params);
+			                                    $elt = date($date_params->date_form_format, strtotime($element->content));
+		                                    }
 	                                    }
-	                                    elseif ($element->plugin == 'birthday' && $element->content > 0) {
-	                                        $format = 'Y-n-j';
-	                                        $d = DateTime::createFromFormat($format, $element->content);
-	                                        if ($d && $d->format($format) == $element->content) {
-		                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-	                                        } else {
-		                                        $elt = $element->content;
+	                                    elseif ($element->plugin == 'birthday') {
+		                                    if (!$element->content > 0) {
+			                                    $elt = '';
+		                                    } else {
+		                                        $format = 'Y-n-j';
+		                                        $d = DateTime::createFromFormat($format, $element->content);
+		                                        if ($d && $d->format($format) == $element->content) {
+			                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+		                                        } else {
+			                                        $elt = $element->content;
+		                                        }
 	                                        }
 	                                    }
 	                                    elseif ($element->plugin == 'databasejoin') {
