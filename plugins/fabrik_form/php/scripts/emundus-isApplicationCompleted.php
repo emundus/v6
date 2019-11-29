@@ -29,8 +29,8 @@ if ($jinput->get('view') == 'form') {
 	$scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
 
 	$m_application 	= new EmundusModelApplication;
-	$attachments 	= $m_application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
-	$forms 			= $m_application->getFormsProgress($user->id, $user->profile, $user->fnum);
+	$attachments 	= $m_application->getAttachmentsProgress($user->profile, $user->fnum);
+	$forms 			= $m_application->getFormsProgress($user->profile, $user->fnum);
 
 	// If students with a scholarship have a different fee.
 	// The form ID will be appended to the URL, taking him to a different checkout page.

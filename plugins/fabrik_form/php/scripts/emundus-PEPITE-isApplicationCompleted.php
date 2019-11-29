@@ -25,8 +25,8 @@ if ($jinput->get('view') == 'form') {
 	$user = JFactory::getSession()->get('emundusUser');
 	
 	//$application = new EmundusModelApplication;
-	//$attachments = $application->getAttachmentsProgress($user->id, $user->profile, $user->fnum);
-	//$forms = $application->getFormsProgress($user->id, $user->profile, $user->fnum);
+	//$attachments = $application->getAttachmentsProgress($user->profile, $user->fnum);
+	//$forms = $application->getFormsProgress($user->profile, $user->fnum);
 
 
 	$forms = @EmundusHelperMenu::buildMenuQuery($user->profile);

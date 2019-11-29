@@ -106,8 +106,8 @@ $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 	
 	$fnums = array_keys($applications);
-	$attachments = $m_application->getAttachmentsProgress($user->id, $user->profile, $fnums);
-	$forms = $m_application->getFormsProgress($user->id, $user->profile, $fnums);
+	$attachments = $m_application->getAttachmentsProgress($user->profile, $fnums);
+	$forms = $m_application->getFormsProgress($user->profile, $fnums);
 	$confirm_form_url = $m_application->getConfirmUrl($fnums);
 	$first_page = $m_application->getFirstPage('index.php', $fnums);
 

@@ -386,17 +386,16 @@ class EmundusModelApplication extends JModelList {
         return $this->_db->loadAssoc();
     }
 
-    public function getFormsProgress($aid, $pid = 9, $fnum = "0") {
+    public function getFormsProgress($pid = 9, $fnum = "0") {
         if (!is_array($fnum)) {
-            //$user = JFactory::getUser($aid);
             $forms = @EmundusHelperMenu::buildMenuQuery($pid);
             $nb = 0;
             $formLst = array();
             foreach ($forms as $form) {
-                $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$aid.' AND fnum like '.$this->_db->Quote($fnum);
-                $this->_db->setQuery( $query );
+                $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum);
+                $this->_db->setQuery($query);
                 $cpt = $this->_db->loadResult();
-                if ($cpt==1) {
+                if ($cpt == 1) {
                     $nb++;
                 } else {
                     $formLst[] = $form->label;
@@ -423,7 +422,7 @@ class EmundusModelApplication extends JModelList {
                 $formLst = array();
                 foreach ($forms as $form) {
                     $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($f);
-                    $this->_db->setQuery( $query );
+                    $this->_db->setQuery($query);
                     $cpt = $this->_db->loadResult();
                     if ($cpt==1) {
                         $nb++;
@@ -437,12 +436,12 @@ class EmundusModelApplication extends JModelList {
         }
     }
 
-    public function getAttachmentsProgress($aid, $pid=9, $fnum = "0") {
+    public function getAttachmentsProgress($pid = 9, $fnum = "0") {
         if (!is_array($fnum)) {
 
             $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
-                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$aid.' AND uploads.fnum like '.$this->_db->Quote($fnum).'
+                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
                 WHERE profiles.profile_id = '.$pid.' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
             $this->_db->setQuery($query);
             return floor($this->_db->loadResult());
@@ -482,7 +481,7 @@ class EmundusModelApplication extends JModelList {
 	 *
 	 * @since version
 	 */
-    public function getLogged ($aid) {
+    public function getLogged($aid) {
         $user = JFactory::getUser();
         $query = 'SELECT s.time, s.client_id, u.id, u.name, u.username
                     FROM #__session AS s
@@ -989,17 +988,25 @@ class EmundusModelApplication extends JModelList {
 		                            }
 
 	                                if (!empty(trim($element->label))) {
-	                                    if ($element->plugin=='date' && $element->content>0) {
-	                                        $date_params = json_decode($element->params);
-	                                        $elt = date($date_params->date_form_format, strtotime($element->content));
+	                                    if ($element->plugin=='date') {
+	                                    	if (!$element->content > 0) {
+	                                    		$elt = '';
+		                                    } else {
+			                                    $date_params = json_decode($element->params);
+			                                    $elt = date($date_params->date_form_format, strtotime($element->content));
+		                                    }
 	                                    }
-	                                    elseif ($element->plugin == 'birthday' && $element->content > 0) {
-	                                        $format = 'Y-n-j';
-	                                        $d = DateTime::createFromFormat($format, $element->content);
-	                                        if ($d && $d->format($format) == $element->content) {
-		                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-	                                        } else {
-		                                        $elt = $element->content;
+	                                    elseif ($element->plugin == 'birthday') {
+		                                    if (!$element->content > 0) {
+			                                    $elt = '';
+		                                    } else {
+		                                        $format = 'Y-n-j';
+		                                        $d = DateTime::createFromFormat($format, $element->content);
+		                                        if ($d && $d->format($format) == $element->content) {
+			                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+		                                        } else {
+			                                        $elt = $element->content;
+		                                        }
 	                                        }
 	                                    }
 	                                    elseif ($element->plugin == 'databasejoin') {
@@ -1893,22 +1900,21 @@ class EmundusModelApplication extends JModelList {
         $tableuser = @EmundusHelperList::getFormsListByProfileID($options['profile_id']);
 
         $forms = "<style>
-table{
-    border-spacing: 1px;
-    background-color: #f2f2f2;
-    width: 100%;
-}
-th {
-    border-spacing: 1px; color: #666666;
-}
-td {
-    border-spacing: 1px;
-    background-color: #FFFFFF;
-}
-</style>";
-        if(isset($tableuser)) {
-            foreach($tableuser as $key => $itemt) {
-                //$forms .= '<br><br>';
+					table {
+					    border-spacing: 1px;
+					    background-color: #f2f2f2;
+					    width: 100%;
+					}
+					th {
+					    border-spacing: 1px; color: #666666;
+					}
+					td {
+					    border-spacing: 1px;
+					    background-color: #FFFFFF;
+					}
+					</style>";
+        if (isset($tableuser)) {
+            foreach ($tableuser as $key => $itemt) {
                 $forms .= ($options['show_list_label']==1)?'<h2>'.JText::_($itemt->label).'</h2>':'';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
@@ -2114,7 +2120,7 @@ td {
         return $forms;
     }
 
-    public function getEmail($user_id){
+    public function getEmail($user_id) {
         $query = 'SELECT *
         FROM #__messages as email
         LEFT JOIN #__users as user ON user.id=email.user_id_from
@@ -2134,12 +2140,10 @@ td {
         return $results;
     }
 
-    public function getActionMenu()
-    {
+    public function getActionMenu() {
         $juser = JFactory::getUser();
 
-        try
-        {
+        try {
             $db = $this->getDbo();
             $grUser = $juser->getAuthorisedViewLevels();
 
@@ -2151,38 +2155,28 @@ td {
             $db->setQuery($query);
             return $db->loadAssocList();
 
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             return false;
         }
     }
 
-    public function getProgramSynthesis($cid)
-    {
-        try
-        {
+    public function getProgramSynthesis($cid) {
+        try {
             $db = $this->getDbo();
             $query = 'select p.synthesis, p.id, p.label from #__emundus_setup_programmes as p left join #__emundus_setup_campaigns as c on c.training = p.code where c.id='.$cid;
             $db->setQuery($query);
             return $db->loadObject();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             return null;
         }
     }
 
-    public function getAttachments($ids)
-    {
-        try
-        {
+    public function getAttachments($ids) {
+        try {
             $query = "SELECT id, fnum, user_id, filename FROM #__emundus_uploads WHERE id in (".implode(',', $ids).")";
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             error_log($e->getMessage(), 0);
             return false;
         }
@@ -2196,21 +2190,35 @@ td {
                         WHERE fnum like ".$this->_db->quote($fnum);
 
             if (isset($attachment_id) && !empty($attachment_id) && $attachment_id[0] != "" ){
-                if(is_array($attachment_id))
-                    $query .= " AND attachment_id IN (".implode(',', $attachment_id).")";
-                else
-                    $query .= " AND attachment_id = ".$attachment_id;
+                if (is_array($attachment_id)) {
+	                $query .= " AND attachment_id IN (".implode(',', $attachment_id).")";
+                } else {
+	                $query .= " AND attachment_id = ".$attachment_id;
+                }
             }
 
-            if (!empty($ids) && $ids != "null")
-                $query .= " AND id in ($ids)";
+            if (!empty($ids) && $ids != "null") {
+	            $query .= " AND id in ($ids)";
+            }
 
             $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
+            $docs = $this->_db->loadObjectList();
         } catch(Exception $e) {
             error_log($e->getMessage(), 0);
             return false;
         }
+
+	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+	    // Sort the docs out that are not allowed to be exported by the user.
+	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+	    if ($allowed_attachments !== true) {
+		    foreach ($docs as $key => $doc) {
+			    if (!in_array($doc->id, $allowed_attachments)) {
+				    unset($docs[$key]);
+			    }
+		    }
+	    }
+        return $docs;
     }
 
     public function getAccessFnum($fnum)
