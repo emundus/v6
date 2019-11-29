@@ -386,17 +386,16 @@ class EmundusModelApplication extends JModelList {
         return $this->_db->loadAssoc();
     }
 
-    public function getFormsProgress($aid, $pid = 9, $fnum = "0") {
+    public function getFormsProgress($pid = 9, $fnum = "0") {
         if (!is_array($fnum)) {
-            //$user = JFactory::getUser($aid);
             $forms = @EmundusHelperMenu::buildMenuQuery($pid);
             $nb = 0;
             $formLst = array();
             foreach ($forms as $form) {
-                $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$aid.' AND fnum like '.$this->_db->Quote($fnum);
-                $this->_db->setQuery( $query );
+                $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum);
+                $this->_db->setQuery($query);
                 $cpt = $this->_db->loadResult();
-                if ($cpt==1) {
+                if ($cpt == 1) {
                     $nb++;
                 } else {
                     $formLst[] = $form->label;
@@ -423,7 +422,7 @@ class EmundusModelApplication extends JModelList {
                 $formLst = array();
                 foreach ($forms as $form) {
                     $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($f);
-                    $this->_db->setQuery( $query );
+                    $this->_db->setQuery($query);
                     $cpt = $this->_db->loadResult();
                     if ($cpt==1) {
                         $nb++;
@@ -437,12 +436,12 @@ class EmundusModelApplication extends JModelList {
         }
     }
 
-    public function getAttachmentsProgress($aid, $pid=9, $fnum = "0") {
+    public function getAttachmentsProgress($pid = 9, $fnum = "0") {
         if (!is_array($fnum)) {
 
             $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
-                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$aid.' AND uploads.fnum like '.$this->_db->Quote($fnum).'
+                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
                 WHERE profiles.profile_id = '.$pid.' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
             $this->_db->setQuery($query);
             return floor($this->_db->loadResult());
@@ -482,7 +481,7 @@ class EmundusModelApplication extends JModelList {
 	 *
 	 * @since version
 	 */
-    public function getLogged ($aid) {
+    public function getLogged($aid) {
         $user = JFactory::getUser();
         $query = 'SELECT s.time, s.client_id, u.id, u.name, u.username
                     FROM #__session AS s

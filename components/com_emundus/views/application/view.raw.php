@@ -128,7 +128,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $userAttachments = $m_application->getUserAttachmentsByFnum($fnum, $search);
 
 						$profile = $m_profiles->getProfileByCampaign($fnumInfos['campaign_id']);
-						$attachmentsProgress = $m_application->getAttachmentsProgress($fnumInfos['applicant_id'], $profile['profile_id'], $fnum);
+						$attachmentsProgress = $m_application->getAttachmentsProgress($profile['profile_id'], $fnum);
                         $nameCategory = $m_files->getAttachmentCategories();
 
 						$this->assignRef('userAttachments', $userAttachments);
@@ -339,7 +339,7 @@ class EmundusViewApplication extends JViewLegacy {
 							EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_LOGS_FORM_BACKOFFICE');
 							$pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 
-							$formsProgress = $m_application->getFormsProgress($fnumInfos['applicant_id'], $pid, $fnum);
+							$formsProgress = $m_application->getFormsProgress($pid, $fnum);
 							$this->assignRef('formsProgress', $formsProgress);
 
 							$forms = $m_application->getforms(intval($fnumInfos['applicant_id']), $fnum, $pid);

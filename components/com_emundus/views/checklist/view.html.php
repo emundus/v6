@@ -74,8 +74,8 @@ class EmundusViewChecklist extends JViewLegacy
 			$m_application 	= new EmundusModelApplication;
 			$m_files = new EmundusModelFiles;
 			$applications = $m_application->getApplications($this->_user->id);
-			$attachments = $m_application->getAttachmentsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
-			$forms = $m_application->getFormsProgress($this->_user->id, $this->_user->profile, array_keys($applications));
+			$attachments = $m_application->getAttachmentsProgress($this->_user->profile, array_keys($applications));
+			$forms = $m_application->getFormsProgress($this->_user->profile, array_keys($applications));
 
 			if ((int)($attachments[$this->_user->fnum])>=100 && (int)($forms[$this->_user->fnum])>=100) {
 				$accept_created_payments = $eMConfig->get('accept_created_payments', 0);
