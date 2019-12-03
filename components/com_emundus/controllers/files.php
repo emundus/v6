@@ -1723,15 +1723,17 @@ class EmundusControllerFiles extends JControllerLegacy
     public function generate_pdf() {
         $current_user = JFactory::getUser();
 
-        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die(JText::_('RESTRICTED_ACCESS'));
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+	        die(JText::_('RESTRICTED_ACCESS'));
+        }
 
         $m_files = $this->getModel('Files');
 
         $session = JFactory::getSession();
         $fnums_post = $session->get('fnums_export');
-        if (count($fnums_post) == 0)
-            $fnums_post = array($session->get('application_fnum'));
+        if (count($fnums_post) == 0) {
+	        $fnums_post = array($session->get('application_fnum'));
+        }
 
         $jinput     = JFactory::getApplication()->input;
         $file       = $jinput->getVar('file', null, 'STRING');
@@ -1780,11 +1782,9 @@ class EmundusControllerFiles extends JControllerLegacy
                             }
                         }
                     }
-
                     if ($forms || !empty($forms_to_export)) {
 	                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options);
                     }
-
                 }
 
                 if ($attachment || !empty($attachids)) {
@@ -1793,11 +1793,11 @@ class EmundusControllerFiles extends JControllerLegacy
                     $attachment_to_export = array();
                     foreach ($attachids as $aids) {
                         $detail = explode("|", $aids);
-                        if (!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training'])
-                            if ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")
-                                $attachment_to_export[] = $detail[0];
+                        if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+	                        $attachment_to_export[] = $detail[0];
+                        }
                     }
-                    if ($attachment || !empty($attachment_to_export)){
+                    if ($attachment || !empty($attachment_to_export)) {
                         $files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachment_to_export);
                         if ($options[0] != "0") {
                             $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
@@ -1822,8 +1822,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
         }
         $start = $i;
-
-
 
         if (count($files_list) > 0) {
 
@@ -2959,7 +2957,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
                         // Generate PDF
                         $tags = $m_emails->setTags($fnumsInfos[$fnum]['applicant_id'], $post, $fnum);
-                        $htmldata = "";
 
                         require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
                         $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -3012,15 +3009,13 @@ class EmundusControllerFiles extends JControllerLegacy
                         // Print text using writeHTMLCell()
                         $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $htmldata, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
 
-                        //@chdir('tmp');
 						$rand = rand(0, 1000000);
 						if (!file_exists(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'])) {
 						    mkdir(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'], 0775);
 						}
 
-						$name = str_replace(' ', '', $fnumsInfos[$fnum]['applicant_name']) . $attachInfos['lbl'] . "-" . md5($rand . time()) . ".pdf";
+						$name = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".pdf";
 
-                        //$name = $attachInfos['lbl'] . '_' . date('Y-m-d_H-i-s') . '.pdf';
                         $path = EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $name;
                         $url = JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/';
                         $upId = $m_files->addAttachment($fnum, $name, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description'], $canSee);
@@ -3144,18 +3139,6 @@ class EmundusControllerFiles extends JControllerLegacy
                                             $preprocess->setValue($tag, $birthday->date . ' (' . $birthday->age . ')');
                                             break;
 
-                                        // This is a special radar style element of the evaluation values.
-                                        case 'evaluation_radar':
-                                            $preprocess->setValue($tag, '');
-
-                                            // The code below cannot work as of right now, objects cannot be inserted in a template file being parsed.
-                                            // TODO: Retry doing this when a new version of PHPOffice is available.
-                                            /*$evaluation = $m_evalutaion->getScore($fnum);
-                                            $section = $phpWord->addSection();
-                                            $section->addChart('radar', array_keys($evaluation), $evaluation);
-                                            $section->addTextBreak();*/
-                                            break;
-
                                         default:
                                             $preprocess->setValue($tag, '');
                                             break;
@@ -3190,9 +3173,9 @@ class EmundusControllerFiles extends JControllerLegacy
                                 mkdir(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'], 0775);
                             }
 
-                            $filename = str_replace(' ', '', $fnumsInfos[$fnum]['applicant_name']) . $attachInfos['lbl'] . "-" . md5($rand . time()) . ".docx";
+                            $filename = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand . time()).".docx";
 
-                            $preprocess->saveAs(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $filename);
+                            $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$filename);
 
                             $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
 
@@ -3211,7 +3194,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 break;
 
         case 4 :
-            require_once JPATH_LIBRARIES .DS. 'phpspreadsheet' .DS. 'phpspreadsheet.php';
+            require_once JPATH_LIBRARIES.DS.'phpspreadsheet'.DS.'phpspreadsheet.php';
 
             $inputFileName = JPATH_BASE . $tmpl[0]['file'];
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
@@ -3318,7 +3301,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         mkdir(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'], 0775);
                     }
 
-                    $filename = str_replace(' ', '', $fnumsInfos[$fnum]['applicant_name']) . $attachInfos['lbl'] . "-" . md5($rand . time()) . ".xlsx";
+                    $filename = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand . time()).".xlsx";
 
                     $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                     $writer->setIncludeCharts(true);
@@ -3333,6 +3316,10 @@ class EmundusControllerFiles extends JControllerLegacy
             echo json_encode($res);
         break;
         }
+    }
+
+    private function sanitize_filename($name) {
+    	return strtolower(preg_replace(['([\40])', '([^a-zA-Z0-9-])','(-{2,})'], ['_','','_'], preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/', '$1', htmlentities($name, ENT_NOQUOTES, 'UTF-8'))));
     }
 
     public function exportzipdoc() {
