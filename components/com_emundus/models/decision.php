@@ -1239,11 +1239,8 @@ class EmundusModelDecision extends JModelList
 			$query .= ' AND c.fnum like '.$dbo->Quote($current_fnum);
 		}
 
-		if (in_array('overall', $em_blocks_names))
-			$query .= ' GROUP BY c.fnum';
-
+		$query .= ' GROUP BY c.fnum';
 		$query .=  $this->_buildContentOrderBy();
-
 
 		$dbo->setQuery($query);
 
@@ -1259,9 +1256,7 @@ class EmundusModelDecision extends JModelList
 			}
 
 			$dbo->setQuery($query);
-			$res = $dbo->loadAssocList();
-//echo '<hr>'.str_replace('#_', 'jos', $query).'<hr>';
-			return $res;
+			return $dbo->loadAssocList();
 
 		} catch (Exception $e) {
 			echo $e->getMessage();
