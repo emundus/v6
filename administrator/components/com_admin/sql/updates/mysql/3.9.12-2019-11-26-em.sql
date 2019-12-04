@@ -1,3 +1,4 @@
+ALTER TABLE `jos_hikashop_order` ENGINE=InnoDB;
 
 CREATE TABLE `jos_emundus_hikashop` (
   `id` int(11) NOT NULL,
@@ -7,11 +8,6 @@ CREATE TABLE `jos_emundus_hikashop` (
   `campaign_id` int(11) DEFAULT NULL,
   `order_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
---
--- Indexes for dumped tables
---
 
 --
 -- Indexes for table `jos_emundus_hikashop`
@@ -27,3 +23,6 @@ ALTER TABLE `jos_emundus_hikashop`
 ALTER TABLE `jos_emundus_hikashop`
   ADD CONSTRAINT `jos_emundus_hikashop_ibfk_1` FOREIGN KEY (`user`) REFERENCES `jos_emundus_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `jos_emundus_hikashop_ibfk_2` FOREIGN KEY (`fnum`) REFERENCES `jos_emundus_campaign_candidature` (`fnum`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+ALTER TABLE `jos_emundus_hikashop` ADD FOREIGN KEY (`order_id`) REFERENCES `jos_hikashop_order`(`order_id`) ON DELETE CASCADE ON UPDATE CASCADE;

@@ -187,6 +187,9 @@ $comments = $session->get('comments');
         var camp = document.getElementById('campaign').options[document.getElementById('campaign').selectedIndex];
 
         document.getElementById('other-result').classList.add('hide');
+        
+        document.getElementById('campaign').options.length = 0;
+
         if (camp !== '') {
             var httpRequest = new XMLHttpRequest();
             httpRequest.onreadystatechange = function(data) {
