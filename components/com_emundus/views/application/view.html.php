@@ -92,10 +92,10 @@ class EmundusViewApplication extends JViewLegacy{
 		$userComments = $application->getUsersComments($aid);
 		$this->assignRef('userComments', $userComments);
 
-		$formsProgress = $application->getFormsProgress($aid, $userInformations['pid']);
+		$formsProgress = $application->getFormsProgress($userInformations['pid']);
 		$this->assignRef('formsProgress', $formsProgress);
 
-		$attachmentsProgress = $application->getAttachmentsProgress($aid, $userInformations['pid']);
+		$attachmentsProgress = $application->getAttachmentsProgress($userInformations['pid']);
 		$this->assignRef('attachmentsProgress', $attachmentsProgress);
 
 		$logged = $application->getlogged($aid);

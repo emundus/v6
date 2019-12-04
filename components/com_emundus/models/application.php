@@ -35,6 +35,8 @@ class EmundusModelApplication extends JModelList {
 
         $this->_db = JFactory::getDBO();
         $this->_user = JFactory::getSession()->get('emundusUser');
+
+        $this->locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
     }
 
     public function getApplicantInfos($aid, $param) {
@@ -384,17 +386,16 @@ class EmundusModelApplication extends JModelList {
         return $this->_db->loadAssoc();
     }
 
-    public function getFormsProgress($aid, $pid = 9, $fnum = "0") {
+    public function getFormsProgress($pid = 9, $fnum = "0") {
         if (!is_array($fnum)) {
-            //$user = JFactory::getUser($aid);
             $forms = @EmundusHelperMenu::buildMenuQuery($pid);
             $nb = 0;
             $formLst = array();
             foreach ($forms as $form) {
-                $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$aid.' AND fnum like '.$this->_db->Quote($fnum);
-                $this->_db->setQuery( $query );
+                $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum);
+                $this->_db->setQuery($query);
                 $cpt = $this->_db->loadResult();
-                if ($cpt==1) {
+                if ($cpt == 1) {
                     $nb++;
                 } else {
                     $formLst[] = $form->label;
@@ -421,7 +422,7 @@ class EmundusModelApplication extends JModelList {
                 $formLst = array();
                 foreach ($forms as $form) {
                     $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($f);
-                    $this->_db->setQuery( $query );
+                    $this->_db->setQuery($query);
                     $cpt = $this->_db->loadResult();
                     if ($cpt==1) {
                         $nb++;
@@ -435,12 +436,12 @@ class EmundusModelApplication extends JModelList {
         }
     }
 
-    public function getAttachmentsProgress($aid, $pid=9, $fnum = "0") {
+    public function getAttachmentsProgress($pid = 9, $fnum = "0") {
         if (!is_array($fnum)) {
 
             $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
-                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.user_id = '.$aid.' AND uploads.fnum like '.$this->_db->Quote($fnum).'
+                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
                 WHERE profiles.profile_id = '.$pid.' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
             $this->_db->setQuery($query);
             return floor($this->_db->loadResult());
@@ -480,7 +481,7 @@ class EmundusModelApplication extends JModelList {
 	 *
 	 * @since version
 	 */
-    public function getLogged ($aid) {
+    public function getLogged($aid) {
         $user = JFactory::getUser();
         $query = 'SELECT s.time, s.client_id, u.id, u.name, u.username
                     FROM #__session AS s
@@ -626,6 +627,7 @@ class EmundusModelApplication extends JModelList {
                                     $where  = $params->join_key_column.'='.$this->_db->Quote($element->content);
                                     $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                     $query  = preg_replace('#{thistable}#', $from, $query);
+                                    $query  = preg_replace('#{shortlang}#', $this->locales, $query);
                                     $query  = preg_replace('#{my->id}#', $aid, $query);
 
                                     try {
@@ -730,6 +732,7 @@ class EmundusModelApplication extends JModelList {
                                             $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                             $query  = preg_replace('#{thistable}#', $from, $query);
                                             $query  = preg_replace('#{my->id}#', $aid, $query);
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
 
                                             try {
                                                 $this->_db->setQuery($query);
@@ -816,6 +819,7 @@ class EmundusModelApplication extends JModelList {
                                         $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                         $query  = preg_replace('#{thistable}#', $from, $query);
                                         $query  = preg_replace('#{my->id}#', $aid, $query);
+                                        $query  = preg_replace('#{shortlang}#', $this->locales, $query);
 
                                         try {
                                             $this->_db->setQuery($query);
@@ -841,6 +845,7 @@ class EmundusModelApplication extends JModelList {
                                     $query  = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                     $query  = preg_replace('#{thistable}#', $from, $query);
                                     $query  = preg_replace('#{my->id}#', $aid, $query);
+                                    $query  = preg_replace('#{shortlang}#', $this->locales, $query);
 
                                     try {
                                         $this->_db->setQuery($query);
@@ -983,17 +988,25 @@ class EmundusModelApplication extends JModelList {
 		                            }
 
 	                                if (!empty(trim($element->label))) {
-	                                    if ($element->plugin=='date' && $element->content>0) {
-	                                        $date_params = json_decode($element->params);
-	                                        $elt = date($date_params->date_form_format, strtotime($element->content));
+	                                    if ($element->plugin=='date') {
+	                                    	if (!$element->content > 0) {
+	                                    		$elt = '';
+		                                    } else {
+			                                    $date_params = json_decode($element->params);
+			                                    $elt = date($date_params->date_form_format, strtotime($element->content));
+		                                    }
 	                                    }
-	                                    elseif ($element->plugin == 'birthday' && $element->content > 0) {
-	                                        $format = 'Y-n-j';
-	                                        $d = DateTime::createFromFormat($format, $element->content);
-	                                        if ($d && $d->format($format) == $element->content) {
-		                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-	                                        } else {
-		                                        $elt = $element->content;
+	                                    elseif ($element->plugin == 'birthday') {
+		                                    if (!$element->content > 0) {
+			                                    $elt = '';
+		                                    } else {
+		                                        $format = 'Y-n-j';
+		                                        $d = DateTime::createFromFormat($format, $element->content);
+		                                        if ($d && $d->format($format) == $element->content) {
+			                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+		                                        } else {
+			                                        $elt = $element->content;
+		                                        }
 	                                        }
 	                                    }
 	                                    elseif ($element->plugin == 'databasejoin') {
@@ -1004,7 +1017,9 @@ class EmundusModelApplication extends JModelList {
 	                                        $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                        $query = preg_replace('#{thistable}#', $from, $query);
 	                                        $query = preg_replace('#{my->id}#', $aid, $query);
-	                                        $this->_db->setQuery( $query );
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
+                                            $this->_db->setQuery( $query );
 		                                    $ret = $this->_db->loadResult();
 		                                    if (empty($ret)) {
 			                                    $ret = $element->content;
@@ -1039,9 +1054,9 @@ class EmundusModelApplication extends JModelList {
 	                            $t_elt = array();
 	                            foreach($elements as &$element) {
 	                                $t_elt[] = $element->name;
-		                            if ($element->plugin != 'internalid') {
-			                            $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
-		                            }
+	                                if($element->plugin != 'id') {
+                                        $forms .= '<th scope="col">'.JText::_($element->label).'</th>';
+                                    }
 	                            }
 	                            unset($element);
 
@@ -1075,8 +1090,8 @@ class EmundusModelApplication extends JModelList {
 	                                    $forms .= '<tr>';
 	                                    $j = 0;
 	                                    foreach ($r_element as $key => $r_elt) {
-	                                    	
-		                                    // Do not display elements with no value inside them.
+
+                                            // Do not display elements with no value inside them.
 		                                    if ($show_empty_fields == 0 && trim($r_elt) == '') {
 		                                    	$forms .= '<td></td>';
 			                                    continue;
@@ -1109,7 +1124,9 @@ class EmundusModelApplication extends JModelList {
 	                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                                $query = preg_replace('#{thistable}#', $from, $query);
 	                                                $query = preg_replace('#{my->id}#', $aid, $query);
-	                                                $this->_db->setQuery( $query );
+                                                    $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
+                                                    $this->_db->setQuery( $query );
 		                                            $ret = $this->_db->loadResult();
 		                                            if (empty($ret)) {
 			                                            $ret = $r_elt;
@@ -1148,6 +1165,8 @@ class EmundusModelApplication extends JModelList {
 	                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                                $query = preg_replace('#{thistable}#', $from, $query);
 	                                                $query = preg_replace('#{my->id}#', $aid, $query);
+                                                    $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
 	                                                $this->_db->setQuery($query);
 	                                                $ret = $this->_db->loadResult();
 	                                                if (empty($ret)) {
@@ -1228,7 +1247,7 @@ class EmundusModelApplication extends JModelList {
 	                                                    FROM `' . $itemt->db_table_name . '_repeat_' . $element->name . '`
 	                                                    WHERE parent_id=' . $parent_id . ' GROUP BY parent_id';
 	                                            try {
-	                                                $this->_db->setQuery($query);
+                                                    $this->_db->setQuery($query);
 	                                                $res = $this->_db->loadRow();
 	                                                $elt = $res[1];
 	                                            } catch (Exception $e) {
@@ -1241,6 +1260,8 @@ class EmundusModelApplication extends JModelList {
 	                                            $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                            $query = preg_replace('#{thistable}#', $from, $query);
 	                                            $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query = preg_replace('#{shortlang}#', $this->locales, $query);
+
 	                                            $this->_db->setQuery( $query );
 		                                        $ret = $this->_db->loadResult();
 		                                        if (empty($ret)) {
@@ -1261,6 +1282,8 @@ class EmundusModelApplication extends JModelList {
 	                                        $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 	                                        $query = preg_replace('#{thistable}#', $from, $query);
 	                                        $query = preg_replace('#{my->id}#', $aid, $query);
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
 	                                        $this->_db->setQuery( $query );
 		                                    $ret = $this->_db->loadResult();
 		                                    if (empty($ret)) {
@@ -1536,6 +1559,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery($query);
                                                 $elt = $this->_db->loadResult();
                                             }
@@ -1571,6 +1596,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery($query);
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
@@ -1669,6 +1696,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery( $query );
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
@@ -1684,6 +1713,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery( $query );
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
@@ -1803,6 +1834,8 @@ class EmundusModelApplication extends JModelList {
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
+                                                $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                                 $this->_db->setQuery( $query );
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
@@ -1817,6 +1850,8 @@ class EmundusModelApplication extends JModelList {
                                             $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                             $query = preg_replace('#{thistable}#', $from, $query);
                                             $query = preg_replace('#{my->id}#', $aid, $query);
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                             $this->_db->setQuery( $query );
                                             $elt = JText::_($this->_db->loadResult());
 
@@ -1865,22 +1900,21 @@ class EmundusModelApplication extends JModelList {
         $tableuser = @EmundusHelperList::getFormsListByProfileID($options['profile_id']);
 
         $forms = "<style>
-table{
-    border-spacing: 1px;
-    background-color: #f2f2f2;
-    width: 100%;
-}
-th {
-    border-spacing: 1px; color: #666666;
-}
-td {
-    border-spacing: 1px;
-    background-color: #FFFFFF;
-}
-</style>";
-        if(isset($tableuser)) {
-            foreach($tableuser as $key => $itemt) {
-                //$forms .= '<br><br>';
+					table {
+					    border-spacing: 1px;
+					    background-color: #f2f2f2;
+					    width: 100%;
+					}
+					th {
+					    border-spacing: 1px; color: #666666;
+					}
+					td {
+					    border-spacing: 1px;
+					    background-color: #FFFFFF;
+					}
+					</style>";
+        if (isset($tableuser)) {
+            foreach ($tableuser as $key => $itemt) {
                 $forms .= ($options['show_list_label']==1)?'<h2>'.JText::_($itemt->label).'</h2>':'';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
@@ -1983,6 +2017,8 @@ td {
                                             $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                             $query = preg_replace('#{thistable}#', $from, $query);
                                             $query = preg_replace('#{my->id}#', $aid, $query);
+                                            $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                             $this->_db->setQuery( $query );
                                             $elt = $this->_db->loadResult();
                                         }
@@ -2036,6 +2072,8 @@ td {
                                         $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                         $query = preg_replace('#{thistable}#', $from, $query);
                                         $query = preg_replace('#{my->id}#', $aid, $query);
+                                        $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                         $this->_db->setQuery( $query );
                                         $elt = $this->_db->loadResult();
                                     }
@@ -2051,6 +2089,8 @@ td {
                                         $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                                         $query = preg_replace('#{thistable}#', $from, $query);
                                         $query = preg_replace('#{my->id}#', $aid, $query);
+                                        $query  = preg_replace('#{shortlang}#', $this->locales, $query);
+
                                         $this->_db->setQuery( $query );
                                         $elt = $this->_db->loadResult();
                                     }
@@ -2080,7 +2120,7 @@ td {
         return $forms;
     }
 
-    public function getEmail($user_id){
+    public function getEmail($user_id) {
         $query = 'SELECT *
         FROM #__messages as email
         LEFT JOIN #__users as user ON user.id=email.user_id_from
@@ -2100,12 +2140,10 @@ td {
         return $results;
     }
 
-    public function getActionMenu()
-    {
+    public function getActionMenu() {
         $juser = JFactory::getUser();
 
-        try
-        {
+        try {
             $db = $this->getDbo();
             $grUser = $juser->getAuthorisedViewLevels();
 
@@ -2117,38 +2155,28 @@ td {
             $db->setQuery($query);
             return $db->loadAssocList();
 
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             return false;
         }
     }
 
-    public function getProgramSynthesis($cid)
-    {
-        try
-        {
+    public function getProgramSynthesis($cid) {
+        try {
             $db = $this->getDbo();
             $query = 'select p.synthesis, p.id, p.label from #__emundus_setup_programmes as p left join #__emundus_setup_campaigns as c on c.training = p.code where c.id='.$cid;
             $db->setQuery($query);
             return $db->loadObject();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             return null;
         }
     }
 
-    public function getAttachments($ids)
-    {
-        try
-        {
+    public function getAttachments($ids) {
+        try {
             $query = "SELECT id, fnum, user_id, filename FROM #__emundus_uploads WHERE id in (".implode(',', $ids).")";
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             error_log($e->getMessage(), 0);
             return false;
         }
@@ -2162,21 +2190,35 @@ td {
                         WHERE fnum like ".$this->_db->quote($fnum);
 
             if (isset($attachment_id) && !empty($attachment_id) && $attachment_id[0] != "" ){
-                if(is_array($attachment_id))
-                    $query .= " AND attachment_id IN (".implode(',', $attachment_id).")";
-                else
-                    $query .= " AND attachment_id = ".$attachment_id;
+                if (is_array($attachment_id)) {
+	                $query .= " AND attachment_id IN (".implode(',', $attachment_id).")";
+                } else {
+	                $query .= " AND attachment_id = ".$attachment_id;
+                }
             }
 
-            if (!empty($ids) && $ids != "null")
-                $query .= " AND id in ($ids)";
+            if (!empty($ids) && $ids != "null") {
+	            $query .= " AND id in ($ids)";
+            }
 
             $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
+            $docs = $this->_db->loadObjectList();
         } catch(Exception $e) {
             error_log($e->getMessage(), 0);
             return false;
         }
+
+	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+	    // Sort the docs out that are not allowed to be exported by the user.
+	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+	    if ($allowed_attachments !== true) {
+		    foreach ($docs as $key => $doc) {
+			    if (!in_array($doc->id, $allowed_attachments)) {
+				    unset($docs[$key]);
+			    }
+		    }
+	    }
+        return $docs;
     }
 
     public function getAccessFnum($fnum)
@@ -2515,6 +2557,8 @@ td {
      * @return bool|mixed
      */
     public function getHikashopOrder($fnumInfos, $sent = false, $admission = false) {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
         if ($admission) {
             $startDate = $fnumInfos['admission_start_date'];
             $endDate = $fnumInfos['admission_end_date'];
@@ -2525,28 +2569,89 @@ td {
 
         $dbo = $this->getDbo();
 
-        if ($sent) {
+        $em_application_payment = $eMConfig->get('application_payment', 'user');
 
-            $query = 'SELECT ho.*, hu.user_cms_id
-                FROM #__hikashop_order ho
-                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                AND ho.order_created >= '.strtotime($startDate).'
-                AND ho.order_created <= '.strtotime($endDate).'
-                ORDER BY ho.order_created desc';
+        switch ($em_application_payment) {
+            
+            
+            case 'user' :
+                if ($sent) {
 
-        } else {
+                    $query = 'SELECT ho.*, hu.user_cms_id
+                                FROM #__hikashop_order ho
+                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
 
-            $query = 'SELECT ho.*, hu.user_cms_id
-                FROM #__hikashop_order ho
-                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                AND ho.order_status like "confirmed"
-                AND ho.order_created >= '.strtotime($startDate).'
-                AND ho.order_created <= '.strtotime($endDate).'
-                ORDER BY ho.order_created desc';
+                }
+                else {
+
+                    $query = 'SELECT ho.*, hu.user_cms_id
+                                FROM #__hikashop_order ho
+                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
+                                AND ho.order_status like "confirmed"
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+
+                }
+            break;
+
+            case 'fnum' :
+                if ($sent) {
+                    $query = 'SELECT ho.*, eh.user as user_cms_id
+                                FROM #__emundus_hikashop eh
+                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
+                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+                }
+                else {
+                    $query = 'SELECT ho.*, eh.user as user_cms_id
+                                FROM #__emundus_hikashop eh
+                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
+                                AND ho.order_status like "confirmed"
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+                }
+            break;
+
+            case 'campaign' :
+                if ($sent) {
+                    $query = 'SELECT ho.*, hu.user_cms_id
+                                FROM #__emundus_hikashop eh
+                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                                WHERE eh.campaign_id = '.$fnumInfos['id'].' 
+                                AND hu.user_cms_id = '.$fnumInfos['applicant_id'].' 
+                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+                }
+                else {
+                    $query = 'SELECT ho.*, hu.user_cms_id
+                                FROM #__emundus_hikashop eh
+                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
+                                WHERE eh.campaign_id= '.$fnumInfos['id'].' 
+                                AND hu.user_cms_id = '.$fnumInfos['applicant_id'].' 
+                                AND ho.order_status like "confirmed"
+                                AND ho.order_created >= '.strtotime($startDate).'
+                                AND ho.order_created <= '.strtotime($endDate).'
+                                ORDER BY ho.order_created desc';
+                }
+                break;
         }
+
 
         try {
 

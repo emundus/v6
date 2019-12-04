@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <falang type="contentelement">
   <name>Emundus - Groups</name>
-  <author>eMundus</author>
+  <author>eMundus - www.emundus.fr</author>
   <version>2.0</version>
   <description>Definition for the emundus groups table</description>
   <reference>

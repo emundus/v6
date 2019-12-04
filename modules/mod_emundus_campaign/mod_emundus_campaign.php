@@ -65,7 +65,7 @@ $ordertime = $session->get('order_time');
 if ($params->get('mod_em_campaign_layout') == "institut_fr") {
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
     $m_progs = new EmundusModelProgramme;
-    $program_array['IN'] = explode(', ', $program_code);
+    $program_array['IN'] = array_map('trim', explode(',', $program_code));
     $programs = $m_progs->getProgrammes(1, $program_array);
 }
 
@@ -74,7 +74,7 @@ if (isset($searchword) && !empty($searchword)) {
 }
 
 if (!empty($program_code)) {
-    $condition .= " AND pr.code IN(" . implode ( "','", explode(', ',$db->Quote($program_code)) ) . ") ";
+    $condition .= " AND pr.code IN(" . implode ( "','", array_map('trim', explode(',', $db->Quote($program_code)))) . ") ";
 }
 
 switch ($mod_em_campaign_groupby) {

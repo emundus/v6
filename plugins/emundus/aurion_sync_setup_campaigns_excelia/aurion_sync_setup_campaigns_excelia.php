@@ -140,10 +140,10 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends JPlugin {
 
 							// Profile is different based on if it's a bachelors or not.
 							// We can find this out by looking at the programme label.
-							if (strpos(strtolower($insert[$camp_prog_label]), 'bachelor') !== false) {
-								$insert_data['profile_id'] = 1001;
-							} else {
+							if (strpos(strtolower($insert[$camp_prog_label]), 'msc') !== false) {
 								$insert_data['profile_id'] = 1000;
+							} else {
+								$insert_data['profile_id'] = 1001;
 							}
 
 							$insert_data['end_date'] = $this->db->quote(date("Y-m-d H:i:s", strtotime($insert[$camp_end_date_fr])));

@@ -76,6 +76,8 @@ class EmundusModelFiles extends JModelLegacy
         $groupAssoc = array_filter($m_users->getUserGroupsProgrammeAssoc($current_user->id));
         $progAssoc = array_filter($this->getAssociatedProgrammes($current_user->id));
         $this->code = array_merge($groupAssoc, $progAssoc);
+
+        $this->locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
         /*
         ** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
         */
@@ -2229,8 +2231,7 @@ if (JFactory::getUser()->id == 63)
                                 WHERE '.$t.'.parent_id='.$elt->table_join.'.id
                               ) ';
                         } else {
-
-                            $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
+                            $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
 
 	                        if ($methode == 2) {
 		                        $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ") ';
@@ -2287,7 +2288,7 @@ if (JFactory::getUser()->id == 63)
                             WHERE '.$t.'.parent_id='.$tableAlias[$elt->tab_name].'.id
                           )';
                     } else {
-                        $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->join_val_column_concat).')':'t.'.$element_attribs->join_val_column;
+                        $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
 
                         $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
                             FROM '.$element_attribs->join_db_name.' as t
@@ -2299,7 +2300,7 @@ if (JFactory::getUser()->id == 63)
                 	$element_attribs = json_decode($elt->element_attribs);
 	                $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
 	                $where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$elt->tab_name.'.'.$elt->element_name;
-	                $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', $element_attribs->cascadingdropdown_label_concat).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
+	                $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
 
 	                $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
                             FROM '.$from.' as t

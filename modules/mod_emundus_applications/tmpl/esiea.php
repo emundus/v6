@@ -42,9 +42,9 @@ echo $description;
                }
 
             if(!empty($m_profile->getProfileByFnum($application->fnum))) {
-                $confirm_form_url = $m_checklist->getConfirmUrl($m_profile->getProfileByFnum($application->fnum)).'&usekey=fnum&rowid='.$user->fnum;
+                $confirm_url = $m_checklist->getConfirmUrl($m_profile->getProfileByFnum($application->fnum)).'&usekey=fnum&rowid='.$user->fnum;
             } else {
-                $confirm_form_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url[$application->fnum]['link']);
+                $confirm_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url[$application->fnum]['link']);
             }
             ?>
             <div class="row" id="row<?= $application->fnum; ?>">
@@ -64,7 +64,7 @@ echo $description;
 
                     <?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
 
-                        <a id='send' class="btn btn-xs" href="<?= JRoute::_(JURI::base() . $confirm_form_url); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
+                        <a id='send' class="btn btn-xs" href="<?= JRoute::_(JURI::base() . $confirm_url); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
 
                     <?php endif; ?>
 
@@ -79,8 +79,8 @@ echo $description;
                     <?php if ($show_progress == 1) : ?>
                         <div id="file<?= $application->fnum; ?>"></div>
                         <script type="text/javascript">
-                            $(document).ready(function () {
-                                $("#file<?= $application->fnum; ?>").circliful({
+                            jQuery(document).ready(function () {
+                                jQuery("#file<?= $application->fnum; ?>").circliful({
                                     animation: 1,
                                     animationStep: 5,
                                     foregroundBorderWidth: 15,
@@ -97,8 +97,8 @@ echo $description;
                     <?php if ($show_progress_forms == 1) : ?>
                         <div id="forms<?= $application->fnum; ?>"></div>
                         <script type="text/javascript">
-                            $(document).ready(function () {
-                                $("#forms<?= $application->fnum; ?>").circliful({
+                            jQuery(document).ready(function () {
+                                jQuery("#forms<?= $application->fnum; ?>").circliful({
                                     animation: 1,
                                     animationStep: 5,
                                     foregroundBorderWidth: 15,
@@ -116,8 +116,8 @@ echo $description;
                     <?php if ($show_progress_documents == 1) : ?>
                         <div id="documents<?= $application->fnum; ?>"></div>
                         <script type="text/javascript">
-                            $(document).ready(function () {
-                                $("#documents<?= $application->fnum; ?>").circliful({
+                            jQuery(document).ready(function () {
+                                jQuery("#documents<?= $application->fnum; ?>").circliful({
                                     animation: 1,
                                     animationStep: 5,
                                     foregroundBorderWidth: 15,
@@ -194,10 +194,12 @@ endif; ?>
 
     <script type="text/javascript">
         var poll_url = "<?= $poll_url; ?>";
-        $(".modal-body").html('<iframe src="' + poll_url + '" style="width:' + window.getWidth() * 0.8 + 'px; height:' + window.getHeight() * 0.8 + 'px; border:none"></iframe>');
-        setTimeout(function () {
-            $('#em-modal-form').modal({backdrop: true, keyboard: true}, 'toggle');
-        }, 1000);
+        if ($poll_url !== "") {
+            jQuery(".modal-body").html('<iframe src="' + poll_url + '" style="width:' + window.getWidth() * 0.8 + 'px; height:' + window.getHeight() * 0.8 + 'px; border:none"></iframe>');
+            setTimeout(function () {
+                jQuery('#em-modal-form').modal({backdrop: true, keyboard: true}, 'toggle');
+            }, 1000);
+        }
     </script>
 
 <?php endif; ?>
@@ -210,7 +212,7 @@ endif; ?>
     }
 </script>
 <script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
+    jQuery(function () {
+        jQuery('[data-toggle="tooltip"]').tooltip()
     })
 </script>
