@@ -1,7 +1,7 @@
 
 CREATE TABLE `jos_emundus_hikashop` (
   `id` int(11) NOT NULL,
-  `date_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `date_time` timestamp DEFAULT CURRENT_TIMESTAMP,
   `user` int(11) DEFAULT NULL,
   `fnum` varchar(255) DEFAULT NULL,
   `campaign_id` int(11) DEFAULT NULL,
