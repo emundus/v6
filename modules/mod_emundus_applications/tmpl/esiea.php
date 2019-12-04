@@ -42,9 +42,9 @@ echo $description;
                }
 
             if(!empty($m_profile->getProfileByFnum($application->fnum))) {
-                $confirm_form_url = $m_checklist->getConfirmUrl($m_profile->getProfileByFnum($application->fnum)).'&usekey=fnum&rowid='.$user->fnum;
+                $confirm_url = $m_checklist->getConfirmUrl($m_profile->getProfileByFnum($application->fnum)).'&usekey=fnum&rowid='.$user->fnum;
             } else {
-                $confirm_form_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url[$application->fnum]['link']);
+                $confirm_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url[$application->fnum]['link']);
             }
             ?>
             <div class="row" id="row<?= $application->fnum; ?>">
@@ -64,7 +64,7 @@ echo $description;
 
                     <?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
 
-                        <a id='send' class="btn btn-xs" href="<?= JRoute::_(JURI::base() . $confirm_form_url); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
+                        <a id='send' class="btn btn-xs" href="<?= JRoute::_(JURI::base() . $confirm_url); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
 
                     <?php endif; ?>
 

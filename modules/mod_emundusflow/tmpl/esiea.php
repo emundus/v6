@@ -42,13 +42,14 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
                 <div class="description"><?php echo JText::sprintf('FORM_FILLED', $forms); ?></div>
             </div>
         </div>
+        <?php if($show_document_step == 1){ ?>
         <div class="<?php echo ($view=="checklist")?"active":""; ?> <?php echo $step_attachment; ?> step">
             <i class="large attach outline icon"></i>
             <div class="content">
                 <div class="description"><?php echo JText::sprintf('ATTACHMENT_SENT', $attachments); ?></div>
             </div>
         </div>
-
+        <?php } ?>
         <?php if ($application_fee == 1) { ?>
             <div class="<?php echo ($option=="com_hikashop")?"active":""; ?> <?php echo $step_paiement; ?> step">
                 <?php if ($paid == 0 && !empty($sentOrder) && !$orderCancelled): ?>

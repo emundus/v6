@@ -18,7 +18,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class PlgHikashopEmundus_hikashop extends JPlugin
 {
-    public function onAfterOrderUpdate(&$order){
+    public function onAfterOrderCreate(&$order){
 
         // We get the emundus payment type from the config
         $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -65,7 +65,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin
                     ->clear()
                     ->select('*')
                     ->from($db->quoteName('#__emundus_hikashop'))
-                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('campaign_id') . ' = ' . $cid);
+                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR (' . $db->quoteName('campaign_id') . ' = ' . $cid . ' AND ' . $db->quoteName('user_id') . ' = ' . $user .' ) ');
             break;
 
             case 'fnum':
@@ -105,7 +105,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin
             else {
 
                 $fields = array(
-                    $db->quoteName('order_status') . ' = ' . $db->quote($order->order_status)
+                    $db->quoteName('order_id') . ' = ' . $db->quote($order_id)
                 );
 
                 $update_conditions = array(
@@ -115,7 +115,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin
                 // Prepare the insert query.
                 $query
                     ->clear()
-                    ->update($db->quoteName('#__hikashop_order'))
+                    ->update($db->quoteName('#__emundus_hikashop'))
                     ->set($fields)
                     ->where($update_conditions);
 
@@ -133,5 +133,9 @@ class PlgHikashopEmundus_hikashop extends JPlugin
         } catch (Exception $exception) {
             return false;
         }
+    }
+
+    public function onAfterOrderUpdate(&$order){
+        $this->onAfterOrderCreate($order);
     }
 }
