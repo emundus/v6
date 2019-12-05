@@ -452,10 +452,10 @@ function openFiles(fnum) {
 
 }
 
-function getApplicationMenu() {
+    function getApplicationMenu() {
     $.ajax({
         type:'get',
-        url:'index.php?option=com_emundus&controller=application&task=getactionmenu&Itemid='.itemId,
+        url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&Itemid='.itemId,
         dataType:'json',
         success: function(result) {
             var menuList = '';

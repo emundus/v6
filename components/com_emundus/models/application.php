@@ -2140,7 +2140,7 @@ class EmundusModelApplication extends JModelList {
         return $results;
     }
 
-    public function getActionMenu() {
+    public function getApplicationMenu() {
         $juser = JFactory::getUser();
 
         try {
@@ -2187,7 +2187,7 @@ class EmundusModelApplication extends JModelList {
 
             $query = "SELECT eu.*, sa.value FROM #__emundus_uploads as eu
                         LEFT JOIN #__emundus_setup_attachments as sa on sa.id = eu.attachment_id
-                        WHERE fnum like ".$this->_db->quote($fnum);
+                        WHERE fnum like ".$this->_db->quote($fnum). " ORDER BY sa.category ASC, eu.timedate DESC";
 
             if (isset($attachment_id) && !empty($attachment_id) && $attachment_id[0] != "" ){
                 if (is_array($attachment_id)) {
