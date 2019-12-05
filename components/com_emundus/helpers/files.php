@@ -585,6 +585,10 @@ class EmundusHelperFiles
                     INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
             $where = 'WHERE tab.published = 1 AND groupe.published = 1 ';
 
+            if (is_array($plist) && count($plist) > 0) {
+                $where .= ' AND p.id IN (' . implode(',', $plist) . ') ';
+            }
+
             if (count($fabrik_elements) > 0 ) {
 
                 $where .= ' AND element.id IN (' . implode(',', $fabrik_elements) . ') ';
