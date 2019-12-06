@@ -3651,6 +3651,63 @@ $(document).ready(function() {
                 $('#em-modal-actions').modal({backdrop:false, keyboard:true},'toggle');
                 break;
 
+            // export to an external application
+            case 33 :
+                $('#can-val').empty();
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
+                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                $('#can-val').show();
+
+                $('.modal-body').append(
+                    '<div>' +
+                    '<img src="'+loadingLine+'" alt="loading"/>' +
+                    '</div>');
+                $('.modal-body').empty();
+
+                var regex = /type=\w+/gi;
+
+                var exportType = url.match(regex)[0].split('=')[1];
+
+                $('.modal-body').attr('data-export-type', exportType);
+
+                $('.modal-body').append('<div class="">' +
+                    '<select id="change-status-dd">' +
+                    '<option value="">' + Joomla.JText._('PLEASE_SELECT')+'</option>' +
+                    '<option value="1">' + Joomla.JText._('JNO')+'</option>' +
+                    '<option value="2">' + Joomla.JText._('JYES')+'</option>' +
+                    '</select></div>');
+
+                $.ajax({
+                    type:'get',
+                    url: 'index.php?option=com_emundus&controller=files&task=getstate',
+                    dataType:'json',
+                    success: function(result) {
+
+                        var status = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
+
+                        for (var i in result.states) {
+                            if (isNaN(parseInt(i)))
+                                break;
+                            status += '<option value="'+result.states[i].step+'" >'+result.states[i].value+'</option>';
+                        }
+                        status += '</select></div>';
+                        $('.modal-body').append(status);
+                        $("#em-action-state").hide();
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+
+                $('#change-status-dd').on('change', function(){
+                    if($(this).val() <=1) {
+                        $("#em-action-state").hide();
+                    }
+                    else {
+                        $("#em-action-state").show();
+                    }
+                });
+                break;
 
             // Mail applicants
             case 9:
@@ -4889,6 +4946,55 @@ $(document).ready(function() {
 
                         $('#em-modal-actions').modal('hide');
 
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+                break;
+
+            // Export to external app
+            case 33:
+                var type = $('.modal-body').attr('data-export-type');
+
+                $('.modal-body').empty();
+                $('.modal-body').append('<div>' +
+                    '<img src="'+loadingLine+'" alt="loading"/>' +
+                    '</div>');
+                url = 'index.php?option=com_emundus&controller=files&task=exportfile';
+                $.ajax({
+                    type:'POST',
+                    url:url,
+                    dataType:'json',
+                    data:({fnums:checkInput, type: type}),
+                    success: function(result) {
+
+                        $('.modal-footer').hide();
+                        if (result.status) {
+                            $('.modal-body').empty();
+                            Swal.fire({
+                                position: 'center',
+                                type: 'success',
+                                title: result.msg,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            $('.modal-body').empty();
+                            Swal.fire({
+                                position: 'center',
+                                type: 'warning',
+                                title: result.msg
+                            });
+                        }
+
+
+                        $('#em-modal-actions').modal('hide');
+
+                        reloadData();
+                        reloadActions($('#view').val(), undefined, false);
+                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                        $('body').removeClass('modal-open');
                     },
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);

@@ -3776,4 +3776,21 @@ class EmundusControllerFiles extends JControllerLegacy
         return $fabrikValues;
     }
 
+    public function exportfile() {
+
+        $jinput = JFactory::getApplication()->input;
+        $fnums = $jinput->post->getString('fnums', "");
+        $type = $jinput->post->getString('type', "");
+
+        $fnums = (array) json_decode(stripslashes($fnums));
+
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher = JEventDispatcher::getInstance();
+        $dispatcher->trigger('onExportFiles', array($fnums, $type));
+
+    }
 }
+
+
+
+
