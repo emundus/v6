@@ -453,9 +453,9 @@ class EmundusModelFiles extends JModelLegacy
      * @return array
      */
     private function _buildWhere($tableAlias = array()) {
-        $session    = JFactory::getSession();
-        $params     = $session->get('filt_params'); // came from search box
-        $filt_menu  = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
+        $session = JFactory::getSession();
+        $params = $session->get('filt_params'); // came from search box
+        $filt_menu = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
 
         $db = JFactory::getDBO();
 
@@ -473,11 +473,25 @@ class EmundusModelFiles extends JModelLegacy
                             foreach ($value as $k => $v) {
                                 $tab = explode('.', $k);
 
+                                if (isset($v['select'])) {
+                                	$adv_select = $v['select'];
+                                }
+
+                                if (isset($v['value'])) {
+	                                $v = $v['value'];
+                                }
+
                                 if (count($tab)>1 && !empty($v)) {
 
                                     if ($tab[0] == 'jos_emundus_training') {
-                                        $query['q'] .= ' AND ';
-                                        $query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
+
+                                    	// Do not do LIKE %% search on elements that come from a <select>, we should get the exact value.
+                                    	if (isset($adv_select) && $adv_select) {
+		                                    $query['q'] .= ' AND search_'.$tab[0].'.id like "'.$v.'"';
+	                                    } else {
+		                                    $query['q'] .= ' AND search_'.$tab[0].'.id like "%'.$v.'%"';
+	                                    }
+
                                     } else {
                                         $query['q'] .= ' AND ';
                                         // Check if it is a join table
@@ -489,7 +503,12 @@ class EmundusModelFiles extends JModelLegacy
                                             $table = $join_from_table;
                                             $table_join = $tab[0];
 
-                                            $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
+	                                        // Do not do LIKE %% search on elements that come from a <select>, we should get the exact value.
+	                                        if (isset($adv_select) && $adv_select) {
+		                                        $query['q'] .= $table_join.'.'.$tab[1].' like "' . $v . '"';
+	                                        } else {
+		                                        $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
+	                                        }
 
                                             if (!isset($query[$table])) {
                                                 $query[$table] = true;
@@ -501,8 +520,6 @@ class EmundusModelFiles extends JModelLegacy
                                             if (!isset($query[$table_join])) {
                                                 $query[$table_join] = true;
                                                 try {
-                                                    $db->setQuery('SELECT parent_id FROM '.$table_join);
-                                                    $col_exists = $db->loadResult();
 
                                                     if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias)) {
                                                         $query['join'] .= ' left join '.$table_join.' on ' .$table.'.id='.$table_join.'.parent_id';
@@ -520,7 +537,7 @@ class EmundusModelFiles extends JModelLegacy
                                         	$sql = 'SELECT plugin FROM #__fabrik_elements WHERE name like '.$db->Quote($tab[1]);
                                             $db->setQuery($sql);
                                             $res = $db->loadResult();
-                                            if ($res == "radiobutton" || $res == "dropdown" || $res == "databasejoin") {
+                                            if ($res == "radiobutton" || $res == "dropdown" || $res == "databasejoin" || (isset($adv_select) && $adv_select)) {
                                                 $query['q'] .= $tab[0].'.'.$tab[1].' like "' . $v . '"';
                                             } else {
                                                 $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
@@ -534,9 +551,7 @@ class EmundusModelFiles extends JModelLegacy
                                             }
                                         }
                                     }
-
                                 }
-
                             }
                         }
                         break;
@@ -547,7 +562,7 @@ class EmundusModelFiles extends JModelLegacy
                                 if (!empty($v)) {
                                     $tab = explode('.', $k);
                                     if (count($tab) > 1) {
-                                        if ($tab[0]=='jos_emundus_training') {
+                                        if ($tab[0] == 'jos_emundus_training') {
                                             $query['q'] .= ' AND ';
                                             $query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
                                         } else {
@@ -756,6 +771,8 @@ class EmundusModelFiles extends JModelLegacy
                         } else {
                             $query['q'] .= ' and jos_emundus_campaign_candidature.published=1 ';
                         }
+                        break;
+                    default:
                         break;
                 }
             }

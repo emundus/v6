@@ -1556,7 +1556,12 @@ class EmundusHelperFiles
                 $i = 1;
                 $selected_adv = "";
                 foreach ($search as $key => $val) {
-                    $adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding">
+
+                	if (isset($val['value'])) {
+                		$val = $val['value'];
+	                }
+
+                	$adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding">
 										<select class="chzn-select em-filt-select" id="elements" name="elements">
                                             <option value="">'.JText::_('PLEASE_SELECT').'</option>';
                     $menu = "";

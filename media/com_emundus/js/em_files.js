@@ -68,7 +68,8 @@ function search() {
         inputs.push({
             name: $(this).attr('name'),
             value: $(this).val(),
-            adv_fil: true
+            adv_fil: true,
+            select: this.nodeName.toLowerCase() === 'select'
         });
     });
 
@@ -837,22 +838,24 @@ $(document).ready(function() {
             var id = $(this).attr('id');
 
             if (id != 'elements') {
-                if ($('#' + id).attr('multiple') != undefined)
+                if (typeof $('#' + id).attr('multiple') !== 'undefined') {
                     var multi = true;
-                else
+                } else {
                     var multi = false;
+                }
 
                 var test = id.split('-');
                 test.pop();
-                if (test.join('-') == 'em-adv-fil')
+                if (test.join('-') == 'em-adv-fil') {
                     var elements_son = true;
-                else
+                } else {
                     var elements_son = false;
+                }
 
                 if (multi) {
                     var value = $('#' + id).val();
-                    if (value != null && value.length > 1 && value[0] == '%') {
-                        if ((lastVal.hasOwnProperty(id) && lastVal[id][0] != '%')) {
+                    if (value != null && value.length > 1 && value[0] === '%') {
+                        if ((lastVal.hasOwnProperty(id) && lastVal[id][0] !== '%')) {
                             $('#' + id + ' option:selected').removeAttr('selected');
                             $('#' + id + ' option')[0].selected = true;
                             $('.chzn-select').trigger('chosen:updated');
@@ -864,10 +867,11 @@ $(document).ready(function() {
                         lastVal[id] = $('#' + id).val();
                     }
                 }
-                if ($('#select_multiple_programmes').val() != null || $('#select_multiple_campaigns').val() != null)
+                if ($('#select_multiple_programmes').val() != null || $('#select_multiple_campaigns').val() != null) {
                     $('#em_adv_filters').show();
-                else
+                } else {
                     $('#em_adv_filters').hide();
+                }
 
                 search();
             } else {
@@ -1280,16 +1284,6 @@ $(document).ready(function() {
 
     $(document).on('keyup', 'input:text', function(e) {
         if (e.keyCode == 13) {
-            var id = $(this).attr('id');
-            if (id != 'undefined') {
-                var test = id.split('-');
-                test.pop();
-                if (test.join('-') == 'em-adv-fil') {
-                    var elements_son = true;
-                } else {
-                    var elements_son = false;
-                }
-            }
             search();
         }
     });
