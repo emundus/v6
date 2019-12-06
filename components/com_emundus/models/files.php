@@ -161,6 +161,7 @@ class EmundusModelFiles extends JModelLegacy
                 elseif ($def_elmt->element_plugin == 'databasejoin') {
                     $attribs = json_decode($def_elmt->element_attribs);
                     $join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat);
+	                $join_val_column_concat = str_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $join_val_column_concat);
                     $column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
                     //$column = (!empty($attribs->join_val_column_concat) && $attribs->join_val_column_concat!='')?'CONCAT('.$attribs->join_val_column_concat.')':$attribs->join_val_column;
 
@@ -206,6 +207,7 @@ class EmundusModelFiles extends JModelLegacy
                     $query = "(SELECT ".$select." FROM ".$from." WHERE ".$where.") AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
                     $query = preg_replace('#{thistable}#', $from, $query);
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
+	                $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
                 }
                 elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
