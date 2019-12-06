@@ -140,7 +140,7 @@ class EmundusModelApplication extends JModelList {
 				            AND (esa.value like "%'. $search .'%"
 				            OR esa.description like "%'. $search .'%"
 				            OR eu.timedate like "%'. $search .'%")
-				            ORDER BY esa.category ASC, eu.timedate DESC';
+				            ORDER BY esa.value DESC';
             } else {
                 $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
 			                FROM #__emundus_uploads AS eu
@@ -148,7 +148,7 @@ class EmundusModelApplication extends JModelList {
 			                LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
 			                WHERE eu.fnum like ' . $this->_db->Quote($fnum) . ' 
 			                AND (eu.attachment_id != ' . $expert_document_id . ') 
-			                ORDER BY esa.category ASC, eu.timedate DESC';
+			                ORDER BY esa.value ASC';
             }
         } else {
             if (isset($search) && !empty($search)) {
@@ -160,14 +160,14 @@ class EmundusModelApplication extends JModelList {
                 AND (esa.value like "%'. $search .'%"
                 OR esa.description like "%'. $search .'%"
                 OR eu.timedate like "%'. $search .'%")
-                ORDER BY esa.category ASC, eu.timedate DESC';
+                ORDER BY esa.value ASC';
             } else {
                 $query = 'SELECT eu.id AS aid, esa.*, eu.attachment_id, eu.filename, eu.description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, esc.label as campaign_label, esc.year, esc.training
                 FROM #__emundus_uploads AS eu
                 LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
                 LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
                 WHERE eu.fnum like ' . $this->_db->Quote($fnum) . '
-                ORDER BY esa.category ASC, eu.timedate DESC';
+                ORDER BY sa.value ASC';
             }
         }
 
@@ -2187,7 +2187,7 @@ class EmundusModelApplication extends JModelList {
 
             $query = "SELECT eu.*, sa.value FROM #__emundus_uploads as eu
                         LEFT JOIN #__emundus_setup_attachments as sa on sa.id = eu.attachment_id
-                        WHERE fnum like ".$this->_db->quote($fnum). " ORDER BY sa.category ASC, eu.timedate DESC";
+                        WHERE fnum like ".$this->_db->quote($fnum)
 
             if (isset($attachment_id) && !empty($attachment_id) && $attachment_id[0] != "" ){
                 if (is_array($attachment_id)) {
@@ -2201,6 +2201,7 @@ class EmundusModelApplication extends JModelList {
 	            $query .= " AND id in ($ids)";
             }
 
+            $query .= " ORDER BY sa.value DESC";
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();
         } catch(Exception $e) {
