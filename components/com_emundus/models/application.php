@@ -541,7 +541,8 @@ class EmundusModelApplication extends JModelList {
         for ($i = 0; $i < sizeof($table); $i++) {
             $form .= '<br><hr><div class="TitleAdmission"><h3>';
 
-            $form .= JText::_($table[$i]->label);
+	        $title = explode('-', $table[$i]->label);
+            $form .= !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
 
             $form .= '</h3>';
             if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $table[$i]->db_table_name != "#__emundus_training") {
