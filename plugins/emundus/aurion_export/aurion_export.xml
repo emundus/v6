@@ -12,12 +12,13 @@
 	<files>
 		<filename plugin="aurion_export">aurion_export.php</filename>
 	</files>
+	<folder>language</folder>
 	<config>
 		<fields name="params">
 			<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" name="basic">
-				<field name="em_groups" value="" type="usergroup" label="COM_EMUNDUS_USER_GROUPS" description="COM_EMUNDUS_USER_GROUPS_DESC"/>
-			</fieldset>
-			<fieldset name="basic">
+				<field name="url" type="text" description="PLG_CRON_AURION_URL_DESC" label="PLG_CRON_AURION_URL_LABEL" size="30" />
+				<field name="login" type="text" label="PLG_CRON_AURION_LOGIN_LABEL" size="30" />
+				<field name="password" type="text" label="PLG_CRON_AURION_PASS_LABEL" size="30" />
 			</fieldset>
 		</fields>
 	</config>
