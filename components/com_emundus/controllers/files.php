@@ -1722,6 +1722,39 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $fnumsInfo = $m_files->getFnumsInfos($validFnums);
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        // Generate filename from emundus config ONLY if one file is selected
+        //
+        if (count($validFnums) == 1) {
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
+
+            if ($application_form_name != "application_form_pdf") {
+
+                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+                $m_emails = new EmundusModelEmails;
+                
+                $fnum = $validFnums[0];
+                $post = array(
+                        'FNUM' => $fnum,
+                        'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
+                    );
+                $tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post);
+                
+                // Format filename
+                $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
+                $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum)); 
+                $application_form_name = $m_emails->stripAccents($application_form_name);
+                $application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
+                $application_form_name = preg_replace('/\s/', '', $application_form_name);
+                $application_form_name = strtolower($application_form_name);
+
+                $file = $application_form_name.'.pdf';
+            }
+        }
+        ////////////////////////////////////////////////////////////
+
         if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $file)) {
 	        $files_list = array(JPATH_BASE.DS.'tmp'.DS.$file);
         } else {
@@ -2545,7 +2578,10 @@ class EmundusControllerFiles extends JControllerLegacy
                 $dossier = EMUNDUS_PATH_ABS.$users[$fnum]->id.DS;
 
                 /// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
-                $post = array('FNUM' => $fnum);
+                $post = array(
+                        'FNUM' => $fnum,
+                        'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
+                    );
                 $tags = $m_emails->setTags($users[$fnum]->id, $post);
                 $application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
                 $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
