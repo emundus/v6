@@ -97,8 +97,8 @@ this.iScroll.prototype = {
 		if (e.targetTouches.length != 1) {
 			return false;
         }
-
-		e.preventDefault();
+        
+		/*e.preventDefault();*/ // removed in iscroll-android.js
 		e.stopPropagation();
 
 		this.element.style.webkitTransitionDuration = '0';
@@ -170,7 +170,7 @@ this.iScroll.prototype = {
 
 		if (!this.moved) {
 			var theEvent = document.createEvent('MouseEvents');
-			theEvent.initMouseEvent("click", true, true, document.defaultView, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, null);
+			theEvent.initMouseEvent("click", true, true, document.defaultView, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, null);
 			e.changedTouches[0].target.dispatchEvent(theEvent);
 			return false;
 		}

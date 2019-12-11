@@ -89,7 +89,8 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 
 		// FEF Renderer options. Used to load the common CSS file.
 		$this->container->renderer->setOptions([
-			'custom_css' => 'admin://components/com_admintools/media/css/backend.min.css'
+			'custom_css' => 'admin://components/com_admintools/media/css/backend.min.css',
+			'fef_dark'   => $this->container->params->get('dark_mode', -1),
 		]);
 
 	    // Load the version file

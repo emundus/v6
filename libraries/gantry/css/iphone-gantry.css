@@ -1,5 +1,5 @@
 /**
- * @version   4.1.41 May 26, 2019
+ * @version   4.1.42 September 20, 2019
  * @author    RocketTheme http://www.rockettheme.com
  * @copyright Copyright (C) 2007 - 2019 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
@@ -57,7 +57,7 @@ body #rt-menu .rt-container {background: transparent;height:auto;overflow:hidden
 #rt-menu , #rt-menu .rt-container {position:relative;z-index:10000;}
 body.rt-normal #rt-menu .rt-container, body.rt-flipped #rt-menu .rt-container {width: 320px;}
 body.rt-right #rt-menu .rt-container, body.rt-left #rt-menu .rt-container {width: 480px;}
-#rt-menu ul.menu {height:100%;}
+#rt-menu ul.menu {height:100%;touch-action: none;}
 #rt-menu ul.menu li a:hover, #rt-menu ul.menu li.active a:hover {background: transparent !important;}
 body #rt-menu {background: url(../images/iphone/menu-bg.png) repeat-x !important;height: auto;}
 body #rt-menu ul.menu li a {color: #aaa;font-size: 0.9em;line-height:2.2em !important;padding: 0 10px;text-shadow: 1px 1px 1px #fff;}

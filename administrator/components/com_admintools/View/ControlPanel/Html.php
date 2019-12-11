@@ -266,8 +266,8 @@ class Html extends BaseView
 		// Is this a very old version? If it's older than 180 days let's warn the user
 		$this->oldVersion = false;
 
-		$relDate          = new Date(ADMINTOOLS_DATE, 'UTC');
-		$interval         = time() - $relDate->toUnix();
+		$relDate  = new Date(ADMINTOOLS_DATE, 'UTC');
+		$interval = time() - $relDate->toUnix();
 
 		if ($interval > (60 * 60 * 24 * 180))
 		{
@@ -278,21 +278,21 @@ class Html extends BaseView
 		$dbType = $this->container->db->name;
 
 		// Pass properties to the view
-		$this->isMySQL               = strpos($dbType, 'mysql') !== false;
-		$this->adminLocked           = $adminPasswordModel->isLocked();
-		$this->hasValidPassword      = $masterPasswordModel->hasValidPassword();
-		$this->enable_cleantmp       = $masterPasswordModel->accessAllowed('CleanTempDirectory');
-		$this->enable_tmplogcheck    = $masterPasswordModel->accessAllowed('CheckTempAndLogDirectories');
-		$this->enable_fixperms       = $masterPasswordModel->accessAllowed('FixPermissions');
-		$this->enable_purgesessions  = $masterPasswordModel->accessAllowed('purgesessions');
-		$this->enable_dbtools        = $masterPasswordModel->accessAllowed('DatabaseTools');
-		$this->enable_dbchcol        = $masterPasswordModel->accessAllowed('ChangeDBCollation');
-		$this->pluginid              = $controlPanelModel->getPluginID();
+		$this->isMySQL              = strpos($dbType, 'mysql') !== false;
+		$this->adminLocked          = $adminPasswordModel->isLocked();
+		$this->hasValidPassword     = $masterPasswordModel->hasValidPassword();
+		$this->enable_cleantmp      = $masterPasswordModel->accessAllowed('CleanTempDirectory');
+		$this->enable_tmplogcheck   = $masterPasswordModel->accessAllowed('CheckTempAndLogDirectories');
+		$this->enable_fixperms      = $masterPasswordModel->accessAllowed('FixPermissions');
+		$this->enable_purgesessions = $masterPasswordModel->accessAllowed('purgesessions');
+		$this->enable_dbtools       = $masterPasswordModel->accessAllowed('DatabaseTools');
+		$this->enable_dbchcol       = $masterPasswordModel->accessAllowed('ChangeDBCollation');
+		$this->pluginid             = $controlPanelModel->getPluginID();
 
 		if (defined('ADMINTOOLS_PRO') && ADMINTOOLS_PRO)
 		{
-			$this->hasplugin             = $geoBlockModel->hasGeoIPPlugin();
-			$this->pluginNeedsUpdate     = $geoBlockModel->dbNeedsUpdate();
+			$this->hasplugin         = $geoBlockModel->hasGeoIPPlugin();
+			$this->pluginNeedsUpdate = $geoBlockModel->dbNeedsUpdate();
 		}
 
 		$this->htMakerSupported      = ServerTechnology::isHtaccessSupported();
@@ -309,9 +309,9 @@ class Html extends BaseView
 		// Pro version secret word setup
 		if (defined('ADMINTOOLS_PRO') && ADMINTOOLS_PRO)
 		{
+			$this->jwarnings               = $controlPanelModel->checkJoomlaConfiguration();
 			$this->frontEndSecretWordIssue = $controlPanelModel->getFrontendSecretWordError();
 			$this->newSecretWord           = $this->container->platform->getSessionVar('newSecretWord', null, 'admintools.cpanel');
-			$this->jwarnings               = $controlPanelModel->checkJoomlaConfiguration();
 		}
 
 		$this->addJavascriptFile('admin://components/com_admintools/media/js/Modal.min.js');

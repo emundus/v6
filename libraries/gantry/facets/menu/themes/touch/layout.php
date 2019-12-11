@@ -21,7 +21,7 @@ if (!defined('modRokNavMenuShowItems')) {
 		<?php if (count($item->_children) > 0 && $item->parent != 1): ?>
 			<small class="menucount"><?php echo count($item->_children); ?></small>
 			<?php endif; ?>
-		<a <?php if ($item->hasLinkClasses()): ?>class="<?php echo $item->getLinkClasses();?>"<?php endif;?> <?php if ($item->hasLink()): ?>href="<?php echo $item->getLink();?>"<?php endif;?> <?php if (isset($item->nav)): ?>target="<?php echo $item->nav;?>"<?php endif;?> <?php if (isset($item->onclick)): ?>onclick="<?php echo $item->onclick;?>"<?php endif;?><?php if ($item->hasLinkAttribs()): ?> <?php echo $item->getLinkAttribs(); ?><?php endif;?>>
+		<a <?php if ($item->hasLinkClasses()): ?>class="<?php echo $item->getLinkClasses();?>"<?php endif;?> <?php if ($item->hasLink()): ?>href="<?php echo $item->getLink();?>"<?php endif;?> <?php if (isset($item->onclick)): ?>onclick="<?php echo $item->onclick;?>"<?php endif;?><?php if ($item->hasLinkAttribs()): ?> <?php echo $item->getLinkAttribs(); ?><?php endif;?>>
 			<?php if (isset($item->image)): ?><img alt="<?php echo $item->alias;?>" src="<?php echo $item->image;?>"/><?php endif; ?>
 			<span <?php if ($item->hasSpanClasses()): ?>class="<?php echo $item->getSpanClasses();?>"<?php endif; ?>><?php echo $item->title;?></span>
 		</a>
@@ -51,7 +51,7 @@ if (!defined('modRokNavMenuShowItems')) {
 				<?php if (count($item->_children) > 0 && (!$item->parent && $item->parent != 1)): ?>
 					<small class="menucount"><?php echo count($item->_children); ?></small>
 					<?php endif; ?>
-				<a <?php if ($item->hasLinkClasses()): ?>class="<?php echo $item->getLinkClasses();?>"<?php endif;?> <?php if ($item->hasLink()): ?>href="<?php echo $item->getLink();?>"<?php endif;?> <?php if (isset($item->nav)): ?>target="<?php echo $item->nav;?>"<?php endif;?> <?php if (isset($item->onclick)): ?>onclick="<?php echo $item->onclick;?>"<?php endif;?><?php if ($item->hasLinkAttribs()): ?> <?php echo $item->getLinkAttribs(); ?><?php endif;?>>
+				<a <?php if ($item->hasLinkClasses()): ?>class="<?php echo $item->getLinkClasses();?>"<?php endif;?> <?php if ($item->hasLink()): ?>href="<?php echo $item->getLink();?>"<?php endif;?> <?php if (isset($item->onclick)): ?>onclick="<?php echo $item->onclick;?>"<?php endif;?><?php if ($item->hasLinkAttribs()): ?> <?php echo $item->getLinkAttribs(); ?><?php endif;?>>
 					<?php if (isset($item->image)): ?><img alt="<?php echo $item->alias;?>" src="<?php echo $item->image;?>"/><?php endif; ?>
 					<span <?php if ($item->hasSpanClasses()): ?>class="<?php echo $item->getSpanClasses();?>"<?php endif; ?>><?php echo $item->title;?></span>
 				</a>

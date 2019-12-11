@@ -131,7 +131,6 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_admintools/Controller/Scan.php',
 			'administrator/components/com_admintools/Controller/ScanAlert.php',
 			'administrator/components/com_admintools/Controller/ScanAlerts.php',
-			'administrator/components/com_admintools/Controller/Scanner.php',
 			'administrator/components/com_admintools/Controller/Scans.php',
 			'administrator/components/com_admintools/Controller/SchedulingInformation.php',
 			'administrator/components/com_admintools/Controller/SecurityException.php',
@@ -158,7 +157,6 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_admintools/Model/NginXConfMaker.php',
 			'administrator/components/com_admintools/Model/QuickStart.php',
 			'administrator/components/com_admintools/Model/ScanAlerts.php',
-			'administrator/components/com_admintools/Model/Scanner.php',
 			'administrator/components/com_admintools/Model/Scans.php',
 			'administrator/components/com_admintools/Model/SchedulingInformation.php',
 			'administrator/components/com_admintools/Model/SecurityExceptions.php',
@@ -177,11 +175,9 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			// CLI common files
 			'administrator/components/com_admintools/assets/cli',
 
-			// File Change Scanner files
-			'administrator/components/com_admintools/engine',
-			'administrator/components/com_admintools/platform',
-
 			// Pro features
+			'administrator/components/com_admintools/Model/Scanner',
+
 			'administrator/components/com_admintools/View/AutoBannedAddresses',
 			'administrator/components/com_admintools/View/BadWords',
 			'administrator/components/com_admintools/View/BlacklistedAddresses',
@@ -194,7 +190,6 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_admintools/View/NginXConfMaker',
 			'administrator/components/com_admintools/View/QuickStart',
 			'administrator/components/com_admintools/View/ScanAlerts',
-			'administrator/components/com_admintools/View/Scanner',
 			'administrator/components/com_admintools/View/Scans',
 			'administrator/components/com_admintools/View/SchedulingInformation',
 			'administrator/components/com_admintools/View/SecurityExceptions',
@@ -253,9 +248,6 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			// ...because some people have never updated to 3.6, apparently?!
 			'plugins/system/admintools/feature/blockinstall.php',
 
-			// Obsolete engine files
-			'administrator/components/com_admintools/engine/Base/Object.php',
-
 			// Moving to FEF
 			'administrator/components/com_admintools/Helper/Coloriser.php',
 			'administrator/components/com_admintools/View/ScanAlerts/tmpl/form.default.xml',
@@ -304,53 +296,12 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_admintools/Platform/Filescan/Archiver/jfscan.ini',
 			'administrator/components/com_admintools/Platform/Filescan/Config/config.ini',
 
-			// Migration of Akeeba Engine to JSON format
-			"administrator/components/com_admintools/engine/Dump/native.ini",
-			"administrator/components/com_admintools/engine/Dump/reverse.ini",
-			"administrator/components/com_admintools/engine/Postproc/none.ini",
-			"administrator/components/com_admintools/engine/Postproc/webdav.ini",
-			"administrator/components/com_admintools/engine/Postproc/sugarsync.ini",
-			"administrator/components/com_admintools/engine/Postproc/email.ini",
-			"administrator/components/com_admintools/engine/Postproc/box.ini",
-			"administrator/components/com_admintools/engine/Postproc/dropbox2.ini",
-			"administrator/components/com_admintools/engine/Postproc/ovh.ini",
-			"administrator/components/com_admintools/engine/Postproc/cloudme.ini",
-			"administrator/components/com_admintools/engine/Postproc/idrivesync.ini",
-			"administrator/components/com_admintools/engine/Postproc/ftpcurl.ini",
-			"administrator/components/com_admintools/engine/Postproc/dreamobjects.ini",
-			"administrator/components/com_admintools/engine/Postproc/azure.ini",
-			"administrator/components/com_admintools/engine/Postproc/sftp.ini",
-			"administrator/components/com_admintools/engine/Postproc/amazons3.ini",
-			"administrator/components/com_admintools/engine/Postproc/cloudfiles.ini",
-			"administrator/components/com_admintools/engine/Postproc/googlestorage.ini",
-			"administrator/components/com_admintools/engine/Postproc/googlestoragejson.ini",
-			"administrator/components/com_admintools/engine/Postproc/swift.ini",
-			"administrator/components/com_admintools/engine/Postproc/sftpcurl.ini",
-			"administrator/components/com_admintools/engine/Postproc/onedrive.ini",
-			"administrator/components/com_admintools/engine/Postproc/googledrive.ini",
-			"administrator/components/com_admintools/engine/Postproc/backblaze.ini",
-			"administrator/components/com_admintools/engine/Postproc/ftp.ini",
-			"administrator/components/com_admintools/engine/Archiver/zipnative.ini",
-			"administrator/components/com_admintools/engine/Archiver/directftp.ini",
-			"administrator/components/com_admintools/engine/Archiver/directsftpcurl.ini",
-			"administrator/components/com_admintools/engine/Archiver/zip.ini",
-			"administrator/components/com_admintools/engine/Archiver/directftpcurl.ini",
-			"administrator/components/com_admintools/engine/Archiver/directsftp.ini",
-			"administrator/components/com_admintools/engine/Archiver/jps.ini",
-			"administrator/components/com_admintools/engine/Archiver/jpa.ini",
-			"administrator/components/com_admintools/engine/Scan/smart.ini",
-			"administrator/components/com_admintools/engine/Scan/large.ini",
-			"administrator/components/com_admintools/engine/Filter/Stack/dateconditional.ini",
-			"administrator/components/com_admintools/engine/Filter/Stack/errorlogs.ini",
-			"administrator/components/com_admintools/engine/Filter/Stack/hoststats.ini",
-			"administrator/components/com_admintools/engine/Core/04.quota.ini",
-			"administrator/components/com_admintools/engine/Core/02.advanced.ini",
-			"administrator/components/com_admintools/engine/Core/01.basic.ini",
-			"administrator/components/com_admintools/engine/Core/scripting.ini",
-			"administrator/components/com_admintools/engine/Core/05.tuning.ini",
-
 			// Obsolete eAccelerator warning
 			"administrator/components/com_admintools/View/eaccelerator.php",
+
+			// Refactored PHP File Change Scanner
+			'administrator/components/com_admintools/Controller/Scanner.php',
+			'administrator/components/com_admintools/Model/Scanner.php',
 		],
 		'folders' => [
 			// Obsolete folders from AT 1.x, 2.x and 3.x
@@ -378,6 +329,12 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 
 			// Common tables (they're installed by FOF)
 			'administrator/components/com_admintools/sql/common',
+
+			// Refactored PHP File Change Scanner
+			'administrator/components/com_admintools/engine',
+			'administrator/components/com_admintools/platform',
+			'administrator/components/com_admintools/View/Scanner',
+
 		],
 	];
 

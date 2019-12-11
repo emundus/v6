@@ -2,8 +2,8 @@
 <extension version="2.5" type="package" method="upgrade">
     <name>pkg_gantry</name>
     <packagename>gantry</packagename>
-    <version>4.1.41</version>
-    <creationDate>May 26, 2019</creationDate>
+    <version>4.1.42</version>
+    <creationDate>September 20, 2019</creationDate>
     <author>RocketTheme, LLC</author>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>
@@ -15,11 +15,11 @@
 
     <files folder="packages">
         <!-- Mandatory system plugin -->
-        <file type="plugin"    group="system"     id="gantry"              enabled="1">plg_system_gantry-4.1.41.zip</file>
+        <file type="plugin"    group="system"     id="gantry"              enabled="1">plg_system_gantry-4.1.42.zip</file>
         <!-- Gantry framework library -->
-        <file type="library"                      id="gantry"              enabled="1">lib_gantry-4.1.41.zip</file>
+        <file type="library"                      id="gantry"              enabled="1">lib_gantry-4.1.42.zip</file>
         <!-- Administration component -->
-        <file type="component"                    id="com_gantry"          enabled="1">com_gantry-4.1.41.zip</file>
+        <file type="component"                    id="com_gantry"          enabled="1">com_gantry-4.1.42.zip</file>
     </files>
 
     <languages folder="language">

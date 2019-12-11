@@ -100,7 +100,7 @@ if (version_compare(PHP_VERSION, '5.5.0', 'lt')):
 			<?php echo \JText::_('COM_ADMINTOOLS_MSG_CONTROLPANEL_MUSTENTERDLID'); ?>
 		</h3>
 		<p>
-			<?php echo JText::sprintf('COM_ADMINTOOLS_LBL_CONTROLPANEL_NEEDSDLID','https://www.akeebabackup.com/instructions/1436-admin-tools-download-id.html'); ?>
+			<?php echo JText::sprintf('COM_ADMINTOOLS_LBL_CONTROLPANEL_NEEDSDLID','https://www.akeebabackup.com/download/official/add-on-dlid.html'); ?>
 		</p>
 		<form name="dlidform" action="index.php" method="post" class="akeeba-form--inline">
 			<input type="hidden" name="option" value="com_admintools" />
