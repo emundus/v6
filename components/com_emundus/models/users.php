@@ -1735,7 +1735,7 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function getGroupsAcl($gid) {
-      if (!empty($gid) && count($gid) > 0) {
+      if (!empty($gid)) {
         try {
             if (is_array($gid)) {
                 $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d

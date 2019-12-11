@@ -21,8 +21,7 @@ jimport('joomla.application.component.view');
  * @since 1.6
  */
 
-class EmundusViewUsers extends JViewLegacy
-{
+class EmundusViewUsers extends JViewLegacy {
 	var $_user = null;
 	var $_db = null;
 
@@ -148,36 +147,31 @@ class EmundusViewUsers extends JViewLegacy
 		$this->assignRef('groups', $g);
 	}
 
-	private function _loadGroupRights()
-	{
+	private function _loadGroupRights() {
 		$m_users = new EmundusModelUsers();
 		$gid = JFactory::getApplication()->input->getInt('rowid', null);
 		$group = $m_users->getGroupProgs($gid);
 		$g[0]['label'] = $group[0]['group_label'];
 		$g[0]['progs'] = $m_users->getGroupProgs($gid);
 		$g[0]['acl'] = $m_users->getGroupsAcl($gid);
-//var_dump($g[0]['acl']);
 		$users = $m_users->getGroupUsers($gid);
 
 		$this->assignRef('groups', $g);
 		$this->assignRef('users', $users);
 	}
 
-    function display($tpl = null)
-    {
+    function display($tpl = null) {
 	    JHTML::script( 'media/com_emundus/js/em_user.js');
 	    JHtml::stylesheet( 'media/com_emundus/css/emundus_files.css');
 
-	    if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-	    {
+	    if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die("ACCESS_DENIED");
 		}
 
 
 
 		$layout = JFactory::getApplication()->input->getString('layout', null);
-		switch ($layout)
-		{
+		switch ($layout) {
 			case 'user':
 				$this->_loadData();
 				break;
@@ -197,6 +191,10 @@ class EmundusViewUsers extends JViewLegacy
 				$this->_loadRightsForm();
 				break;
 			case 'showgrouprights':
+				// We are running the group Sync code here, this makes sure that group rights are always present, no matter if groups are made in some other way.
+				require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'actions.php');
+				$m_actions = new EmundusModelActions;
+				$m_actions->syncAllActions(false);
 				$this->_loadGroupRights();
 				break;
 			default :
@@ -205,22 +203,14 @@ class EmundusViewUsers extends JViewLegacy
 			    $actions = $m_users->getActions("19,20,21,22,23,24,25,26");
 
 			    $acts = array('user' => array(), 'group' => array());
-			    if (!empty($actions))
-			    {
-				    foreach ($actions as $key => $action)
-				    {
-					    if (preg_match('/.*_user/', $action['name']) === 1 )
-					    {
+			    if (!empty($actions)) {
+				    foreach ($actions as $action) {
+					    if (preg_match('/.*_user/', $action['name']) === 1 ) {
 						    $acts['user'][] = $action;
-					    }
-					    elseif (preg_match('/.*_group/', $action['name']) === 1)
-					    {
+					    } elseif (preg_match('/.*_group/', $action['name']) === 1) {
 						    $acts['group'][] = $action;
-					    }
-					    else
-					    {
-						    if ($action['name'] != 'user')
-						    {
+					    } else {
+						    if ($action['name'] != 'user') {
 							    $acts['other'][] = $action;
 						    }
 					    }
