@@ -3654,6 +3654,7 @@ $(document).ready(function() {
             // export to an external application
             case 33 :
                 $('#can-val').empty();
+
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
                     '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
                 $('#can-val').show();
@@ -3670,12 +3671,12 @@ $(document).ready(function() {
 
                 $('.modal-body').attr('data-export-type', exportType);
 
-                $('.modal-body').append('<div class="">' +
-                    '<select id="change-status-dd">' +
-                    '<option value="">' + Joomla.JText._('PLEASE_SELECT')+'</option>' +
-                    '<option value="1">' + Joomla.JText._('JNO')+'</option>' +
-                    '<option value="2">' + Joomla.JText._('JYES')+'</option>' +
-                    '</select></div>');
+                $('.modal-body').append('<div class="select-export-status">' +
+                    '<label class="col-lg-12 control-label">'+Joomla.JText._('EXPORT_CHANGE_STATUS')+'</label>' +
+                    '<div class="col-lg-12 control-label" id="change-status">' +
+                    '<div><input type="radio" name="export-status" id="ex-yes" value="yes"> <label for="ex-yes">' + Joomla.JText._('JYES') + '</label></div>' +
+                    '<div><input type="radio" name="export-status" id="ex-no" value="no"> <label for="ex-no">' + Joomla.JText._('JNO') + '</label></div>' +
+                    '</div></div>');
 
                 $.ajax({
                     type:'get',
@@ -3683,7 +3684,7 @@ $(document).ready(function() {
                     dataType:'json',
                     success: function(result) {
 
-                        var status = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
+                        var status = '<br/><div id="em-action-export-state" class="form-group" style="color:black !important; display:inline-block !important; padding-left: 15px;"><label class="col-lg-22 control-label">'+result.state+'</label><select class="col-lg-12 modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value=""><option value="">' + Joomla.JText._('PLEASE_SELECT') + '</option>';
 
                         for (var i in result.states) {
                             if (isNaN(parseInt(i)))
@@ -3692,19 +3693,20 @@ $(document).ready(function() {
                         }
                         status += '</select></div>';
                         $('.modal-body').append(status);
-                        $("#em-action-state").hide();
+                        $("#em-action-export-state").hide();
                     },
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);
                     }
                 });
 
-                $('#change-status-dd').on('change', function(){
-                    if($(this).val() <=1) {
-                        $("#em-action-state").hide();
+                $('#change-status input[name=export-status]').on('change', function(){
+                    $('#em-action-state').val('');
+                    if(this.value == "yes") {
+                        $("#em-action-export-state").show();
                     }
                     else {
-                        $("#em-action-state").show();
+                        $("#em-action-export-state").hide();
                     }
                 });
                 break;
@@ -4738,11 +4740,13 @@ $(document).ready(function() {
             // Validating status changes for files
             case 13:
                 var state = $("#em-action-state").val();
+
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
                     '<img src="'+loadingLine+'" alt="loading"/>' +
                     '</div>');
                 url = 'index.php?option=com_emundus&controller=files&task=updatestate';
+
                 $.ajax({
                     type:'POST',
                     url:url,
@@ -4956,11 +4960,13 @@ $(document).ready(function() {
             // Export to external app
             case 33:
                 var type = $('.modal-body').attr('data-export-type');
+                var state = $("#em-action-state").val();
 
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
                     '<img src="'+loadingLine+'" alt="loading"/>' +
                     '</div>');
+
                 url = 'index.php?option=com_emundus&controller=files&task=exportfile';
                 $.ajax({
                     type:'POST',
@@ -4969,8 +4975,46 @@ $(document).ready(function() {
                     data:({fnums:checkInput, type: type}),
                     success: function(result) {
 
-                        $('.modal-footer').hide();
                         if (result.status) {
+
+                            url = 'index.php?option=com_emundus&controller=files&task=updatestate';
+                            if (state !== '') {
+                                $.ajax({
+                                    type:'POST',
+                                    url:url,
+                                    dataType:'json',
+                                    data:({fnums:checkInput, state: state}),
+                                    success: function(result) {
+
+                                        $('.modal-footer').hide();
+
+                                        if (result.status) {
+                                            $('.modal-body').empty();
+                                            Swal.fire({
+                                                position: 'center',
+                                                type: 'success',
+                                                title: result.msg,
+                                                showConfirmButton: false,
+                                                timer: 1500
+                                            });
+                                        }
+                                        else {
+                                            $('.modal-body').empty();
+                                            Swal.fire({
+                                                position: 'center',
+                                                type: 'warning',
+                                                title: result.msg
+                                            });
+                                        }
+                                    },
+                                    error: function (jqXHR) {
+                                        console.log(jqXHR.responseText);
+                                    }
+                                });
+                            }
+
+
+                            $('.modal-footer').hide();
                             $('.modal-body').empty();
                             Swal.fire({
                                 position: 'center',
@@ -4979,7 +5023,9 @@ $(document).ready(function() {
                                 showConfirmButton: false,
                                 timer: 1500
                             });
-                        } else {
+
+                        }
+                        else {
                             $('.modal-body').empty();
                             Swal.fire({
                                 position: 'center',

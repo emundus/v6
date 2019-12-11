@@ -8,9 +8,9 @@
 	<authorUrl>https://www.emundus.fr</authorUrl>
 	<copyright>(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<description>This plugin will Export User's data to an External Aurion </description>
+	<description>This plugin will Export User's data to Excelia Aurion </description>
 	<files>
-		<filename plugin="aurion_export">aurion_export.php</filename>
+		<filename plugin="excelia_aurion_export">excelia_aurion_export.php</filename>
 	</files>
 	<folder>language</folder>
 	<config>
