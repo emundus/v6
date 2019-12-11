@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -29,7 +29,7 @@ class hikashopQuantityType {
 		$label = '';
 		$id = str_replace(array('][','[',']'),array('__','_',''), $map);
 		$app = JFactory::getApplication();
-		$backend = $app->isAdmin();
+		$backend = hikashop_isClient('administrator');
 		if(($backend && HIKASHOP_BACK_RESPONSIVE) || (!$backend && HIKASHOP_RESPONSIVE)) {
 			hikashop_loadJsLib('tooltip');
 			$ret = '<div class="input-append">'.

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,8 +22,13 @@ class plgHikashopCartnotify extends JPlugin
 
 	public function onBeforeCompileHead() {
 		$app = JFactory::getApplication();
-		if($app->isAdmin())
-			return;
+		if(version_compare(JVERSION,'4.0','<')) {
+			if($app->isAdmin())
+				return;
+		} else {
+			if($app->isClient('administrator'))
+				return;
+		}
 
 		$reference = $this->params->get('notification_reference', 'global');
 		if($reference == 'popup')
@@ -35,7 +40,7 @@ class plgHikashopCartnotify extends JPlugin
 	protected function initCartNotificationScript() {
 		$app = JFactory::getApplication();
 		$doc = JFactory::getDocument();
-		$base = ($app->isAdmin()) ? '..' : JURI::base(true);
+		$base = (hikashop_isClient('administrator')) ? '..' : JURI::base(true);
 
 		hikashop_loadJslib('notify');
 		$doc->addScript($base.'/plugins/hikashop/cartnotify/media/notify.js');
@@ -97,7 +102,7 @@ window.cartNotifyParams = '.json_encode(array(
 		$app = JFactory::getApplication();
 		$doc = JFactory::getDocument();
 
-		$base = ($app->isAdmin()) ? '..' : JURI::base(true);
+		$base = (hikashop_isClient('administrator')) ? '..' : JURI::base(true);
 		$doc->addScript($base.'/plugins/hikashop/cartnotify/media/notify-vex.js');
 		$doc->addStyleSheet($base.'/media/com_hikashop/css/notify-metro.css');
 

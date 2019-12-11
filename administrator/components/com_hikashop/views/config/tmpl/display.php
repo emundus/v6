@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -84,7 +84,7 @@ hikaInput::get()->set('from_display',true);
 			$options[] = JHTML::_('hikaselect.option', $k, JText::_($v));
 		}
 	}
-	echo JHTML::_('select.genericlist', $options, 'config[image_popup_mode]', 'class="custom-select" onchange="return window.localPage.imagepopupmode(this);"', 'value', 'text', $this->config->get('image_popup_mode', 'mootools'));
+	echo JHTML::_('select.genericlist', $options, 'config[image_popup_mode]', 'class="custom-select" onchange="return window.localPage.imagepopupmode(this);"', 'value', 'text', $this->config->get('image_popup_mode', 'shadowbox'));
 ?>
 <script type="text/javascript">
 if(!window.localPage)
@@ -264,6 +264,22 @@ window.localPage.imagepopupmode = function(el) {
 			}
 		?></td>
 	</tr>
+<?php
+			if($this->config->get('product_contact', 0)) {
+?>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('product_contact_button');?>><?php echo JText::_('DISPLAY_CONTACT_BUTTON_ON_LISTING'); ?></td>
+		<td><?php
+				if(hikashop_level(1)) {
+					echo JHTML::_('hikaselect.booleanlist', 'config[default_params][product_contact_button]', '',  @$this->default_params['product_contact_button']);
+				} else {
+					echo hikashop_getUpgradeLink('essential');
+				}
+		?></td>
+	</tr>
+<?php
+			}
+?>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('show_code');?>><?php echo JText::_('DISPLAY_CODE');?></td>
 		<td><?php echo JHTML::_('hikaselect.booleanlist', 'config[show_code]', '', $this->config->get('show_code', 0));?></td>
@@ -434,6 +450,12 @@ window.localPage.imagepopupmode = function(el) {
 		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_link_to_product_page');?>><?php echo JText::_('LINK_TO_PRODUCT_PAGE');?></td>
 		<td><?php
 			echo JHTML::_('hikaselect.booleanlist', 'config[default_params][link_to_product_page]', '', @$this->default_params['link_to_product_page']);
+		?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_details_button');?>><?php echo JText::_('PRODUCT_DETAILS_BUTTON');?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[default_params][details_button]', '', @$this->default_params['details_button']);
 		?></td>
 	</tr>
 	<tr>

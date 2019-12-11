@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -96,37 +96,34 @@ class OrderViewOrder extends hikashopView{
 
 		switch($pageInfo->filter->filter_start) {
 			case '':
+			case '0000-00-00 00:00:00':
+				$pageInfo->filter->filter_start = '';
 				switch($pageInfo->filter->filter_end) {
 					case '':
+					case '0000-00-00 00:00:00':
+						$pageInfo->filter->filter_end = '';
 						break;
 					default:
-						$filter_end=explode('-',$pageInfo->filter->filter_end);
-						$noHourDay=explode(' ',$filter_end[2]);
-						$filter_end[2]=$noHourDay[0];
-						$filter_end= hikashop_getTime(mktime(23, 59, 59, $filter_end[1], $filter_end[2], $filter_end[0]));
+						$filter_end = hikashop_getTime($pageInfo->filter->filter_end, '%d %B %Y');
 						$filters[]='b.order_created < '.(int)$filter_end;
 						$pageInfo->filter->filter_end=(int)$filter_end;
 						break;
 				}
 				break;
 			default:
-				$filter_start=explode('-',$pageInfo->filter->filter_start);
-				$noHourDay=explode(' ',$filter_start[2]);
-				$filter_start[2]=$noHourDay[0];
-				$filter_start= hikashop_getTime(mktime(0, 0, 0, $filter_start[1], $filter_start[2], $filter_start[0]));
+				$filter_start = hikashop_getTime($pageInfo->filter->filter_start, '%d %B %Y');
 				switch($pageInfo->filter->filter_end){
 					case '':
-						$filters[]='b.order_created > '.hikashop_getTime((int)$filter_start);
+					case '0000-00-00 00:00:00':
+						$pageInfo->filter->filter_end = '';
+						$filters[]='b.order_created > '.(int)$filter_start;
 						$pageInfo->filter->filter_start=(int)$filter_start;
 						break;
 					default:
-						$filter_end=explode('-',$pageInfo->filter->filter_end);
-						$noHourDay=explode(' ',$filter_end[2]);
-						$filter_end[2]=$noHourDay[0];
-						$filter_end= hikashop_getTime(mktime(23, 59, 59, $filter_end[1], $filter_end[2], $filter_end[0]));
-						$filters[]='b.order_created > '.(int)$filter_start. ' AND b.order_created < '.(int)$filter_end;
+						$filter_end = hikashop_getTime($pageInfo->filter->filter_end, '%d %B %Y');
 						$pageInfo->filter->filter_start=(int)$filter_start;
 						$pageInfo->filter->filter_end=(int)$filter_end;
+						$filters[] = 'b.order_created > '.(int)$filter_start. ' AND b.order_created < '.(int)$filter_end;
 						break;
 				}
 				break;
@@ -584,28 +581,19 @@ class OrderViewOrder extends hikashopView{
 						case '':
 							break;
 						default:
-							$filter_end = explode('-', $filter_end);
-							$noHourDay = explode(' ', $filter_end[2]);
-							$filter_end[2] = $noHourDay[0];
-							$filter_end = hikashop_getTime(mktime(23, 59, 59, $filter_end[1], $filter_end[2], $filter_end[0]));
+							$filter_end = hikashop_getTime($filter_end, '%d %B %Y');
 							$filters['order_created'] = 'hk_order.order_created < '.(int)$filter_end;
 							break;
 					}
 					break;
 				default:
-					$filter_start = explode('-', $filter_start);
-					$noHourDay = explode(' ', $filter_start[2]);
-					$filter_start[2] = $noHourDay[0];
-					$filter_start = hikashop_getTime(mktime(0, 0, 0, $filter_start[1], $filter_start[2], $filter_start[0]));
+					$filter_start = hikashop_getTime($filter_start, '%d %B %Y');
 					switch($filter_end) {
 						case '':
 							$filters['order_created'] = 'hk_order.order_created > '.(int)$filter_start;
 							break;
 						default:
-							$filter_end = explode('-',$filter_end);
-							$noHourDay = explode(' ',$filter_end[2]);
-							$filter_end[2] = $noHourDay[0];
-							$filter_end = hikashop_getTime(mktime(23, 59, 59, $filter_end[1], $filter_end[2], $filter_end[0]));
+							$filter_end = hikashop_getTime($filter_end, '%d %B %Y');
 							$filters['order_created'] = 'hk_order.order_created > '.(int)$filter_start. ' AND hk_order.order_created < '.(int)$filter_end;
 							break;
 					}
@@ -1171,11 +1159,13 @@ class OrderViewOrder extends hikashopView{
 		$this->show($tpl, false);
 
 		if($this->edit) {
-			if(!empty($this->order->order_shipping_address_id)) {
+			if(hikaInput::get()->get('fail', null)){
+				$this->order->shipping_address = $_SESSION['hikashop_address_data'];
+			}elseif(!empty($this->order->order_shipping_address_id)) {
 				$addressClass = hikashop_get('class.address');
 				$this->order->shipping_address = $addressClass->get($this->order->order_shipping_address_id);
 			}
-			$this->fieldsClass->prepareFields($this->order->fields, $this->order->shipping_address, 'address', 'user&task=state');
+			$this->fieldsClass->prepareFields($this->order->shipping_fields, $this->order->shipping_address, 'address', 'user&task=state');
 		}
 
 		$this->setLayout('show_address');
@@ -1187,11 +1177,13 @@ class OrderViewOrder extends hikashopView{
 		$this->show($tpl, false);
 
 		if($this->edit) {
-			if(!empty($this->order->order_billing_address_id)) {
+			if(hikaInput::get()->get('fail', null)){
+				$this->order->billing_address = $_SESSION['hikashop_address_data'];
+			}elseif(!empty($this->order->order_billing_address_id)) {
 				$addressClass = hikashop_get('class.address');
 				$this->order->billing_address = $addressClass->get($this->order->order_billing_address_id);
 			}
-			$this->fieldsClass->prepareFields($this->order->fields, $this->order->billing_address, 'address', 'user&task=state');
+			$this->fieldsClass->prepareFields($this->order->billing_fields, $this->order->billing_address, 'address', 'user&task=state');
 		}
 
 		$this->setLayout('show_address');
@@ -1312,7 +1304,16 @@ class OrderViewOrder extends hikashopView{
 					if(empty($rows[0]->prices) && !empty($rows[1]->prices)) {
 						$rows[0]->prices = $rows[1]->prices;
 					}
+					$this->allPrices = array();
+					if(!empty($rows[0]->prices)) {
+						foreach($rows[0]->prices as $price) {
+							if(!empty( $price->price_orig_currency_id))
+								continue;
+							$this->allPrices[] = hikashop_copy($price);
+						}
+					}
 					$currencyClass->pricesSelection($rows[0]->prices, 0);
+
 					if(!empty($rows[0]->prices)) {
 						foreach($rows[0]->prices as $price) {
 							$orderProduct->order_product_price = $price->price_value;
@@ -1407,7 +1408,7 @@ class OrderViewOrder extends hikashopView{
 			$methods = $shippingMethod->shippingMethods($shipping);
 
 			if(isset($methods[$shipping_id])){
-				$shipping_name = $shipping->shipping_name.' - '.$methods[$shipping_id];
+				$shipping_name = JText::sprintf('SHIPPING_METHOD_COMPLEX_NAME',$shipping->shipping_name, $methods[$shipping_id]);
 			}else{
 				$shipping_name = $shipping_id;
 			}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -60,7 +60,7 @@ defined('_JEXEC') or die('Restricted access');
 				<?php echo JText::_( 'START_DATE' ); ?>
 			</td>
 			<td>
-				<?php echo JHTML::_('calendar', hikashop_getDate((@$this->element->widget_params->start?@$this->element->widget_params->start:''),'%Y-%m-%d %H:%M'), 'data[widget][widget_params][start]','period_start','%Y-%m-%d %H:%M',array('size'=>'20')); ?>
+				<?php echo JHTML::_('calendar', hikashop_getDate((@$this->element->widget_params->start?@$this->element->widget_params->start:''),'%Y-%m-%d %H:%M'), 'data[widget][widget_params][start]','period_start',hikashop_getDateFormat('%d %B %Y %H:%M'),array('size'=>'20')); ?>
 			</td>
 		</tr>
 		<tr>
@@ -68,7 +68,7 @@ defined('_JEXEC') or die('Restricted access');
 				<?php echo JText::_( 'END_DATE' ); ?>
 			</td>
 			<td>
-				<?php echo JHTML::_('calendar', hikashop_getDate((@$this->element->widget_params->end?@$this->element->widget_params->end:''),'%Y-%m-%d %H:%M'), 'data[widget][widget_params][end]','period_end','%Y-%m-%d %H:%M',array('size'=>'20')); ?>
+				<?php echo JHTML::_('calendar', hikashop_getDate((@$this->element->widget_params->end?@$this->element->widget_params->end:''),'%Y-%m-%d %H:%M'), 'data[widget][widget_params][end]','period_end',hikashop_getDateFormat('%d %B %Y %H:%M'),array('size'=>'20')); ?>
 			</td>
 		</tr>
 		<tr>
@@ -92,7 +92,7 @@ defined('_JEXEC') or die('Restricted access');
 				<?php echo JText::_( 'LIMIT' );//only for listing ?>
 			</td>
 			<td>
-				<input name="data[widget][widget_params][limit]" value="<?php echo $this->escape(@$this->element->widget_params->limit); ?>" onchange="if(this.value <1 || this.value > 50){ alert('Setting a negative value or a too high value for the limit might might broke the dashboard.'); this.value=7;}" />
+				<input name="data[widget][widget_params][limit]" value="<?php echo $this->escape(@$this->element->widget_params->limit); ?>" onchange="if(this.value <1 || this.value > 50){ alert('Setting a negative value or a too high value for the limit might might broke the dashboard.');}" />
 			</td>
 		</tr>
 		<?php if(hikashop_level(2)){ ?>

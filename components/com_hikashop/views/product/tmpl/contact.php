@@ -1,16 +1,17 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div id="hikashop_product_contact_<?php echo hikaInput::get()->getInt('cid');?>_page" class="hikashop_product_contact_page">
-	<fieldset>
-		<div class="" style="float:left">
-			<h1><?php
+	<form action="<?php echo hikashop_completeLink('product'); ?>" id="hikashop_contact_form" name="hikashop_contact_form" method="post"  onsubmit="return checkFields();">
+		<fieldset>
+			<div class="" style="float:left">
+				<h1><?php
 if(!empty($this->product->product_id)) {
 	$doc = JFactory::getDocument();
 	$doc->setMetaData( 'robots', 'noindex' );
@@ -25,16 +26,16 @@ if(!empty($this->product->product_id)) {
 } else {
 	echo @$this->title;
 }
-			?></h1>
-		</div>
-		<div class="toolbar" id="toolbar" style="float: right;">
-			<button class="hikabtn hikabtn-success" type="button" onclick="checkFields();"><i class="fa fa-check"></i> <?php echo JText::_('OK'); ?></button>
+				?></h1>
+			</div>
+			<div class="toolbar" id="toolbar" style="float: right;">
+				<button class="hikabtn hikabtn-success" type="submit"><i class="fa fa-check"></i> <?php echo JText::_('OK'); ?></button>
 <?php if(hikaInput::get()->getCmd('tmpl', '') != 'component') { ?>
-			<button class="hikabtn hikabtn-danger" type="button" onclick="history.back();"><i class="fa fa-times"></i> <?php echo JText::_('HIKA_CANCEL'); ?></button>
+				<button class="hikabtn hikabtn-danger" type="button" onclick="history.back(); return false;"><i class="fa fa-times"></i> <?php echo JText::_('HIKA_CANCEL'); ?></button>
 <?php } ?>
-		</div>
-		<div style="clear:both"></div>
-	</fieldset>
+			</div>
+			<div style="clear:both"></div>
+		</fieldset>
 <?php
 	$formData = hikaInput::get()->getVar('formData','');
 	if(empty($formData))
@@ -46,7 +47,6 @@ if(!empty($this->product->product_id)) {
 		$formData->email = $this->element->email;
 	}
 ?>
-	<form action="<?php echo hikashop_completeLink('product'); ?>" id="hikashop_contact_form" name="hikashop_contact_form" method="post">
 		<dl>
 			<dt id="hikashop_contact_name_name" class="hikashop_contact_item_name">
 				<label for="data[contact][name]"><?php echo JText::_( 'HIKA_USER_NAME' ); ?> <span class="hikashop_field_required_label">*</span></label>
@@ -83,7 +83,7 @@ if(!empty($this->product->product_id)) {
 						$oneExtraField,$itemData,
 						'data[contact]['.$oneExtraField->field_namekey.']',
 						false,
-						' '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\'contact\',0);"',
+						' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'contact\',0);"',
 						false,
 						null,
 						null,
@@ -118,11 +118,37 @@ if(!empty($this->product->product_id)) {
 					if(isset($formData->altbody)) echo $formData->altbody;
 				?></textarea>
 			</dd>
+<?php
+	if(!empty($this->privacy)) {
+		$text = JText::_( 'PLG_CONTENT_CONFIRMCONSENT_CONSENTBOX_LABEL' ) . ' <span class="hikashop_field_required_label">*</span>';
+		if(!empty($this->privacy['id'])) {
+			$popupHelper = hikashop_get('helper.popup');
+			$text = $popupHelper->display(
+				$text,
+				'PLG_CONTENT_CONFIRMCONSENT_CONSENTBOX_LABEL',
+				JRoute::_('index.php?option=com_hikashop&ctrl=checkout&task=privacyconsent&type=contact&tmpl=component'),
+				'contact_privacyconsent',
+				800, 500, '', '', 'link'
+			);
+		}
+?>
+			<dt id="hikashop_contact_name_consent" class="hikashop_contact_item_name">
+				<label><?php echo $text; ?></label>
+			</dt>
+			<dd id="hikashop_contact_value_consent" class="hikashop_contact_item_value">
+				<label class="checkbox">
+					<input type="checkbox" id="hikashop_contact_consent" name="data[contact][consent]" value="1"/> <?php echo $this->privacy['text']; ?>
+				</label>
+				<input type="hidden" name="data[contact][consentcheck]" value="1"/>
+			</dd>
+<?php
+	}
+?>
 		</dl>
 		<input type="hidden" name="data[contact][product_id]" value="<?php echo hikaInput::get()->getInt('cid');?>" />
 		<input type="hidden" name="cid" value="<?php echo hikaInput::get()->getInt('cid');?>" />
 		<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
-		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="task" value="send_email" />
 		<input type="hidden" name="ctrl" value="product" />
 		<input type="hidden" name="redirect_url" value="<?php $redirect_url = hikaInput::get()->getString('redirect_url', ''); echo $this->escape($redirect_url); ?>" />
 <?php

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -420,15 +420,18 @@ class hikashopNameboxType {
 				$map = substr($map, 0, -2);
 
 			if(!empty($values)) {
-				$n = $typeConfig['name'];
+				if(!empty($typeConfig['name']))
+					$n = $typeConfig['name'];
 				foreach($values as $key => $name) {
 					$obj = null;
 					if(is_object($name)) {
 						$obj = $name;
 						if(!empty($displayFormat))
 							$name = $this->getDisplayValue($obj, $typeConfig, $options);
-						else
+						elseif(!empty($n))
 							$name = $name->$n;
+						else
+							$name = 'name missing in type.namebox';
 					}
 					$ret .= "\r\n".'<div class="namebox" id="'.$id.'-'.$key.'">'.
 						'<input type="hidden" name="'.$map.'[]" value="'.$key.'"/>'.$name.

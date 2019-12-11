@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,7 +27,7 @@ if(!isset($this->edit) || $this->edit !== true ) {
 				<i class="fas fa-pen"></i> <span><?php echo JText::_('HIKA_EDIT'); ?></span>
 			</a>
 			<a href="<?php echo hikashop_completeLink($delete_url, 'ajax');?>" onclick="return window.addressMgr.delete(this,<?php echo (int)@$this->address->address_id; ?>);">
-				<i class="fa fa-trash"></i> <span><?php echo JText::_('HIKA_DELETE'); ?></span>
+				<i class="fas fa-trash"></i> <span><?php echo JText::_('HIKA_DELETE'); ?></span>
 			</a>
 		</div>
 <?php
@@ -56,6 +56,8 @@ if(isset($this->edit) && $this->edit === true) {
 		}
 	}
 
+	if(!empty($this->extraData->address_top)) { echo implode("\r\n", $this->extraData->address_top); }
+
 	foreach($this->fields as $fieldname => $field) {
 ?>
 	<dl id="hikashop_address_<?php echo $fieldname; ?>" class="hika_options">
@@ -75,7 +77,7 @@ if(isset($this->edit) && $this->edit === true) {
 					@$this->address->$fieldname,
 					'data[address]['.$fieldname.']',
 					false,
-					' ' . $onWhat . '="hikashopToggleFields(this.value,\''.$fieldname.'\',\'address\',0);"',
+					' ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\'address\',0);"',
 					false,
 					$this->fields,
 					$this->address
@@ -84,6 +86,8 @@ if(isset($this->edit) && $this->edit === true) {
 	</dl>
 <?php
 	}
+	if(!empty($this->extraData) && !empty($this->extraData->address_bottom)) { echo implode("\r\n", $this->extraData->address_bottom); }
+
 	if(empty($this->address->address_id)) {
 ?>
 	<input type="hidden" name="data[address][address_type]" value="<?php echo @$this->address->address_type; ?>"/>

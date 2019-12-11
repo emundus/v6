@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -23,7 +23,7 @@ define('HIKASHOP_JVERSION', $jversion);
 
 define('HIKASHOP_PHP5',version_compare(PHP_VERSION,'5.0.0', '>=') ? true : false);
 
-define('HIKASHOP_VERSION', '4.0.1');
+define('HIKASHOP_VERSION', '4.2.2');
 
 class hikashop {
 	public static function __callStatic($name, $arguments) {
@@ -38,6 +38,17 @@ function hikashop_getDate($time = 0, $format = '%d %B %Y %H:%M') {
 	if(empty($time))
 		return '';
 
+	$format = str_replace(array('%A','%d','%B','%m','%Y','%y','%H','%M','%S','%a'), array('l','d','F','m','Y','y','H','i','s','D'), hikashop_getDateFormat($format));
+	$date = '';
+	try {
+		$date = JHTML::_('date', $time, $format, false);
+	} catch (Exception $e) {
+		echo $e->getMessage();
+	}
+
+	return $date;
+}
+function hikashop_getDateFormat($format = '%d %B %Y %H:%M') {
 	if(is_numeric($format))
 		$format = JText::_('DATE_FORMAT_LC'.$format);
 	$format_key = '';
@@ -53,16 +64,7 @@ function hikashop_getDate($time = 0, $format = '%d %B %Y %H:%M') {
 			$format = $language_format;
 		}
 	}
-
-	$format = str_replace(array('%A','%d','%B','%m','%Y','%y','%H','%M','%S','%a'), array('l','d','F','m','Y','y','H','i','s','D'), $format);
-	$date = '';
-	try {
-		$date = JHTML::_('date', $time, $format, false);
-	} catch (Exception $e) {
-		echo $e->getMessage();
-	}
-
-	return $date;
+	return $format;
 }
 
 function hikashop_isAllowed($allowedGroups, $id = null, $type = 'user') {
@@ -176,22 +178,40 @@ function hikashop_currentURL($checkInRequest = '', $safe = true) {
 	return $result;
 }
 
-function hikashop_getTime($date) {
+function hikashop_getTime($date, $format = '%d %B %Y %H:%M') {
 	static $timeoffset = null;
+	static $timeZone = null;
 	if($timeoffset === null){
 		$config = JFactory::getConfig();
 		if(!HIKASHOP_J30){
-			$timeoffset = $config->getValue('config.offset');
+			$timeZone = $config->getValue('config.offset');
 		} else {
-			$timeoffset = $config->get('offset');
+			$timeZone = $config->get('offset');
 		}
-		$dateC = JFactory::getDate('now', $timeoffset);
+		$dateC = JFactory::getDate('now', $timeZone);
 		$timeoffset = $dateC->getOffsetFromGMT(true);
 	}
-	if(!is_numeric($date)) $date = strtotime($date);
+	if(!is_numeric($date)) {
+		$format = str_replace(array('%A','%d','%B','%m','%Y','%y','%H','%M','%S','%a'), array('l','d','F','m','Y','y','H','i','s','D'), hikashop_getDateFormat($format));
+		try {
+			$dateTime = DateTime::createFromFormat($format, $date, new DateTimeZone($timeZone));
+			if($dateTime) {
+				$date = $dateTime->getTimestamp();
+			}else {
+				$date = strtotime(str_replace('-','/', $date));
+				if($date === false)
+					return false;
+				return $date - $timeoffset *60*60 + date('Z', $date);
+			}
+		} catch( Exception $e) {
+			$date = strtotime(str_replace('-','/', $date));
 	if($date === false)
 		return false;
 	return $date - $timeoffset *60*60 + date('Z', $date);
+}
+
+	}
+	return $date;
 }
 
 function hikashop_getIP() {
@@ -209,7 +229,7 @@ function hikashop_getIP() {
 		$ip = trim($ips[0]);
 	}
 
-	return strip_tags($ip);
+	return filter_var($ip, FILTER_VALIDATE_IP);
 }
 
 function hikashop_isSSL() {
@@ -330,7 +350,7 @@ function hikashop_getZone($type = 'shipping', $args = null) {
 		$type = $config->get('tax_zone_type', 'shipping');
 	}
 	$app = JFactory::getApplication();
-	$isAdmin = $app->isAdmin();
+	$isAdmin = hikashop_isClient('administrator');
 	$zone_id = 0;
 
 	if(!$isAdmin) {
@@ -340,6 +360,14 @@ function hikashop_getZone($type = 'shipping', $args = null) {
 			$shipping_address = (int)$cart->cart_shipping_address_ids;
 		if(!empty($cart) && ($type == 'billing' || empty($shipping_address)))
 			$shipping_address = (int)$cart->cart_billing_address_id;
+
+		if(empty($shipping_address) && empty($cart->user_id)) {
+			$session_addresses = $app->getUserState(HIKASHOP_COMPONENT.'.addresses', array());
+			$session_address = reset($session_addresses);
+			$shipping_address = (int)@$session_addresses->address_id;
+			unset($session_addresses);
+			unset($session_address);
+		}
 	}
 
 	if(!$isAdmin && empty($shipping_address))
@@ -417,7 +445,7 @@ function hikashop_getCurrency() {
 	$app = JFactory::getApplication();
 	$currency_id = (int)$app->getUserState(HIKASHOP_COMPONENT.'.currency_id', $main_currency);
 
-	if($currency_id != $main_currency && !$app->isAdmin()) {
+	if($currency_id != $main_currency && !hikashop_isClient('administrator')) {
 		static $checked = array();
 		if(!isset($checked[$currency_id])) {
 			$checked[$currency_id]=true;
@@ -573,7 +601,7 @@ function hikashop_disallowUrlRedirect($url) {
 
 function hikashop_setTitle($name, $picture, $link) {
 	$app = JFactory::getApplication();
-	if(!$app->isAdmin())
+	if(!hikashop_isClient('administrator'))
 		return false;
 	$config =& hikashop_config();
 	$menu_style = $config->get('menu_style','title_bottom');
@@ -615,7 +643,7 @@ function hikashop_getMenu($title = '', $menu_style = 'content_top') {
 	$document = JFactory::getDocument();
 	$controller = new hikashopBridgeController(array('name'=>'menu'));
 	$viewType = $document->getType();
-	if(empty($viewType)) $viewType = 'html';
+	if(empty($viewType) || !in_array($viewType, array('html', 'feed'))) $viewType = 'html';
 	$view = $controller->getView('', $viewType, '');
 
 	$view->setLayout('default');
@@ -627,7 +655,7 @@ function hikashop_getMenu($title = '', $menu_style = 'content_top') {
 function hikashop_getLayout($controller, $layout, $params, &$js, $backend = false) {
 	$base_path=HIKASHOP_FRONT;
 	$app = JFactory::getApplication();
-	if($app->isAdmin() || $backend){
+	if(hikashop_isClient('administrator') || $backend){
 		$base_path=HIKASHOP_BACK;
 	}
 	$base_path = rtrim($base_path,DS);
@@ -635,7 +663,7 @@ function hikashop_getLayout($controller, $layout, $params, &$js, $backend = fals
 
 	$controller = new hikashopBridgeController(array('name'=>$controller,'base_path'=>$base_path));
 	$viewType = $document->getType();
-	if(empty($viewType)) $viewType = 'html';
+	if(empty($viewType) || !in_array($viewType, array('html', 'feed'))) $viewType = 'html';
 	$view = $controller->getNewView( '', $viewType, '',array('base_path'=>$base_path));
 
 	$folder	= $base_path.DS.'views'.DS.$view->getName().DS.'tmpl';
@@ -693,7 +721,7 @@ function hikashop_display($messages, $type = 'success', $return = false, $close 
 		$display_messages[] = $msg;
 	}
 	$app = JFactory::getApplication();
-	if(($app->isAdmin() && !HIKASHOP_BACK_RESPONSIVE) || (!$app->isAdmin() && !HIKASHOP_RESPONSIVE)) {
+	if((hikashop_isClient('administrator') && !HIKASHOP_BACK_RESPONSIVE) || (!hikashop_isClient('administrator') && !HIKASHOP_RESPONSIVE)) {
 		$html = '<div id="hikashop_messages_'.$type.'" class="hikashop_messages hikashop_'.$type.'"><ul><li>'.implode('</li><li>',$display_messages).'</li></ul></div>';
 	} else {
 		$html = '<div class="alert alert-'.$type.' alert-block">'.($close?'<button type="button" class="close" data-dismiss="alert">×</button>':'').'<p>'.implode('</p><p>',$display_messages).'</p></div>';
@@ -728,7 +756,7 @@ function hikashop_frontendLink($link, $popup = false) {
 
 	$config = hikashop_config();
 	$app = JFactory::getApplication();
-	if(!$app->isAdmin() && $config->get('activate_sef',0)){
+	if(!hikashop_isClient('administrator') && $config->get('activate_sef',0)){
 		$link = ltrim(JRoute::_($link,false),'/');
 	}
 
@@ -778,7 +806,7 @@ function hikashop_completeLink($link, $popup = false, $redirect = false, $js = f
 
 	$config = hikashop_config();
 	$app = JFactory::getApplication();
-	if($frontend && $app->isAdmin()){
+	if($frontend && hikashop_isClient('administrator')){
 		static $mainurl = '';
 		static $otherarguments = false;
 		if(empty($mainurl)){
@@ -843,7 +871,7 @@ function hikashop_contentLink($link, $object, $popup = false, $redirect = false,
 
 	$app = JFactory::getApplication();
 	$menusClass = hikashop_get('class.menus');
-	if($app->isAdmin()){
+	if(hikashop_isClient('administrator')){
 		$id = 0;
 		$to_be_replaced = '';
 		if(preg_match('#Itemid=([0-9]+)#',$link,$match)){
@@ -929,7 +957,7 @@ function hikashop_secureField($fieldName) {
 }
 
 function hikashop_translate($name) {
-	$val = strtoupper($name);
+	$val = preg_replace('#[^A-Z_0-9]#','',strtoupper($name));
 	$trans = JText::_($val);
 	if($val == $trans)
 		$trans = $name;
@@ -981,11 +1009,11 @@ function hikashop_footer() {
 		$link.='?partner_id='.$aff;
 	}
 	$text = '<!--  HikaShop Component powered by '.$link.' -->
-	<!-- version '.$config->get('level').' : '.$config->get('version').' [1812031120] -->';
+	<!-- version '.$config->get('level').' : '.$config->get('version').' [1912041848] -->';
 	if(!$config->get('show_footer',true)) return $text;
 	$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 	$app= JFactory::getApplication();
-	if($app->isAdmin()){
+	if(hikashop_isClient('administrator')){
 		$text .= $config->get('level').' '.$config->get('version');
 	}
 	$text .= ', '.$description.'</a></div>';
@@ -1046,6 +1074,9 @@ function hikashop_get($path) {
 			$include_file = constant('HIKASHOP_'.strtoupper($group)).$class.'.php';
 			if(JFile::exists($include_file))
 				include_once($include_file);
+			elseif($group == 'controller') {
+				hikashop_getPluginController($class);
+			}
 		}
 	}
 	if(!class_exists($className)) return null;
@@ -1134,7 +1165,7 @@ function hikashop_tooltip($desc, $title = '', $image = 'tooltip.png', $name = ''
 		if(HIKASHOP_J30) {
 			$app = JFactory::getApplication();
 			$config = hikashop_config();
-			if($app->isAdmin() || $config->get('bootstrap_design', HIKASHOP_J30))
+			if(hikashop_isClient('administrator') || $config->get('bootstrap_design', HIKASHOP_J30))
 				JHtml::_('bootstrap.tooltip');
 			else
 				$class = 'hasTip';
@@ -1188,83 +1219,116 @@ function hikashop_loadJslib($name, $data = null) {
 	if(isset($loadLibs[$name]) && $loadLibs[$name] !== null)
 		return $loadLibs[$name];
 
+	$config = hikashop_config();
+	$js = $config->get('load_js', 1) || hikashop_isClient('administrator');
+	$css = $config->get('load_css',1) || hikashop_isClient('administrator');
+
 	switch($name) {
 		case 'mootools':
-			if(!HIKASHOP_J30)
-				JHTML::_('behavior.mootools');
-			else
-				JHTML::_('behavior.framework');
+			if($js) {
+				if(!HIKASHOP_J30)
+					JHTML::_('behavior.mootools');
+				else
+					JHTML::_('behavior.framework');
+			}
+			$ret = true;
 			break;
 		case 'jquery':
-			if(HIKASHOP_J30) {
-				JHtml::_('jquery.framework');
-				JHtml::_('jquery.ui', array('core', 'sortable'));
-			} else {
-				$doc->addScript(HIKASHOP_JS.'jquery.min.js');
+			if($js) {
+				if(HIKASHOP_J30) {
+					JHtml::_('jquery.framework');
+					JHtml::_('jquery.ui', array('core', 'sortable'));
+				} else {
+					$doc->addScript(HIKASHOP_JS.'jquery.min.js');
+				}
+				$doc->addScript(HIKASHOP_JS.'jquery-ui.min.js');
 			}
-			$doc->addScript(HIKASHOP_JS.'jquery-ui.min.js');
 			$ret = true;
 			break;
 		case 'tooltip':
-			hikashop_loadJslib('jquery');
-			$doc->addScript(HIKASHOP_JS.'tooltip.js');
-			$doc->addStyleSheet(HIKASHOP_CSS.'tooltip.css');
+			if($js) {
+				hikashop_loadJslib('jquery');
+				$doc->addScript(HIKASHOP_JS.'tooltip.js');
+			}
+			if($css)
+				$doc->addStyleSheet(HIKASHOP_CSS.'tooltip.css');
 			$ret = true;
 			break;
 		case 'owl-carousel':
-			hikashop_loadJslib('jquery');
-			$doc->addScript(HIKASHOP_JS.'owl.carousel.min.js');
-			$doc->addStyleSheet(HIKASHOP_CSS.'owl.carousel.min.css');
-			$doc->addStyleSheet(HIKASHOP_CSS.'owl.theme.default.min.css');
+			if($js) {
+				hikashop_loadJslib('jquery');
+				$doc->addScript(HIKASHOP_JS.'owl.carousel.min.js');
+			}
+			if($css) {
+				$doc->addStyleSheet(HIKASHOP_CSS.'owl.carousel.min.css');
+				$doc->addStyleSheet(HIKASHOP_CSS.'owl.theme.default.min.css');
+			}
 			$ret = true;
 			break;
 		case 'otree':
-			hikashop_loadJslib('jquery');
-			$doc->addScript(HIKASHOP_JS.'otree.js?v='.HIKASHOP_RESSOURCE_VERSION);
-			$doc->addStyleSheet(HIKASHOP_CSS.'otree.css?v='.HIKASHOP_RESSOURCE_VERSION);
+			if($js) {
+				hikashop_loadJslib('jquery');
+				$doc->addScript(HIKASHOP_JS.'otree.js?v='.HIKASHOP_RESSOURCE_VERSION);
+			}
+			if($css)
+				$doc->addStyleSheet(HIKASHOP_CSS.'otree.css?v='.HIKASHOP_RESSOURCE_VERSION);
 			$ret = true;
 			break;
 		case 'opload':
-			hikashop_loadJslib('jquery');
-			$doc->addScript(HIKASHOP_JS.'opload.js?v='.HIKASHOP_RESSOURCE_VERSION);
-			$doc->addStyleSheet(HIKASHOP_CSS.'opload.css?v='.HIKASHOP_RESSOURCE_VERSION);
+			if($js) {
+				hikashop_loadJslib('jquery');
+				$doc->addScript(HIKASHOP_JS.'opload.js?v='.HIKASHOP_RESSOURCE_VERSION);
+			}
+			if($css)
+				$doc->addStyleSheet(HIKASHOP_CSS.'opload.css?v='.HIKASHOP_RESSOURCE_VERSION);
 			$ret = true;
 			break;
 		case 'vex':
-			if(HIKASHOP_J30)
-				JHtml::_('jquery.framework');
-			else
-				hikashop_loadJslib('jquery');
-			$doc->addScript(HIKASHOP_JS.'vex.min.js?v='.HIKASHOP_RESSOURCE_VERSION);
-			$doc->addStyleSheet(HIKASHOP_CSS.'vex.css?v='.HIKASHOP_RESSOURCE_VERSION);
+			if($js) {
+				if(HIKASHOP_J30)
+					JHtml::_('jquery.framework');
+				else
+					hikashop_loadJslib('jquery');
+				$doc->addScript(HIKASHOP_JS.'vex.min.js?v='.HIKASHOP_RESSOURCE_VERSION);
+			}
+			if($css)
+				$doc->addStyleSheet(HIKASHOP_CSS.'vex.css?v='.HIKASHOP_RESSOURCE_VERSION);
 			$ret = true;
 			break;
 		case 'notify':
-			if(HIKASHOP_J30)
-				JHtml::_('jquery.framework');
-			else
-				hikashop_loadJslib('jquery');
-			$doc->addScript(HIKASHOP_JS.'notify.min.js?v='.HIKASHOP_RESSOURCE_VERSION);
-			$doc->addStyleSheet(HIKASHOP_CSS.'notify-metro.css?v='.HIKASHOP_RESSOURCE_VERSION);
+			if($js) {
+				if(HIKASHOP_J30)
+					JHtml::_('jquery.framework');
+				else
+					hikashop_loadJslib('jquery');
+				$doc->addScript(HIKASHOP_JS.'notify.min.js?v='.HIKASHOP_RESSOURCE_VERSION);
+			}
+			if($css)
+				$doc->addStyleSheet(HIKASHOP_CSS.'notify-metro.css?v='.HIKASHOP_RESSOURCE_VERSION);
 			$ret = true;
 			break;
 		case 'creditcard':
-			$doc->addScript(HIKASHOP_JS.'creditcard.js?v='.HIKASHOP_RESSOURCE_VERSION);
+			if($js)
+				$doc->addScript(HIKASHOP_JS.'creditcard.js?v='.HIKASHOP_RESSOURCE_VERSION);
 			$ret = true;
 			break;
 		case 'dropdown':
-			hikashop_loadJslib('jquery');
-			$doc->addScript(HIKASHOP_JS.'dropdown.js?v='.HIKASHOP_RESSOURCE_VERSION);
-			$doc->addStyleSheet(HIKASHOP_CSS.'dropdown.css?v='.HIKASHOP_RESSOURCE_VERSION);
+			if($js) {
+				hikashop_loadJslib('jquery');
+				$doc->addScript(HIKASHOP_JS.'dropdown.js?v='.HIKASHOP_RESSOURCE_VERSION);
+			}
+			if($css)
+				$doc->addStyleSheet(HIKASHOP_CSS.'dropdown.css?v='.HIKASHOP_RESSOURCE_VERSION);
 			$ret = true;
 			break;
 		case 'font-awesome':
-			$config = hikashop_config();
-			$fa = $config->get('font-awesome', 'local');
-			if($fa == 'local')
-				$doc->addStyleSheet(HIKASHOP_CSS.'font-awesome.css?v=5.2.0');
-			if($fa == 'cdn')
-				$doc->addStyleSheet('https://use.fontawesome.com/releases/v5.2.0/css/all.css');
+			if($css) {
+				$fa = $config->get('font-awesome', 'local');
+				if($fa == 'local')
+					$doc->addStyleSheet(HIKASHOP_CSS.'font-awesome.css?v=5.2.0');
+				if($fa == 'cdn')
+					$doc->addStyleSheet('https://use.fontawesome.com/releases/v5.2.0/css/all.css');
+			}
 			$ret = true;
 			break;
 		case 'translations':
@@ -1276,6 +1340,18 @@ function hikashop_loadJslib($name, $data = null) {
 			if(!empty($js))
 				$doc->addScriptDeclaration($js);
 			$ret = null;
+			break;
+		case 'nouislider':
+			if($js)
+				$doc->addScript(HIKASHOP_JS.'nouislider.min.js?v='.HIKASHOP_RESSOURCE_VERSION);
+			if($css)
+				$doc->addStyleSheet(HIKASHOP_CSS.'nouislider.min.css?v='.HIKASHOP_RESSOURCE_VERSION);
+			$ret = true;
+			break;
+		case 'wnumb':
+			if($js)
+				$doc->addScript(HIKASHOP_JS.'wNumb.js?v='.HIKASHOP_RESSOURCE_VERSION);
+			$ret = true;
 			break;
 	}
 
@@ -1341,7 +1417,7 @@ function hikashop_cleanURL($url, $forceInternURL = false, $frontend = false) {
 	if(isset($parsedCurrent['path']) && !preg_match('#^/?'.$parsedCurrent['path'].'#', $endUrl)) {
 		$parsedCurrent['path'] = preg_replace('#/$#', '', $parsedCurrent['path']);
 		$app = JFactory::getApplication();
-		if($frontend && $app->isAdmin() && strpos($parsedCurrent['path'], '/administrator') === 0)
+		if($frontend && hikashop_isClient('administrator') && strpos($parsedCurrent['path'], '/administrator') === 0)
 			$parsedCurrent['path'] = substr($parsedCurrent['path'], 14);
 	} else
 		$parsedCurrent['path'] = '';
@@ -1477,6 +1553,28 @@ if(!HIKASHOP_J30){
 } else {
 	function hikashop_getFormToken() {
 		return JSession::getFormToken();
+	}
+}
+if(!HIKASHOP_J40){
+	function hikashop_isClient($type) {
+		static $test = array();
+		if(!isset($test[$type])) {
+			$app = JFactory::getApplication();
+			if($type == 'administrator')
+				$test[$type] = $app->isAdmin();
+			else
+				$test[$type] = $app->isSite();
+		}
+		return $test[$type];
+	}
+} else {
+	function hikashop_isClient($type) {
+		static $test = array();
+		if(!isset($test[$type])) {
+			$app = JFactory::getApplication();
+			$test[$type] = $app->isClient($type);
+		}
+		return $test[$type];
 	}
 }
 
@@ -1760,7 +1858,7 @@ class hikashopController extends hikashopBridgeController {
 
 		$app = JFactory::getApplication();
 		$tmpl = hikaInput::get()->getString('tmpl');
-		if($app->isAdmin() && $tmpl !== 'component' && $tmpl !== 'ajax' && $tmpl !== 'raw') {
+		if(hikashop_isClient('administrator') && $tmpl !== 'component' && $tmpl !== 'ajax' && $tmpl !== 'raw') {
 			$config =& hikashop_config();
 			$menu_style = $config->get('menu_style','title_bottom');
 			if(HIKASHOP_J30) $menu_style = 'content_top';
@@ -1951,9 +2049,9 @@ class hikashopClass extends JObject {
 		$this->database->setQuery($query, 0, 1);
 		if($multiTranslation) {
 			$app = JFactory::getApplication();
-			if(!$app->isAdmin() && class_exists('JFalangDatabase')) {
+			if(!hikashop_isClient('administrator') && class_exists('JFalangDatabase')) {
 				$ret = $this->database->loadObject('stdClass', false);
-			} elseif(!$app->isAdmin() && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
+			} elseif(!hikashop_isClient('administrator') && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
 				$ret = $this->database->loadObject(false);
 			} else {
 				$ret = $this->database->loadObject();
@@ -2002,7 +2100,7 @@ class hikashopView extends hikashopBridgeView {
 
 		if(!empty($this->toolbar)) {
 			$app = JFactory::getApplication();
-			if($app->isAdmin())
+			if(hikashop_isClient('administrator'))
 				$this->toolbarHelper->process($this->toolbar, $this->title);
 		}
 
@@ -2011,7 +2109,7 @@ class hikashopView extends hikashopBridgeView {
 			$include_mootools = version_compare($jversion,'3.3.0','<');
 
 			$app = JFactory::getApplication();
-			if($app->isAdmin()) {
+			if(hikashop_isClient('administrator')) {
 				if($_REQUEST['option'] == HIKASHOP_COMPONENT && !HIKASHOP_J40) {
 					if($include_mootools)
 						JHTML::_('behavior.framework');
@@ -2050,7 +2148,7 @@ class hikashopView extends hikashopBridgeView {
 			return parent::loadTemplate($tpl);
 
 		$app = JFactory::getApplication();
-		if($app->isAdmin() && $active != 2)
+		if(hikashop_isClient('administrator') && $active != 2)
 			return parent::loadTemplate($tpl);
 
 		return '<div class="hikashop_view_files_border"><div class="hikashop_view_files_title"><span>'.
@@ -2217,7 +2315,7 @@ class hikashopView extends hikashopBridgeView {
 		$app = JFactory::getApplication();
 		$component = JApplicationHelper::getComponentName();
 		$component = preg_replace('/[^A-Z0-9_\.-]/i', '', $component);
-		$layout_path = ( $app->isAdmin() ? HIKASHOP_BACK : HIKASHOP_FRONT ) . 'views/layouts/tmpl';
+		$layout_path = ( hikashop_isClient('administrator') ? HIKASHOP_BACK : HIKASHOP_FRONT ) . 'views/layouts/tmpl';
 		$fallback = JPATH_THEMES . '/' . $app->getTemplate() . '/html/' . $component . '/layouts';
 
 		$this->_path['template'] = array();
@@ -2319,7 +2417,7 @@ class hikashopPlugin extends JPlugin {
 			$app = JFactory::getApplication();
 			if(is_int($aclFilter) && $aclFilter > 0)
 				hikashop_addACLFilters($where, $this->type.'_access', '', 2, false, (int)$aclFilter);
-			else if(!$app->isAdmin())
+			else if(!hikashop_isClient('administrator'))
 				hikashop_addACLFilters($where, $this->type.'_access');
 		}
 		$where = '('.implode(') AND (', $where).')';
@@ -2378,7 +2476,7 @@ class hikashopPlugin extends JPlugin {
 			$plugin_id = hikaInput::get()->getInt($this->type.'_id', 0);
 		}
 
-		if($app->isAdmin()) {
+		if(hikashop_isClient('administrator')) {
 			$this->toolbar = array(
 				'save',
 				'apply',
@@ -2394,7 +2492,7 @@ class hikashopPlugin extends JPlugin {
 		if(empty($this->title)) {
 			$this->title = JText::_('HIKASHOP_PLUGIN_METHOD');
 		}
-		if($app->isAdmin()) {
+		if(hikashop_isClient('administrator')) {
 			if($plugin_id == 0) {
 				hikashop_setTitle($this->title, 'plugin', 'plugins&plugin_type='.$this->type.'&task=edit&name='.$this->pluginName.'&subtask=edit');
 			} else {
@@ -2440,7 +2538,7 @@ class hikashopPlugin extends JPlugin {
 			}
 		}
 
-		if($app->isAdmin()) {
+		if(hikashop_isClient('administrator')) {
 			$this->toolbar = array(
 				array('name' => 'link', 'icon'=>'new','alt' => JText::_('HIKA_NEW'), 'url' => hikashop_completeLink('plugins&plugin_type='.$this->type.'&task=edit&name='.$this->pluginName.'&subtask=edit')),
 				'cancel',
@@ -2661,7 +2759,7 @@ if($configClass->get('bootstrap_back_design', HIKASHOP_J30)) {
 	define('HIKASHOP_BACK_RESPONSIVE', false);
 }
 
-if(HIKASHOP_J30 && (($app->isAdmin() && HIKASHOP_BACK_RESPONSIVE) || (!$app->isAdmin() && HIKASHOP_RESPONSIVE && (int)$configClass->get('bootstrap_radios', 1) == 1))) {
+if(HIKASHOP_J30 && ((hikashop_isClient('administrator') && HIKASHOP_BACK_RESPONSIVE) || (!hikashop_isClient('administrator') && HIKASHOP_RESPONSIVE && (int)$configClass->get('bootstrap_radios', 1) == 1))) {
 	include_once(dirname(__FILE__).DS.'joomla30.php');
 } else {
 	include_once(dirname(__FILE__).DS.'joomla25.php');
@@ -2670,7 +2768,7 @@ if(HIKASHOP_J30 && (($app->isAdmin() && HIKASHOP_BACK_RESPONSIVE) || (!$app->isA
 include_once HIKASHOP_INC.'compat.php';
 
 define('HIKASHOP_RESSOURCE_VERSION', str_replace('.', '', $configClass->get('version')));
-if($app->isAdmin()) {
+if(hikashop_isClient('administrator')) {
 	define('HIKASHOP_CONTROLLER', HIKASHOP_BACK.'controllers'.DS);
 	define('HIKASHOP_IMAGES', '../media/'.HIKASHOP_COMPONENT.'/images/');
 	define('HIKASHOP_CSS', '../media/'.HIKASHOP_COMPONENT.'/css/');
@@ -2684,22 +2782,28 @@ if($app->isAdmin()) {
 	$css_type = 'frontend';
 }
 
-$doc->addScript(HIKASHOP_JS.'hikashop.js?v='.HIKASHOP_RESSOURCE_VERSION);
-$doc->addStyleSheet(HIKASHOP_CSS.'hikashop.css?v='.HIKASHOP_RESSOURCE_VERSION);
 
-$css = $configClass->get('css_'.$css_type,'default');
-if(!empty($css)) {
-	$doc->addStyleSheet(HIKASHOP_CSS.$css_type.'_'.$css.'.css?t='.@filemtime(HIKASHOP_MEDIA.'css'.DS.$css_type.'_'.$css.'.css'));
+$js = $configClass->get('load_js', 1) || hikashop_isClient('administrator');
+$css = $configClass->get('load_css',1) || hikashop_isClient('administrator');
+
+if($js)
+	$doc->addScript(HIKASHOP_JS.'hikashop.js?v='.HIKASHOP_RESSOURCE_VERSION);
+if($css)
+	$doc->addStyleSheet(HIKASHOP_CSS.'hikashop.css?v='.HIKASHOP_RESSOURCE_VERSION);
+
+$css_file = $configClass->get('css_'.$css_type,'default');
+if($css && !empty($css_file)) {
+	$doc->addStyleSheet(HIKASHOP_CSS.$css_type.'_'.$css_file.'.css?t='.@filemtime(HIKASHOP_MEDIA.'css'.DS.$css_type.'_'.$css_file.'.css'));
 }
 
-if(!$app->isAdmin()) {
+if($css && !hikashop_isClient('administrator')) {
 	$style = $configClass->get('css_style', '');
 	if(!empty($style)) {
 		$doc->addStyleSheet(HIKASHOP_CSS.'style_'.$style.'.css?t='.@filemtime(HIKASHOP_MEDIA.'css'.DS.'style_'.$style.'.css'));
 	}
 }
 
-if($lang->isRTL()) {
+if($lang->isRTL() && $css) {
 	$doc->addStyleSheet(HIKASHOP_CSS.'rtl.css?v='.HIKASHOP_RESSOURCE_VERSION);
 }
 
@@ -2713,3 +2817,89 @@ define('HIKASHOP_HELPURL',HIKASHOP_URL.'index.php?option=com_updateme&ctrl=doc&c
 define('HIKASHOP_REDIRECT',HIKASHOP_URL.'index.php?option=com_updateme&ctrl=redirect&page=');
 if(is_callable("date_default_timezone_set"))
 	date_default_timezone_set(@date_default_timezone_get());
+
+$navigator_check = hikashop_getNavigator();
+
+if ($navigator_check["name"] == "Apple Safari") {
+	$doc->addStyleSheet(HIKASHOP_CSS.'safari_hikashop.css');
+}
+function hikashop_getNavigator($agent = null) {
+	$u_agent = ($agent!=null)? $agent : $_SERVER['HTTP_USER_AGENT'];
+	$bname = 'Unknown';
+	$platform = 'Unknown';
+	$version= "";
+
+	if (preg_match('/linux/i', $u_agent)) {
+		$platform = 'linux';
+	}
+	elseif (preg_match('/macintosh|mac os x/i', $u_agent)) {
+		$platform = 'mac';
+	}
+	elseif (preg_match('/windows|win32/i', $u_agent)) {
+		$platform = 'windows';
+	}
+
+	if(preg_match('/MSIE/i',$u_agent) && !preg_match('/Opera/i',$u_agent))
+	{
+		$bname = 'Internet Explorer';
+		$ub = "MSIE";
+	}
+	elseif(preg_match('/Firefox/i',$u_agent))
+	{
+		$bname = 'Mozilla Firefox';
+		$ub = "Firefox";
+	}
+	elseif(preg_match('/Chrome/i',$u_agent))
+	{
+		$bname = 'Google Chrome';
+		$ub = "Chrome";
+	}
+	elseif(preg_match('/Safari/i',$u_agent))
+	{
+		$bname = 'Apple Safari';
+		$ub = "Safari";
+	}
+	elseif(preg_match('/Opera/i',$u_agent))
+	{
+		$bname = 'Opera';
+		$ub = "Opera";
+	}
+	elseif(preg_match('/Netscape/i',$u_agent))
+	{
+		$bname = 'Netscape';
+		$ub = "Netscape";
+	}
+
+	$known = array('Version', 'other');
+	if(!empty($ub))
+		$known[] = $ub;
+	$pattern = '#(?<browser>' . join('|', $known) .
+	')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
+	if (!preg_match_all($pattern, $u_agent, $matches)) {
+	}
+
+	$i = count($matches['browser']);
+	if ($i != 1) {
+		if (!empty($ub) && strripos($u_agent,"Version") < strripos($u_agent, $ub)){
+			$version= $matches['version'][0];
+		}
+		else {
+			$version= $matches['version'][1];
+		}
+	}
+	else {
+		$version= $matches['version'][0];
+	}
+
+	if ($version==null || $version=="") {$version="?";}
+
+	$result = array(
+		'userAgent' => $u_agent,
+		'name'      => $bname,
+		'version'   => $version,
+		'platform'  => $platform,
+		'pattern'    => $pattern
+	);
+
+	return $result;
+}

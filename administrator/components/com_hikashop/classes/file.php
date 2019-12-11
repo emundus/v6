@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -176,13 +176,46 @@ class hikashopFileClass extends hikashopClass {
 		return $ids;
 	}
 
-	function deleteFiles($type,$pkeys, $ignoreFile=false){
+
+	public function save(&$file) {
+		$new = false;
+		if(empty($file->file_id)) {
+			$new = true;
+		}
+
+		$do = true;
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		if($new) {
+			$app->triggerEvent('onBeforeFileCreate', array( &$file, &$do ));
+		} else {
+			$app->triggerEvent('onBeforeFileUpdate', array( &$file, &$do ));
+		}
+
+		if(!$do)
+			return false;
+
+		$status = parent::save($file);
+		if(!$status)
+			return $status;
+
+		if($new) {
+			$file->file_id = $status;
+			$app->triggerEvent('onAfterFileCreate', array( &$file ));
+		} else {
+			$app->triggerEvent('onAfterFileUpdate', array( &$file ));
+		}
+		return $status;
+	}
+
+
+	function deleteFiles($type,$pkeys, $ignoreFile=false, $subPath=''){
 		if(!is_array($pkeys))
 			$pkeys = array($pkeys);
 		if(!count($pkeys))
 			return;
 		hikashop_toInteger($pkeys);
-		$uploadPath = $this->getPath($type);
+		$uploadPath = rtrim($this->getPath($type),DS). DS . ltrim($subPath, DS);
 		$query = 'SELECT * FROM '.hikashop_table(end($this->tables)).' WHERE file_ref_id IN ('.implode(',',$pkeys).') AND file_type='.$this->database->Quote($type);
 		$this->database->setQuery($query);
 		$oldEntries = $this->database->loadObjectList();
@@ -230,6 +263,10 @@ class hikashopFileClass extends hikashopClass {
 			}
 			$translationHelper = hikashop_get('helper.translation');
 			$translationHelper->deleteTranslations('file',$elements);
+
+			JPluginHelper::importPlugin('hikashop');
+			$app = JFactory::getApplication();
+			$app->triggerEvent('onAfterFileDelete', array( &$pkeys, &$type ));
 		}
 	}
 
@@ -253,7 +290,7 @@ class hikashopFileClass extends hikashopClass {
 		if($file_pos <= 0)
 			$file_pos = 1;
 
-		if(!$app->isAdmin() && empty($file->file_free_download)) {
+		if(!hikashop_isClient('administrator') && empty($file->file_free_download)) {
 			$orderClass = hikashop_get('class.order');
 			$order = $orderClass->get($order_id);
 			$user_id = hikashop_loadUser();
@@ -373,7 +410,7 @@ class hikashopFileClass extends hikashopClass {
 		if(!empty($file)){
 			$path = $this->getPath('file');
 			if(substr($file->file_path,0,7) == 'http://' || substr($file->file_path,0,8) == 'https://' || substr($file->file_path,0,1) == '@' || substr($file->file_path,0,1) == '#' || file_exists($path.$file->file_path) || file_exists($file->file_path) ){
-				if(!$app->isAdmin()){
+				if(!hikashop_isClient('administrator')){
 					if(!empty($file->file_free_download)){
 						$order_id = 0;
 					}
@@ -409,7 +446,7 @@ class hikashopFileClass extends hikashopClass {
 		$file->file_path = trim($file->file_path);
 
 		$filename = $path.$file->file_path;
-		if(substr($file->file_path,0,7) == 'http://' || substr($file->file_path,0,8) == 'https://' || substr($file->file_path,0,1) == '@' || substr($file->file_path,0,1) == '#' || file_exists($file->file_path) ){
+		if(substr($file->file_path,0,7) == 'http://' || substr($file->file_path,0,8) == 'https://' || substr($file->file_path,0,1) == '@' || substr($file->file_path,0,1) == '#' || (!file_exists($filename) && file_exists($file->file_path)) ){
 			$filename = $file->file_path;
 		}
 
@@ -556,7 +593,7 @@ class hikashopFileClass extends hikashopClass {
 
 	function downloadFieldFile($name,$field_table,$field_namekey,$options=array()){
 		$app = JFactory::getApplication();
-		if(!$app->isAdmin()) {
+		if(!hikashop_isClient('administrator')) {
 			$found = false;
 			switch($field_table){
 				case 'entry':

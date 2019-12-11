@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,7 +24,9 @@ if(!empty($this->orders)){
 	$maxProd = 0;
 	$productFields = null;
 	foreach($this->orders as $order){
-		$nbProd = count(@$order->products);
+		if(empty($order->products))
+			continue;
+		$nbProd = count($order->products);
 		if($maxProd < $nbProd){
 			$maxProd = $nbProd;
 			if(empty($productFields)){
@@ -56,6 +58,7 @@ if(!empty($this->orders)){
 		if(!empty($row->user_created)) $row->user_created = hikashop_getDate($row->user_created,'%Y-%m-%d %H:%M:%S');
 		if(!empty($row->order_created)) $row->order_created = hikashop_getDate($row->order_created,'%Y-%m-%d %H:%M:%S');
 		if(!empty($row->order_modified)) $row->order_modified = hikashop_getDate($row->order_modified,'%Y-%m-%d %H:%M:%S');
+		if(!empty($row->order_modified)) $row->order_invoice_created = hikashop_getDate($row->order_invoice_created,'%Y-%m-%d %H:%M:%S');
 
 		if($maxProd && !empty($productFields)){
 			for($i=1;$i<=$maxProd;$i++){

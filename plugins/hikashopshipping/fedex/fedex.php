@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -23,7 +23,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 		array('key'=>6,'code' => 'PRIORITY_OVERNIGHT', 'name' => 'FedEx Priority Overnight', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
 		array('key'=>7,'code' => 'SMART_POST', 'name' => 'FedEx Smart Post', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
 		array('key'=>8,'code' => 'STANDARD_OVERNIGHT', 'name' => 'FedEx Standard Overnight', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
-		array('key'=>9,'code' => 'INTERNATIONAL_GROUND', 'name' => 'FedEx International Ground'),
+		array('key'=>9,'code' => 'FEDEX_GROUND', 'name' => 'FedEx International Ground'),
 		array('key'=>10,'code' => 'INTERNATIONAL_ECONOMY', 'name' => 'FedEx International Economy'),
 		array('key'=>11,'code' => 'INTERNATIONAL_ECONOMY_DISTRIBUTION', 'name' => 'FedEx International Economy Distribution'),
 		array('key'=>12,'code' => 'INTERNATIONAL_FIRST', 'name' => 'FedEx International First'),
@@ -57,16 +57,19 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 						break;
 					}
 				}
+
 				if($selected)
 					$methods[$main->shipping_id . '-' . $selected['key']] = $selected['name'];
+				if($selected['key'] == 1)
+					$methods[$main->shipping_id . '-9'] = $this->fedex_methods[8]['name'];
 			}
 		}
 		return $methods;
 	}
 
 	function onShippingDisplay(&$order,&$dbrates,&$usable_rates,&$messages){
-		if(!hikashop_loadUser())
-			return false;
+		if(empty($order->shipping_address))
+			return true;
 
 		$local_usable_rates = array();
 		$local_messages = array();
@@ -75,7 +78,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			return false;
 		$currentShippingZone = null;
 		$currentCurrencyId = null;
-		$currencyClass=hikashop_get('class.currency');
+		$currencyClass = hikashop_get('class.currency');
 		foreach($local_usable_rates as $k => $rate){
 			if(empty($rate->shipping_params->methodsList)) {
 				$messages['no_shipping_methods_configured'] = 'No shipping methods configured in the FedEx shipping plugin options';

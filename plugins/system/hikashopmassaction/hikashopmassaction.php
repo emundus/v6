@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -203,7 +203,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 					}
 					$operators->extra = 'onchange="countresults(\''.$table->table.'\',\''.$key.'\')"';
 					$output .= $operators->display('filter['.$table->table.']['.$key.']['.$column.'][operator]',$value->data['operator'], "chzn-done not-processed");
-					$output .= ' <input class="inputbox" type="text" name="filter['.$table->table.']['.$key.']['.$column.'][value]" size="50" value="'.$value->data['value'].'" onchange="countresults(\''.$table->table.'\',\''.$key.'\')" />';
+					$output .= ' <input class="inputbox" type="text" name="filter['.$table->table.']['.$key.']['.$column.'][value]" size="50" value="'.htmlspecialchars($value->data['value'], ENT_COMPAT, 'UTF-8').'" onchange="countresults(\''.$table->table.'\',\''.$key.'\')" />';
 
 					$filters_html[$value->name] = $massactionClass->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
 				}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,7 +22,29 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 			'type' => 'boolean',
 			'default' => 1
 		),
+		'payment_selector' => array(
+			'name' => 'HIKASHOP_CHECKOUT_DISPLAY_SELECTOR',
+			'type' => 'radio',
+			'tooltip' => 'checkout_payment_selector',
+			'default' => 1,
+			'showon' => array(
+				'key' => 'read_only',
+				'values' => array(0)
+			)
+		),
 	);
+
+	public function getParams() {
+		$config = hikashop_config();
+		$values = array(
+			JHTML::_('select.option', 1, JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR_LIST')),
+			JHTML::_('select.option', 2, JText::_('HIKASHOP_CHECKOUT_ADDRESS_SELECTOR_DROPDOWN'))
+		);
+		$this->params['payment_selector']['values'] = $values;
+
+		return parent::getParams();
+	}
+
 	public function check(&$controller, &$params) {
 		if(!empty($params['read_only']))
 			return true;
@@ -204,6 +226,10 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 			$params['read_only'] = false;
 		if(!isset($params['show_title']))
 			$params['show_title'] = true;
+		if(!isset($params['payment_selector']))
+			$params['payment_selector'] = 0;
+		if($params['read_only'])
+			$params['payment_selector'] = 0;
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();

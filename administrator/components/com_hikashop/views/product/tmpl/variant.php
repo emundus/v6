@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,7 +22,7 @@ defined('_JEXEC') or die('Restricted access');
 	</div>
 	<div style="clear:both"></div>
 </div>
-<div id="hikashop_product_variant_edition_<?php echo $this->product->product_id; ?>">
+<div id="hikashop_product_variant_edition_<?php echo $this->product->product_id; ?>" class="hk-container-fluid">
 
 	<div class="hkc-xl-4 hkc-lg-6 hikashop_product_block hikashop_product_edit_general"><div>
 		<div class="hikashop_product_part_title hikashop_product_edit_general_title"><?php
@@ -188,9 +188,9 @@ window.productMgr.closeVariantEditor = function() { <?php echo $this->editor->js
 	if(hikashop_acl('product/edit/salestart')) { ?>
 			<dt class="hikashop_product_salestart"><label for="product_sale_start_img"><?php echo JText::_('PRODUCT_SALE_DATES'); ?></label></dt>
 			<dd class="hikashop_product_salestart"><?php
-				echo JHTML::_('calendar', hikashop_getDate((@$this->product->product_sale_start?@$this->product->product_sale_start:''),'%Y-%m-%d %H:%M'), 'data[variant][product_sale_start]','product_variant_sale_start','%Y-%m-%d %H:%M',array('size' => '20'));
+				echo JHTML::_('calendar', hikashop_getDate((@$this->product->product_sale_start?@$this->product->product_sale_start:''),'%Y-%m-%d %H:%M'), 'data[variant][product_sale_start]','product_variant_sale_start',hikashop_getDateFormat('%d %B %Y %H:%M'),array('size' => '20'));
 				echo ' <label for="product_sale_end_img" class="calendar-separator" style="font-weight:bold">' . JText::_('HIKA_RANGE_TO') . '</label> ';
-				echo JHTML::_('calendar', hikashop_getDate((@$this->product->product_sale_end?@$this->product->product_sale_end:''),'%Y-%m-%d %H:%M'), 'data[variant][product_sale_end]','product_variant_sale_end','%Y-%m-%d %H:%M',array('size' => '20'));
+				echo JHTML::_('calendar', hikashop_getDate((@$this->product->product_sale_end?@$this->product->product_sale_end:''),'%Y-%m-%d %H:%M'), 'data[variant][product_sale_end]','product_variant_sale_end',hikashop_getDateFormat('%d %B %Y %H:%M'),array('size' => '20'));
 			?></dd>
 <?php
 	}
@@ -268,7 +268,7 @@ window.productMgr.closeVariantEditor = function() { <?php echo $this->editor->js
 				$onWhat = 'onchange';
 				if($oneExtraField->field_type == 'radio')
 					$onWhat = 'onclick';
-				echo $this->fieldsClass->display($oneExtraField, $this->product->$fieldName, 'data[variant]['.$fieldName.']', false, ' '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\'product\',0,\''.$this->fieldsClass->prefix.'\');"');
+				echo $this->fieldsClass->display($oneExtraField, $this->product->$fieldName, 'data[variant]['.$fieldName.']', false, ' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'product\',0,\''.$this->fieldsClass->prefix.'\');"');
 			?></dd>
 		</dl>
 <?php		}
@@ -343,6 +343,10 @@ if(JoomlaCalendar && JoomlaCalendar.init){
 			JoomlaCalendar.init(elements[i]);
 		}
 	}, 500);
+}
+if(Joomla && Joomla.JoomlaTinyMCE && Joomla.JoomlaTinyMCE.setupEditors) {
+	var section = document.getElementById('hikashop_product_variant_edition');
+	Joomla.JoomlaTinyMCE.setupEditors(section);
 }
 </script>
 <?php

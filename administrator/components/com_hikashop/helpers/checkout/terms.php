@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -53,7 +53,7 @@ class hikashopCheckoutTermsHelper extends hikashopCheckoutHelperInterface {
 
 	public function getParams() {
 		$this->params['label']['attributes'] = 'rows="3" cols="30" placeholder="'.JText::_('PLEASE_ACCEPT_TERMS').'"';
-		return $this->params;
+		return parent::getParams();
 	}
 
 	public function check(&$controller, &$params) {
@@ -64,7 +64,7 @@ class hikashopCheckoutTermsHelper extends hikashopCheckoutHelperInterface {
 		if(!empty($cart->cart_params->$key))
 			return true;
 
-		$checkoutHelper->addMessage('terms.checkfailed', array(
+		$checkoutHelper->addMessage('terms_' . $params['src']['step'] . '_' .  $params['src']['pos'] . '.checkfailed', array(
 			JText::_('PLEASE_ACCEPT_TERMS_BEFORE_FINISHING_ORDER'),
 			'error'
 		));

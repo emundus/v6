@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -60,7 +60,7 @@ class updateController extends HikashopBridgeController {
 	}
 	function _iframe($url){
 		$app = JFactory::getApplication();
-		if($app->isAdmin()){
+		if(hikashop_isClient('administrator')){
 			$config =& hikashop_config();
 			$menu_style = $config->get('menu_style','title_bottom');
 			if(HIKASHOP_J30) $menu_style = 'content_top';
@@ -79,7 +79,7 @@ class updateController extends HikashopBridgeController {
 	}
 	function wizard(){
 		$app = JFactory::getApplication();
-		if(!$app->isAdmin()){
+		if(!hikashop_isClient('administrator')){
 			return;
 		}
 		$lang = JFactory::getLanguage();

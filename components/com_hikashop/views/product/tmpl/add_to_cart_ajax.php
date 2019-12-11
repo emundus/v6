@@ -1,16 +1,17 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 
 $enable_cart = !$this->config->get('catalogue', false) && $this->params->get('add_to_cart');
-$enable_wishlist = (hikashop_level(1) && $this->config->get('enable_wishlist', 1) && $this->params->get('add_to_wishlist', 0) && (!$this->config->get('hide_wishlist_guest', 1) || hikashop_loadUser() != null));
+$user = JFactory::getUser();
+$enable_wishlist = (hikashop_level(1) && $this->config->get('enable_wishlist', 1) && $this->params->get('add_to_wishlist', 0) && (!$this->config->get('hide_wishlist_guest', 1) || empty($user->guest)));
 if(!$enable_cart && !$enable_wishlist)
 	return;
 
@@ -31,6 +32,11 @@ if($global_on_listing){
 	$this->row->quantityFieldName = 'data['.$this->row->product_id.']';
 	$display_quantity_field = true;
 }
+
+$display_waitlist = (int)$this->params->get('product_waitlist', 0);
+$waitlist = (int)$this->config->get('product_waitlist', 0) && $display_waitlist;
+$waitlist_btn = !$in_stock && (hikashop_level(1) && ($waitlist == 2 || ($waitlist == 1 && (!empty($this->element->main->product_waitlist) || !empty($this->row->product_waitlist)))));
+
 
 $has_options = !empty($this->row->has_options) || (!$display_fields && $has_required_fields);
 
@@ -76,6 +82,14 @@ if($start_date > 0 && $start_date > $now) {
 ?>
 </span>
 <?php
+
+if($waitlist_btn) {
+?>
+	<a class="<?php echo $css_button; ?>" rel="nofollow" href="<?php echo hikashop_completeLink('product&task=waitlist&cid='.$this->row->product_id); ?>"><span><?php
+		echo JText::_('ADD_ME_WAITLIST');
+	?></span></a>
+<?php
+}
 
 if(($add_to_cart || $add_to_wishlist) && (($has_fields && $display_fields) || $display_quantity_field) && !$has_options && !$global_on_listing) {
 ?>

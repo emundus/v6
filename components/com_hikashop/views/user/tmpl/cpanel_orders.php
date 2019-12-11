@@ -1,15 +1,16 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 $url_itemid = (isset($this->url_itemid)) ? $this->url_itemid : '';
 $cancel_orders = false;
+$print_invoice = false;
 
 ?>
 <div class="hika_cpanel_main_top">
@@ -24,9 +25,9 @@ if(empty($this->cpanel_data->cpanel_orders)) {
 	</div>
 <?php
 }
-
+$cancel_url = '&cancel_url='.base64_encode(hikashop_currentURL());
 foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
-	$order_link = hikashop_completeLink('order&task=show&cid='.$order_id.$url_itemid);
+	$order_link = hikashop_completeLink('order&task=show&cid='.$order_id.$url_itemid.$cancel_url);
 ?>
 <div class="hk-card hk-card-default hk-card-order">
 	<div class="hk-card-header">
@@ -44,6 +45,7 @@ foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
 	<div class="hk-card-body">
 		<div class="hk-row-fluid">
 			<div class="hkc-sm-4" class="hika_cpanel_order_number">
+<?php if(!empty($order->extraData->topLeft)) { echo implode("\r\n", $order->extraData->topLeft); } ?>
 				<span class="hika_cpanel_title"><?php echo  JText::_('ORDER_NUMBER'); ?> : </span>
 				<span class="hika_cpanel_value"><?php echo $order->order_number; ?></span>
 <?php if(!empty($order->order_invoice_number)) { ?>
@@ -51,11 +53,16 @@ foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
 				<span class="hika_cpanel_title"><?php echo JText::_('INVOICE_NUMBER'); ?> : </span>
 				<span class="hika_cpanel_value"><?php echo $order->order_invoice_number; ?></span>
 <?php } ?>
+<?php if(!empty($order->extraData->bottomLeft)) { echo implode("\r\n", $order->extraData->bottomLeft); } ?>
 			</div>
 			<div class="hkc-sm-4 hika_cpanel_order_status">
+<?php if(!empty($order->extraData->topMiddle)) { echo implode("\r\n", $order->extraData->topMiddle); } ?>
 				<span class="order-label order-label-<?php echo $order->order_status; ?>"><?php echo hikashop_orderStatus($order->order_status); ?></span>
+<?php if(!empty($order->extraData->bottomMiddle)) { echo implode("\r\n", $order->extraData->bottomMiddle); } ?>
 			</div>
-			<div class="hkc-sm-4 hika_cpanel_order_action"><?php
+			<div class="hkc-sm-4 hika_cpanel_order_action">
+<?php if(!empty($order->extraData->topRight)) { echo implode("\r\n", $order->extraData->topRight); } ?>
+<?php
 		$dropData = array(
 			array(
 				'name' => '<i class="fas fa-search"></i> '. JText::_('HIKA_DETAILS'),
@@ -63,7 +70,8 @@ foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
 			)
 		);
 
-		if($this->config->get('print_invoice_frontend') && !empty($order->order_invoice_id)) {
+		if(!empty($order->show_print_button)) {
+			$print_invoice = true;
 			$dropData[] = array(
 				'name' => '<i class="fas fa-print"></i> '. JText::_('PRINT_INVOICE'),
 				'link' => '#print_invoice',
@@ -109,11 +117,14 @@ foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
 				array('type' => 'btn', 'right' => true, 'up' => false)
 			);
 		}
-			?></div>
+?>
+<?php if(!empty($order->extraData->bottomRight)) { echo implode("\r\n", $order->extraData->bottomRight); } ?>
+			</div>
 		</div>
 	</div>
 	<div class="hk-row-fluid">
 		<div class="hkc-md-8 hk-list-group hika_cpanel_products">
+<?php if(!empty($order->extraData->beforeProductsListing)) { echo implode("\r\n", $order->extraData->beforeProductsListing); } ?>
 <?php
 	$show_more = false;
 	$max_products = (int)$this->config->get('max_products_cpanel', 4);
@@ -188,8 +199,10 @@ foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
 <?php
 	}
 ?>
+<?php if(!empty($order->extraData->afterProductsListing)) { echo implode("\r\n", $order->extraData->afterProductsListing); } ?>
 		</div>
 		<div class="hkc-md-4" class="hika_cpanel_methods">
+<?php if(!empty($order->extraData->beforeInfo)) { echo implode("\r\n", $order->extraData->beforeInfo); } ?>
 			<dl class="hika_cpanel_order_methods">
 <?php if(!empty($order->payment)) { ?>
 				<dt><?php echo JText::_('HIKASHOP_PAYMENT_METHOD'); ?></dt>
@@ -198,28 +211,26 @@ foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
 <?php if(!empty($order->shippings)) { ?>
 				<dt><?php echo JText::_('HIKASHOP_SHIPPING_METHOD'); ?></dt>
 				<dd><?php
-		if(count($order->shippings) > 1 ) {
-?>
-				<ul><?php
-					foreach($order->shippings as $key => $value) {
-						 echo '<li>'.$value->shipping_name.'</li>';
-					}
-				?></ul>
-<?php
-		} else {
-			$s = reset($order->shippings);
-			echo $s->shipping_name;
+		$shippingClass = hikashop_get('class.shipping');
+		$shippings_data = $shippingClass->getAllShippingNames($order);
+		if(!empty($shippings_data)) {
+			if(count($shippings_data) > 1) {
+				echo '<ul><li>'.implode('</li><li>', $shippings_data).'</li></ul>';
+			} else {
+				echo reset($shippings_data);
+			}
 		}
-				?></dd>
+?></dd>
 <?php } ?>
 			</dl>
+<?php if(!empty($order->extraData->afterInfo)) { echo implode("\r\n", $order->extraData->afterInfo); } ?>
 		</div>
 	</div>
 </div>
 <?php
 }
 
-if(!empty($this->cpanel_data->cpanel_orders) && ($this->config->get('print_invoice_frontend') || $cancel_orders)) {
+if(!empty($this->cpanel_data->cpanel_orders) && ($print_invoice || $cancel_orders)) {
 	echo $this->popupHelper->display(
 		'',
 		'INVOICE',

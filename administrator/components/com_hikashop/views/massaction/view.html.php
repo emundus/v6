@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -661,7 +661,7 @@ var actionId = {};
 				}
 				break;
 			case 'date':
-				$html.= JHTML::_('calendar', hikashop_getDate(@$params['value'],'%Y-%m-%d %H:%M'), $params['name'],$params['id'],'%Y-%m-%d %H:%M',array('size'=>'20'));
+				$html.= JHTML::_('calendar', hikashop_getDate(@$params['value'],'%Y-%m-%d %H:%M'), $params['name'],$params['id'],hikashop_getDateFormat('%d %B %Y %H:%M'),array('size'=>'20'));
 				$html.= '<br/>';
 				break;
 			default:

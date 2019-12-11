@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -420,6 +420,7 @@ class hikashopVoteClass extends hikashopClass {
 			$voteType = 1;
 
 		$js = '
+if(typeof hikaVote !== "undefined") {
 hikaVote.setOptions({
 	itemId : "'.hikashop_getCID().'",
 	urls : {
@@ -428,6 +429,9 @@ hikaVote.setOptions({
 	},ctrl : "'.hikaInput::get()->getVar('ctrl','product').'",
 	both : "'.$voteType.'"
 });
+} else {
+	console.log(\'the HikaShop vote initialization JS is loaded while hikaVote is not available !\');
+}
 function hikashop_vote_useful(hikashop_vote_id, val) { return hikaVote.useful(hikashop_vote_id, val); }
 function hikashop_send_comment(){ return hikaVote.vote(0,"hikashop_vote_rating_id"); }
 function hikashop_send_vote(rating, from){ return hikaVote.vote(rating, from); }

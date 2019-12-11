@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_badge` (
 	`badge_quantity` varchar(255) NOT NULL DEFAULT '',
 	`badge_url` varchar(255) NOT NULL DEFAULT '',
 	`badge_access` varchar(255) NOT NULL DEFAULT 'all',
+	`badge_new_period` int(10) unsigned NOT NULL DEFAULT '0',
 	PRIMARY KEY (`badge_id`)
 ) ENGINE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;
 
@@ -237,6 +238,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_field` (
 	`field_categories` TEXT NULL,
 	`field_with_sub_categories` tinyint(1) NOT NULL DEFAULT '0',
 	`field_products` TEXT NULL,
+	`field_address_type` varchar(50) DEFAULT '',
 	`field_frontcomp` tinyint(3) unsigned NOT NULL DEFAULT '0',
 	`field_backend` tinyint(3) unsigned NOT NULL DEFAULT '1',
 	`field_backend_listing` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -515,7 +517,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_product` (
 	`product_sort_price` decimal(17,5) NOT NULL DEFAULT '0.00000',
 	`product_description_raw` text NULL,
 	`product_description_type` varchar(255) NULL,
-	`product_option_method` smallint(5) unsigned NOT NULL DEFAULT '0',
+	`product_option_method` VARCHAR(255) NOT NULL DEFAULT '',
 	`product_condition` varchar(255) NULL,
 	PRIMARY KEY (`product_id`),
 	UNIQUE KEY `product_code` (`product_code`),

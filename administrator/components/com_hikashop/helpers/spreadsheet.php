@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -129,6 +129,9 @@ class hikashopSpreadsheetHelper {
 	}
 
 	function writeText($row, $col, $value, $lastOne) {
+		if( empty($value) || is_array($value) || is_object($value)) {
+			$value = '';
+		}
 		if( $this->format == 1 ) {
 			$this->currLine = $row;
 			$len = strlen($value);
@@ -139,12 +142,10 @@ class hikashopSpreadsheetHelper {
 				$this->newLine();
 			$this->currLine = $row;
 
-			if(!empty($value) && !empty($this->excelSecurity) && in_array(substr($value, 0, 1), array('=','+','-','@')))
+			if(!empty($value) && !empty($this->excelSecurity) && in_array(@substr($value, 0, 1), array('=','+','-','@')))
 				$value = "'".$value;
 
-			if( empty($value) ) {
-				$value = '""';
-			} elseif( strpos($value, '"') !== false ) {
+			if( strpos($value, '"') !== false) {
 				$value = '"' . str_replace('"','""',$value) . '"';
 			} elseif( $this->forceQuote || (strpos($value, $this->separator) !== false) || (strpos($value, "\n") !== false) || (trim($value) != $value) ) {
 				$value = '"' . $value . '"';
@@ -176,7 +177,11 @@ class hikashopSpreadsheetHelper {
 			if(is_array($value))
 				continue;
 
-			if( !$this->forceText && is_numeric($value) && (preg_match('[^0-9]',$value) || ltrim($value, '0') === (string)$value) || '0' === (string)$value || '0.00000' === (string)$value) {
+			if(
+				!$this->forceText &&
+				is_numeric($value) &&
+				(preg_match('[^0-9]',$value) || ltrim($value, '0') === (string)$value || '0' === (string)$value || '0.00000' === (string)$value)
+			) {
 				$this->writeNumber($this->currLine, $i++, $value, $lastOne);
 			} else {
 				$this->writeText($this->currLine, $i++, $value, $lastOne);

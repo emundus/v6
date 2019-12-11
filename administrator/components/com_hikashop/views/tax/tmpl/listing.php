@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -43,9 +43,9 @@ defined('_JEXEC') or die('Restricted access');
 	if(!is_numeric($this->pageInfo->filter->filter_start) && !empty($this->pageInfo->filter->filter_start)) $this->pageInfo->filter->filter_start = strtotime($this->pageInfo->filter->filter_start);
 	if(!is_numeric($this->pageInfo->filter->filter_end) && !empty($this->pageInfo->filter->filter_end)) $this->pageInfo->filter->filter_end = strtotime($this->pageInfo->filter->filter_end);
 	echo JText::_('FROM').' ';
-	echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_start?@$this->pageInfo->filter->filter_start:''),'%d %B %Y'), 'filter_start','period_start','%Y-%m-%d',array('size'=>'10',''));
+	echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_start?@$this->pageInfo->filter->filter_start:''),'%d %B %Y'), 'filter_start','period_start',hikashop_getDateFormat('%d %B %Y'),array('size'=>'10',''));
 	echo ' '.JText::_('TO').' ';
-	echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_end?@$this->pageInfo->filter->filter_end:''),'%d %B %Y'), 'filter_end','period_end','%Y-%m-%d',array('size'=>'10',''));
+	echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_end?@$this->pageInfo->filter->filter_end:''),'%d %B %Y'), 'filter_end','period_end',hikashop_getDateFormat('%d %B %Y'),array('size'=>'10',''));
 	$this->category->multiple = true;
 	echo $this->category->display("filter_status",$this->pageInfo->filter->filter_status,'',false);
 ?>
@@ -100,6 +100,23 @@ defined('_JEXEC') or die('Restricted access');
 			<?php
 				$k = $i = 0;
 				foreach($this->rows as $row){
+					if (isset($row->tr_type)) {
+						if($row->tr_type == 'title') {
+							echo '<tr><td colspan="'. (4+$count_extrafields).'">'.$row->tax_namekey.'</td></tr>';
+							continue;
+						}
+?>
+				<tr class="<?php echo "row$k"; ?>">
+					<td class="hk_center">
+						<?php echo $this->pagination->getRowOffset($i); ?>
+					</td>
+					<td class="hk_center">
+					</td>
+					<td class="hk_center">
+						<p><?php echo $row->tax_namekey; ?></p>
+					</td>
+			<?php		
+				} else {
 			?>
 				<tr class="<?php echo "row$k"; ?>">
 					<td class="hk_center">
@@ -113,7 +130,9 @@ defined('_JEXEC') or die('Restricted access');
 							<?php echo $row->tax_namekey; ?>
 						</a>
 					</td>
-					<td>
+			<?php 
+				} 
+			?>		<td>
 						<?php echo $row->tax_rate*100.0; ?>%
 					</td>
 					<?php
@@ -142,7 +161,7 @@ defined('_JEXEC') or die('Restricted access');
 						}
 					?>
 				</tr>
-			<?php
+				<?php
 					$k = 1-$k;
 					$i++;
 				}

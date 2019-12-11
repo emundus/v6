@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -70,14 +70,50 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 			return;
 
 		$db = JFactory::getDBO();
-		$sql = 'SELECT * FROM #__content WHERE id = ' . intval($terms_article);
+		$sql = 'SELECT * FROM #__content WHERE id = ' . (int)$terms_article;
 		$db->setQuery($sql);
 		$data = $db->loadObject();
 
+		$lang = JFactory::getLanguage();
+		$currentLanguage = $lang->getTag();
+		if(!in_array($data->language, array('all', $currentLanguage)) ) {
+			$assoc = JLanguageAssociations::isEnabled();
+			if ($assoc) {
+				$data->associations = array();
+				if ($data->id != null) {
+					$associations = JLanguageAssociations::getAssociations('com_content', '#__content', 'com_content.item', $data->id);
+					foreach ($associations as $tag => $association) {
+						if($tag == $currentLanguage) {
+							$sql = 'SELECT * FROM #__content WHERE id = ' . (int)$association->id;
+							$db->setQuery($sql);
+							$data = $db->loadObject();
+
+						}
+					}
+				}
+			}
+		}
 		$article = '';
 		if (is_object($data))
 			$article = $data->introtext . $data->fulltext;
 		$this->assignRef('article', $article);
+	}
+	public function privacyconsent() {
+		$type = hikaInput::get()->getString('type', 'registration');
+		$userClass = hikashop_get('class.user');
+		$privacy = $userClass->getPrivacyConsentSettings($type);
+
+		if (empty($privacy) || empty($privacy['id']))
+			return;
+
+		$db = JFactory::getDBO();
+		$sql = 'SELECT * FROM #__content WHERE id = ' . intval($privacy['id']);
+		$db->setQuery($sql);
+		$data = $db->loadObject();
+
+		if (is_object($data))
+			$data->text = $data->introtext . $data->fulltext;
+		$this->assignRef('article', $data);
 	}
 
 	public function show() {
@@ -118,10 +154,13 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$app = JFactory::getApplication();
 
 		$this->checkout_data = array();
+		$this->hasSeparator = false;
 		$obj =& $this;
 		foreach($this->workflow['steps'][$this->workflow_step]['content'] as $k => &$content) {
 			$task = $content['task'];
 			$this->block_position = $k;
+			if($task == 'separator')
+				$this->hasSeparator = true;
 
 			$ctrl = hikashop_get('helper.checkout-' . $task);
 			if(!empty($ctrl)) {
@@ -215,6 +254,14 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		return true;
 	}
 
+	function getDescription(&$method) {
+		$name = 'shipping_description';
+		if(!empty($method->payment_id))
+			$name = 'payment_description';
+		return preg_replace('@(((?>src|href)=")((?!http|#)[^"]+"))@', '$2' . JURI::base() . '$3', $method->$name);
+
+	}
+
 	public function displayBlock($layout, $pos, $options) {
 		$ctrl = hikashop_get('helper.checkout-' . $layout);
 		if(!empty($ctrl)) {
@@ -230,14 +277,74 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 
 			$this->options = $previous_options;
 
-			return $ret;
+		} else {
+			$ret = '';
+			$app = JFactory::getApplication();
+			$obj =& $this;
+			$app->triggerEvent('onCheckoutStepDisplay', array($layout, &$ret, &$obj, $pos, $options));
+		}
+		if(!empty($options['process_content_tags'])) {
+			$ret = JHTML::_('content.prepare', $ret);
+		}
+		return $ret;
+	}
+
+
+	public function getGrid() {
+		if(empty($this->options['type']))
+			return;
+
+		$StepViews = $this->checkoutHelper->checkout_workflow['steps'][$this->workflow_step]['content'];
+		$flow = array();
+		foreach($StepViews as $k => $view) {
+			if($view['task'] == 'separator')
+				$flow[$k] = $view['params']['type'];
+		}
+		if(!count($flow))
+			return;
+		$columns = 1;
+		$stop = false;
+		foreach($flow as $k => $sep) {
+			if($this->module_position < $k)
+				$stop = true;
+			if($sep == 'horizontal') {
+				if($stop)
+					break;
+				$columns = 1;
+				continue;
+			}
+			$columns++;
 		}
 
-		$ret = '';
-		$app = JFactory::getApplication();
-		$obj =& $this;
-		$app->triggerEvent('onCheckoutStepDisplay', array($layout, &$ret, &$obj, $pos, $options));
-		return $ret;
+		$span = 1;
+		$row_fluid = 12;
+		switch($columns) {
+			case 12:
+			case 6:
+			case 4:
+			case 3:
+			case 2:
+			case 1:
+				$row_fluid = 12;
+				$span = $row_fluid / $columns;
+				break;
+			case 10:
+			case 8:
+			case 7:
+				$row_fluid = $columns;
+				$span = 1;
+				break;
+			case 5:
+				$row_fluid = 10;
+				$span = 2;
+				break;
+			case 9: // special case
+				$row_fluid = 10;
+				$span = 1;
+				break;
+		}
+
+		return array($row_fluid, $span);
 	}
 
 	public function getDisplayProductPrice(&$product, $unit = false) {
@@ -287,7 +394,8 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 			$cart = $this->checkoutHelper->getCart();
 			$products =& $cart->products;
 		}
-		$this->extraFields['item'] = $this->fieldClass->getFields('frontcomp', $products, 'item');
+		$this->extraFields['item'] = $this->fieldClass->getFields('display:checkout=1', $products, 'item');
+
 	}
 
 	public function state() {

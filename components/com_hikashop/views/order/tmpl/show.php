@@ -1,20 +1,22 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div id="hikashop_order_main">
 <?php
-$colspan = 3;
+$colspan = 4;
 if($this->invoice_type == 'order') {
 	echo $this->toolbarHelper->process($this->toolbar, $this->title);
-}
 ?>
 <form action="<?php echo hikashop_completeLink('order'.$this->url_itemid); ?>" method="post" name="adminForm" id="adminForm">
+<?php
+}
+?>
 	<table class="hikashop_order_main_table">
 		<tr>
 			<td>
@@ -96,7 +98,7 @@ if($this->invoice_type == 'order') {
 					<table cellpadding="1" width="100%">
 						<thead>
 							<tr>
-								<th class="hikashop_order_item_name_title title"><?php
+								<th class="hikashop_order_item_name_title title" colspan="2"><?php
 									echo JText::_('PRODUCT');
 								?></th>
 <?php
@@ -163,6 +165,14 @@ if($this->invoice_type == 'order') {
 <?php
 	$k=0;
 	$group = $this->config->get('group_options',0);
+	$imageHelper = hikashop_get('helper.image');
+	$width = (int)$this->config->get('cart_thumbnail_x', 50);
+	$height = (int)$this->config->get('cart_thumbnail_y', 50);
+	$image_options = array(
+		'default' => true,
+		'forcesize' => $this->config->get('image_force_size', true),
+		'scale' => $this->config->get('image_scale_mode','inside')
+	);
 	foreach($this->order->products as $product) {
 		$productData = null;
 		if(!empty($product->product_id) && !empty($this->products[ (int)$product->product_id ]))
@@ -171,6 +181,15 @@ if($this->invoice_type == 'order') {
 			continue;
 ?>
 							<tr class="row<?php echo $k;?>">
+								<td data-title="<?php echo JText::_('HIKA_IMAGE'); ?>" class="hikashop_order_item_image_value">
+<?php
+		$image_path = (!empty($product->images) ? @$product->images[0]->file_path : '');
+		$img = $imageHelper->getThumbnail($image_path, array('width' => $width, 'height' => $height), $image_options);
+		if($img->success) {
+			echo '<img class="hikashop_order_item_image" title="'.$this->escape(@$product->images[0]->file_description).'" alt="'.$this->escape(@$product->images[0]->file_name).'" src="'.$img->url.'"/>';
+		}
+?>
+								</td>
 								<td data-title="<?php echo JText::_('PRODUCT'); ?>" class="hikashop_order_item_name_value">
 <?php if($this->invoice_type == 'order' && !empty($product->product_id)) { ?>
 									<a class="hikashop_order_product_link" href="<?php echo hikashop_contentLink('product&task=show&cid='.$product->product_id.$this->url_itemid, $productData); ?>">
@@ -650,6 +669,10 @@ if($this->invoice_type == 'order') {
 	<input type="hidden" name="cancel_redirect" value="<?php echo hikaInput::get()->getString('cancel_redirect'); ?>" />
 	<input type="hidden" name="cancel_url" value="<?php echo hikaInput::get()->getString('cancel_url'); ?>" />
 	<?php echo JHTML::_( 'form.token' ); ?>
+<?php
+if($this->invoice_type == 'order') {
+?>
 </form>
+<?php } ?>
 </div>
 <div style="page-break-after:always"></div>

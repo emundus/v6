@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,9 +24,7 @@ if(!empty($this->categories)) {
 $app = JFactory::getApplication();
 if(empty($this->element)) {
 	if($this->config->get('404_when_product_not_found',1)){
-		header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", true, 404);
-		$app = JFactory::getApplication();
-		$app->enqueueMessage(JText::_('PRODUCT_NOT_FOUND'), 'error');
+		throw new Exception(JText::_('PRODUCT_NOT_FOUND'), 404);
 		echo '</div>';
 		return;
 	}
@@ -408,7 +406,8 @@ if($this->config->get('comments_feature') == 'jcomments') {
 			$product_id = $this->product->product_id;
 			$product_name = $this->product->product_name;
 		}
-		echo JComments::showComments($product_id, 'com_hikashop', $product_name);
+		if(class_exists('JComments'))
+			echo JComments::showComments($product_id, 'com_hikashop', $product_name);
 	}
 } elseif($this->config->get('comments_feature') == 'jomcomment') {
 	$comments = HIKASHOP_ROOT . 'plugins' . DS . 'content' . DS . 'jom_comment_bot.php';
@@ -418,13 +417,15 @@ if($this->config->get('comments_feature') == 'jcomments') {
 			$product_id = $this->product->main->product_id;
 		else
 			$product_id = $this->product->product_id;
-		echo jomcomment($product_id, 'com_hikashop');
+		if(function_exists('jomcomment'))
+			echo jomcomment($product_id, 'com_hikashop');
 	}
 } elseif($this->config->get('comments_feature') == 'komento') {
 	$comments = HIKASHOP_ROOT . 'components' . DS . 'com_komento' . DS . 'bootstrap.php';
 	if(file_exists($comments)) {
 		require_once ($comments);
-		echo KT::commentify('com_hikashop', $this->product, array('params' => ''));
+		if(class_exists('KT'))
+			echo KT::commentify('com_hikashop', $this->product, array('params' => ''));
 	}
 }
 ?>

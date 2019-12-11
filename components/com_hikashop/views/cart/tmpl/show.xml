@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<state>
+		<name>Carts / Wishlists display</name>
+		<param name="cart_type" type="radio" default="cart" label="Select a cart type" description="Select here the type of cart to display">
+			<option value="cart">Cart</option>
+			<option value="wishlist">Wishlist</option>
+		</param>
+	</state>
+	<layout title="COM_HIKASHOP_CART_FORM_VIEW_DEFAULT_TITLE">
+		<message></message>
+	</layout>
+	<fields name="params" addfieldpath="/components/com_hikashop/fields">
+		<fieldset name="basic" label="Select a type">
+			<field name="cart_type" type="radio" label="Select a cart type" default="cart" description="Select here the type of cart to display">
+				<option value="cart">Cart</option>
+				<option value="wishlist">Wishlist</option>
+			</field>
+		</fieldset>
+	</fields>
+</metadata>

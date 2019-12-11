@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,7 +16,7 @@ class productController extends hikashopController {
 	public function __construct($config = array(), $skip = false) {
 		parent::__construct($config, $skip);
 		$this->display = array_merge($this->display, array(
-			'updatecart', 'cart', 'cleancart', 'contact', 'compare', 'waitlist', 'send_email', 'add_waitlist', 'price', 'download'
+			'updatecart', 'cart', 'cleancart', 'contact', 'compare', 'waitlist', 'send_email', 'add_waitlist', 'price', 'download', 'filter'
 		));
 	}
 
@@ -34,12 +34,24 @@ class productController extends hikashopController {
 
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
 		if(in_array($tmpl, array('ajax', 'raw'))) {
-			$this->display();
-			exit;
+			if(!headers_sent())
+				header('X-Robots-Tag: noindex');
+			$result = $this->display();
+
+			$filter = hikaInput::get()->getCmd('filter', '');
+			if(!$filter)
+				exit;
+			return $result;
 		}
 		return $this->display();
 	}
+	public function filter() {
+		hikaInput::get()->set('layout', 'filter');
 
+		if(!headers_sent())
+			header('X-Robots-Tag: noindex');
+		return $this->display();
+	}
 	public function send_email() {
 		JSession::checkToken('request') || die('Invalid Token');
 
@@ -58,8 +70,8 @@ class productController extends hikashopController {
 
 		$app = JFactory::getApplication();
 		if(empty($element->email)) {
-			$app->enqueueMessage(JText::_('VALID_EMAIL'));
-			return $this->contact();
+			$app->enqueueMessage(JText::_('VALID_EMAIL'), 'error');
+			$send = false;
 		}
 
 		$config =& hikashop_config();
@@ -70,7 +82,7 @@ class productController extends hikashopController {
 		$app->triggerEvent('onBeforeSendContactRequest', array(&$element, &$send));
 
 		jimport('joomla.mail.helper');
-		if($element->email && method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($element->email)){
+		if(!empty($element->email) && method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($element->email)){
 			$app->enqueueMessage(JText::_('EMAIL_INVALID'), 'error');
 			$send = false;
 		}
@@ -85,6 +97,11 @@ class productController extends hikashopController {
 			$send = false;
 		} else {
 			$element->altbody = strip_tags($element->altbody);
+		}
+
+		if(!empty($element->consentcheck) && empty($element->consent)) {
+			$app->enqueueMessage(JText::_('PLEASE_AGREE_TO_PRIVACY_POLICY'), 'error');
+			$send = false;
 		}
 
 		if(!$send) {
@@ -328,6 +345,8 @@ class productController extends hikashopController {
 
 		$product_id = hikaInput::get()->getInt('product_id', 0);
 		$module_id = hikaInput::get()->getInt('module_id', 0);
+		$reset_cart = hikaInput::get()->getInt('reset_cart', 0);
+
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
 
 		if(empty($_COOKIE)) {
@@ -336,6 +355,7 @@ class productController extends hikashopController {
 					'ret' => 0,
 					'message' => JText::_('COOKIES_REQUIRED_FOR_OPERATION')
 				);
+				hikashop_cleanBuffers();
 				echo json_encode($ret);
 				exit;
 			}
@@ -370,12 +390,17 @@ class productController extends hikashopController {
 		if(empty($cart_id))
 			$cart_id = $cartClass->getCurrentCartId($cart_type);
 
+		if($cart_id && $reset_cart) {
+			$cart_id = $cartClass->resetCart($cart_id);
+		}
+
 		if($cart_id === false && $cart_type == 'wishlist' && hikashop_loadUser() == false) {
 			if(in_array($tmpl, array('ajax', 'raw'))) {
 				$ret = array(
 					'ret' => 0,
 					'message' => JText::_('LOGIN_REQUIRED_FOR_WISHLISTS')
 				);
+				hikashop_cleanBuffers();
 				echo json_encode($ret);
 				exit;
 			}
@@ -471,6 +496,7 @@ class productController extends hikashopController {
 		$cart = $cartClass->getFullCart($cart_id);
 		if(in_array($tmpl, array('ajax', 'raw'))) {
 			$ret = $this->getAjaxCartData($used_data, $cart, $status);
+			hikashop_cleanBuffers();
 			echo json_encode($ret);
 			exit;
 		}

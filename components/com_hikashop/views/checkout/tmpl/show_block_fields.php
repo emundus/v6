@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,6 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 $cart = $this->checkoutHelper->getCart();
 if(!hikashop_level(2) || empty($cart->order_fields))
 	return;
+$fields = hikashop_copy($cart->order_fields);
 if(!empty($this->options['fields'])){
 	$ids = is_string($this->options['fields']) ? explode(',', $this->options['fields']) :  $this->options['fields'];
 	$unset = array();
@@ -21,7 +22,7 @@ if(!empty($this->options['fields'])){
 	}
 	if(count($unset)){
 		foreach($unset as $u){
-			unset($cart->order_fields[$u]);
+			unset($fields[$u]);
 		}
 	}
 }
@@ -47,7 +48,7 @@ if(empty($this->ajax)) {
 	<legend><?php echo JText::_('ADDITIONAL_INFORMATION'); ?></legend>
 <?php
 	}
-	foreach($cart->order_fields as $fieldName => $oneExtraField) {
+	foreach($fields as $fieldName => $oneExtraField) {
 		$oneExtraField->registration_page = @$this->registration_page;
 ?>
 	<div class="hkcontrol-group control-group hikashop_checkout_<?php echo $fieldName;?>_line" id="hikashop_order_<?php echo $this->step . '_' . $this->module_position . '_' . $oneExtraField->field_namekey; ?>">
@@ -69,11 +70,11 @@ if(empty($this->ajax)) {
 			echo $this->fieldClass->display(
 				$oneExtraField,
 				(isset($_SESSION['hikashop_order_data']) && is_object($_SESSION['hikashop_order_data']) && isset($_SESSION['hikashop_order_data']->$fieldName) && !is_null($_SESSION['hikashop_order_data']->$fieldName)) ? $_SESSION['hikashop_order_data']->$fieldName : @$cart->cart_fields->$fieldName,
-				'checkout[fields]['.$fieldName.']',
+				'data[order_' . $this->step . '_' . $this->module_position.']['.$fieldName.']',
 				false,
 				' class="hkform-control" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'order_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
 				false,
-				$cart->order_fields,
+				$fields,
 				$cart->cart_fields,
 				false
 			);

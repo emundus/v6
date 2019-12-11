@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.0.1
+ * @version    4.2.2
  * @author     hikashop.com
- * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 .hk-container {
@@ -25,9 +25,20 @@
 }
 .hk-container-fluid {
 	margin-right:auto; margin-left:auto; padding-left:5px; padding-right:5px;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	box-sizing:border-box;
+	display: -webkit-box;
+	display: -moz-box;
+	display: box;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-flex-flow: row wrap;
+	-moz-flex-flow: row wrap;
+	flex-flow: row wrap;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	text-rendering: optimizespeed;
 }
 .hk-row {
 	margin-left:-5px; margin-right:-5px;
@@ -35,19 +46,47 @@
 	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 }
+
+.hk-container-fluid .hk-row {
+	width: 100%;
+}
+
+.hikashop_main_content.hk-container-fluid, .hk-container-fluid .hk-container-fluid {
+    display: block;
+}
 .hk-row-fluid {
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	box-sizing:border-box;
+	display: -webkit-box;
+	display: -moz-box;
+	display: box;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-flex-flow: row wrap;
+	-moz-flex-flow: row wrap;
+	flex-flow: row wrap;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	text-rendering: optimizespeed;
 }
 .hkc-1, .hkc-2, .hkc-3, .hkc-4, .hkc-5, .hkc-6, .hkc-7, .hkc-8, .hkc-9, .hkc-10, .hkc-11, .hkc-12,
 .hkc-xs-1, .hkc-sm-1, .hkc-md-1, .hkc-lg-1, .hkc-xl-1, .hkc-xs-2, .hkc-sm-2, .hkc-md-2, .hkc-lg-2, .hkc-xl-2, .hkc-xs-3, .hkc-sm-3, .hkc-md-3, .hkc-lg-3, .hkc-xl-3, .hkc-xs-4, .hkc-sm-4, .hkc-md-4, .hkc-lg-4, .hkc-xl-4, .hkc-xs-5, .hkc-sm-5, .hkc-md-5, .hkc-lg-5, .hkc-xl-5, .hkc-xs-6, .hkc-sm-6, .hkc-md-6, .hkc-lg-6, .hkc-xl-6, .hkc-xs-7, .hkc-sm-7, .hkc-md-7, .hkc-lg-7, .hkc-xl-7, .hkc-xs-8, .hkc-sm-8, .hkc-md-8, .hkc-lg-8, .hkc-xl-8, .hkc-xs-9, .hkc-sm-9, .hkc-md-9, .hkc-lg-9, .hkc-xl-9, .hkc-xs-10, .hkc-sm-10, .hkc-md-10, .hkc-lg-10, .hkc-xl-10, .hkc-xs-11, .hkc-sm-11, .hkc-md-11, .hkc-lg-11, .hkc-xl-11, .hkc-xs-12, .hkc-sm-12, .hkc-md-12, .hkc-lg-12 {
-	position:relative; min-height:1px; padding-left:5px; padding-right:5px;
+	min-height:1px; padding-left:5px; padding-right:5px;
 	-webkit-box-sizing:border-box;
 	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 }
-.hkc-1, .hkc-2, .hkc-3, .hkc-4, .hkc-5, .hkc-6, .hkc-7, .hkc-8, .hkc-9, .hkc-10, .hkc-11, .hkc-12 {
+.hkc-xs-12, .hkc-xs-11, .hkc-xs-10, .hkc-xs-9, .hkc-xs-8, .hkc-xs-7, .hkc-xs-6, .hkc-xs-5, .hkc-xs-4, .hkc-xs-3, .hkc-xs-2, .hkc-xs-1,
+.hkc-sm-12, .hkc-sm-11, .hkc-sm-10, .hkc-sm-9, .hkc-sm-8, .hkc-sm-7, .hkc-sm-6, .hkc-sm-5, .hkc-sm-4, .hkc-sm-3, .hkc-sm-2, .hkc-sm-1,
+.hkc-md-12, .hkc-md-11, .hkc-md-10, .hkc-md-9, .hkc-md-8, .hkc-md-7, .hkc-md-6, .hkc-md-5, .hkc-md-4, .hkc-md-3, .hkc-md-2, .hkc-md-1,
+.hkc-lg-12, .hkc-lg-11, .hkc-lg-10, .hkc-lg-9, .hkc-lg-8, .hkc-lg-7, .hkc-lg-6, .hkc-lg-5, .hkc-lg-4, .hkc-lg-3, .hkc-lg-2, .hkc-lg-1,
+.hkc-xl-12, .hkc-xl-11, .hkc-xl-10, .hkc-xl-9, .hkc-xl-8, .hkc-xl-7, .hkc-xl-6, .hkc-xl-5, .hkc-xl-4, .hkc-xl-3, .hkc-xl-2, .hkc-xl-1{
+	width: 100%;
+}
+.hkc-1, .hkc-2, .hkc-3, .hkc-4, .hkc-5, .hkc-6, .hkc-7, .hkc-8, .hkc-9, .hkc-10, .hkc-11, .hkc-12,
+
+.hk-container-fluid .hk-row div[class^=' hkc-'], .hk-container-fluid .hk-row div[class*=' hkc-']{
 	float:left;
 }
 .hkc-12 { width:100%; }
@@ -63,10 +102,6 @@
 .hkc-2 { width:16.66666667%; }
 .hkc-1 { width:8.33333333%; }
 @media (min-width:576px) {
-	.hkc-xs-1, .hkc-xs-2, .hkc-xs-3, .hkc-xs-4, .hkc-xs-5, .hkc-xs-6, .hkc-xs-7, .hkc-xs-8, .hkc-xs-9, .hkc-xs-10, .hkc-xs-11, .hkc-xs-12 {
-		float:left;
-	}
-	.hkc-xs-12 { width:100%; }
 	.hkc-xs-11 { width:91.66666667%; }
 	.hkc-xs-10 { width:83.33333333%; }
 	.hkc-xs-9 { width:75%; }
@@ -80,8 +115,6 @@
 	.hkc-xs-1 { width:8.33333333%; }
 }
 @media (min-width:768px) {
-	.hkc-sm-1, .hkc-sm-2, .hkc-sm-3, .hkc-sm-4, .hkc-sm-5, .hkc-sm-6, .hkc-sm-7, .hkc-sm-8, .hkc-sm-9, .hkc-sm-10, .hkc-sm-11, .hkc-sm-12 { float:left; }
-	.hkc-sm-12 { width:100%; }
 	.hkc-sm-11 { width:91.66666667%; }
 	.hkc-sm-10 { width:83.33333333%; }
 	.hkc-sm-9 { width:75%; }
@@ -95,8 +128,6 @@
 	.hkc-sm-1 { width:8.33333333%; }
 }
 @media (min-width:992px) {
-	.hkc-md-1, .hkc-md-2, .hkc-md-3, .hkc-md-4, .hkc-md-5, .hkc-md-6, .hkc-md-7, .hkc-md-8, .hkc-md-9, .hkc-md-10, .hkc-md-11, .hkc-md-12 { float:left; }
-	.hkc-md-12 { width:100%; }
 	.hkc-md-11 { width:91.66666667%; }
 	.hkc-md-10 { width:83.33333333%; }
 	.hkc-md-9 { width:75%; }
@@ -110,8 +141,6 @@
 	.hkc-md-1 { width:8.33333333%; }
 }
 @media (min-width:1200px) {
-	.hkc-lg-1, .hkc-lg-2, .hkc-lg-3, .hkc-lg-4, .hkc-lg-5, .hkc-lg-6, .hkc-lg-7, .hkc-lg-8, .hkc-lg-9, .hkc-lg-10, .hkc-lg-11, .hkc-lg-12 { float:left; }
-	.hkc-lg-12 { width:100%; }
 	.hkc-lg-11 { width:91.66666667%; }
 	.hkc-lg-10 { width:83.33333333%; }
 	.hkc-lg-9 { width:75%; }
@@ -128,8 +157,6 @@
 	.hkc-lg-clear { clear:left; }
 }
 @media (min-width:1600px) {
-	.hkc-xl-1, .hkc-xl-2, .hkc-xl-3, .hkc-xl-4, .hkc-xl-5, .hkc-xl-6, .hkc-xl-7, .hkc-xl-8, .hkc-xl-9, .hkc-xl-10, .hkc-xl-11, .hkc-xl-12 { float:left; }
-	.hkc-xl-12 { width:100%; }
 	.hkc-xl-11 { width:91.66666667%; }
 	.hkc-xl-10 { width:83.33333333%; }
 	.hkc-xl-9 { width:75%; }
@@ -467,6 +494,13 @@ input[type=checkbox].hkform-control, input[type=radio].hkform-control {
 .hkform-horizontal .hkform-group {
 	margin-left: -5px;
 	margin-right: -5px;
+	display: -webkit-box;
+	display: -moz-box;
+	display: box;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flexbox;
+	display: flex;
 }
 .hkform-horizontal .hkcontrol-group:before,
 .hkform-horizontal .hkcontrol-group:after {
@@ -855,8 +889,8 @@ a.hikabtn.hikadisabled, .hika_j2 a.btn.disabled {
 .hika_j2 .btn-info:hover, .hikabtn-info:hover { color:#fff; background-color:#31b0d5; border-color:#269abc; }
 
 div.hikashop_checkout_loading { position:relative; }
-div.hikashop_checkout_loading div.hikashop_checkout_loading_elem,
-div.hikashop_checkout_loading div.hikashop_checkout_loading_spinner {
+div.hikashop_checkout_loading > div.hikashop_checkout_loading_elem,
+div.hikashop_checkout_loading > div.hikashop_checkout_loading_spinner {
 	position:absolute;
 	z-index:999;
 	top:0px;
@@ -864,15 +898,15 @@ div.hikashop_checkout_loading div.hikashop_checkout_loading_spinner {
 	right:0px;
 	bottom:0px;
 }
-div.hikashop_checkout_loading div.hikashop_checkout_loading_elem {
+div.hikashop_checkout_loading > div.hikashop_checkout_loading_elem {
 	background-color:#ffffff;
 	opacity:0.5;
 	filter:alpha(opacity=50);
 }
-div.hikashop_checkout_loading div.hikashop_checkout_loading_spinner {
+div.hikashop_checkout_loading > div.hikashop_checkout_loading_spinner {
 	background:url('../images/spinner_02.gif') no-repeat center;
 }
-div.hikashop_checkout_loading div.hikashop_checkout_loading_spinner.small_spinner {
+div.hikashop_checkout_loading > div.hikashop_checkout_loading_spinner.small_spinner {
 	background:url('../images/spinner.gif') no-repeat center;
 }
 .hikashop_cart_product_quantity_refresh, .hikashop_cart_product_quantity_delete {
@@ -1226,7 +1260,7 @@ div.hikashop_messages li { list-style-type : none; }
 }
 
 
-.hikashop_products_listing {
+.hikashop_products_listing, .hikashop_products_pagination {
 	clear:both;
 }
 @media only screen and (max-width: 640px) {
@@ -1250,7 +1284,7 @@ div.hikashop_messages li { list-style-type : none; }
 div.hikashop_filter_collapsable_content_mobile {
 	display: block;
 }
-@media only screen and (max-width: 640px) {
+@media only screen and (max-width: 800px) {
 	.hikashop_filter_collapsable_title_mobile {
 		display: block;
 	}
@@ -1282,4 +1316,15 @@ div.hikashop_filter_collapsable_content_mobile {
 
 .hikashop_order_main_table .key {
 	text-align: right;
+}
+
+.hikashop_products.display_list .hikashop_product {
+    display: block;
+    width: 100%;
+	-webkit-transition: width 0.3s;
+    transition: width 0.3s;
+}
+.hikashop_product {
+	-webkit-transition: width 0.3s;
+	transition: width 0.3s;
 }

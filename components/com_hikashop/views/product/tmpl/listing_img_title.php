@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -33,7 +33,19 @@ if($this->config->get('thumbnail', 1)) {
 		array('default' => true,'forcesize'=>$this->config->get('image_force_size',true),'scale'=>$this->config->get('image_scale_mode','inside'))
 	);
 	if($img->success) {
-		echo '<img class="hikashop_product_listing_image" title="'.$this->escape(@$this->row->file_description).'" alt="'.$this->escape(@$this->row->file_name).'" src="'.$img->url.'"/>';
+		$html = '<img class="hikashop_product_listing_image" title="'.$this->escape(@$this->row->file_description).'" alt="'.$this->escape(@$this->row->file_name).'" src="'.$img->url.'"/>';
+		if($this->config->get('add_webp_images', 1) && function_exists('imagewebp') && !empty($img->webpurl)) {
+			$html = '
+			<picture>
+				<source srcset="'.$img->webpurl.'" type="image/webp">
+				<source srcset="'.$img->url.'" type="image/'.$img->ext.'">
+				'.$html.'
+			</picture>
+			';
+		}
+		echo $html;
+?>		<meta itemprop="image" content=<?php echo $img->url; ?>/>
+<?php
 	}
 	if($this->params->get('display_badges', 1)) {
 		$this->classbadge->placeBadges($this->image, $this->row->badges, -10, 0);
@@ -70,6 +82,7 @@ if($this->config->get('thumbnail', 1)) {
 		</a>
 <?php } ?>
 	</span>
+	<meta itemprop="name" content="<?php echo $this->escape(strip_tags($this->row->product_name)); ?>">
 	<!-- EO PRODUCT NAME -->
 
 	<!-- PRODUCT CODE -->
@@ -117,6 +130,7 @@ if(!empty($this->productFields)) {
 
 	<!-- PRODUCT VOTE -->
 <?php
+
 if($this->params->get('show_vote')) {
 	$this->setLayout('listing_vote');
 	echo $this->loadTemplate();
@@ -155,6 +169,38 @@ if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->g
 }
 ?>
 	<!-- EO COMPARISON AREA -->
+
+	<!-- CONTACT US AREA -->
+<?php
+	$contact = (int)$this->config->get('product_contact', 0);
+	if(hikashop_level(1) && $this->params->get('product_contact_button', 0) && ($contact == 2 || ($contact == 1 && !empty($this->row->product_contact)))) {
+		$css_button = $this->config->get('css_button', 'hikabtn');
+?>
+	<a href="<?php echo hikashop_completeLink('product&task=contact&cid=' . (int)$this->row->product_id . $this->itemid); ?>" class="<?php echo $css_button; ?>"><?php
+		echo JText::_('CONTACT_US_FOR_INFO');
+	?></a>
+<?php
+	}
+?>
+
+	<!-- EO CONTACT US AREA -->
+
+	<!-- PRODUCT DETAILS BUTTON AREA -->
+<?php
+	$details_button = (int)$this->params->get('details_button', 0);
+	if($details_button) {
+		$css_button = $this->config->get('css_button', 'hikabtn');
+?>
+	<a href="<?php echo $link; ?>" class="<?php echo $css_button; ?>"><?php
+		echo JText::_('PRODUCT_DETAILS');
+	?></a>
+<?php
+	}
+?>
+
+	<!-- EO PRODUCT DETAILS BUTTON AREA -->
+
+	<meta itemprop="url" content="<?php echo $link; ?>">
 </div>
 <?php
 

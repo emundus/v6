@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -46,6 +46,12 @@ echo $this->leftmenu(
 			echo $this->delayTypeCarts->display('config[cart_retaining_period_check_frequency]', $this->config->get('cart_retaining_period_check_frequency', 86400));
 			?><br/><?php
 			echo JText::sprintf('LAST_CHECK', hikashop_getDate($this->config->get('cart_retaining_period_checked')));
+		?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('use_trash');?>><?php echo JText::_('HIKA_USE_TRASH'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[use_trash]', '', $this->config->get('use_trash', 0));
 		?></td>
 	</tr>
 	<tr>

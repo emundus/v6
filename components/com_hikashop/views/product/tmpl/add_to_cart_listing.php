@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -79,7 +79,7 @@ if(empty($this->row->has_options) && ($this->row->product_quantity == -1 || $thi
 				$itemData,
 				'data[item]['.$oneExtraField->field_namekey.']',
 				false,
-				' '.$onWhat.'="if (\'function\' == typeof window.hikashopToggleFields) { hikashopToggleFields(this.value,\''.$fieldName.'\',\'item\',0); }"'
+				' '.$onWhat.'="if (\'function\' == typeof window.hikashopToggleFields) { window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'item\',0); }"'
 			);
 					?></span>
 				</td>
@@ -131,7 +131,7 @@ if($this->config->get('show_quantity_field') < 2) {
 				$this->row->product_min_per_order = 1;
 			$min_quantity = (int)$this->row->product_min_per_order;
 			if((int)$this->row->product_max_per_order == 0)
-				$max_quantity = $min_quantity * 15;
+				$max_quantity = $min_quantity * $this->config->get('quantity_select_max_default_value', 15);
 ?>
 		<select id="hikashop_listing_quantity_select_<?php echo $this->row->product_id;?>" class="tochosen" onchange="var qty_field = document.getElementById('hikashop_listing_quantity_<?php echo $this->row->product_id;?>'); qty_field.value = this.value;">
 <?php

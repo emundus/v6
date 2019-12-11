@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,7 +22,7 @@ class checkoutLegacyController extends hikashopController {
 
 	function __construct($config = array(), $skip = false) {
 		parent::__construct($config, $skip);
-		$this->display = array('convert','step','notice','state','deleteaddress','notify','after_end','activate_page','activate','resetcart','threedsecure','printcart','termsandconditions','show','');
+		$this->display = array('convert','step','notice','state','deleteaddress','notify','after_end','activate_page','activate','resetcart','threedsecure','printcart','termsandconditions','show','privacyconsent','');
 		if(!$skip) {
 			$this->registerDefaultTask('step');
 		}
@@ -56,6 +56,11 @@ class checkoutLegacyController extends hikashopController {
 
 	function authorize($task) {
 		return $this->isIn($task, array('display'));
+	}
+
+	public function privacyconsent() {
+		hikaInput::get()->set('layout', 'privacyconsent');
+		return $this->display();
 	}
 
 	function printcart() {

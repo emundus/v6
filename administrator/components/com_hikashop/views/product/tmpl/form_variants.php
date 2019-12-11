@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -29,6 +29,7 @@ if(!hikashop_acl('product/edit/variants') || empty($this->product->product_id))
 				<input onchange="window.hikashop.checkAll(this, 'hikashop_product_variant_checkbox_');" type="checkbox" id="hikashop_product_variant_checkbox_general" value=""/>
 			</th>
 			<th style="width:25px"></th>
+			<th><?php echo JText::_('PRODUCT_CODE'); ?></th>
 <?php
 	$default_variants = array();
 	$characteristics = array();
@@ -62,6 +63,9 @@ if(!hikashop_acl('product/edit/variants') || empty($this->product->product_id))
 				<input onchange="window.productMgr.checkVariant(this, <?php echo $variant->product_id; ?>);" type="checkbox" id="hikashop_product_variant_checkbox_<?php echo $variant->product_id; ?>" value="<?php echo $variant->product_id; ?>"/>
 			</td>
 			<td style="text-align:center"><a href="#edit:<?php echo $variant->product_id; ?>" onclick="return window.productMgr.editVariant(<?php echo $variant->product_id; ?>);"><i class="fas fa-pen"></i></a></td>
+			<td>
+				<?php echo $variant->product_code; ?>
+			</td>
 <?php
 		$cpt = 0;
 		foreach($this->product->characteristics as $characteristic) {

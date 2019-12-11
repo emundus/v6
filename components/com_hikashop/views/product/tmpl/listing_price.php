@@ -1,17 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 $config =& hikashop_config();
-if((int)$this->params->get('show_original_price',-1) == -1) {
-	$this->params->set('show_original_price', (int)$config->get('show_original_price'));
-}
 $class = (!empty($this->row->prices) && count($this->row->prices) > 1) ? ' hikashop_product_several_prices' : '';
 
 if(isset($this->element->main->product_msrp) && !(@$this->row->product_msrp > 0.0))
@@ -20,7 +17,7 @@ if(isset($this->row->product_msrp) && $this->row->product_msrp > 0.0 && hikaInpu
 	$show_msrp = true;
 	$mainCurr = $this->currencyHelper->mainCurrency();
 	$currCurrency = hikashop_getCurrency();
-	if($currCurrency == $mainCurr) {
+	if($currCurrency == $mainCurr && !empty($this->row->prices)) {
 		$price = reset($this->row->prices);
 		if(!empty($this->unit) && isset($price->unit_price))
 			$price =& $price->unit_price;
@@ -69,9 +66,8 @@ if(!empty($show_msrp)) {
 		if($this->params->get('price_with_tax', 3) == 3) {
 			$this->params->set('price_with_tax', (int)$config->get('price_with_tax'));
 		}
-		if($this->params->get('show_discount', 3) == 3) {
-			$this->params->set('show_discount', (int)$config->get('show_discount'));
-		}
+
+		$microDataForCurrentProduct = false;
 
 		foreach($this->row->prices as $k => $price) {
 			if($first)$first=false;
@@ -79,6 +75,8 @@ if(!empty($show_msrp)) {
 			if(!empty($this->unit) && isset($price->unit_price)) {
 				$price =& $price->unit_price;
 			}
+			if(empty($price->price_currency_id))
+				continue;
 			$start = JText::_('PRICE_BEGINNING_'.$i);
 			if($start != 'PRICE_BEGINNING_'.$i) {
 				echo $start;
@@ -139,13 +137,18 @@ if(!empty($show_msrp)) {
 			}
 
 			$attributes = '';
-			if(!empty($this->element->product_id) && !@$this->element->displayed_price_microdata) {
+			if(!empty($this->element->product_id) && !$microDataForCurrentProduct) {
 				$round = $this->currencyHelper->getRounding($price->price_currency_id, true);
-				$this->element->displayed_price_microdata = true;
+				$prefix = 'data-';
+				$microDataForCurrentProduct = true;
+				if(empty($this->displayed_price_microdata)) {
+					$this->displayed_price_microdata = true;
+					$prefix = '';
+				}
 				if($this->params->get('price_with_tax')) {
-					$attributes = ' itemprop="price" content="'. str_replace(',','.',$this->currencyHelper->round($price->price_value_with_tax, $round, 0, true)) .'"';
+					$attributes = ' '.$prefix.'itemprop="price" '.$prefix.'content="'. str_replace(',','.',$this->currencyHelper->round($price->price_value_with_tax, $round, 0, true)) .'"';
 				} else {
-					$attributes = ' itemprop="price" content="'. str_replace(',','.',$this->currencyHelper->round($price->price_value, $round, 0, true)) .'"';
+					$attributes = ' '.$prefix.'itemprop="price" '.$prefix.'content="'. str_replace(',','.',$this->currencyHelper->round($price->price_value, $round, 0, true)) .'"';
 				}
 			}
 			echo '<span class="'.implode(' ',$classes).'"'.$attributes.'>';

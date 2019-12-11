@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -276,7 +276,7 @@ window.localPage.createBox = function(el,href,options) {
 	function image($content, $url, $id = null, $attr = '', $params = array()) {
 		$html = '';
 		$config = hikashop_config();
-		$popupMode = $config->get('image_popup_mode', 'mootools');
+		$popupMode = $config->get('image_popup_mode', 'shadowbox');
 
 		switch($popupMode) {
 			case 'shadowbox':
@@ -325,7 +325,7 @@ window.localPage.createBox = function(el,href,options) {
 		static $init = false;
 		if($init === false) {
 			$config = hikashop_config();
-			$shadowboxMode = $config->get('image_popup_mode', 'mootools');
+			$shadowboxMode = $config->get('image_popup_mode', 'shadowbox');
 			$doc = JFactory::getDocument();
 			if($shadowboxMode != 'shadowbox-embbeded') {
 				$doc->addStyleSheet('https://cdn.hikashop.com/shadowbox/shadowbox.css');

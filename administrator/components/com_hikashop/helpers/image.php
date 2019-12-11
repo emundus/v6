@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -34,7 +34,7 @@ class hikashopImageHelper {
 		$this->uploadFolder_url = str_replace(DS,'/',$uploadFolder);
 		$this->uploadFolder = JPATH_ROOT.DS.$uploadFolder;
 
-		if($app->isAdmin()) {
+		if(hikashop_isClient('administrator')) {
 			$this->uploadFolder_url = '../'.$this->uploadFolder_url;
 		}else{
 			$this->uploadFolder_url = rtrim(JURI::base(true),'/').'/'.$this->uploadFolder_url;
@@ -74,7 +74,7 @@ class hikashopImageHelper {
 		}
 
 		$app = JFactory::getApplication();
-		if($app->isAdmin()) {
+		if(hikashop_isClient('administrator')) {
 			$app->enqueueMessage('The PHP GD extension could not be found. Thus, it is impossible to generate thumbnails in PHP from your images. If you want HikaShop to generate thumbnails you need to install/activate GD or ask your hosting company to do so.');
 		}
 
@@ -203,7 +203,7 @@ class hikashopImageHelper {
 
 		static $done = false;
 		$app = JFactory::getApplication();
-		if($app->isAdmin() && !$done) {
+		if(hikashop_isClient('administrator') && !$done) {
 			$done = true;
 			$app->enqueueMessage('The '.$this->image_mode.' library for thumbnails creation is installed and activated on your website. However, it is not configured to support &quot;'.$extension.'&quot; images. Please make sure that you\'re using a valid image extension and contact your hosting company or system administrator in order to make sure that the GD library on your web server supports the image extension: '.$extension);
 		}
@@ -798,6 +798,7 @@ class hikashopImageHelper {
 				$fullFilename = HIKASHOP_MEDIA.'images'.DS . ltrim($ret->path, DS);
 				$ret->url = rtrim(HIKASHOP_IMAGES, '/') . '/' . ltrim($ret->path, '/');
 				$ret->origin_url = rtrim(HIKASHOP_IMAGES, '/') . '/' . ltrim($ret->path, '/');
+				$ret->default_image = true;
 				$ret->filename = $ret->path;
 			} else {
 				$fullFilename = $this->uploadFolder . $ret->path;
@@ -823,6 +824,11 @@ class hikashopImageHelper {
 					break;
 			}
 		}
+
+		if(!isset($options['background'])) {
+			$options['background'] = $config->get('images_stripes_background', '');
+		}
+
 		if(!empty($options['background']) && is_string($options['background']) && strtolower($options['background']) != '#ffffff') {
 			$optString .= 'c'.trim(strtoupper($options['background']), '#');
 		}
@@ -831,7 +837,9 @@ class hikashopImageHelper {
 
 		$destFolder = 'thumbnails' . DS . $size['y'] . 'x' . $size['x'] . $optString;
 
-		$extension = $this->getFileExtension($filename); // strtolower(substr($filename, strrpos($filename, '.') + 1));
+		$ret->ext = $extension = $this->getFileExtension($filename); // strtolower(substr($filename, strrpos($filename, '.') + 1));
+		if($ret->ext == 'jpg')
+			$ret->ext = 'jpeg';
 
 		$origin = new stdClass();
 		if($extension == 'svg') {
@@ -866,9 +874,30 @@ class hikashopImageHelper {
 				if(empty($ret->origin_url))
 					$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
 				list($ret->width, $ret->height) = getimagesize($cachePath . $destFolder . DS . $filename);
+
+
+				if($config->get('add_webp_images', 1) && function_exists('imagewebp')) {
+
+					$status = true;
+					$webpfile = preg_replace('#\.'. $extension.'$#i','.webp', $filename);
+					if(!JFile::exists($cachePath . $destFolder . DS . $webpfile)) {
+						$resThumb = $this->getImage($cachePath . $destFolder . DS . $filename, $extension);
+						if(empty($options['webp_quality']))
+							$options['webp_quality'] = $config->get('webp_image_quality', 80);
+						if(in_array($resThumb['ext'], array('gif','png')))
+							imagepalettetotruecolor($resThumb['res']);
+						$status = imagewebp($resThumb['res'], $cachePath . $destFolder . DS . $webpfile, $options['webp_quality']);
+					}
+
+					if($status)
+						$ret->webpurl = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $destFolder . DS . $webpfile);
+
+				}
+
 				return $ret;
 			}
 		}
+
 
 		if($scaling === false && empty($options['forcesize'])) {
 			$ret->success = true;
@@ -880,6 +909,24 @@ class hikashopImageHelper {
 				$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
 			else
 				$ret->url = $ret->origin_url;
+
+			if($config->get('add_webp_images', 1) && function_exists('imagewebp') && empty($ret->default_image)) {
+				$webpfile = preg_replace('#\.'. $extension.'$#i','.webp', $fullFilename);
+				$status = true;
+				if(!JFile::exists($webpfile)) {
+					$resMain = $this->getImage($fullFilename, $extension);
+					if(empty($options['webp_quality']))
+							$options['webp_quality'] = $config->get('webp_image_quality', 80);
+					if(in_array($resMain['ext'], array('gif','png')))
+						imagepalettetotruecolor($resMain['res']);
+					$status = imagewebp($resMain['res'], $webpfile, $options['webp_quality']);
+				}
+
+				if($status) {
+					$webpfile = preg_replace('#\.'. $extension.'$#i','.webp', $filename);
+					$ret->webpurl = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $webpfile);
+				}
+			}
 			return $ret;
 		}
 		unset($ret->url);
@@ -922,7 +969,7 @@ class hikashopImageHelper {
 
 		$resMain = $this->getImage($fullFilename, $extension);
 		if(!$resMain)
-			return false;
+			return $ret;
 
 		$options['scaling'] = $scaling;
 		$thumbSize = array(
@@ -930,8 +977,6 @@ class hikashopImageHelper {
 			'y' => empty($options['forcesize']) || empty($size['y']) ? $scaling[1] : $size['y'],
 		);
 		$resThumb = $this->createThumbRes($resMain, $thumbSize, $options);
-
-		$this->freeRes($resMain);
 
 		switch($extension) {
 			case 'png':
@@ -942,6 +987,8 @@ class hikashopImageHelper {
 				$this->setResQuality($resThumb, $quality['jpg']);
 				break;
 		}
+
+		$this->freeRes($resMain);
 
 		if(!empty($options['radius']) && (int)$options['radius'] > 2)
 			$this->setResCorners($resThumb, (int)$options['radius']);
@@ -954,9 +1001,10 @@ class hikashopImageHelper {
 		$imageContent = $this->getImageResContent($resThumb);
 		$status = ($imageContent !== false && $imageContent !== null);
 
-		$this->freeRes($resThumb);
+
 
 		if($cachePath === false) {
+			$this->freeRes($resThumb);
 			$ret->success = $status;
 			$ret->data = $imageContent;
 			return $ret;
@@ -970,6 +1018,18 @@ class hikashopImageHelper {
 			$ret->url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $ret->path);
 			if(empty($ret->origin_url))
 				$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
+
+			if($config->get('add_webp_images', 1) && function_exists('imagewebp')) {
+				if(empty($options['webp_quality']))
+					$options['webp_quality'] = $config->get('webp_image_quality', 80);
+				$webpfile = preg_replace('#\.'. $resThumb['ext'].'$#i','.webp', $filename);
+
+				if(in_array($resThumb['ext'], array('gif','png')))
+					imagepalettetotruecolor($resThumb['res']);
+				$status = imagewebp($resThumb['res'], $cachePath . $destFolder . DS . $webpfile, $options['webp_quality']);
+				if($status)
+					$ret->webpurl = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $destFolder . DS . $webpfile);
+			}
 		} else  {
 			static $image_generation_warning = null;
 			if($image_generation_warning === null) {
@@ -978,6 +1038,8 @@ class hikashopImageHelper {
 				$image_generation_warning = true;
 			}
 		}
+
+		$this->freeRes($resThumb);
 
 		return $ret;
 	}

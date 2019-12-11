@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,7 @@ class ProductController extends hikashopController {
 	var $orderingMap ='ordering';
 	var $groupVal = 0;
 
-	function __construct($config = array()) {
+	public function __construct($config = array()) {
 		parent::__construct($config);
 		$this->display = array(
 			'unpublish','publish',
@@ -28,12 +28,13 @@ class ProductController extends hikashopController {
 			'form_price_edit',
 			'getprice','addimage','selectimage','addfile','selectfile','file_entry',
 			'variant','updatecart','export',
+			'trashlist',
 			'galleryimage','galleryselect',
 			'selection','useselection',
 			'getTree','findTree',''
 		);
 		$this->modify = array_merge($this->modify, array(
-			'managevariant', 'variants', 'save_translation', 'copy', 'characteristic'
+			'managevariant', 'variants', 'save_translation', 'copy', 'characteristic', 'untrash', 'purge'
 		));
 		$this->modify_views = array_merge($this->modify_views, array(
 			'edit_translation', 'priceaccess', 'unpublish', 'publish'
@@ -43,7 +44,7 @@ class ProductController extends hikashopController {
 			$this->publish_return_view = 'variant';
 	}
 
-	function edit(){
+	public function edit(){
 		hikaInput::get()->set('hidemainmenu',1);
 		hikaInput::get()->set('layout', 'form');
 		if(hikaInput::get()->getInt('legacy', 0) == 1)
@@ -51,25 +52,25 @@ class ProductController extends hikashopController {
 		return $this->display();
 	}
 
-	function priceaccess(){
+	public function priceaccess(){
 		hikaInput::get()->set('layout', 'priceaccess');
 		return parent::display();
 	}
 
-	function form_price_edit(){
+	public function form_price_edit(){
 		hikaInput::get()->set('layout', 'form_price_edit');
 		parent::display();
 		exit;
 	}
 
-	function edit_translation(){
+	public function edit_translation(){
 		hikaInput::get()->set('layout', 'edit_translation');
 		if(hikaInput::get()->getInt('legacy', 0) == 1)
 			hikaInput::get()->set('layout', 'edit_translation_legacy');
 		return parent::display();
 	}
 
-	function save_translation(){
+	public function save_translation(){
 		$product_id = hikashop_getCID('product_id');
 		$productClass = hikashop_get('class.product');
 		$element = $productClass->get($product_id);
@@ -82,7 +83,7 @@ class ProductController extends hikashopController {
 		$document->addScriptDeclaration('window.top.hikashop.closeBox();');
 	}
 
-	function managevariant() {
+	public function managevariant() {
 		$id = $this->store();
 		if($id) {
 			hikaInput::get()->set('cid',$id);
@@ -92,7 +93,7 @@ class ProductController extends hikashopController {
 		}
 	}
 
-	function updatecart() {
+	public function updatecart() {
 		$product_id = hikaInput::get()->getInt('cid');
 		$productClass = hikashop_get('class.product');
 		$product = $productClass->get($product_id);
@@ -100,10 +101,10 @@ class ProductController extends hikashopController {
 		$id = $menusClass->loadAMenuItemId('','');
 		if(!empty($id))
 			$id = '&Itemid='.$id;
-		echo '<textarea style="width:100%" rows="5"><a class="hikashop_html_add_to_cart_link" href="'. hikashop_completeLink('product&task=updatecart&qty=1&cid='.$product_id.$id, false, false, false, true).'">'.JText::_('ADD_TO_CART').'</a></textarea>';
+		echo '<textarea style="width:100%" rows="5"><a class="hikashop_html_add_to_cart_link" href="'. hikashop_completeLink('product&task=updatecart&quantity=1&cid='.$product_id.$id, false, false, false, true).'">'.JText::_('ADD_TO_CART').'</a></textarea>';
 	}
 
-	function save() {
+	public function save() {
 		$result = parent::store();
 		if(!$result)
 			return $this->edit();
@@ -116,19 +117,23 @@ class ProductController extends hikashopController {
 		}
 	}
 
-	function save2new() {
+	public function save2new() {
 		$result = $this->store(true);
 		if($result)
 			hikaInput::get()->set('product_id', 0);
 		return $this->edit();
 	}
 
-	function copy() {
+	public function copy() {
 		$products = hikaInput::get()->get('cid', array(), 'array');
 		$result = true;
 		if(!empty($products)) {
 			$importHelper = hikashop_get('helper.import');
 			foreach($products as $product) {
+				if(!$product) {
+					$result = false;
+					continue;
+				}
 				if(!$importHelper->copyProduct($product))
 					$result = false;
 			}
@@ -140,10 +145,22 @@ class ProductController extends hikashopController {
 			else
 				$app->enqueueMessage(JText::_( 'HIKASHOP_SUCC_SAVED' ));
 		}
+
+		$product_id = hikaInput::get()->getInt('product_id');
+		if($product_id) {
+			if($result && !empty($importHelper->products) && count($importHelper->products)) {
+				$main = reset($importHelper->products);
+				if(!empty($main->product_id)) {
+					$url = hikashop_completeLink('product&task=edit&cid[]='.$main->product_id);
+					$app->enqueueMessage(JText::sprintf( 'ACCESS_COPY_HERE', $url ));
+				}
+			}
+			return $this->edit();
+		}
 		return $this->listing();
 	}
 
-	function variant() {
+	public function variant() {
 		hikashop_nocache();
 		hikaInput::get()->set('layout', 'variant');
 
@@ -268,27 +285,27 @@ class ProductController extends hikashopController {
 		exit;
 	}
 
-	function export(){
+	public function export(){
 		hikaInput::get()->set('layout', 'export');
 		return parent::display();
 	}
 
-	function orderdown(){
+	public function orderdown(){
 		$this->getGroupVal();
 		return parent::orderdown();
 	}
 
-	function orderup(){
+	public function orderup(){
 		$this->getGroupVal();
 		return parent::orderup();
 	}
 
-	function saveorder(){
+	public function saveorder(){
 		$this->getGroupVal();
 		return parent::saveorder();
 	}
 
-	function getGroupVal(){
+	public function getGroupVal(){
 		$app = JFactory::getApplication();
 		$this->groupVal = $app->getUserStateFromRequest( HIKASHOP_COMPONENT.'.product.filter_id','filter_id',0,'string');
 		if(!is_numeric($this->groupVal)){
@@ -297,27 +314,27 @@ class ProductController extends hikashopController {
 		}
 	}
 
-	function selectcategory(){
+	public function selectcategory(){
 		hikaInput::get()->set('layout', 'selectcategory');
 		return parent::display();
 	}
 
-	function addcategory(){
+	public function addcategory(){
 		hikaInput::get()->set('layout', 'addcategory');
 		return parent::display();
 	}
 
-	function selectrelated(){
+	public function selectrelated(){
 		hikaInput::get()->set('layout', 'selectrelated');
 		return parent::display();
 	}
 
-	function addrelated(){
+	public function addrelated(){
 		hikaInput::get()->set('layout', 'addrelated');
 		return parent::display();
 	}
 
-	function addimage(){
+	public function addimage(){
 		if($this->_saveFile())
 			hikaInput::get()->set('layout', 'addimage');
 		else
@@ -325,12 +342,12 @@ class ProductController extends hikashopController {
 		return parent::display();
 	}
 
-	function selectimage(){
+	public function selectimage(){
 		hikaInput::get()->set('layout', 'selectimage');
 		return parent::display();
 	}
 
-	function addfile(){
+	public function addfile(){
 		$ret = $this->_saveFile();
 		if($ret)
 			hikaInput::get()->set('layout', 'addfile');
@@ -339,7 +356,7 @@ class ProductController extends hikashopController {
 		return parent::display();
 	}
 
-	function getSizeFile($url) {
+	public function getSizeFile($url) {
 		if(substr($url, 0, 4) != 'http')
 			return @filesize($url);
 
@@ -352,7 +369,7 @@ class ProductController extends hikashopController {
 		return strlen(stream_get_contents($fp));
 	}
 
-	function _saveFile() {
+	protected function _saveFile() {
 		$file = new stdClass();
 		$file->file_id = hikashop_getCID('file_id');
 		$formData = hikaInput::get()->get('data', array(), 'array');
@@ -494,12 +511,12 @@ class ProductController extends hikashopController {
 		return true;
 	}
 
-	function selectfile(){
+	public function selectfile(){
 		hikaInput::get()->set('layout', 'selectfile');
 		return parent::display();
 	}
 
-	function galleryimage() {
+	public function galleryimage() {
 		hikaInput::get()->set('layout', 'galleryimage');
 		return parent::display();
 	}
@@ -512,7 +529,7 @@ class ProductController extends hikashopController {
 		exit;
 	}
 
-	function galleryselect(){
+	public function galleryselect(){
 		$formData = hikaInput::get()->get('data', array(), 'array');
 		$filesData = hikaInput::get()->get('files', array(), 'array');
 
@@ -536,7 +553,7 @@ class ProductController extends hikashopController {
 		return parent::display();
 	}
 
-	function getprice(){
+	public function getprice() {
 		$price = hikaInput::get()->getVar('price');
 		$price=hikashop_toFloat($price);
 		$tax_id = hikaInput::get()->getInt('tax_id');
@@ -560,26 +577,75 @@ class ProductController extends hikashopController {
 		exit;
 	}
 
-	function remove(){
-		$cids = hikaInput::get()->get('cid', array(), 'array');
-		$variant = hikaInput::get()->getInt( 'variant' );
-		$class = hikashop_get('class.'.$this->type);
-		$num = $class->delete($cids);
+	public function remove() {
 		$app = JFactory::getApplication();
+		$config = hikashop_config();
+
+		$cids = hikaInput::get()->get('cid', array(), 'array');
+		$variant = hikaInput::get()->getInt('variant');
+
+		$productClass = hikashop_get('class.'.$this->type);
+		if($config->get('use_trash', 0)) {
+			$num = $productClass->trash($cids);
+		} else {
+			$num = $productClass->delete($cids);
+		}
+
 		$app->enqueueMessage(JText::sprintf('SUCC_DELETE_ELEMENTS',$num), 'message');
-		if($variant){
-			hikaInput::get()->set('cid',hikaInput::get()->getInt('parent_id'));
+		if($variant) {
+			hikaInput::get()->set('cid', hikaInput::get()->getInt('parent_id'));
 			return $this->variant();
 		}
 		return $this->listing();
 	}
 
-	function selection() {
+	public function trashlist() {
+		$app = JFactory::getApplication();
+		$config = hikashop_config();
+
+		if((int)$config->get('use_trash', 0) == 0)
+			$app->redirect(hikashop_completeLink('product&task=listing', false, true));
+
+		hikaInput::get()->set('layout', 'trashlist');
+		return parent::display();
+	}
+
+	public function untrash() {
+		$app = JFactory::getApplication();
+		$config = hikashop_config();
+
+		if((int)$config->get('use_trash', 0) == 0)
+			$app->redirect(hikashop_completeLink('product&task=listing', false, true));
+
+		$cids = hikaInput::get()->get('cid', array(), 'array');
+		$productClass = hikashop_get('class.product');
+		$num = $productClass->untrash($cids);
+		$app->enqueueMessage(JText::sprintf('SUCC_UNTRASH_ELEMENTS',$num), 'message');
+
+		$app->redirect(hikashop_completeLink('product&task=trashlist', false, true));
+	}
+
+	public function purge() {
+		$app = JFactory::getApplication();
+		$config = hikashop_config();
+
+		if((int)$config->get('use_trash', 0) == 0)
+			$app->redirect(hikashop_completeLink('product&task=listing', false, true));
+
+		$cids = hikaInput::get()->get('cid', array(), 'array');
+		$productClass = hikashop_get('class.product');
+		$num = $productClass->delete($cids);
+		$app->enqueueMessage(JText::sprintf('SUCC_DELETE_ELEMENTS',$num), 'message');
+
+		$app->redirect(hikashop_completeLink('product&task=trashlist', false, true));
+	}
+
+	public function selection() {
 		hikaInput::get()->set('layout', 'selection');
 		return parent::display();
 	}
 
-	function useselection() {
+	public function useselection() {
 		hikaInput::get()->set('layout', 'useselection');
 		return parent::display();
 	}
@@ -705,7 +771,7 @@ class ProductController extends hikashopController {
 		}
 	}
 
-	function getTree() {
+	public function getTree() {
 		hikashop_nocache();
 		hikashop_cleanBuffers();
 
@@ -728,5 +794,5 @@ class ProductController extends hikashopController {
 		echo '[]';
 		exit;
 	}
-	function findTree() { return $this->getTree(); }
+	public function findTree() { return $this->getTree(); }
 }

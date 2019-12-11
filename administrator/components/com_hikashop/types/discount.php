@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -55,7 +55,7 @@ window.hikashop.ready( function(){ hikashopToggleDiscount(\''.$value.'\'); });
 
 		if ($jsInit !== true) {
 			$display_format = 'data.discount_code';
-			if ($app->isAdmin()) {
+			if (hikashop_isClient('administrator')) {
 				$display_format = 'data.id + " - " + data.discount_code';
 			}
 
@@ -104,7 +104,7 @@ window.localPage.fieldRemDiscount = function(el, name) {
 		}
 
 		$discount_display_name = $discount_code;
-		if ($app->isAdmin()) {
+		if (hikashop_isClient('administrator')) {
 			$discount_display_name = $discount_id.' - '.$discount_code;
 		}
 

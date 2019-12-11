@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -91,20 +91,27 @@ class UserController extends hikashopController {
 	public function saveaddress() {
 		$addressClass = hikashop_get('class.address');
 		$oldData = null;
-
-		if(!empty($_REQUEST['address']['address_id'])){
-			$oldData = $addressClass->get($_REQUEST['address']['address_id']);
+		$type = '';
+		if(!empty($_REQUEST['data']['address']['address_id'])) {
+			$oldData = $addressClass->get($_REQUEST['data']['address']['address_id']);
+			if(!empty($oldData->address_type))
+				$type = $oldData->address_type . '_';
+		} else {
+			if(in_array(@$_REQUEST['data']['address']['address_type'], array('billing', 'shipping')))
+				$type = $_REQUEST['data']['address']['address_type'] . '_';
 		}
+		$type .= 'address';
 		$fieldClass = hikashop_get('class.field');
-		$addressData = $fieldClass->getInput('address',$oldData);
+		$addressData = $fieldClass->getInput(array('address', $type),$oldData);
+
 		$ok = true;
-		if(empty($addressData)){
+		if(empty($addressData)) {
 			$ok=false;
-		}else{
+		}else {
 			if(in_array(@$addressData->address_type, array('billing', '', 'both','shipping')))
 				$address_id = $addressClass->save($addressData);
 		}
-		if(!$ok || !@$address_id){
+		if(!$ok || !@$address_id) {
 			$app = JFactory::getApplication();
 			echo '<html><head><script type="text/javascript">javascript: history.go(-1);</script></head><body></body></html>';
 			exit;

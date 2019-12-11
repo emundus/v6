@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -35,26 +35,31 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 	if(!empty($this->element->extraData->rightBegin))
 		echo implode("\r\n",$this->element->extraData->rightBegin);
+
+	$itemprop_offer = '';
+	if (!empty($this->element->prices))
+		$itemprop_offer = 'itemprop="offers" itemscope itemtype="https://schema.org/Offer"';
 ?>
-	<span id="hikashop_product_price_main" class="hikashop_product_price_main" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+	<span id="hikashop_product_price_main" class="hikashop_product_price_main" <?php echo $itemprop_offer; ?>>
 <?php
 	if($this->params->get('show_price') && (empty($this->displayVariants['prices']) || $this->params->get('characteristic_display') != 'list')) {
 		$this->row = & $this->element;
 		$this->setLayout('listing_price');
 		echo $this->loadTemplate();
 
-?>
-		<meta itemprop="availability" content="https://schema.org/<?php echo ($this->row->product_quantity != 0) ? 'InStock' : 'OutOfstock' ;?>" />
-<?php
+		if (!empty($this->element->prices)) {
+?>			<meta itemprop="availability" content="https://schema.org/<?php echo ($this->row->product_quantity != 0) ? 'InStock' : 'OutOfstock' ;?>" />
+<?php	}
 
 		$CurrId = hikashop_getCurrency();
 		$null = null;
 		$currency = $this->currencyHelper->getCurrencies($CurrId, $null);
 		$CurrCode = $currency[$CurrId]->currency_code;
-?>
-		<meta itemprop="priceCurrency" content="<?php echo $CurrCode; ?>" />
-<?php
-		}
+
+		if (!empty($this->element->prices)) {
+?>			<meta itemprop="priceCurrency" content="<?php echo $CurrCode; ?>" />
+<?php	}
+	}
 ?>
 	</span>
 	<div id="hikashop_product_vote_mini" class="hikashop_product_vote_mini">

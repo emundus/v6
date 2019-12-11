@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,25 +12,25 @@ $id_td = '';
 if(isset($this->ids)){
 	$id_td = $this->tab_id.'_'.$this->data_id.'_'.$this->table.'_'.$this->column;
 	echo '<div class="massaction-edition">
-			<a onclick="var target = document.getElementById(\''.$id_td.'\'); if(target.rel == \'edit\'){onEditSquare(\'save\',target,\''.$this->table.'_'.$this->column.'\',\''.$this->data_id.'\',\''.$this->table.'\',\''.$this->tab_id.'\');}">
-				<img src="../media/com_hikashop/images/ok.png" alt>
-				<span>Save</span>
+			<a class="btn btn-success" onclick="var target = document.getElementById(\''.$id_td.'\'); if(target.rel == \'edit\'){onEditSquare(\'save\',target,\''.$this->table.'_'.$this->column.'\',\''.$this->data_id.'\',\''.$this->table.'\',\''.$this->tab_id.'\');}">
+				<i class="fa fa-save"></i>
+				 <span>'.JText::_('HIKA_SAVE').'</span>
 			</a>
-			<a onclick="var target = document.getElementById(\''.$id_td.'\'); if(target.rel == \'edit\'){onEditSquare(\'cancel\',target,\''.$this->table.'_'.$this->column.'\',\''.$this->data_id.'\',\''.$this->table.'\',\''.$this->tab_id.'\');}">
-				<img src="../media/com_hikashop/images/cancel.png" alt>
-				<span>Cancel</span>
+			<a class="btn btn-danger" onclick="var target = document.getElementById(\''.$id_td.'\'); if(target.rel == \'edit\'){onEditSquare(\'cancel\',target,\''.$this->table.'_'.$this->column.'\',\''.$this->data_id.'\',\''.$this->table.'\',\''.$this->tab_id.'\');}">
+				<i class="fa fa-times"></i>
+				 <span>'.JText::_('HIKA_CANCEL').'</span>
 			</a>
 		</div>';
 }else if(!isset($this->ids)){
 	$id_td = $this->tab_id.'_'.$this->table.'_'.$this->column;
 	echo '<div>
-			<a onclick="var target = document.getElementById(\''.$id_td.'\'); if(target.rel == \'edit\'){onEditColumn(\'save\',target,\''.$this->table.'\',\''.$this->column.'\',\''.$this->tab_id.'\');}">
-				<img src="../media/com_hikashop/images/ok.png" alt>
-				<span>Save</span>
+			<a class="btn btn-success" onclick="var target = document.getElementById(\''.$id_td.'\'); if(target.rel == \'edit\'){onEditColumn(\'save\',target,\''.$this->table.'\',\''.$this->column.'\',\''.$this->tab_id.'\');}">
+				<i class="fa fa-save"></i>
+				 <span>'.JText::_('HIKA_SAVE').'</span>
 			</a>
-			<a ="var target = document.getElementById(\''.$id_td.'\'); if(target.rel == \'edit\'){onEditColumn(\'cancel\',target,\''.$this->table.'\',\''.$this->column.'\',\''.$this->tab_id.'\');}">
-				<img src="../media/com_hikashop/images/cancel.png" alt>
-				<span>Cancel</span>
+			<a class="btn btn-danger" onclick="var target = document.getElementById(\''.$id_td.'\'); if(target.rel == \'edit\'){onEditColumn(\'cancel\',target,\''.$this->table.'\',\''.$this->column.'\',\''.$this->tab_id.'\');}">
+				<i class="fa fa-times"></i>
+				 <span>'.JText::_('HIKA_CANCEL').'</span>
 			</a>
 		</div>';
 }

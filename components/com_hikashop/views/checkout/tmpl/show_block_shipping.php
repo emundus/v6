@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -70,9 +70,57 @@ if(!empty($cart->usable_methods->shipping)) {
 	</ul>
 <?php
 		}
+
+		if($this->options['shipping_selector'] == 2) {
+?>
+	<fieldset class="hika_shipping_field hikashop_checkout_shipping_block">
+		<select id="hikashop_shipping_selector_<?php echo $this->step.'_'.$this->module_position; ?>"
+				name="checkout[shipping][<?php echo $shipping_group_key; ?>][id]"
+				class="hikashop_field_dropdown"
+				onchange="window.checkout.shippingSelected(this.options[this.selectedIndex]);">
+<?php
+			foreach($cart->usable_methods->shipping as $shipping) {
+				if($several_groups && $shipping->shipping_warehouse_id != $shipping_group_key)
+					continue;
+
+				$selected = false; // (!empty($cart->shipping) && $shipping->shipping_id == $cart->shipping->shipping_id);
+				if(!empty($cart->shipping)) {
+					$shipping_id = is_numeric($shipping->shipping_id) ? (int)$shipping->shipping_id : $shipping->shipping_id;
+					foreach($cart->shipping as $s) {
+						$s_id = is_numeric($s->shipping_id) ? (int)$s->shipping_id : $s->shipping_id;
+						if($s_id === $shipping_id && (!$several_groups || $s->shipping_warehouse_id === $shipping->shipping_warehouse_id)) {
+							$selected = true;
+							$shipping_json[$shipping_group_key] = (int)$shipping->shipping_id;
+							break;
+						}
+					}
+				}
+
+				$input_data = array(
+					'step' => $this->step,
+					'pos' => $this->module_position,
+					'block' => 'shipping',
+					'type' => $shipping->shipping_type,
+					'warehouse' => $shipping_group_key,
+					'id' => $shipping->shipping_id,
+				);
+?>
+			<option value="<?php echo $shipping->shipping_id;?>"
+				<?php echo ($selected ? ' selected="selected"' : ''); ?>
+				data-hk-checkout="<?php echo $this->escape(json_encode($input_data)); ?>">
+				<?php echo $shipping->shipping_name;?>
+			</option><?php
+			}
+?>
+		</select>
+	</fieldset>
+<?php
+		}
+		else {
 ?>
 	<table style="width:100%" class="hikashop_shipping_methods_table table table-bordered table-striped table-hover">
 <?php
+		}
 		foreach($cart->usable_methods->shipping as $shipping) {
 			if($several_groups && $shipping->shipping_warehouse_id != $shipping_group_key)
 				continue;
@@ -102,14 +150,15 @@ if(!empty($cart->usable_methods->shipping)) {
 				'warehouse' => $shipping_group_key,
 				'id' => $shipping->shipping_id,
 			);
+			if($this->options['shipping_selector'] != 2) {
 ?>
-	<tr><td>
+<tr><td>
 <?php
-			if(empty($this->options['read_only'])){
+				if(empty($this->options['read_only'])){
 ?>
 		<input class="hikashop_checkout_shipping_radio" type="radio" name="checkout[shipping][<?php echo $shipping_group_key; ?>][id]" id="<?php echo $input_id; ?>" data-hk-checkout="<?php echo $this->escape(json_encode($input_data)); ?>" onchange="window.checkout.shippingSelected(this);" value="<?php echo $shipping->shipping_id;?>"<?php echo ($selected ? ' checked="checked"' : ''); ?>/>
 <?php
-			}
+				}
 ?>
 		<label for="<?php echo $input_id; ?>" style="cursor:pointer;">
 			<span class="hikashop_checkout_shipping_name"><?php echo $shipping->shipping_name;?></span>
@@ -118,75 +167,80 @@ if(!empty($cart->usable_methods->shipping)) {
 			echo $this->checkoutHelper->getDisplayPrice($shipping, 'shipping', $this->options);
 		?></span>
 <?php
-			if(!empty($shipping->shipping_images)) {
+				if(!empty($shipping->shipping_images)) {
 ?>
 		<span class="hikashop_checkout_shipping_images">
 <?php
-				$images = explode(',', $shipping->shipping_images);
-				foreach($images as $image) {
-					$img = $this->checkoutHelper->getPluginImage($image, 'shipping');
-					if(empty($img))
-						continue;
+					$images = explode(',', $shipping->shipping_images);
+					foreach($images as $image) {
+						$img = $this->checkoutHelper->getPluginImage($image, 'shipping');
+						if(empty($img))
+							continue;
 ?>
 			<img src="<?php echo $img->url; ?>" alt=""/>
 <?php
-				}
+					}
 ?>
 		</span>
 <?php
-			}
+				}
 ?>
 <?php
-			if(!empty($shipping->shipping_description)) {
+				if(!empty($shipping->shipping_description)) {
 ?>
 		<div class="hikashop_checkout_shipping_description"><?php
-			echo $shipping->shipping_description;
+			echo $this->getDescription($shipping);
 		?></div>
 <?php
+				}
 			}
-
-		if(empty($this->options['read_only']) && !empty($shipping->custom_html)) {
+			if(empty($this->options['read_only']) && !empty($shipping->custom_html)) {
 ?>
 	<div id="<?php echo $container_id; ?>__custom" class="hikashop_checkout_shipping_custom" style="<?php echo $selected ? '' : ' display:none;'; ?>">
 <?php
-			echo $this->checkoutHelper->getCustomHtml($shipping->custom_html, 'checkout[shipping]['.$shipping_group_key.'][custom]['.$shipping->shipping_id.']');
+				echo $this->checkoutHelper->getCustomHtml($shipping->custom_html, 'checkout[shipping]['.$shipping_group_key.'][custom]['.$shipping->shipping_id.']');
 
-			if(empty($shipping->custom_html_no_btn)) {
+				if(empty($shipping->custom_html_no_btn)) {
 ?>
 		<div class="hikashop_checkout_shipping_submit">
 			<button class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_checkout_shipping_submit" id="hikabtn_checkout_shipping_submit_g<?php echo $shipping_group_key; ?>_p<?php echo $shipping->shipping_id; ?>" onclick="return window.checkout.submitCustomShipping('<?php echo $shipping->shipping_type; ?>','<?php echo $shipping_group_key; ?>',<?php echo (int)$shipping->shipping_id; ?>,<?php echo $this->step; ?>,<?php echo $this->module_position; ?>);"><?php echo JText::_('HIKA_SUBMIT'); ?></button>
 		</div>
 <?php
-			}
+				}
 ?>
 	</div>
 <?php
-		}
+			}
+			if($this->options['shipping_selector'] != 2) {
 ?>
 	</td></tr>
+<?php		}
+		}
+		if($this->options['shipping_selector'] != 2) {
+?>
+	</table>
 <?php
 		}
 
 		if(empty($group->shippings)) {
 			if(!empty($group->no_weight) && empty($group->errors)) {
 ?>
-	<tr><td class="hikashop_checkout_shipping_message checkout_no_shipping_required" colspan="3">
+	<div class="hikashop_checkout_shipping_message checkout_no_shipping_required">
 		<?php echo JText::_('NO_SHIPPING_REQUIRED'); ?>
 		<input type="radio" style="display:none;" name="checkout[shipping][id][<?php echo $shipping_group_key; ?>]" value="0" checked="checked" />
-	</td></tr>
+	</div>
 <?php
 			} else {
 ?>
-	<tr><td class="hikashop_checkout_shipping_message checkout_no_shipping_available" colspan="3">
+	<div class="hikashop_checkout_shipping_message checkout_no_shipping_available">
 		<?php echo JText::_('NO_SHIPPING_AVAILABLE_FOR_WAREHOUSE'); ?>
 		<input type="radio" style="display:none;" name="checkout[shipping][id][<?php echo $shipping_group_key; ?>]" value="0" checked="checked" />
-	</td></tr>
+	</div>
 <?php
 			}
 		}
 ?>
-	</table>
-	</div>
+</div>
 <?php
 	}
 }

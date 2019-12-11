@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -199,6 +199,13 @@ class hikashopShippingPlugin extends hikashopPlugin {
 				}
 				if(count($rate_prices['products']['product_names'])) {
 					$rate->errors['X_PRODUCTS_ARE_NOT_SHIPPABLE_TO_YOU'] = implode($rate_prices['products']['product_names'], ', ');
+					$rate->errors['X_PRODUCTS_ARE_NOT_SHIPPABLE_TO_YOU'] = '';
+					foreach($rate_prices['products']['product_names'] as $product_name) {
+						if(empty($product_name) || $product_name == '""')
+							continue;
+						$rate->errors['X_PRODUCTS_ARE_NOT_SHIPPABLE_TO_YOU'] .= $product_name . ', '; 
+					}
+					trim($rate->errors['X_PRODUCTS_ARE_NOT_SHIPPABLE_TO_YOU'], ', ');
 				} else {
 					if(!isset($rate->shipping_price_base))
 						$rate->shipping_price_base = hikashop_toFloat($rate->shipping_price);
@@ -341,7 +348,7 @@ class hikashopShippingPlugin extends hikashopPlugin {
 
 	public function getShippingAddress($id = 0, $order = null) {
 		$app = JFactory::getApplication();
-		if($id == 0 && !$app->isAdmin()) {
+		if($id == 0 && !hikashop_isClient('administrator')) {
 			$id = $app->getUserState(HIKASHOP_COMPONENT.'.shipping_id', null);
 			if(!empty($id) && is_array($id))
 				$id = (int)reset($id);

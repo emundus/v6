@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -57,13 +57,20 @@ if(JText::_($name) != $name) {
 }elseif(JText::_('HIKA_'.$name) != $name) {
 	$name = JText::_('HIKA_'.$name);
 }
-
+$date = false;
+if(!empty($this->widget->widget_params->period_compare) && $this->widget->widget_params->period_compare != 'none') {
+	$date = true;
+}
 ?>
 <script language="JavaScript" type="text/javascript">
 function drawChart() {
 	var dataTable = new google.visualization.DataTable();
-	dataTable.addColumn('date');
 <?php
+	if($date) {
+		echo "dataTable.addColumn('date');";
+	}else {
+		echo "dataTable.addColumn('string');";
+	}
 	$dates = array();
 	$types = array();
 	$i= 0;
@@ -75,7 +82,12 @@ function drawChart() {
 			$dates[$oneResult->calculated_date] = $i;
 			$i++;
 			echo "dataTable.addRows(1);"."\n";
-			echo "dataTable.setValue(".$dates[$oneResult->calculated_date].", 0, new Date(".$oneResult->year.", ".(int)$oneResult->month.", ".(int)$oneResult->day.", ".@(int)$oneResult->hour."));";
+			if($date) {
+				echo "dataTable.setValue(".$dates[$oneResult->calculated_date].", 0, new Date(".$oneResult->year.", ".(int)$oneResult->month.", ".(int)$oneResult->day.", ".@(int)$oneResult->hour."));";
+			} else {
+				echo "dataTable.setValue(".$dates[$oneResult->calculated_date].", 0, '".hikashop_getDate(strtotime($oneResult->day.'-'.$oneResult->month.'-'.$oneResult->year),'%d %B %Y')."');";
+			}
+
 		}
 		if(!isset($types[$oneResult->type])){
 			$types[$oneResult->type] = $a;

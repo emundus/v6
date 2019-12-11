@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,13 +27,15 @@ class hikashopGalleryHelper {
 		if(strpos($dir,JPATH_ROOT)!==false){
 			$dir = str_replace(JPATH_ROOT,'',$dir);
 		}
+
 		$dir = ltrim($dir,'/');
 		if(strpos($dir, '..') !== false)
 			return false;
 		$this->root = JPath::clean(JPATH_ROOT.DS.$dir);
 		$app = JFactory::getApplication();
 		$dir = str_replace(DS, '/', $dir);
-		if($app->isAdmin())
+		$dir = trim($dir,'/').'/';
+		if(hikashop_isClient('administrator'))
 			$this->urlRoot = '../' . $dir;
 		else
 			$this->urlRoot = rtrim(JURI::base(true), '/') . '/' . $dir;

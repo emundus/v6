@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,7 +14,7 @@ class plgHikaShopTaxcloud extends JPlugin {
 	protected $errors = array();
 	 public function onHikashopBeforeDisplayView(&$view){
 	 	$app = JFactory::getApplication();
-	 	if(!$app->isAdmin()) return true;
+	 	if(!hikashop_isClient('administrator')) return true;
 
 	 	$viewName = $view->getName();
 	 	$layoutName = $view->getLayout();
@@ -350,7 +350,7 @@ class plgHikaShopTaxcloud extends JPlugin {
 			return;
 
 		$app = JFactory::getApplication();
-		if($app->isAdmin())
+		if(hikashop_isClient('administrator'))
 			return;
 		$this->lookupAfterOrderCreate($order);
 
@@ -596,14 +596,14 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 
 	public function onAfterProductCreate(&$product) {
 		$app = JFactory::getApplication();
-		if($app->isAdmin()) {
+		if(hikashop_isClient('administrator')) {
 			$this->productFormSave($product);
 		}
 	}
 
 	public function onAfterProductUpdate(&$product) {
 		$app = JFactory::getApplication();
-		if($app->isAdmin()) {
+		if(hikashop_isClient('administrator')) {
 			$this->productFormSave($product);
 		}
 	}
@@ -857,7 +857,7 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 		}
 		if(empty($this->plugin_options['api_id']) || empty($this->plugin_options['api_key'])){
 			$app = JFactory::getApplication();
-			if($app->isAdmin()){
+			if(hikashop_isClient('administrator')){
 				$app->enqueueMessage('Please configure your TaxCloud plugin via the Joomla plugins manager');
 			}
 			return false;
@@ -1013,6 +1013,21 @@ window.addEvent("domready", function(){ var taxcloudField = new taxcloud("hikash
 				return (int)$p[$product->cart_product_parent_id]->product_taxability_code;
 			if(isset($fp) && isset($fp[$p[$product->cart_product_parent_id]->cart_product_id]) && !empty($fp[$p[$product->cart_product_parent_id]->cart_product_id]->product_taxability_code) && $fp[$p[$product->cart_product_parent_id]->cart_product_id]->product_taxability_code != '-1')
 				return (int)$fp[$p[$product->cart_product_parent_id]->cart_product_id]->product_taxability_code;
+		}
+
+		if(isset($product->product_taxability_code) || empty($product->product_id))
+			return;
+
+		$productClass = hikashop_get('class.product');
+		$data = $productClass->get($product->product_id);
+
+		if(!empty($data->product_taxability_code) && $data->product_taxability_code!= '-1')
+			return $data->product_taxability_code;
+
+		if(!empty($data->product_parent_id)) {
+			$data = $productClass->get($product->product_parent_id);
+			if(!empty($data->product_taxability_code) && $data->product_taxability_code!= '-1')
+				return $data->product_taxability_code;
 		}
 
 		return false;
