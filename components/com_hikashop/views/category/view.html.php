@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -111,6 +111,7 @@ class CategoryViewCategory extends HikaShopView {
 			$content_type = 'product';
 		}
 
+		$categoryFromURL = false;
 		if($this->params->get('content_synchronize')) {
 			if(hikaInput::get()->getString('option','') == HIKASHOP_COMPONENT) {
 				if(hikaInput::get()->getString('ctrl','category') == 'product') {
@@ -123,7 +124,11 @@ class CategoryViewCategory extends HikaShopView {
 						$pageInfo->filter->cid = $this->params->get('selectparentlisting');
 					}
 				} elseif(hikaInput::get()->getString('ctrl','category') == 'category') {
-					$pageInfo->filter->cid = hikaInput::get()->getInt("cid", $this->params->get('selectparentlisting'));
+					$pageInfo->filter->cid = hikaInput::get()->getInt("cid");
+					if(empty($pageInfo->filter->cid))
+						$pageInfo->filter->cid = $this->params->get('selectparentlisting');
+					else
+						$categoryFromURL = true;
 				} else {
 					$pageInfo->filter->cid = $this->params->get('selectparentlisting');
 				}
@@ -132,7 +137,11 @@ class CategoryViewCategory extends HikaShopView {
 			}
 		} else {
 			if(empty($this->module)) {
-				$pageInfo->filter->cid = hikaInput::get()->getInt("cid",$this->params->get('selectparentlisting'));
+				$pageInfo->filter->cid = hikaInput::get()->getInt("cid");
+				if(empty($pageInfo->filter->cid))
+					$pageInfo->filter->cid = $this->params->get('selectparentlisting');
+				else
+					$categoryFromURL = true;
 			} else {
 				$pageInfo->filter->cid = $this->params->get('selectparentlisting');
 			}
@@ -157,6 +166,9 @@ class CategoryViewCategory extends HikaShopView {
 		if(!empty($pageInfo->filter->cid)) {
 			$acl_filters = array();
 			hikashop_addACLFilters($acl_filters, 'category_access');
+			if($categoryFromURL) {
+				$acl_filters[] = 'category_published = 1';
+			}
 			if(!empty($acl_filters)) {
 				if(!is_array($pageInfo->filter->cid)) {
 					if(empty($catData))
@@ -171,6 +183,9 @@ class CategoryViewCategory extends HikaShopView {
 				$query = 'SELECT category_id FROM '.hikashop_table('category').' WHERE '.implode(' AND ',$acl_filters);
 				$database->setQuery($query);
 				$pageInfo->filter->cid = $database->loadColumn();
+				if(!count($pageInfo->filter->cid) && empty($this->module)) {
+					throw new Exception(JText::_('CATEGORY_NOT_FOUND'), 404);
+				}
 			}
 		}
 
@@ -195,17 +210,17 @@ class CategoryViewCategory extends HikaShopView {
 		if($this->params->get('limit', '') == '')
 			$this->params->set('limit', $defaultParams['limit']);
 
-		$oldValue = $app->getUserState($this->paramBase.'.list_limit');
+		$oldValue = $app->getUserState($this->paramBase.'.list_limit_category');
 		if(empty($oldValue))
 			$oldValue = $this->params->get('limit');
 
-		$pageInfo->limit->value = $app->getUserStateFromRequest($this->paramBase.'.list_limit', 'limit_'.$this->params->get('main_div_name').$category_selected, $this->params->get('limit'), 'int');
+		$pageInfo->limit->value = $app->getUserStateFromRequest($this->paramBase.'.list_limit_category', 'limit_category', $this->params->get('limit'), 'int');
 
 		if($oldValue != $pageInfo->limit->value) {
-			hikaInput::get()->set('limitstart_'.$this->params->get('main_div_name').$category_selected,0);
+			hikaInput::get()->set('limitstart_category',0);
 		}
 
-		$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart', 'limitstart_'.$this->params->get('main_div_name').$category_selected, 0, 'int' );
+		$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart_category', 'limitstart_category', 0, 'int' );
 
 		if(empty($this->module)){
 			if($config->get('hikarss_format') != 'none'){
@@ -375,7 +390,7 @@ class CategoryViewCategory extends HikaShopView {
 			}
 
 			$pagination = hikashop_get('helper.pagination', $pageInfo->elements->total, $pageInfo->limit->start, $pageInfo->limit->value);
-			$pagination->hikaSuffix = '_'.$this->params->get('main_div_name').$category_selected;
+			$pagination->hikaSuffix = '_category';
 			$this->assignRef('pagination',$pagination);
 			$this->params->set('show_limit',1);
 
@@ -420,7 +435,7 @@ class CategoryViewCategory extends HikaShopView {
 	}
 
 	function getLink($cid, $alias = '') {
-		if(!is_object($cid)){
+		if(!is_object($cid)) {
 			$obj = new stdClass();
 			$obj->category_id = $cid;
 			$obj->alias = $alias;
@@ -435,7 +450,7 @@ class CategoryViewCategory extends HikaShopView {
 
 		global $Itemid;
 		$config =& hikashop_config();
-		if(empty($this->module) && !empty($Itemid) && $config->get('forward_to_submenus',1)){
+		if(empty($this->module) && !empty($Itemid) && $config->get('forward_to_submenus', 1)) {
 			$app = JFactory::getApplication();
 			$menus	= $app->getMenu();
 			$query = 'SELECT a.id as itemid FROM `#__menu` as a WHERE a.client_id=0 AND a.parent_id='.(int)$Itemid;
@@ -444,9 +459,9 @@ class CategoryViewCategory extends HikaShopView {
 			$submenus = $db->loadObjectList();
 			foreach($submenus as $submenu){
 				$menu = $menus->getItem($submenu->itemid);
-				if(!empty($menu) && !empty($menu->link) && strpos($menu->link,'option='.HIKASHOP_COMPONENT)!==false && (strpos($menu->link,'view=category')!==false || strpos($menu->link,'view=')===false || strpos($menu->link,'view=product')!==false)){
+				if(!empty($menu) && !empty($menu->link) && strpos($menu->link,'option='.HIKASHOP_COMPONENT)!==false && (strpos($menu->link,'view=category')!==false || strpos($menu->link,'view=')===false || strpos($menu->link,'view=product')!==false)) {
 					$parent = 0;
-					if(HIKASHOP_J30){
+					if(HIKASHOP_J30) {
 						$params = $menu->params->get('hk_category',false);
 						if($params && isset($params->category))
 							$parent = $params->category;
@@ -456,26 +471,37 @@ class CategoryViewCategory extends HikaShopView {
 								$parent = $params->category;
 						}
 					}
-					if(!$parent){
+					if(!$parent) {
 						$params = $config->get( 'menu_'.$submenu->itemid );
 						if(isset($params['selectparentlisting']))
 							$parent = $params['selectparentlisting'];
 					}
 
-					if(!empty($params) && $parent == $cid->category_id){
-						return JRoute::_('index.php?option=com_hikashop&Itemid='.$submenu->itemid);
+					if(!empty($params) && $parent == $cid->category_id) {
+						$url = JRoute::_('index.php?option=com_hikashop&Itemid='.$submenu->itemid);
+
+						$config = hikashop_config();
+						$force_canonical = $config->get('force_canonical_urls',1);
+						if(isset($cid->category_canonical) && empty($cid->category_canonical) && $force_canonical == 2) {
+							$newObj = new stdClass();
+							$newObj->category_id = $cid->category_id;
+							$newObj->category_canonical = $url;
+							$categoryClass = hikashop_get('class.category');
+							$categoryClass->save($newObj);
+						}
+						return $url;
 					}
 				}
 			}
 		}
 
 		$type = 'category';
-		if(!empty($this->menu_id)){
+		if(!empty($this->menu_id)) {
 			$parts = explode('=',$this->menu_id);
 			$app = JFactory::getApplication();
 			$menus	= $app->getMenu();
 			$menu = $menus->getItem($parts[1]);
-			if(!empty($menu) && !empty($menu->link) && strpos($menu->link,'option='.HIKASHOP_COMPONENT)!==false && (strpos($menu->link,'view=')===false || strpos($menu->link,'view=product')!==false)){
+			if(!empty($menu) && !empty($menu->link) && strpos($menu->link,'option='.HIKASHOP_COMPONENT)!==false && (strpos($menu->link,'view=')===false || strpos($menu->link,'view=product')!==false)) {
 				$type = 'product';
 			}
 		}

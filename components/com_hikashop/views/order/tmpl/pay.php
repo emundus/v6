@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -13,7 +13,12 @@ global $Itemid;
 $url_itemid = (!empty($Itemid) ? '&Itemid=' . $Itemid : '');
 ?>
 <form action="<?php echo hikashop_completeLink('order&task=pay&order_id='.$this->order->order_id.$url_itemid); ?>" method="post">
-
+<dl class="hika_options large">
+	<dt><?php echo JText::_('HIKASHOP_TOTAL'); ?></dt>
+	<dd><?php
+		echo $this->currencyClass->format($this->order->order_full_price, $this->order->order_currency_id);
+	?></dd>
+</dl>
 <?php if(empty($this->new_payment_method)) { ?>
 
 <dl class="hika_options large">

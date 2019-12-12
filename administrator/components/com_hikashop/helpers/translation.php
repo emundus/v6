@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,7 +16,7 @@ class hikashopTranslationHelper {
 		$this->database = JFactory::getDBO();
 		$app = JFactory::getApplication();
 		$this->flagPath = 'media/mod_languages/images/';
-		if($app->isAdmin()){
+		if(hikashop_isClient('administrator')){
 			$this->flagPath = '../'.$this->flagPath;
 		} else {
 			$this->flagPath = rtrim(JURI::base(true),'/') . '/' . $this->flagPath;
@@ -375,25 +375,13 @@ class hikashopTranslationHelper {
 			$languageFile = reset($languageFiles);
 
 			if(!empty($languageFile)){
-				$oneLanguage->edit = $popupHelper->display(
-					'<span id="image'.$oneLanguage->language.'" alt="'.JText::_('EDIT_LANGUAGE_FILE').'" style="color:#555; font-size:1.2em;"><i class="'. $edit_image.'"></i></span>',
-					'EDIT_LANGUAGE_FILE',
-					'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=config&amp;task=language&amp;code='.$oneLanguage->language,
-					'edit_language_'.$oneLanguage->language,
-					760, 480, '', '', 'link'
-				);
+				$oneLanguage->edit = '<a href="index.php?option=com_hikashop&amp;ctrl=config&amp;task=language&amp;code='.$oneLanguage->language.'"><span id="image'.$oneLanguage->language.'" alt="'.JText::_('EDIT_LANGUAGE_FILE').'" style="color:#555; font-size:1.2em;"><i class="'. $edit_image.'"></i></span></a>';
 				$oneLanguage->status = '<img id="image'.$oneLanguage->language.'" src="'. $status_hika.'" alt="'.$tooltip_hika.'"/>';
 
 				$oneLanguage->edit_tooltip = $tooltip_edit;
 				$oneLanguage->status_tooltip = $tooltip_hika;
 			}else{
-				$oneLanguage->edit = $popupHelper->display(
-					'<span id="image'.$oneLanguage->language.'"alt="'.$tooltip_add.'" style="color:#555; font-size:1.2em;"><i class="'. $edit_add.'"></i></span>',
-					'ADD_LANGUAGE_FILE',
-					'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=config&amp;task=language&amp;code='.$oneLanguage->language,
-					'edit_language_'.$oneLanguage->language,
-					760, 480, '', '', 'link'
-				);
+				$oneLanguage->edit = '<a href="index.php?option=com_hikashop&amp;ctrl=config&amp;task=language&amp;code='.$oneLanguage->language.'"><span id="image'.$oneLanguage->language.'"alt="'.$tooltip_add.'" style="color:#555; font-size:1.2em;"><i class="'. $edit_add.'"></i></span></a>';
 				$oneLanguage->status = '<span id="image'.$oneLanguage->language.'" alt="'.JText::_('ADD_HIKA_LANG').'" style="color:#942a25; font-size:1.2em;"><i class="'. $status_unavailable.'"></i></span>';
 
 				$oneLanguage->edit_tooltip = $tooltip_add;

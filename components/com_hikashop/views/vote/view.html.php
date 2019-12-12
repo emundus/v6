@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -181,6 +181,14 @@ class VoteViewvote extends HikaShopView {
 		$this->assignRef('rows', $row);
 		$this->assignRef('elts', $elts);
 		$this->assignRef('itemType', $type_item);
+
+		$this->microData = false;
+		if(($config->get('enable_status_vote',0)=='comment' || $config->get('enable_status_vote',0)=='two' || $config->get('enable_status_vote',0)=='both' )){
+			$productClass = hikashop_get('class.product');
+			$product = $productClass->get($hikashop_vote_ref_id);
+			if($product->product_total_vote > 0)
+				$this->microData = true;
+		}
 	}
 	function form(){
 		$doc = JFactory::getDocument();

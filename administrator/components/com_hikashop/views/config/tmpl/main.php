@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -32,7 +32,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('version');?>><?php echo JText::_('VERSION');?></td>
 		<td>
-			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [1812031120]
+			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [1912041848]
 		</td>
 	</tr>
 	<tr>
@@ -296,7 +296,7 @@ echo $this->leftmenu(
 					JHTML::_('select.option', '*'.'/'.'*', JText::_('EVERY_DAYS')),
 				);
 				$value = $this->config->get('invoice_reset_frequency', '');
-				if(strpos($value, '/') !== false) {
+				if(strpos($value, '/') !== false && $value != '*'.'/'.'*') {
 					$values[] = JHTML::_('select.option', $value, $value);
 				}
 				echo JHTML::_('select.genericlist', $values, 'config[invoice_reset_frequency]', 'class="custom-select" size="1"', 'value', 'text', $value);
@@ -320,16 +320,6 @@ echo $this->leftmenu(
 		<td><?php
 			if(hikashop_level(1)) {
 				echo JHTML::_('hikaselect.booleanlist', 'config[allow_payment_change]','',$this->config->get('allow_payment_change',1));
-			} else {
-				echo hikashop_getUpgradeLink('essential');
-			}
-		?></td>
-	</tr>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('print_invoice_frontend');?>><?php echo JText::_('PRINT_INVOICE_FRONTEND'); ?></td>
-		<td><?php
-			if(hikashop_level(1)) {
-				echo JHTML::_('hikaselect.booleanlist', 'config[print_invoice_frontend]', '', $this->config->get('print_invoice_frontend'));
 			} else {
 				echo hikashop_getUpgradeLink('essential');
 			}
@@ -421,6 +411,12 @@ echo $this->leftmenu(
 		<td>
 			<input class="inputbox" type="text" name="config[download_number_limit]" value="<?php echo $this->config->get('download_number_limit'); ?>" />
 		</td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('display_downloads_on_product_page');?>><?php echo JText::_('PURCHASED_FILE_DOWNLOAD_ON_PRODUCT_PAGE'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[display_downloads_on_product_page]', '', $this->config->get('display_downloads_on_product_page', 0));
+		?></td>
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('csv_separator');?>><?php echo JText::_('CSV_SEPARATOR'); ?></td>
@@ -523,6 +519,15 @@ echo $this->leftmenu(
 		</td>
 	</tr>
 	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('images_stripes_background');?>><?php echo JText::_('IMAGES_STRIPES_COLOR'); ?></td>
+		<td>
+<?php
+	$type = hikashop_get('type.color');
+	echo $type->displayAll('images_stripes_background','config[images_stripes_background]', $this->config->get('images_stripes_background', ''));
+?>
+		</td>
+	</tr>
+	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('keep_category_product_images');?>><?php echo JText::_('KEEP_IMAGES_AFTER_DELETE'); ?></td>
 		<td><?php
 			echo JHTML::_('hikaselect.booleanlist', "config[keep_category_product_images]" , '',$this->config->get('keep_category_product_images', 0));
@@ -562,6 +567,12 @@ echo $this->leftmenu(
 			} else {
 				echo hikashop_getUpgradeLink('business');
 			}
+		?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('add_webp_images');?>><?php echo JText::_('GENERATE_WEBP_IMAGES'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', "config[add_webp_images]" , '',$this->config->get('add_webp_images', 1));
 		?></td>
 	</tr>
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -355,7 +355,8 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	public function display(&$view, &$params) {
-		$params['show_login'] = $view->config->get('display_login', 1);
+		if(!isset($params['show_login']))
+			$params['show_login'] = $view->config->get('display_login', 1);
 
 		$params['current_login'] = hikashop_loadUser(true);
 		$view->mainUser = JFactory::getUser();
@@ -403,6 +404,16 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 		$params['registration_registration'] = true;
 		$params['registration_count'] = 1;
 
+
+		if($params['registration_registration'] || $params['registration_simplified'] || $params['registration_password']) {
+			$userClass = hikashop_get('class.user');
+			$privacy = $userClass->getPrivacyConsentSettings();
+			if($privacy) {
+				$params['privacy'] = true;
+				$params['privacy_id'] = $privacy['id'];
+				$params['privacy_text'] = $privacy['text'];
+			}
+		}
 	}
 
 	protected function initRegistration(&$view, &$params) {
@@ -437,8 +448,19 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 
 		if(!empty($params['address_on_registration'])) {
 			$view->address = @$_SESSION['hikashop_billing_address_data'];
-			$view->extraFields['address'] = $view->fieldsClass->getFields('frontcomp', $view->address, 'address');
-			$params['js'] .= $view->fieldsClass->jsToggle($view->extraFields['address'], $view->address, 0, 'hikashop_', array('return_data' => true, 'suffix_type' => '_'.$view->step.'_'.$view->block_position));
+
+			if(empty($view->address)) {
+				$app = JFactory::getApplication();
+				$session_addresses = $app->getUserState(HIKASHOP_COMPONENT.'.addresses', array());
+				$session_address = reset($session_addresses);
+				if(!empty($session_address))
+					$view->address = hikashop_copy($session_address);
+				unset($session_addresses);
+				unset($session_address);
+			}
+
+			$view->extraFields['address'] = $view->fieldsClass->getFields('frontcomp', $view->address, 'billing_address');
+			$params['js'] .= $view->fieldsClass->jsToggle($view->extraFields['address'], $view->address, 0, 'hikashop_', array('return_data' => true, 'suffix_type' => '_'.$view->step.'_'.$view->block_position, 'type' => ''));
 			$check_values['address'] = $view->address;
 
 			if($params['same_address']) {
@@ -447,8 +469,19 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 					$params['same_address_pre_checked'] = (int)$_SESSION['same_address_pre_checked'];
 
 				$view->shipping_address = @$_SESSION['hikashop_shipping_address_data'];
-				$view->extraFields['shipping_address'] = $view->fieldsClass->getFields('frontcomp', $view->shipping_address, 'address');
-				$params['js'] .= $view->fieldsClass->jsToggle($view->extraFields['shipping_address'], $view->shipping_address, 0, 'hikashop_', array('return_data' => true, 'suffix_type' => '_shipping_'.$view->step.'_'.$view->block_position));
+
+				if(empty($view->shipping_address)) {
+					$app = JFactory::getApplication();
+					$session_addresses = $app->getUserState(HIKASHOP_COMPONENT.'.addresses', array());
+					$session_address = reset($session_addresses);
+					if(!empty($session_address))
+						$view->shipping_address = hikashop_copy($session_address);
+					unset($session_addresses);
+					unset($session_address);
+				}
+
+				$view->extraFields['shipping_address'] = $view->fieldsClass->getFields('frontcomp', $view->shipping_address, 'shipping_address');
+				$params['js'] .= $view->fieldsClass->jsToggle($view->extraFields['shipping_address'], $view->shipping_address, 0, 'hikashop_', array('return_data' => true, 'suffix_type' => '_shipping_'.$view->step.'_'.$view->block_position, 'type' => 'shipping_'));
 				$check_values['shipping_address'] = $view->shipping_address;
 
 			}

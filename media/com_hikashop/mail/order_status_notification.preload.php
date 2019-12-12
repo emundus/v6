@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -57,7 +57,7 @@ $data->cart->full_total = new stdClass;
 $data->cart->full_total->prices = array($price);
 $data->cart->coupon->discount_value =& $data->cart->order_discount_price;
 
-if($app->isAdmin()) {
+if(hikashop_isClient('administrator')) {
 	$view = 'order';
 } else {
 	$view = 'address';
@@ -80,6 +80,11 @@ $vars = array(
 	'TPL_HEADER' => (bool)@$customer->user_cms_id,
 	'TPL_HEADER_URL' => $order_url,
 );
+
+$order_changed = JText::sprintf('ORDER_STATUS_CHANGED_TO', $url, $data->mail_status);
+if(!empty($data->usermsg->usermsg))
+	$order_changed = $data->usermsg->usermsg;
+
 $texts = array(
 	'BILLING_ADDRESS' => JText::_('HIKASHOP_BILLING_ADDRESS'),
 	'SHIPPING_ADDRESS' => JText::_('HIKASHOP_SHIPPING_ADDRESS'),
@@ -96,7 +101,7 @@ $texts = array(
 
 	'ORDER_TITLE' => JText::_('YOUR_ORDER'),
 	'HI_CUSTOMER' => JText::sprintf('HI_CUSTOMER', $customer_name),
-	'ORDER_CHANGED' => JText::sprintf('ORDER_STATUS_CHANGED_TO', $url, $data->mail_status),
+	'ORDER_CHANGED' => $order_changed,
 	'ORDER_BEGIN_MESSAGE' => JText::sprintf('THANK_YOU_FOR_YOUR_ORDER_BEGIN', HIKASHOP_LIVE),
 	'ORDER_END_MESSAGE' => JText::sprintf('THANK_YOU_FOR_YOUR_ORDER', HIKASHOP_LIVE) . '<br/>' . JText::sprintf('BEST_REGARDS_CUSTOMER',$mail->from_name),
 );
@@ -232,7 +237,7 @@ if(!empty($data->cart->products)){
 
 		$t = '';
 		$statusDownload = explode(',',$config->get('order_status_for_download','confirmed,shipped'));
-		if(!empty($item->files) && in_array($data->order->order_status,$statusDownload)){
+		if(!empty($item->files) && in_array($data->order_status,$statusDownload)){
 			$t .= '<p>';
 			foreach($item->files as $file){
 				$fileName = empty($file->file_name) ? $file->file_path : $file->file_name;

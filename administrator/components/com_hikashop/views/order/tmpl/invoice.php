@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -103,10 +103,10 @@ defined('_JEXEC') or die('Restricted access');
 				<fieldset class="adminform" id="htmlfieldset_products">
 					<legend style="background-color: #FFFFFF;"><?php echo JText::_('PRODUCT_LIST'); ?></legend>
 					<table class="adminlist table table-striped" cellpadding="1" width="100%">
-<?php $colspan = 3; ?>
+<?php $colspan = 4; ?>
 						<thead>
 							<tr>
-								<th class="title" width="60%">
+								<th class="title" width="60%" colspan="2">
 									<?php echo JText::_('PRODUCT'); ?>
 								</th>
 <?php
@@ -172,11 +172,28 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 	$k = 0;
 	$group = $this->config->get('group_options', 0);
+	$imageHelper = hikashop_get('helper.image');
+	$width = (int)$this->config->get('cart_thumbnail_x', 50);
+	$height = (int)$this->config->get('cart_thumbnail_y', 50);
+	$image_options = array(
+		'default' => true,
+		'forcesize' => $this->config->get('image_force_size', true),
+		'scale' => $this->config->get('image_scale_mode','inside')
+	);
 	foreach($this->order->products as $product) {
 		if($group && $product->order_product_option_parent_id)
 			continue;
 ?>
 							<tr class="row<?php echo $k; ?>">
+								<td>
+<?php
+		$image_path = (!empty($product->images) ? @$product->images[0]->file_path : '');
+		$img = $imageHelper->getThumbnail($image_path, array('width' => $width, 'height' => $height), $image_options);
+		if($img->success) {
+			echo '<img class="hikashop_order_product_image" title="'.$this->escape(@$product->images[0]->file_description).'" alt="'.$this->escape(@$product->images[0]->file_name).'" src="'.$img->url.'"/>';
+		}
+?>
+								</td>
 								<td>
 									<?php echo $product->order_product_name; ?>
 									<p class="hikashop_order_product_custom_item_fields">
@@ -528,7 +545,12 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 	JPluginHelper::importPlugin('hikashop');
 	$app = JFactory::getApplication();
+	ob_start();
 	$app->triggerEvent('onAfterOrderProductsListingDisplay', array(&$this->order, 'order_back_invoice'));
+	$html = ob_get_clean();
+	if(!empty($html)) {
+		echo '<tr><td>'.$html.'</td></tr>';
+	}
 ?>
 		<tr>
 			<td>

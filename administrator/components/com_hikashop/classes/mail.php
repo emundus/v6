@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -19,6 +19,8 @@ class hikashopMailClass {
 	}
 
 	public function get($name, &$data) {
+		$app = JFactory::getApplication();
+
 		$this->mailer = JFactory::getMailer();
 
 		$mail = new stdClass();
@@ -28,7 +30,8 @@ class hikashopMailClass {
 
 		$mail->body = $this->loadEmail($mail, $data);
 		$mail->altbody = $this->loadEmail($mail, $data, 'text');
-		$mail->preload = $this->loadEmail($mail, $data, 'preload');
+		if(hikashop_isClient('administrator'))
+			$mail->preload = $this->loadEmail($mail, $data, 'preload');
 		$mail->data =& $data;
 
 		if($data !== true)
@@ -162,10 +165,10 @@ class hikashopMailClass {
 			if(!empty($pathWithStatus)) $path = $pathWithStatus;
 
 			$preloadWithStatus = $this->getMailPath($mail->mail_name.'.'.$data->order_status, 'preload');
-			if(!empty($pathWithStatus)) $preload = $preloadWithStatus;
+			if(!empty($preloadWithStatus)) $preload = $preloadWithStatus;
 
 			$postloadWithStatus = $this->getMailPath($mail->mail_name.'.'.$data->order_status, 'postload');
-			if(!empty($pathWithStatus)) $postload = $postloadWithStatus;
+			if(!empty($postloadWithStatus)) $postload = $postloadWithStatus;
 		}
 
 		$currencyClass = hikashop_get('class.currency');
@@ -365,7 +368,7 @@ class hikashopMailClass {
 				$mail_folder = '';
 				$mail_file = '';
 				foreach($plugin_files as $plugin_file) {
-					if($plugin_file['file'] == $mail_name) {
+					if($plugin_file['file'] == $mail_name || $plugin_file['filename'] == $mail_name) {
 						$mail_folder = @$plugin_file['folder'];
 						$mail_file = $plugin_file['filename'];
 						break;
@@ -543,6 +546,13 @@ class hikashopMailClass {
 				if($lang->isRTL()) {
 					$htmlExtra = ' dir="rtl"';
 				}
+
+				$mail->body = preg_replace_callback('#class="w([0-9]+)[a-z_ ]*"(.+?)(?=>)#i', function ($matches){
+					if(strpos($matches[2], 'width') !== false)
+						return $matches[0];
+					return 'width="'.$matches[1].'" '.$matches[0];
+				}, $mail->body);
+
 				$this->mailer->Body = '<html><head>'.
 					'<meta http-equiv="Content-Type" content="text/html; charset='.$this->mailer->CharSet.'">'.
 					'<title>'.$mail->subject.'</title>'.$style.
@@ -635,7 +645,7 @@ class hikashopMailClass {
 			$result = $this->mailer->Send();
 		} catch( Exception $e) {
 			$result = false;
-			if($app->isAdmin()) {
+			if(hikashop_isClient('administrator')) {
 				$app->enqueueMessage($e->getMessage(), 'error');
 			}
 		}

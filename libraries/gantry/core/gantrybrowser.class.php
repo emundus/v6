@@ -102,6 +102,11 @@ class GantryBrowser
 	 */
 	protected function checkPlatform()
 	{
+ 
+		if (strpos($this->user_agent, 'Android') !== false) {
+    		return $this->platform = 'android';
+    	}
+
 		preg_match('/(CrOS|Tizen|iPhone|iPod|iPad|Android|Mobile|Windows(\ Phone)?|win|Silk|mac|linux|BlackBerry|X11|(New\ )?Nintendo\ (WiiU?|3?DS)|Xbox(\ One))/i', $this->user_agent, $matches);
 
 		if (isset($matches[0]))

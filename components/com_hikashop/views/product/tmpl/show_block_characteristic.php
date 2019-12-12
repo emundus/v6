@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -46,7 +46,7 @@ if(!empty($this->element->main->characteristics)) {
 <?php }
 	foreach($this->element->main->characteristics as $characteristic) { $columns++; ?>
 				<th class="hikashop_product_characteristic hikashop_product_characteristic_<?php echo $characteristic->characteristic_id; ?> title hikashop_variants_table_th"><?php
-					echo $characteristic->characteristic_value;
+					echo hikashop_translate($characteristic->characteristic_value);
 				?></th>
 <?php }
 
@@ -123,7 +123,7 @@ if(!empty($this->element->main->characteristics)) {
 				foreach($characteristic->values as $k => $value) {
 					foreach($variant->characteristics as $variantCharacteristic) {
 						if($variantCharacteristic->characteristic_id == $value->characteristic_id) {
-							echo $variantCharacteristic->characteristic_value;
+							echo hikashop_translate($variantCharacteristic->characteristic_value);
 							break 2;
 						}
 					}
@@ -206,7 +206,7 @@ if(!empty($this->element->main->characteristics)) {
 							$min_quantity = max((int)$min_quantity, 1);
 							$max_quantity = max((int)$max_quantity, 0);
 							if($max_quantity == 0)
-								$max_quantity = $min_quantity * 15;
+								$max_quantity = $min_quantity * $this->config->get('quantity_select_max_default_value', 15);
 							$values = array();
 							if($quantityLayout == 'show_select' || empty($this->row->prices)) {
 								$values = range($min_quantity, $max_quantity, $min_quantity);

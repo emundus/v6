@@ -25,8 +25,7 @@ class GantryMenuFormatter
 	function format_tree(&$nav_menu_tree)
 	{
 		if ($nav_menu_tree->hasChildren()) {
-			reset($nav_menu_tree->_children);
-			while (list($key, $value) = each($nav_menu_tree->_children)) {
+			foreach($nav_menu_tree->_children as $key => $value) {
 				$child_node  =& $nav_menu_tree->_children[$key];
 				$menu_params =& $nav_menu_tree->_params;
 				$this->format_subnodes($child_node, $menu_params);
@@ -45,8 +44,7 @@ class GantryMenuFormatter
 		$this->default_format($node, $menu_params);
 		$this->format($node, $menu_params);
 		if ($node->hasChildren()) {
-			reset($node->_children);
-			while (list($key, $value) = each($node->_children)) {
+			foreach($node->_children as $key => $value) {
 				$child_node =& $node->_children[$key];
 				$this->format_subnodes($child_node, $menu_params);
 			}

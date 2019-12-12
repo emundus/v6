@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -208,7 +208,7 @@ class hikashopDatepickerfield {
 		}else{
 			$tag = 'en-GB';
 		}
-		if($app->isAdmin()) {
+		if(hikashop_isClient('administrator')) {
 			$base = '..';
 		} else {
 			$base = JURI::base(true);
@@ -275,7 +275,7 @@ window.hikashopDatepicker = function(el) {
 
 	public function getFieldName(&$field, $requiredDisplay = false, $classname = '') {
 		$app = JFactory::getApplication();
-		if($app->isAdmin()) return $this->trans($field->field_realname);
+		if(hikashop_isClient('administrator')) return $this->trans($field->field_realname);
 		$required = '';
 		$options = '';
 		$for = '';
@@ -292,7 +292,7 @@ window.hikashopDatepicker = function(el) {
 		$val = preg_replace('#[^a-z0-9]#i','_',strtoupper($name));
 
 		$app = JFactory::getApplication();
-		if($app->isAdmin() && strcmp(JText::_($val), strip_tags(JText::_($val))) !== 0)
+		if(hikashop_isClient('administrator') && strcmp(JText::_($val), strip_tags(JText::_($val))) !== 0)
 			$trans = $val;
 		else
 			$trans = JText::_($val);
@@ -520,7 +520,7 @@ window.hikashopDatepicker = function(el) {
 		$datepicker_id = $id . '_input';
 
 		if(empty($datepicker_options['inline'])) {
-			if(($app->isAdmin() && HIKASHOP_BACK_RESPONSIVE) || (!$app->isAdmin() && HIKASHOP_RESPONSIVE)) {
+			if((hikashop_isClient('administrator') && HIKASHOP_BACK_RESPONSIVE) || (!hikashop_isClient('administrator') && HIKASHOP_RESPONSIVE)) {
 				$ret = '<div class="input-append">'.
 					'<input type="text" id="'.$datepicker_id.'" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"/>'.
 					'<button class="btn" onclick="document.getElementById(\''.$datepicker_id.'\').focus();return false;"><i class="icon-calendar"></i></button>'.

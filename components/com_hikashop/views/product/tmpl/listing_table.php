@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,9 +25,9 @@ $pagination = $this->config->get('pagination','bottom');
 if(in_array($pagination, array('top', 'both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total) {
 	$this->pagination->form = '_top';
 ?>
-<form action="<?php echo hikashop_currentURL(); ?>" method="post" name="adminForm_<?php echo $this->params->get('main_div_name').$this->category_selected; ?>_top">
+<form action="<?php echo str_replace('&tmpl=raw', '', hikashop_currentURL()); ?>" method="post" name="adminForm_<?php echo $this->params->get('main_div_name').$this->category_selected; ?>_top">
 	<div class="hikashop_products_pagination hikashop_products_pagination_top">
-		<?php echo $this->pagination->getListFooter($this->params->get('limit')); ?>
+		<?php echo str_replace('&tmpl=raw','', $this->pagination->getListFooter($this->params->get('limit'))); ?>
 		<span class="hikashop_results_counter"><?php echo $this->pagination->getResultsCounter(); ?></span>
 	</div>
 	<input type="hidden" name="filter_order_<?php echo $this->params->get('main_div_name').$this->category_selected;?>" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
@@ -37,14 +37,15 @@ if(in_array($pagination, array('top', 'both')) && $this->params->get('show_limit
 <?php
 }
 ?>
-<div class="hikashop_products">
+<div class="hikashop_products" itemscope="" itemtype="https://schema.org/itemListElement">
 <?php
 $columns = 1;
 if((int)$this->config->get('show_quantity_field') >= 2) {
 ?>
 	<form action="<?php echo hikashop_completeLink('product&task=updatecart'); ?>" method="post" name="hikashop_product_form_<?php echo $this->params->get('main_div_name'); ?>" enctype="multipart/form-data">
 <?php } ?>
-		<table class="hikashop_products_table adminlist table table-striped table-hover" cellpadding="1">
+		<table class="hikashop_products_table adminlist table table-striped table-hover" cellpadding="1"
+			 itemscope="" itemtype="https://schema.org/itemListElement">
 			<thead>
 				<tr>
 <?php if($this->config->get('thumbnail')){ $columns++; ?>
@@ -102,7 +103,7 @@ if((int)$this->config->get('show_quantity_field') >= 2) {
 						echo JText::_('PRICE');
 					?></th>
 <?php } ?>
-<?php if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist')) { $columns++; ?>
+<?php if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist') || (hikashop_level(1) && $this->params->get('product_contact_button', 0)) || (int)$this->params->get('details_button', 0)) { $columns++; ?>
 					<th class="hikashop_product_add_to_cart title hk_center">
 					</th>
 <?php } ?>
@@ -131,7 +132,7 @@ foreach($this->rows as $row) {
 
 	$this->quantityLayout = $this->getProductQuantityLayout($row);
 ?>
-				<tr>
+				<tr itemprop="itemList" itemscope="" itemtype="http://schema.org/ItemList">
 <?php if($this->config->get('thumbnail')) { ?>
 					<td class="hikashop_product_image_row">
 						<div style="height:<?php echo $divHeight;?>px;text-align:center;clear:both;" class="hikashop_product_image">
@@ -143,7 +144,19 @@ foreach($this->rows as $row) {
 	$image_options = array('default' => true,'forcesize'=>$this->config->get('image_force_size',true),'scale'=>$this->config->get('image_scale_mode','inside'));
 	$img = $this->image->getThumbnail(@$this->row->file_path, array('width' => $this->image->main_thumbnail_x, 'height' => $this->image->main_thumbnail_y), $image_options);
 	if($img->success) {
-		echo '<img class="hikashop_product_listing_image" title="'.$this->escape(@$this->row->file_description).'" alt="'.$this->escape(@$this->row->file_name).'" src="'.$img->url.'"/>';
+		$html = '<img class="hikashop_product_listing_image" title="'.$this->escape(@$this->row->file_description).'" alt="'.$this->escape(@$this->row->file_name).'" src="'.$img->url.'"/>';
+		if($this->config->get('add_webp_images', 1) && function_exists('imagewebp') && !empty($img->webpurl)) {
+			$html = '
+			<picture>
+				<source srcset="'.$img->webpurl.'" type="image/webp">
+				<source srcset="'.$img->url.'" type="image/'.$img->ext.'">
+				'.$html.'
+			</picture>
+			';
+		}
+		echo $html;
+?>		<meta itemprop="image" content=<?php echo HIKASHOP_LIVE.$img->url; ?>/>
+<?php
 	}
 	$main_thumb_x = $this->image->main_thumbnail_x;
 	$main_thumb_y = $this->image->main_thumbnail_y;
@@ -156,6 +169,7 @@ foreach($this->rows as $row) {
 <?php if($haveLink) { ?>
 								</a>
 <?php } ?>
+								<meta itemprop="url" content="<?php echo $link;?>">
 							</div>
 						</div>
 					</td>
@@ -168,7 +182,7 @@ foreach($this->rows as $row) {
 								<?php echo $this->row->product_name; ?>
 <?php if($haveLink) { ?>
 								</a>
-<?php } ?>
+<?php } ?>						<meta itemprop="name" content="<?php echo $this->escape(strip_tags($this->row->product_name)); ?>">
 						</span>
 <?php if(!empty($this->row->extraData->afterProductName)) { echo implode("\r\n",$this->row->extraData->afterProductName); } ?>
 					</td>
@@ -204,7 +218,6 @@ foreach($this->rows as $row) {
 ?>
 <?php if($this->params->get('show_vote')) { ?>
 						<td class="hikashop_product_vote_row"><?php
-							$this->row =& $row;
 							$this->setLayout('listing_vote');
 							echo $this->loadTemplate();
 						?></td>
@@ -215,11 +228,42 @@ foreach($this->rows as $row) {
 							echo $this->loadTemplate();
 						?></td>
 <?php } ?>
-<?php if($this->params->get('add_to_cart')) { ?>
-						<td class="hikashop_product_add_to_cart_row"><?php
-							$this->setLayout('add_to_cart_listing');
-							echo $this->loadTemplate();
-						?></td>
+<?php if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist') || (hikashop_level(1) && $this->params->get('product_contact_button', 0)) || (int)$this->params->get('details_button', 0)) { ?>
+						<td class="hikashop_product_add_to_cart_row">
+							<?php if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist')) {
+								$this->setLayout('add_to_cart_listing');
+								echo $this->loadTemplate();
+							}
+						?>
+	<!-- CONTACT US AREA -->
+<?php
+	$contact = (int)$this->config->get('product_contact', 0);
+	if(hikashop_level(1) && $this->params->get('product_contact_button', 0) && ($contact == 2 || ($contact == 1 && !empty($this->row->product_contact)))) {
+		$css_button = $this->config->get('css_button', 'hikabtn');
+?>
+	<a href="<?php echo hikashop_completeLink('product&task=contact&cid=' . (int)$this->row->product_id . $this->itemid); ?>" class="<?php echo $css_button; ?>"><?php
+		echo JText::_('CONTACT_US_FOR_INFO');
+	?></a>
+<?php
+	}
+?>
+
+	<!-- EO CONTACT US AREA -->
+
+	<!-- PRODUCT DETAILS BUTTON AREA -->
+<?php
+	$details_button = (int)$this->params->get('details_button', 0);
+	if($details_button) {
+		$css_button = $this->config->get('css_button', 'hikabtn');
+?>
+	<a href="<?php echo $link; ?>" class="<?php echo $css_button; ?>"><?php
+		echo JText::_('PRODUCT_DETAILS');
+	?></a>
+<?php
+	}
+?>
+
+	<!-- EO PRODUCT DETAILS BUTTON AREA --></td>
 <?php } ?>
 <?php
 	if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->getVar('task') == 'listing' && $this->params->get('show_compare')) {
@@ -280,9 +324,9 @@ if((int)$this->config->get('show_quantity_field') >= 2) {
 if(in_array($pagination,array('bottom','both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total) {
 	$this->pagination->form = '_bottom';
 ?>
-	<form action="<?php echo hikashop_currentURL(); ?>" method="post" name="adminForm_<?php echo $this->params->get('main_div_name').$this->category_selected; ?>_bottom">
+	<form action="<?php echo str_replace('&tmpl=raw', '', hikashop_currentURL()); ?>" method="post" name="adminForm_<?php echo $this->params->get('main_div_name').$this->category_selected; ?>_bottom">
 		<div class="hikashop_products_pagination hikashop_products_pagination_bottom">
-		<?php echo $this->pagination->getListFooter($this->params->get('limit')); ?>
+		<?php echo str_replace('&tmpl=raw','', $this->pagination->getListFooter($this->params->get('limit'))); ?>
 		<span class="hikashop_results_counter"><?php echo $this->pagination->getResultsCounter(); ?></span>
 		</div>
 		<input type="hidden" name="filter_order_<?php echo $this->params->get('main_div_name').$this->category_selected; ?>" value="<?php echo $this->pageInfo->filter->order->value; ?>" />

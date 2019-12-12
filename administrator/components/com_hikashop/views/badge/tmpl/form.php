@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -39,7 +39,7 @@ defined('_JEXEC') or die('Restricted access');
 							<?php echo JText::_( 'START_DATE' ); ?>
 						</td>
 						<td>
-							<?php echo JHTML::_('calendar', (@$this->element->badge_start?hikashop_getDate(@$this->element->badge_start,'%Y-%m-%d %H:%M'):''), 'data[badge][badge_start]','badge_start','%Y-%m-%d %H:%M',array('size'=>'20')); ?>
+							<?php echo JHTML::_('calendar', (@$this->element->badge_start?hikashop_getDate(@$this->element->badge_start,'%Y-%m-%d %H:%M'):''), 'data[badge][badge_start]','badge_start',hikashop_getDateFormat('%d %B %Y %H:%M'),array('size'=>'20')); ?>
 						</td>
 					</tr>
 					<tr>
@@ -47,17 +47,29 @@ defined('_JEXEC') or die('Restricted access');
 							<?php echo JText::_( 'END_DATE' ); ?>
 						</td>
 						<td>
-							<?php echo JHTML::_('calendar', (@$this->element->badge_end?hikashop_getDate(@$this->element->badge_end,'%Y-%m-%d %H:%M'):''), 'data[badge][badge_end]','badge_end','%Y-%m-%d %H:%M',array('size'=>'20')); ?>
+							<?php echo JHTML::_('calendar', (@$this->element->badge_end?hikashop_getDate(@$this->element->badge_end,'%Y-%m-%d %H:%M'):''), 'data[badge][badge_end]','badge_end',hikashop_getDateFormat('%d %B %Y %H:%M'),array('size'=>'20')); ?>
 						</td>
 					</tr>
 					<tr>
 						<td class="key">
-							<?php echo JText::_( 'PRODUCT_QUANTITY' ); ?>
+							<?php echo JText::_( 'MAXIMUM_PRODUCT_QUANTITY' ); ?>
 						</td>
 						<td>
 							<input type="text" name="data[badge][badge_quantity]" value="<?php echo @$this->element->badge_quantity; ?>" />
 						</td>
 					</tr>
+					<tr>
+						<td class="key">
+							<?php echo JText::_( 'NEW_PRODUCT_PERIOD' ); ?>
+						</td>
+						<td>
+							<?php
+								$delayType = hikashop_get('type.delay');
+								echo $delayType->display('data[badge][badge_new_period]', @$this->element->badge_new_period, 3);
+							?>
+						</td>
+					</tr>
+
 					<tr>
 						<td class="key">
 							<?php echo JText::_( 'PRODUCT' ); ?>

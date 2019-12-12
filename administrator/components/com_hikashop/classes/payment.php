@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,6 +24,8 @@ class hikashopPaymentClass extends hikashopClass {
 			if(!empty($result->payment_params)) {
 				$result->payment_params = hikashop_unserialize($result->payment_params);
 			}
+			if(!empty($result->payment_name))
+				$result->payment_name = hikashop_translate($result->payment_name);
 			$cachedElements[$id] = $result;
 		}
 
@@ -512,6 +514,20 @@ class hikashopPaymentClass extends hikashopClass {
 				else
 					$restrictions[] = JText::_('ZONE') . ':' . 'INVALID';
 			}
+
+			if(!empty($row->payment_currency)) {
+				$null = null;
+				$currency_ids = explode(',', $row->payment_currency);
+				$currencies = $view->currencyClass->getCurrencies($currency_ids, $null);
+				if(count($currencies)) {
+					$list = array();
+					foreach($currencies as $c) {
+						$list[] = $c->currency_code;
+					}
+					$restrictions[] = JText::_('CURRENCY') . ': ' . implode(', ', $list);
+				}
+			}
+
 			$row->col_display_restriction = implode('<br/>', $restrictions);
 		}
 		unset($row);

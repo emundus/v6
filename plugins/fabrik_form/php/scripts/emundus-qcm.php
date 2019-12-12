@@ -71,6 +71,14 @@ if (empty($formModel->getRowId())) {
 			$purl .= '&jos_emundus_qcm___a'.$i.'='.$value;
 			$i++;
 		}
+		// Section A - GER
+		$query = 'SELECT question_code FROM data_qcm WHERE section like "A" AND sub_section like "GER" group by num ORDER BY RAND() LIMIT 2';
+		$db->setQuery( $query );
+		$res = $db->loadColumn();
+		foreach ($res as $key => $value) {
+			$purl .= '&jos_emundus_qcm___a'.$i.'='.$value;
+			$i++;
+		}
 
 		// Section B
 		$i = 1;

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -80,22 +80,23 @@ defined('_JEXEC') or die('Restricted access');
 								echo JHTML::_('grid.sort', JText::_('PRODUCT_PRICE'), 'b.product_sort_price', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
 							?></th>
 							<th class="title"><?php
-							echo JHTML::_('grid.sort', JText::_('PRODUCT_QUANTITY'), 'b.product_quantity', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
+								echo JHTML::_('grid.sort', JText::_('PRODUCT_QUANTITY'), 'b.product_quantity', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
 							?></th>
 <?php
+	$count_extrafields = 9;
 	if(!empty($this->fields)){
 		foreach($this->fields as $field){
 			if($field->field_type == 'customtext') continue;
 			echo '<th class="title">'.JHTML::_('grid.sort', $this->fieldsClass->trans($field->field_realname), 'b.'.$field->field_namekey, $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ).'</th>';
 		}
+		$count_extrafields += count($this->fields);
 	}
 
-	$count_extrafields = 0;
 	if(!empty($this->extrafields)) {
 		foreach($this->extrafields as $namekey => $extrafield) {
 			echo '<th class="hikashop_product_'.$namekey.'_title title">'.$extrafield->name.'</th>'."\r\n";
 		}
-		$count_extrafields = count($this->extrafields);
+		$count_extrafields += count($this->extrafields);
 	}
 ?>
 							<th class="title titleorder"><?php
@@ -117,10 +118,7 @@ defined('_JEXEC') or die('Restricted access');
 					</thead>
 					<tfoot>
 						<tr>
-							<td colspan="<?php
-							$count = 9 + count($this->fields)+$count_extrafields;
-							echo $count;
-							?>">
+							<td colspan="<?php echo $count_extrafields; ?>">
 								<?php echo $this->pagination->getListFooter(); ?>
 								<?php echo $this->pagination->getResultsCounter(); ?>
 							</td>

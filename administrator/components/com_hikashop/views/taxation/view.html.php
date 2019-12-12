@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -34,30 +34,12 @@ class TaxationViewTaxation extends hikashopView{
 		$pageInfo->limit->value = $app->getUserStateFromRequest( $this->paramBase.'.list_limit', 'limit', $app->getCfg('list_limit'), 'int' );
 		$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart', 'limitstart', 0, 'int' );
 
-		$pageInfo->filter->taxation_date_start=$app->getUserStateFromRequest( HIKASHOP_COMPONENT.'.taxation_date_start','taxation_date_start','' ,'string');
-		$pageInfo->filter->taxation_date_end=$app->getUserStateFromRequest( HIKASHOP_COMPONENT.'.taxation_date_end','taxation_date_end','' ,'string');
 		$pageInfo->filter->tax_namekey=$app->getUserStateFromRequest( HIKASHOP_COMPONENT.'.tax_namekey','tax_namekey','' ,'string');
 		$pageInfo->filter->taxation_type=$app->getUserStateFromRequest( HIKASHOP_COMPONENT.'.taxation_type','taxation_type','' ,'string');
 		$pageInfo->filter->taxation_site_id=$app->getUserStateFromRequest( HIKASHOP_COMPONENT.'.taxation_site_id','taxation_site_id','' ,'string');
 		$database = JFactory::getDBO();
 
 		$filters = array();
-
-
-		if ( !empty( $pageInfo->filter->taxation_date_start)) {
-			$filters[] = '('
-				. hikashop_getTime($pageInfo->filter->taxation_date_start).'<=a.taxation_date_start'
-				. ' OR '. hikashop_getTime($pageInfo->filter->taxation_date_start).'<=a.taxation_date_end'
-				. ' OR a.taxation_date_end=0'
-				. ')';
-		}
-		if ( !empty( $pageInfo->filter->taxation_date_end)) {
-			$filters[] = '('
-				. 'a.taxation_date_start<='.hikashop_getTime($pageInfo->filter->taxation_date_end)
-				. ' OR (a.taxation_date_start<=a.taxation_date_end AND a.taxation_date_end<='.hikashop_getTime($pageInfo->filter->taxation_date_end).')'
-				. ' OR a.taxation_date_start=0'
-				. ')';
-		}
 
 		if(!empty($pageInfo->filter->tax_namekey)){
 			$filters[]='a.tax_namekey='.$database->Quote($pageInfo->filter->tax_namekey);

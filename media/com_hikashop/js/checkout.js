@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.0.1
+ * @version    4.2.2
  * @author     hikashop.com
- * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 (function() {
@@ -53,6 +53,15 @@ var hikashopCheckout = {
 		});
 		return false;
 	},
+	submitStep: function(el) {
+		if(window.checkout.onFormSubmit && !window.checkout.onFormSubmit(el.form, el))
+			return false;
+		var mainDiv = document.getElementById('hikashop_checkout');
+		if(mainDiv)
+			this.setLoading(mainDiv, true);
+		el.form.submit();
+		return false;
+	},
 	submitBlock: function(type, step, id, data) {
 		if((id === null || id === undefined) && typeof(step) == 'object') {
 			info = this.getBlockPos(step);
@@ -74,6 +83,10 @@ var hikashopCheckout = {
 			return false;
 		}
 
+		var triggers = o.fireAjax('checkoutBlockSubmit', {'type': type, 'cid': step, 'pos': id, 'element': el, 'data': data});
+		if(triggers !== false && triggers.length > 0)
+			return true;
+
 		if(data === undefined || !data) {
 			formData = o.getFormData(el);
 		} else if(typeof(data) == "string") {
@@ -85,10 +98,6 @@ var hikashopCheckout = {
 				formData += encodeURI(k) + "=" + encodeURIComponent(data[k]);
 			}
 		}
-
-		var triggers = o.fireAjax('checkoutBlockSubmit', {'type': type, 'cid': step, 'pos': id, 'element': el});
-		if(triggers !== false && triggers.length > 0)
-			return true;
 
 		t.setLoading(el, true, true);
 
@@ -137,14 +146,14 @@ var hikashopCheckout = {
 		else if(t.loading > 0)
 			t.loading--;
 		// we block the next button while blocks are being submitted to avoid wrong actions to be validated while finishing the checkout
-		if(t.loading) {
-			if(btn)
+		if(btn) {
+			if(t.loading) {
 				btn.disabled = true;
-			o.addClass(btn, 'next_button_disabled');
-		} else {
-			if(btn)
+				o.addClass(btn, 'next_button_disabled');
+			} else  {
 				btn.disabled = false;
-			o.removeClass(btn, 'next_button_disabled');
+				o.removeClass(btn, 'next_button_disabled');
+			}
 		}
 	},
 	handleParams: function(data, url, req) {
@@ -167,10 +176,17 @@ var hikashopCheckout = {
 		req.mode = "POST";
 		return url;
 	},
-	onFormSubmit: function(el) {
+	onFormSubmit: function(el, btn) {
+		if(el === null)
+			el = document.getElementById('hikashop_checkout_form');
 		if(el.submit_in_progress)
 			return false;
 		el.submit_in_progress = true;
+		var triggers = window.Oby.fireAjax('checkoutFormSubmit', {'element': el, 'button': btn});
+		if(triggers !== false && triggers.length > 0) {
+			el.submit_in_progress = false;
+			return false;
+		}
 		return true;
 	},
 	isSource: function(params, step, pos) {
@@ -202,6 +218,8 @@ var hikashopCheckout = {
 			return true;
 
 		for(var idx = 0 ; idx < els.length ; idx++) {
+			if(els[idx].parentElement.className == 'chzn-search')
+				continue;
 			els[idx].addEventListener('keydown', function(e) {
 				if(e.key === undefined && e.keyCode === undefined && e.which === undefined)
 					return;
@@ -212,12 +230,19 @@ var hikashopCheckout = {
 			});
 		}
 	},
-	checkScroll: function () {
+	checkScroll: function (fullReload) {
 		var els = document.getElementsByClassName("hikashop_error");
+		var height =  (window.innerHeight || document.documentElement.clientHeight);
 		for (var i = 0; i < els.length; i++) {
 			var bounding = els[i].getBoundingClientRect();
-			if(bounding.top < 0)
+			// for submitblock
+			if(!fullReload && bounding.top < 0)
 				els[i].scrollIntoView('{block: "start"}');
+			// for submitstep
+			if(fullReload && bounding.bottom > height) {
+				els[i].scrollIntoView('{block: "start"}');
+				break;
+			}
 		}
 	}
 };
@@ -230,5 +255,9 @@ if(oldCheckout && oldCheckout instanceof Object) {
 			window.checkout[attr] = oldCheckout[attr];
 	}
 }
+
+window.hikashop.ready(function(){
+	window.checkout.checkScroll(true);
+});
 
 })();

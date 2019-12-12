@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -108,7 +108,7 @@ class hikashopUserClass extends hikashopClass {
 
 			$previousPartnerCurrency = $user->user_currency_id;
 
-			if($app->isAdmin()) {
+			if(hikashop_isClient('administrator')) {
 				if($element->user_currency_id == $config->get('partner_currency')) {
 					$element->user_currency_id = 0;
 				}
@@ -311,7 +311,7 @@ class hikashopUserClass extends hikashopClass {
 				continue;
 			}
 
-			if($app->isAdmin()) {
+			if(hikashop_isClient('administrator')) {
 				$data = $this->get($el);
 				$app->enqueueMessage('The user with the email address "'.$data->user_email.'" could not be deleted in HikaShop because he has orders attached to him. If you want to delete this user in HikaShop as well, you first need to delete his orders.');
 				$result = false;
@@ -443,11 +443,11 @@ class hikashopUserClass extends hikashopClass {
 		$registerData = $fieldClass->getInput('register', $old, 'msg', $input_data['register']);
 		$userData = $fieldClass->getFilteredInput('user', $old, 'msg', $input_data['user']);
 		$addressData = null;
-		if($input_data['address'] !== null)
-			$addressData = $fieldClass->getFilteredInput(array('billing_address','address'), $old, 'msg', $input_data['address']);
+		if(isset($input_data['address']) && $input_data['address'] !== null)
+			$addressData = $fieldClass->getFilteredInput(array('billing_address','billing_address'), $old, 'msg', $input_data['address']);
 		$shippingAddressData = null;
-		if($input_data['shipping_address'] !== null)
-			$shippingAddressData = $fieldClass->getFilteredInput(array('shipping_address','address', 'shipping_'), $old, 'msg', $input_data['shipping_address']);
+		if(isset($input_data['shipping_address']) && $input_data['shipping_address'] !== null)
+			$shippingAddressData = $fieldClass->getFilteredInput(array('shipping_address','shipping_address', 'shipping_'), $old, 'msg', $input_data['shipping_address']);
 
 		$status = true;
 		$messages = array();
@@ -556,7 +556,6 @@ class hikashopUserClass extends hikashopClass {
 			'shippingAddressData' => &$shippingAddressData
 		);
 
-
 		if(!empty($addressData->address_vat)) {
 			$vatHelper = hikashop_get('helper.vat');
 			if(!$vatHelper->isValid($addressData)) {
@@ -574,14 +573,18 @@ class hikashopUserClass extends hikashopClass {
 			}
 		}
 
-		if($config->get('affiliate_registration', 0) && !empty($input_data['affiliate'])) {
-			$userData->user_partner_activated = 1;
-			$registerData->user_partner_activated = 1;
-		}
-
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 		$app->triggerEvent('onBeforeHikaUserRegistration', array(&$ret, $input_data, $mode));
+
+		$data = array(
+			'name' => @$registerData->name,
+			'username' => @$registerData->username,
+			'email' => @$registerData->email,
+			'password' => @$registerData->password,
+			'password2' => @$registerData->password2
+		);
+		$_SESSION['hikashop_main_user_data'] = $data;
 
 		if($ret['status'] == false) {
 			if(empty($ret['messages'])) {
@@ -650,6 +653,14 @@ class hikashopUserClass extends hikashopClass {
 			$language = JFactory::getLanguage();
 			$language->load('lib_joomla', JPATH_SITE);
 
+
+			$privacy = $this->getPrivacyConsentSettings();
+			if($privacy && !$registerData->privacy) {
+				$ret['status'] = false;
+				$ret['messages']['PLG_SYSTEM_PRIVACYCONSENT_FIELD_ERROR'] = array(JText::_('PLG_SYSTEM_PRIVACYCONSENT_FIELD_ERROR'), 'error');
+				return $ret;
+			}
+
 			if( !$user->bind($data, 'usertype') ) {
 				$ret['status'] = false;
 				$ret['messages'][] = array(JText::_( $user->getError() ), 'error');
@@ -693,6 +704,9 @@ class hikashopUserClass extends hikashopClass {
 				$userData->user_cms_id = $user->id;
 			else
 				$userData->user_email = $registerData->email;
+
+			if($privacy)
+				$this->addUserConsent($user);
 
 			$ret['user_id'] = $this->save($userData);
 
@@ -1201,6 +1215,76 @@ class hikashopUserClass extends hikashopClass {
 		$this->database->execute();
 
 		return true;
+	}
+
+	public function getPrivacyConsentSettings($type = 'registration') {
+		$group = 'system';
+		$name = 'privacyconsent';
+		$note_name = 'privacy_note';
+		$note_trans_key = 'PLG_SYSTEM_PRIVACYCONSENT_NOTE_FIELD_DEFAULT';
+		if($type == 'contact') {
+			$group = 'content';
+			$name = 'confirmconsent';
+			$note_name = 'consentbox_text';
+			$note_trans_key = 'PLG_CONTENT_CONFIRMCONSENT_FIELD_NOTE_DEFAULT';
+		}
+
+		$pluginsClass = hikashop_get('class.plugins');
+		$plugin = $pluginsClass->getByName($group, $name);
+
+		if(empty($plugin) || !$plugin->enabled)
+			return false;
+
+		$language = JFactory::getLanguage();
+		$language->load('plg_'.$group.'_'.$name, JPATH_ADMINISTRATOR, $language->getTag(), true);
+
+		$privacyArticleId = @$plugin->params['privacy_article'];
+		$privacyNote = @$plugin->params[$note_name];
+		if(empty($privacyNote))
+			$privacyNote = JText::_($note_trans_key);
+
+		$articleClass = hikashop_get('class.article');
+		$privacyArticleId = $articleClass->getLanguageArticleId($privacyArticleId);
+		return array('id' => $privacyArticleId, 'text' => $privacyNote);
+	}
+
+	public function addUserConsent(&$user){
+		$ip = hikashop_getIP();
+
+		$userAgent = filter_var($_SERVER['HTTP_USER_AGENT'], FILTER_SANITIZE_STRING);
+
+		$userNote = (object) array(
+			'user_id' => $user->id,
+			'subject' => 'PLG_SYSTEM_PRIVACYCONSENT_SUBJECT',
+			'body'    => JText::sprintf('PLG_SYSTEM_PRIVACYCONSENT_BODY', $ip, $userAgent),
+			'created' => JFactory::getDate()->toSql(),
+		);
+
+		try
+		{
+			$this->db->insertObject('#__privacy_consents', $userNote);
+		}
+		catch (Exception $e)
+		{
+		}
+
+		$userId = JArrayHelper::getValue($data, 'id', 0, 'int');
+
+		$message = array(
+			'action'      => 'consent',
+			'id'          => $user->id,
+			'title'       => $user->name,
+			'itemlink'    => 'index.php?option=com_users&task=user.edit&id=' . $user->id,
+			'userid'      => $user->id,
+			'username'    => $user->username,
+			'accountlink' => 'index.php?option=com_users&task=user.edit&id=' . $user->id,
+		);
+
+		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_actionlogs/models', 'ActionlogsModel');
+
+
+		$model = JModelLegacy::getInstance('Actionlog', 'ActionlogsModel');
+		$model->addLog(array($message), 'PLG_SYSTEM_PRIVACYCONSENT_CONSENT', 'plg_system_privacyconsent', $user->id);
 	}
 
 	public function &getNameboxData($typeConfig, &$fullLoad, $mode, $value, $search, $options) {

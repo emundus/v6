@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,6 +18,8 @@ $name = 'quantity';
 if(!empty($this->row->quantityFieldName)){
 	$name = $this->row->quantityFieldName;
 }
+if(!isset($this->config))
+	$this->config = hikashop_config();
 
 if(isset($this->row) && isset($this->row->product_min_per_order)) {
 	$min_quantity = ($this->row->product_min_per_order || empty($this->element->main)) ? $this->row->product_min_per_order : @$this->element->main->product_min_per_order;
@@ -37,8 +39,6 @@ if(isset($this->row) && isset($this->row->product_min_per_order)) {
 $html = $this->params->get('html');
 
 if(!isset($this->global_on_listing)){
-	if(!isset($this->config))
-		$this->config = hikashop_config();
 	$this->global_on_listing = $this->config->get('show_quantity_field') == 2;
 }
 if(!empty($this->global_on_listing))
@@ -88,7 +88,7 @@ switch($quantityLayout) {
 	case 'show_select':
 		$increment = ($min_quantity ? $min_quantity : 1);
 		if(empty($max_quantity)){
-			$max_quantity = (int)$increment * 15;
+			$max_quantity = (int)$increment * $this->config->get('quantity_select_max_default_value', 15);
 		}
 ?>
 		<div class="hikashop_product_quantity_div hikashop_product_quantity_input_div_select"><?php
@@ -110,7 +110,7 @@ switch($quantityLayout) {
 	case 'show_select_price':
 		$increment = ($min_quantity ? $min_quantity : 1);
 		if(!$max_quantity){
-			$max_quantity = (int)$increment * 15;
+			$max_quantity = (int)$increment * $this->config->get('quantity_select_max_default_value', 15);
 		}
 ?>
 		<div class="hikashop_product_quantity_div hikashop_product_quantity_input_div_select"><?php

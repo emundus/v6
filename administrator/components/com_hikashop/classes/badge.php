@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -66,11 +66,14 @@ class hikashopBadgeClass extends hikashopClass {
 			$product_id = $row->product_id;
 		}
 
+		$period = time() - $row->product_created;
+
 		$badge_filters = array(
 			'a.badge_start <= '.time(),
 			'(a.badge_end >= '.time().' OR a.badge_end = 0)',
 			'a.badge_published = 1',
 			'(a.badge_quantity = \'\' OR a.badge_quantity = '.(int)$qty.')',
+			'(a.badge_new_period = 0 OR a.badge_new_period >= '.(int)$period.')',
 		);
 		if($discount && isset($discount->discount_id)) {
 			$badge_filters[] = '(badge_discount_id = '.(int)@$discount->discount_id.' OR badge_discount_id = \'0\' OR badge_discount_id = \'\' OR badge_discount_id LIKE \'%,'.(int)@$discount->discount_id.',%\')';

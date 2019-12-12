@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -34,14 +34,25 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 	foreach($this->elts as $elt) {
 		if(empty($elt->vote_comment))
 			continue;
+
+	$table_elements = '';
+	$td_elements = '';
+	$span_elements = '';
+	$div_elements = '';
+	if ($this->microData == true) {
+		$table_elements = ' itemprop="review" itemscope itemtype="https://schema.org/Review"';
+		$td_elements = ' itemprop="author" itemscope itemtype="https://schema.org/Person"';
+		$span_elements = ' itemprop="name"';
+		$div_elements= ' itemprop="reviewBody"';
+	}
 ?>
-<table itemprop="review" itemscope itemtype="https://schema.org/Review" class="hika_comment_listing" style="width:100%;">
+<table<?php echo $table_elements; ?> class="hika_comment_listing" style="width:100%;">
 	<tr>
-		<td class="hika_comment_listing_name" itemprop="author" itemscope itemtype="https://schema.org/Person">
+		<td<?php echo $td_elements; ?> class="hika_comment_listing_name">
 <?php if ($elt->vote_pseudo == '0') { ?>
-			<span itemprop="name" class="hika_vote_listing_username"><?php echo $elt->username; ?> </span>
+			<span<?php echo $span_elements; ?> class="hika_vote_listing_username"><?php echo $elt->username; ?> </span>
 <?php } else { ?>
-			<span itemprop="name" class="hika_vote_listing_username" ><?php echo $elt->vote_pseudo; ?></span>
+			<span<?php echo $span_elements; ?> class="hika_vote_listing_username" ><?php echo $elt->vote_pseudo; ?></span>
 <?php } ?>
 		</td>
 		<td class="hika_comment_listing_stars hk-rating"><?php
@@ -59,13 +70,14 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 			for($k = 0; $k < $nb_star_empty; $k++) {
 				?><span class="hika_comment_listing_empty_stars hk-rate-star state-empty"></span><?php
 			}
-?>
-			<span style="display:none;" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
-				<span itemprop="bestRating"><?php echo $nb_star_config; ?></span>
-				<span itemprop="worstRating">1</span>
-				<span itemprop="ratingValue"><?php echo $nb_star_vote; ?></span>
-			</span>
-<?php
+			if($this->microData == true) {
+	?>
+				<span style="display:none;" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+					<span itemprop="bestRating"><?php echo $nb_star_config; ?></span>
+					<span itemprop="worstRating">1</span>
+					<span itemprop="ratingValue"><?php echo $nb_star_vote; ?></span>
+				</span>
+<?php		}
 		}
 ?>
 		</td>
@@ -150,7 +162,7 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 <?php } ?>
 	<tr>
 		<td colspan="8">
-			<div id="<?php echo $i++; ?>" itemprop="reviewBody" class="hika_comment_listing_content"><?php echo nl2br($this->escape($elt->vote_comment)); ?></div>
+			<div id="<?php echo $i++; ?>"<?php echo $div_elements; ?> class="hika_comment_listing_content"><?php echo nl2br($this->escape($elt->vote_comment)); ?></div>
 		</td>
 	</tr>
 	<tr>

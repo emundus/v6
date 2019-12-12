@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -677,7 +677,7 @@ function insertCards(){
 				$app->enqueueMessage( $message['safe_mode_activated']);
 			$safe_mode_dir = ini_get('safe_mode_exec_dir');
 			$element->payment_params->safe=true;
-			if($app->isAdmin() && empty($element->payment_params->binaries_folder)){
+			if(hikashop_isClient('administrator') && empty($element->payment_params->binaries_folder)){
 				$app->enqueueMessage($message['cannot_run_binaries'].$safe_mode_dir, 'error');
 			}
 		}

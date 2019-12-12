@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension version="3.4" type="template" client="site" method="upgrade">
     <name>g5_helium</name>
-    <version>5.4.29</version>
-    <creationDate>June 21, 2019</creationDate>
+    <version>5.4.31</version>
+    <creationDate>October  4, 2019</creationDate>
     <author>RocketTheme, LLC</author>
     <authorEmail>support@rockettheme.com</authorEmail>
     <authorUrl>http://www.rockettheme.com</authorUrl>
@@ -48,7 +48,6 @@
         <position>content-top-a</position>
         <position>content-top-b</position>
         <position>content-top-c</position>
-        <position>debug</position>
         <position>drawer</position>
         <position>drawer-a</position>
         <position>drawer-b</position>

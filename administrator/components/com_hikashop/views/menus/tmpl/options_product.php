@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -123,10 +123,40 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name"><?php
+				echo JText::_('DISPLAY_WAITLIST_BUTTON');
+			?></dt>
+			<dd class="hikashop_option_value"><?php
+				echo JHTML::_('hikaselect.booleanlist', $this->name.'[product_waitlist]', '', @$this->element['product_waitlist']);
+			?></dd>
+		</dl>
+		<dl class="hika_options">
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('CONTACT_US_BUTTON');
+			?></dt>
+			<dd class="hikashop_option_value"><?php
+				if(hikashop_level(1)) {
+					if(!isset($this->element['product_contact_button'])) $this->element['product_contact_button'] = '-1';
+					echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[product_contact_button]', @$this->element['product_contact_button']);
+				} else {
+					echo hikashop_getUpgradeLink('essential');
+				}
+			?></dd>
+		</dl>
+		<dl class="hika_options">
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('PRODUCT_DETAILS_BUTTON');
+			?></dt>
+			<dd class="hikashop_option_value"><?php
+				if(!isset($this->element['details_button'])) $this->element['details_button'] = '-1';
+				echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[details_button]', @$this->element['details_button']);
+			?></dd>
+		</dl>
+		<dl class="hika_options">
+			<dt class="hikashop_option_name"><?php
 				echo JText::_('VOTE');
 			?></dt>
 			<dd class="hikashop_option_value"><?php
-				if((!isset($this->element['show_vote'])) && (isset($this->element['show_vote_product']))) 
+				if((!isset($this->element['show_vote'])) && (isset($this->element['show_vote_product'])))
 					$this->element['show_vote'] = $this->element['show_vote_product'];
 				elseif(!isset($this->element['show_vote']))
 					$this->element['show_vote'] = '-1';

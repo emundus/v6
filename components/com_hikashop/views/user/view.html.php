@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -79,7 +79,10 @@ class userViewUser extends HikaShopView {
 		if(!empty($menu) && method_exists($menu, 'getParams')) {
 			if($show_page_heading)
 				$this->title = $params->get('page_heading');
-			hikashop_setPageTitle($menu->title);
+			$title = $params->get('page_title');
+			if(empty($title))
+				$title = $menu->title;
+			hikashop_setPageTitle($title);
 		} else {
 			if($show_page_heading)
 				$this->title = JText::_('CUSTOMER_ACCOUNT');
@@ -113,7 +116,13 @@ class userViewUser extends HikaShopView {
 		if($nb_display_option <= 0)
 			$nb_display_option = 3;
 
-		$query = 'SELECT `order_id` FROM ' .  hikashop_table('order') . ' WHERE `order_user_id` = '. $user_id .' AND `order_type` = \'sale\' ORDER BY `order_created` DESC';
+		$filters = array('`order_type` = \'sale\'', '`order_user_id` = '. (int)$user_id);
+		$status = $this->config->get('orders_listing_default_status','');
+		if(!empty($status)) {
+			$filters[] = 'order_status = '.$db->Quote($status);
+		}
+		$filters = implode(' AND ', $filters);
+		$query = 'SELECT `order_id` FROM ' .  hikashop_table('order') . ' WHERE ' . $filters . '  ORDER BY `order_created` DESC';
 		$db->setQuery($query, 0, $nb_display_option);
 		$last_order_ids = $db->loadColumn();
 
@@ -201,6 +210,17 @@ class userViewUser extends HikaShopView {
 			unset($order);
 		}
 
+		$print_statuses = explode(',', trim($this->config->get('print_invoice_statuses', 'confirmed,shipped,refunded'), ', '));
+		if(hikashop_level(1) && !empty($orders)) {
+			foreach($orders as &$order) {
+				if(in_array($order->order_status, $print_statuses)) {
+					$order->show_print_button = true;
+					$this->action_column = true;
+				}
+			}
+			unset($order);
+		}
+
 		if($this->config->get('allow_reorder', 0)) {
 			$this->action_column = true;
 		}
@@ -234,9 +254,37 @@ class userViewUser extends HikaShopView {
 		$this->assignRef('config', $config);
 	}
 
-	public function form(){
+	public function form() {
+		$app = JFactory::getApplication();
+
 		$this->registration();
-		hikashop_setPageTitle('HIKA_REGISTRATION');
+
+		$menus	= $app->getMenu();
+		$menu	= $menus->getActive();
+		$show_page_heading = true;
+		$params = null;
+		if(!empty($menu) && method_exists($menu, 'getParams')) {
+			$params = $menu->getParams();
+			$show_page_heading = $params->get('show_page_heading');
+		}
+		if(is_null($show_page_heading)) {
+			$com_menus = JComponentHelper::getParams('com_menus');
+			if(!empty($com_menus))
+				$show_page_heading = $com_menus->get('show_page_heading');
+		}
+		if(!empty($menu) && method_exists($menu, 'getParams') && $menu->link == 'index.php?option=com_hikashop&view=user&layout=form') {
+			if($show_page_heading)
+				$this->title = $params->get('page_heading');
+			$title = $params->get('page_title');
+			if(empty($title))
+				$title = $menu->title;
+			hikashop_setPageTitle($title);
+		} else {
+			if($show_page_heading)
+				$this->title = JText::_('HIKA_REGISTRATION');
+			hikashop_setPageTitle('HIKA_REGISTRATION');
+
+		}
 	}
 
 	public function registration() {
@@ -377,7 +425,8 @@ else
 
 		$user = @$_SESSION['hikashop_user_data'];
 		$address = @$_SESSION['hikashop_address_data'];
-
+		if(!empty($_SESSION['hikashop_billing_address_data']))
+			$address = $_SESSION['hikashop_billing_address_data'];
 		$fieldsClass = hikashop_get('class.field');
 		$this->assignRef('fieldsClass', $fieldsClass);
 		$fieldsClass->skipAddressName = true;
@@ -458,6 +507,17 @@ else
 			$affiliate = '';
 		}
 		$this->assignRef('affiliate_checked', $affiliate);
+
+		$userClass = hikashop_get('class.user');
+		$privacy = $userClass->getPrivacyConsentSettings();
+		$this->options = array();
+		if($privacy) {
+			$this->options['privacy'] = true;
+			$this->options['privacy_id'] = $privacy['id'];
+			$this->options['privacy_text'] = $privacy['text'];
+		}
+
+
 	}
 
 	public function downloads() {

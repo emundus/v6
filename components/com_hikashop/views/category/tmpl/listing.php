@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -124,6 +124,7 @@ if(!$this->module){
 		foreach($data->hk_product as $k => $v){
 			$params->set($k,$v);
 		}
+		$params->set('content_synchronize', 1);
 		$main_div_name = 'hikashop_category_information_module_'.$params->get('id');
 		$params->set('main_div_name',$main_div_name);
 		echo '<div class="hikashop_submodules" style="clear:both">'.hikashop_getLayout('product', 'listing', $params, $js).'</div>';

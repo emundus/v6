@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -20,7 +20,7 @@ class ExplorerViewExplorer extends hikashopView {
 
 		$select = 'SELECT a.*';
 		$table = ' FROM '.hikashop_table('category').' AS a';
-		if($app->isAdmin() && $translationHelper->isMulti()) {
+		if(hikashop_isClient('administrator') && $translationHelper->isMulti()) {
 			$locale = $user->getParam('language');
 			if(empty($locale)) {
 				if(HIKASHOP_J30) {
@@ -41,8 +41,6 @@ class ExplorerViewExplorer extends hikashopView {
 		$where = '';
 		if(!empty($type)) {
 			$where = ' WHERE a.category_type IN ('.$database->Quote($type).',\'root\')';
-			if($type == 'product')
-				$where = ' WHERE a.category_type NOT IN (\'status\', \'tax\')';
 		}
 
 		$database->setQuery($select.$table.$where.' ORDER BY a.category_parent_id ASC, a.category_ordering ASC');

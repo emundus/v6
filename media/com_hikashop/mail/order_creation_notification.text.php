@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -63,7 +63,7 @@ if($data->cart->full_total->prices[0]->price_value!=$data->cart->full_total->pri
 }
 
 $app = JFactory::getApplication();
-if($app->isAdmin()){
+if(hikashop_isClient('administrator')){
 	$view = 'order';
 }else{
 	$view = 'address';
@@ -98,7 +98,7 @@ foreach($fields as $fieldName => $oneExtraField) {
 	echo $fieldsClass->trans($oneExtraField->field_realname).' : '.$fieldsClass->show($oneExtraField,$data->$fieldName)."\r\n";
 }
 
-if(!$app->isAdmin()){
+if(!hikashop_isClient('administrator')){
 	if($data->cart->full_total->prices[0]->price_value_with_tax>0) echo JText::_('ORDER_VALID_AFTER_PAYMENT')."\n\n";
 	echo JText::sprintf('THANK_YOU_FOR_YOUR_ORDER',HIKASHOP_LIVE)."\n\n";
 }

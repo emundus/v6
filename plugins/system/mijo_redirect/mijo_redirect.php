@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -30,7 +30,13 @@ class plgSystemMijo_redirect extends JPlugin {
 			$mijoOrderId = JRequest::getInt('order_id');
 		}
 
-		if( $option != 'com_mijoshop' || $app->isAdmin() )
+
+		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('administrator'))
+			return true;
+		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
+			return true;
+
+		if( $option != 'com_mijoshop')
 			return true;
 
 		$url = null; //HIKASHOP_LIVE;

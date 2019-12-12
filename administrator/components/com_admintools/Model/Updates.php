@@ -22,41 +22,33 @@ class Updates extends Update
 	 *
 	 * @var  array
 	 */
-	protected $obsoleteUpdateSiteLocations = array(
+	protected $obsoleteUpdateSiteLocations = [
 		'http://cdn.akeebabackup.com/updates/atpro.xml',
 		'http://cdn.akeebabackup.com/updates/atcore.xml',
 		'http://cdn.akeebabackup.com/updates/fof.xml',
-	);
+	];
 
 	/**
 	 * Public constructor. Initialises the protected members as well.
 	 *
-	 * @param array $config
+	 * @param   array  $config
 	 */
-	public function __construct($config = array())
+	public function __construct($config = [])
 	{
 		$container = Container::getInstance('com_admintools');
 
-		$config['update_component']  = 'pkg_admintools';
-		$config['update_sitename']   = 'Admin Tools Core';
-		$config['update_site']       = 'https://cdn.akeebabackup.com/updates/pkgadmintoolscore.xml';
-		$config['update_extraquery'] = '';
+		$config['update_component'] = 'pkg_admintools';
+		$config['update_sitename']  = 'Admin Tools Core';
+		$config['update_site']      = 'https://cdn.akeebabackup.com/updates/pkgadmintoolscore.xml';
+		$config['update_paramskey'] = 'downloadid';
+		$config['update_container'] = $container;
 
 		$isPro = defined('ADMINTOOLS_PRO') ? ADMINTOOLS_PRO : 0;
-		$dlid = $container->params->get('downloadid', '');
-
-		// If I have a valid Download ID I will need to use a non-blank extra_query in Joomla! 3.2+
-		if (preg_match('/^([0-9]{1,}:)?[0-9a-f]{32}$/i', $dlid))
-		{
-			// Even if the user entered a Download ID in the Core version. Let's switch his update channel to Professional
-			$isPro = true;
-		}
 
 		if ($isPro)
 		{
-			$config['update_sitename']   = 'Admin Tools Professional';
-			$config['update_site']       = 'https://cdn.akeebabackup.com/updates/pkgadmintoolspro.xml';
-			$config['update_extraquery'] = 'dlid=' . $dlid;
+			$config['update_sitename'] = 'Admin Tools Professional';
+			$config['update_site']     = 'https://cdn.akeebabackup.com/updates/pkgadmintoolspro.xml';
 		}
 
 		if (defined('ADMINTOOLS_VERSION') && !in_array(substr(ADMINTOOLS_VERSION, 0, 3), ['dev', 'rev']))
@@ -66,8 +58,7 @@ class Updates extends Update
 
 		parent::__construct($config);
 
-		$this->container = $container;
-
+		$this->container    = $container;
 		$this->extension_id = $this->findExtensionId('pkg_admintools', 'package');
 
 		if (empty($this->extension_id))
@@ -90,102 +81,14 @@ class Updates extends Update
 	}
 
 	/**
-	 * Handle automatic updates. Sends update notification emails and/or installs a new version automatically.
-	 *
-	 * @return  array
-	 */
-	public function autoupdate()
-	{
-		$return = array(
-			'message' => ''
-		);
-
-		// First of all let's check if there are any updates
-		$updateInfo = (object) $this->getUpdates(true);
-
-		// There are no updates, there's no point in continuing
-		if (!$updateInfo->hasUpdate)
-		{
-			return array(
-				'message' => array("No available updates found")
-			);
-		}
-
-		$return['message'][] = "Update detected, version: " . $updateInfo->version;
-
-		// Ok, an update is found, what should I do?
-		$params     = $this->container->params;
-		$autoupdate = $params->get('autoupdateCli', 1);
-
-		// Let's notifiy the user
-		if ($autoupdate == 1 || $autoupdate == 2)
-		{
-			$email = $params->get('notificationEmail');
-
-			if (!$email)
-			{
-				$return['message'][] = "There isn't an email for notifications, no notification will be sent.";
-			}
-			else
-			{
-				// Ok, I can send it out, but before let's check if the user set any frequency limit
-				$numfreq    = $params->get('notificationFreq', 1);
-				$freqtime   = $params->get('notificationTime', 'day');
-				$lastSend   = $this->getLastSend();
-				$shouldSend = false;
-
-				if (!$numfreq)
-				{
-					$shouldSend = true;
-				}
-				else
-				{
-					$check = strtotime('-' . $numfreq . ' ' . $freqtime);
-
-					if ($lastSend < $check)
-					{
-						$shouldSend = true;
-					}
-					else
-					{
-						$return['message'][] = "Frequency limit hit, I won't send any email";
-					}
-				}
-
-				if ($shouldSend)
-				{
-					if ($this->sendNotificationEmail($updateInfo->version, $email))
-					{
-						$return['message'][] = "E-mail(s) correctly sent";
-					}
-					else
-					{
-						$return['message'][] = "An error occurred while sending e-mail(s). Please double check your settings";
-					}
-
-					$this->setLastSend();
-				}
-			}
-		}
-
-		// Let's download and install the latest version
-		if ($autoupdate == 1 || $autoupdate == 3)
-		{
-			$return['message'][] = $this->updateComponent();
-		}
-
-		return $return;
-	}
-
-	/**
 	 * Sends an update notification email
 	 *
-	 * @param   string $version The newest available version
-	 * @param   string $email   The email address of the recipient
+	 * @param   string  $version  The newest available version
+	 * @param   string  $email    The email address of the recipient
 	 *
 	 * @return  boolean  The result from JMailer::send()
 	 */
-	private function sendNotificationEmail($version, $email)
+	public function sendNotificationEmail($version, $email)
 	{
 		$email_subject = <<<ENDSUBJECT
 THIS EMAIL IS SENT FROM YOUR SITE "[SITENAME]" - Update available
@@ -234,10 +137,10 @@ ENDBODY;
 		$jconfig  = $this->container->platform->getConfig();
 		$sitename = $jconfig->get('sitename');
 
-		$substitutions = array(
+		$substitutions = [
 			'[VERSION]'  => $version,
-			'[SITENAME]' => $sitename
-		);
+			'[SITENAME]' => $sitename,
+		];
 
 		$email_subject = str_replace(array_keys($substitutions), array_values($substitutions), $email_subject);
 		$email_body    = str_replace(array_keys($substitutions), array_values($substitutions), $email_body);
@@ -249,7 +152,7 @@ ENDBODY;
 			$mailfrom = $jconfig->get('mailfrom');
 			$fromname = $jconfig->get('fromname');
 
-			$mailer->setSender(array($mailfrom, $fromname));
+			$mailer->setSender([$mailfrom, $fromname]);
 			$mailer->addRecipient($email);
 			$mailer->setSubject($email_subject);
 			$mailer->setBody($email_body);
@@ -264,151 +167,6 @@ ENDBODY;
 	}
 
 	/**
-	 * Automatically download and install the updated version
-	 *
-	 * @return  string  The message to show in the CLI output
-	 */
-	private function updateComponent()
-	{
-		\JLoader::import('joomla.updater.update');
-
-		$db = $this->container->db;
-
-		$updateSiteIDs = $this->getUpdateSiteIds();
-		$update_site   = array_shift($updateSiteIDs);
-
-		$query = $db->getQuery(true)
-			->select($db->qn('update_id'))
-			->from($db->qn('#__updates'))
-			->where($db->qn('update_site_id') . ' = ' . $update_site);
-
-		$uid = $db->setQuery($query)->loadResult();
-
-		$update   = new \JUpdate();
-		$instance = \JTable::getInstance('update');
-		$instance->load($uid);
-		$update->loadFromXml($instance->detailsurl);
-
-		if (isset($update->get('downloadurl')->_data))
-		{
-			$url = trim($update->downloadurl->_data);
-		}
-		else
-		{
-			return "No download URL found inside XML manifest";
-		}
-
-		$extra_query = $instance->extra_query;
-
-		if ($extra_query)
-		{
-			if (strpos($url, '?') === false)
-			{
-				$url .= '?';
-			}
-			else
-			{
-				$url .= '&amp;';
-			}
-
-			$url .= $extra_query;
-		}
-
-		$config   = $this->container->platform->getConfig();
-		$tmp_dest = $config->get('tmp_path');
-
-		if (!$tmp_dest)
-		{
-			return "Joomla temp directory is empty, please set it before continuing";
-		}
-		elseif (!\JFolder::exists($tmp_dest))
-		{
-			return "Joomla temp directory does not exists, please set the correct path before continuing";
-		}
-
-		$p_file = \JInstallerHelper::downloadPackage($url);
-
-		if (!$p_file)
-		{
-			return "An error occurred while trying to download the latest version";
-		}
-
-		// Unpack the downloaded package file
-		$package = \JInstallerHelper::unpack($tmp_dest . '/' . $p_file);
-
-		if (!$package)
-		{
-			return "An error occurred while unpacking the file, please double check your Joomla temp directory";
-		}
-
-		$installer = new \JInstaller;
-		$installed = $installer->install($package['extractdir']);
-
-		// Let's cleanup the downloaded archive and the temp folder
-		if (\JFolder::exists($package['extractdir']))
-		{
-			\JFolder::delete($package['extractdir']);
-		}
-
-		if (\JFile::exists($package['packagefile']))
-		{
-			\JFile::delete($package['packagefile']);
-		}
-
-		if ($installed)
-		{
-			return "Component successfully updated";
-		}
-		else
-		{
-			return "An error occurred while trying to update the component";
-		}
-	}
-
-	/**
-	 * Does the user need to provide FTP credentials? It also registers any FTP credentials provided in the URL.
-	 *
-	 * @return  bool  True if the user needs to provide FTP credentials
-	 */
-	public function needsFTPCredentials()
-	{
-		// Determine wether FTP credentials have been passed along with the current request
-		\JLoader::import('joomla.client.helper');
-
-		$user = $this->input->get('username', null, 'raw');
-		$pass = $this->input->get('password', null, 'raw');
-
-		if (!(($user == '') && ($pass == '')))
-		{
-			// Add credentials to the session
-			if (\JClientHelper::setCredentials('ftp', $user, $pass))
-			{
-				return false;
-			}
-
-			return true;
-		}
-
-		return !\JClientHelper::hasCredentials('ftp');
-	}
-
-	private function getLastSend()
-	{
-		return $this->container->params->get('admintools_autoupdate_lastsend', 0);
-	}
-
-	/**
-	 * Set the UNIX timestamp of the last time we sent out an update notificatin email to be right now
-	 *
-	 * @return  void
-	 */
-	private function setLastSend()
-	{
-		$this->container->params->set('admintools_autoupdate_lastsend', time());
-		$this->container->params->save();
-	}
-
-	/**
 	 * Removes the obsolete update sites for the component, since now we're dealing with a package.
 	 *
 	 * Controlled by componentName, packageName and obsoleteUpdateSiteLocations
@@ -420,7 +178,7 @@ ENDBODY;
 	private function removeObsoleteComponentUpdateSites()
 	{
 		// Initialize
-		$deleteIDs      = array();
+		$deleteIDs = [];
 
 		// Get component ID
 		$componentID = $this->findExtensionId('com_admintools', 'component');
@@ -432,7 +190,7 @@ ENDBODY;
 		if ($componentID)
 		{
 			// Old component packages
-			$moreIDs   = $this->getUpdateSitesFor($componentID, null);
+			$moreIDs = $this->getUpdateSitesFor($componentID, null);
 
 			if (is_array($moreIDs) && count($moreIDs))
 			{
@@ -440,7 +198,7 @@ ENDBODY;
 			}
 
 			// Obsolete update sites
-			$moreIDs   = $this->getUpdateSitesFor(null, $componentID, $this->obsoleteUpdateSiteLocations);
+			$moreIDs = $this->getUpdateSitesFor(null, $componentID, $this->obsoleteUpdateSiteLocations);
 
 			if (is_array($moreIDs) && count($moreIDs))
 			{
@@ -452,7 +210,7 @@ ENDBODY;
 		if ($packageID)
 		{
 			// Update sites for all of the current extension ID update sites
-			$moreIDs   = $this->getUpdateSitesFor($packageID, null);
+			$moreIDs = $this->getUpdateSitesFor($packageID, null);
 
 			if (is_array($moreIDs) && count($moreIDs))
 			{
@@ -465,7 +223,7 @@ ENDBODY;
 			if (count($deleteIDs))
 			{
 				$lastID = array_pop($moreIDs);
-				$pos = array_search($lastID, $deleteIDs);
+				$pos    = array_search($lastID, $deleteIDs);
 				unset($deleteIDs[$pos]);
 			}
 		}
@@ -478,11 +236,11 @@ ENDBODY;
 			return;
 		}
 
-		$deleteIDs = array_map(array($db, 'q'), $deleteIDs);
+		$deleteIDs = array_map([$db, 'q'], $deleteIDs);
 
 		$query = $db->getQuery(true)
-		            ->delete($db->qn('#__update_sites'))
-		            ->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
+			->delete($db->qn('#__update_sites'))
+			->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
 
 		try
 		{
@@ -494,8 +252,8 @@ ENDBODY;
 		}
 
 		$query = $db->getQuery(true)
-		            ->delete($db->qn('#__update_sites_extensions'))
-		            ->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
+			->delete($db->qn('#__update_sites_extensions'))
+			->where($db->qn('update_site_id') . ' IN(' . implode(',', $deleteIDs) . ')');
 
 		try
 		{
@@ -510,7 +268,8 @@ ENDBODY;
 	/**
 	 * Gets the ID of an extension
 	 *
-	 * @param   string  $element  Extension element, e.g. com_foo, mod_foo, lib_foo, pkg_foo or foo (CAUTION: plugin, file!)
+	 * @param   string  $element  Extension element, e.g. com_foo, mod_foo, lib_foo, pkg_foo or foo (CAUTION: plugin,
+	 *                            file!)
 	 * @param   string  $type     Extension type: component, module, library, package, plugin or file
 	 * @param   null    $folder   Plugins: plugin folder. Modules: admin/site
 	 *
@@ -518,12 +277,12 @@ ENDBODY;
 	 */
 	private function findExtensionId($element, $type = 'component', $folder = null)
 	{
-		$db = $this->container->db;
+		$db    = $this->container->db;
 		$query = $db->getQuery(true)
-		            ->select($db->qn('extension_id'))
-		            ->from($db->qn('#__extensions'))
-		            ->where($db->qn('element') . ' = ' . $db->q($element))
-		            ->where($db->qn('type') . ' = ' . $db->q($type));
+			->select($db->qn('extension_id'))
+			->from($db->qn('#__extensions'))
+			->where($db->qn('element') . ' = ' . $db->q($element))
+			->where($db->qn('type') . ' = ' . $db->q($type));
 
 		// Plugin? We should look for a folder
 		if ($type == 'plugin')
@@ -563,23 +322,23 @@ ENDBODY;
 	 *
 	 * @return  array  The IDs of the update sites
 	 */
-	private function getUpdateSitesFor($includeEID = null, $excludeEID = null, $locations = array())
+	private function getUpdateSitesFor($includeEID = null, $excludeEID = null, $locations = [])
 	{
-		$db = $this->container->db;
+		$db    = $this->container->db;
 		$query = $db->getQuery(true)
-		            ->select($db->qn('s.update_site_id'))
-		            ->from($db->qn('#__update_sites', 's'));
+			->select($db->qn('s.update_site_id'))
+			->from($db->qn('#__update_sites', 's'));
 
 		if (!empty($locations))
 		{
-			$quotedLocations = array_map(array($db, 'q'), $locations);
+			$quotedLocations = array_map([$db, 'q'], $locations);
 			$query->where($db->qn('location') . 'IN(' . implode(',', $quotedLocations) . ')');
 		}
 
 		if (!empty($includeEID) || !empty($excludeEID))
 		{
 			$query->innerJoin($db->qn('#__update_sites_extensions', 'e') . 'ON(' . $db->qn('e.update_site_id') .
-			                  ' = ' . $db->qn('s.update_site_id') . ')'
+				' = ' . $db->qn('s.update_site_id') . ')'
 			);
 		}
 
@@ -601,7 +360,7 @@ ENDBODY;
 			$ret = null;
 		}
 
-		return empty($ret) ? array() : $ret;
+		return empty($ret) ? [] : $ret;
 	}
 
 	private function createFakePackageExtension()
@@ -609,31 +368,31 @@ ENDBODY;
 		$db = $this->container->db;
 
 		$query = $db->getQuery(true)
-		            ->insert($db->qn('#__extensions'))
-		            ->columns(array(
-			            $db->qn('name'), $db->qn('type'), $db->qn('element'), $db->qn('folder'), $db->qn('client_id'),
-			            $db->qn('enabled'), $db->qn('access'), $db->qn('protected'), $db->qn('manifest_cache'),
-			            $db->qn('params'), $db->qn('custom_data'), $db->qn('system_data'), $db->qn('checked_out'),
-			            $db->qn('checked_out_time'), $db->qn('ordering'), $db->qn('state')
-		            ))
-		            ->values(array(
-			            $db->q('Admin Tools package') . ',' .
-			            $db->q('package') . ',' .
-			            $db->q('pkg_admintools') . ',' .
-			            $db->q('') . ',' .
-			            $db->q(0) . ',' .
-			            $db->q(1) . ',' .
-			            $db->q(1) . ',' .
-			            $db->q(0) . ',' .
-			            $db->q('{"name":"Admin Tools package","type":"package","creationDate":"2016-06-01","author":"Nicholas K. Dionysopoulos","copyright":"Copyright (c)2006-2016 Akeeba Ltd \/ Nicholas K. Dionysopoulos","authorEmail":"","authorUrl":"","version":"' . $this->version . '","description":"Admin Tools installation package, for updating from version 3.x only","group":"","filename":"pkg_admintools"}') . ',' .
-			            $db->q('{}') . ',' .
-			            $db->q('') . ',' .
-			            $db->q('') . ',' .
-			            $db->q(0) . ',' .
-			            $db->q($db->getNullDate()) . ',' .
-			            $db->q(0) . ',' .
-			            $db->q(0)
-		            ));
+			->insert($db->qn('#__extensions'))
+			->columns([
+				$db->qn('name'), $db->qn('type'), $db->qn('element'), $db->qn('folder'), $db->qn('client_id'),
+				$db->qn('enabled'), $db->qn('access'), $db->qn('protected'), $db->qn('manifest_cache'),
+				$db->qn('params'), $db->qn('custom_data'), $db->qn('system_data'), $db->qn('checked_out'),
+				$db->qn('checked_out_time'), $db->qn('ordering'), $db->qn('state'),
+			])
+			->values([
+				$db->q('Admin Tools package') . ',' .
+				$db->q('package') . ',' .
+				$db->q('pkg_admintools') . ',' .
+				$db->q('') . ',' .
+				$db->q(0) . ',' .
+				$db->q(1) . ',' .
+				$db->q(1) . ',' .
+				$db->q(0) . ',' .
+				$db->q('{"name":"Admin Tools package","type":"package","creationDate":"2016-06-01","author":"Nicholas K. Dionysopoulos","copyright":"Copyright (c)2006-2016 Akeeba Ltd \/ Nicholas K. Dionysopoulos","authorEmail":"","authorUrl":"","version":"' . $this->version . '","description":"Admin Tools installation package, for updating from version 3.x only","group":"","filename":"pkg_admintools"}') . ',' .
+				$db->q('{}') . ',' .
+				$db->q('') . ',' .
+				$db->q('') . ',' .
+				$db->q(0) . ',' .
+				$db->q($db->getNullDate()) . ',' .
+				$db->q(0) . ',' .
+				$db->q(0),
+			]);
 
 		try
 		{
@@ -657,10 +416,13 @@ ENDBODY;
 			return;
 		}
 
+		$isPro = defined('ADMINTOOLS_PRO') ? ADMINTOOLS_PRO : 0;
+		$dlid  = $isPro ? '<dlid prefix="dlid=" suffix=""/>' : '';
 
 		$content = <<< XML
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.8.0" type="package" method="upgrade">
+	$dlid
     <name>Admin Tools package</name>
     <author>Nicholas K. Dionysopoulos</author>
     <creationDate>2016-06-01</creationDate>

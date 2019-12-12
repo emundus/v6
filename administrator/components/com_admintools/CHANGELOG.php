@@ -1,4 +1,11 @@
 <?php die() ?>
+Admin Tools 5.4.0
+================================================================================
++ Administrator IP whitelist, Never Block these IPs: you can now add dynamic IPv6 domain names instead of IPs by prefixing them with #.
++ Support for Dark Mode
++ Support for Joomla 4 Download Key management in the Update Sites page
+# [LOW] Missing SessionShield value inside reasons select lists
+
 Admin Tools 5.3.4
 ================================================================================
 + Installer plugin to fix update issues after using Joomla's Rebuild Update Sites feature

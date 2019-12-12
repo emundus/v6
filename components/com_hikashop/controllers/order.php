@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -91,6 +91,9 @@ class orderController extends hikashopController {
 	}
 
 	public function show() {
+		if(!headers_sent())
+			header('X-Robots-Tag: noindex');
+
 		if(!$this->_check())
 			return false;
 
@@ -98,6 +101,9 @@ class orderController extends hikashopController {
 	}
 
 	public function invoice() {
+		if(!headers_sent())
+			header('X-Robots-Tag: noindex');
+
 		if(!$this->_check())
 			return false;
 
@@ -106,6 +112,9 @@ class orderController extends hikashopController {
 	}
 
 	public function cancel_order() {
+		if(!headers_sent())
+			header('X-Robots-Tag: noindex');
+
 		$app = JFactory::getApplication();
 		$order_id = hikashop_getCID('order_id');
 		$order_id_in_session = (int)$app->getUserState(HIKASHOP_COMPONENT.'.order_id');
@@ -142,7 +151,7 @@ class orderController extends hikashopController {
 		$itemid_for_checkout = $config->get('checkout_itemid','0');
 		$item = (!empty($itemid_for_checkout) ? '&Itemid='.(int)$itemid_for_checkout : '');
 
-		$cancel_url =  hikashop_completeLink('checkout&step=' . $step . $item, false, true);
+		$cancel_url = hikashop_completeLink('checkout&step=' . $step . $item, false, true);
 
 		if(empty($order) || $order->order_user_id != $user_id) {
 			$redirect_url = hikaInput::get()->getVar('redirect_url');
@@ -206,6 +215,9 @@ class orderController extends hikashopController {
 	}
 
 	public function reorder() {
+		if(!headers_sent())
+			header('X-Robots-Tag: noindex');
+
 		if(!hikashop_level(1) || !$this->_check()) {
 			return false;
 		}
@@ -251,6 +263,9 @@ class orderController extends hikashopController {
 	}
 
 	public function pay() {
+		if(!headers_sent())
+			header('X-Robots-Tag: noindex');
+
 		if(!$this->_check()) {
 			return false;
 		}
@@ -406,14 +421,7 @@ class orderController extends hikashopController {
 		}
 
 		if(empty($needCC)) {
-			$itemid_for_checkout = (int)$config->get('checkout_itemid', 0);
-			if($itemid_for_checkout) {
-				global $Itemid;
-				$Itemid = $itemid_for_checkout;
-			}
-
 			ob_start();
-
 			if(method_exists($paymentPlugin, 'onAfterOrderConfirm'))
 				$paymentPlugin->onAfterOrderConfirm($order, $paymentMethods, $order->order_payment_id);
 
@@ -445,7 +453,15 @@ class orderController extends hikashopController {
 			return true;
 		}
 
-		$app->redirect( hikashop_completeLink('checkout&task=after_end', false, true) );
+		$cartClass = hikashop_get('class.cart');
+		$cartClass->handleReturnURL($order->order_id);
+
+		$params = '&order_id='.$order->order_id;
+		$token = hikaInput::get()->getVar('order_token');
+		if(!empty($token))
+			$params .= '&order_token=' . $token;
+		$app->redirect( hikashop_completeLink('checkout&task=after_end'.$params, false, true) );
+
 		return false;
 	}
 
@@ -488,12 +504,11 @@ class orderController extends hikashopController {
 
 		$full_price_without_payment = $order->order_full_price - $order->order_payment_price;
 
-
 		$new_payment = $payment;
-		$new_payment_price = $paymentClass->computePrice( $order, $new_payment, $full_price_without_payment, @$payment->payment_price, hikashop_getCurrency());
-		$new_payment_tax = @$new_payment->payment_tax;
-		$updateOrder->order_payment_price = $new_payment_price;
-		$updateOrder->order_full_price = $full_price_without_payment + $new_payment_price + $new_payment_tax;
+		$paymentClass->computePrice( $order, $new_payment, $full_price_without_payment, @$payment->payment_price, $order->order_currency_id);
+		$updateOrder->order_payment_price = @$new_payment->payment_price;
+		$updateOrder->order_payment_tax = @$new_payment->payment_tax;
+		$updateOrder->order_full_price = $full_price_without_payment + @$new_payment->payment_price + @$new_payment->payment_tax;
 
 		$updateOrder->history = new stdClass();
 		$updateOrder->history->history_payment_id = $payment_id;
@@ -519,6 +534,9 @@ class orderController extends hikashopController {
 	}
 
 	public function download() {
+		if(!headers_sent())
+			header('X-Robots-Tag: noindex');
+
 		$file_id = hikaInput::get()->getInt('file_id');
 		if(empty($file_id)){
 			$field_table = hikaInput::get()->getString('field_table');

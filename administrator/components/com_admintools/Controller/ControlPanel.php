@@ -13,10 +13,11 @@ use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
 use Akeeba\AdminTools\Admin\Helper\ServerTechnology;
 use Akeeba\AdminTools\Admin\Model\MasterPassword;
 use Akeeba\AdminTools\Admin\Model\Updates;
-use Akeeba\Engine\Util\RandomValue;
 use AkeebaGeoipProvider;
+use Exception;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
+use FOF30\Encrypt\Randval;
 use JText;
 use JUri;
 
@@ -39,8 +40,8 @@ class ControlPanel extends Controller
 			'resetSecretWord',
 			'forceUpdateDb',
 			'IpWorkarounds',
-		    'changelog',
-		    'endRescue',
+			'changelog',
+			'endRescue',
 			'renameMainPhp',
 			'ignoreServerConfigWarn',
 			'regenerateServerConfig',
@@ -84,7 +85,7 @@ class ControlPanel extends Controller
 	public function login()
 	{
 		/** @var MasterPassword $model */
-		$model = $this->getModel('MasterPassword');
+		$model    = $this->getModel('MasterPassword');
 		$password = $this->input->get('userpw', '', 'raw');
 		$model->setUserPassword($password);
 
@@ -151,18 +152,18 @@ class ControlPanel extends Controller
 	{
 		/** @var Updates $updateModel */
 		$updateModel = $this->container->factory->model('Updates')->tmpInstance();
-		$updateInfo  = (object)$updateModel->getUpdates();
+		$updateInfo  = (object) $updateModel->getUpdates();
 
 		$result = '';
 
 		if ($updateInfo->hasUpdate)
 		{
-			$strings = array(
+			$strings = [
 				'header'  => JText::sprintf('COM_ADMINTOOLS_MSG_CONTROLPANEL_UPDATEFOUND', $updateInfo->version),
 				'button'  => JText::sprintf('COM_ADMINTOOLS_MSG_CONTROLPANEL_UPDATENOW', $updateInfo->version),
 				'infourl' => $updateInfo->infoURL,
 				'infolbl' => JText::_('COM_ADMINTOOLS_MSG_CONTROLPANEL_MOREINFO'),
-			);
+			];
 
 			$result = <<<ENDRESULT
 	<div class="akeeba-block--warning">
@@ -194,7 +195,7 @@ ENDRESULT;
 		/** @var \Akeeba\AdminTools\Admin\Model\ControlPanel $model */
 		$model = $this->getModel();
 
-		$result = (int)$model->isMyIPBlocked($externalIP);
+		$result = (int) $model->isMyIPBlocked($externalIP);
 
 		echo '###' . $result . '###';
 
@@ -206,7 +207,7 @@ ENDRESULT;
 		$unblockIP[] = $this->input->getString('ip', '');
 
 		/** @var \Akeeba\AdminTools\Admin\Model\ControlPanel $model */
-		$model = $this->getModel();
+		$model       = $this->getModel();
 		$unblockIP[] = $model->getVisitorIP();
 
 		/** @var \Akeeba\AdminTools\Admin\Model\UnblockIP $unblockModel */
@@ -235,14 +236,18 @@ ENDRESULT;
 		$msgType = 'error';
 		$dlid    = $this->input->getString('dlid', '');
 
+		/** @var Updates $updateModel */
+		$updateModel = $this->container->factory->model('Updates')->tmpInstance();
+		$dlid        = $updateModel->sanitizeLicenseKey($dlid);
+		$isValidDLID = $updateModel->isValidLicenseKey($dlid);
+
 		// If the Download ID seems legit let's apply it
-		if (preg_match('/^([0-9]{1,}:)?[0-9a-f]{32}$/i', $dlid))
+		if ($isValidDLID)
 		{
 			$msg     = null;
 			$msgType = null;
 
-			$this->container->params->set('downloadid', $dlid);
-			$this->container->params->save();
+			$updateModel->setLicenseKey($dlid);
 		}
 
 		// Redirect back to the control panel
@@ -259,34 +264,6 @@ ENDRESULT;
 			$url = \JUri::base() . 'index.php?option=com_admintools';
 		}
 
-		$this->setRedirect($url, $msg, $msgType);
-	}
-
-	/**
-	 * Reset the Secret Word for front-end and remote backup
-	 *
-	 * @return  void
-	 */
-	public function resetSecretWord()
-	{
-		$this->csrfProtection();
-
-		$newSecret = $this->container->platform->getSessionVar('newSecretWord', null, 'admintools.cpanel');
-
-		if (empty($newSecret))
-		{
-			$random    = new RandomValue();
-			$newSecret = $random->generateString(32);
-			$this->container->platform->setSessionVar('newSecretWord', $newSecret, 'admintools.cpanel');
-		}
-
-		$this->container->params->set('frontend_secret_word', $newSecret);
-		$this->container->params->save();
-
-		$msg     = JText::sprintf('COM_ADMINTOOLS_MSG_CONTROLPANEL_FESECRETWORD_RESET', $newSecret);
-		$msgType = null;
-
-		$url = 'index.php?option=com_admintools';
 		$this->setRedirect($url, $msg, $msgType);
 	}
 
@@ -424,5 +401,34 @@ ENDRESULT;
 		$model->writeConfigFile();
 
 		$this->setRedirect('index.php?option=com_admintools&view=ControlPanel', JText::_('COM_ADMINTOOLS_CPANEL_SERVERCONFIGWARN_REGENERATED'));
+	}
+
+	/**
+	 * Reset the Secret Word for front-end and remote backup
+	 *
+	 * @return  void
+	 * @throws  Exception
+	 */
+	public function resetSecretWord()
+	{
+		$this->csrfProtection();
+
+		$newSecret = $this->container->platform->getSessionVar('newSecretWord', null, 'admintools.cpanel');
+
+		if (empty($newSecret))
+		{
+			$random    = new Randval();
+			$newSecret = $random->getRandomPassword(32);
+			$this->container->platform->setSessionVar('newSecretWord', $newSecret, 'admintools.cpanel');
+		}
+
+		$this->container->params->set('frontend_secret_word', $newSecret);
+		$this->container->params->save();
+
+		$msg     = JText::sprintf('COM_ADMINTOOLS_MSG_CONTROLPANEL_FESECRETWORD_RESET', $newSecret);
+		$msgType = null;
+
+		$url = 'index.php?option=com_admintools';
+		$this->setRedirect($url, $msg, $msgType);
 	}
 }

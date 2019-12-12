@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,33 +11,20 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 if(!empty($this->element->files)) {
 
-	$freeDownload = false;
+	$files = array();
 	foreach($this->element->files as $file) {
-		if(!empty($file->file_free_download)) {
-			$freeDownload = true;
-			break;
-		}
+		if(empty($file->download_link))
+			continue;
+		if(empty($file->file_name))
+			$file->file_name = $file->file_path;
+		$files[] = '<a class="hikashop_product_file_link" href="' .  $file->download_link . '">' . $file->file_name . '</a>';
 	}
 
-	if($freeDownload) {
-		global $Itemid;
-		$url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
+	if(count($files)) {
 ?>
 	<fieldset class="hikashop_product_files_fieldset">
 		<legend><?php echo JText::_('DOWNLOADS'); ?></legend>
-<?php
-		foreach($this->element->files as $file) {
-			if(empty($file->file_free_download))
-				continue;
-
-			if(empty($file->file_name))
-				$file->file_name = $file->file_path;
-?>
-		<a class="hikashop_product_file_link" href="<?php echo hikashop_completeLink('product&task=download&file_id=' . $file->file_id.$url_itemid); ?>"><?php echo $file->file_name; ?></a><br/>
-<?php
-		}
-
-?>
+		<?php echo implode('<br/>', $files); ?>
 	</fieldset>
 <?php
 	}

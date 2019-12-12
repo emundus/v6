@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -35,7 +35,13 @@ class plgSystemHikashopuser extends JPlugin {
 
 	public function onContentPrepareForm($form, $data) {
 		$app = JFactory::getApplication();
-		if($app->isAdmin() && @$_GET['option'] == 'com_plugins' && @$_GET['view'] == 'plugin' && (@$_GET['layout'] == 'edit' || @$_GET['task'] == 'edit')) {
+
+		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('site'))
+			return true;
+		if(version_compare(JVERSION,'4.0','<') && !$app->isAdmin())
+			return true;
+
+		if(@$_GET['option'] == 'com_plugins' && @$_GET['view'] == 'plugin' && (@$_GET['layout'] == 'edit' || @$_GET['task'] == 'edit')) {
 			$lang = JFactory::getLanguage();
 			$lang->load('com_hikashop', JPATH_SITE, null, true);
 		}
@@ -192,8 +198,11 @@ class plgSystemHikashopuser extends JPlugin {
 
 	public function restoreSession(&$user_id, $options) {
 		$app = JFactory::getApplication();
-		if($app->isAdmin())
-			return;
+
+		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('administrator'))
+			return true;
+		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
+			return true;
 
 		$currency = $app->getUserState('com_hikashop.currency_id');
 		if(empty($currency) && !empty($this->currency))
@@ -222,7 +231,9 @@ class plgSystemHikashopuser extends JPlugin {
 	public function onLoginUser($user, $options) {
 		$app = JFactory::getApplication();
 
-		if($app->isAdmin())
+		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('administrator'))
+			return true;
+		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
 			return true;
 
 		$user_id = 0;
@@ -343,6 +354,8 @@ class plgSystemHikashopuser extends JPlugin {
 	public function onAfterRoute() {
 		$app = JFactory::getApplication();
 
+
+
 		if(version_compare(JVERSION,'3.0','>=')) {
 			$option = $app->input->getCmd('option', '');
 			$view = $app->input->getCmd('view', '');
@@ -368,8 +381,15 @@ class plgSystemHikashopuser extends JPlugin {
 			}
 		}
 
-		if($app->isAdmin())
-			return;
+		if($option == 'com_finder') {
+			$lang = JFactory::getLanguage();
+			$lang->load('com_hikashop', JPATH_SITE, null, true);
+		}
+
+		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('administrator'))
+			return true;
+		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
+			return true;
 
 		if(($option != 'com_user' || $view != 'user' || $task != 'edit') && ($option != 'com_users' || $view != 'profile' || $layout != 'edit'))
 			return;
@@ -410,8 +430,6 @@ class plgSystemHikashopuser extends JPlugin {
 
 	public function onAfterRender() {
 		$app = JFactory::getApplication();
-		if($app->isAdmin())
-			return;
 
 		if(version_compare(JVERSION,'3.0','>=')) {
 			$option = $app->input->getCmd('option', '');
@@ -424,6 +442,11 @@ class plgSystemHikashopuser extends JPlugin {
 			$task = JRequest::getCmd('task', '');
 			$layout = JRequest::getCmd('layout', '');
 		}
+
+		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('administrator'))
+			return true;
+		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
+			return true;
 
 		if(($option != 'com_user' || $view != 'user' || $task != 'edit') && ($option != 'com_users' || $view != 'profile' || $layout != 'edit'))
 			return;
@@ -484,7 +507,7 @@ class plgSystemHikashopuser extends JPlugin {
 			$onWhat='onchange';
 			if($oneExtraField->field_type=='radio')
 				$onWhat='onclick';
-			$data .= $fieldsClass->display($oneExtraField,@$user->$fieldName,'data[user]['.$fieldName.']',false,' '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\'user\',0);"',false,$extraFields['user'],$user);
+			$data .= $fieldsClass->display($oneExtraField,@$user->$fieldName,'data[user]['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'user\',0);"',false,$extraFields['user'],$user);
 
 			if(HIKASHOP_J30)
 				$data .= '</div></div>';

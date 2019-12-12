@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -114,8 +114,24 @@ class CartController extends hikashopController {
 			if(!empty($cart_type) && $cart_type == 'wishlist') {
 				$cart_id = $cartClass->getCurrentCartId('wishlist');
 
-				if(empty($cart_id) && $menu_item_displaying_the_current_wishlist)
-					return parent::show();
+				if(empty($cart_id) && $menu_item_displaying_the_current_wishlist) {
+
+					$user = JFactory::getUser();
+					if(!$user->guest) {
+						$app->enqueueMessage(JText::_('WISHLIST_EMPTY'));
+						return parent::show();
+					}
+					$app = JFactory::getApplication();
+					$app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
+
+					global $Itemid;
+					$url = '';
+					if(!empty($Itemid))
+						$url = '&Itemid='.$Itemid;
+
+					$url = 'index.php?option=com_users&view=login'.$url;
+					$app->redirect(JRoute::_($url.'&return='.urlencode(base64_encode(hikashop_currentUrl('', false))), false));
+				}
 
 				if(empty($cart_id)) {
 					$this->setRedirect(hikashop_completeLink('user'), JText::_('WISHLIST_EMPTY'));
@@ -193,7 +209,7 @@ class CartController extends hikashopController {
 		}
 
 		$multi_cart = (int)$config->get('enable_multicart', 1);
-		if($cart_type == 'wishlist' && $multi_cart)
+		if($cart_type == 'wishlist')
 			$multi_cart = (int)$config->get('enable_multiwishlist', 1);
 		if(!$multi_cart) {
 			$cartClass = hikashop_get('class.cart');
@@ -408,21 +424,19 @@ window.hikashop.ready(function(){
 		if($add) {
 			$formData = hikaInput::get()->get('data', array(), 'array');
 			foreach($products as $key => &$product) {
-				if(!isset($formData['products'][$key]))
-					continue;
-				$qty_change = $formData['products'][$key]['quantity'] - $product->cart_product_quantity;
+				$qty_change = 0;
+				if(isset($formData['products'][$key]))
+					$qty_change = $formData['products'][$key]['quantity'] - $product->cart_product_quantity;
 
 				foreach($cart->cart_products as $product_in_cart_key => $product_in_cart){
 					if($product_in_cart->cart_product_option_parent_id == $key){
 						$products[$product_in_cart_key] = $product_in_cart;
-						if($qty_change)
-							$products[$product_in_cart_key]->cart_product_quantity = $product_in_cart->cart_product_quantity + ($product_in_cart->cart_product_quantity / $product->cart_product_quantity) * $qty_change;
+						$products[$product_in_cart_key]->cart_product_quantity = $product_in_cart->cart_product_quantity + ($product_in_cart->cart_product_quantity / $product->cart_product_quantity) * $qty_change;
 					}
 				}
-
-				$product->cart_product_quantity = (int)$formData['products'][$key]['quantity'];
+				if($qty_change)
+					$product->cart_product_quantity = (int)$formData['products'][$key]['quantity'];
 			}
-			unset($product);
 
 			$product_data = $cartClass->cartProductsToArray($products, array('wishlist' => $cart_id));
 			$ret = $cartClass->addProduct($addto_id, $product_data);

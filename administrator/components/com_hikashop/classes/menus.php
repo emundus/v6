@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -189,37 +189,37 @@ class hikashopMenusClass extends hikashopClass {
 		return $url_menu_id;
 	}
 
-	function getCheckoutURL($redirect = false) {
+	function getCheckoutURL($redirect = false, $extra = '') {
 		$config = hikashop_config();
 		$task = $config->get('checkout_legacy', 0) ? 'step' : 'show';
 		$itemid_for_checkout = (int)$config->get('checkout_itemid', 0);
 		if(!empty($itemid_for_checkout)) {
 			$forced_menu_item_is_checkout_type = (int)$this->loadAMenuItemId('checkout', $task, $itemid_for_checkout);
 			if(!empty($forced_menu_item_is_checkout_type))
-				return JRoute::_('index.php?option=' . HIKASHOP_COMPONENT . '&Itemid=' . $itemid_for_checkout, !$redirect);
+				return JRoute::_('index.php?option=' . HIKASHOP_COMPONENT . $extra . '&Itemid=' . $itemid_for_checkout, !$redirect);
 
 			$forced_menu_item_is_hikashop = (int)$this->loadAMenuItemId('', '', $itemid_for_checkout);
 			if(!empty($forced_menu_item_is_hikashop))
-				return hikashop_completeLink('checkout&Itemid=' . $itemid_for_checkout, false, $redirect);
+				return hikashop_completeLink('checkout' . $extra . '&Itemid=' . $itemid_for_checkout, false, $redirect);
 		}
 
 		$menu_id = (int)$this->loadAMenuItemId('checkout', $task);
 		if(!empty($menu_id))
-			return JRoute::_('index.php?option=' . HIKASHOP_COMPONENT . '&Itemid=' . $menu_id, !$redirect);
+			return JRoute::_('index.php?option=' . HIKASHOP_COMPONENT . $extra . '&Itemid=' . $menu_id, !$redirect);
 
 		global $Itemid;
 		$menu_id = (int)$this->loadAMenuItemId('','',$Itemid);
 		if(!empty($menu_id))
-			return hikashop_completeLink('checkout&Itemid=' . $menu_id, false, $redirect);
+			return hikashop_completeLink('checkout' . $extra . '&Itemid=' . $menu_id, false, $redirect);
 
 		$menu_id = (int)$this->loadAMenuItemId('','');
 		if(!empty($menu_id))
-			return hikashop_completeLink('checkout&Itemid=' . $menu_id, false, $redirect);
+			return hikashop_completeLink('checkout' . $extra . '&Itemid=' . $menu_id, false, $redirect);
 
 		if(!empty($Itemid))
-			return hikashop_completeLink('checkout&Itemid=' . $Itemid, false, $redirect);
+			return hikashop_completeLink('checkout' . $extra . '&Itemid=' . $Itemid, false, $redirect);
 
-		return hikashop_completeLink('checkout', false, $redirect);
+		return hikashop_completeLink('checkout' . $extra, false, $redirect);
 	}
 
 	function getPublicMenuItemId($id = 0) {
@@ -233,7 +233,7 @@ class hikashopMenusClass extends hikashopClass {
 
 		$lang = JFactory::getLanguage();
 		$tag = $lang->getTag();
-		$filters[] = "a.language IN ('*',".$this->database->Quote($tag).")";
+		$filters[] = "a.language IN ('*', '', ".$this->database->Quote($tag).")";
 
 		if($id){
 			$filters[] = 'a.id = '.(int)$id;
@@ -268,7 +268,7 @@ class hikashopMenusClass extends hikashopClass {
 
 			$lang = JFactory::getLanguage();
 			$tag = $lang->getTag();
-			$filters[] = "a.language IN ('*',".$this->database->Quote($tag).")";
+			$filters[] = "a.language IN ('*', '', ".$this->database->Quote($tag).")";
 
 
 			$query="SELECT a.id FROM ".hikashop_table('menu',false).' AS a INNER JOIN `#__menu_types` as b on a.menutype = b.menutype WHERE '.implode(' AND ',$filters);
@@ -313,6 +313,7 @@ class hikashopMenusClass extends hikashopClass {
 						return (int)$current_id;
 					}
 				}
+				return (int)reset($cache[$view.'.'.$layout]);
 			}
 			return 0;
 		}

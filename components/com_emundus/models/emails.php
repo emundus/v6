@@ -616,7 +616,7 @@ class EmundusModelEmails extends JModelList
         $r1 = explode('___', $id);
         $label = $attribs->cascadingdropdown_label;
         $r2 = explode('___', $label);
-        $select = !empty($attribs->cascadingdropdown_label_concat)?str_replace('{thistable}',$r2[0],"CONCAT(".$attribs->cascadingdropdown_label_concat.")"):$r2[1];
+        $select = !empty($attribs->cascadingdropdown_label_concat)?str_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), str_replace('{thistable}',$r2[0],"CONCAT(".$attribs->cascadingdropdown_label_concat.")")):$r2[1];
         
         $query = $this->_db->getQuery(true);
         $query->select($select)

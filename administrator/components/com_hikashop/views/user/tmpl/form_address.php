@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -48,7 +48,7 @@ if(empty($this->edit_address)) {
 	);
 ?>
 			<a href="<?php echo hikashop_completeLink('user&task=deleteaddress&address_id='.$address->address_id.'&'.hikashop_getFormToken().'=1');?>" title="<?php echo JText::_('HIKA_DELETE'); ?>">
-				<i class="fa fa-trash"></i>
+				<i class="fas fa-trash"></i>
 			</a>
 		</div>
 <?php
@@ -92,7 +92,7 @@ if(empty($this->edit_address)) {
 						@$this->address->$fieldname,
 						'data[user_address]['.$fieldname.']',
 						false,
-						' ' . $onWhat . '="hikashopToggleFields(this.value,\''.$fieldname.'\',\'user_address\',0);"',
+						' ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\'user_address\',0);"',
 						false,
 						$this->fields['address'],
 						$this->address

@@ -49,8 +49,7 @@ class GantryMenuTreeBase
 			$this->_children[$node->id] =& $node;
 			return true;
 		} else if ($this->hasChildren()) {
-			reset($this->_children);
-			while (list($key, $value) = each($this->_children)) {
+			foreach($this->_children as $key => $value) {
 				$child =& $this->_children[$key];
 				if ($child->addChild($node)) {
 					return true;
@@ -89,8 +88,7 @@ class GantryMenuTreeBase
 		if (array_key_exists($node_id, $this->_children)) {
 			return $this->_children[$node_id];
 		} else if ($this->hasChildren()) {
-			reset($this->_children);
-			while (list($key, $value) = each($this->_children)) {
+			foreach($this->_children as $key => $value) {
 				$child       =& $this->_children[$key];
 				$wanted_node = $child->findChild($node_id);
 				if ($wanted_node !== false) {
@@ -108,8 +106,7 @@ class GantryMenuTreeBase
 			unset($this->_children[$node_id]);
 			return true;
 		} else if ($this->hasChildren()) {
-			reset($this->_children);
-			while (list($key, $value) = each($this->_children)) {
+			foreach($this->_children as $key => $value) {
 				$child =& $this->_children[$key];
 				$ret   = $child->removeChild($node_id);
 				if ($ret === true) {
@@ -126,8 +123,7 @@ class GantryMenuTreeBase
 			$this->_children = array();
 		} else if ($this->level < $end) {
 			if ($this->hasChildren()) {
-				reset($this->_children);
-				while (list($key, $value) = each($this->_children)) {
+				foreach($this->_children as $key => $value) {
 					$child =& $this->_children[$key];
 					$child->removeLevel($end);
 				}
@@ -142,8 +138,7 @@ class GantryMenuTreeBase
 			if (in_array((int)$this->id, $active_tree) && $last_active == $this->id) {
 				// i am the last node in the active tree
 				if ($this->hasChildren()) {
-					reset($this->_children);
-					while (list($key, $value) = each($this->_children)) {
+					foreach($this->_children as $key => $value) {
 						$child            =& $this->_children[$key];
 						$child->_children = array();
 					}
@@ -151,8 +146,7 @@ class GantryMenuTreeBase
 			} else if (in_array((int)$this->id, $active_tree)) {
 				// i am in the active tree but not the last node
 				if ($this->hasChildren()) {
-					reset($this->_children);
-					while (list($key, $value) = each($this->_children)) {
+					foreach($this->_children as $key => $value) {
 						$child =& $this->_children[$key];
 						$child->removeIfNotInTree($active_tree, $last_active);
 					}

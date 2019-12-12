@@ -11,14 +11,14 @@ defined('_JEXEC') or die;
 echo $description;
 ?>
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-  <a class="btn btn-success" href="<?php echo JURI::base(); ?>index.php?option=com_fabrik&view=form&formid=102"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+  <a class="btn btn-success" href="index.php?option=com_fabrik&view=form&formid=102"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
 <hr>
 <?php endif; ?>
 <?php if (!empty($applications)) : ?>
 <div class="<?php echo $moduleclass_sfx ?>"> 
  <?php foreach($applications as $application) : ?>
   <fieldset>
-  <a href="<?php echo JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link']); ?>" class="list-group-item<?php echo (!empty($user->fnum) && $application->fnum == $user->fnum)?'-active':''; ?>">
+  <a href="<?php echo 'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link']); ?>" class="list-group-item<?php echo (!empty($user->fnum) && $application->fnum == $user->fnum)?'-active':''; ?>">
     <h4><?php echo $application->label; ?></h4>
     	<span class="label label-<?php echo $application->class; ?>"> <?php echo $application->value; ?></span> 
     	<?php if (!empty($user->fnum) && $application->fnum == $user->fnum) : ?>
@@ -35,6 +35,6 @@ echo $description;
 </div> 
 <?php endif; ?>
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
-  <a class="btn btn-success" href="<?php echo JURI::base(); ?>index.php?option=com_fabrik&view=form&formid=102"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+  <a class="btn btn-success" href="index.php?option=com_fabrik&view=form&formid=102"><span class="icon-plus-sign"> <?php echo JText::_('ADD_APPLICATION_FILE'); ?></span></a>
 <hr>
 <?php endif; ?>

@@ -166,24 +166,13 @@ CREATE TABLE `#__admintools_scanalerts` (
 			<query><![CDATA[
 CREATE TABLE `#__admintools_scans` (
 	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-	`description` varchar(255) NOT NULL,
 	`comment` longtext,
-	`backupstart` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-	`backupend` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`scanstart` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`scanend` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
 	`status` enum('run','fail','complete') NOT NULL DEFAULT 'run',
 	`origin` varchar(30) NOT NULL DEFAULT 'backend',
-	`type` varchar(30) NOT NULL DEFAULT 'full',
-	`profile_id` bigint(20) NOT NULL DEFAULT '1',
-	`archivename` longtext,
-	`absolute_path` longtext,
-	`multipart` int(11) NOT NULL DEFAULT '0',
-	`tag` varchar(255) DEFAULT NULL,
-	`backupid` varchar(255) DEFAULT NULL,
-	`filesexist` tinyint(3) NOT NULL DEFAULT '1',
-	`remote_filename` varchar(1000) DEFAULT NULL,
-	`total_size` bigint(20) NOT NULL DEFAULT '0',
+	`totalfiles` int(11) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`id`),
-	KEY `idx_fullstatus` (`filesexist`,`status`),
 	KEY `idx_stale` (`status`,`origin`)
 ) DEFAULT COLLATE utf8_general_ci;
 			]]></query>
@@ -645,6 +634,61 @@ CREATE TABLE `#__admintools_tempsupers` (
   `expiration` datetime NOT NULL,
   PRIMARY KEY (`user_id`)
 ) DEFAULT COLLATE utf8_general_ci
+			]]></query>
+		</action>
+
+		<action table="#__admintools_scans" canfail="1">
+			<condition type="index" value="idx_fullstatus" />
+			<!-- Keep top 1000 rows for performance reasons (we are going to regenerate the indices) -->
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` DROP KEY `idx_fullstatus`;
+			]]></query>
+		</action>
+
+		<action table="#__admintools_scans" canfail="0">
+			<condition type="missing" operator="not" value="description"/>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` DROP COLUMN `description`;
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` DROP COLUMN `type`;
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` DROP COLUMN `profile_id`;
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` DROP COLUMN `archivename`;
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` DROP COLUMN `absolute_path`;
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` DROP COLUMN `tag`;
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` DROP COLUMN `backupid`;
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` DROP COLUMN `filesexist`;
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` DROP COLUMN `remote_filename`;
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` DROP COLUMN `total_size`;
+			]]></query>
+		</action>
+
+		<action table="#__admintools_scans" canfail="0">
+			<condition type="missing" value="scanstart"/>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` CHANGE COLUMN `backupstart` `scanstart` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` CHANGE COLUMN `backupend` `scanend` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE `#__admintools_scans` CHANGE COLUMN `multipart` `totalfiles` int(11) NOT NULL DEFAULT '0';
 			]]></query>
 		</action>
 	</sql>

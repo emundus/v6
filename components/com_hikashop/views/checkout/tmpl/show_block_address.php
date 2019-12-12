@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -41,14 +41,18 @@ if(!empty($this->options['display'])) {
 ?>
 			<fieldset class="hika_address_field hikashop_checkout_checkout_address_block">
 <?php
+		$fields_type = '';
 		if($this->options['edit_address'] === true) {
 			$label = 'HIKASHOP_NEW_ADDRESS';
-			if(!empty($this->options['new_address_type']) && in_array($this->options['new_address_type'], array('billing','shipping')))
+			if(!empty($this->options['new_address_type']) && in_array($this->options['new_address_type'], array('billing','shipping'))) {
 				$label = 'HIKASHOP_NEW_'.strtoupper($this->options['new_address_type']).'_ADDRESS';
+				$fields_type = $this->options['new_address_type'];
+			}
 ?>
 				<legend><?php echo JText::_($label); ?></legend>
 <?php
 		} else {
+			$fields_type = @$this->edit_address->address_type;
 ?>
 				<input type="hidden" name="data[address_<?php echo $this->step . '_' . $this->module_position; ?>][address_id]" value="<?php echo (int)$this->options['edit_address']; ?>"/>
 				<legend><?php echo JText::_('HIKASHOP_EDIT_ADDRESS'); ?></legend>
@@ -59,7 +63,10 @@ if(!empty($this->options['display'])) {
 ?>
 <fieldset class="hkform-horizontal">
 <?php
-		foreach($this->cart_addresses['fields'] as $field) {
+		if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->address_top)) { echo implode("\r\n", $this->extraData[$this->module_position]->address_top); }
+		if(!empty($fields_type))
+			$fields_type .= '_';
+		foreach($this->cart_addresses[$fields_type.'fields'] as $field) {
 			if(empty($field->field_frontcomp))
 				continue;
 
@@ -113,6 +120,8 @@ if(!empty($this->options['display'])) {
 				<input type="hidden" name="data[address_type_<?php echo $this->step . '_' . $this->module_position; ?>]" value="<?php echo $this->options['new_address_type']; ?>" />
 <?php
 		}
+
+		if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->address_bottom)) { echo implode("\r\n", $this->extraData[$this->module_position]->address_bottom); }
 ?>
 			</fieldset>
 			<div class="hkform-group control-group hikashop_address_required_info_line">
@@ -139,7 +148,7 @@ if(!empty($this->options['display'])) {
 				<legend><?php echo JText::_('HIKASHOP_BILLING_ADDRESS'); ?></legend>
 <?php
 		if(!empty($this->options['read_only'])) {
-			echo $this->addressClass->displayAddress($this->cart_addresses['fields'], $this->cart_addresses['data'][ $cart->cart_billing_address_id ], 'address');
+			echo $this->addressClass->displayAddress($this->cart_addresses['billing_fields'], $this->cart_addresses['data'][ $cart->cart_billing_address_id ], 'address');
 		} elseif($this->options['address_selector'] == 2) {
 			if(!empty($this->options['multi_address'])) {
 				$values = array();
@@ -167,14 +176,14 @@ if(!empty($this->options['display'])) {
 <?php
 			if(!empty($this->options['multi_address'])) {
 ?>
-						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$cart->cart_billing_address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>" ><i class="fa fa-trash"></i><span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
+						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$cart->cart_billing_address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>" ><i class="fas fa-trash"></i><span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
 <?php
 			}
 ?>
 					</div>
 					<div class="hika_address_display">
 <?php
-			echo $this->addressClass->displayAddress($this->cart_addresses['fields'], $this->cart_addresses['data'][ $cart->cart_billing_address_id ], 'address');
+			echo $this->addressClass->displayAddress($this->cart_addresses['billing_fields'], $this->cart_addresses['data'][ $cart->cart_billing_address_id ], 'address');
 ?>
 					</div>
 				</div>
@@ -203,14 +212,14 @@ if(!empty($this->options['display'])) {
 <?php
 				if(!empty($this->options['multi_address'])) {
 ?>
-						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$address->address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fa fa-trash"></i> <span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
+						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$address->address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fas fa-trash"></i> <span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
 <?php
 			}
 ?>
 					</div>
 					<div class="hika_address_display">
 <?php
-				echo $this->addressClass->displayAddress($this->cart_addresses['fields'], $address, 'address');
+				echo $this->addressClass->displayAddress($this->cart_addresses['billing_fields'], $address, 'address');
 ?>
 					</div>
 				</div>
@@ -250,7 +259,7 @@ if(!empty($this->options['display'])) {
 				?></span>
 <?php
 			} elseif(!empty($this->options['read_only'])) {
-				echo $this->addressClass->displayAddress($this->cart_addresses['fields'], $this->cart_addresses['data'][ $shipping_address_id ], 'address');
+				echo $this->addressClass->displayAddress($this->cart_addresses['shipping_fields'], $this->cart_addresses['data'][ $shipping_address_id ], 'address');
 			} elseif($this->options['address_selector'] == 2) {
 				if(!empty($this->options['multi_address'])) {
 					$values = array();
@@ -278,14 +287,14 @@ if(!empty($this->options['display'])) {
 <?php
 				if(!empty($this->options['multi_address'])) {
 ?>
-						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$shipping_address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fa fa-trash"></i> <span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
+						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$shipping_address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fas fa-trash"></i> <span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
 <?php
 				}
 ?>
 					</div>
 					<div class="hika_address_display">
 <?php
-				echo $this->addressClass->displayAddress($this->cart_addresses['fields'], $this->cart_addresses['data'][ $shipping_address_id ], 'address');
+				echo $this->addressClass->displayAddress($this->cart_addresses['shipping_fields'], $this->cart_addresses['data'][ $shipping_address_id ], 'address');
 ?>
 					</div>
 				</div>
@@ -314,14 +323,14 @@ if(!empty($this->options['display'])) {
 <?php
 				if(!empty($this->options['multi_address'])) {
 ?>
-						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$address->address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fa fa-trash"></i> <span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
+						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$address->address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fas fa-trash"></i> <span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
 <?php
 				}
 ?>
 					</div>
 					<div class="hika_address_display">
 <?php
-					echo $this->addressClass->displayAddress($this->cart_addresses['fields'], $address, 'address');
+					echo $this->addressClass->displayAddress($this->cart_addresses['shipping_fields'], $address, 'address');
 ?>
 					</div>
 				</div>
@@ -378,6 +387,12 @@ window.checkout.newAddress = function(step, id, type) {
 	window.checkout.submitBlock('address', step, id, {'checkout[address][new]':type});
 	return false;
 };
+</script>
+<?php
+}elseif(!empty($this->options['edit_address'])) {
+?>
+<script type="text/javascript">
+document.getElementById('hikashop_checkout_address_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>').scrollIntoView();
 </script>
 <?php
 }

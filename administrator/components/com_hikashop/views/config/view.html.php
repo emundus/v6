@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -73,6 +73,16 @@ class configViewConfig extends hikashopView
 			'nameboxType' => 'type.namebox',
 		));
 
+		$checkout_menu_id = $config->get('checkout_itemid');
+		$this->menusType->load($checkout_menu_id);
+		if(!isset($this->menusType->menus[$checkout_menu_id])) {
+			$config->set('checkout_itemid', 0);
+			$save = array('checkout_itemid'=>0);
+			$config->save($save);
+		} elseif (strpos($this->menusType->menus[$checkout_menu_id]->link, 'index.php?option=com_hikashop')===false) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage(JText::_('THE_MENU_ITEM_SELECTED_NEEDS_TO_BE_A_HIKASHOP_TYPE_MENU'), 'error');
+		}
 
 		$lg = JFactory::getLanguage();
 		$lg->load('com_hikashop_config', JPATH_SITE);
@@ -80,7 +90,7 @@ class configViewConfig extends hikashopView
 		$language = $lg->getTag();
 		$styleRemind = 'float:right;margin-right:30px;position:relative;';
 
-		$loadLink = '<a onclick="hikashopHideWarning();return true;" class="modal" rel="{handler: \'iframe\', size: {x: 800, y: 500}}" href="index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=config&amp;task=latest&amp;code='.$language.'">'.JText::_('LOAD_LATEST_LANGUAGE').'</a>';
+		$loadLink = '<a onclick="hikashopHideWarning();return true;" href="index.php?option=com_hikashop&amp;ctrl=config&amp;task=latest&amp;code='.$language.'">'.JText::_('LOAD_LATEST_LANGUAGE').'</a>';
 		if(!file_exists(HIKASHOP_ROOT.'language'.DS.$language.DS.$language.'.com_hikashop.ini')){
 			if($config->get('errorlanguagemissing',1)){
 				$notremind = '<small style="'.$styleRemind.'">'.$this->toggleClass->delete('hikashop_messages_warning','errorlanguagemissing-0','config',false,JText::_('DONT_REMIND')).'</small>';
@@ -486,9 +496,25 @@ function registrationAvailable(value, checked) {
 		if(JFile::exists($override_path)){
 			$override_content = file_get_contents($override_path);
 		}
+
 		$this->assignRef('override_content',$override_content);
 		$this->assignRef('showLatest',$showLatest);
 		$this->assignRef('file',$file);
+
+		$config = hikashop_config();
+		$manage = hikashop_isAllowed($config->get('acl_config_manage','all'));
+		hikashop_setTitle(JText::_('HIKA_FILE').' : '.$file->name, 'flag', 'config&task='.hikaInput::get()->getString('task').'&code='.$file->name);
+
+		$this->toolbar = array(
+			array('name' => 'custom', 'icon' => 'share-alt', 'alt' => JText::_('SHARE'), 'task' => 'share', 'check' => false, 'display' => $manage),
+			array('name' => 'custom', 'icon' => 'apply', 'alt' => JText::_('HIKA_SAVE'), 'task' => 'savelanguage', 'check' => false, 'display' => $manage),
+			array('name' => 'custom', 'icon' => 'cancel', 'alt' => JText::_('HIKA_CLOSE'), 'task' => 'config', 'check' => false),
+		);
+
+
+		if(!empty($this->showLatest)){
+			array_unshift($this->toolbar, array('name' => 'custom', 'icon' => 'import', 'alt' => JText::_('LOAD_LATEST_LANGUAGE'), 'task' => 'latest', 'check' => false, 'display' => $manage));
+		}
 	}
 
 	public function getDoc($key) {
@@ -552,6 +578,15 @@ function registrationAvailable(value, checked) {
 		$file = new stdClass();
 		$file->name = hikaInput::get()->getString('code');
 		$this->assignRef('file',$file);
+		$config = hikashop_config();
+		$manage = hikashop_isAllowed($config->get('acl_config_manage','all'));
+		hikashop_setTitle(JText::_('SHARE').' : '.$file->name, 'flag', 'config&task='.hikaInput::get()->getString('task').'&code='.$file->name);
+
+		$this->toolbar = array(
+			array('name' => 'custom', 'icon' => 'share-alt', 'alt' => JText::_('SHARE'), 'task' => 'send', 'check' => false, 'display' => $manage),
+			array('name' => 'custom', 'icon' => 'cancel', 'alt' => JText::_('HIKA_CLOSE'), 'task' => 'config', 'check' => false),
+		);
+
 	}
 
 	public function leftmenu($name, $data) {

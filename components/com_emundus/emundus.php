@@ -128,6 +128,8 @@ JText::script('ATTACHMENT_PDF');
 JText::script('ASSESSMENT_PDF');
 JText::script('JYES');
 JText::script('JNO');
+JText::script('PLEASE_SELECT');
+JText::script('EXPORT_CHANGE_STATUS');
 JText::script('YOU_MUST_SELECT_ATTACHMENT');
 JText::script('ATTACHEMENTS_AGGREGATIONS');
 JText::script('FILES_GENERATED');

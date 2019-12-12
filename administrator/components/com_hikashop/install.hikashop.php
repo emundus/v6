@@ -1,4 +1,11 @@
 <?php
+$version = explode('.',PHP_VERSION);
+if($version[0] < 5 || ($version[0] == 5 && $version[1] < 4)) {
+	echo '<html><body><h1>This extension works with PHP 5.4.0 or newer.</h1>'.
+		'<h2>Please contact your web hosting provider to update your PHP version</h2>'.
+		'installation aborted...</body></html>';
+	exit;
+}
 function com_hikashop_install() {
 	if(!defined('DS'))
 		define('DS', DIRECTORY_SEPARATOR);
@@ -23,7 +30,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Starter';
-	var $version = '4.0.1';
+	var $version = '4.2.2';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -787,6 +794,19 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			$this->db->setQuery($query);
 			try{$this->db->execute();}catch(Exception $e){}
 		}
+		if(version_compare($this->fromVersion, '4.0.3', '<')) {
+			$query = 'ALTER TABLE `#__hikashop_product` CHANGE `product_option_method` `product_option_method` VARCHAR(255) NOT NULL DEFAULT \'\'';
+			$this->db->setQuery($query);
+			try{$this->db->execute();}catch(Exception $e){}
+
+		}
+		if(version_compare($this->fromVersion, '4.1.0', '<')) {
+			$this->databaseHelper->addColumns("badge", "`badge_new_period` int(10) unsigned NOT NULL DEFAULT '0'");
+		}
+
+		if(version_compare($this->fromVersion, '4.1.1', '<')) {
+			$this->databaseHelper->addColumns("field", "`field_address_type` varchar(50) DEFAULT ''");
+		}
 	}
 
 	public function addPref() {
@@ -872,6 +892,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			'product_image_y' => 100,
 			'image_x' => '',
 			'image_y' => '',
+			'add_webp_images' => 0,
 			'max_x_popup' => 760,
 			'max_y_popup' => 480,
 			'vat_check' => 0,

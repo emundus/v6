@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -62,6 +62,10 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 	}
 
 	function onProductBlocksDisplay(&$product, &$html) {
+		if(isset($product->product_parent_id) && $product->product_parent_id > 0 && isset($product->main->product_id) && $product->main->product_id > 0) {
+			if(isset($product->main->product_warehouse_id) && $product->main->product_warehouse_id > 0)
+				$product->product_warehouse_id = $product->main->product_warehouse_id;
+		}
 		$shippings = $this->_getShippings($product);
 		if(empty($shippings))
 			return;
@@ -86,7 +90,13 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 		if(!hikamarket::acl('product/edit/plugin/shippingprices')) return;
 
 		$vendor_id = hikamarket::loadVendor(false);
+		if(isset($product->product_parent_id) && $product->product_parent_id > 0 && isset($product->parent->product_id) && $product->parent->product_id > 0) {
+			if(isset($product->parent->product_warehouse_id) && $product->parent->product_warehouse_id > 0)
+				$product->product_warehouse_id = $product->parent->product_warehouse_id;
+		}
+
 		$shippings = $this->_getShippings($product, $vendor_id);
+
 		if(empty($shippings))
 			return;
 
@@ -115,7 +125,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 	function onAfterProductUpdate(&$product, $create = false) {
 		$app = JFactory::getApplication();
 		$vendor = null;
-		if(!$app->isAdmin()) {
+		if(!hikashop_isClient('administrator')) {
 			if(!defined('HIKAMARKET_COMPONENT'))
 				return;
 
@@ -130,7 +140,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 		if(empty($formData))
 			return;
 
-		if(!$app->isAdmin()) {
+		if(!hikashop_isClient('administrator')) {
 			if(isset($formData[$product->product_id]))
 				$formData = $formData[$product->product_id];
 			else if(isset($formData[0]) && $create)

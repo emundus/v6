@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -230,7 +230,7 @@ $app = JFactory::getApplication();
 								if($min_quantity == 0)
 									$min_quantity = 1;
 								if($max_quantity == 0){
-									$max_quantity = (int)$min_quantity * 15;
+									$max_quantity = (int)$min_quantity * $this->config->get('quantity_select_max_default_value', 15);
 									if($max_quantity<$row->cart_product_quantity)
 										$values[] = JHTML::_('select.option', $row->cart_product_quantity, $row->cart_product_quantity);
 								}elseif($max_quantity<$row->cart_product_quantity){

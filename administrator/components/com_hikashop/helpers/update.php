@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -56,6 +56,7 @@ class hikashopUpdateHelper{
 			,'plg_acymailing_hikashop' => array('AcyMailing : HikaShop integration',0,1,1)
 			,'plg_authentication_opencart' => array('Hikashop OpenCart authentication Plugin',0,0)
 			,'plg_editors-xtd_hikashopproduct' => array('Hikashop product tag insertion plugin',0,1)
+			,'plg_finder_hikashop' => array('Smart Search - HikaShop Products',0,1)
 			,'plg_hikashop_acymailing' => array('HikaShop trigger for AcyMailing filters',0,1)
 			,'plg_hikashop_cartnotify' => array('HikaShop Cart notification Plugin',0,1)
 			,'plg_hikashop_content_markdown' => array('HikaShop Content Markdown Plugin',0,1)
@@ -98,7 +99,7 @@ class hikashopUpdateHelper{
 			,'plg_hikashoppayment_borgun' => array('HikaShop Borgun payment plugin',0,0)
 			,'plg_hikashoppayment_cardsave' => array('HikaShop CardSave payment plugin',0,0)
 			,'plg_hikashoppayment_check' => array('HikaShop check payment plugin',0,0)
-			,'plg_hikashoppayment_cmcic' => array('HikaShop CM-CIC payment plugin',0,0)
+			,'plg_hikashoppayment_cmcic' => array('HikaShop Monetico payment plugin',0,0)
 			,'plg_hikashoppayment_collectondelivery' => array('HikaShop collect on delivery payment plugin',0,0)
 			,'plg_hikashoppayment_common' => array('HikaShop common payment API plugin',0,1)
 			,'plg_hikashoppayment_creditcard' => array('HikaShop credit card payment plugin',0,0)
@@ -113,6 +114,7 @@ class hikashopUpdateHelper{
 			,'plg_hikashoppayment_ipaydna' => array('HikaShop iPayDNA payment plugin',0,0)
 			,'plg_hikashoppayment_iveri' => array('HikaShop iVeri payment plugin',0,0)
 			,'plg_hikashoppayment_migsvpc' => array('HikaShop MIGS VPC payment plugin',0,0)
+			,'plg_hikashoppayment_monetico' => array('HikaShop Monetico payment plugin',0,0)
 			,'plg_hikashoppayment_moneybookers' => array('HikaShop Moneybookers payment plugin',0,0)
 			,'plg_hikashoppayment_nets' => array('HikaShop NETS payment plugin',0,0)
 			,'plg_hikashoppayment_ogone' => array('HikaShop Ogone payment plugin',0,0)
@@ -127,6 +129,7 @@ class hikashopUpdateHelper{
 			,'plg_hikashoppayment_paypalintegralevolution' => array('Hikashop Paypal Website Payments Pro Hosted Payment plugin',0,0)
 			,'plg_hikashoppayment_paypalpro' => array('HikaShop PayPal Pro payment plugin',0,0)
 			,'plg_hikashoppayment_payplug' => array('HikaShop PayPlug payment plugin',0,0)
+			,'plg_hikashoppayment_payplug2' => array('HikaShop PayPlug v2 payment plugin',0,0)
 			,'plg_hikashoppayment_payuindia' => array('HikaShop PayU India payment plugin',0,0)
 			,'plg_hikashoppayment_postfinance' => array('HikaShop Post Finance payment plugin',0,0)
 			,'plg_hikashoppayment_purchaseorder' => array('HikaShop Purchase Order payment plugin',0,0)
@@ -149,7 +152,6 @@ class hikashopUpdateHelper{
 			,'plg_search_hikashop_categories' => array('HikaShop categories search plugin',0,1)
 			,'plg_search_hikashop_products' => array('HikaShop products search plugin',0,1)
 			,'plg_system_custom_price' => array('HikaShop Donation plugin',0,0)
-			,'plg_system_custom_quantity_tax' => array('HikaShop tax calculations override plugin',0,0)
 			,'plg_system_hikashopaffiliate' => array('HikaShop affiliate plugin',0,1)
 			,'plg_system_hikashopanalytics' => array('HikaShop Google Analytics plugin',0,0)
 			,'plg_system_hikashopgeolocation' => array('HikaShop geolocation plugin',0,1)

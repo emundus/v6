@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -91,36 +91,34 @@ class TaxViewTax extends hikashopView{
 				$filters[]='order_status IN ('.implode(',',$statuses).')';
 				break;
 		}
+
 		switch($pageInfo->filter->filter_start){
 			case '':
+			case '0000-00-00 00:00:00':
+				$pageInfo->filter->filter_start = '';
 				switch($pageInfo->filter->filter_end){
 					case '':
+					case '0000-00-00 00:00:00':
+						$pageInfo->filter->filter_end = '';
 						break;
 					default:
-						$filter_end=explode('-',$pageInfo->filter->filter_end);
-						$noHourDay=explode(' ',$filter_end[2]);
-						$filter_end[2]=$noHourDay[0];
-						$filter_end= hikashop_getTime(mktime(23, 59, 59, $filter_end[1], $filter_end[2], $filter_end[0]));
+						$filter_end = hikashop_getTime($pageInfo->filter->filter_end, '%d %B %Y');
 						$filters[]='order_created <= '.(int)$filter_end;
 						$pageInfo->filter->filter_end=(int)$filter_end;
 						break;
 				}
 				break;
 			default:
-				$filter_start=explode('-',$pageInfo->filter->filter_start);
-				$noHourDay=explode(' ',$filter_start[2]);
-				$filter_start[2]=$noHourDay[0];
-				$filter_start= hikashop_getTime(mktime(0, 0, 0, $filter_start[1], $filter_start[2], $filter_start[0]));
+				$filter_start = hikashop_getTime($pageInfo->filter->filter_start, '%d %B %Y');
 				switch($pageInfo->filter->filter_end){
 					case '':
-						$filters[]='order_created >= '.hikashop_getTime((int)$filter_start);
+					case '0000-00-00 00:00:00':
+						$pageInfo->filter->filter_end = '';
+						$filters[]='order_created >= '.(int)$filter_start;
 						$pageInfo->filter->filter_start=(int)$filter_start;
 						break;
 					default:
-						$filter_end=explode('-',$pageInfo->filter->filter_end);
-						$noHourDay=explode(' ',$filter_end[2]);
-						$filter_end[2]=$noHourDay[0];
-						$filter_end= hikashop_getTime(mktime(23, 59, 59, $filter_end[1], $filter_end[2], $filter_end[0]));
+						$filter_end = hikashop_getTime($pageInfo->filter->filter_end, '%d %B %Y');
 						$filters[]='order_created >= '.(int)$filter_start. ' AND order_created <= '.(int)$filter_end;
 						$pageInfo->filter->filter_start=(int)$filter_start;
 						$pageInfo->filter->filter_end=(int)$filter_end;
@@ -129,12 +127,12 @@ class TaxViewTax extends hikashopView{
 				break;
 		}
 		if(!empty($filters)){
-			$filters = ' WHERE ('. implode(') AND (',$filters).')';
+			$filters_txt = ' WHERE ('. implode(') AND (',$filters).')';
 		}else{
-			$filters = '';
+			$filters_txt = '';
 		}
 
-		$database->setQuery('SELECT order_tax_info, order_currency_id, order_discount_price, order_discount_tax FROM '.hikashop_table('order').$filters);
+		$database->setQuery('SELECT order_tax_info, order_currency_id, order_discount_price, order_discount_tax FROM '.hikashop_table('order').$filters_txt);
 		$orders_taxes = $database->loadObjectList();
 
 		$config = hikashop_config();
@@ -214,6 +212,131 @@ class TaxViewTax extends hikashopView{
 				$rows[$k]->amount = $amount_main_currency;
 			}
 		}
+
+		$tax_zone_type = $config->get('tax_zone_type','shipping');
+		$database	= JFactory::getDBO();
+		$mainCurr = $config->get('main_currency', 1);
+
+		$filters[] = 'o.order_discount_tax  = 0';
+		$filters[] = 'o.order_payment_tax = 0';
+		$filters[] = 'o.order_shipping_tax = 0';
+		$filters[] = 'op.order_product_tax = 0';
+
+
+		if(!empty($filters)){
+			$filters = ' WHERE ('. implode(') AND (',$filters).')';
+		}else{
+			$filters = '';
+		}
+		$target = 'o.order_id, o.order_full_price, a.address_country, o.order_currency_id';
+		$left_join1 = ' LEFT JOIN '.hikashop_table('address').' AS a ON a.address_id = o.order_'.$tax_zone_type.'_address_id ';
+		$left_join2 = ' LEFT JOIN '.hikashop_table('order_product').' AS op ON op.order_id = o.order_id';
+
+		$address_query = 'SELECT '.$target.' FROM '.hikashop_table('order').' AS o '.$left_join1.$left_join2. $filters;
+		$database->setQuery($address_query);
+		$tax_null_order = $database->loadObjectList();
+
+		$ue_countries = array(
+			'country_Austria_14' => 'AT',
+			'country_Belgium_21' => 'BE',
+			'country_Bulgaria_33' => 'BG',
+			'country_Croatia_53' => 'HR',
+			'country_Cyprus_55' => 'CY',
+			'country_Czech_Republic_56' => 'CZ',
+			'country_Denmark_57' => 'DK',
+			'country_Estonia_67' => 'EE',
+			'country_Finland_72' => 'FI',
+			'country_France_73' => 'FR',
+			'country_Monaco_141' => 'FR',
+			'country_Germany_81' => 'DE',
+			'country_Greece_84' => 'GR',
+			'country_Hungary_97' => 'HU',
+			'country_Ireland_103' => 'IE',
+			'country_Italy_105' => 'IT',
+			'country_Latvia_117' => 'LV',
+			'country_Lithuania_123' => 'LT',
+			'country_Luxembourg_124' => 'LU',
+			'country_Malta_132' => 'MT',
+			'country_Netherlands_150' => 'NL',
+			'country_Poland_170' => 'PL',
+			'country_Portugal_171' => 'PT',
+			'country_Romania_175' => 'RO',
+			'country_Slovakia_189' => 'SK',
+			'country_Slovenia_190' => 'SI',
+			'country_Spain_195' => 'ES',
+			'country_Sweden_203' => 'SE',
+			'country_United_Kingdom_222' => 'GB',
+		);
+		$data_title = new stdClass();
+		$data_title->tr_type = 'title';
+		$data_title->tax_namekey = JText::_('ADDITIONAL_INFORMATION');
+
+		$object_in_ue = new stdClass();
+		$object_in_ue->tr_type = 'ue_tax';
+		$object_in_ue->tax_namekey = JText::_('HIKA_ORDER_WITHOUT_TAX_IN_EU');
+		$object_in_ue->tax_rate = '0';
+
+		$object_out_ue = new stdClass();
+		$object_out_ue->tr_type = 'ue_tax';
+		$object_out_ue->tax_namekey = JText::_('HIKA_ORDER_WITHOUT_TAX_OUT_EU');
+		$object_out_ue->tax_rate = '0';
+
+		$processed_order = array();
+		$curr_data_title = array();
+		$curr_in_ue_total = array();
+		$curr_out_ue_total = array();
+		$total_in_ue = 0;
+		$total_out_ue = 0;
+
+		foreach($currencies as $currency_id => $currency) {
+			$curr_data_title[$currency_id] = '0';
+			$curr_in_ue_total[$currency_id] = '0';
+			$curr_out_ue_total[$currency_id] = '0';
+
+			foreach ($tax_null_order as $order) {
+				if($order->order_currency_id !=$currency_id)
+					continue;
+				if (!in_array($order->order_id, $processed_order)) {
+					if ($mainCurr != $order->order_currency_id) {
+						$order_full_price = $currencyClass->convertUniquePrice($order->order_full_price, $order->order_currency_id, $mainCurr);
+					}else
+							$order_full_price = $order->order_full_price;
+					if (array_key_exists($order->address_country, $ue_countries)) {
+						$total_in_ue = $total_in_ue + round((float)$order_full_price,2);
+						$curr_in_ue_total[$order->order_currency_id] += round($order->order_full_price,2);
+					}
+					else {
+						$total_out_ue = $total_out_ue + round((float)$order_full_price,2);
+						$curr_out_ue_total[$order->order_currency_id] += round($order->order_full_price,2);
+					}
+					$processed_order[] = $order->order_id;
+				}
+			}
+		}
+
+		$object_in_ue->amounts = array();
+		$object_in_ue->tax_amounts = array();
+		$object_out_ue->amounts = array();
+		$object_out_ue->tax_amounts = array();
+
+		foreach ($curr_in_ue_total as $id => $value) {
+			$object_in_ue->amounts[$id] = $value;
+			$object_in_ue->tax_amounts[$id] = '0';
+		}
+		foreach ($curr_out_ue_total as $id => $value) {
+			$object_out_ue->amounts[$id] = $value;
+			$object_out_ue->tax_amounts[$id] = '0';
+		}
+
+		$object_in_ue->tax_amount = '0';
+		$object_in_ue->amount = $total_in_ue;
+		$object_out_ue->tax_amount = '0';
+		$object_out_ue->amount = $total_out_ue;
+
+		$rows['data_title'] = $data_title;
+		$rows['in_ue'] = $object_in_ue;
+		$rows['out_ue'] = $object_out_ue;
+
 		$this->assignRef('rows',$rows);
 		$this->assignRef('pageInfo',$pageInfo);
 		$this->assignRef('currencies',$currencies);
@@ -227,6 +350,7 @@ class TaxViewTax extends hikashopView{
 		$this->getPagination();
 
 		$this->toolbar = array(
+			'export',
 			'addNew',
 			'editList',
 			'deleteList'
@@ -239,8 +363,13 @@ class TaxViewTax extends hikashopView{
 		$this->toolbar[]='|';
 		$this->toolbar[]=array('name' => 'pophelp', 'target' => $this->ctrl.'-listing');
 		$this->toolbar[]='dashboard';
-
 	}
+
+	public function export(){
+		$this->listing();
+		unset($this->rows['data_title']);
+	}
+
 	function form(){
 
 		$tax_namekey = hikaInput::get()->getString('tax_namekey');

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -29,6 +29,9 @@ class plgSearchHikashop_categories extends JPlugin{
 	}
 
 	function &onSearchAreas(){
+		if(!defined('DS'))
+			define('DS', DIRECTORY_SEPARATOR);
+		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) return array();
 		$areas = array(
 			'categories' => JText::_('PRODUCT_CATEGORIES_SEARCH')
 		);
@@ -219,9 +222,9 @@ class plgSearchHikashop_categories extends JPlugin{
 
 			$categoryClass = hikashop_get('class.category');
 			foreach ( $rows as $k => $row ) {
-
 				$row->category_name = $row->title;
 				$categoryClass->addAlias($row);
+				$row->title = hikashop_translate($row->title);
 
 				if(!empty($row->category_canonical)){
 					$rows[$k]->href = $row->category_canonical;

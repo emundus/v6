@@ -71,9 +71,8 @@ class GantryMenuNode extends GantryMenuTreeBase
 	function getLinkAdditions($starting_query = false, $starting_seperator = false)
 	{
 		$link_additions = " ";
-		reset($this->_link_additions);
 		$i = 0;
-		while (list($key, $value) = each($this->_link_additions)) {
+		foreach($this->_link_additions as $key => $value) {
 			$link_additions .= (($i == 0) && $starting_query) ? '?' : '';
 			$link_additions .= (($i == 0) && !$starting_query) ? '&' : '';
 			$link_additions .= ($i > 0) ? '&' : '';
@@ -96,8 +95,7 @@ class GantryMenuNode extends GantryMenuTreeBase
 	function getLinkAttribs()
 	{
 		$link_attribs = " ";
-		reset($this->_link_attribs);
-		while (list($key, $value) = each($this->_link_attribs)) {
+		foreach($this->_link_attribs as $key => $value) {
 			$link_attribs .= $key . "='" . $value . "' ";
 		}
 		return rtrim(ltrim($link_attribs));
@@ -111,8 +109,7 @@ class GantryMenuNode extends GantryMenuTreeBase
 	function getListItemClasses()
 	{
 		$html_classes = " ";
-		reset($this->_li_classes);
-		while (list($key, $value) = each($this->_li_classes)) {
+		foreach($this->_li_classes as $key => $value) {
 			$class =& $this->_li_classes[$key];
 			$html_classes .= $class . " ";
 		}
@@ -133,8 +130,7 @@ class GantryMenuNode extends GantryMenuTreeBase
 	function getLinkClasses()
 	{
 		$html_classes = " ";
-		reset($this->_a_classes);
-		while (list($key, $value) = each($this->_a_classes)) {
+		foreach($this->_a_classes as $key => $value) {
 			$class =& $this->_a_classes[$key];
 			$html_classes .= $class . " ";
 		}
@@ -154,8 +150,7 @@ class GantryMenuNode extends GantryMenuTreeBase
 	function getSpanClasses()
 	{
 		$html_classes = " ";
-		reset($this->_span_classes);
-		while (list($key, $value) = each($this->_span_classes)) {
+		foreach($this->_span_classes as $key => $value) {
 			$class =& $this->_span_classes[$key];
 			$html_classes .= $class . " ";
 		}
@@ -187,8 +182,7 @@ class GantryMenuNode extends GantryMenuTreeBase
 				$this->_children[$node->id] =& $node;
 				$ret                        = true;
 			} else if ($this->hasChildren()) {
-				reset($this->_children);
-				while (list($key, $value) = each($this->_children)) {
+				foreach($this->_children as $key => $value) {
 					$child =& $this->_children[$key];
 					if ($child->addChild($node)) {
 						return true;

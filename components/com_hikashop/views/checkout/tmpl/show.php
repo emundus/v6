@@ -1,30 +1,43 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><form action="<?php echo hikashop_completeLink('checkout&task=show&cid='. ($this->step).$this->cartIdParam); ?>" method="post" id="hikashop_checkout_form" name="hikashop_checkout_form" enctype="multipart/form-data" onsubmit="if(window.checkout.onFormSubmit){ return window.checkout.onFormSubmit(this); }">
+?><form action="<?php echo $this->checkoutHelper->completeLink('cid='. $this->step, false, false, false, $this->itemid); ?>" method="post" id="hikashop_checkout_form" name="hikashop_checkout_form" enctype="multipart/form-data" onsubmit="if(window.checkout.onFormSubmit){ return window.checkout.onFormSubmit(this); }">
 <input type="hidden" name="task" value="submitstep"/>
 <input type="hidden" name="<?php echo hikashop_getFormToken(); ?>" id="hikashop_checkout_token" value="1"/>
 <input type="hidden" name="cart_id" value="<?php echo $this->cart_id; ?>"/>
 <input type="submit" style="display:none;"/>
-<div id="hikashop_checkout" data-checkout-step="<?php echo $this->step; ?>" class="hikashop_checkout_page hikashop_checkout_page_step<?php echo $this->step; ?>"><?php
+<div id="hikashop_checkout" data-checkout-step="<?php echo $this->step; ?>" class="hikashop_checkout_page hikashop_checkout_page_step<?php echo $this->step; ?>">
+	<div class="hikashop_checkout_loading_elem"></div>
+	<div class="hikashop_checkout_loading_spinner"></div>
+<?php
 
 if((int)$this->config->get('display_checkout_bar', 2) > 0) {
 	echo $this->displayBlock('bar', 0, array(
 		'display_end' => ((int)$this->config->get('display_checkout_bar', 2) == 1)
 	));
 }
-
+if($this->hasSeparator)
+	echo $this->displayBlock('separator', 0, array('type' => 'start'));
 $handleEnter = array();
+$last = 0;
+if(!empty($this->extraData['checkout']) && !empty($this->extraData['checkout']->checkout_top)) { echo implode("\r\n", $this->extraData['checkout']->checkout_top); }
+
 foreach($this->workflow['steps'][$this->workflow_step]['content'] as $k => $content) {
 	$handleEnter[] = 'window.checkout.handleEnter(\''.$content['task'].'\','.$this->step.','.$k.');';
 	echo $this->displayBlock($content['task'], $k, @$content['params']);
+	$last = $k;
 }
+
+if(!empty($this->extraData['checkout']) && !empty($this->extraData['checkout']->checkout_bottom)) { echo implode("\r\n", $this->extraData['checkout']->checkout_bottom); }
+
+if($this->hasSeparator)
+	echo $this->displayBlock('separator', $last+1, array('type' => 'end'));
 
 echo $this->displayBlock('buttons', 0, array());
 

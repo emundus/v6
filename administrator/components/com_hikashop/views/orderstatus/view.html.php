@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -127,6 +127,18 @@ class OrderstatusViewOrderstatus extends hikashopView
 				'description' => JText::_('STATISTICS_DESC'),
 				'key' => 'stats_valid_order_statuses',
 				'default' => 'confirmed,shipped',
+				'type' => 'toggle'
+			);
+		}
+
+
+		if(hikashop_level(1)){
+			$orderstatus_columns['print'] = array(
+				'text' => JText::_('PRINT_INVOICE'),
+				'title' => JText::_('PRINT_ORDER_STATUSES'),
+				'description' => JText::_('PRINT_DESC'),
+				'key' => 'print_invoice_statuses',
+				'default' => 'confirmed,shipped,refunded',
 				'type' => 'toggle'
 			);
 		}

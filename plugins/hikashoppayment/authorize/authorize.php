@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,6 +17,7 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		'url' => array('URL', 'input'),
 		'login_id' => array('AUTHORIZE_LOGIN_ID', 'input'),
 		'transaction_key' => array('AUTHORIZE_TRANSACTION_KEY', 'input'),
+		'signature_key' => array('AUTHORIZE_SIGNATURE_KEY', 'input'),
 		'md5_hash' => array('AUTHORIZE_MD5_HASH', 'input'),
 		'capture' => array('INSTANTCAPTURE', 'boolean','1'),
 		'duplicate_window' => array('DUPLICATE_WINDOW', 'input'),
@@ -122,6 +123,8 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		$history->amount= round($order->cart->full_total->prices[0]->price_value_with_tax,2).'USD';
 		$history->data = '';
 		if(!empty($transaction_id)) $history->data = 'Authorize.net transaction id: '.$transaction_id . "\r\n\r\n";
+
+		$this->response_code = $response_code;
 
 		switch($response_code) {
 			case 2:
@@ -318,7 +321,7 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 			}
 			$vars["x_fp_sequence"] = $vars["x_invoice_num"];
 			$vars["x_fp_timestamp"] = time();
-			$vars["x_fp_hash"] = hash_hmac("md5", $vars["x_login"] . "^" . $vars["x_fp_sequence"] . "^" . $vars["x_fp_timestamp"] . "^" . $vars["x_amount"] . "^" . $vars["x_currency_code"], $this->payment_params->transaction_key);
+			$vars["x_fp_hash"] = $this->calculateFP($vars["x_login"], $vars["x_amount"], $vars["x_fp_sequence"], $vars["x_fp_timestamp"], $vars["x_currency_code"]);
 			if(!empty($this->payment_params->x_logo_url)){
 				$vars['x_logo_url']=$this->payment_params->x_logo_url;
 			}
@@ -326,6 +329,14 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		}
 
 		return $this->showPage($viewType);
+	}
+
+	function calculateFP($x_login, $x_amount, $x_fp_sequence, $x_fp_timestamp, $x_currency_code) {
+		$data_to_hash = $x_login . "^" . $x_fp_sequence . "^" . $x_fp_timestamp . "^" . $x_amount . "^" . $x_currency_code;
+		if(!empty($this->payment_params->signature_key)) {
+			return hash_hmac('sha512', $data_to_hash, hex2bin($this->payment_params->signature_key));
+		}
+		return hash_hmac("md5", $data_to_hash, $this->payment_params->transaction_key);
 	}
 
 	function onPaymentNotification(&$statuses){
@@ -375,27 +386,46 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 			return $msg;
 		}
 
-		$vars['x_MD5_Hash_calculated']=$this->md5Hash(@$this->payment_params->md5_hash,@$this->payment_params->login_id,@$vars['x_trans_id'],@$vars['x_amount']);
+		$vars['x_Hash_calculated']=$this->hash($vars);
 
 		$url = HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id='.$order_id;
 		$order_text = "\r\n".JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE',$dbOrder->order_number,HIKASHOP_LIVE);
 		$order_text .= "\r\n".str_replace('<br/>',"\r\n",JText::sprintf('ACCESS_ORDER_WITH_LINK',$url));
 
-		$vars['x_MD5_Hash'] = strtoupper(@$vars['x_MD5_Hash']);
+		if(isset($vars['x_SHA2_Hash'])) {
+			$vars['x_SHA2_Hash'] = strtoupper(@$vars['x_SHA2_Hash']);
 
-		if ($vars['x_MD5_Hash'] != $vars['x_MD5_Hash_calculated']) {
+			if ($vars['x_SHA2_Hash'] != $vars['x_Hash_calculated']) {
 
-			$email = new stdClass();
-			$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER','Authorize.net').'invalid response';
-			$body = JText::sprintf("Hello,\r\n An Authorize.net notification was refused because the response from the Authorize.net server was invalid. The hash received was ".$vars['x_MD5_Hash']." while the calculated hash was ".$vars['x_MD5_Hash_calculated'].". Please cehck that you're set the same md5 hash key in Authorize.net and the plugin")."\r\n\r\n".$order_text;
-			$email->body = $body;
+				$email = new stdClass();
+				$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER','Authorize.net').'invalid response';
+				$body = JText::sprintf("Hello,\r\n An Authorize.net notification was refused because the response from the Authorize.net server was invalid. The hash received was ".$vars['x_SHA2_Hash']." while the calculated hash was ".$vars['x_Hash_calculated'].". Please cehck that you're set the same signature key in Authorize.net and the plugin")."\r\n\r\n".$order_text;
+				$email->body = $body;
 
-			$this->modifyOrder($order_id, $this->payment_params->invalid_status,false,$email);
+				$this->modifyOrder($order_id, $this->payment_params->invalid_status,false,$email);
 
-			if($this->payment_params->debug){
-				echo 'invalid md5'."\n\n\n";
+				if($this->payment_params->debug){
+					echo 'invalid hash'."\n\n\n";
+				}
+				return 'Invalid notification.';
 			}
-			return 'Invalid notification.';
+		} else {
+			$vars['x_MD5_Hash'] = strtoupper(@$vars['x_MD5_Hash']);
+
+			if ($vars['x_MD5_Hash'] != $vars['x_Hash_calculated']) {
+
+				$email = new stdClass();
+				$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER','Authorize.net').'invalid response';
+				$body = JText::sprintf("Hello,\r\n An Authorize.net notification was refused because the response from the Authorize.net server was invalid. The hash received was ".$vars['x_MD5_Hash']." while the calculated hash was ".$vars['x_Hash_calculated'].". Please cehck that you're set the same signature key in Authorize.net and the plugin")."\r\n\r\n".$order_text;
+				$email->body = $body;
+
+				$this->modifyOrder($order_id, $this->payment_params->invalid_status,false,$email);
+
+				if($this->payment_params->debug){
+					echo 'invalid hash'."\n\n\n";
+				}
+				return 'Invalid notification.';
+			}
 		}
 		$vars['x_response_code']=(int)@$vars['x_response_code'];
 
@@ -464,6 +494,22 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		return $msg;
 	}
 
+	function onPaymentConfigurationSave(&$element) {
+		if(empty($this->pluginConfig))
+			return true;
+
+		$formData = hikaInput::get()->get('data', array(), 'array');
+		if(!isset($formData['payment']['payment_params']))
+			return true;
+
+		$app = JFactory::getApplication();
+
+		if(empty($element->payment_params->md5_hash) && empty($element->payment_params->signature_key))
+			$app->enqueueMessage(JText::sprintf('ENTER_INFO', 'Authorize.net', JText::_('AUTHORIZE_SIGNATURE_KEY')), 'error');
+
+		return true;
+	}
+
 	function getPaymentDefaultValues(&$element) {
 		$element->payment_name='Authorize';
 		$element->payment_description='You can pay by credit card using this payment method';
@@ -476,11 +522,24 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		$element->payment_params->verified_status='confirmed';
 	}
 
-	function md5Hash($md5Hash, $login_id, $trans_id, $amount) {
-		if ($amount == '' || $amount == '0'){
-			$amount = '0.00';
+	function hash($vars) {
+		if(!empty($this->payment_params->signature_key)) {
+			$keys = array('x_trans_id','x_test_request','x_response_code','x_auth_code','x_cvv2_resp_code','x_cavv_response',
+                'x_avs_code','x_method','x_account_number','x_amount','x_company','x_first_name','x_last_name','x_address',
+                'x_city','x_state','x_zip','x_country','x_phone','x_fax','x_email','x_ship_to_company','x_ship_to_first_name',
+                'x_ship_to_last_name','x_ship_to_address','x_ship_to_city','x_ship_to_state','x_ship_to_zip','x_ship_to_country',
+                'x_invoice_num');
+			$signature_key_hash = '^';
+			foreach($keys as $key) {
+				$signature_key_hash.= @$vars[$key].'^';
+			}
+			return strtoupper(hash_hmac("sha512", $signature_key_hash, hex2bin($this->payment_params->signature_key)));
 		}
-		return strtoupper(md5($md5Hash.$login_id.$trans_id.$amount));
+
+		if (@$vars['x_amount'] == '' || @$vars['x_amount'] == '0'){
+			@$vars['x_amount'] = '0.00';
+		}
+		return strtoupper(md5(@$this->payment_params->md5_hash.@$this->payment_params->login_id.@$vars['x_trans_id'],@$vars['x_amount']));
 	}
 }
 

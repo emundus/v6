@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -31,7 +31,7 @@ class hikashopBridgePaginationHelper extends JPagination {
 			require_once ($chromePath);
 			if(function_exists('pagination_list_render')) {
 				$listOverride = true;
-				if(HIKASHOP_J30 && $app->isAdmin())
+				if(HIKASHOP_J30 && hikashop_isClient('administrator'))
 					$itemOverride = true;
 			}
 		}
@@ -99,14 +99,14 @@ class hikashopBridgePaginationHelper extends JPagination {
 	function _list_render($list){
 		$html = null;
 		if(isset($list['start']['base']))
-			$html .= "<a href=\"".$this->_link($list['start']['base'])."\" class=\"pagenav_start_chevron\" onclick=\"javascript: var f = document.forms['adminForm".$this->hikaSuffix.$this->form."']; f.limitstart".$this->hikaSuffix.".value=".$list['start']['base']."; f.submit();return false;\"> &lt;&lt; </a>";
+			$html .= "<a href=\"".$this->_link($list['start']['base'])."\" class=\"pagenav_start_chevron\"> &lt;&lt; </a>";
 		else
 			$html .= '<span class="pagenav_start_chevron">&lt;&lt; </span>';
 
 		$html .= $list['start']['data'];
 
 		if(isset($list['previous']['base']))
-			$html .= "<a href=\"".$this->_link($list['previous']['base'])."\" class=\"pagenav_previous_chevron\" onclick=\"javascript: var f = document.forms['adminForm".$this->hikaSuffix.$this->form."']; f.limitstart".$this->hikaSuffix.".value=".$list['previous']['base']."; f.submit();return false;\"> &lt; </a>";
+			$html .= "<a href=\"".$this->_link($list['previous']['base'])."\" class=\"pagenav_previous_chevron\"> &lt; </a>";
 		else
 			$html .= '<span class="pagenav_previous_chevron"> &lt; </span>';
 
@@ -119,14 +119,14 @@ class hikashopBridgePaginationHelper extends JPagination {
 		$html .= ' '. $list['next']['data'];
 
 		if(isset($list['next']['base']))
-			$html .= "<a href=\"".$this->_link($list['next']['base'])."\" class=\"pagenav_next_chevron\" onclick=\"javascript: var f = document.forms['adminForm".$this->hikaSuffix.$this->form."']; f.limitstart".$this->hikaSuffix.".value=".$list['next']['base']."; f.submit();return false;\"> &gt; </a>";
+			$html .= "<a href=\"".$this->_link($list['next']['base'])."\" class=\"pagenav_next_chevron\"> &gt; </a>";
 		else
 			$html .= '<span class="pagenav_next_chevron"> &gt;</span>';
 
 		$html .= ' '. $list['end']['data'];
 
 		if(isset($list['end']['base']))
-			$html .= "<a href=\"".$this->_link($list['end']['base'])."\" class=\"pagenav_end_chevron\" onclick=\"javascript: var f = document.forms['adminForm".$this->hikaSuffix.$this->form."']; f.limitstart".$this->hikaSuffix.".value=".$list['end']['base']."; f.submit();return false;\"> &gt;&gt; </a>";
+			$html .= "<a href=\"".$this->_link($list['end']['base'])."\" class=\"pagenav_end_chevron\"> &gt;&gt; </a>";
 		else
 			$html .= '<span class="pagenav_end_chevron"> &gt;&gt;</span>';
 
@@ -135,14 +135,24 @@ class hikashopBridgePaginationHelper extends JPagination {
 
 	function _link($start){
 		$current_url = hikashop_currentURL();
+		$ret = false;
 		if(isset($_GET['limitstart'])){
+			$ret = true;
 			$old_start = hikaInput::get()->getInt('limitstart');
-			return str_replace(array('limitstart='.$old_start, 'limitstart-='.$old_start), array('limitstart='.$start, 'limitstart-'.$start), $current_url);
+			$current_url = str_replace(array('limitstart'.$this->hikaSuffix.'='.$old_start, 'limitstart'.$this->hikaSuffix.'-='.$old_start), array('limitstart'.$this->hikaSuffix.'='.$start, 'limitstart'.$this->hikaSuffix.'-'.$start), $current_url);
 		}
+
+		if(isset($_POST['limit']) && isset($_GET['limit'])){
+			$ret = true;
+			$old_limit = (int)$_GET['limit'];
+			$current_url = str_replace(array('limit'.$this->hikaSuffix.'='.$old_limit, 'limit'.$this->hikaSuffix.'-='.$old_limit), array('limit'.$this->hikaSuffix.'='.$this->limit, 'limit'.$this->hikaSuffix.'-'.$this->limit), $current_url);
+		}
+		if($ret)
+			return $current_url;
 		$sep = '?';
 		if(strpos($current_url, '?'))
 			$sep = '&';
-		return $current_url.$sep.'limitstart='.$start;
+		return $current_url.$sep.'limitstart'.$this->hikaSuffix.'='.$start.'&limit='.$this->limit;
 	}
 
 	function _list_footer($list) {
@@ -228,7 +238,7 @@ class hikashopBridgePaginationHelper extends JPagination {
 
 			$html = str_replace(
 				array('hikashop_pagination_link'),
-				array($this->_link($b)."\" onclick=\"var f = document.forms['adminForm".$this->hikaSuffix.$this->form."']; f.limitstart".$this->hikaSuffix.".value=".$b."; f.submit();return false;"),
+				array($this->_link($b)),
 				$html
 			);
 			return $html;
@@ -242,16 +252,16 @@ class hikashopBridgePaginationHelper extends JPagination {
 			}
 		}
 		if($item->base > 0)
-			return "<a href=\"".$this->_link($item->base)."\" class=\"".$class."\" title=\"".$item->text."\" onclick=\"javascript: var f = document.forms['adminForm".$this->hikaSuffix.$this->form."']; f.limitstart".$this->hikaSuffix.".value=".$item->base."; f.submit();return false;\">".$item->text."</a>";
-		return "<a href=\"".$this->_link('0')."\" class=\"".$class."\" title=\"".$item->text."\" onclick=\"javascript: var f = document.forms['adminForm".$this->hikaSuffix.$this->form."']; f.limitstart".$this->hikaSuffix.".value=0; f.submit();return false;\">".$item->text."</a>";
+			return "<a href=\"".$this->_link($item->base)."\" class=\"".$class."\" title=\"".$item->text."\">".$item->text."</a>";
+		return "<a href=\"".$this->_link('0')."\" class=\"".$class."\" title=\"".$item->text."\">".$item->text."</a>";
 	}
 
 	function HK_item_inactive($item) {
 		if(function_exists('pagination_item_inactive'))
 			return pagination_item_inactive($item);
 
-		$mainframe = JFactory::getApplication();
-		if ($mainframe->isAdmin())
+		$app = JFactory::getApplication();
+		if (hikashop_isClient('administrator'))
 			return "<span>".$item->text."</span>";
 
 		$class = 'pagenav';
@@ -294,13 +304,13 @@ if(version_compare($jversion,'3.8.0','>=')) {
 				}
 			}
 			if($item->base>0)
-				return "<a href=\"".$this->_link($item->base)."\" class=\"".$class."\" title=\"".$item->text."\" onclick=\"javascript: var f = document.forms['adminForm".$this->hikaSuffix.$this->form."']; f.limitstart".$this->hikaSuffix.".value=".$item->base."; f.submit();return false;\">".$item->text."</a>";
-			return "<a href=\"".$this->_link('0')."\" class=\"".$class."\" title=\"".$item->text."\" onclick=\"javascript: var f = document.forms['adminForm".$this->hikaSuffix.$this->form."']; f.limitstart".$this->hikaSuffix.".value=0; f.submit();return false;\">".$item->text."</a>";
+				return "<a href=\"".$this->_link($item->base)."\" class=\"".$class."\" title=\"".$item->text."\" >".$item->text."</a>";
+			return "<a href=\"".$this->_link('0')."\" class=\"".$class."\" title=\"".$item->text."\" >".$item->text."</a>";
 		}
 
 		function _item_inactive(&$item) {
-			$mainframe = JFactory::getApplication();
-			if ($mainframe->isAdmin())
+			$app = JFactory::getApplication();
+			if (hikashop_isClient('administrator'))
 				return "<span>".$item->text."</span>";
 
 			$class = 'pagenav';

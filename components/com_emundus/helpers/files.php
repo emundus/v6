@@ -585,6 +585,10 @@ class EmundusHelperFiles
                     INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
             $where = 'WHERE tab.published = 1 AND groupe.published = 1 ';
 
+            if (is_array($plist) && count($plist) > 0) {
+                $where .= ' AND p.id IN (' . implode(',', $plist) . ') ';
+            }
+
             if (count($fabrik_elements) > 0 ) {
 
                 $where .= ' AND element.id IN (' . implode(',', $fabrik_elements) . ') ';
@@ -853,7 +857,7 @@ class EmundusHelperFiles
 			} elseif ($element_name=='training_id') {
                 $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' ORDER BY '.str_replace('{thistable}', $params->join_db_name, $params->join_db_name.'.date_start ');
 			} else {
-                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' '.str_replace('{thistable}', $params->join_db_name, $params->database_join_where_sql);
+                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' '.str_replace('{thistable}', $params->join_db_name, preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $params->database_join_where_sql));
             }
             $db->setQuery($query);
             $result = $db->loadObjectList();
@@ -1552,7 +1556,12 @@ class EmundusHelperFiles
                 $i = 1;
                 $selected_adv = "";
                 foreach ($search as $key => $val) {
-                    $adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding">
+
+                	if (isset($val['value'])) {
+                		$val = $val['value'];
+	                }
+
+                	$adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding">
 										<select class="chzn-select em-filt-select" id="elements" name="elements">
                                             <option value="">'.JText::_('PLEASE_SELECT').'</option>';
                     $menu = "";
