@@ -4975,6 +4975,7 @@ $(document).ready(function() {
                     data:({fnums:checkInput, type: type}),
                     success: function(result) {
 
+                        var msg = result.msg;
                         if (result.status) {
 
                             url = 'index.php?option=com_emundus&controller=files&task=updatestate';
@@ -4993,7 +4994,8 @@ $(document).ready(function() {
                                             Swal.fire({
                                                 position: 'center',
                                                 type: 'success',
-                                                title: result.msg,
+                                                title: msg,
+                                                text: result.msg,
                                                 showConfirmButton: false,
                                                 timer: 1500
                                             });
@@ -5003,7 +5005,8 @@ $(document).ready(function() {
                                             Swal.fire({
                                                 position: 'center',
                                                 type: 'warning',
-                                                title: result.msg
+                                                title: msg,
+                                                text: result.msg
                                             });
                                         }
                                     },
