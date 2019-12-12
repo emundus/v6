@@ -3815,23 +3815,29 @@ class EmundusControllerFiles extends JControllerLegacy
     public function exportfile() {
 
         $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->post->getString('fnums', "");
-        $type = $jinput->post->getString('type', "");
+        $fnums = $jinput->post->getString('fnums');
+        $type = $jinput->post->getString('type');
+
+        if (empty($fnums)) {
+	        echo json_encode((object)(array('status' => false, 'msg' => JText::_('FILES_EXPORTED_TO_EXTERNAL_ERROR'))));
+	        exit;
+        }
 
         $fnums = (array) json_decode(stripslashes($fnums));
 
         JPluginHelper::importPlugin('emundus');
         $dispatcher = JEventDispatcher::getInstance();
 
-        $status = $dispatcher->trigger('onExportFiles', array($fnums, $type))[0];
-        if ($status == true) {
+        $status = $dispatcher->trigger('onExportFiles', array($fnums, $type));
+        if (is_array($status) && !in_array(false, $status)) {
             $msg = JText::_('FILES_EXPORTED_TO_EXTERNAL');
-        }
-        else {
+            $result = true;
+        } else {
             $msg = JText::_('FILES_EXPORTED_TO_EXTERNAL_ERROR');
+            $result = false;
         }
 
-        echo json_encode((object)(array('status' => $status, 'msg' => $msg)));
+        echo json_encode((object)(array('status' => $result, 'msg' => $msg)));
         exit;
     }
 }

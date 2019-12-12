@@ -11,13 +11,11 @@ defined('_JEXEC') or die('Restricted access');
 class plgEmundusExcelia_aurion_export extends JPlugin {
 
     var $db;
-    var $query;
 
     function __construct(&$subject, $config) {
         parent::__construct($subject, $config);
 
         $this->db = JFactory::getDbo();
-        $this->query = $this->db->getQuery(true);
 
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.exceliaAurionExport.php'), JLog::ALL, array('com_emundus'));
@@ -26,7 +24,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
     /**
      * Export all fnums in params to Exceila Aurion
      * Method is called on the eMundus Export plugin if the Aurion param is set
-    * @param Array $fnums
+     * @param array $fnums
      * @return bool
      *
      * @since version
@@ -36,9 +34,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
         // No need to go further if we are'nt looking for this plugin or have no fnums selected
         if ($type !== 'excelia_aurion' || empty($fnums)) {
             return false;
-        }
-
-        else {
+        } else {
             // Get Aurion params to export
             $aurion_url = $this->params->get('url', null);
             $aurion_login = $this->params->get('login', null);
@@ -204,12 +200,11 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 // Build the xml file depending if the user exists in Aurion
                 if (empty($user->id_Individu) && empty($user->aurion_user)) {
                     $xml_export = $this->buildNewUserXml($user);
-                }
-                else {
+                } else {
                     $xml_export = $this->buildExistingUserXml($user);
                 }
 
-                if(empty($xml_export)) {
+                if (empty($xml_export)) {
                     JLog::add('error while building the xml file', JLog::ERROR, 'com_emundus');
                     return false;
                 }
@@ -244,7 +239,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $res = curl_exec($ch);
 
                 // Vérification si une erreur est survenue
-                if(curl_errno($ch)) {
+                if (curl_errno($ch)) {
                     JLog::add('Error posting data in Curl' . $info, JLog::ERROR, 'com_emundus');
                     return false;
                 }
@@ -264,8 +259,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 					', JLog::ERROR, 'com_emundus');
                         return false;
                     }
-                }
-                else {
+                } else {
                     JLog::add('
 						HTTP ERROR: Response not 200 OK \n 
 						URL: '.$aurion_url.' \n
@@ -297,8 +291,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             $skype = "<coordonnee key='SKYPE_" . $user_key . "' libelle='" . $user->skype_id . "'>
                             <type_coordonnee objet_id='86334' OnRelation='true' ForceImport='true' ForceReplace='true' />
                       </coordonnee>";
-        }
-        else {
+        } else {
             $skype = "";
         }
 
@@ -309,8 +302,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                         <pays objet_id='" . $user->country_1 . "' ForceImport='true' />
                         <type_adresse objet_id='44755' OnRelation='true' ForceImport='true' ForceReplace='true' />
                     </adresse>";
-        }
-        else {
+        } else {
             $address = "";
         }
 
@@ -371,8 +363,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     <statut_inscription objet_id='46311' ForceImport='true' />
                     
                 </inscription_module>";
-        }
-        else {
+        } else {
             $inscription_module ="";
         }
 
@@ -395,8 +386,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     <statut_inscription objet_id='46311' ForceImport='true' />
                     
                 </inscription_cours>";
-        }
-        else {
+        } else {
             $inscription_cours = "";
         }
 
@@ -421,8 +411,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 
                 </inscription_concours>";
 
-        }
-        else {
+        } else {
             $inscription_concours = "";
         }
 
@@ -516,8 +505,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     <statut_inscription objet_id='46311' ForceImport='true' />
                     
                 </inscription_module>";
-        }
-        else {
+        } else {
             $inscription_module = "";
         }
 
@@ -539,8 +527,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     <statut_inscription objet_id='46311' ForceImport='true' />
                 
                 </inscription_cours>";
-        }
-        else {
+        } else {
             $inscription_cours = "";
         }
 
@@ -562,8 +549,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     <statut_inscription objet_id='46312' ForceImport='true' />
                 
                 </inscription_concours>";
-        }
-        else {
+        } else {
             $inscription_concours = "";
         }
 
@@ -606,6 +592,4 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         return $xml->flush();
     }
-
-
 }
