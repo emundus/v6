@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -95,14 +95,14 @@ defined('_JEXEC') or die('Restricted access');
 			echo JText::_('DISCOUNT_START_DATE');
 		?></label></dt>
 		<dd><?php
-			echo JHTML::_('calendar', (@$this->element->discount_start ? hikashop_getDate(@$this->element->discount_start, '%Y-%m-%d %H:%M') : ''), 'data[discount][discount_start]', 'discount_start', '%Y-%m-%d %H:%M', array('size' => '20'));
+			echo JHTML::_('calendar', (@$this->element->discount_start ? hikashop_getDate(@$this->element->discount_start, '%Y-%m-%d %H:%M') : ''), 'data[discount][discount_start]', 'discount_start', hikashop_getDateFormat('%d %B %Y %H:%M'), array('size' => '20'));
 		?></dd>
 
 		<dt><label><?php
 			echo JText::_('DISCOUNT_END_DATE');
 		?></label></dt>
 		<dd><?php
-			echo JHTML::_('calendar', (@$this->element->discount_end ? hikashop_getDate(@$this->element->discount_end, '%Y-%m-%d %H:%M') : ''), 'data[discount][discount_end]', 'discount_end', '%Y-%m-%d %H:%M', array('size' => '20'));
+			echo JHTML::_('calendar', (@$this->element->discount_end ? hikashop_getDate(@$this->element->discount_end, '%Y-%m-%d %H:%M') : ''), 'data[discount][discount_end]', 'discount_end', hikashop_getDateFormat('%d %B %Y %H:%M'), array('size' => '20'));
 		?></dd>
 
 <?php if(!hikashop_level(1)) { ?>

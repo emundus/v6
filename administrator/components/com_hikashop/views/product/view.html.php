@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -66,7 +66,7 @@ class ProductViewProduct extends hikashopView
 		$pageInfo->filter->filter_manufacturer = $app->getUserStateFromRequest( $this->paramBase.".filter_manufacturer", 'filter_manufacturer', '', 'string');
 
 		$database = JFactory::getDBO();
-		$filters = array();
+		$filters = array('product_type' => 'b.product_type != '.$database->Quote('trash'));
 
 		if($pageInfo->filter->filter_published==2){
 			$filters[]='b.product_published=1';
@@ -134,31 +134,33 @@ class ProductViewProduct extends hikashopView
 		$fieldsClass = hikashop_get('class.field');
 		$this->assignRef('fieldsClass', $fieldsClass);
 
-		$parent_cat_ids = array();
-		if(!empty($cat_ids)) {
-			$parents = $categoryClass->getParents($cat_ids, true, array(), '', 0, 0);
-			if(!empty($parents)) {
-				foreach($parents as $parent) {
-					$parent_cat_ids[] = (int)$parent->category_id;
+		$fields = null;
+		if(hikashop_level(1)) {
+			$parent_cat_ids = array();
+			if(!empty($cat_ids)) {
+				$parents = $categoryClass->getParents($cat_ids, true, array(), '', 0, 0);
+				if(!empty($parents)) {
+					foreach($parents as $parent) {
+						$parent_cat_ids[] = (int)$parent->category_id;
+					}
+				}
+			}
+
+			$categories = array('originals' => $cat_ids, 'parents' => $parent_cat_ids);
+
+			$fields = @$fieldsClass->getFields('backend_listing', $categories, 'product');
+
+
+			if(!empty($fields)) {
+				foreach($fields as $field) {
+					if($field->field_type == "customtext")
+						continue;
+					$searchMap[] = 'b.'.$field->field_namekey;
 				}
 			}
 		}
 
-		$categories = array('originals' => $cat_ids, 'parents' => $parent_cat_ids);
-
-		$fields = @$fieldsClass->getFields('backend_listing', $categories, 'product');
-
-
 		$this->assignRef('fields', $fields);
-
-		if(!empty($fields)) {
-			foreach($fields as $field) {
-				if($field->field_type == "customtext")
-					continue;
-				$searchMap[] = 'b.'.$field->field_namekey;
-			}
-		}
-
 
 		if(!empty($pageInfo->search)){
 			$searchVal = '\'%'.hikashop_getEscaped($pageInfo->search,true).'%\'';
@@ -177,8 +179,7 @@ class ProductViewProduct extends hikashopView
 			}
 		}
 
-		JPluginHelper::importPlugin( 'hikashop' );
-		$app = JFactory::getApplication();
+		JPluginHelper::importPlugin('hikashop');
 		$obj =& $this;
 		$app->triggerEvent( 'onBeforeProductListingLoad', array( & $filters, & $order, &$obj, & $select, & $select2, & $a, & $b, & $on) );
 
@@ -219,7 +220,6 @@ class ProductViewProduct extends hikashopView
 
 		hikashop_setTitle(JText::_($this->nameListing),$this->icon,$this->ctrl);
 
-		$config =& hikashop_config();
 		$manage = hikashop_isAllowed($config->get('acl_product_manage','all'));
 		$this->assignRef('manage',$manage);
 		$this->toolbar = array(
@@ -230,6 +230,7 @@ class ProductViewProduct extends hikashopView
 			array('name' => 'addNew', 'display' => $manage),
 			array('name' => 'editList', 'display' => $manage),
 			array('name' => 'deleteList', 'display' => hikashop_isAllowed($config->get('acl_product_delete','all'))),
+			array('name' => 'link', 'icon' => 'trash', 'alt' => JText::_('JTRASHED'), 'url' => hikashop_completeLink('product&task=trashlist'), 'display' => (bool)$config->get('use_trash', 0)),
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-listing'),
 			'dashboard'
@@ -557,6 +558,7 @@ class ProductViewProduct extends hikashopView
 		$this->toolbar = array(
 			array('name' => 'popup','icon'=>'upload','alt'=>JText::_('ADD_TO_CART_HTML_CODE'),'url'=>$url),
 			'|',
+			array('name' => 'custom', 'icon' => 'copy', 'alt' => JText::_('HIKA_COPY'), 'task' => 'copy'),
 			'save',
 			array('name' => 'save2new'),
 			'apply'
@@ -762,36 +764,41 @@ class ProductViewProduct extends hikashopView
 		return $characteristics;
 	}
 
-	protected function _loadPrices(&$rows){
+	protected function _loadPrices(&$rows) {
 		$currencyClass = hikashop_get('class.currency');
 		$zone_id = hikashop_getZone();
+		$database = JFactory::getDBO();
+
 		$ids = array();
 		$parents = array();
-		foreach($rows as $row){
-			$ids[]=(int)$row->product_id;
+		foreach($rows as $row) {
+			$ids[] = (int)$row->product_id;
 			if(!empty($row->product_parent_id))
 				$parents[(int)$row->product_parent_id] = (int)$row->product_parent_id;
 		}
+
 		$query = 'SELECT * FROM '.hikashop_table('price').' WHERE price_product_id IN ('.implode(',',$ids).')';
-		$database = JFactory::getDBO();
 		$database->setQuery($query);
 		$prices = $database->loadObjectList();
-		if(!empty($parents)){
+		if(empty($prices))
+			return;
+
+		if(!empty($parents)) {
 			$query = 'SELECT product_id, product_tax_id FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',',$parents).')';
 			$database->setQuery($query);
 			$parents_tax_id = $database->loadObjectList('product_id');
 		}
-		if(!empty($prices)){
-			foreach($rows as $k => $row){
-				foreach($prices as $price){
-					if($price->price_product_id==$row->product_id){
-						if(!isset($row->prices)) $row->prices=array();
-						$rows[$k]->prices[$price->price_min_quantity.'_'.$price->price_access.'_'.$price->price_users.'_'.$price->price_currency_id]=$price;
-						if(!empty($row->product_parent_id))
-							$row->product_tax_id = @$parents_tax_id[$row->product_parent_id]->product_tax_id;
-						$rows[$k]->prices[$price->price_min_quantity.'_'.$price->price_access.'_'.$price->price_users.'_'.$price->price_currency_id]->price_value_with_tax = $currencyClass->getTaxedPrice($price->price_value,$zone_id,$row->product_tax_id);
-					}
-				}
+		foreach($rows as $k => $row) {
+			foreach($prices as $price) {
+				if($price->price_product_id != $row->product_id)
+					continue;
+
+				if(!isset($row->prices))
+					$row->prices=array();
+				$rows[$k]->prices[$price->price_min_quantity.'_'.$price->price_access.'_'.$price->price_users.'_'.$price->price_currency_id] = $price;
+				if(!empty($row->product_parent_id))
+					$row->product_tax_id = @$parents_tax_id[$row->product_parent_id]->product_tax_id;
+				$rows[$k]->prices[$price->price_min_quantity.'_'.$price->price_access.'_'.$price->price_users.'_'.$price->price_currency_id]->price_value_with_tax = $currencyClass->getTaxedPrice($price->price_value,$zone_id,$row->product_tax_id);
 			}
 		}
 	}
@@ -1366,7 +1373,7 @@ class ProductViewProduct extends hikashopView
 		$categories = $db->loadObjectList('category_id');
 
 		$db = JFactory::getDBO();
-		$db->setQuery('SELECT category_id, category_name FROM '.hikashop_table('category').' AS a WHERE a.category_type=\'brand\'');
+		$db->setQuery('SELECT category_id, category_name FROM '.hikashop_table('category').' AS a WHERE a.category_type IN (\'brand\', \'manufacturer\') ');
 		$brands = $db->loadObjectList('category_id');
 
 		$db->setQuery('SELECT * FROM '.hikashop_table('file').' AS a WHERE a.file_type=\'category\' AND a.file_ref_id IN ('.implode(',',array_keys($categories)).')');
@@ -1878,8 +1885,9 @@ class ProductViewProduct extends hikashopView
 		$url = 'index.php?option=com_hikashop&ctrl=product&task=updatecart&tmpl=component&cid='.$product_id;
 
 		$this->toolbar = array(
-			array('name' => 'popup','icon'=>'upload','alt'=>JText::_('ADD_TO_CART_HTML_CODE'),'url'=>$url),
+			array('name' => 'popup','icon'=>'upload','alt'=>JText::_('ADD_TO_CART_HTML_CODE'),'url'=>$url, 'display' => !empty($product_id)),
 			'|',
+			array('name' => 'custom', 'check'=>false, 'icon' => 'copy', 'alt' => JText::_('HIKA_COPY'), 'task' => 'copy', 'display' => !empty($product_id)),
 			'save-group',
 			'cancel' => 'cancel',
 			'|',
@@ -2399,6 +2407,84 @@ class ProductViewProduct extends hikashopView
 				'icon' => 'save',
 				'name' => JText::_('HIKA_SAVE'), 'pos' => 'right'
 			)
+		);
+	}
+
+	public function trashlist() {
+		$app = JFactory::getApplication();
+		$db = JFactory::getDBO();
+		$config = hikashop_config();
+		$this->assignRef('config', $config);
+
+		$task = 'trashlist';
+		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName() . '.' . $task;
+
+		$this->loadRef(array(
+			'imageHelper' => 'helper.image',
+			'currencyHelper' => 'class.currency',
+			'toggleClass' => 'helper.toggle'
+		));
+
+		$pageInfo = $this->getPageInfo('p.product_id', 'asc', array());
+
+		$filters = array(
+			'product_type' => 'p.product_type = '.$db->Quote('trash')
+		);
+		$order = '';
+		$searchMap = array('p.product_id', 'p.product_name', 'p.product_code');
+
+		$this->processFilters($filters, $order, $searchMap, array('p.'));
+		$query = ' FROM ' . hikashop_table('product').' AS p ' . $filters . $order;
+		$this->getPageInfoTotal($query, '*');
+		$db->setQuery('SELECT p.*' . $query, $pageInfo->limit->start, $pageInfo->limit->value);
+		$rows = $db->loadObjectList('product_id');
+
+		if(!empty($pageInfo->search)) {
+			$rows = hikashop_search($pageInfo->search, $rows, array('product_id', 'product_code'));
+		}
+
+		if(!empty($rows)) {
+			$this->_loadPrices($rows);
+
+			$queryImage = 'SELECT * FROM '.hikashop_table('file').' WHERE file_ref_id IN ('.implode(',', array_keys($rows)).') AND file_type=\'product\' ORDER BY file_ref_id ASC, file_ordering ASC, file_id ASC';
+			$db->setQuery($queryImage);
+			$images = $db->loadObjectList();
+			if(!empty($images)) {
+				foreach($rows as &$row) {
+					foreach($images as $image){
+						if($row->product_id != $image->file_ref_id)
+							continue;
+						if(!isset($row->file_ref_id)) {
+							foreach(get_object_vars($image) as $key => $name) {
+								$row->$key = $name;
+							}
+						}
+						break;
+					}
+					if(!isset($row->file_name))
+						$row->file_name = $row->product_name;
+				}
+			}
+			unset($row);
+			unset($images);
+		}
+
+		$this->assignRef('rows', $rows);
+
+		$this->getPagination();
+		$this->getOrdering('p.product_id', true);
+
+		hikashop_setTitle(JText::_('TRASHED_PRODUCTS'), 'trash-alt', $this->ctrl.'&task='.$task);
+
+		$this->manage = true;
+
+		$this->toolbar = array(
+			array('name' => 'link', 'icon' => 'back', 'alt' => JText::_('HIKA_BACK'), 'url' => hikashop_completeLink('product&task=listing')),
+			array('name' => 'custom', 'icon' => 'publish', 'alt' => JText::_('HIKA_RESTORE'), 'task' => 'untrash', 'display' => $this->manage),
+			array('name' => 'custom', 'icon' => 'unpublish', 'alt' => JText::_('HIKA_PURGE'), 'task' => 'purge', 'display' => $this->manage),
+			'|',
+			array('name' => 'pophelp', 'target' => $this->ctrl.'-trashlist'),
+			'dashboard'
 		);
 	}
 }

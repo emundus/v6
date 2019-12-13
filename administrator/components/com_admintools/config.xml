@@ -11,12 +11,92 @@
 			description="COM_ADMINTOOLS_JCONFIG_SCAN_DESC"
 	>
 
+		<field name="logLevel" type="list" default="4"
+			   label="COM_ADMINTOOLS_JCONFIG_LOGLEVEL_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_LOGLEVEL_DESC">
+			<option value="0">COM_ADMINTOOLS_JCONFIG_LOGLEVEL_NONE</option>
+			<option value="1">COM_ADMINTOOLS_JCONFIG_LOGLEVEL_ERROR</option>
+			<option value="2">COM_ADMINTOOLS_JCONFIG_LOGLEVEL_WARNING</option>
+			<option value="3">COM_ADMINTOOLS_JCONFIG_LOGLEVEL_INFO</option>
+			<option value="4">COM_ADMINTOOLS_JCONFIG_LOGLEVEL_DEBUG</option>
+		</field>
+
+		<field name="minExec" type="number" default="2" size="30"
+			   min="0" max="30" step="0.5"
+			   label="COM_ADMINTOOLS_LBL_JCONFIG_MINEXEC_LABEL"
+			   description="COM_ADMINTOOLS_LBL_JCONFIG_MINEXEC_DESC"
+		/>
+
+		<field name="maxExec" type="number" default="5" size="30"
+			   min="0" max="30" step="0.5"
+			   label="COM_ADMINTOOLS_LBL_JCONFIG_MAXEXEC_LABEL"
+			   description="COM_ADMINTOOLS_LBL_JCONFIG_MAXEXEC_DESC"
+		/>
+
+		<field name="runtimeBias" type="number" default="75" size="30"
+			   min="50" max="100" step="1"
+			   label="COM_ADMINTOOLS_LBL_JCONFIG_RUNTIMEBIAS_LABEL"
+			   description="COM_ADMINTOOLS_LBL_JCONFIG_RUNTIMEBIAS_DESC"
+		/>
+
+		<field name="dirThreshold" type="number" default="50" size="30"
+			   min="25" max="1000" step="25"
+			   label="COM_ADMINTOOLS_LBL_JCONFIG_DIRTHRESHOLD_LABEL"
+			   description="COM_ADMINTOOLS_LBL_JCONFIG_DIRTHRESHOLD_DESC"
+		/>
+
+		<field name="fileThreshold" type="number" default="100" size="30"
+			   min="25" max="1000" step="25"
+			   label="COM_ADMINTOOLS_LBL_JCONFIG_FILETHRESHOLD_LABEL"
+			   description="COM_ADMINTOOLS_LBL_JCONFIG_FILETHRESHOLD_DESC"
+		/>
+
+		<field name="directoryFilters" type="textarea"
+			   rows="5" columns="80"
+			   default=""
+			   label="COM_ADMINTOOLS_JCONFIG_DIRECTORYFILTERS_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_DIRECTORYFILTERS_DESC"
+			   class="input-large"/>
+
+		<field name="fileFilters" type="textarea"
+			   rows="5" columns="80"
+			   default=""
+			   label="COM_ADMINTOOLS_JCONFIG_FILEFILTERS_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_FILEFILTERS_DESC"
+			   class="input-large"/>
+
+		<field name="scanExtensions" type="text"
+			   size="50"
+			   default="php, phps, phtml, php3, inc"
+			   label="COM_ADMINTOOLS_JCONFIG_SCANEXTENSIONS_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_SCANEXTENSIONS_DESC"
+			   class="input-xlarge"/>
+
+		<field name="largeFileThreshold" type="number" default="524288" size="30"
+			   min="131072" max="26214400" step="131072"
+			   label="COM_ADMINTOOLS_LBL_JCONFIG_LARGEFILETHRESHOLD_LABEL"
+			   description="COM_ADMINTOOLS_LBL_JCONFIG_LARGEFILETHRESHOLD_DESC"
+		/>
+
 		<field name="scandiffs" type="list" default="0"
 			   label="COM_ADMINTOOLS_JCONFIG_SCANDIFF_LABEL"
 			   description="COM_ADMINTOOLS_JCONFIG_SCANDIFF_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
+
+		<field name="scanignorenonthreats" type="list" default="0"
+			   label="COM_ADMINTOOLS_JCONFIG_SCANIGNORENONTHREATS_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_SCANIGNORENONTHREATS_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
+
+		<field name="oversizeFileThreshold" type="number" default="5242880" size="30"
+			   min="524288" max="52428800" step="524288"
+			   label="COM_ADMINTOOLS_LBL_JCONFIG_OVERSIZEFILETHRESHOLD_LABEL"
+			   description="COM_ADMINTOOLS_LBL_JCONFIG_OVERSIZEFILETHRESHOLD_DESC"
+		/>
 
 		<field name="scanemail" type="text" default="" size="30"
 			   label="COM_ADMINTOOLS_LBL_JCONFIG_SCANEMAIL_LABEL"
@@ -37,6 +117,15 @@
 			label="COM_ADMINTOOLS_JCONFIG_BACKEND_LABEL"
 			description="COM_ADMINTOOLS_JCONFIG_BACKEND_DESC"
 	>
+
+		<field name="dark_mode" type="radio" default="-1"
+			   label="COM_ADMINTOOLS_JBACKEND_DARKMODE_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_BACKEND_DARKMODE_DESC"
+			   class="switcher btn-group">
+			<option value="-1">COM_ADMINTOOLS_JCONFIG_BACKEND_DARKMODE_AUTO</option>
+			<option value="0">COM_ADMINTOOLS_JCONFIG_BACKEND_DARKMODE_NEVER</option>
+			<option value="1">COM_ADMINTOOLS_JCONFIG_BACKEND_DARKMODE_ALWAYS</option>
+		</field>
 
 		<field name="showstats" type="list" default="1"
 			   label="COM_ADMINTOOLS_JCONFIG_SHOWSTATS_LABEL"

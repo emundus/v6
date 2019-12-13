@@ -115,10 +115,10 @@ class EmundusModelEvaluation extends JModelList {
 													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
 					} else
 						$this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
-				}
-				elseif ($def_elmt->element_plugin == 'databasejoin') {
+				} elseif ($def_elmt->element_plugin == 'databasejoin') {
 					$attribs = json_decode($def_elmt->element_attribs);
 					$join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat);
+					$join_val_column_concat = str_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $join_val_column_concat);
 					$join_val_column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
 
 					if ($group_params->repeat_group_button == 1) {
@@ -711,8 +711,9 @@ class EmundusModelEvaluation extends JModelList {
 
         $db = JFactory::getDBO();
 
-        if (!is_numeric(@$params['published']) || is_null(@$params['published']))
-            $params['published'] = 1;
+        if (!is_numeric(@$params['published']) || is_null(@$params['published'])) {
+	        $params['published'] = 1;
+        }
 
 		$query = array('q' => '', 'join' => '');
 
@@ -727,52 +728,79 @@ class EmundusModelEvaluation extends JModelList {
 							foreach ($value as $k => $v) {
 								$tab = explode('.', $k);
 
-								if (count($tab) > 1) {
-									if (!empty($v)) {
+								if (isset($v['select'])) {
+									$adv_select = $v['select'];
+								}
 
-										if ($tab[0] == 'jos_emundus_training') {
-											$query['q'] .= ' AND ';
-											$query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
+								if (isset($v['value'])) {
+									$v = $v['value'];
+								}
+
+								if (count($tab) > 1 && !empty($v)) {
+
+									if ($tab[0] == 'jos_emundus_training') {
+
+										// Do not do LIKE %% search on elements that come from a <select>, we should get the exact value.
+										if (isset($adv_select) && $adv_select) {
+											$query['q'] .= ' AND search_'.$tab[0].'.id like "'.$v.'"';
 										} else {
-                                            $query['q'] .= ' AND ';
-                                            // Check if it is a join table
-                                            $sql = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
-                                            $db->setQuery($sql);
-                                            $join_from_table = $db->loadResult();
+											$query['q'] .= ' AND search_'.$tab[0].'.id like "%'.$v.'%"';
+										}
 
-                                            if (!empty($join_from_table)) {
-                                                $table = $join_from_table;
-                                                $table_join = $tab[0];
+									} else {
+                                        $query['q'] .= ' AND ';
+                                        // Check if it is a join table
+                                        $sql = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
+                                        $db->setQuery($sql);
+                                        $join_from_table = $db->loadResult();
 
-                                                $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
+                                        if (!empty($join_from_table)) {
+                                            $table = $join_from_table;
+                                            $table_join = $tab[0];
 
-                                                if (!isset($query[$table])) {
+	                                        // Do not do LIKE %% search on elements that come from a <select>, we should get the exact value.
+	                                        if (isset($adv_select) && $adv_select) {
+		                                        $query['q'] .= $table_join.'.'.$tab[1].' like "' . $v . '"';
+	                                        } else {
+		                                        $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
+	                                        }
 
-                                                	$query[$table] = true;
-                                                    if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias))
-                                                        $query['join'] .= ' left join '.$table.' on ' .$table.'.fnum like c.fnum ';
+                                            if (!isset($query[$table])) {
 
-                                                } if (!isset($query[$table_join])) {
-
-                                                    $query[$table_join] = true;
-                                                    if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias))
-                                                        $query['join'] .= ' left join '.$table_join.' on ' .$table.'.id='.$table_join.'.parent_id';
-
+                                                $query[$table] = true;
+                                                if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias)) {
+	                                                $query['join'] .= ' left join '.$table.' on '.$table.'.fnum like c.fnum ';
                                                 }
 
-                                            } else {
-                                                $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
+                                            } if (!isset($query[$table_join])) {
 
-                                                if (!isset($query[$tab[0]])) {
+                                                $query[$table_join] = true;
+                                                if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias)) {
+	                                                $query['join'] .= ' left join '.$table_join.' on '.$table.'.id='.$table_join.'.parent_id';
+                                                }
 
-                                                    $query[$tab[0]] = true;
-                                                    if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias))
-                                                        $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like c.fnum ';
+                                            }
 
+                                        } else {
+
+	                                        $sql = 'SELECT plugin FROM #__fabrik_elements WHERE name like '.$db->Quote($tab[1]);
+	                                        $db->setQuery($sql);
+	                                        $res = $db->loadResult();
+	                                        if ($res == "radiobutton" || $res == "dropdown" || $res == "databasejoin" || (isset($adv_select) && $adv_select)) {
+		                                        $query['q'] .= $tab[0].'.'.$tab[1].' like "' . $v . '"';
+	                                        } else {
+		                                        $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
+	                                        }
+
+                                            if (!isset($query[$tab[0]])) {
+
+                                                $query[$tab[0]] = true;
+                                                if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias)) {
+	                                                $query['join'] .= ' left join '.$tab[0].' on '.$tab[0].'.fnum like c.fnum ';
                                                 }
                                             }
                                         }
-									}
+                                    }
 								}
 							}
 						}

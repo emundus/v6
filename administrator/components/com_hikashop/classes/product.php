@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -789,6 +789,8 @@ class hikashopProductClass extends hikashopClass{
 
 
 		}
+
+		$oldProduct->categories = $this->getCategories($parent_product_id);
 		$product = $fieldClass->getInput('variant', $oldProduct, true, 'data', false, 'all');
 		if(empty($product))
 			return false;
@@ -1682,6 +1684,16 @@ class hikashopProductClass extends hikashopClass{
 		}else{
 			$element->alias = JFilterOutput::stringURLSafe($element->alias);
 		}
+		if(is_numeric(substr($element->alias,0,1)) && hikashop_isClient('site')) {
+			$config = hikashop_config();
+			if($config->get('sef_remove_id',0)) {
+				$element->alias = 'p'.$element->alias;
+				$save = new stdClass();
+				$save->product_id = $element->product_id;
+				$save->product_alias = $element->alias;
+				parent::save($save);
+			}
+		}
 	}
 
 	public function loadProductsListingData(&$rows, $options = array()){
@@ -1712,6 +1724,8 @@ class hikashopProductClass extends hikashopClass{
 				$ids[] = (int)$row->product_id;
 				$this->addAlias($rows[$key]);
 			}
+			$rows[$key]->product_name = hikashop_translate($row->product_name);
+			$rows[$key]->product_description = hikashop_translate($row->product_description);
 		}
 		if(empty($ids))
 			$ids = array(0);
@@ -1940,10 +1954,11 @@ class hikashopProductClass extends hikashopClass{
 
 		if(!empty($element->product_canonical)) {
 			if(strpos($element->product_canonical, 'http://') !== false || strpos($element->product_canonical, 'https://') !== false) {
-				if (strpos($element->product_canonical, HIKASHOP_LIVE)) {
+				if (strpos($element->product_canonical, HIKASHOP_LIVE)!==false) {
 					$element->product_canonical = str_replace(HIKASHOP_LIVE,'',$element->product_canonical);
 				} else {
-					unset($element->product_canonical);
+					$app = JFactory::getApplication();
+					$app->enqueueMessage(JText::sprintf('CANONICAL_URL_NOT_FROM_CURRENT_WEBSITE', $element->product_canonical, HIKASHOP_LIVE),'warning');
 				}
 			}
 		}
@@ -2993,11 +3008,18 @@ class hikashopProductClass extends hikashopClass{
 
 		hikashop_toInteger($product_ids);
 
+		$diff = array_diff($elements, $product_ids);
+		if(!empty($diff)) {
+			$ret = $this->delete($diff);
+			if($ret === false)
+				return false;
+		}
+
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 		$do = true;
 		$app->triggerEvent('onBeforeProductTrash', array(&$product_ids, &$do));
-		if(!$do)
+		if(!$do || empty($product_ids))
 			return false;
 
 		$query = 'UPDATE '.hikashop_table('product').' SET product_type = ' . $this->database->Quote('trash').
@@ -3095,6 +3117,7 @@ class hikashopProductClass extends hikashopClass{
 			$variant->product_type = 'variant';
 			$variant->product_sale_start = 0;
 			$variant->product_sale_end = 0;
+			$variant->product_created = 0;
 			$variant->characteristics = array();
 			foreach($map as $k => $id) {
 				$variant->characteristics[$id] = $element->characteristics[$k]->values[$id];
@@ -3153,7 +3176,10 @@ class hikashopProductClass extends hikashopClass{
 			} else if($field == 'product_name') {
 				if(!empty($variant->characteristics)) {
 					foreach($variant->characteristics as $val) {
-						$variant->characteristics_text .= $separator . $val->characteristic_value;
+						$char_value = $val->characteristic_value;
+						if(strpos($char_value, '<') === false)
+							$char_value = hikashop_translate($char_value);
+						$variant->characteristics_text .= $separator . $char_value;
 					}
 				}
 			} else if(!$perfs || $force) {
@@ -3175,6 +3201,10 @@ class hikashopProductClass extends hikashopClass{
 		if(!$variant->product_published)
 			$variant->product_quantity = 0;
 		$variant->variant_checked = true;
+
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onAfterVariantChecked', array( &$variant, &$element));
 	}
 
 	function generateVariantData(&$element){
@@ -3326,7 +3356,7 @@ class hikashopProductClass extends hikashopClass{
 
 				$o = new stdClass();
 				$o->status = 3;
-				$o->name = JText::_($v->category_name);
+				$o->name = hikashop_translate($v->category_name);
 				$o->value = $k;
 				$o->data = array();
 				if($set_no_selection)
@@ -3356,7 +3386,7 @@ class hikashopProductClass extends hikashopClass{
 			$query = 'SELECT p.*, c.category_id FROM ' . hikashop_table('product') . ' AS p '.
 				' INNER JOIN ' . hikashop_table('product_category') . ' AS pc ON p.product_id = pc.product_id '.
 				' INNER JOIN ' . hikashop_table('category') . ' AS c ON c.category_id = pc.category_id '.
-				' WHERE pc.category_id IN (' . implode(',', $lookup_categories) . ') ' .
+				' WHERE pc.category_id IN (' . implode(',', $lookup_categories) . ') AND p.product_type != \'trash\'' .
 				' ORDER BY c.category_left ASC, c.category_name ASC, p.product_name ASC';
 			$this->db->setQuery($query, 0, $limit);
 			$product_elements = $this->db->loadObjectList();
@@ -3365,7 +3395,7 @@ class hikashopProductClass extends hikashopClass{
 			$query = 'SELECT p.*, c.category_id, c.category_right, c.category_left FROM ' . hikashop_table('product') . ' AS p '.
 				' INNER JOIN ' . hikashop_table('product_category') . ' AS pc ON p.product_id = pc.product_id '.
 				' INNER JOIN ' . hikashop_table('category') . ' AS c ON c.category_id = pc.category_id '.
-				' WHERE (p.product_name LIKE '.$searchStr.' OR p.product_code LIKE '.$searchStr.') '.
+				' WHERE (p.product_name LIKE '.$searchStr.' OR p.product_code LIKE '.$searchStr.') AND p.product_type != \'trash\''.
 				' ORDER BY p.product_name ASC';
 			$this->db->setQuery($query, 0, $limit);
 			$product_elements = $this->db->loadObjectList();
@@ -3398,7 +3428,7 @@ class hikashopProductClass extends hikashopClass{
 
 				$o = new stdClass();
 				$o->status = 2;
-				$o->name = JText::_($v->category_name);
+				$o->name = hikashop_translate($v->category_name);
 				$o->value = $k;
 				$o->data = array();
 				if($set_no_selection)
@@ -3436,10 +3466,15 @@ class hikashopProductClass extends hikashopClass{
 			unset($type);
 
 			$query = 'SELECT p.* FROM ' . hikashop_table('product') . ' AS p '.
-				' WHERE p.product_type IN (' . implode(',', $product_types) . ' ) '.
+				' WHERE p.product_type IN (' . implode(',', $product_types) . ' ) AND p.product_type != \'trash\''.
 				' ORDER BY p.product_name ASC';
 			$this->db->setQuery($query, 0, $limit);
 			$product_elements = $this->db->loadObjectList('product_id');
+		}
+
+		foreach($product_elements as $k => $p) {
+			if(!empty($p->product_name))
+				$product_elements[$k]->product_name = hikashop_translate($p->product_name);
 		}
 
 		if(!empty($product_elements) && $tree_mode) {
@@ -3457,8 +3492,10 @@ class hikashopProductClass extends hikashopClass{
 						' ORDER BY p.product_parent_id ASC, p.product_name ASC';
 				$this->db->setQuery($query);
 				$variants = $this->db->loadObjectList('product_id');
-				foreach($variants as $v) {
+				foreach($variants as $k => $v) {
 					$product_ids[ (int)$v->product_parent_id ][] = (int)$v->product_id;
+					if(!empty($v->product_name))
+						$variants[$k]->product_name = hikashop_translate($v->product_name);
 				}
 
 				$characteristics = $this->getCharacteristics(array_keys($product_ids), array_keys($variants));
@@ -3581,9 +3618,13 @@ class hikashopProductClass extends hikashopClass{
 			}
 			$query = 'SELECT p.* '.
 					' FROM ' . hikashop_table('product') . ' AS p ' .
-					' WHERE p.product_id IN ('.implode(',', $filter).') ';
+					' WHERE p.product_id IN ('.implode(',', $filter).') AND p.product_type != \'trash\'';
 			$this->db->setQuery($query);
 			$products_data = $this->db->loadObjectList('product_id');
+			foreach($products_data as $k => $p) {
+				if(!empty($p->product_name))
+					$products_data[$k]->product_name = hikashop_translate($p->product_name);
+			}
 
 			$products = array();
 			foreach($filter as $pid){
@@ -3606,9 +3647,13 @@ class hikashopProductClass extends hikashopClass{
 			}
 
 			if(!empty($variant_data['product'])) {
-				$query = 'SELECT p.product_id, p.product_name FROM ' . hikashop_table('product') . ' AS p WHERE p.product_id IN (' . implode(',', $variant_data['product']) . ');';
+				$query = 'SELECT p.product_id, p.product_name FROM ' . hikashop_table('product') . ' AS p WHERE p.product_id IN (' . implode(',', $variant_data['product']) . ') AND p.product_type != \'trash\';';
 				$this->db->setQuery($query);
 				$parents = $this->db->loadObjectList('product_id');
+				foreach($parents as $k => $p) {
+					if(!empty($p->product_name))
+						$parents[$k]->product_name = hikashop_translate($p->product_name);
+				}
 
 				$characteristics = $this->getCharacteristics($variant_data['product'], $variant_data['variant']);
 

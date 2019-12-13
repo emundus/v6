@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -29,7 +29,9 @@ class plgHikashoppaymentOgone extends hikashopPaymentPlugin
 		)),
 		'environnement' => array('ENVIRONNEMENT', 'list', array(
 			'production' => 'HIKA_PRODUCTION',
-			'test' => 'HIKA_TEST'
+			'test' => 'HIKA_TEST',
+			'kbc_production' => 'KBC/CBC-Paypage DirectLink Production',
+			'kbc_test' => 'KBC/CBC-Paypage DirectLink Test'
 		)),
 		'status_url' => array('After payment URL', 'html', ''),
 		'debug' => array('DEBUG', 'boolean'),
@@ -52,6 +54,24 @@ class plgHikashoppaymentOgone extends hikashopPaymentPlugin
 		'authorized_status' => array('AUTHORIZED_STATUS', 'orderstatus'),
 		'verified_status' => array('VERIFIED_STATUS', 'orderstatus')
 	);
+
+	function setURL() {
+		switch($this->payment_params->environnement) {
+			case 'kbc_test':
+				$this->payment_params->url = 'https://secure.paypage.be/ncol/test/orderdirect.asp';
+				break;
+			case 'kbc_production':
+				$this->payment_params->url = 'https://secure.paypage.be/ncol/prod/orderdirect.asp';
+				break;
+			case 'test':
+				$this->payment_params->url = 'https://secure.ogone.com/ncol/test/orderstandard_utf8.asp';
+				break;
+			default:
+			case 'production':
+				$this->payment_params->url = 'https://secure.ogone.com/ncol/prod/orderstandard_utf8.asp';
+				break;
+		}
+	}
 
 	function onPaymentConfiguration(&$element) {
 		parent::onPaymentConfiguration($element);
@@ -141,11 +161,7 @@ class plgHikashoppaymentOgone extends hikashopPaymentPlugin
 		}
 
 		$vars['SHASign'] = $this->generateHash($vars, $this->payment_params->shain_passphrase, $this->payment_params->hash_method);
-
-		if($this->payment_params->environnement == 'test')
-			$this->payment_params->url = 'https://secure.ogone.com/ncol/test/orderstandard_utf8.asp';
-		else
-			$this->payment_params->url = 'https://secure.ogone.com/ncol/prod/orderstandard_utf8.asp';
+		$this->setURL();
 
 		$this->vars = $vars;
 		return $this->showPage('end');

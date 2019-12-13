@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -54,7 +54,7 @@ class hikashopCheckoutFieldsHelper extends hikashopCheckoutHelperInterface {
 				),
 			),
 		);
-		return $this->params;
+		return parent::getParams();
 	}
 
 	public function check(&$controller, &$params) {
@@ -70,9 +70,18 @@ class hikashopCheckoutFieldsHelper extends hikashopCheckoutHelperInterface {
 			return true;
 		if(!empty($params['read_only']))
 			return true;
+
+		if(empty($data))
+			$data = hikaInput::get()->get('data', array(), 'array');
+		$key = 'order_' . $params['src']['step'] . '_' .  $params['src']['pos'];
+
 		if(empty($data))
 			$data = hikaInput::get()->get('checkout', array(), 'array');
-		if(empty($data['fields']))
+		if(!isset($data[$key]))
+			$key = 'fields';
+
+
+		if(empty($data[$key]))
 			return true;
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
@@ -86,7 +95,7 @@ class hikashopCheckoutFieldsHelper extends hikashopCheckoutHelperInterface {
 		if(!empty($params['fields']) && is_string($params['fields']))
 			$params['fields'] = explode(',',$params['fields']);
 		$fieldClass = hikashop_get('class.field');
-		$orderData = $fieldClass->getFilteredInput('order', $old, 'msg', $data['fields'], false, '', @$params['fields']);
+		$orderData = $fieldClass->getFilteredInput('order', $old, 'msg', $data[$key], false, '', @$params['fields']);
 
 		if($orderData === false) {
 			$messages = $fieldClass->messages;

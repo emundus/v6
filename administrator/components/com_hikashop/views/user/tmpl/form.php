@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -70,7 +70,7 @@ defined('_JEXEC') or die('Restricted access');
 				$this->user->$fieldName,
 				'data[user]['.$fieldName.']',
 				false,
-				' '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\'user\',0);"',
+				' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'user\',0);"',
 				false,
 				$this->fields['user'],
 				$this->user

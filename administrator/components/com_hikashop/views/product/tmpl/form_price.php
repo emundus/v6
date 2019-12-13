@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -79,10 +79,12 @@ if(!empty($this->editing_variant))
 			$restrictions[] = '<strong>'.JText::_('ACCESS_LEVEL').'</strong>: '.implode(', ', $text);
 		}
 		if(!empty($price->price_start_date) && (int)$price->price_start_date > 0 && hikashop_level(2)) {
-			$restrictions[] = '<strong>'.JText::_('START_DATE').'</strong>: '. hikashop_getDate($price->price_start_date, '%d %B %Y %H:%M');
+			$price->price_start_date = hikashop_getDate($price->price_start_date, '%d %B %Y %H:%M');
+			$restrictions[] = '<strong>'.JText::_('START_DATE').'</strong>: '. $price->price_start_date;
 		}
 		if(!empty($price->price_end_date) && (int)$price->price_end_date > 0 && hikashop_level(2)) {
-			$restrictions[] = '<strong>'.JText::_('END_DATE').'</strong>: '. hikashop_getDate($price->price_end_date, '%d %B %Y %H:%M');
+			$price->price_end_date = hikashop_getDate($price->price_end_date, '%d %B %Y %H:%M');
+			$restrictions[] = '<strong>'.JText::_('END_DATE').'</strong>: '. $price->price_end_date;
 		}
 		if(!empty($price->price_site_id))
 			$restrictions[] = '<strong>'.JText::_('SITE_ID').'</strong>: '.$price->price_site_id;
@@ -100,7 +102,7 @@ if(!empty($this->editing_variant))
 			</td>
 			<td style="text-align:center">
 				<a href="#edit" onclick="window.productMgr.editPrice('<?php echo $form_key ?>', <?php echo $price->price_id;?>); return false;" title="<?php echo JText::_('HIKA_EDIT'); ?>"><i class="fas fa-pen"></i></a>
-				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fa fa-trash"></i></a>
+				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fas fa-trash"></i></a>
 			</td>
 		</tr>
 <?php
@@ -125,7 +127,7 @@ if(!empty($this->editing_variant))
 			</td>
 			<td style="text-align:center;">
 				{EDIT_BUTTON}
-				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fa fa-trash"></i></a>
+				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fas fa-trash"></i></a>
 			</td>
 		</tr>
 	</tbody>

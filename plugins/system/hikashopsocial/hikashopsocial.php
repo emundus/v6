@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -29,8 +29,13 @@ class plgSystemHikashopsocial extends JPlugin {
 			$ctrl = JRequest::getVar('ctrl');
 			$task = JRequest::getVar('task');
 		}
+		if(version_compare(JVERSION,'4.0','>=')) {
+			$admin = $app->isClient('administrator');
+		} else {
+			$admin = $app->isAdmin();
+		}
 
-		if($app->isAdmin() || !in_array($option, array('com_hikashop', 'com_hikamarket', '')) || !in_array($ctrl, array('product', 'category', 'vendor')) || !in_array($task, array('show', 'listing')))
+		if($admin || !in_array($option, array('com_hikashop', 'com_hikamarket', '')) || !in_array($ctrl, array('product', 'category', 'vendor')) || !in_array($task, array('show', 'listing')))
 			return;
 
 		if(!defined('HIKASHOP_COMPONENT'))
@@ -220,7 +225,7 @@ class plgSystemHikashopsocial extends JPlugin {
 			$url = hikashop_cleanURL($element->url_canonical);
 		else
 			$url = hikashop_currentURL('',false);
-		$description = $this->_cleanDescription($element->description);
+		$description = $this->_cleanDescription($element->description, 500);
 		return '<span class="hikashop_social_pinterest'.$c.'"><a href="//pinterest.com/pin/create/button/?url='.urlencode($url).'&media='.urlencode($imageUrl).'&description='.rawurlencode($description).'" class="pin-it-button" count-layout="'.$count.'"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a></span>';
 	}
 
@@ -553,12 +558,15 @@ function twitterPop(str) {
 		return $imageUrl;
 	}
 
-	function _cleanDescription($description){
+	function _cleanDescription($description, $max = 0){
 		$description = preg_replace('#\{(load)?(module|position|modulepos) +[a-z_0-9]+\}#i','',$description);
 
 		$description = preg_replace('#\{(slider|tab|modal|tip|article|snippet)(-[a-z_0-9]+)? +[a-z_ 0-9\|]+\}.*\{\/(slider|tab|modal|tip|article|snippet)s?(-[a-z_0-9]+)?\}#Usi','',$description);
 
 		$description = htmlspecialchars(strip_tags($description), ENT_COMPAT,'UTF-8');
+
+		if($max && strlen($description) > $max)
+			$description = substr($description, 0, $max-4).'...';
 		return $description;
 	}
 }

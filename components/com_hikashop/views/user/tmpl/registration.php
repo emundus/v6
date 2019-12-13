@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -133,10 +133,49 @@ if($this->display_method == 1) {
 	</div>
 </div>
 <?php
+		if(!empty($this->extraData) && !empty($this->extraData->address_top)) { echo implode("\r\n", $this->extraData->address_top); }
 		$this->type = 'address';
 		echo $this->loadTemplate();
+		if(!empty($this->extraData) && !empty($this->extraData->address_bottom)) { echo implode("\r\n", $this->extraData->address_bottom); }
 	}
-
+	if(!empty($this->options['privacy'])) {
+?>
+<fieldset>
+	<legend>
+<?php
+	echo JText::_('PLG_SYSTEM_PRIVACYCONSENT_LABEL');
+?>
+	</legend>
+<?php
+		if(!empty($this->options['privacy_text']))
+			hikashop_display($this->options['privacy_text'], 'info');
+?>
+	<div class="hkform-group control-group hikashop_registration_privacy_line">
+		<div class="hkc-sm-4 hkcontrol-label">
+<?php
+		$text = JText::_('PLG_SYSTEM_PRIVACYCONSENT_FIELD_LABEL').'<span class="hikashop_field_required_label">*</span>';
+		if(!empty($this->options['privacy_id'])) {
+			$popupHelper = hikashop_get('helper.popup');
+			$text = $popupHelper->display(
+				$text,
+				'PLG_SYSTEM_PRIVACYCONSENT_FIELD_LABEL',
+				JRoute::_('index.php?option=com_hikashop&ctrl=checkout&task=privacyconsent&tmpl=component'),
+				'shop_privacyconsent',
+				800, 500, '', '', 'link'
+			);
+		}
+		echo $text;
+?>
+		</div>
+		<div class="hkc-sm-8">
+<?php
+		echo JHTML::_('hikaselect.booleanlist', "data[register][privacy]" , '', 0, JText::_('PLG_SYSTEM_PRIVACYCONSENT_OPTION_AGREE'), JText::_('JNO')	);
+?>
+		</div>
+	</div>
+</fieldset>
+<?php
+}
 	if(!empty($this->extraData) && !empty($this->extraData->bottom)) { echo implode("\r\n", $this->extraData->bottom); }
 ?>
 <div class="hkform-group control-group hikashop_registration_required_info_line">

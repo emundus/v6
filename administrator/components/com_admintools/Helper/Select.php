@@ -86,7 +86,7 @@ class Select
 
 		$reasons = [
 			'other', 'adminpw', 'ipwl', 'ipbl', 'sqlishield', 'antispam',
-			'tmpl', 'template', 'muashield', 'csrfshield',
+			'tmpl', 'template', 'muashield', 'sessionshield', 'csrfshield',
 			'geoblocking', 'rfishield', 'dfishield', 'uploadshield',
 			'httpbl', 'loginfailure', 'external', 'awayschedule', 'admindir',
 			'nonewadmins', 'nonewfrontendadmins', 'phpshield', '404shield', 'wafblacklist',

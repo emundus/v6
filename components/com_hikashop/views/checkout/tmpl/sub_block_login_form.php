@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -29,6 +29,9 @@ if(!HIKASHOP_RESPONSIVE) {
 	$inputcolumnclass = 'hkc-sm-8';
 ?>
 <fieldset class="hkform-horizontal">
+<?php
+if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->loginTop)) { echo implode("\r\n", $this->extraData[$this->module_position]->loginTop); }
+?>
 	<div class="hkform-group control-group hikashop_login_username_line">
 		<label for="username" class="<?php echo $labelcolumnclass;?> hkcontrol-label"><?php echo JText::_('HIKA_USERNAME') ?></label>
 		<div class="<?php echo $inputcolumnclass;?>">
@@ -82,6 +85,9 @@ if(!HIKASHOP_RESPONSIVE) {
 			</a>
 		</div>
 	</div>
+<?php
+if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->loginBottom)) { echo implode("\r\n", $this->extraData[$this->module_position]->loginBottom); }
+?>
 </fieldset>
 <?php
 
@@ -89,6 +95,9 @@ if(!HIKASHOP_RESPONSIVE) {
 
 ?>
 <div class="userdata form-inline">
+<?php
+if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->loginTop)) { echo implode("\r\n", $this->extraData[$this->module_position]->loginTop); }
+?>
 	<div id="form-login-username" class="control-group">
 		<div class="controls">
 			<div class="input-prepend input-append">
@@ -130,6 +139,9 @@ if(!HIKASHOP_RESPONSIVE) {
 			?></button>
 		</div>
 	</div>
+<?php
+if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->loginBottom)) { echo implode("\r\n", $this->extraData[$this->module_position]->loginBottom); }
+?>
 </div>
 <?php
 	}

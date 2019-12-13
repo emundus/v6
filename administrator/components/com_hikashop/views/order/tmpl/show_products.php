@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -57,6 +57,7 @@ window.orderMgr.selectProduct = function(el) {
 <table class="hika_listing adminlist <?php echo (HIKASHOP_RESPONSIVE)?'table table-striped table-hover':'hika_table'; ?>" id="hikashop_order_product_listing" style="width:100%">
 	<thead>
 		<tr>
+			<th class="hikashop_order_item_image_title title"></th>
 			<th class="hikashop_order_item_name_title title"><?php echo JText::_('PRODUCT'); ?></th>
 <?php
 	$null = null;
@@ -101,12 +102,29 @@ window.orderMgr.selectProduct = function(el) {
 	<tbody>
 <?php
 $manage = hikashop_isAllowed($this->config->get('acl_product_manage','all'));
+$imageHelper = hikashop_get('helper.image');
+$width = (int)$this->config->get('cart_thumbnail_x', 50);
+$height = (int)$this->config->get('cart_thumbnail_y', 50);
+$image_options = array(
+	'default' => true,
+	'forcesize' => $this->config->get('image_force_size', true),
+	'scale' => $this->config->get('image_scale_mode','inside')
+);
 foreach($this->order->products as $k => $product) {
 	$td_class = '';
 	if(!empty($product->order_product_option_parent_id))
 		$td_class = ' hikamarket_order_item_option';
 ?>
 		<tr>
+			<td class="hikashop_order_item_image_value">
+<?php
+		$image_path = (!empty($product->images) ? @$product->images[0]->file_path : '');
+		$img = $imageHelper->getThumbnail($image_path, array('width' => $width, 'height' => $height), $image_options);
+		if($img->success) {
+			echo '<img class="hikashop_order_item_image" title="'.$this->escape(@$product->images[0]->file_description).'" alt="'.$this->escape(@$product->images[0]->file_name).'" src="'.$img->url.'"/>';
+		}
+?>
+			</td>
 			<td class="hikashop_order_item_name_value<?php echo $td_class; ?>">
 <?php
 	if(!empty($product->product_id)) {
@@ -230,7 +248,7 @@ foreach($this->order->products as $k => $product) {
 			</td>
 			<td class="hikashop_order_item_remove_value" style="text-align:center">
 				<a class="btn btn-danger" onclick="return window.orderMgr.delProduct(this, <?php echo $product->order_product_id; ?>);" href="<?php echo hikashop_completeLink('order&task=product_delete&order_id='.$this->order->order_id.'&order_product_id='.$product->order_product_id); ?>">
-					<i class="fa fa-trash"></i> <?php echo JText::_('HIKA_DELETE'); ?>
+					<i class="fas fa-trash"></i> <?php echo JText::_('HIKA_DELETE'); ?>
 				</a>
 			</td>
 		</tr>

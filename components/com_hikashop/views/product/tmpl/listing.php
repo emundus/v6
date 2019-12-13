@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -228,6 +228,21 @@ $layout_type = $this->params->get('layout_type');
 if(empty($layout_type))
 	$layout_type = 'div';
 
+
+$classes = 'hikashop_category_information hikashop_products_listing_main hikashop_product_listing_'.@$this->element->category_id;
+$attributes = '';
+if(!$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0)) {
+	$classes .= ' filter_refresh_div';
+	$url = hikashop_currentURL();
+	if(!strpos($url, '&tmpl=raw&filter=1')) {
+		if(strpos($url, '?'))
+			$url .= '&tmpl=raw&filter=1';
+		else
+			$url .= '?tmpl=raw&filter=1';
+	}
+	$attributes = 'data-refresh-class="hikashop_checkout_loading" data-refresh-url="' . $url . '" data-use-url="1"';
+}
+
 if($filter_type !== 3) {
 	$this->setLayout('listing');
 	$html = $this->loadTemplate($layout_type);
@@ -255,17 +270,10 @@ if($filter_type !== 3) {
 ?>
 	</div>
 <?php
-	} elseif(( !$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0) ) && ($ctrl == 'product'  || $ctrl == 'category') && $task == 'listing' && !empty($this->filters) && count($this->filters) && !empty($this->filter_set)) {
+	} elseif(( !$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0) ) && ($ctrl == 'product'  || $ctrl == 'category') && $task == 'listing' && !empty($this->filters) && is_array($this->filters) && count($this->filters) && !empty($this->filter_set)) {
 		if(!empty($htmlFilter))
 			echo $htmlFilter;
-		echo JText::_('HIKASHOP_NO_RESULT');
-	}
-
-	$html = ob_get_clean();
-	if(!empty($html)) {
-?>
-	<div id="<?php echo $this->params->get('main_div_name');?>" class="hikashop_category_information hikashop_products_listing_main"><?php echo $html; ?></div>
-<?php
+		echo '<div class="hk-well hika_no_products"><i class="fa fa-search"></i> ' . JText::_('HIKASHOP_NO_RESULT') . '</div>';
 	}
 } else if(!empty($this->rows) && !empty($this->categories)) {
 
@@ -283,9 +291,9 @@ if($filter_type !== 3) {
 	if((!empty($allrows) || !$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0)) && in_array($pagination, array('top','both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total) {
 		$this->pagination->form = '_top';
 ?>
-	<form action="<?php echo hikashop_currentURL(); ?>" method="post" name="adminForm_<?php echo $this->params->get('main_div_name').$this->category_selected;?>_top">
+	<form action="<?php echo str_replace('&tmpl=raw', '', hikashop_currentURL()); ?>" method="post" name="adminForm_<?php echo $this->params->get('main_div_name').$this->category_selected;?>_top">
 		<div class="hikashop_products_pagination hikashop_products_pagination_top">
-		<?php echo $this->pagination->getListFooter($this->params->get('limit')); ?>
+		<?php echo str_replace('&tmpl=raw', '', $this->pagination->getListFooter($this->params->get('limit'))); ?>
 		<span class="hikashop_results_counter"><?php echo $this->pagination->getResultsCounter(); ?></span>
 		</div>
 		<input type="hidden" name="filter_order_<?php echo $this->params->get('main_div_name').$this->category_selected;?>" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
@@ -336,13 +344,12 @@ if($filter_type !== 3) {
 	}
 	$this->params->set('main_div_name', $main_div_name);
 	$this->config->set('pagination', $pagination);
-
 	if((!empty($allrows) || !$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0)) && in_array($pagination,array('bottom','both')) && $this->params->get('show_limit') && $this->pageInfo->elements->total) {
 		$this->pagination->form = '_bottom';
 ?>
-	<form action="<?php echo hikashop_currentURL(); ?>" method="post" name="adminForm_<?php echo $this->params->get('main_div_name').$this->category_selected;?>_bottom">
+	<form action="<?php echo str_replace('&tmpl=raw', '', hikashop_currentURL()); ?>" method="post" name="adminForm_<?php echo $this->params->get('main_div_name').$this->category_selected;?>_bottom">
 		<div class="hikashop_products_pagination hikashop_products_pagination_bottom">
-		<?php echo $this->pagination->getListFooter($this->params->get('limit')); ?>
+		<?php echo str_replace('&tmpl=raw', '', $this->pagination->getListFooter($this->params->get('limit'))); ?>
 		<span class="hikashop_results_counter"><?php echo $this->pagination->getResultsCounter(); ?></span>
 		</div>
 		<input type="hidden" name="filter_order_<?php echo $this->params->get('main_div_name').$this->category_selected;?>" value="<?php echo $this->pageInfo->filter->order->value; ?>" />
@@ -350,13 +357,23 @@ if($filter_type !== 3) {
 		<?php echo JHTML::_( 'form.token' ); ?>
 	</form>
 <?php }
+}
 
-	$html = ob_get_clean();
-	if(!empty($html)) {
+$html = ob_get_clean();
+if(!empty($html)) {
 ?>
-		<div id="<?php echo $this->params->get('main_div_name');?>" class="hikashop_category_information hikashop_products_listing_main hikashop_product_listing_<?php echo $this->element->category_id; ?>"><?php echo $html; ?></div>
+	<div id="<?php echo $this->params->get('main_div_name');?>" class="<?php echo $classes; ?>" <?php echo $attributes; ?>>
+<?php
+	if(hikaInput::get()->getVar('hikashop_front_end_main',0)) {
+?>
+		<div class="hikashop_checkout_loading_elem"></div>
+		<div class="hikashop_checkout_loading_spinner"></div>
 <?php
 	}
+	echo $html;
+?>
+	</div>
+<?php
 }
 
 if(!$this->module){

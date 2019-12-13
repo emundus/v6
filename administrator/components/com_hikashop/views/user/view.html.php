@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -239,7 +239,10 @@ function updateCustomFeesPanel(active) {
 		$fieldsClass = hikashop_get('class.field');
 		$this->assignRef('fieldsClass',$fieldsClass);
 		$fieldsClass->skipAddressName=true;
-		$extraFields['address'] = $fieldsClass->getFields('backend',$address,'address','user&task=state');
+		$field_type = 'address';
+		if(!empty($address->address_type))
+			$field_type = $address->address_type.'_'.$field_type;
+		$extraFields['address'] = $fieldsClass->getFields('backend',$address,$field_type,'user&task=state');
 		$this->assignRef('extraFields',$extraFields);
 		$this->assignRef('user_id',$user_id);
 		$this->assignRef('address',$address);

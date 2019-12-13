@@ -1,14 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 class addressViewAddress extends HikaShopView {
+	var $triggerView = true;
 	public function display($tpl = null, $params = null) {
 		if(empty($params))
 			$params = new HikaParameter('');
@@ -43,6 +44,28 @@ class addressViewAddress extends HikaShopView {
 			}
 		}
 		$this->assignRef('fields', $fields);
+
+		if(!empty($fields) && count($fields)) {
+			$billing_fields = array();
+			$shipping_fields = array();
+			foreach($fields as $k => $field) {
+				if($field->field_address_type == 'billing') {
+					$billing_fields[$k] = $field;
+					continue;
+				}
+				if($field->field_address_type == 'shipping') {
+					$shipping_fields[$k] = $field;
+					continue;
+				}
+				if(empty($field->field_address_type)) {
+					$billing_fields[$k] = $field;
+					$shipping_fields[$k] = $field;
+				}
+			}
+			$this->assignRef('billing_fields', $billing_fields);
+			$this->assignRef('shipping_fields', $shipping_fields);
+		}
+
 		$this->assignRef('addresses', $addresses);
 
 		$this->two_columns = true;
@@ -82,7 +105,10 @@ class addressViewAddress extends HikaShopView {
 		if(!empty($menu) && method_exists($menu, 'getParams') && $menu->link == 'index.php?option=com_hikashop&view=address&layout=listing') {
 			if($show_page_heading)
 				$this->title = $params->get('page_heading');
-			hikashop_setPageTitle($menu->title);
+			$title = $params->get('page_title');
+			if(empty($title))
+				$title = $menu->title;
+			hikashop_setPageTitle($title);
 		} else {
 			if($show_page_heading)
 				$this->title = JText::_('ADDRESSES');
@@ -157,8 +183,14 @@ class addressViewAddress extends HikaShopView {
 			$type = $this->params->type;
 		} else {
 			$type = hikaInput::get()->getCmd('address_type', '');
-			if(empty($type))
-				$type = hikaInput::get()->getCmd('subtask', 'billing');
+			if(empty($type)) {
+
+				$data = hikaInput::get()->get('data', array(), 'array');
+				if(!empty($data['address']['address_type']))
+					$type = $data['address']['address_type'];
+				if(empty($type))
+					$type = hikaInput::get()->getCmd('subtask', 'billing');
+			}
 			if(substr($type, -8) == '_address')
 				$type = substr($type, 0, -8);
 		}
@@ -190,7 +222,9 @@ class addressViewAddress extends HikaShopView {
 				$this->addressClass->loadZone($addresses);
 			}
 		} else {
-			if(isset($_SESSION['hikashop_address_data']) && isset($_SESSION['hikashop_address_data']->address_type) && $_SESSION['hikashop_address_data']->address_type == $type)
+			if(isset($_SESSION['hikashop_'.$type.'_address_data']))
+				$address = @$_SESSION['hikashop_'.$type.'_address_data'];
+			elseif(isset($_SESSION['hikashop_address_data']) && isset($_SESSION['hikashop_address_data']->address_type) && $_SESSION['hikashop_address_data']->address_type == $type)
 				$address = @$_SESSION['hikashop_address_data'];
 
 			if(!empty($address) && (!empty($address->address_id) || (!empty($address->address_type) && $address->address_type != $type)))
@@ -235,7 +269,7 @@ class addressViewAddress extends HikaShopView {
 		$this->assignRef('url_itemid', $url_itemid);
 
 		$extraFields = array(
-			'address' => $this->fieldsClass->getFields('frontcomp' ,$address, 'address', 'checkout&task=state'.$url_itemid)
+			'address' => $this->fieldsClass->getFields('frontcomp' ,$address, $type . '_address', 'checkout&task=state'.$url_itemid)
 		);
 		$this->assignRef('fields', $extraFields['address']);
 

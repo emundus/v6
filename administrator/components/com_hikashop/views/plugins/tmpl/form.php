@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -202,7 +202,14 @@ function hika_payment_algorithm(el) {
 						<?php
 						if(empty($this->element->shipping_id))
 							$this->element->shipping_params->shipping_tax = 1;
-						echo JHTML::_('hikaselect.booleanlist', "data[shipping][shipping_params][shipping_tax]" , 'onchange="hikashopToggleTax(this.value);"', @$this->element->shipping_params->shipping_tax); ?>
+
+						$values = array(
+							JHTML::_('select.option', 0, JText::_('HIKASHOP_NO')),
+							JHTML::_('select.option', 1, JText::_('PROPORTION')),
+							JHTML::_('select.option', 2, JText::_('HIGHEST_RATE')),
+						);
+
+						echo JHTML::_('select.genericlist', $values, "data[shipping][shipping_params][shipping_tax]" , 'onchange="hikashopToggleTax(this.value);"', 'value', 'text', @$this->element->shipping_params->shipping_tax); ?>
 					</td>
 				</tr>
 				<tr data-tax-display="1">

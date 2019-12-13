@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -200,10 +200,20 @@ jQuery(document).ready(function(){
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('address_format');?>><?php echo JText::_('ADDRESS_FORMAT'); ?></td>
 		<td id="address_format">
-			<textarea cols="65" rows="8" id="address_format_textarea" name="config_address_format" ><?php echo $this->address_format; ?></textarea>
+			<textarea cols="65" rows="8" id="address_format_textarea" name="config_address_format"><?php echo $this->address_format; ?></textarea>
 <?php
+		$js = '
+			window.hikashop.ready(function(){
+				var el = document.getElementById(\'address_format_textarea\');
+				window.hikashop.address = el.value;
+				el.form.addEventListener(\'submit\', function(e) {
+					if(el.value == window.hikashop.address)
+						el.value = \'\';
+				});
+			});
+			';
 		if(!empty($this->address_format_reset)){
-			$js = '
+			$js .= '
 			function resetAddressFormat() {
 				if (!confirm(\''.JText::_('PROCESS_CONFIRMATION').'\'))
 					return false;
@@ -220,10 +230,12 @@ jQuery(document).ready(function(){
 				});
 			}
 			';
-			$this->doc->addScriptDeclaration($js);
 ?>
 			<button type="button" id="address_format_reset_button" class="btn" onclick="return resetAddressFormat();"><?php echo JText::_('RESET_ADDRESS_FORMAT_TO_DEFAULT'); ?></button>
-<?php 	} ?>
+<?php
+		}
+		$this->doc->addScriptDeclaration($js);
+?>
 		</td>
 	</tr>
 <?php } ?>

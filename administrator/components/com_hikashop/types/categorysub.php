@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,7 +25,7 @@ class hikashopCategorysubType {
 			$app = JFactory::getApplication();
 			$translationHelper = hikashop_get('helper.translation');
 
-			if($app->isAdmin() && $translationHelper->isMulti()){
+			if(hikashop_isClient('administrator') && $translationHelper->isMulti()){
 				$user = JFactory::getUser();
 				$locale = $user->getParam('language');
 				if(empty($locale)){
@@ -47,7 +47,7 @@ class hikashopCategorysubType {
 
 			static $multiTranslation = null;
 			$app = JFactory::getApplication();
-			if($multiTranslation === null && !$app->isAdmin()) {
+			if($multiTranslation === null && !hikashop_isClient('administrator')) {
 				$translationHelper = hikashop_get('helper.translation');
 				$multiTranslation = $translationHelper->isMulti(true);
 			}
@@ -61,9 +61,9 @@ class hikashopCategorysubType {
 
 			$query = $select.$table.' WHERE ('.implode(') AND (',$filters).') ORDER BY a.category_ordering ASC';
 			$db->setQuery($query);
-			if(!$app->isAdmin() && $multiTranslation && class_exists('JFalangDatabase')){
+			if(!hikashop_isClient('administrator') && $multiTranslation && class_exists('JFalangDatabase')){
 				$this->categories = $db->loadObjectList('','stdClass',false);
-			}elseif(!$app->isAdmin() && $multiTranslation && (class_exists('JFDatabase')||class_exists('JDatabaseMySQLx'))){
+			}elseif(!hikashop_isClient('administrator') && $multiTranslation && (class_exists('JFDatabase')||class_exists('JDatabaseMySQLx'))){
 				$this->categories = $db->loadObjectList('','stdClass',false);
 			}else{
 				$this->categories = $db->loadObjectList();

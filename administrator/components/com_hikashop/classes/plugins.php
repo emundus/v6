@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -36,7 +36,7 @@ class hikashopPluginsClass extends hikashopClass {
 		}
 
 		$app = JFactory::getApplication();
-		if(!$app->isAdmin()){
+		if(!hikashop_isClient('administrator')){
 			$access = $type.'_access';
 			hikashop_addACLFilters($where,$access);
 		}
@@ -89,9 +89,12 @@ class hikashopPluginsClass extends hikashopClass {
 		if(empty($methods))
 			return;
 		$params = $type.'_params';
+		$name = $type . '_name';
 		foreach($methods as $k => $el) {
 			if(!empty($el->$params))
 				$methods[$k]->$params = @hikashop_unserialize($el->$params);
+			if(!empty($el->$name))
+				$methods[$k]->$name = hikashop_translate($el->$name);
 		}
 	}
 
@@ -110,7 +113,7 @@ class hikashopPluginsClass extends hikashopClass {
 	}
 
 	function loadParams(&$result){
-		if(empty($result->params))
+		if(empty($result->params) || is_array($result->params))
 			return;
 
 		$registry = new JRegistry;

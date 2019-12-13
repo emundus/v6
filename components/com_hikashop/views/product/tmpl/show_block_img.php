@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -59,9 +59,18 @@ if(!$this->config->get('thumbnail')) {
 		$img = $this->image->getThumbnail(@$image->file_path, array('width' => $width, 'height' => $height), $image_options);
 		if(@$img->success) {
 			$attributes = 'style="margin-top:10px;margin-bottom:10px;display:inline-block;vertical-align:middle"';
-			if($img->external)
+			if($img->external && $img->req_width && $img->req_height)
 				$attributes .= ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
 			$html = '<img id="hikashop_main_image'.$variant_name.'" '.$attributes.' title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"/>';
+			if($this->config->get('add_webp_images', 1) && function_exists('imagewebp') && !empty($img->webpurl)) {
+				$html = '
+				<picture>
+					<source id="hikashop_main_image'.$variant_name.'_webp" srcset="'.$img->webpurl.'" type="image/webp">
+					<source id="hikashop_main_image'.$variant_name.'_src" srcset="'.$img->url.'" type="image/'.$img->ext.'">
+					'.$html.'
+				</picture>
+				';
+			}
 
 			if(!empty($this->element->badges))
 				$html .= $this->classbadge->placeBadges($this->image, $this->element->badges, '0', '0',false);
@@ -78,6 +87,13 @@ if(!$this->config->get('thumbnail')) {
 		</div>
 <?php
 	if(empty($this->variant_name) && !empty($img->origin_url)) {
+		if(strpos($img->origin_url, 'http://') === false && strpos($img->origin_url, 'https://') === false) {
+			$url = HIKASHOP_LIVE;
+			$pieces = parse_url(HIKASHOP_LIVE);
+			if(!empty($pieces['path']))
+				$url = substr(HIKASHOP_LIVE,0,strrpos(HIKASHOP_LIVE,$pieces['path']));
+			$img->origin_url = $url.$img->origin_url;
+		}
 ?>
 		<meta itemprop="image" content="<?php echo $img->origin_url; ?>"/>
 <?php
@@ -112,7 +128,15 @@ if(!$this->config->get('thumbnail')) {
 
 			$attr = 'title="'.$this->escape(@$image->file_description).'" onmouseover="return window.localPage.changeImage(this, \'hikashop_main_image'.$variant_name.'\', \''.$img->url.'\', '.$img->width.', '.$img->height.', \''.str_replace("'","\'",@$image->file_description).'\', \''.str_replace("'","\'",@$image->file_name).'\');"';
 			$html = '<img class="'.$classname.'" title="'.$this->escape(@$image->file_description).'" alt="'.$this->escape(@$image->file_name).'" src="'.$img->url.'"/>';
-
+			if($this->config->get('add_webp_images', 1) && function_exists('imagewebp') && !empty($img->webpurl)) {
+				$html = '
+				<picture>
+					<source srcset="'.$img->webpurl.'" type="image/webp">
+					<source srcset="'.$img->url.'" type="image/'.$img->ext.'">
+					'.$html.'
+				</picture>
+				';
+			}
 			if(empty($variant_name)) {
 				echo $this->popup->image($html, $img->origin_url, $id, $attr, array('gallery' => 'hikashop_main_image'));
 			} else {
@@ -139,6 +163,16 @@ window.localPage.changeImage = function(el, id, url, width, height, title, alt) 
 	target.height = height;
 	target.title = title;
 	target.alt = alt;
+
+	var target_src = d.getElementById(id+'_src');
+	if(target_src) {
+		target_src.srcset = url;
+	}
+	var target_webp = d.getElementById(id+'_webp');
+	if(target_webp) {
+		target_webp.srcset = url.substr(0, url.lastIndexOf(".")) + '.webp';
+	}
+
 	var thumb_img = null, thumbs_div = d.getElementById('hikashop_small_image_div');
 	if(thumbs_div) {
 		thumbs_img = thumbs_div.getElementsByTagName('img');

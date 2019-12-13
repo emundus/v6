@@ -142,6 +142,31 @@ class AtsystemUtilFilter
 			return $ip;
 		}, $ipTable);
 
+		/**
+		 * Resolve any IPv6 domains given in the list (e.g. #example.dyndns.info) into IP addresses.
+		 *
+		 * WARNING! This incurs a significant time penalty, up to 3 seconds per DNS query.
+		 */
+		$ipTable = array_map(function ($v) {
+			if (substr($v, 0, 1) != '#')
+			{
+				return $v;
+			}
+
+			$domain = substr($v, 1);
+			$dns   = dns_get_record($domain, DNS_AAAA);
+
+			foreach ($dns as $record)
+			{
+				if ($record['type'] === 'AAAA')
+				{
+					return $record['ipv6'];
+				}
+			}
+
+			return '';
+		}, $ipTable);
+
 		// Perform the filtering
 		foreach ($ipTable as $ipExpression)
 		{

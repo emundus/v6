@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -68,7 +68,7 @@ defined('_JEXEC') or die('Restricted access');
 				<input type="text" size="5" style="width:70px;" name="data[product][bundle][<?php echo $pid; ?>]" value="<?php echo max((int)$bundle->product_related_quantity, 1); ?>"/>
 			</td>
 			<td style="text-align:center">
-				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt="<?php echo JText::_('HIKA_DELETE'); ?>"></a>
+				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;"><i class="fas fa-trash"></i></a>
 			</td>
 		</tr>
 <?php
@@ -82,7 +82,7 @@ defined('_JEXEC') or die('Restricted access');
 				<input type="text" size="5" style="width:70px;" name="{INPUT_NAME}" value="{VALUE}"/>
 			</td>
 			<td style="text-align:center">
-				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;"><img src="<?php echo HIKASHOP_IMAGES; ?>delete.png" alt="<?php echo JText::_('HIKA_DELETE'); ?>"></a>
+				<a href="#delete" onclick="window.hikashop.deleteRow(this); return false;"><i class="fas fa-trash"></i></a>
 			</td>
 		</tr>
 	</tbody>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -72,6 +72,17 @@ class hikashopCategoryClass extends hikashopClass {
 			$element->alias = JFilterOutput::stringURLUnicodeSlug(strip_tags($element->alias));
 		else
 			$element->alias = JFilterOutput::stringURLSafe(strip_tags($element->alias));
+
+		if(is_numeric(substr($element->alias,0,1)) && hikashop_isClient('site')) {
+			$config = hikashop_config();
+			if($config->get('sef_remove_id',0)) {
+				$element->alias = 'p'.$element->alias;
+				$save = new stdClass();
+				$save->category_id = $element->category_id;
+				$save->category_alias = $element->alias;
+				parent::save($save);
+			}
+		}
 	}
 
 	function saveForm() {
@@ -108,6 +119,8 @@ class hikashopCategoryClass extends hikashopClass {
 
 		if(!empty($element->category_alias) && (empty($element->category_type) || in_array($element->category_type,array('product','manufacturer')))) {
 			$query = 'SELECT category_id FROM '.hikashop_table('category').' WHERE category_alias='.$this->database->Quote($element->category_alias);
+			if(!empty($element->category_type))
+				$query .= ' AND category_type = '.$this->database->Quote($element->category_type);
 			$this->database->setQuery($query);
 			$element_with_same_alias = $this->database->loadResult();
 			if(!empty($element_with_same_alias) && (empty($element->category_id) || $element_with_same_alias != $element->category_id)) {
@@ -525,7 +538,7 @@ class hikashopCategoryClass extends hikashopClass {
 		$leftjoin = '';
 
 		$app = JFactory::getApplication();
-		if(!$app->isAdmin()) {
+		if(!hikashop_isClient('administrator')) {
 			$filters[] = 'a.category_published=1';
 			hikashop_addACLFilters($filters,'category_access', 'a');
 		}
@@ -539,7 +552,7 @@ class hikashopCategoryClass extends hikashopClass {
 		else
 			$filters = '';
 
-		if(!$app->isAdmin() && preg_match('#(.*)a\.category_name ?(ASC|DESC)(.*)#i',$order,$match) && (strpos($select,'*')!==false || strpos($select,'category_name')!==false)){
+		if(!hikashop_isClient('administrator') && preg_match('#(.*)a\.category_name ?(ASC|DESC)(.*)#i',$order,$match) && (strpos($select,'*')!==false || strpos($select,'category_name')!==false)){
 			$translationHelper = hikashop_get('helper.translation');
 			if($translationHelper->isMulti()){
 				$trans_table = 'jf_content';
@@ -555,7 +568,7 @@ class hikashopCategoryClass extends hikashopClass {
 
 		static $multiTranslation = null;
 		$app = JFactory::getApplication();
-		if(!$lang && $multiTranslation === null && !$app->isAdmin()) {
+		if(!$lang && $multiTranslation === null && !hikashop_isClient('administrator')) {
 			$translationHelper = hikashop_get('helper.translation');
 			$multiTranslation = $translationHelper->isMulti(true);
 		}
@@ -563,7 +576,7 @@ class hikashopCategoryClass extends hikashopClass {
 		$this->query = ' FROM '.hikashop_table(end($this->tables)).' AS a'.$leftjoin.$filters;
 		$query = 'SELECT '.$select.' FROM '.hikashop_table(end($this->tables)).' AS a'.$leftjoin.$filters.$order;
 		$this->database->setQuery($query,(int)$start,(int)$value);
-		if($lang || !$multiTranslation || $app->isAdmin()) {
+		if($lang || !$multiTranslation || hikashop_isClient('administrator')) {
 			$rows = $this->database->loadObjectList();
 		} else {
 			if(class_exists('JFalangDatabase')) {
@@ -576,8 +589,12 @@ class hikashopCategoryClass extends hikashopClass {
 		}
 		if($category_image && !empty($rows)){
 			$ids = array();
-			foreach($rows as $row){
+			foreach($rows as $k => $row){
 				$ids[]=(int)$row->category_id;
+				if(!empty($row->category_name))
+					$rows[$k]->category_name = hikashop_translate($row->category_name);
+				if(!empty($row->category_description))
+					$rows[$k]->category_description = hikashop_translate($row->category_description);
 			}
 			$this->database->setQuery('SELECT * FROM '.hikashop_table('file').' WHERE file_type=\'category\' AND file_ref_id IN ('.implode(',',$ids).')');
 			$images = $this->database->loadObjectList();
@@ -866,9 +883,9 @@ class hikashopCategoryClass extends hikashopClass {
 		$query = 'SELECT '.implode(', ', $select) . ' FROM ' . implode(' ', $table) . ' WHERE ' . implode(' AND ', $where).$order;
 		$db->setQuery($query, $page, $limit);
 
-		if(!$app->isAdmin() && $multiTranslation && class_exists('JFalangDatabase')) {
+		if(!hikashop_isClient('administrator') && $multiTranslation && class_exists('JFalangDatabase')) {
 			$categories = $db->loadObjectList('category_id', 'stdClass', false);
-		} elseif(!$app->isAdmin() && $multiTranslation && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
+		} elseif(!hikashop_isClient('administrator') && $multiTranslation && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
 			$categories = $db->loadObjectList('category_id', false);
 		} else {
 			$categories = $db->loadObjectList('category_id');
@@ -887,11 +904,11 @@ class hikashopCategoryClass extends hikashopClass {
 				}
 			} elseif(!empty($typeConfig['params']['category_type']) && $typeConfig['params']['category_type'] == 'manufacturer') {
 				foreach($categories as $category) {
-					$ret[0][$category->category_id] = (!empty($category->translation)) ? $category->translation : $category->category_name;
+					$ret[0][$category->category_id] = (!empty($category->translation)) ? $category->translation : hikashop_translate($category->category_name);
 				}
 			} else {
 				foreach($categories as $category) {
-					$ret[0][$category->category_name] = (!empty($category->translation)) ? $category->translation : $category->category_name;
+					$ret[0][$category->category_name] = (!empty($category->translation)) ? $category->translation : hikashop_translate($category->category_name);
 				}
 			}
 		} else {
@@ -913,9 +930,9 @@ class hikashopCategoryClass extends hikashopClass {
 					' WHERE ' . $base . '((c.category_left < '.implode(') OR (c.category_left < ', $lookup_categories) . '))'.$order;
 				$db->setQuery($query);
 
-				if(!$app->isAdmin() && $multiTranslation && class_exists('JFalangDatabase')) {
+				if(!hikashop_isClient('administrator') && $multiTranslation && class_exists('JFalangDatabase')) {
 					$category_tree = $db->loadObjectList('category_id', 'stdClass', false);
-				} elseif(!$app->isAdmin() && $multiTranslation && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
+				} elseif(!hikashop_isClient('administrator') && $multiTranslation && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
 					$category_tree = $db->loadObjectList('category_id', false);
 				} else {
 					$category_tree = $db->loadObjectList('category_id');
@@ -927,7 +944,7 @@ class hikashopCategoryClass extends hikashopClass {
 
 					$o = new stdClass();
 					$o->status = 2;
-					$o->name = JText::_($v->category_name);
+					$o->name = hikashop_translate($v->category_name);
 					$o->value = $k;
 					$o->data = array();
 
@@ -955,7 +972,7 @@ class hikashopCategoryClass extends hikashopClass {
 				}else{
 					$o->status = 3;
 				}
-				$o->name = (!empty($v->translation)) ? $v->translation : JText::_($v->category_name);
+				$o->name = (!empty($v->translation)) ? $v->translation : hikashop_translate($v->category_name);
 				$o->value = $k;
 				$o->data = array();
 
@@ -1014,9 +1031,9 @@ class hikashopCategoryClass extends hikashopClass {
 			}
 			$db->setQuery($query);
 
-			if(!$app->isAdmin() && $multiTranslation && class_exists('JFalangDatabase')) {
+			if(!hikashop_isClient('administrator') && $multiTranslation && class_exists('JFalangDatabase')) {
 				$categories = $db->loadObjectList('category_id', 'stdClass', false);
-			} elseif(!$app->isAdmin() && $multiTranslation && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
+			} elseif(!hikashop_isClient('administrator') && $multiTranslation && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
 				$categories = $db->loadObjectList('category_id', false);
 			} else {
 				$categories = $db->loadObjectList('category_id');
@@ -1034,9 +1051,9 @@ class hikashopCategoryClass extends hikashopClass {
 						' INNER JOIN ' . hikashop_table('category') . ' AS cp ON (c.category_left <= cp.category_left AND c.category_right >= cp.category_left) '.
 						' WHERE cp.category_id IN ('.implode(',', $parent_categories).') AND c.category_id > 1';
 					$db->setQuery($query);
-					if(!$app->isAdmin() && $multiTranslation && class_exists('JFalangDatabase')) {
+					if(!hikashop_isClient('administrator') && $multiTranslation && class_exists('JFalangDatabase')) {
 						$parent_categories = $db->loadObjectList('category_id', 'stdClass', false);
-					} elseif(!$app->isAdmin() && $multiTranslation && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
+					} elseif(!hikashop_isClient('administrator') && $multiTranslation && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
 						$parent_categories = $db->loadObjectList('category_id', false);
 					} else {
 						$parent_categories = $db->loadObjectList('category_id');
@@ -1052,7 +1069,7 @@ class hikashopCategoryClass extends hikashopClass {
 				$categories = $orderedList;
 
 				foreach($categories as $category) {
-					$category->category_name = (!empty($category->translation)) ? $category->translation :  JText::_($category->category_name);
+					$category->category_name = (!empty($category->translation)) ? $category->translation :  hikashop_translate($category->category_name);
 
 					if(!empty($options['tooltip'])) {
 						$tree = array();

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -111,9 +111,10 @@ if(!$this->simplified_registration || $this->simplified_registration == 3){ ?>
 
 	<div class="hikashop_registration_address"><legend><?php echo JText::_( 'ADDRESS_INFORMATION' ); ?></legend></div>
 <?php
-	$this->type = 'address';
-	echo $this->loadTemplate();
-
+		if(!empty($this->extraData) && !empty($this->extraData->address_top)) { echo implode("\r\n", $this->extraData->address_top); }
+		$this->type = 'address';
+		echo $this->loadTemplate();
+		if(!empty($this->extraData) && !empty($this->extraData->address_bottom)) { echo implode("\r\n", $this->extraData->address_bottom); }
 	}
 ?>
 

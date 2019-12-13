@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -74,7 +74,7 @@ class plgHikashoppaymentBeanstream extends hikashopPaymentPlugin
 
 	function getPaymentDefaultValues(&$element) //To set the back end default values
 	{
-		$element->payment_name='Beanstream';
+		$element->payment_name='Bambora (Beanstream)';
 		$element->payment_description='You can pay by credit card using this payment method';
 		$element->payment_images='MasterCard,VISA,Credit_card,American_Express,Diners,Discover,JCB,Sears'; //Merchant accounts for each card type
 		$element->payment_params->address_type="billing";

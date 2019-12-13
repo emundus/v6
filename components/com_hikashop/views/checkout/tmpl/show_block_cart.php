@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -95,7 +95,6 @@ defined('_JEXEC') or die('Restricted access');
 			continue;
 		if($group && !empty($product->cart_product_option_parent_id))
 			continue;
-
 		$this->productClass->addAlias($product);
 ?>
 		<tr class="row<?php echo $k; ?>">
@@ -257,7 +256,7 @@ defined('_JEXEC') or die('Restricted access');
 				$min_quantity = max((int)$min_quantity, 1);
 				$max_quantity = max((int)$max_quantity, 0);
 				if($max_quantity == 0)
-					$max_quantity = (int)$min_quantity * 15;
+					$max_quantity = (int)$min_quantity * $this->config->get('quantity_select_max_default_value', 15);
 
 				$values = array(
 					0 => JHTML::_('select.option', 0, 0)
@@ -356,7 +355,7 @@ defined('_JEXEC') or die('Restricted access');
 		}
 
 		if(!empty($this->options['show_price']) && !empty($cart->shipping)) {
-?>
+?> 
 		<tr>
 			<td colspan="<?php echo $row_count - 2; ?>" class="hikashop_cart_empty_footer"></td>
 			<td id="hikashop_checkout_cart_shipping_title" class="hikashop_cart_shipping_title hikashop_cart_title"><?php

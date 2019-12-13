@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -313,7 +313,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 				if(!HIKASHOP_J30)
 					echo '<div class="calendarj25" style="display: inline; margin-left: 2px">';
 
-				echo JHTML::_('calendar', hikashop_getDate((@$this->product->product_sale_start?@$this->product->product_sale_start:''),'%Y-%m-%d %H:%M'), 'data[product][product_sale_start]','product_sale_start','%Y-%m-%d %H:%M',array('size' => '20', 'showTime' => true));
+				echo JHTML::_('calendar', hikashop_getDate((@$this->product->product_sale_start?@$this->product->product_sale_start:''),'%Y-%m-%d %H:%M'), 'data[product][product_sale_start]','product_sale_start', hikashop_getDateFormat('%d %B %Y %H:%M'), array('size' => '20', 'showTime' => true));
 				if(!HIKASHOP_J30)
 					echo '</div>';
 
@@ -321,7 +321,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 
 				if(!HIKASHOP_J30)
 					echo '<div class="calendarj25" style="display: inline; margin-left: 2px">';
-				echo JHTML::_('calendar', hikashop_getDate((@$this->product->product_sale_end?@$this->product->product_sale_end:''),'%Y-%m-%d %H:%M'), 'data[product][product_sale_end]','product_sale_end','%Y-%m-%d %H:%M',array('size' => '20', 'showTime' => true));
+				echo JHTML::_('calendar', hikashop_getDate((@$this->product->product_sale_end?@$this->product->product_sale_end:''),'%Y-%m-%d %H:%M'), 'data[product][product_sale_end]','product_sale_end', hikashop_getDateFormat('%d %B %Y %H:%M'), array('size' => '20', 'showTime' => true));
 				if(!HIKASHOP_J30)
 					echo '</div';
 			?></dd>
@@ -525,7 +525,7 @@ window.productMgr.saveProductEditor = function() { <?php echo $this->editor->jsC
 				$onWhat = 'onchange';
 				if($oneExtraField->field_type == 'radio')
 					$onWhat = 'onclick';
-				echo $this->fieldsClass->display($oneExtraField, @$this->product->$fieldName, 'data[product]['.$fieldName.']', false, ' '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\'product\',0);"');
+				echo $this->fieldsClass->display($oneExtraField, @$this->product->$fieldName, 'data[product]['.$fieldName.']', false, ' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'product\',0);"');
 			?></dd>
 		</dl>
 <?php

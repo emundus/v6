@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -92,6 +92,17 @@ if(hikashop_level(2)){
 					<input type="text" id="data_menu__<?php echo $this->type; ?>_limit" name="<?php echo $this->name; ?>[limit]" value="<?php echo $this->element['limit']; ?>">
 				</dd>
 			</dl>
+			<?php if((($this->menu == 'product') || ($this->menu == 'category')) && ($this->type == 'product')){ ?>
+			<dl class="hika_options"><?php
+				if(!isset($this->element['enable_switcher'])) $this->element['enable_switcher'] = 0; ?>
+				<dt class="hikashop_option_name"><?php
+					echo JText::_('HIKA_SWITCHER_MODE');
+				?></dt>
+				<dd class="hikashop_option_value"><?php
+					echo JHTML::_('hikaselect.booleanlist', $this->name.'[enable_switcher]', '', @$this->element['enable_switcher']);
+				?></dd>
+			</dl>
+			<?php } ?>
 		</div>
 	</div>
 	<div class="hkc-xl-4 hkc-md-6 hikashop_menu_subblock hikashop_menu_edit_display_settings_subdiv">

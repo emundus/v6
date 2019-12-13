@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -238,7 +238,8 @@ class hikashopStatisticsClass extends hikashopClass {
 
 			'type' => 'tile',
 			'tile' => array(
-				'mode' => 'small'
+				'mode' => 'small',
+				'image' => 'product',
 			),
 			'vars' => array(
 				'DATE_RANGE' => 'this.month',
@@ -250,12 +251,10 @@ class hikashopStatisticsClass extends hikashopClass {
 					'name' => 'hk_product.order_product_name AS name',
 					'value' => 'ROUND(SUM(hk_product.order_product_price * hk_product.order_product_quantity),2) AS value',
 					'counter' => 'COUNT(hk_order.order_id) AS counter',
-					'image' => 'hk_file.file_path AS image',
 				),
 				'tables' => array(
 					hikashop_table('order_product') . ' AS hk_product',
 					'INNER JOIN ' . hikashop_table('order') . ' AS hk_order ON hk_order.order_id = hk_product.order_id',
-					'LEFT JOIN ' . hikashop_table('file') . ' AS hk_file ON hk_product.product_id > 0 AND hk_product.product_id = hk_file.file_ref_id',
 				),
 				'filters' => array(
 					'order_type' => 'hk_order.order_type = '.$order_type.'',
@@ -263,9 +262,8 @@ class hikashopStatisticsClass extends hikashopClass {
 					'order_created' => ($created_status ?
 						'hk_order.order_created >= {DATE_START} AND ({DATE_END} <= 0 OR hk_order.order_created <= {DATE_END})' :
 						'hk_order.order_invoice_created >= {DATE_START} AND ({DATE_END} <= 0 OR hk_order.order_invoice_created <= {DATE_END})'),
-					'file_type' => 'hk_file.file_type = '.$this->db->Quote('product')
 				),
-				'order' => 'value DESC, hk_file.file_ordering ASC',
+				'order' => 'value DESC',
 				'limit' => 1
 			)
 		);
@@ -278,7 +276,8 @@ class hikashopStatisticsClass extends hikashopClass {
 
 			'type' => 'tile',
 			'tile' => array(
-				'mode' => 'small'
+				'mode' => 'small',
+				'image' => 'category',
 			),
 			'vars' => array(
 				'DATE_RANGE' => 'this.month',
@@ -290,14 +289,12 @@ class hikashopStatisticsClass extends hikashopClass {
 					'name' => 'hk_category.category_name AS name',
 					'value' => 'ROUND(SUM(hk_product.order_product_price * hk_product.order_product_quantity),2) AS value',
 					'counter' => 'COUNT(hk_order.order_id) AS counter',
-					'image' => 'hk_file.file_path AS image',
 				),
 				'tables' => array(
 					hikashop_table('order_product') . ' AS hk_product',
 					'INNER JOIN ' . hikashop_table('order') . ' AS hk_order ON hk_order.order_id = hk_product.order_id',
 					'INNER JOIN ' . hikashop_table('product_category') . ' AS hk_pc ON hk_product.product_id > 0 AND hk_pc.product_id = hk_product.product_id AND hk_pc.ordering = 1',
 					'INNER JOIN ' . hikashop_table('category') . ' AS hk_category ON hk_pc.category_id = hk_category.category_id',
-					'LEFT JOIN ' . hikashop_table('file') . ' AS hk_file ON hk_category.category_id = hk_file.file_ref_id',
 				),
 				'filters' => array(
 					'order_type' => 'hk_order.order_type = '.$order_type.'',
@@ -305,9 +302,8 @@ class hikashopStatisticsClass extends hikashopClass {
 					'order_created' => ($created_status ?
 						'hk_order.order_created >= {DATE_START} AND ({DATE_END} <= 0 OR hk_order.order_created <= {DATE_END})' :
 						'hk_order.order_invoice_created >= {DATE_START} AND ({DATE_END} <= 0 OR hk_order.order_invoice_created <= {DATE_END})'),
-					'file_type' => 'hk_file.file_type = '.$this->db->Quote('category')
 				),
-				'order' => 'value DESC, hk_file.file_ordering ASC',
+				'order' => 'value DESC',
 				'limit' => 1
 			)
 		);
@@ -499,7 +495,7 @@ class hikashopStatisticsClass extends hikashopClass {
 	public function getAjaxData($name, $value) {
 		$app = JFactory::getApplication();
 		$statistics = array();
-		if($app->isAdmin())
+		if(hikashop_isClient('administrator'))
 			$statistics = $this->getDashboard();
 
 		if(empty($statistics[$name]))
@@ -769,7 +765,7 @@ class hikashopStatisticsClass extends hikashopClass {
 
 		$app = JFactory::getApplication();
 		$url = hikashop_completeLink('user&task=reports', 'ajax', false, true);
-		if($app->isAdmin()) {
+		if(hikashop_isClient('administrator')) {
 			$url = hikashop_completeLink('dashboard&task=reports', 'ajax', false, true);
 		}
 
@@ -1029,6 +1025,9 @@ jQuery(window).on("resize", function(){
 		if(!is_array($data['value']))
 			$data['value'] = array($data['value']);
 
+		if(isset($data['vars-2'])) {
+			$data['value'][] = $this->processQuery($data['query'], $data['vars-2']);
+		}
 
 		if(isset($data['format']) && $data['format'] == 'percentage' && count($data['value']) == 2) {
 			$a = hikashop_toFloat($data['value'][0]);
@@ -1047,6 +1046,13 @@ jQuery(window).on("resize", function(){
 
 		if(!empty($data['tile']['mode']) && $data['tile']['mode'] == 'small') {
 			$background = '';
+			if(!empty($data['tile']['image']) && empty($value->image) && !empty($value->id)) {
+				$query = 'SELECT file_path FROM #__hikashop_file WHERE file_ref_id = '.(int)$value->id.' AND file_type = ' . $this->db->Quote($data['tile']['image']).' ORDER BY file_ordering ASC LIMIT 1';
+				$this->db->setQuery($query);
+				$image = $this->db->loadResult();
+				if(!empty($image))
+					$value->image = $image;
+			}
 			if(isset($value->image)) {
 				$imageHelper = hikashop_get('helper.image');
 				$img = $imageHelper->getThumbnail($value->image, array(150,150), array('default' => true), true);
@@ -1305,6 +1311,7 @@ window.localPage.chartsInit[window.localPage.chartsInit.length] = function() {
 			}
 			$chartData[ $value->axis ][ $value->$col ] = strip_tags($value->value);
 		}
+		ksort($chartData);
 		foreach($chartData as $k => &$d) {
 			$d = '"' . strip_tags(str_replace('"','\\"', $k)) . '",' . strip_tags(implode(',', $d));
 		}

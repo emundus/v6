@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -28,6 +28,9 @@ class plgSearchHikashop_products extends JPlugin{
 	}
 
 	function &onSearchAreas(){
+		if(!defined('DS'))
+			define('DS', DIRECTORY_SEPARATOR);
+		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) return array();
 		$areas = array(
 			'products' => JText::_('PRODUCTS_SEARCH')
 		);
@@ -80,14 +83,17 @@ class plgSearchHikashop_products extends JPlugin{
 		$rows = array();
 
 		$filters = array('a.product_published=1');
+		$filters2 = array('a.product_published=1');
 
 		$variants = (int)$this->params->get('variants','0');
 		if(!$variants){
 			$filters[]='a.product_type=\'main\'';
+			$filters2[]='a.product_type=\'main\'';
 		}
 		$out_of_stock = (int)$this->params->get('out_of_stock_display','1');
 		if(!$out_of_stock){
 			$filters[]='a.product_quantity!=0';
+			$filters2[]='a.product_quantity!=0';
 		}
 
 		hikashop_addACLFilters($filters,'product_access','a');
@@ -108,7 +114,6 @@ class plgSearchHikashop_products extends JPlugin{
 			$leftjoin=' INNER JOIN '.hikashop_table('product_category').' AS b ON a.product_id=b.product_id';
 		}
 
-		$filters2 = array();
 
 		if($multi){
 			$registry = JFactory::getConfig();
@@ -274,8 +279,8 @@ class plgSearchHikashop_products extends JPlugin{
 					if(!$this->params->get('item_id','')) $item_id = '';
 				}
 				$class->addAlias($row);
-				$row->title=$row->product_name;
-				$row->text=$row->product_description;
+				$row->title=hikashop_translate($row->product_name);
+				$row->text=hikashop_translate($row->product_description);
 				if($variants && $row->product_type=='variant'){
 					$ids[(int)$row->product_parent_id]=(int)$row->product_parent_id;
 					static $mains = array();
@@ -294,10 +299,10 @@ class plgSearchHikashop_products extends JPlugin{
 					$row->characteristics = $db->loadObjectList();
 					$class->checkVariant($row,$mains[$row->product_parent_id]);
 					if(empty($row->title)){
-						$row->title = strip_tags($row->product_name);
+						$row->title = strip_tags(hikashop_translate($row->product_name));
 					}
 					if(empty($row->text)){
-						$row->text = $mains[$row->product_parent_id]->product_description;
+						$row->text = hikashop_translate($mains[$row->product_parent_id]->product_description);
 					}
 				}
 				if(empty($row->product_canonical)){

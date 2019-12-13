@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.0.1
+ * @version    4.2.2
  * @author     hikashop.com
- * @copyright  (C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 div.hikashop_footer{
@@ -143,11 +143,6 @@ img.hikashop_child_image{
 #hikashop_product_top_part h1{font-size:16px; color: #555555; font-weight: bold; border-bottom:1px solid #ddd; padding-bottom:4px; margin-bottom:20px}
 #hikashop_product_description_main{color:#666}
 
-span.hikashop_product_name{
-	text-align: left;
-	display:block;
-	margin-bottom:5px;
-}
 .hikashop_product_name a{color:#666; text-decoration:none; font-weight:bold; display:block}
 .hikashop_product_name a:hover{color:#2C8296;}
 
@@ -156,10 +151,6 @@ span.hikashop_product_name{
 .hikashop_category_name a {color:#666; text-decoration:none; font-weight:bold; margin-top:10px; display:block}
 .hikashop_category_name a:hover{color:#2C8296;}
 
-span.hikashop_product_price_before_discount{
-	text-decoration:line-through;
-	white-space:nowrap;
-}
 span.hikashop_product_price,
 .hikashop_checkout_cart_additional,
 .hikashop_checkout_cart_payment,
@@ -2437,9 +2428,7 @@ p.jRatingInfos span.maxRate {
 
 
 
-legend{width:auto !important; line-height:normal !important; border:none !important}
 .hikashop_product_quantity_field{padding:2px !important; margin:0px 5px !important;}
-form {margin:0px !important}
 .hikashop_product_stock .hikashop_product_quantity_field{margin:0px !important;}
 
 

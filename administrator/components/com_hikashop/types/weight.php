@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,7 +22,7 @@ class hikashopWeightType {
 			$this->values[] = JHTML::_('select.option', $weight_unit, JText::_($weight_unit) );
 
 			$app = JFactory::getApplication();
-			if($check && $app->isAdmin())
+			if($check && hikashop_isClient('administrator'))
 				$app->enqueueMessage(JText::sprintf('HIKASHOP_PRODUCT_INVALID_WEIGHT_UNIT',$weight_unit));
 		}
 		foreach($symbols as $symbol) {

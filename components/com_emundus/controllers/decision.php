@@ -74,38 +74,31 @@ class EmundusControllerDecision extends JControllerLegacy
 
         @EmundusHelperFiles::clearfilter();
 
-        if($multi == "true")
-        {
+        if ($multi == "true") {
             $filterval = $jinput->get('val', array(), 'ARRAY');
-        }
-        else
-        {
+        } else {
             $filterval = $jinput->getString('val', null);
         }
 
         $session = JFactory::getSession();
         $params = $session->get('filt_params');
 
-        if($elements == 'false')
-        {
+        if ($elements == 'false') {
             $params[$filterName] = $filterval;
-        }
-        else
-        {
+        } else {
             $vals = (array)json_decode(stripslashes($filterval));
-            if(count($vals) > 0)
-            {
-                foreach ($vals as $val)
-                {
-                    if($val->adv_fil)
-                        $params['elements'][$val->name] = $val->value;
-                    else
-                        $params[$val->name] = $val->value;
+            if (count($vals) > 0) {
+                foreach ($vals as $val) {
+                    if ($val->adv_fil) {
+	                    $params['elements'][$val->name]['value'] = $val->value;
+	                    $params['elements'][$val->name]['select'] = $val->select;
+                    } else {
+	                    $params[$val->name] = $val->value;
+                    }
                 }
-
+            } else {
+	            $params['elements'][$filterName]['value'] = $filterval;
             }
-            else
-                $params['elements'][$filterName] = $filterval;
         }
 
         $session->set('filt_params', $params);

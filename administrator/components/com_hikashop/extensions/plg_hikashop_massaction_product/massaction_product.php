@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -81,7 +81,6 @@ class plgHikashopMassaction_product extends JPlugin
 		$loadedData->massaction_filters['__num__']->data['pathType'] = '';
 		$loadedData->massaction_filters['__num__']->data['type'] = '';
 		$loadedData->massaction_filters['__num__']->html = '';
-
 		foreach($loadedData->massaction_filters as $key => &$value) {
 			if($value->name != 'csvImport' || ($table->table != $loadedData->massaction_table && is_int($key)))
 				continue;
@@ -133,7 +132,7 @@ class plgHikashopMassaction_product extends JPlugin
 	function onProcessProductMassFilterdirection(&$elements, &$query,$filter,$num){
 		if(empty($query->ordering))
 			$query->ordering['default'] = 'product_id';
-		$query->direction[] = $filter['value'];
+		$query->direction = $filter['value'];
 	}
 
 	function onProcessProductMassFilterproductColumn(&$elements,&$query,$filter,$num){
@@ -274,9 +273,9 @@ class plgHikashopMassaction_product extends JPlugin
 				$query->join = array();
 				$query->leftjoin = array();
 				if(count($ids))
-					$query->where = array('product_id IN ('.implode(',',$ids).') OR product_parent_id IN ('.implode(',',$ids).')');
+					$query->where = array('hk_product.product_id IN ('.implode(',',$ids).') OR hk_product.product_parent_id IN ('.implode(',',$ids).')');
 				else
-					$query->where = array('product_id=0');
+					$query->where = array('hk_product.product_id=0');
 			}
 		}
 	}
@@ -759,7 +758,7 @@ class plgHikashopMassaction_product extends JPlugin
 		$params->action_id = $k;
 		$js = '';
 		$app = JFactory::getApplication();
-		if($app->isAdmin() && hikaInput::get()->getVar('ctrl','massaction') == 'massaction'){
+		if(hikashop_isClient('administrator') && hikaInput::get()->getVar('ctrl','massaction') == 'massaction'){
 			echo hikashop_getLayout('massaction','results',$params,$js);
 		}
 	}
@@ -774,7 +773,7 @@ class plgHikashopMassaction_product extends JPlugin
 			ob_get_clean();
 		}
 		$app = JFactory::getApplication();
-		if($app->isAdmin() || (!$app->isAdmin() && !empty($path))){
+		if(hikashop_isClient('administrator') || (!hikashop_isClient('administrator') && !empty($path))){
 			$action['product']['product_id'] = 'product_id';
 			unset($action['formatExport']);
 			$params = $this->massaction->_displayResults('product',$elements,$action,$k);

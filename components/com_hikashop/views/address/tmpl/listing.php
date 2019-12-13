@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -199,6 +199,7 @@ window.addressMgr.get = function(elem, target) {
 	window.Oby.xRequest(elem.getAttribute('href'), {update: target}, function(){
 		t.loading(false);
 	});
+	document.getElementById('hikashop_address_listing').scrollIntoView();
 	return false;
 };
 window.addressMgr.setDefault = function(elem, type) {
@@ -225,6 +226,7 @@ window.addressMgr.new = function(type) {
 	o.xRequest('<?php echo hikashop_completeLink('address&task=edit&cid=0', 'ajax'); ?>', {update: 'hikashop_user_addresses_show', mode: 'POST', data: data}, function(){
 		t.loading(false);
 	});
+	document.getElementById('hikashop_address_listing').scrollIntoView();
 	return false;
 };
 window.addressMgr.delete = function(el, cid) {

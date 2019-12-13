@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -211,7 +211,8 @@ class plgHikashopMassaction_order extends JPlugin
 			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
 				$query->leftjoin['order_product'] = hikashop_table('order_product').' as hk_order_product ON hk_order_product.order_id = hk_order.order_id';
 				$query->where[] = $this->massaction->getRequest($filter,'hk_order_product');
-				$query->select = 'distinct(hk_order.order_id), ' . $query->select;
+				if(strpos($query->select, 'distinct(hk_order.order_id)') === false)
+					$query->select = 'distinct(hk_order.order_id), ' . $query->select;
 			}
 		 }
 	}
@@ -290,8 +291,29 @@ class plgHikashopMassaction_order extends JPlugin
 	function onProcessOrderMassFilteraccessLevel(&$elements,&$query,$filter,$num){
 		if(empty($filter['type']) || $filter['type']=='all') return;
 		if(count($elements)){
+			$user_ids = array();
 			foreach($elements as $k => $element){
-				if($element->$filter['type']!=$filter['value']) unset($elements[$k]);
+				$user_ids[$element->order_user_id] = (int)$element->order_user_id;
+			}
+			if(count($user_ids)) {
+				$db = JFactory::getDBO();
+				$db->setQuery('SELECT user_id, user_cms_id FROM '.hikashop_table('user').'  WHERE user_id IN ('.implode(',', $user_ids).')');
+				$users = $db->loadObjectList('user_id');
+				$cms_ids = array();
+				foreach($users as $u){
+					$cms_ids[$u->user_cms_id] = (int)$u->user_cms_id;
+				}
+				$groups = array();
+				if(count($cms_ids)) {
+					$db->setQuery('SELECT user_id FROM '.hikashop_table('user_usergroup_map',false).'  WHERE user_id IN ('.implode(',', $cms_ids).') AND group_id = '.(int)$filter['group']);
+					$groups = $db->loadObjectList('user_id');
+				}
+				foreach($elements as $k => $element){
+					if($filter['type'] == 'IN' && (!isset($users[$element->order_user_id]) || !isset($groups[$users[$element->order_user_id]->user_cms_id])))
+						unset($elements[$k]);
+					elseif($filter['type'] == 'NOT IN' && isset($users[$element->order_user_id]) && isset($groups[$users[$element->order_user_id]->user_cms_id]))
+						unset($elements[$k]);
+				}
 			}
 		}else{
 			$db = JFactory::getDBO();
@@ -361,7 +383,7 @@ class plgHikashopMassaction_order extends JPlugin
 		$params->action_id = $k;
 		$js = '';
 		$app = JFactory::getApplication();
-		if($app->isAdmin() && hikaInput::get()->getVar('ctrl','massaction') == 'massaction'){
+		if(hikashop_isClient('administrator') && hikaInput::get()->getVar('ctrl','massaction') == 'massaction'){
 			echo hikashop_getLayout('massaction','results',$params,$js);
 		}
 	}
@@ -377,7 +399,7 @@ class plgHikashopMassaction_order extends JPlugin
 		}
 
 		$app = JFactory::getApplication();
-		if($app->isAdmin() || (!$app->isAdmin() && !empty($path))){
+		if(hikashop_isClient('administrator') || (!hikashop_isClient('administrator') && !empty($path))){
 			$params = new stdClass();
 			$params->action['order']['order_id'] = 'order_id';
 			unset($action['formatExport']);
@@ -623,7 +645,7 @@ class plgHikashopMassaction_order extends JPlugin
 			$db->execute();
 		}
 		$currentUser = hikashop_loadUser(true);
-		if(!$app->isAdmin() && in_array($currentUser->user_cms_id,$user_ids))
+		if(!hikashop_isClient('administrator') && in_array($currentUser->user_cms_id,$user_ids))
 			$app->logout( $currentUser->user_cms_id );
 	}
 	function onProcessOrderMassActionsendEmail(&$elements,&$action,$k){

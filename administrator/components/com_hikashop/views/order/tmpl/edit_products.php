@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,6 +25,22 @@ defined('_JEXEC') or die('Restricted access');
 			<input type="text" name="data[order][product][order_product_code]" value="<?php echo $this->escape(@$this->orderProduct->order_product_code); ?>" />
 		</dd>
 
+		<dt class="hikashop_order_product_quantity"><label><?php echo JText::_('PRODUCT_QUANTITY'); ?></label></dt>
+		<dd class="hikashop_order_product_quantity">
+			<input type="text" name="data[order][product][order_product_quantity]" value="<?php echo @$this->orderProduct->order_product_quantity; ?>"
+<?php
+	if(!empty($this->allPrices)) {
+		$data = array();
+		foreach($this->allPrices as $price) {
+			$data[] = array((int)$price->price_min_quantity, round($price->price_value,5));
+		}
+		if(count($data)){
+			echo ' data-prices="'.json_encode($data).'" onchange="window.orderMgr.recalculatePrice(this);"';
+		}
+	}
+?>
+			/>
+		</dd>
 		<dt class="hikashop_order_product_price"><label><?php echo JText::_('UNIT_PRICE'); ?></label></dt>
 		<dd class="hikashop_order_product_price">
 			<input type="text" id="hikashop_order_product_price_input" name="data[order][product][order_product_price]" value="<?php echo @$this->orderProduct->order_product_price; ?>" />
@@ -41,10 +57,6 @@ defined('_JEXEC') or die('Restricted access');
 			echo $this->ratesType->display( "data[order][product][tax_namekey]" , $tax); ?>
 		</dd>
 
-		<dt class="hikashop_order_product_quantity"><label><?php echo JText::_('PRODUCT_QUANTITY'); ?></label></dt>
-		<dd class="hikashop_order_product_quantity">
-			<input type="text" name="data[order][product][order_product_quantity]" value="<?php echo @$this->orderProduct->order_product_quantity; ?>" />
-		</dd>
 
 <?php
 	if(!empty($this->extra_data['products'])) {
@@ -79,6 +91,31 @@ defined('_JEXEC') or die('Restricted access');
 <script type="text/javascript">
 if(!window.orderMgr)
 	window.orderMgr = {};
+window.orderMgr.recalculatePrice = function(el) {
+	var qty = parseInt(el.value);
+	if (isNaN(qty))
+		return;
+	var priceInput = document.getElementById('hikashop_order_product_price_input');
+	if(!priceInput)
+		return;
+	var prices = el.getAttribute('data-prices');
+	if(!prices)
+		return;
+	prices = JSON.parse(prices);
+	if(!prices)
+		return;
+	var priceToUse = 0;
+	var minQty = 0;
+	for (var i = 0; i < prices.length; i++) {
+		var price = prices[i];
+		if(price[0] <= qty && (price[0] > minQty || minQty == 0)) {
+			minQty = price[0];
+			priceToUse = price[1];
+		}
+	}
+	if(priceToUse)
+		priceInput.value = priceToUse;
+}
 window.orderMgr.orderproduct_history_changed = function(el) {
 	var fields = ['hikashop_history_orderproduct_msg'], displayValue = '';
 	if(!el.checked) displayValue = 'none';

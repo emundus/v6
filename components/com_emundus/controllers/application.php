@@ -380,8 +380,8 @@ class EmundusControllerApplication extends JControllerLegacy
     /*
      * Get Menu for application file
      */
-    public function getactionmenu()
-    {
+    public function getapplicationmenu() {
+
         $user = JFactory::getUser();
         if(!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die(JText::_("ACCESS_DENIED"));
@@ -390,28 +390,23 @@ class EmundusControllerApplication extends JControllerLegacy
         $fnum = $jinput->get('fnum', null, 'STRING');
 
         $m_application = $this->getModel('Application');
-        $menus = $m_application->getActionMenu();
+        $menus = $m_application->getApplicationMenu();
         $res = false;
 
-        if(EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum))
-        {
-            if ($menus !== false)
-            {
+        if(EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum)) {
+            if ($menus !== false) {
                 $res = true;
                 $menu_application = array();
                 $i=0;
                 //var_dump($res);
-                foreach($menus as $k => $menu)
-                {
+                foreach($menus as $k => $menu) {
                     $action = explode('|', $menu['note']);
                     if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
                         $menu_application[] = $menu;
-                        if ((intval($menu['rgt']) - intval($menu['lft'])) == 1)
-                        {
+                        if ((intval($menu['rgt']) - intval($menu['lft'])) == 1) {
                             $menu_application[$i++]['hasSons'] = false;
                         }
-                        else
-                        {
+                        else {
                             $menu_application[$i++]['hasSons'] = true;
                         }
                     }
@@ -420,10 +415,10 @@ class EmundusControllerApplication extends JControllerLegacy
             }
             $tab = array('status' => $res, 'menus' => $menu_application);
         }
-        else
-        {
+        else {
             $tab = array('status' => false, 'msg' => JText::_('RESTRICTED_ACCESS'));
         }
+
         echo json_encode((object)$tab);
         exit;
     }

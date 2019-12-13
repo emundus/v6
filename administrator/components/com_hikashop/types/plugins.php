@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,9 +17,22 @@ class hikashopPluginsType{
 			$this->methods = array();
 		if(empty($this->methods[$this->type]))
 			$this->methods[$this->type] = array();
+		$shipping = '';
+		if(!$backend) {
+			JPluginHelper::importPlugin('hikashop');
+			JPluginHelper::importPlugin('hikashoppayment');
+			$app = JFactory::getApplication();
+			$usable_methods = array();
+			$orderClass = hikashop_get('class.order');
+			$this->order = $orderClass->loadFullOrder($this->order->order_id, true);
+			if($this->type == 'payment' && !empty($this->order->shippings)) {
+				$first = reset($this->order->shippings);
+				$shipping = $first->shipping_type.'_'.$first->shipping_id;
+			}
+		}
 
 		$pluginsClass = hikashop_get('class.plugins');
-		$this->methods[$this->type][(string)@$this->order->order_id] = $pluginsClass->getMethods($this->type);
+		$this->methods[$this->type][(string)@$this->order->order_id] = $pluginsClass->getMethods($this->type, '', $shipping);
 
 		if(!empty($this->methods[$this->type][(string)@$this->order->order_id])){
 			$max = 0;
@@ -43,13 +56,24 @@ class hikashopPluginsType{
 		}
 
 		if(!$backend) {
-			JPluginHelper::importPlugin('hikashop');
-			JPluginHelper::importPlugin('hikashoppayment');
-			$app = JFactory::getApplication();
-			$usable_methods = array();
-			$orderClass = hikashop_get('class.order');
-			$this->order = $orderClass->loadFullOrder($this->order->order_id, true);
+			if($this->methods[$this->type][(string)@$this->order->order_id]) {
+				$currencyClass = hikashop_get('class.currency');
+				$currencyClass->convertPayments($this->methods[$this->type][(string)@$this->order->order_id], $this->order->order_currency_id);
 
+				$full_price_without_payment = $this->order->order_full_price - $this->order->order_payment_price;
+				foreach( $this->methods[$this->type][(string)@$this->order->order_id] as $k => $method) {
+					if(!empty($method->payment_params->payment_percentage))
+						$method->payment_price_without_percentage = $method->payment_price;
+					$method->payment_price = $currencyClass->round(($full_price_without_payment * (float)@$method->payment_params->payment_percentage / 100) + @$method->payment_price, $currencyClass->getRounding($this->order->order_currency_id, true));
+					if($method->payment_id == $this->order->order_payment_id || (float)$method->payment_price == (float)$this->order->order_payment_price)
+						continue;
+					$diff = $method->payment_price - $this->order->order_payment_price;
+					$sign = '';
+					if($diff > 0)
+					 $sign = '+';
+					$this->methods[$this->type][(string)@$this->order->order_id][$k]->payment_name .= ' ('.$sign.$currencyClass->format($diff, $this->order->order_currency_id).')';
+				}
+			}
 			$app->triggerEvent('onPaymentDisplay', array( &$this->order, &$this->methods[$this->type][(string)@$this->order->order_id], &$usable_methods ) );
 			if(!empty($usable_methods)) {
 				ksort($usable_methods);
@@ -76,7 +100,7 @@ class hikashopPluginsType{
 						foreach($methods as $id => $name) {
 							$new = clone($method);
 							$new->shipping_id = $id;
-							$new->shipping_name = $method->shipping_name . ' - ' . $name;
+							$new->shipping_name = JText::sprintf('SHIPPING_METHOD_COMPLEX_NAME',$method->shipping_name, $name);
 							$add[] = $new;
 						}
 					} else {
@@ -113,7 +137,7 @@ class hikashopPluginsType{
 					if(empty($method->$type_name)) {
 						$method->$name = '';
 					} else {
-						$method->$name = $method->$type_name . ($app->isAdmin() ? ' '.$method->$id_name : '');
+						$method->$name = $method->$type_name . (hikashop_isClient('administrator') ? ' '.$method->$id_name : '');
 					}
 				}
 
@@ -125,7 +149,7 @@ class hikashopPluginsType{
 			if(empty($type)) {
 				$name = JText::_('HIKA_NONE');
 			} else {
-				$name =  $type . ($app->isAdmin() ? ' '.$id : '');
+				$name =  $type . (hikashop_isClient('administrator') ? ' '.$id : '');
 			}
 			$this->values[] = JHTML::_('select.option', $type.'_'.$id, $name);
 		}

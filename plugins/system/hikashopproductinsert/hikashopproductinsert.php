@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -40,10 +40,13 @@ class plgSystemHikashopproductInsert extends JPlugin {
 		return htmlspecialchars($str, ENT_COMPAT, 'UTF-8');
 	}
 
-	function onAfterRender() {
+	function onAfterRoute() {
+
+		$load = $this->params->get('load_hikashop_on_all_frontend_pages', 0);
+		if(!$load)
+			return;
+
 		$app = JFactory::getApplication();
-		if($app->isAdmin())
-			return true;
 
 		if(version_compare(JVERSION,'3.0','>=')) {
 			$layout = $app->input->getString('layout');
@@ -56,6 +59,48 @@ class plgSystemHikashopproductInsert extends JPlugin {
 			$task = JRequest::getString('task');
 			$function = JRequest::getString('function');
 		}
+		if(version_compare(JVERSION,'4.0','>=')) {
+			$admin = $app->isClient('administrator');
+		} else {
+			$admin = $app->isAdmin();
+		}
+
+		if($admin)
+			return true;
+
+		if($layout == 'edit' || $ctrl == 'plugins' && $task == 'trigger' && $function == 'productDisplay')
+			return true;
+
+		if(!defined('DS'))
+			define('DS', DIRECTORY_SEPARATOR);
+		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php'))
+			return true;
+
+		JPluginHelper::importPlugin('hikashop');
+	}
+
+	function onAfterRender() {
+		$app = JFactory::getApplication();
+
+		if(version_compare(JVERSION,'3.0','>=')) {
+			$layout = $app->input->getString('layout');
+			$ctrl = $app->input->getString('ctrl');
+			$task = $app->input->getString('task');
+			$function = $app->input->getString('function');
+		} else {
+			$layout = JRequest::getString('layout');
+			$ctrl = JRequest::getString('ctrl');
+			$task = JRequest::getString('task');
+			$function = JRequest::getString('function');
+		}
+		if(version_compare(JVERSION,'4.0','>=')) {
+			$admin = $app->isClient('administrator');
+		} else {
+			$admin = $app->isAdmin();
+		}
+
+		if($admin)
+			return true;
 
 		if($layout == 'edit' || $ctrl == 'plugins' && $task == 'trigger' && $function == 'productDisplay')
 			return true;
@@ -77,6 +122,8 @@ class plgSystemHikashopproductInsert extends JPlugin {
 			define('DS', DIRECTORY_SEPARATOR);
 		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php'))
 			return true;
+
+		JPluginHelper::importPlugin('hikashop');
 
 		$db = JFactory::getDBO();
 		$currencyClass = hikashop_get('class.currency');
@@ -149,6 +196,8 @@ class plgSystemHikashopproductInsert extends JPlugin {
 						$product->product_name = $productClass->products[$product->product_parent_id]->product_name.': ' . $product->product_name;
 					if(empty($product->product_description))
 						$product->product_description = $productClass->products[$product->product_parent_id]->product_description;
+					if(empty($product->product_tax_id))
+						$product->product_tax_id = $productClass->products[$product->product_parent_id]->product_tax_id;
 				}
 			}
 		}

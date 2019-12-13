@@ -10,6 +10,7 @@
 			<field type="referenceid" name="field_id" translate="0">ID</field>
 			<field type="titletext" name="field_realname" length="255" maxlength="255" translate="1">Field name</field>
 			<field type="textarea" name="field_value" rows="10" columns="80" translate="1">Field values</field>
+			<field type="textarea" name="field_options" rows="10" columns="80" translate="1">Field options</field>
 			<field type="text" name="field_default" length="255" maxlength="255" translate="1">Field default value</field>
 			<field type="text" name="field_ordering" length="255" maxlength="255" translate="1">Field ordering</field>
 		</table>

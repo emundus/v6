@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1417,11 +1417,6 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 		if( $offset == 0 )
 			$offset = $this->options->last_mijo_pfile;
 
-		$sql = "SELECT `config_value` FROM `#__hikashop_config` WHERE config_namekey = 'download_number_limit';";
-		$this->db->setQuery($sql);
-		$data = $this->db->loadObjectList();
-		$dl_limit = $data[0]->config_value;
-
 		$sql = 'SELECT mjd.download_id, mjd.filename FROM `#__mijoshop_download` AS mjd WHERE mjd.download_id > '.$offset.' ORDER BY mjd.download_id ASC LIMIT '.$count.';'; //Why no Mask FFS
 		$this->db->setQuery($sql);
 		$data = $this->db->loadObjectList();
@@ -1474,8 +1469,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 
 		$data = array(
 			'file_id' => 'hkf.file_id',
-			'order_id' => 'hko.order_id',
-			'download_number' => '(' . $dl_limit . '- mjd.remaining)' //$dl_limit ?
+			'order_id' => 'hko.order_id'
 		);
 
 		$sql = 'INSERT IGNORE INTO `#__hikashop_download` (`'.implode('`,`',array_keys($data)).'`) '.
@@ -1496,6 +1490,46 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 
 		$ret = true;
 		return $ret;
+	}
+
+	function copyFile($dir, $fsrc, $dst, $debug = false){
+		if ($debug){
+			echo 'Source folder : '.$dir.'<br/>';
+			echo 'File source name : '.$fsrc.'<br/>';
+			echo 'From "'.$dir.$fsrc.'" to folder/file : "'.$dst.'"<br/>';
+			echo '#####<br/>';
+		}
+		$src = $fsrc;
+		if( file_exists($dir.$fsrc) )
+			$src = $dir.$fsrc;
+		else if( file_exists(HIKASHOP_ROOT.$fsrc) )
+			$src = HIKASHOP_ROOT.$fsrc;
+
+		if( !file_exists($src) ) {
+			$files = JFolder::files($dir, $fsrc, true, true);
+			if($files) {
+				$dst = reset($files);
+			}
+			if( !file_exists($src) ) {
+				echo '<span '.$this->copywarning.'>File is not found "' . $dir.$fsrc . '"</span><br/>';
+				return false;
+			}
+		}
+
+		if( !file_exists($dst) ){
+			$ret = JFile::copy($src, $dst);
+			if( !$ret ){
+				echo '<span '.$this->copywarning.'>The file "' . $src . '" could not be copied to "' . $dst . '"</span><br/>';
+			}else{
+				return true;
+			}
+		}
+		else{
+			echo '<span '.$this->copywarning.'>File already exists "' .$dst . '" ("' . $src . '")</span><br/>';
+			return true;
+		}
+
+		return false;
 	}
 
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -276,11 +276,11 @@ class hikashopDiscountClass extends hikashopClass {
 								$coupon->discount_flat_amount -= $product->prices[0]->$price_without_discount - $product->prices[0]->$price;
 								if($coupon->discount_flat_amount < 0)
 									$coupon->discount_flat_amount = 0;
-								continue;
+								break;
 							}
 						case 1:
 							if(isset($product->prices[0]->$price_without_discount)) {
-								continue;
+								break;
 							}
 						default:
 							$coupon->discount_flat_amount += ($coupon->discount_percent_amount * $product->prices[0]->$price) / 100;
@@ -309,11 +309,11 @@ class hikashopDiscountClass extends hikashopClass {
 									$coupon->discount_flat_amount -= $product->prices[0]->$price_without_discount - $product->prices[0]->$price;
 									if($coupon->discount_flat_amount < 0)
 										$coupon->discount_flat_amount = 0;
-									continue;
+									break;
 								}
 							case 1:
 								if(isset($product->prices[0]->$price_without_discount))
-									continue;
+									break;
 
 							default:
 								if(isset($product->prices[0]->price_value))
@@ -393,12 +393,13 @@ class hikashopDiscountClass extends hikashopClass {
 				$coupon2->total->prices[0]->price_value = $totalprice;
 
 				$currencyClass->addCoupon($coupon2->total,$coupon2);
-
 				$coupon2->total->prices[0]->price_value_without_discount_with_tax -= $totaldiscount_with_tax;
 				$coupon2->total->prices[0]->price_value_without_discount -= $totaldiscount;
-				$coupon2->discount_percent_amount_calculated_without_tax -= $totaldiscount;
+				if(isset($coupon2->discount_percent_amount_calculated_without_tax))
+					$coupon2->discount_percent_amount_calculated_without_tax -= $totaldiscount;
 				$coupon2->discount_value_without_tax -= $totaldiscount;
-				$coupon2->discount_percent_amount_calculated -= $totaldiscount;
+				if(isset($coupon2->discount_percent_amount_calculated))
+					$coupon2->discount_percent_amount_calculated -= $totaldiscount;
 				$coupon2->discount_value -= $totaldiscount;
 				$coupon2->discount_flat_amount = $coupon2->discount_value;
 				break;
@@ -561,9 +562,9 @@ class hikashopDiscountClass extends hikashopClass {
 		$query = 'SELECT '.implode(', ', $select) . ' FROM ' . implode(' ', $table) . ' WHERE ' . implode(' AND ', $where);
 		$db->setQuery($query, $start, $limit);
 
-		if(!$app->isAdmin() && $multiTranslation && class_exists('JFalangDatabase')) {
+		if(!hikashop_isClient('administrator') && $multiTranslation && class_exists('JFalangDatabase')) {
 			$discounts = $db->loadObjectList('discount_id', 'stdClass', false);
-		} elseif(!$app->isAdmin() && $multiTranslation && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
+		} elseif(!hikashop_isClient('administrator') && $multiTranslation && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
 			$discounts = $db->loadObjectList('discount_id', false);
 		} else {
 			$discounts = $db->loadObjectList('discount_id');
@@ -588,9 +589,9 @@ class hikashopDiscountClass extends hikashopClass {
 					' WHERE d.discount_id IN ('.implode(',', $filter_id).')';
 			$db->setQuery($query);
 
-			if(!$app->isAdmin() && $multiTranslation && class_exists('JFalangDatabase')) {
+			if(!hikashop_isClient('administrator') && $multiTranslation && class_exists('JFalangDatabase')) {
 				$discounts = $db->loadObjectList('discount_id', 'stdClass', false);
-			} elseif(!$app->isAdmin() && $multiTranslation && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
+			} elseif(!hikashop_isClient('administrator') && $multiTranslation && (class_exists('JFDatabase') || class_exists('JDatabaseMySQLx'))) {
 				$discounts = $db->loadObjectList('discount_id', false);
 			} else {
 				$discounts = $db->loadObjectList('discount_id');

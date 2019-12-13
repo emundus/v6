@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -47,6 +47,10 @@ class hikashopOrder_statusType {
 		if(empty($extra))
 			$extra = 'class="custom-select"';
 		return JHTML::_('select.genericlist', $values, $map, $extra, 'value', 'text', $value);
+	}
+
+	public function displayFilter($key, $filterValues, $extra = '', $addAll = true) {
+		return $this->display('filter_'.$key, @$filterValues->$key, $extra.' class="custom-select" onchange="this.form.submit();"', $addAll);
 	}
 
 	public function displayMultiple($map, $values, $delete = true) {

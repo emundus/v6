@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -123,7 +123,7 @@ $doc->addScriptDeclaration($js);
 <?php if($this->delete){ ?>
 					<a title="<?php echo JText::_('REMOVE_CUSTOMIZATION_HTML'); ?>" href="<?php echo hikashop_completeLink('email&task=remove&type=html&mail_name='.$row->file); ?>" onclick="return hikashopRemoveCustom('html','<?php echo $row->file?>');">
 <?php } ?>
-						<i class="fa fa-trash"></i>
+						<i class="fas fa-trash"></i>
 <?php if($this->delete){ ?>
 					</a>
 <?php } ?>
@@ -134,7 +134,7 @@ $doc->addScriptDeclaration($js);
 <?php if($this->delete){ ?>
 					<a title="<?php echo JText::_('REMOVE_CUSTOMIZATION_TEXT'); ?>" href="<?php echo hikashop_completeLink('email&task=remove&type=text&mail_name='.$row->file); ?>" onclick="return hikashopRemoveCustom('text','<?php echo $row->file?>');">
 <?php } ?>
-						<i class="fa fa-trash"></i>
+						<i class="fas fa-trash"></i>
 <?php if($this->delete){ ?>
 					</a>
 <?php } ?>
@@ -145,7 +145,7 @@ $doc->addScriptDeclaration($js);
 <?php if($this->delete){ ?>
 					<a title="<?php echo JText::_('REMOVE_CUSTOMIZATION_PRELOAD'); ?>" href="<?php echo hikashop_completeLink('email&task=remove&type=preload&mail_name='.$row->file); ?>" onclick="return hikashopRemoveCustom('preload','<?php echo $row->file?>');">
 <?php } ?>
-						<i class="fa fa-trash"></i>
+						<i class="fas fa-trash"></i>
 <?php if($this->delete){ ?>
 					</a>
 <?php } ?>

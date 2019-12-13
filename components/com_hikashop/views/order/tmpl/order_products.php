@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,6 +24,7 @@ if(count($this->row->products) > $max_products) {
 
 ?>
 <div id="hika_order_<?php echo $this->row->order_id; ?>_details" class="hk-list-group hika_order_products">
+	<?php if(!empty($this->row->extraData->beforeProductsListing)) { echo implode("\r\n", $this->row->extraData->beforeProductsListing); } ?>
 <?php
 $group = $this->config->get('group_options',0);
 foreach($this->row->products as $product) {
@@ -88,4 +89,5 @@ if($show_more) {
 <?php
 }
 ?>
+<?php if(!empty($this->row->extraData->afterProductsListing)) { echo implode("\r\n", $this->row->extraData->afterProductsListing); } ?>
 </div>

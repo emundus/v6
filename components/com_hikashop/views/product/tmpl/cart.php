@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -79,11 +79,13 @@ if(empty($this->rows)) {
 $css_button = $this->config->get('css_button', 'hikabtn');
 $css_button_checkout = $this->config->get('css_button_checkout', 'hikashop_cart_proceed_to_checkout');
 
-$print_button = $this->popup->display(
-	'<i class="fas fa-print"></i>',
-	'HIKA_PRINT', hikashop_completeLink('cart&task=printcart&cid='.$this->element->cart_id, true),
-	'hikashop_print_popup', 760, 480, 'title="'.JText::_('HIKA_PRINT').'"', '', 'link'
-);
+if($this->params->get('print_cart', 0)) {
+	$print_button = $this->popup->display(
+		'<i class="fas fa-print"></i>',
+		'HIKA_PRINT', hikashop_completeLink('cart&task=printcart&cid='.$this->element->cart_id, true),
+		'hikashop_print_popup', 760, 480, 'title="'.JText::_('HIKA_PRINT').'"', '', 'link'
+	);
+}
 $this->setLayout('listing_price');
 $this->params->set('show_quantity_field', 0);
 
@@ -169,7 +171,7 @@ if(!empty($small_cart)) {
 	if($small_cart == 2) {
 		$extra_data .= ' onclick="if(window.hikashop.toggleOverlayBlock(\'hikashop_cart_dropdown_'.$module_id.'\')) return false;"';
 	}elseif($small_cart == 3) {
-		$extra_data .= ' onmouseover="window.hikashop.toggleOverlayBlock(\'hikashop_cart_dropdown_'.$module_id.'\', \'hover\'); return false;"';
+		$extra_data .= ' ontouchend="window.hikashop.toggleOverlayBlock(\'hikashop_cart_dropdown_'.$module_id.'\', \'hover\'); return false;" onmouseover="window.hikashop.toggleOverlayBlock(\'hikashop_cart_dropdown_'.$module_id.'\', \'hover\'); return false;"';
 	}
 ?>
 	<a class="hikashop_small_cart_checkout_link" href="<?php echo $link; ?>"<?php echo $extra_data; ?>>

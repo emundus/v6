@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -51,7 +51,7 @@ $data->cart->full_total = new stdClass;
 $data->cart->full_total->prices = array($price);
 $data->cart->coupon->discount_value =& $data->cart->order_discount_price;
 
-if($app->isAdmin()) {
+if(hikashop_isClient('administrator')) {
 	$view = 'order';
 } else {
 	$view = 'address';
@@ -69,6 +69,8 @@ $vars = array(
 	'URL' => $order_url,
 	'order' => $data->cart,
 	'user' => $customer,
+	'billing_address' => @$data->cart->billing_address,
+	'shipping_address' => @$data->cart->shipping_address,
 	'ORDER_LINK' => HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id='.$data->order_id,
 	'TPL_HEADER' => (bool)@$customer->user_cms_id,
 	'TPL_HEADER_URL' => $order_url,

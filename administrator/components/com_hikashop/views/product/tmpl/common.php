@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -47,7 +47,7 @@ defined('_JEXEC') or die('Restricted access');
 							<?php echo JText::_( 'PRODUCT_SALE_START' ); ?>
 					</td>
 					<td>
-						<?php echo JHTML::_('calendar', hikashop_getDate((@$this->element->product_sale_start?@$this->element->product_sale_start:''),'%Y-%m-%d %H:%M'), 'data[product][product_sale_start]','product_sale_start','%Y-%m-%d %H:%M',array('size'=>'20')); ?>
+						<?php echo JHTML::_('calendar', hikashop_getDate((@$this->element->product_sale_start?@$this->element->product_sale_start:''),'%Y-%m-%d %H:%M'), 'data[product][product_sale_start]','product_sale_start',hikashop_getDateFormat('%d %B %Y %H:%M'),array('size'=>'20')); ?>
 					</td>
 				</tr>
 				<tr class="hikashop_product_sale_end_row">
@@ -55,7 +55,7 @@ defined('_JEXEC') or die('Restricted access');
 							<?php echo JText::_( 'PRODUCT_SALE_END' ); ?>
 					</td>
 					<td>
-						<?php echo JHTML::_('calendar', hikashop_getDate((@$this->element->product_sale_end?@$this->element->product_sale_end:''),'%Y-%m-%d %H:%M'), 'data[product][product_sale_end]','product_sale_end','%Y-%m-%d %H:%M',array('size'=>'20')); ?>
+						<?php echo JHTML::_('calendar', hikashop_getDate((@$this->element->product_sale_end?@$this->element->product_sale_end:''),'%Y-%m-%d %H:%M'), 'data[product][product_sale_end]','product_sale_end',hikashop_getDateFormat('%d %B %Y %H:%M'),array('size'=>'20')); ?>
 					</td>
 				</tr>
 				<tr class="hikashop_product_msrp_row">

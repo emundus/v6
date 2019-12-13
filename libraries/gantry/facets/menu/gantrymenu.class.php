@@ -189,8 +189,7 @@ class GantryMenu
 		$joomlamenu         = $app->getMenu();
 		$active     = $joomlamenu->getActive();
 		if (isset($active) && isset($active->tree) && count($active->tree)) {
-			reset($active->tree);
-			while (list($key, $value) = each($active->tree)) {
+			foreach($active->tree as $key => $value) {
 				$active_node  =& $active->tree[$key];
 				$active_child = $menu->findChild($active_node);
 				if ($active_child !== false) {

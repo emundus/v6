@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -98,7 +98,9 @@ if(!empty($this->products)) {
 		$data = array();
 
 		if(!empty($product->product_manufacturer_id) && !empty($this->brands[$product->product_manufacturer_id]))
-			$product->product_manufacturer_id = $this->brands[$product->product_manufacturer_id];
+			$product->product_manufacturer_id = $this->brands[$product->product_manufacturer_id]->category_name;
+		else
+			$product->product_manufacturer_id = '';
 
 		foreach($products_columns as $column) {
 			if(!empty($product->$column) && is_array($product->$column))

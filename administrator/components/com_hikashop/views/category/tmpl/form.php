@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -147,7 +147,7 @@ defined('_JEXEC') or die('Restricted access');
 									</td>
 									<td>
 										<?php $onWhat='onchange'; if($oneExtraField->field_type=='radio') $onWhat='onclick'; ?>
-										<?php echo $this->fieldsClass->display($oneExtraField,$this->element->$fieldName,'data[category]['.$fieldName.']',false,' '.$onWhat.'="hikashopToggleFields(this.value,\''.$fieldName.'\',\'category\',0);"'); ?>
+										<?php echo $this->fieldsClass->display($oneExtraField,$this->element->$fieldName,'data[category]['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'category\',0);"'); ?>
 									</td>
 								</tr>
 <?php

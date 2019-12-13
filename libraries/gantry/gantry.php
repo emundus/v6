@@ -19,7 +19,7 @@ if (!defined('GANTRY_VERSION')) {
 	/**
 	 * @name GANTRY_VERSION
 	 */
-	define('GANTRY_VERSION', '4.1.41');
+	define('GANTRY_VERSION', '4.1.42');
 
 	if (!defined('DS')) {
 		define('DS', DIRECTORY_SEPARATOR);
@@ -58,7 +58,7 @@ if (!defined('GANTRY_VERSION')) {
 		foreach ($url_file_checks as $url_file) {
 			$full_path = realpath($url_file);
 			if ($full_path !== false && file_exists($full_path)) {
-				$document->addScript($relative_path . '/' . basename($full_path) . '?ver=4.1.41');
+				$document->addScript($relative_path . '/' . basename($full_path) . '?ver=4.1.42');
 				break;
 			}
 		}
@@ -98,7 +98,7 @@ if (!defined('GANTRY_VERSION')) {
 		foreach ($url_file_checks as $url_file) {
 			$full_path = realpath($url_file);
 			if ($full_path !== false && file_exists($full_path)) {
-				$document->addStyleSheet($relative_path . '/' . basename($full_path) . '?ver=4.1.41');
+				$document->addStyleSheet($relative_path . '/' . basename($full_path) . '?ver=4.1.42');
 			}
 		}
 	}

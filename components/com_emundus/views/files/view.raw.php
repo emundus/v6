@@ -63,9 +63,9 @@ class EmundusViewFiles extends JViewLegacy {
 				$fnums = $app->input->getString('users', null);
 				$fnums_obj = (array) json_decode(stripslashes($fnums));
 
-			    if (@$fnums_obj[0] == 'all')
-					$fnums = $m_files->getAllFnums();
-			    else {
+			    if (@$fnums_obj[0] == 'all') {
+				    $fnums = $m_files->getAllFnums();
+			    } else {
 			        $fnums = array();
 			        foreach ($fnums_obj as $key => $value) {
 			        	$fnums[] = @$value->fnum;
@@ -197,8 +197,9 @@ class EmundusViewFiles extends JViewLegacy {
 					];
 				}
 
-				if (isset($eltarr))
+				if (isset($eltarr)) {
 					$elements = $eltarr;
+				}
 
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
@@ -250,6 +251,8 @@ class EmundusViewFiles extends JViewLegacy {
 								    }
 							    }
 						    	break;
+						    default:
+						    	break;
 					    }
 				    }
 				/*	$hasAccess = false;
@@ -280,17 +283,15 @@ class EmundusViewFiles extends JViewLegacy {
 							    $userObj->val = $value;
 							    $userObj->class = $class;
 								$userObj->type = 'fnum';
-								if ($displayPhoto)
+								if ($displayPhoto) {
 									$userObj->photo = $h_files->getPhotos($value);
+								}
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
 								$userObj->user->name = $user['name'];
 							    $line['fnum'] = $userObj;
-							}
-
-							elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id')
+							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id') {
 								continue;
-
-							elseif (isset($elements) && in_array($key, array_keys($elements))) {
+							} elseif (isset($elements) && in_array($key, array_keys($elements))) {
 								$userObj->val 			= $value;
 								$userObj->type 			= $elements[$key]['plugin'];
 								$userObj->status_class 	= $user['status_class'];
@@ -327,9 +328,9 @@ class EmundusViewFiles extends JViewLegacy {
 									    $userObj->type = 'html';
 									    $line[$key] = $userObj;
 								    }
-							    }
-								elseif ($key === 'overall' || $key === 'id_tag' || $key === 'access' || (!empty($mod_emundus_custom) && array_key_exists($key, $mod_emundus_custom)))
+							    } elseif ($key === 'overall' || $key === 'id_tag' || $key === 'access' || (!empty($mod_emundus_custom) && array_key_exists($key, $mod_emundus_custom))) {
 									$line[$key] = "";
+								}
 						    }
 					    }
 					    $data[$line['fnum']->val.'-'.$i] = $line;
@@ -357,15 +358,14 @@ class EmundusViewFiles extends JViewLegacy {
 						    }
 					    }
 				    }
-                  //var_dump($fnumArray);echo '<hr>';
 
 			    } else {
 				    $data = JText::_('NO_RESULT');
 			    }
 
 				/* Get the values from the state object that were inserted in the model's construct function */
-			    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
-				$lists['order']     = JFactory::getSession()->get( 'filter_order' );
+			    $lists['order_dir'] = JFactory::getSession()->get('filter_order_Dir');
+				$lists['order'] = JFactory::getSession()->get('filter_order');
 			    $this->assignRef('lists', $lists);
 			    $this->assignRef('actions', $actions);
 			    $pagination = $this->get('Pagination');

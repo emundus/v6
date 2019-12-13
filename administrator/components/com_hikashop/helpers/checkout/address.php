@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -73,7 +73,7 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 			JHTML::_('select.option', 2, JText::_('FOR_LOGGED_IN_USERS_ONLY')),
 			JHTML::_('select.option', 1, JText::_('HIKA_ALWAYS')),
 		);
-		return $this->params;
+		return parent::getParams();
 	}
 
 	public function check(&$controller, &$params) {
@@ -164,15 +164,24 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		}
 
 		$fieldClass = hikashop_get('class.field');
-		$type = 'address';
-		$formdata = array('address' => &$address_data);
+		$type = '';
+		if(!empty($old_address->address_type))
+			$type = $old_address->address_type;
+		elseif(empty($address_data['address_id']) && !empty($new_address_type))
+			$type = $new_address_type;
+		$field_type = $type;
+		if(!empty($field_type))
+			$field_type .= '_';
+		$field_type .= 'address';
+
+		$formdata = array($field_type => &$address_data);
 
 		$app = JFactory::getApplication();
 		$old_messages = $app->getMessageQueue();
 
 
 		$null = null;
-		$address = $fieldClass->getFilteredInput($type, $null, 'ret', $formdata, false, 'frontcomp');
+		$address = $fieldClass->getFilteredInput($field_type, $null, 'ret', $formdata, false, 'frontcomp');
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$ret = true;
@@ -185,22 +194,34 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		}
 
 		if($ret) {
-			if(isset($formdata['address']) && !empty($formdata['address']['address_id']))
-				$address->address_id = (int)$formdata['address']['address_id'];
+			if(isset($formdata[$field_type]) && !empty($formdata[$field_type]['address_id']))
+				$address->address_id = (int)$formdata[$field_type]['address_id'];
 
 			$address->address_published = 1;
 			if(!empty($old_address) && !empty($old_address->address_default))
 				$address->address_default = 1;
-			$address->address_user_id = hikashop_loadUser(false);
+			$checkoutHelper = hikashopCheckoutHelper::get();
+			$cart = $checkoutHelper->getCart();
+			$address->address_user_id = $cart->user_id;
 
+			$billing_ret = $shipping_ret = 0;
 			if(!empty($new_address_type) && $both_types !== null) {
-				if($both_types)
-					$address->address_type = 'both';
-				else
+				if($both_types) {
+					$shipping_address = hikashop_copy($address);
+					$billing_address = hikashop_copy($shipping_address);
+
+					$billing_address->address_type = 'billing';
+					$billing_ret = $addressClass->save($billing_address, 0, 'billing');
+
+					$shipping_address->address_type = 'shipping';
+					$shipping_ret = $addressClass->save($shipping_address, 0, 'shipping');
+				} else {
 					$address->address_type = $new_address_type;
+				}
 			}
 
-			$ret = $addressClass->save($address);
+			if($both_types === null || !$both_types)
+				$ret = $addressClass->save($address);
 		}
 
 		if(!$ret) {
@@ -219,9 +240,9 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 				}
 			}
 
-			$new_address_data = $_SESSION['hikashop_'.$type.'_data'];
-			$_SESSION['hikashop_'.$type.'_data'] = null;
-			unset($_SESSION['hikashop_'.$type.'_data']);
+			$new_address_data = $_SESSION['hikashop_'.$type.'_address_data'];
+			$_SESSION['hikashop_'.$type.'_address_data'] = null;
+			unset($_SESSION['hikashop_'.$type.'_address_data']);
 
 			$step = $params['src']['workflow_step'];
 			$block_pos = $params['src']['pos'];
@@ -252,7 +273,12 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 				else
 					$type = $new_address_type;
 
-				$cartClass->updateAddress($cart->cart_id, $type, $ret);
+				if(isset($billing_ret) && (int)$billing_ret > 0 && isset($shipping_ret) && (int)$shipping_ret > 0 && $both_types !== null && $both_types){
+					$cartClass->updateAddress($cart->cart_id, 'billing', $billing_ret);
+					$cartClass->updateAddress($cart->cart_id, 'shipping', $shipping_ret);
+				}else {
+					$cartClass->updateAddress($cart->cart_id, $type, $ret);
+				}
 			}
 		}
 
@@ -266,7 +292,7 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 
 		if(empty($content['params']['err']))
 			$content['params']['err'] = array();
-		$content['params']['err']['addr'] = $address;
+		$content['params']['err']['addr'] = $formdata[$field_type];
 		$content['params']['new_address_type'] = $new_address_type;
 
 		$error_message = 'error';
@@ -432,8 +458,12 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 					$addressClass = hikashop_get('class.address');
 					$view->edit_address = $addressClass->get($params['edit_address']);
 				}
-				$view->fieldClass->prepareFields($addresses['fields'], $view->edit_address, 'address', 'checkout&task=state');
-				$params['js'] .= $view->fieldClass->jsToggle($addresses['fields'], $view->edit_address, 0, 'hikashop_checkout_', array('return_data' => true, 'suffix_type' => '_'.$view->step.'_'.$view->block_position));
+				$fields_type = 'fields';
+				if(!empty($view->edit_address->address_type) && in_array($view->edit_address->address_type, array('billing', 'shipping')))
+					$fields_type = $view->edit_address->address_type . '_fields';
+
+				$view->fieldClass->prepareFields($addresses[$fields_type], $view->edit_address, 'address', 'checkout&task=state');
+				$params['js'] .= $view->fieldClass->jsToggle($addresses[$fields_type], $view->edit_address, 0, 'hikashop_checkout_', array('return_data' => true, 'suffix_type' => '_'.$view->step.'_'.$view->block_position));
 			}
 		}
 	}

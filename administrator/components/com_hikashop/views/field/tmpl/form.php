@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -122,6 +122,20 @@ defined('_JEXEC') or die('Restricted access');
 			'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
 		)
 	);
+		?></dd>
+<?php
+	$displayBlock = in_array($this->field->field_table, array('address')) ? '' : ' style="display:none"';
+?>
+		<dt<?php echo $displayBlock; ?>><label><?php
+			echo JText::_('HIKASHOP_ADDRESS_TYPE');
+		?></label></dt>
+		<dd<?php echo $displayBlock; ?>><?php
+	$values = array(
+		JHTML::_('select.option', '', JText::_('WIZARD_BOTH')),
+		JHTML::_('select.option', 'billing', JText::_('HIKASHOP_BILLING_ADDRESS')),
+		JHTML::_('select.option', 'shipping', JText::_('HIKASHOP_SHIPPING_ADDRESS')),
+	);
+	echo JHTML::_('select.genericlist',   $values, 'data[field][field_address_type]', 'class="custom-select" size="1"', 'value', 'text', @$this->field->field_address_type );
 		?></dd>
 
 		<dt data-hk-display="limit_to"><label><?php

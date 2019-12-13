@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.0.1
+ * @version	4.2.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2018 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -75,12 +75,14 @@ class hikashopModuleHelper {
 
 		if($params->get('margin', '') == '') {
 			$defaultParams = $config->get('default_params');
-			$params->set('margin', (int)$defaultParams['margin']);
+			$params->set('margin', $defaultParams['margin']);
 		}
 
-		$margin = (int)$params->get('margin', 0);
-		$css .= '
-#'.$main_div_name.' div.hikashop_container { margin:'.$margin.'px '.$margin.'px; }';
+		$margin = $params->get('margin', '');
+		if(strlen($margin)) {
+			$css .= '
+#'.$main_div_name.' div.hikashop_container { margin:'.(int)$margin.'px '.(int)$margin.'px; }';
+		}
 
 		if((int)$params->get('rounded_corners', -1) == -1) {
 			$defaultParams = $config->get('default_params');
@@ -108,8 +110,15 @@ class hikashopModuleHelper {
 		}
 		hikashop_toInteger($modules);
 
+		$filters = array('id IN ('.implode(',', $modules).')');
+
 		$database = JFactory::getDBO();
-		$query = 'SELECT * FROM '.hikashop_table('modules', false).' WHERE id IN ('.implode(',', $modules).');';
+		if(HIKASHOP_J30) {
+			$lang = JFactory::getLanguage();
+			$tag = $lang->getTag();
+			$filters[] = "language IN ('*', '', ".$database->Quote($tag).")";
+		}
+		$query = 'SELECT * FROM '.hikashop_table('modules', false).' WHERE '.implode(' AND ', $filters);
 		$database->setQuery($query);
 		$modulesData = $database->loadObjectList('id');
 
