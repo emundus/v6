@@ -130,6 +130,7 @@ JText::script('JYES');
 JText::script('JNO');
 JText::script('PLEASE_SELECT');
 JText::script('EXPORT_CHANGE_STATUS');
+JText::script('EXPORT_SET_TAG');
 JText::script('YOU_MUST_SELECT_ATTACHMENT');
 JText::script('ATTACHEMENTS_AGGREGATIONS');
 JText::script('FILES_GENERATED');

@@ -3684,7 +3684,7 @@ $(document).ready(function() {
                     dataType:'json',
                     success: function(result) {
 
-                        var status = '<br/><div id="em-action-export-state" class="form-group" style="color:black !important; display:inline-block !important; padding-left: 15px;"><label class="col-lg-22 control-label">'+result.state+'</label><select class="col-lg-12 modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value=""><option value="">' + Joomla.JText._('PLEASE_SELECT') + '</option>';
+                        var status = '<br/><div id="em-action-export-state" class="form-group" style="color:black !important; display:inline-block !important; padding-left: 15px;"><br/><label class="col-lg-12 control-label">'+result.state+'</label><select class="col-lg-12 modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value=""><option value="">' + Joomla.JText._('PLEASE_SELECT') + '</option>';
 
                         for (var i in result.states) {
                             if (isNaN(parseInt(i)))
@@ -3694,21 +3694,78 @@ $(document).ready(function() {
                         status += '</select></div>';
                         $('.modal-body').append(status);
                         $("#em-action-export-state").hide();
+
+
+                        $('.modal-body').append(
+                            '<div class="select-export-tag">' +
+                            '<label class="col-lg-12 control-label">'+Joomla.JText._('EXPORT_SET_TAG')+'</label>' +
+                            '<div class="col-lg-12 control-label" id="set-export-tag">' +
+                            '<div><input type="radio" name="export-tag" id="tag-yes" value="yes"> <label for="tag-yes">' + Joomla.JText._('JYES') + '</label></div>' +
+                            '<div><input type="radio" name="export-tag" id="tag-no" value="no"> <label for="tag-no">' + Joomla.JText._('JNO') + '</label></div>' +
+                            '</div></div>'
+                        );
+
+
+                        $.ajax({
+                            type:'get',
+                            url:'index.php?option=com_emundus&controller=files&task=gettags',
+                            dataType:'json',
+                            success: function(result) {
+
+                                var tags = '<br/><div id="em-action-export-tag" style="padding-left: 15px;"><label class="col-lg-12 control-label">'+result.tag+'</label><select class="col-lg-12 modal-chzn-select" name="em-action-tag" id="em-action-tag" multiple="multiple" >';
+
+                                for (var i in result.tags) {
+                                    if (isNaN(parseInt(i)))
+                                        break;
+                                    tags += '<option value="'+result.tags[i].id+'" >'+result.tags[i].label+'</option>';
+                                }
+                                tags += '</select></div>';
+                                $('.modal-body').append(tags);
+                                $('.modal-chzn-select').chosen({width:'75%'});
+                                $("#em-action-export-tag").hide();
+
+                                $('#change-status input[name=export-status]').on('change', function(){
+                                    $('#em-action-state').val('');
+                                    if(this.value == "yes") {
+                                        $("#em-action-export-state").show();
+                                    }
+                                    else {
+                                        $("#em-action-export-state").hide();
+                                    }
+                                });
+
+                                $('#set-export-tag input[name=export-tag]').on('change', function(){
+                                    $(".modal-chzn-select").val('').trigger("chosen:updated");
+                                    if(this.value == "yes") {
+                                        $("#em-action-export-tag").show();
+                                    }
+                                    else {
+                                        $("#em-action-export-tag").hide();
+                                    }
+                                });
+
+                                $('#em-action-tag').on('change', function() {
+                                    if ($(this).val() != null)
+                                        $('#success-ok').removeAttr("disabled");
+                                    else
+                                        $('#success-ok').attr("disabled", "disabled");
+                                });
+                            },
+                            error: function(jqXHR) {
+                                console.log(jqXHR.responseText);
+                            }
+                        });
+
+
+
                     },
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);
                     }
                 });
 
-                $('#change-status input[name=export-status]').on('change', function(){
-                    $('#em-action-state').val('');
-                    if(this.value == "yes") {
-                        $("#em-action-export-state").show();
-                    }
-                    else {
-                        $("#em-action-export-state").hide();
-                    }
-                });
+
+
                 break;
 
             // Mail applicants
@@ -4961,6 +5018,7 @@ $(document).ready(function() {
             case 33:
                 var type = $('.modal-body').attr('data-export-type');
                 var state = $("#em-action-state").val();
+                var tag = $("#em-action-tag").val();
 
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
@@ -4978,13 +5036,52 @@ $(document).ready(function() {
                         var msg = result.msg;
                         if (result.status) {
 
-                            url = 'index.php?option=com_emundus&controller=files&task=updatestate';
+
                             if (state !== '') {
+                                url = 'index.php?option=com_emundus&controller=files&task=updatestate';
                                 $.ajax({
                                     type:'POST',
                                     url:url,
                                     dataType:'json',
                                     data:({fnums:checkInput, state: state}),
+                                    success: function(result) {
+
+                                        $('.modal-footer').hide();
+
+                                        if (result.status) {
+                                            $('.modal-body').empty();
+                                            Swal.fire({
+                                                position: 'center',
+                                                type: 'success',
+                                                title: msg,
+                                                text: result.msg,
+                                                showConfirmButton: false,
+                                                timer: 1500
+                                            });
+                                        }
+                                        else {
+                                            $('.modal-body').empty();
+                                            Swal.fire({
+                                                position: 'center',
+                                                type: 'warning',
+                                                title: msg,
+                                                text: result.msg
+                                            });
+                                        }
+                                    },
+                                    error: function (jqXHR) {
+                                        console.log(jqXHR.responseText);
+                                    }
+                                });
+                            }
+
+                            if (tag !== '') {
+                                url = 'index.php?option=com_emundus&controller=files&task=tagfile';
+                                $.ajax({
+                                    type:'POST',
+                                    url:url,
+                                    dataType:'json',
+                                    data:({fnums:checkInput, tag: tag}),
                                     success: function(result) {
 
                                         $('.modal-footer').hide();
