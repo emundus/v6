@@ -19,7 +19,7 @@ if ($pageClass !== '') :
 endif;
 
 if ($this->tablePicker != '') : ?>
-    <div style="text-align:right"><?php echo FText::_('COM_FABRIK_LIST') ?>: <?php echo $this->tablePicker; ?></div>
+    <div style="text-align:right"><?= FText::_('COM_FABRIK_LIST') ?>: <?= $this->tablePicker; ?></div>
 <?php
 endif;
 
@@ -33,7 +33,7 @@ endif;
 // Intro outside of form to allow for other lists/forms to be injected.
 echo $this->table->intro;
 ?>
-<form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
+<form class="fabrikForm form-search" action="<?= $this->table->action; ?>" method="post" id="<?= $this->formid; ?>" name="fabrikList">
 
 
     <div class="fabrikDataContainer">
@@ -85,41 +85,42 @@ echo $this->table->intro;
         <div class="g-block size-100">
             <?php if ($this->navigation->total < 1) :?>
                 <?php if($this->table->db_table_name == 'jos_emundus_entreprise') :?>
-                    <?php echo JText::_("COM_EMUNDUS_NO_COMPANIES");?>
+                    <?= JText::_("COM_EMUNDUS_NO_COMPANIES"); ?>
                 <?php elseif ($this->table->db_table_name == 'jos_emundus_users') :?>
-                    <?php echo JText::_("COM_EMUNDUS_NO_ASSOCIATES");?>
+                    <?= JText::_("COM_EMUNDUS_NO_ASSOCIATES"); ?>
                 <?php endif; ?>
             <?php else: ?>
                 <?php
                     $gCounter = 0;
                     foreach ($data as $d) :?>
-                        <div class="accordion-container accordion-container-<?php echo $this->table->renderid; ?>">
-                            <div class="article-title article-title-<?php echo $this->table->renderid; ?>">
+                        <div class="accordion-container accordion-container-<?= $this->table->renderid; ?>">
+                            <div class="article-title article-title-<?= $this->table->renderid; ?>">
                                 <div class="article-name">
                                 <i class="fas fa-caret-right"></i>
                                 <?php if ($this->table->db_table_name == 'jos_emundus_entreprise') :?>
                                     <?php if (!empty($d["Raison sociale"])) :?>
-                                    <h4><?php echo $d["Raison sociale"]; ?></h4></div>
+                                    <h4><?= $d["Raison sociale"]; ?></h4></div>
                                     <?php endif; ?>
                                 <?php elseif ($this->table->db_table_name == 'jos_emundus_users') :?>
 
                                     <?php if (!empty($d["lastname"]) && !empty($d["firstname"])) :?>
-                                        <h4><?php echo $d["lastname"]. " " .$d["firstname"]; ?></h4></div>
+                                        <h4><?= $d["lastname"]. " " .$d["firstname"]; ?></h4></div>
                                     <?php elseif (!empty($d["Nom"]) && !empty($d["Prénom"])) :?>
-                                        <h4><?php echo $d["Nom"]. " " .$d["Prénom"]; ?></h4></div>
+                                        <h4><?= $d["Nom"]. " " .$d["Prénom"]; ?></h4></div>
                                     <?php endif; ?>
 
 	                                <?php if (!empty($d['user_id'])) :?>
-                                        <div class="em-inscrire-col"><a href="/inscription?user=<?php echo $d['user_id']; ?>"><?php echo JText::_("COM_EMUNDUS_SIGNUP_FORMATION");?></a></div>
+                                        <div class="em-inscrire-col"><a href="/inscription?user=<?= $d['user_id']; ?>"><?= JText::_("COM_EMUNDUS_SIGNUP_FORMATION"); ?></a></div>
 	                                <?php endif; ?>
                                 <?php endif; ?>
                                 <div class="accordion-icons">
                                     <?php if ($d['fabrik_edit_url']) :?>
-                                        <a href="<?php echo $d['fabrik_edit_url']; ?>"><i class="fa fa-pen"></i></a>
-                                        <?php elseif ($d['fabrik_view_url']) :?>
-                                            <?php echo ($this->table->db_table_name == 'jos_emundus_users') ? "<a class='em-consult-col' href='".$d['fabrik_view_url']."'><span>".JText::_("COM_EMUNDUS_CONSULT_FORMATION")."</span></a>" : "<a href='".$d['fabrik_view_url']."'><i class='fa fa-eye'></i></a>";?>
-                                        <?php endif; ?>
-                                    <div style="display: inline" id="delete-row-<?php echo $d['row_id']; ?>" class="delete-row-<?php echo $this->table->db_table_name; ?>" data-id="<?php echo $d['id']; ?>" <?php if (!empty($d['user_id'])) { echo 'data-cid= "'.$d['cid'].'"'; } ?>>
+	                                    <?= ($this->table->db_table_name == 'jos_emundus_users') ? "<a class='em-consult-col' href='".$d['fabrik_edit_url']."'><span>".JText::_("COM_EMUNDUS_RESET_PASSWORD")."</span></a>" : "<a href='".$d['fabrik_edit_url']."'><i class='fa fa-pen'></i></a>"; ?>
+                                    <?php endif; ?>
+                                    <?php if ($d['fabrik_view_url']) :?>
+                                        <?= ($this->table->db_table_name == 'jos_emundus_users') ? "<a class='em-consult-col' href='".$d['fabrik_view_url']."'><span>".JText::_("COM_EMUNDUS_CONSULT_FORMATION")."</span></a>" : "<a href='".$d['fabrik_view_url']."'><i class='fa fa-eye'></i></a>"; ?>
+                                    <?php endif; ?>
+                                    <div style="display: inline" id="delete-row-<?= $d['row_id']; ?>" class="delete-row-<?= $this->table->db_table_name; ?>" data-id="<?= $d['id']; ?>" <?= (!empty($d['user_id']))?'data-cid= "'.$d['cid'].'"':""; ?>>
                                         <i class="fas fa-times"></i>
                                     </div>
                                 </div>
@@ -130,39 +131,39 @@ echo $this->table->intro;
                                     <?php if ($k != 'fabrik_edit_url' && $k != 'fabrik_view_url' && $k != 'id' && $k != 'row_id' && $k != '__pk_val' && $k != 'user_id' && $k != 'cid') :?>
                                         <?php if (strpos($k, 'Title')) :?>
                                             <div class="em-group-title">
-                                                <span><?php echo str_replace('Title-', '',$k); ?></span>
+                                                <span><?= str_replace('Title-', '',$k); ?></span>
                                             </div>
                                         <?php else: ?>
-                                            <div class="em-element <?php echo strtolower(str_replace(' ', '-', str_replace(['è', 'é'],'e', str_replace(['.', '(', ')','°'], '', $k)))); ?>">
-                                                <div class="em-element-label"><?php echo $k; ?> : </div>
-                                            <div class="em-element-value <?php echo empty($v)?"em-empty-value":"";?>"><?php echo $v; ?></div>
+                                            <div class="em-element <?= strtolower(str_replace(' ', '-', str_replace(['è', 'é'],'e', str_replace(['.', '(', ')','°'], '', $k)))); ?>">
+                                                <div class="em-element-label"><?= $k; ?> : </div>
+                                            <div class="em-element-value <?= empty($v)?"em-empty-value":""; ?>"><?= $v; ?></div>
                                             </div>
                                         <?php endif; ?>
-                                    <?php endif;?>
+                                    <?php endif; ?>
                                 <?php endforeach; ?>
                             </div>
                         </div>
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
-
     </div>
-    <ul id="list-pagin-<?php echo $this->table->renderid; ?>" class="list-pagin"></ul>
+    <ul id="list-pagin-<?= $this->table->renderid; ?>" class="list-pagin"></ul>
 </form>
 
 <?php
-if ($this->hasButtons)
-    echo $this->loadTemplate('buttons');
+if ($this->hasButtons) {
+	echo $this->loadTemplate('buttons');
+}
 echo $this->table->outro;
-if ($pageClass !== '') :
-    echo '</div>';
-endif;
+if ($pageClass !== '') {
+	echo '</div>';
+}
 ?>
 
 
 <script>
 
-    var data = <?php echo sizeof($data); ?>;
+    var data = <?= sizeof($data); ?>;
 
     //Pagination
     pageSize = 3;
@@ -171,25 +172,25 @@ endif;
 
     if (pageCount > 1) {
         for (var i = 0 ; i<pageCount;i++) {
-            jQuery("#list-pagin-<?php echo $this->table->renderid; ?>").append('<li><p>'+(i+1)+'</p></li> ');
+            jQuery("#list-pagin-<?= $this->table->renderid; ?>").append('<li><p>'+(i+1)+'</p></li> ');
         }
     }
 
-    jQuery("#list-pagin-<?php echo $this->table->renderid; ?> li").first().find("p").addClass("current");
-    showPage<?php echo $this->table->renderid; ?>  = function(page) {
-        jQuery(".accordion-container-<?php echo $this->table->renderid; ?>").hide();
-        jQuery(".accordion-container-<?php echo $this->table->renderid; ?>").each(function(n) {
+    jQuery("#list-pagin-<?= $this->table->renderid; ?> li").first().find("p").addClass("current");
+    showPage<?= $this->table->renderid; ?>  = function(page) {
+        jQuery(".accordion-container-<?= $this->table->renderid; ?>").hide();
+        jQuery(".accordion-container-<?= $this->table->renderid; ?>").each(function(n) {
             if (n >= pageSize * (page - 1) && n < pageSize * page)
                 jQuery(this).show();
         });
     };
 
-    showPage<?php echo $this->table->renderid; ?> (1);
+    showPage<?= $this->table->renderid; ?> (1);
 
-    jQuery("#list-pagin-<?php echo $this->table->renderid; ?> li p").click(function() {
-        jQuery("#list-pagin-<?php echo $this->table->renderid; ?> li p").removeClass("current");
+    jQuery("#list-pagin-<?= $this->table->renderid; ?> li p").click(function() {
+        jQuery("#list-pagin-<?= $this->table->renderid; ?> li p").removeClass("current");
         jQuery(this).addClass("current");
-        showPage<?php echo $this->table->renderid; ?> (parseInt(jQuery(this).text()))
+        showPage<?= $this->table->renderid; ?> (parseInt(jQuery(this).text()))
     });
 
 
@@ -199,7 +200,7 @@ endif;
             this.el = el || {};
             this.multiple = multiple || false;
 
-            var links = this.el.find('.article-title-<?php echo $this->table->renderid; ?>');
+            var links = this.el.find('.article-title-<?= $this->table->renderid; ?>');
             links.on('click', {
                 el: this.el,
                 multiple: this.multiple
@@ -224,39 +225,39 @@ endif;
                 $el.find('.accordion-content').not($next).parent().find('.fa-caret-right').removeClass("down");
             }
         };
-        var accordion = new Accordion(jQuery('.accordion-container-<?php echo $this->table->renderid; ?>'), false);
+        var accordion = new Accordion(jQuery('.accordion-container-<?= $this->table->renderid; ?>'), false);
     });
 
     jQuery(document).ready(function(){
-        if(jQuery(this).find('.accordion-container-<?php echo $this->table->renderid; ?>').size() > 0 ) {
-            var first = document.querySelectorAll('.accordion-container-<?php echo $this->table->renderid; ?>')[0];
+        if(jQuery(this).find('.accordion-container-<?= $this->table->renderid; ?>').size() > 0 ) {
+            var first = document.querySelectorAll('.accordion-container-<?= $this->table->renderid; ?>')[0];
             jQuery(first.getElementsByClassName('accordion-content')[0]).slideToggle();
             first.classList.add('open');
             jQuery(first).find('.fa-caret-right').addClass("down");
         }
     });
 
-    jQuery(".delete-row-<?php echo $this->table->db_table_name; ?>").on('click', function (e) {
+    jQuery(".delete-row-<?= $this->table->db_table_name; ?>").on('click', function (e) {
         var that = jQuery(this);
         var row = jQuery(this).closest('.accordion-container')[0];
 
         e.stopPropagation();
 
         Swal.fire({
-                title: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE_CONFIRM') : JText::_('REMOVE_COMPANY_CONFIRM'); ?>",
+                title: "<?= ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE_CONFIRM') : JText::_('REMOVE_COMPANY_CONFIRM'); ?>",
                 type: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#28a745",
                 cancelButtonColor: "#dc3545",
-                confirmButtonText: "<?php echo JText::_('JYES');?>",
-                cancelButtonText: "<?php echo JText::_('JNO');?>"
+                confirmButtonText: "<?= JText::_('JYES'); ?>",
+                cancelButtonText: "<?= JText::_('JNO'); ?>"
             }
         ).then(
             function (isConfirm) {
                 if (isConfirm.value == true) {
                     jQuery.ajax({
                         type: "post",
-                        url: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? 'index.php?option=com_emundus&controller=formations&task=deleteassociate' : 'index.php?option=com_emundus&controller=formations&task=deletecompany'; ?>",
+                        url: "<?= ($this->table->db_table_name == 'jos_emundus_users') ? 'index.php?option=com_emundus&controller=formations&task=deleteassociate' : 'index.php?option=com_emundus&controller=formations&task=deletecompany'; ?>",
                         dataType: 'json',
                         data : ({
                             id: jQuery(that).data("id"),
@@ -269,13 +270,13 @@ endif;
                                 jQuery(row).hide();
                                 Swal.fire({
                                     type: 'success',
-                                    title: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE_REMOVED') : JText::_('REMOVE_COMPANY_REMOVED'); ?>"
+                                    title: "<?= ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE_REMOVED') : JText::_('REMOVE_COMPANY_REMOVED'); ?>"
                                 });
                             }
                             else {
                                 Swal.fire({
                                     type: 'error',
-                                    text: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE__NOT_REMOVED') : JText::_('REMOVE_COMPANY_NOT_REMOVED'); ?>"
+                                    text: "<?= ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE__NOT_REMOVED') : JText::_('REMOVE_COMPANY_NOT_REMOVED'); ?>"
                                 });
                             }
                         },
@@ -283,7 +284,7 @@ endif;
                             console.log(jqXHR.responseText);
                             Swal.fire({
                                 type: 'error',
-                                text: "<?php echo ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE_NOT_REMOVED') : JText::_('REMOVE_COMPANY_NOT_REMOVED'); ?>"
+                                text: "<?= ($this->table->db_table_name == 'jos_emundus_users') ? JText::_('REMOVE_ASSOCIATE_NOT_REMOVED') : JText::_('REMOVE_COMPANY_NOT_REMOVED'); ?>"
                             });
                         }
                     });
