@@ -336,7 +336,7 @@ function openFiles(fnum) {
 
     $.ajax({
         type:'get',
-        url:'index.php?option=com_emundus&controller=application&task=getactionmenu&fnum='+fnum.fnum,
+        url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&fnum='+fnum.fnum,
         dataType:'json',
         success: function(result) {
 
@@ -5037,7 +5037,7 @@ $(document).ready(function() {
                         if (result.status) {
 
 
-                            if (state !== '') {
+                            if (state) {
                                 url = 'index.php?option=com_emundus&controller=files&task=updatestate';
                                 $.ajax({
                                     type:'POST',
@@ -5075,7 +5075,7 @@ $(document).ready(function() {
                                 });
                             }
 
-                            if (tag !== '') {
+                            if (tag) {
                                 url = 'index.php?option=com_emundus&controller=files&task=tagfile';
                                 $.ajax({
                                     type:'POST',
