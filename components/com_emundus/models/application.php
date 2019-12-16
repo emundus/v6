@@ -167,7 +167,7 @@ class EmundusModelApplication extends JModelList {
                 LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
                 LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
                 WHERE eu.fnum like ' . $this->_db->Quote($fnum) . '
-                ORDER BY sa.value ASC';
+                ORDER BY esa.value ASC';
             }
         }
 
@@ -2203,6 +2203,7 @@ class EmundusModelApplication extends JModelList {
             }
 
             $query .= " ORDER BY sa.value DESC";
+
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();
         } catch(Exception $e) {
