@@ -336,7 +336,7 @@ function openFiles(fnum) {
 
     $.ajax({
         type:'get',
-        url:'index.php?option=com_emundus&controller=application&task=getactionmenu&fnum='+fnum.fnum,
+        url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&fnum='+fnum.fnum,
         dataType:'json',
         success: function(result) {
 
