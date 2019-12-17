@@ -52,7 +52,7 @@ echo $this->table->intro;
                     $raw = $key.'_raw';
                     if (property_exists($v->data, $raw)) {
                         if ($raw =="jos_emundus_users___birthday_raw") {
-                            $v->data->$raw = date('d/m/Y', strtotime($v->data->$raw));
+                            $v->data->$raw = !empty($v->data->$raw) ? date('d/m/Y', strtotime($v->data->$raw)) : JText::_('NO_DATE');
                         }
                         $data[$i][$val] = $v->data->$raw;
                     }
