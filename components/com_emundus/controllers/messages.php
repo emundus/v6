@@ -271,7 +271,27 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_subject = $jinput->post->getString('mail_subject', 'No Subject');
         $template_id = $jinput->post->getInt('template', null);
         $mail_message = $jinput->post->get('message', null, 'RAW');
-        $attachments = $jinput->post->get('attachments', null, null);
+        $attachments = $jinput->post->get('attachments');
+
+
+        // Here we filter out any CC or BCC emails that have been entered that do not match the regex.
+        $cc = $jinput->post->get('cc');
+        if (!empty($cc)) {
+            foreach ((array) json_decode(stripslashes($cc)) as $key => $cc_to_test) {
+                if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $cc_to_test) !== 1) {
+                    unset($cc[$key]);
+                }
+            }
+        }
+
+        $bcc = $jinput->post->get('bcc');
+        if (!empty($bcc)) {
+            foreach ((array) json_decode(stripslashes($bcc)) as $key => $bcc_to_test) {
+                if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $bcc_to_test) !== 1) {
+                    unset($bcc[$key]);
+                }
+            }
+        }
 
         // Get additional info for the fnums such as the user email.
         $fnums = $m_files->getFnumsInfos($fnums, 'object');
@@ -337,10 +357,16 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
 
+            if (!empty($bcc)) {
+                $mailer->addBcc($bcc);
+            }
+
+            if (!empty($cc)) {
+                $mailer->addCc($cc);
+            }
 
             // Files uploaded from the frontend.
             if (!empty($attachments['upload'])) {
-
                 // In the case of an uploaded file, just add it to the email.
                 foreach ($attachments['upload'] as $upload) {
                     if (file_exists(JPATH_BASE.DS.$upload)) {

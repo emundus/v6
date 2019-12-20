@@ -4555,11 +4555,10 @@ $(document).ready(function() {
                     mail_from_name 	: $('#mail_from_name').text(),
                     mail_from 		: $('#mail_from').text(),
                     mail_subject 	: $('#mail_subject').text(),
-                    message			: $('#mail_body').val()
+                    message			: $('#mail_body').val(),
+                    bcc             : [],
+                    cc              : []
                 };
-
-                var bcc = [];
-                var cc = [];
 
                 $('#cc-bcc div[data-value]').each(function () {
                     let val = $(this).attr('data-value');
@@ -4571,7 +4570,7 @@ $(document).ready(function() {
                         // Here we format the string from BCC: Bcc: <email@email.com> to just email@email.com
                         val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
                         if (REGEX_EMAIL.test(val)) {
-                            bcc.push(val);
+                            data.bcc.push(val);
                         }
 
                     } else if (val.split(':')[0] === 'CC') {
@@ -4579,7 +4578,7 @@ $(document).ready(function() {
                         // Here we format the string from CC: Cc: <email@email.com> to just email@email.com
                         val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
                         if (REGEX_EMAIL.test(val)) {
-                            cc.push(val);
+                            data.cc.push(val);
                         }
                         
                     }
