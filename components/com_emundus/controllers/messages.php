@@ -240,7 +240,6 @@ class EmundusControllerMessages extends JControllerLegacy {
      */
     public function applicantemail() {
 
-
         if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
 			die(JText::_("ACCESS_DENIED"));
 		}
@@ -264,7 +263,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_from_sys_name = $config->get('fromname');
 
         $fnums  = explode(',',$jinput->post->get('recipients', null, null));
-        $bcc = $jinput->post->getString('Bcc', false);
 
         // If no mail sender info is provided, we use the system global config.
         $mail_from_name = $jinput->post->getString('mail_from_name', $mail_from_sys_name);
@@ -274,8 +272,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         $template_id = $jinput->post->getInt('template', null);
         $mail_message = $jinput->post->get('message', null, 'RAW');
         $attachments = $jinput->post->get('attachments', null, null);
-
-
 
         // Get additional info for the fnums such as the user email.
         $fnums = $m_files->getFnumsInfos($fnums, 'object');
@@ -340,10 +336,6 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mailer->isHTML(true);
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
-
-            if ($bcc === 'true') {
-	            $mailer->addBCC($user->email);
-            }
 
 
             // Files uploaded from the frontend.

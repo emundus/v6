@@ -53,7 +53,7 @@ function getUrlParameter(url, sParam) {
 function search() {
     var quick = [];
 
-    $('div[data-value]').each( function () {
+    $('#quick div[data-value]').each(function () {
         quick.push($(this).attr('data-value')) ;
     });
 
@@ -1283,7 +1283,7 @@ $(document).ready(function() {
     });
 
     $(document).on('keyup', 'input:text', function(e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode == 13 && this.id !== 'cc-bcc-mails-selectized') {
             search();
         }
     });
@@ -4552,12 +4552,39 @@ $(document).ready(function() {
                 var data = {
                     recipients 		: $('#fnums').val(),
                     template		: $('#message_template :selected').val(),
-                    Bcc 			: $('#sendUserACopy').prop('checked'),
                     mail_from_name 	: $('#mail_from_name').text(),
                     mail_from 		: $('#mail_from').text(),
                     mail_subject 	: $('#mail_subject').text(),
                     message			: $('#mail_body').val()
                 };
+
+                var bcc = [];
+                var cc = [];
+
+                $('#cc-bcc div[data-value]').each(function () {
+                    let val = $(this).attr('data-value');
+
+                    var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                    if (val.split(':')[0] === 'BCC') {
+
+                        // Here we format the string from BCC: Bcc: <email@email.com> to just email@email.com
+                        val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
+                        if (REGEX_EMAIL.test(val)) {
+                            bcc.push(val);
+                        }
+
+                    } else if (val.split(':')[0] === 'CC') {
+
+                        // Here we format the string from CC: Cc: <email@email.com> to just email@email.com
+                        val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
+                        if (REGEX_EMAIL.test(val)) {
+                            cc.push(val);
+                        }
+                        
+                    }
+                });
+
 
                 // Attachments object used for sorting the different attachment types.
                 var attachments = {
