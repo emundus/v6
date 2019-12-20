@@ -60,7 +60,7 @@
 						<option value="purple">LIST_PURPLE</option>
 						<option value="black">LIST_BLACK</option>
 					</field>
-					<field type="text" name="mod_em_campaign_link" default="registration" label="MOD_EM_CAMPAIGN_LINK" description="MOD_EM_CAMPAIGN_LINK_DESC"/>
+					<field type="text" name="mod_em_campaign_link" default="" label="MOD_EM_CAMPAIGN_LINK" description="MOD_EM_CAMPAIGN_LINK_DESC"/>
 
 					<field type="text" name="mod_em_campaign_date_format" label="MOD_EM_CAMPAIGN_DATE_FORMAT" description="MOD_EM_CAMPAIGN_DATE_FORMAT_DESC" default="d/m/Y H:i" hint="d/m/Y H:i"/>
 
