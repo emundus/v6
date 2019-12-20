@@ -96,6 +96,11 @@ button#back:hover, button#back:active, button#back:focus,
     margin-right: 10px;
     color: #e5283b;
 }
+
+.view-checklist .attached p {
+    color: #fff;
+}
+
 .view-checklist .input-group {
     width: 100%;
 }
