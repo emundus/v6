@@ -13,7 +13,7 @@ $app = JFactory::getApplication();
 $searchword = $app->input->getString('searchword', null);
 
 ?>
-<form action="<?php echo JRoute::_(JUri::getInstance()->toString(), true, $params->get('')); ?>" method="post" id="search_program">
+<form action="index.php" method="post" id="search_program">
     <?php if(isset($searchword) && !empty($searchword)) { ?>
         <div class="rt-grid-12">
             <p><b><?php echo JText::_("RESULT_FOR")." : ".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8'); ?></b></p>
