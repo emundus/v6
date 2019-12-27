@@ -275,18 +275,18 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 
         // Here we filter out any CC or BCC emails that have been entered that do not match the regex.
-        $cc = $jinput->post->get('cc');
+        $cc = $jinput->post->getString('cc');
         if (!empty($cc)) {
-            foreach ((array) json_decode(stripslashes($cc)) as $key => $cc_to_test) {
+            foreach ($cc as $key => $cc_to_test) {
                 if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $cc_to_test) !== 1) {
                     unset($cc[$key]);
                 }
             }
         }
 
-        $bcc = $jinput->post->get('bcc');
+        $bcc = $jinput->post->getString('bcc');
         if (!empty($bcc)) {
-            foreach ((array) json_decode(stripslashes($bcc)) as $key => $bcc_to_test) {
+            foreach ($bcc as $key => $bcc_to_test) {
                 if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $bcc_to_test) !== 1) {
                     unset($bcc[$key]);
                 }
@@ -357,12 +357,12 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
 
-            if (!empty($bcc)) {
-                $mailer->addBcc($bcc);
-            }
-
             if (!empty($cc)) {
                 $mailer->addCc($cc);
+            }
+
+            if (!empty($bcc)) {
+                $mailer->addBcc($bcc);
             }
 
             // Files uploaded from the frontend.
@@ -496,7 +496,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                     'user_id_to' => $fnum->applicant_id,
                     'subject' => $subject,
                     'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
-                    'type' => $template->type
+                    'type' => (empty($template->type))?'':$template->type
                 ];
                 $m_emails->logEmail($log);
                 // Log the email in the eMundus logging system.
