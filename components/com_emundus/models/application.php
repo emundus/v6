@@ -2994,10 +2994,9 @@ class EmundusModelApplication extends JModelList {
 
             // Send emails defined in trigger
             $m_emails = new EmundusModelEmails;
-            $step = 1;
             $code = array($applicant->code);
             $to_applicant = '0,1';
-            $m_emails->sendEmailTrigger($step, $code, $to_applicant, $applicant);
+            $m_emails->sendEmailTrigger($status, $code, $to_applicant, $applicant);
 
         } catch (Exception $e) {
             // catch any database errors.
