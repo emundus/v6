@@ -115,7 +115,7 @@ echo $description;
 //TODO do the delete if we need to
     function deletefile(fnum){
         if (confirm("<?php echo JText::_('CONFIRM_DELETE_FILE'); ?>")) {
-            document.location.href="<?php echo JRoute::_(JURI::base().'index.php?option=com_emundus&task=deletefile&fnum='); ?>"+fnum;
+            document.location.href="index.php?option=com_emundus&task=deletefile&fnum="+fnum;
         }
     }
 
