@@ -2293,6 +2293,7 @@ class EmundusHelperFiles
 
                 if ($element->element_name != 'id' &&
                     $element->element_name != 'time_date' &&
+                    $element->element_name != 'date_time' &&
                     $element->element_name != 'campaign_id' &&
                     $element->element_name != 'student_id'&&
                     $element->element_name != 'user' &&
@@ -2349,6 +2350,7 @@ class EmundusHelperFiles
 
                 if ($element->element_name != 'id' &&
                     $element->element_name != 'time_date' &&
+                    $element->element_name != 'date_time' &&
                     $element->element_name != 'campaign_id' &&
                     $element->element_name != 'student_id'&&
                     $element->element_name != 'user' &&
