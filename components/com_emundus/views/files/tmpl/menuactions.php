@@ -64,7 +64,13 @@ if (!empty($this->items)) :
             </ul>
         </div>
     </div>
-    <div class="em-close-minimise"><div class="btn-group pull-right"><button id="em-close-file" class="btn btn-danger btn-xxl"><strong>X</strong></button></div></div>
+    <div class="em-close-minimise">
+        <div class="btn-group pull-right">
+            <button id="em-prev-file" class="btn btn-info btn-xxl"><strong><-</strong></button>
+            <button id="em-next-file" class="btn btn-info btn-xxl"><strong>-></strong></button>
+            <button id="em-close-file" class="btn btn-danger btn-xxl"><strong>X</strong></button>
+        </div>
+    </div>
 
 <?php
 endif;
