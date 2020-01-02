@@ -1115,6 +1115,7 @@ $(document).ready(function() {
                     $('#'+fnum.fnum+'_check').prop('checked', true);
 
                     if (openFile) {
+                        addDimmer();
                         fnum.sid = parseInt(fnum.fnum.substr(21, 7));
                         fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
@@ -1145,7 +1146,7 @@ $(document).ready(function() {
 
                     var openFile = false;
 
-                    var url = $(location).attr('href');
+                    var url = $(location).attr('href').split('#');
                     if (url[1] != null && url[1].length >= 20) {
                         var cfnum = url[1].split("|")[0];
                         openFile = true;
@@ -1156,25 +1157,24 @@ $(document).ready(function() {
                         }
                     }
 
-                    var i = 0;
                     var fnumsOnPage = document.getElementsByClassName('em_file_open');
-                    fnumsOnPage.forEach(e => {
-                        if (e.id !== cfnum) {
-                            i++;
+                    for (var i = 0; i < fnumsOnPage.length; i++) {
+                        if (fnumsOnPage[i].id === cfnum) {
+                            // In case we are on the first fnum of the page, we loop around to the length so the i-1 value is equal to the last fnum index.
+                            if (i === 0) {
+                                i = fnumsOnPage.length-1;
+                            }
+                            break;
                         }
-                    });
-
-                    // In case we are on the last fnum of the page, we loop around to -1 so the i+1 value is 0.
-                    if (i === 0) {
-                        i = fnumsOnPage.length+1;
                     }
 
                     var fnum = new Object();
-                    fnum.fnum = fnumsOnPage[i+1].id;
+                    fnum.fnum = fnumsOnPage[i].id;
                     $('.em-check:checked').prop('checked', false);
                     $('#'+fnum.fnum+'_check').prop('checked', true);
 
                     if (openFile) {
+                        addDimmer();
                         fnum.sid = parseInt(fnum.fnum.substr(21, 7));
                         fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
