@@ -155,8 +155,6 @@ function pdf_admission($user_id, $fnum = null, $output = true, $name = null, $op
                 $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
             }
         }
-        if(isset($item->maiden_name))
-            $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
 
         $date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
 
