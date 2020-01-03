@@ -1028,7 +1028,7 @@ $(document).ready(function() {
         //$.ajaxQ.abortAll();
         if (e.handle != true) {
             e.handle = true;
-            var id = $(this).attr('id');
+            var id = this.id;
             switch (id) {
                 case 'del-filter':
                     $.ajaxQ.abortAll();
@@ -1078,36 +1078,43 @@ $(document).ready(function() {
                     $('.em-check:checked').prop('checked', false);
                     $('.nav.navbar-nav').hide();
                     reloadActions('files', undefined, false);
+
+                case 'em-mini-file':
+                    $.ajaxQ.abortAll();
+                    $('#em-appli-block').remove();
+                    $('.em-close-minimise').remove();
+                    $('.em-open-files').remove();
+                    $('.em-hide').hide();
+                    $('#em-last-open').show();
+                    $('#em-last-open .list-group .list-group-item').removeClass('active');
+                    $('#em-files-filters').show();
+                    $('.em-check:checked').prop('checked', false);
+                    $(".main-panel .panel.panel-default").show();
                     break;
 
                 case 'em-next-file':
                     $.ajaxQ.abortAll();
 
-                    var url = document.location.hash.split('#')[1];
-                    if (url != null && url.length >= 20) {
-                        var cfnum = url.split("|")[0];
-                    } else {
-                        var cfnum = document.querySelector('.em-check:checked').id;
-                        if (typeof cfnum !== 'undefined') {
-                            cfnum = cfnum.split('_')[0];
-                        }
+                    var cfnum = document.querySelector('.em-check:checked').id;
+                    if (typeof cfnum !== 'undefined') {
+                        cfnum = cfnum.split('_')[0];
                     }
 
                     var fnumsOnPage = document.getElementsByClassName('em_file_open');
-                    for (var i = 0; i < fnumsOnPage.length; i++) {
-                        if (fnumsOnPage[i].id === cfnum) {
+                    for (var fop = 0; fop < fnumsOnPage.length; fop++) {
+                        if (fnumsOnPage[fop].id === cfnum) {
                             // In case we are on the last fnum of the page, we loop around to -1 so the i+1 value is 0.
-                            if (i+1 === fnumsOnPage.length) {
-                                i = -1;
+                            if (fop === fnumsOnPage.length-1) {
+                                fop = -1;
                             }
                             break;
                         }
                     }
-                    i++;
+                    fop++;
 
 
                     var fnum = new Object();
-                    fnum.fnum = fnumsOnPage[i].id;
+                    fnum.fnum = fnumsOnPage[fop].id;
                     $('.em-check:checked').prop('checked', false);
                     $('#'+fnum.fnum+'_check').prop('checked', true);
 
@@ -1139,31 +1146,26 @@ $(document).ready(function() {
                 case 'em-prev-file':
                     $.ajaxQ.abortAll();
 
-                    var openFile = false;
-
-                    var url = document.location.hash.split('#')[1];
-                    if (url != null && url.length >= 20) {
-                        var cfnum = url.split("|")[0];
-                    } else {
-                        var cfnum = document.querySelector('.em-check:checked').id;
-                        if (typeof cfnum !== 'undefined') {
-                            cfnum = cfnum.split('_')[0];
-                        }
+                    var cfnum = document.querySelector('.em-check:checked').id;
+                    if (typeof cfnum !== 'undefined') {
+                        cfnum = cfnum.split('_')[0];
                     }
 
                     var fnumsOnPage = document.getElementsByClassName('em_file_open');
-                    for (var i = 0; i < fnumsOnPage.length; i++) {
-                        if (fnumsOnPage[i].id === cfnum) {
+                    for (var fop = 0; fop < fnumsOnPage.length; fop++) {
+                        if (fnumsOnPage[fop].id === cfnum) {
                             // In case we are on the first fnum of the page, we loop around to the length so the i-1 value is equal to the last fnum index.
-                            if (i === 0) {
-                                i = fnumsOnPage.length-1;
+                            if (fop === 0) {
+                                fop = fnumsOnPage.length;
                             }
                             break;
                         }
                     }
+                    fop--;
+
 
                     var fnum = new Object();
-                    fnum.fnum = fnumsOnPage[i].id;
+                    fnum.fnum = fnumsOnPage[fop].id;
                     $('.em-check:checked').prop('checked', false);
                     $('#'+fnum.fnum+'_check').prop('checked', true);
 
@@ -1190,20 +1192,6 @@ $(document).ready(function() {
                             console.log(jqXHR.responseText);
                         }
                     });
-                    break;
-
-
-                case 'em-mini-file':
-                    $.ajaxQ.abortAll();
-                    $('#em-appli-block').remove();
-                    $('.em-close-minimise').remove();
-                    $('.em-open-files').remove();
-                    $('.em-hide').hide();
-                    $('#em-last-open').show();
-                    $('#em-last-open .list-group .list-group-item').removeClass('active');
-                    $('#em-files-filters').show();
-                    $('.em-check:checked').prop('checked', false);
-                    $(".main-panel .panel.panel-default").show();
                     break;
 
                 case 'em-see-files':
