@@ -326,6 +326,10 @@ JText::script('COM_EMUNDUS_CANNOT_RETRIEVE_EMUNDUS_PROGRAMME_LIST');
 JText::script('COM_EMUNDUS_DATA_TO_ADD');
 JText::script('COM_EMUNDUS_ERROR_MISSING_FORM_DATA');
 
+//Award list
+JText::script('COM_EMUNDUS_VOTE_NON_ACCEPTED');
+JText::script('COM_EMUNDUS_VOTE_ACCEPTED');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');
 //JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');
