@@ -1083,12 +1083,9 @@ $(document).ready(function() {
                 case 'em-next-file':
                     $.ajaxQ.abortAll();
 
-                    var openFile = false;
-
-                    var url = $(location).attr('href').split('#');
-                    if (url[1] != null && url[1].length >= 20) {
-                        var cfnum = url[1].split("|")[0];
-                        openFile = true;
+                    var url = document.location.hash.split('#')[1];
+                    if (url != null && url.length >= 20) {
+                        var cfnum = url.split("|")[0];
                     } else {
                         var cfnum = document.querySelector('.em-check:checked').id;
                         if (typeof cfnum !== 'undefined') {
@@ -1114,31 +1111,29 @@ $(document).ready(function() {
                     $('.em-check:checked').prop('checked', false);
                     $('#'+fnum.fnum+'_check').prop('checked', true);
 
-                    if (openFile) {
-                        addDimmer();
-                        fnum.sid = parseInt(fnum.fnum.substr(21, 7));
-                        fnum.cid = parseInt(fnum.fnum.substr(14, 7));
+                    addDimmer();
+                    fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+                    fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
-                        $.ajax({
-                            type: 'get',
-                            url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
-                            dataType: "json",
-                            data: ({
-                                fnum: fnum.fnum
-                            }),
-                            success: function (result) {
-                                if (result.status) {
-                                    var fnumInfos = result.fnumInfos;
-                                    fnum.name = fnumInfos.name;
-                                    fnum.label = fnumInfos.label;
-                                    openFiles(fnum);
-                                }
-                            },
-                            error: function (jqXHR) {
-                                console.log(jqXHR.responseText);
+                    $.ajax({
+                        type: 'get',
+                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
+                        dataType: "json",
+                        data: ({
+                            fnum: fnum.fnum
+                        }),
+                        success: function (result) {
+                            if (result.status) {
+                                var fnumInfos = result.fnumInfos;
+                                fnum.name = fnumInfos.name;
+                                fnum.label = fnumInfos.label;
+                                openFiles(fnum);
                             }
-                        });
-                    }
+                        },
+                        error: function (jqXHR) {
+                            console.log(jqXHR.responseText);
+                        }
+                    });
                     break;
 
                 case 'em-prev-file':
@@ -1146,10 +1141,9 @@ $(document).ready(function() {
 
                     var openFile = false;
 
-                    var url = $(location).attr('href').split('#');
-                    if (url[1] != null && url[1].length >= 20) {
-                        var cfnum = url[1].split("|")[0];
-                        openFile = true;
+                    var url = document.location.hash.split('#')[1];
+                    if (url != null && url.length >= 20) {
+                        var cfnum = url.split("|")[0];
                     } else {
                         var cfnum = document.querySelector('.em-check:checked').id;
                         if (typeof cfnum !== 'undefined') {
@@ -1173,31 +1167,29 @@ $(document).ready(function() {
                     $('.em-check:checked').prop('checked', false);
                     $('#'+fnum.fnum+'_check').prop('checked', true);
 
-                    if (openFile) {
-                        addDimmer();
-                        fnum.sid = parseInt(fnum.fnum.substr(21, 7));
-                        fnum.cid = parseInt(fnum.fnum.substr(14, 7));
+                    addDimmer();
+                    fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+                    fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
-                        $.ajax({
-                            type: 'get',
-                            url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
-                            dataType: "json",
-                            data: ({
-                                fnum: fnum.fnum
-                            }),
-                            success: function (result) {
-                                if (result.status) {
-                                    var fnumInfos = result.fnumInfos;
-                                    fnum.name = fnumInfos.name;
-                                    fnum.label = fnumInfos.label;
-                                    openFiles(fnum);
-                                }
-                            },
-                            error: function (jqXHR) {
-                                console.log(jqXHR.responseText);
+                    $.ajax({
+                        type: 'get',
+                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
+                        dataType: "json",
+                        data: ({
+                            fnum: fnum.fnum
+                        }),
+                        success: function (result) {
+                            if (result.status) {
+                                var fnumInfos = result.fnumInfos;
+                                fnum.name = fnumInfos.name;
+                                fnum.label = fnumInfos.label;
+                                openFiles(fnum);
                             }
-                        });
-                    }
+                        },
+                        error: function (jqXHR) {
+                            console.log(jqXHR.responseText);
+                        }
+                    });
                     break;
 
 
