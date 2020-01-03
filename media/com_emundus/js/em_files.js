@@ -4621,8 +4621,8 @@ $(document).ready(function() {
                                 position: 'center',
                                 type: 'info',
                                 title: Joomla.JText._('EMAIL_PREVIEW'),
-                                html: result.html,
-                                width: 800,
+                                html: '<div id="email-recap">'+result.html+'</div>',
+                                width: 1000,
                                 showCancelButton: true,
                                 confirmButtonText: Joomla.JText._('SEND_CUSTOM_EMAIL')
                             }).then(function(confirm) {
@@ -4647,7 +4647,6 @@ $(document).ready(function() {
                                                     var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
                                                     result.sent.forEach(function (element) {
                                                         sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
-                                                        console.log(element);
                                                     });
 
                                                     Swal.fire({
