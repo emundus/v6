@@ -97,7 +97,7 @@ if ($allowed_attachments !== true) {
 
         <!-- Add current user to Bcc -->
         <div id="cc-bcc" class="input-group form-inline col-md-12">
-            <input type="text" id="cc-bcc-mails" class="cc-bcc-mails" placeholder="<?= JText::_('EMAIL'); ?> ...">
+            <input type="text" id="cc-bcc-mails" class="cc-bcc-mails" placeholder="<?= JText::_('COM_EMUNDUS_EMAILS_CC_BCC'); ?> ...">
         </div><!-- /input-group -->
 
         <div class="form-group em-form-recipients">
