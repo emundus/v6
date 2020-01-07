@@ -910,9 +910,9 @@ class EmundusModelApplication extends JModelList {
 	                $title = explode('-', JText::_($itemt->label));
 
 	                if (empty($title[1])) {
-		                $forms .= JText::_($itemt->label);
+		                $forms .= JText::_(trim($itemt->label));
 	                } else {
-		                $forms .= JText::_($title[1]);
+		                $forms .= JText::_(trim($title[1]));
 	                }
                     $forms .= '</h3>';
 	                if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
