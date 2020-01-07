@@ -2337,8 +2337,8 @@ if (JFactory::getUser()->id == 63)
         $query .= $leftJoin. ' '. $leftJoinMulti;
 
         $query .= 'where u.block=0 AND c.fnum in ("'.implode('","', $fnums).'") ';
-		
-        if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && (!empty(JFactory::getSession()->get('emundusUser')->fnums) && !empty(array_diff($fnums, array_keys(JFactory::getSession()->get('emundusUser')->fnums))))) {
+
+        if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && (!empty(JFactory::getSession()->get('emundusUser')->fnums) && !empty(array_diff($fnums, array_keys(JFactory::getSession()->get('emundusUser')->fnums)))) || ((@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) && $eval_can_see_eval == 0)) {
             $query .= ' AND jos_emundus_evaluations.user = '.JFactory::getUser()->id;
         }
 
