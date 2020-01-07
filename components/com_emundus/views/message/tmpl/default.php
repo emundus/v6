@@ -222,6 +222,8 @@ if ($allowed_attachments !== true) {
         </ul>
     </div>
 
+    <a href="index.php?option=com_emundus&view=export_select_columns&format=html&layout=all_programs&Itemid=1173" target="_blank"><?= JText::_('COM_EMUNDUS_SEE_TAGS'); ?></a>
+
     <input type="hidden" name="task" value=""/>
 </form>
 

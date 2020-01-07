@@ -532,7 +532,7 @@ class EmundusHelperFiles
 
         $db = JFactory::getDBO();
 
-        if (count($code) == 0) {
+        if (!empty($code)) {
             $params = JFactory::getSession()->get('filt_params');
             $programme = $params['programme'];
             $campaigns = @$params['campaign'];
