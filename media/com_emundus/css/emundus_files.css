@@ -1524,7 +1524,18 @@ label[for="em-file_to_upload"]:hover {
     overflow: hidden;
     background: white;
     border: 1px solid #ced4da;
+}
 
+/* Email preview SweetAlert */
+#email-recap .alert {
+    display: block;
+}
+#email-recap .email-info {
+    text-align: left;
+}
+#email-recap ul {
+    margin-top: .5rem;
+    margin-bottom: .5rem;
 }
 
 /* Messages sent / failed emails list style. Message recipient list */

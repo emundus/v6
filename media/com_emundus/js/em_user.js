@@ -133,7 +133,7 @@ function refreshFilter() {
 			$("#em-user-filters .panel-body").empty();
 			$("#em-user-filters .panel-body").append(data);
 			$('.chzn-select').chosen();
-
+			reloadData();
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
 			console.log(jqXHR.responseText);
@@ -264,10 +264,9 @@ $(document).ready(function () {
 						success: function (result) {
 							if (result.status) {
 								refreshFilter();
-								reloadData();
 							}
 						},
-						error: function (jqXHR, textStatus, errorThrown) {
+						error: function (jqXHR) {
 							console.log(jqXHR.responseText);
 						}
 					});

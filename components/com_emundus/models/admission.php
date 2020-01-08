@@ -100,13 +100,15 @@ class EmundusModelAdmission extends JModelList
         $hidden = 0;
 		$elements_eval = $this->getAllAdmissionElements($show_in_list_summary, $hidden);
 
-		if (count($elements_eval))
+		if (!empty($elements_eval)) {
 			$this->elements_id .= implode(',', $elements_eval);
+		}
 
 		if ($session->has('adv_cols')) {
 			$adv = $session->get('adv_cols');
-			if (!empty($adv))
+			if (!empty($adv)) {
 				$this->elements_id .= ','.implode(',', $adv);
+			}
 		}
 
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
@@ -179,20 +181,25 @@ class EmundusModelAdmission extends JModelList
 														FROM '.$def_elmt->table_join.'
 														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
 													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
-					} else
-						$this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
+					} else {
+						$this->_elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name.' AS '.$def_elmt->tab_name.'___'.$def_elmt->element_name;
+					}
 				}
 			}
 		}
-		if (in_array('overall', $em_blocks_names))
+		if (in_array('overall', $em_blocks_names)) {
 			$this->_elements_default[] = ' AVG(ee.overall) as overall ';
+		}
 
-		if (count($col_elt) == 0)
+		if (empty($col_elt)) {
 			$col_elt = array();
-		if (count($col_other) == 0)
+		}
+		if (empty($col_other)) {
 			$col_other = array();
-		if (count(@$this->_elements_default_name) == 0)
+		}
+		if (empty(@$this->_elements_default_name)) {
 			$this->_elements_default_name = array();
+		}
 
 		$this->col = array_merge($col_elt, $col_other, $this->_elements_default_name);
 
@@ -217,13 +224,17 @@ class EmundusModelAdmission extends JModelList
 		return $this->_elements;
 	}
 
-    /**
-     * Get list of admission elements
-     * @param 	  int displayed in Fabrik List ; yes=1
-     * @param 	  int hidden from Fabrik List ; yes=1
-     * @return    string list of Fabrik element ID used in admission form
-     **/
-    public function getAdmissionElementsName($show_in_list_summary=1, $hidden=0, $code = null) {
+	/**
+	 * Get list of admission elements
+	 *
+	 * @param   int   $show_in_list_summary
+	 * @param   int   $hidden
+	 * @param   null  $code
+	 *
+	 * @return string list of Fabrik element ID used in admission form
+	 * @throws Exception
+	 */
+    public function getAdmissionElementsName($show_in_list_summary = 1, $hidden = 0, $code = null) {
         $session = JFactory::getSession();
 		$h_list = new EmundusHelperList;
 
@@ -239,27 +250,28 @@ class EmundusModelAdmission extends JModelList
                         $decision_elt_list = array();
                     } else {
 						$decision_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-                        if (count($decision_elt_list)>0) {
+                        if (count($decision_elt_list) > 0) {
                             foreach ($decision_elt_list as $del) {
-                                if (isset($del->element_id) && !empty($del->element_id))
-                                    $elements[] = $h_list->getElementsDetailsByID($del->element_id)[0];
+                                if (isset($del->element_id) && !empty($del->element_id)) {
+	                                $elements[] = $h_list->getElementsDetailsByID($del->element_id)[0];
+                                }
                             }
                         }
                     }
                 }
-
-            }else{
-				if(!empty($code)){
+            } else {
+				if (!empty($code)) {
 					foreach ($code as $value) {
 						$groups = $this->getGroupsAdmissionByProgramme($value);
 						if (empty($groups)) {
 							$decision_elt_list = array();
 						} else {
 							$decision_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-							if (count($decision_elt_list)>0) {
+							if (count($decision_elt_list) > 0) {
 								foreach ($decision_elt_list as $del) {
-									if (isset($del->element_id) && !empty($del->element_id))
+									if (isset($del->element_id) && !empty($del->element_id)) {
 										$elements[] = $h_list->getElementsDetailsByID($del->element_id)[0];
+									}
 								}
 							}
 						}

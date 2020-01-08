@@ -302,8 +302,36 @@ class EmundusModelMessages extends JModelList {
             JLog::add('Error getting upload filename in model/messages at query '.$query, JLog::ERROR, 'com_emudus');
             return false;
         }
-
     }
+
+	/**
+	 * Gets the a file type label from the setup_attachment table .
+	 *
+	 * @since 3.8.13
+	 *
+	 * @param Int    $attachment_id the ID of the attachment used in setup_attachment
+	 *
+	 * @return bool|mixed
+	 */
+	function get_filename($attachment_id) {
+
+		$db = JFactory::getDbo();
+
+		$query = $db->getQuery(true);
+		$query->select($db->quoteName('value'))
+			->from($db->quoteName('#__emundus_setup_attachments'))
+			->where($db->quoteName('id').' = '.$attachment_id);
+
+		try {
+
+			$db->setQuery($query);
+			return $db->loadResult();
+
+		} catch (Exception $e) {
+			JLog::add('Error getting upload filename in model/messages at query '.$query, JLog::ERROR, 'com_emudus');
+			return false;
+		}
+	}
 
     /**
      * Gets the a file from the setup_letters table linked to an fnum.

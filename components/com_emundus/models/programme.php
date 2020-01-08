@@ -76,8 +76,7 @@ class EmundusModelProgramme extends JModelList {
      * @return array
      * get list of declared programmes
      */
-    public function getProgrammes($published = null, $codeList = array())
-    {
+    public function getProgrammes($published = null, $codeList = array()) {
         $db = $this->getDbo();
 
         $query = 'select *
@@ -86,19 +85,20 @@ class EmundusModelProgramme extends JModelList {
         if (isset($published) && !empty($published)) {
           $query .= ' AND published = '.$published;
         }
-        if (count($codeList['IN']) > 0) {
-          $query .= ' AND code IN ('.implode(',', $db->Quote($codeList['IN'])).')';
+
+        if (!empty($codeList)) {
+	        if (count($codeList['IN']) > 0) {
+		        $query .= ' AND code IN ('.implode(',', $db->Quote($codeList['IN'])).')';
+	        }
+	        if (count($codeList['NOT_IN']) > 0) {
+		        $query .= ' AND code NOT IN ('.implode(',', $db->Quote($codeList['NOT_IN'])).')';
+	        }
         }
-        if (count($codeList['NOT_IN']) > 0) {
-          $query .= ' AND code NOT IN ('.implode(',', $db->Quote($codeList['NOT_IN'])).')';
-        }
-        try
-        {
+
+        try {
             $db->setQuery($query);
             return $db->loadAssocList('code');
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             error_log($e->getMessage(), 0);
             return array();
         }
