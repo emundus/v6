@@ -532,7 +532,7 @@ class EmundusHelperFiles
 
         $db = JFactory::getDBO();
 
-        if (count($code) == 0) {
+        if (!empty($code)) {
             $params = JFactory::getSession()->get('filt_params');
             $programme = $params['programme'];
             $campaigns = @$params['campaign'];
@@ -2142,9 +2142,9 @@ class EmundusHelperFiles
                     {
                         $str .= '<tr>';
                         if (strpos($element->element_name, 'comment') !== false) {
-	                        $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.JText::_($eval[$k]).'</td>';
+	                        $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
                         } else {
-	                        $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.JText::_($eval[$k]).'</td>';
+	                        $str .= '<td width="70%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="30%">'.JText::_($eval[$k]).'</td>';
                         }
                         $str .= '</tr>';
                     }
@@ -2293,6 +2293,7 @@ class EmundusHelperFiles
 
                 if ($element->element_name != 'id' &&
                     $element->element_name != 'time_date' &&
+                    $element->element_name != 'date_time' &&
                     $element->element_name != 'campaign_id' &&
                     $element->element_name != 'student_id'&&
                     $element->element_name != 'user' &&
@@ -2349,6 +2350,7 @@ class EmundusHelperFiles
 
                 if ($element->element_name != 'id' &&
                     $element->element_name != 'time_date' &&
+                    $element->element_name != 'date_time' &&
                     $element->element_name != 'campaign_id' &&
                     $element->element_name != 'student_id'&&
                     $element->element_name != 'user' &&

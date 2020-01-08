@@ -111,7 +111,7 @@ if (!$c_messages->sendEmailNoFnum($email, $emailTemplate, $post)) {
 if ($redirect) {
 
 	$update = [
-		$db->quoteName('civility').' = '.$db->quoteName($formModel->getElementData('jos_emundus_users___civility')),
+		$db->quoteName('civility').' = '.$db->quoteName($formModel->getElementData('jos_emundus_users___civility')[0]),
 		$db->quoteName('firstname').' = '.$db->quoteName($formModel->getElementData('jos_emundus_users___firstname')),
 		$db->quoteName('lastname').' = '.$db->quoteName($formModel->getElementData('jos_emundus_users___lastname')),
 		$db->quoteName('birthday').' = '.$db->quoteName($formModel->getElementData('jos_emundus_users___birthday'))

@@ -20,11 +20,15 @@ $baseurl 		= JURI::base();
 $db 			= JFactory::getDBO();
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $alert_new_attachment = $eMConfig->get('alert_new_attachment');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+$m_files = new EmundusModelFiles();
 
 $aid = $_REQUEST['jos_emundus_uploads___attachment_id'];
 $fnum = $_REQUEST['jos_emundus_uploads___fnum'];
-if(is_array($aid))
-	$aid = $aid[0];
+
+if(is_array($aid)) {
+    $aid = $aid[0];
+}
 
 $can_be_view 	= $jinput->get('jos_emundus_uploads___can_be_viewed');
 $inform_applicant_by_email 	= $jinput->get('jos_emundus_uploads___inform_applicant_by_email');
@@ -43,7 +47,9 @@ $db->setQuery( $query );
 $attachment_params = $db->loadObject();
 
 $nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
-if(!isset($attachment_params->displayed) || $attachment_params->displayed === '0') $nom.= "_locked";
+if(!isset($attachment_params->displayed) || $attachment_params->displayed === '0') {
+    $nom.= "_locked"
+};
 $nom .= $attachment_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
 // test if directory exist
@@ -51,51 +57,46 @@ if (!file_exists(EMUNDUS_PATH_ABS.$upload->user_id)) {
 	mkdir(EMUNDUS_PATH_ABS.$upload->user_id, 0777, true);
 }
 
-if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$upload->user_id.DS.$nom))
-	die("ERROR_MOVING_UPLOAD_FILE");
+if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$upload->user_id.DS.$nom)) {
+    die("ERROR_MOVING_UPLOAD_FILE");
+}
 
 $db->setQuery('UPDATE #__emundus_uploads SET filename="'.$nom.'" WHERE id='.$upload->id);
 $db->execute();
 
 // PHOTOS
 if ($attachment_params->lbl=="_photo") {
-	/*$checkdouble_query = 'SELECT count(user_id) FROM #__emundus_uploads WHERE attachment_id=(SELECT id FROM #__emundus_setup_attachments WHERE lbl="_photo") AND user_id='.$student->id. ' AND fnum like '.$db->Quote($fnum);
-	$db->setQuery($checkdouble_query);
-	$cpt = $db->loadResult();
-	if ($cpt>0) {
-		$query = '';
-	} else {*/
-		$pathToThumbs = EMUNDUS_PATH_ABS.$student->id.DS.$nom;
-		$file_src = EMUNDUS_PATH_ABS.$student->id.DS.$nom;
-		list($w_src, $h_src, $type) = getimagesize($file_src);  // create new dimensions, keeping aspect ratio
+    $pathToThumbs = EMUNDUS_PATH_ABS.$student->id.DS.$nom;
+    $file_src = EMUNDUS_PATH_ABS.$student->id.DS.$nom;
+    list($w_src, $h_src, $type) = getimagesize($file_src);  // create new dimensions, keeping aspect ratio
 
-		switch ($type){
-			case 1:   //   gif -> jpg
-				$img = imagecreatefromgif($file_src);
-			break;
-			case 2:   //   jpeg -> jpg
-				$img = imagecreatefromjpeg($file_src);
-			break;
-			case 3:  //   png -> jpg
-				$img = imagecreatefrompng($file_src);
-			break;
-			default:
-				$img = imagecreatefromjpeg($file_src);
-			break;
-		}
-		$new_width = 200;
-		$new_height = floor( $h_src * ( $new_width / $w_src ) );
-		$tmp_img = imagecreatetruecolor( $new_width, $new_height );
-		imagecopyresized( $tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src );
-		imagejpeg( $tmp_img, EMUNDUS_PATH_ABS.$student->id.DS.'tn_'.$nom);
-		$student->avatar = $nom;
-	//}
+    switch ($type){
+        case 1:   //   gif -> jpg
+            $img = imagecreatefromgif($file_src);
+        break;
+        case 2:   //   jpeg -> jpg
+            $img = imagecreatefromjpeg($file_src);
+        break;
+        case 3:  //   png -> jpg
+            $img = imagecreatefrompng($file_src);
+        break;
+        default:
+            $img = imagecreatefromjpeg($file_src);
+        break;
+    }
+    $new_width = 200;
+    $new_height = floor( $h_src * ( $new_width / $w_src ) );
+    $tmp_img = imagecreatetruecolor( $new_width, $new_height );
+    imagecopyresized( $tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $w_src, $h_src );
+    imagejpeg( $tmp_img, EMUNDUS_PATH_ABS.$student->id.DS.'tn_'.$nom);
+    $student->avatar = $nom;
 }
 
 // Pour tous les mails
 $user = JFactory::getUser();
-$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/','/\n/');
-$replacements = array ($student->id, $student->name, $student->email, '<br />');
+$fnumInfos = $m_files->getFnumInfos($fnum);
+$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[FNUM\]/','/\[CAMPAIGN_LABEL\]/', '/\[SITE_URL\]/','/\n/');
+$replacements = array ($student->id, $student->name, $student->email, $fnum, $fnumInfos["label"],JURI::base(),'<br />');
 $mode = 1;
 if ($can_be_view == 1) {
 	$attachment[] = EMUNDUS_PATH_ABS.$upload->user_id.DS.$nom;
@@ -122,10 +123,12 @@ if ($inform_applicant_by_email == 1) {
 	$email_from_sys = $app->getCfg('emailfrom');
 	$mail_from_name = $fromname;//$app->getCfg('fromname');
 	// If the email sender has the same domain as the system sender address.
-	if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-		$mail_from_address = $from;
-	else
-		$mail_from_address = $email_from_sys;
+	if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+        $mail_from_address = $from;
+    }
+	else {
+        $mail_from_address = $email_from_sys;
+    }
 
 		// Set sender
 	$sender = [
@@ -141,8 +144,9 @@ if ($inform_applicant_by_email == 1) {
     $mailer->isHTML(true);
     $mailer->Encoding = 'base64';
     $mailer->setBody($body);
-    if ($can_be_view == 1)
-    	$mailer->addAttachment($attachment);
+    if ($can_be_view == 1) {
+        $mailer->addAttachment($attachment);
+    }
 
     $send = $mailer->Send();
     if ( $send !== true ) {

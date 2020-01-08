@@ -18,7 +18,7 @@ $site_offset = $config->get('offset');
 
 ?>
 
-<form action="<?php echo JRoute::_(JUri::getInstance()->toString(), true, $params->get('')); ?>" method="post" id="search_program">
+<form action="index.php" method="post" id="search_program">
 	<?php if (isset($searchword) && !empty($searchword)) :?>
 		<div class="g-block size-100">
 			<p><b><?php echo JText::_("RESULT_FOR")." : ".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8'); ?></b></p>
@@ -206,7 +206,10 @@ $site_offset = $config->get('offset');
 							<?php
                                 // The register URL does not work  with SEF, this workaround helps counter this.
                                 if ($sef == 0) {
-                                    $register_url = "index.php?option=com_users&view=".$redirect_url."&course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
+                                	if(!isset($redirect_url) || empty($redirect_url)) {
+                                		$redirect_url = "index.php?option=com_users&view=registration";
+                                	}
+                                    $register_url = $redirect_url."&course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
                                 } else {
                                     $register_url = $redirect_url."?course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
                                 }

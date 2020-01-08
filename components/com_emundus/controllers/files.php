@@ -1750,6 +1750,10 @@ class EmundusControllerFiles extends JControllerLegacy
                 $application_form_name = preg_replace('/\s/', '', $application_form_name);
                 $application_form_name = strtolower($application_form_name);
 
+                if ($file != $application_form_name.'.pdf') {
+                    unlink(JPATH_BASE.DS.'tmp'.DS.$application_form_name.'.pdf');
+                }
+
                 $file = $application_form_name.'.pdf';
             }
         }

@@ -1,11 +1,11 @@
 jQuery(function($){
 	//SCROLL SIDEBAR
 		jQuery(document).ready(function(){
-
+          
             document.querySelectorAll(".candidacy-files-list .row").forEach(function(app) {
-            	document.querySelector("#"+app.id+" a").href="/index.php?option=com_emundus&view=programme&id="+app.id.slice(-9,-7)+"&Itemid=1531";
+            	document.querySelector("#"+app.id+" a").href="index.php?option=com_emundus&view=programme&id="+app.id.slice(-9,-7)+"&Itemid=1531";
           	});
-
+          
              if($(window).width() > 991){
 
                  $(window).scroll(function() {
@@ -68,10 +68,10 @@ jQuery(function($){
                  });
                  $(window).scroll();
          }
-
-
+          
+     
 });
-
+     
      // SMOOTH-SCROLL DES ANCRES
          $(function() {
           $("#g-sidebar .em_module>.em_form>a[href*='#']:not([href='#'])").click(function() {
@@ -87,16 +87,11 @@ jQuery(function($){
               }
           });
       });
-
-
-
+  
+  
+  
   $(function() {
          jQuery('.applicant-form').ready(function(){
-
-           if (document.querySelector('.icon-question-sign')) {
-             document.querySelector('.icon-question-sign').className = ('far fa-question-circle');
-           }
-
 			/*
            var labels = document.querySelectorAll('.applicant-form label[opts*="Validation"]');
 
@@ -104,7 +99,7 @@ jQuery(function($){
               label.innerHTML += " <span style='color:red;'> *<span>";
             });
             */
-
+            
              var selects = document.querySelectorAll('.applicant-form select');
            	selects.forEach(function(select) {
               if(select.value === '') {
@@ -121,7 +116,7 @@ jQuery(function($){
             });
 
           });
-
+    
     	jQuery('.applicant-form select').on('change', function () {
           if(this.value != '') {
             this.style.color = 'black';
@@ -151,48 +146,37 @@ jQuery(function($){
        }
 	 });
 
-     // REMOVE br FABRIK
+     // REMOVE br FABRIK 
         $(".fabrikElement br").remove();
-
-  		// Remplacer le titre de la pagre contact par un H1
+  
+  		// Remplacer le titre de la pagre contact par un H1   
      	$(".view-contact .contact-name").unwrap().wrap("<h1 class='contact-name'></h1>");
-
-  $('.login .form-validate.form-horizontal.well .controls .btn-primary').css({
-        'width' : $('.login .form-validate .controls').width()
-    });
-
-
+  
+  
+  
+ 
   	var form = $('#form_307');
   	var parentForm = form.parent();
     parentForm.addClass('em-formRegistrationCenter');
-
-  	/*var loginForm = $('#login-form');
-    var parentloginForm = loginForm.parent();
-    parentloginForm.addClass('em-formRegistrationCenter');*/
-
- var widthInputForm = $('#form_307 fieldset .row-fluid .control-group .controls input#jos_emundus_users___lastname').width();
-  var widthInputFormValidate = $('.em-formRegistrationCenter .control-group .controls').width();
+  
+  var widthInputForm = $('#form_307 fieldset .row-fluid .control-group .controls input#jos_emundus_users___lastname').width();
+  var widthInputFormValidate = $('.login .form-validate .controls').width();
   var heightInputForm = $('#form_307 .row-fluid .control-group .controls input#jos_emundus_users___lastname').height();
-  var heightInputFormValidate = $('.em-formRegistrationCenter .control-group .controls').height();
+  var heightInputFormValidate = $('.login .form-validate .controls').height();
 
-  $('.em-formRegistrationCenter .login-button').css({
-      'width' : widthInputFormValidate,
-      'height': '41px'
   });
   $('#form_307 .span4').css({
       'width':widthInputForm,
-      'height': '41px'
+      'height': heightInputForm
   });
   $('#form_307 .span4 .btn-group button').css({
       'width':widthInputForm,
-      'height': '41px'
+      'height': heightInputForm
   });
   //Largeur égale entre le bouton retour et sauvegarder
     var width = $('.span4:not(offset) .btn-group').width();
     $('.goback-btn').css('width',width);
-
+  
     $('.com_users .nav-tabs li:nth-of-type(2)').remove();
-
-    $('.em-formRegistrationCenter .add-on label').removeClass('element-invisible').addClass('fabrikLabel control-label fabrikTip');
-   $('.unstyled li:eq(1)').css('display','none');
+  
   });

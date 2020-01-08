@@ -2271,16 +2271,24 @@
 			// add create option
 			has_create_option = self.canCreate(query);
 			if (has_create_option) {
-				if($('#view').val() != "users")
-					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('FNUM')}, 'FNUM'));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('ID')}, 'ID'));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('EMAIL')}, 'EMAIL'));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('USERNAME')}, 'USERNAME'));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('FIRST_NAME')}, 'FIRST_NAME'));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('LAST_NAME')}, 'LAST_NAME'));
-				$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') +Joomla.JText._('ALL')}, 'ALL'));
+				var input_id = self.$input[0].id;
+				if (input_id === 'input-tags') {
+					if ($('#view').val() !== "users") {
+						$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') + Joomla.JText._('FNUM')}, 'FNUM'));
+					}
+					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') + Joomla.JText._('ID')}, 'ID'));
+					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') + Joomla.JText._('EMAIL')}, 'EMAIL'));
+					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') + Joomla.JText._('USERNAME')}, 'USERNAME'));
+					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') + Joomla.JText._('FIRST_NAME')}, 'FIRST_NAME'));
+					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') + Joomla.JText._('LAST_NAME')}, 'LAST_NAME'));
+					$dropdown_content.prepend(self.render('option_create', {input: query + Joomla.JText._('IN') + Joomla.JText._('ALL')}, 'ALL'));
+				} else if (input_id === 'cc-bcc-mails') {
+					$dropdown_content.prepend(self.render('option_create', {input: 'Cc: <'+query+'>'}, 'CC'));
+					$dropdown_content.prepend(self.render('option_create', {input: 'Bcc: <'+query+'>'}, 'BCC'));
+				}
 				$create = $($dropdown_content[0].childNodes[0]);
 			}
+
 			// activate
 			self.hasOptions = results.items.length > 0 || has_create_option;
 			if (self.hasOptions) {

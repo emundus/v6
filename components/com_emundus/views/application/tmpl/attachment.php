@@ -35,6 +35,10 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                     </button>
                 <?php endif; ?>
             </h3>
+            <div class="btn-group pull-right">
+                <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
+                <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
+            </div>
         </div>
 
         <?php $i = 1;
