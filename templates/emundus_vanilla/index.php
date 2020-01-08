@@ -40,7 +40,6 @@ $style = $this->params->get('custom_css');
 if (($style || $style == Null) && !empty($style)) {
  $doc->addStyleDeclaration($style);
 }
-$doc->addScript($template_path.'/js/webflow.js');
 ?>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <link rel="icon" type="image/x-icon" href="/" />
