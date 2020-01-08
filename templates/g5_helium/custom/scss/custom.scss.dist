@@ -413,6 +413,11 @@ button#back,
     }
 }
 
+.pull-right #em-prev-file, .pull-right #em-next-file {
+    &:hover {
+        color: $base-secondary-color !important;
+    }
+}
 
 input[type="color"]:hover,
 input[type="date"]:hover,

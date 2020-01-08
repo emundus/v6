@@ -453,7 +453,7 @@ function openFiles(fnum) {
 
 }
 
-    function getApplicationMenu() {
+function getApplicationMenu() {
     $.ajax({
         type:'get',
         url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&Itemid='.itemId,
@@ -1028,7 +1028,7 @@ $(document).ready(function() {
         //$.ajaxQ.abortAll();
         if (e.handle != true) {
             e.handle = true;
-            var id = $(this).attr('id');
+            var id = this.id;
             switch (id) {
                 case 'del-filter':
                     $.ajaxQ.abortAll();
@@ -1090,6 +1090,108 @@ $(document).ready(function() {
                     $('#em-files-filters').show();
                     $('.em-check:checked').prop('checked', false);
                     $(".main-panel .panel.panel-default").show();
+                    break;
+
+                case 'em-next-file':
+                    $.ajaxQ.abortAll();
+
+                    var cfnum = document.querySelector('.em-check:checked').id;
+                    if (typeof cfnum !== 'undefined') {
+                        cfnum = cfnum.split('_')[0];
+                    }
+
+                    var fnumsOnPage = document.getElementsByClassName('em_file_open');
+                    for (var fop = 0; fop < fnumsOnPage.length; fop++) {
+                        if (fnumsOnPage[fop].id === cfnum) {
+                            // In case we are on the last fnum of the page, we loop around to -1 so the i+1 value is 0.
+                            if (fop === fnumsOnPage.length-1) {
+                                fop = -1;
+                            }
+                            break;
+                        }
+                    }
+                    fop++;
+
+
+                    var fnum = new Object();
+                    fnum.fnum = fnumsOnPage[fop].id;
+                    $('.em-check:checked').prop('checked', false);
+                    $('#'+fnum.fnum+'_check').prop('checked', true);
+
+                    addDimmer();
+                    fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+                    fnum.cid = parseInt(fnum.fnum.substr(14, 7));
+
+                    $.ajax({
+                        type: 'get',
+                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
+                        dataType: "json",
+                        data: ({
+                            fnum: fnum.fnum
+                        }),
+                        success: function (result) {
+                            if (result.status) {
+                                var fnumInfos = result.fnumInfos;
+                                fnum.name = fnumInfos.name;
+                                fnum.label = fnumInfos.label;
+                                openFiles(fnum);
+                            }
+                        },
+                        error: function (jqXHR) {
+                            console.log(jqXHR.responseText);
+                        }
+                    });
+                    break;
+
+                case 'em-prev-file':
+                    $.ajaxQ.abortAll();
+
+                    var cfnum = document.querySelector('.em-check:checked').id;
+                    if (typeof cfnum !== 'undefined') {
+                        cfnum = cfnum.split('_')[0];
+                    }
+
+                    var fnumsOnPage = document.getElementsByClassName('em_file_open');
+                    for (var fop = 0; fop < fnumsOnPage.length; fop++) {
+                        if (fnumsOnPage[fop].id === cfnum) {
+                            // In case we are on the first fnum of the page, we loop around to the length so the i-1 value is equal to the last fnum index.
+                            if (fop === 0) {
+                                fop = fnumsOnPage.length;
+                            }
+                            break;
+                        }
+                    }
+                    fop--;
+
+
+                    var fnum = new Object();
+                    fnum.fnum = fnumsOnPage[fop].id;
+                    $('.em-check:checked').prop('checked', false);
+                    $('#'+fnum.fnum+'_check').prop('checked', true);
+
+                    addDimmer();
+                    fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+                    fnum.cid = parseInt(fnum.fnum.substr(14, 7));
+
+                    $.ajax({
+                        type: 'get',
+                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
+                        dataType: "json",
+                        data: ({
+                            fnum: fnum.fnum
+                        }),
+                        success: function (result) {
+                            if (result.status) {
+                                var fnumInfos = result.fnumInfos;
+                                fnum.name = fnumInfos.name;
+                                fnum.label = fnumInfos.label;
+                                openFiles(fnum);
+                            }
+                        },
+                        error: function (jqXHR) {
+                            console.log(jqXHR.responseText);
+                        }
+                    });
                     break;
 
                 case 'em-see-files':
