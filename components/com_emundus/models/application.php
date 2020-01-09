@@ -1421,9 +1421,9 @@ class EmundusModelApplication extends JModelList {
                     $forms .= '<hr><h3 '.$breaker.'>';
                     $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1])) {
-	                    $forms .= JText::_($itemt->label);
+                        $forms .= JText::_(trim($itemt->label));
                     } else {
-	                    $forms .= JText::_($title[1]);
+                        $forms .= JText::_(trim($title[1]));
                     }
                 }
 
