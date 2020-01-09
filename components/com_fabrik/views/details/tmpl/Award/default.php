@@ -73,7 +73,10 @@ echo $this->loadTemplate('relateddata');
 	</div>
 <?php
 endforeach;*/
+$fnum = $this->elements['fnum']->element;
+$current_user = JFactory::getUser();
 
+$thematique = $this->elements['thematique']->element;
 foreach ($this->groups as $group) :
     $this->elements = $group->elements;
     $filename1 = $m_award->getUpload($this->elements['fnum']->element,$this->elements['attachment_id']->element);
@@ -101,7 +104,7 @@ foreach ($this->groups as $group) :
     <hr>
     <p id="em-vote">Votez: <?= $this->nb_vote ;?></p>
     <div class="em-cardContainer-card-vote-button">
-        <a onclick="addVote('<?= $fnum;?>')">YES <i class="fas fa-thumbs-up"></i></a>
+        <a onclick="addVote('<?= $fnum.','.$current_user->id;?>')">YES <i class="fas fa-thumbs-up"></i></a>
         <a onclick="deleteVote('<?= $fnum;?>')">NO <i class="fas fa-thumbs-down"></i></a>
     </div>
 </div>
@@ -113,13 +116,14 @@ foreach ($this->groups as $group) :
     var button = document.querySelector('.em-cardContainer-card-vote-button a');
     button.addEventListener('click', () => {button.classList.add("active")});
 
-    function addVote(fnum) {
+    function addVote(fnum, user) {
         jQuery.ajax({
             type: 'POST',
             dataType: 'json',
             url: 'index.php?option=com_emundus&controller=award&task=addvote',
             data: ({
-                fnum: fnum
+                fnum: fnum,
+                user: user
             }),
             success: function (result) {
 

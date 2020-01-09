@@ -149,7 +149,7 @@ endforeach;
                                         </div>
                                         <?php } */?>
 
-                                        <div class="btn-txt">
+                                        <div>
                                             <?php
                                             // If we are not logged in: we cannot access this page and so we are redirected to the login page.
                                             $user = JFactory::getUser();
@@ -165,14 +165,14 @@ endforeach;
                                     </div>
 
 
-                                <div class="em-cardContainer-card-vote">
+                                <!--<div class="em-cardContainer-card-vote">
                                     <hr>
                                     <p id="em-vote<?= $i;?>">Votez: <?= $group[$i]->data->$nb_vote; ?></p>
                                     <div class="em-cardContainer-card-vote-button">
                                         <a onclick="addVote('<?= $group[$i]->data->jos_emundus_challenges___fnum; ?>','<?=$i;?>')">YES <i class="fas fa-thumbs-up"></i></a>
                                         <a onclick="deleteVote('<?= $group[$i]->data->jos_emundus_challenges___fnum; ?>','<?=$i;?>')">NO <i class="fas fa-thumbs-down"></i></a>
                                     </div>
-                                </div>
+                                </div>-->
 
                                 </div>
                                 <div class="em-bulle left">
@@ -223,7 +223,7 @@ endforeach;
                                             </div>
                                         <?php } */?>
 
-                                        <div class="btn-txt">
+                                        <div>
                                             <?php
                                             // If we are not logged in: we cannot access this page and so we are redirected to the login page.
                                             $user = JFactory::getUser();
@@ -239,14 +239,14 @@ endforeach;
                                     </div>
 
 
-                                <div class="em-cardContainer-card-vote">
+                                <!--<div class="em-cardContainer-card-vote">
                                     <hr>
                                     <p id="em-vote<?= $i;?>">Votez: <?= $group[$i]->data->$nb_vote; ?></p>
                                     <div class="em-cardContainer-card-vote-button">
                                         <a onclick="addVote('<?= $group[$i]->data->jos_emundus_challenges___fnum; ?>','<?=$i;?>')">YES <i class="fas fa-thumbs-up"></i></a>
                                         <a onclick="deleteVote('<?= $group[$i]->data->jos_emundus_challenges___fnum; ?>','<?=$i;?>')">NO <i class="fas fa-thumbs-down"></i></a>
                                     </div>
-                                </div>
+                                </div>-->
                             </div>
                                 <div class="em-bulle right">
                                     <?php if(($i%3) == 1) { ?>
