@@ -45,17 +45,28 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
                 LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like '.$db->Quote($fnum).' 
                 WHERE ecc.fnum like '.$db->Quote($fnum).' 
                 ORDER BY esc.id DESC';
-    $db->setQuery($query);
-    $item = $db->loadObject();
-//die(str_replace("#_", "jos", $query));
+    try {
+
+        $db->setQuery($query);
+        $item = $db->loadObject();
+
+    } catch (Exception $e) {
+        throw $e;
+    }
    
 
     //get logo
     $template = $app->getTemplate(true);
     $params = $template->params;
 
-    $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-    $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+    if (!empty($params->get('logo')->custom->image)) {
+        $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+        $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+    } else {
+        $logo_module = JModuleHelper::getModuleById('90');
+        preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+        $logo = JPATH_BASE.DS.$tab[1];
+    }
 
     //get title
     $title = $config->get('sitename');
@@ -123,21 +134,27 @@ if (!function_exists('exif_imagetype')) {
 }
 
 if (!empty($options) && $options[0] != "" && $options[0] != "0") {
-    $htmldata .= '<div class="card">
-					<table width="100%"><tr>';
-	if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar)) {
-	    $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar.'" width="100" align="left" /></td>';
-	} elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar)) {
-	    $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar.'" width="100" align="left" /></td>';
-	}
+    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
 
-	$htmldata .= '
-	    <td>
-	    <div class="name"><strong>'.$item->firstname.' '.strtoupper($item->lastname).'</strong>, '.$item->label.' ('.$item->cb_schoolyear.')</div>';
+        $htmldata .= '<div class="card">
+                        <table width="100%"><tr>';
+        if (file_exists(EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar)) {
+            $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar . '" width="100" align="left" /></td>';
+        } elseif (file_exists(EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar)) {
+            $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar . '" width="100" align="left" /></td>';
+        }
 
-	if (isset($item->maiden_name)) {
-        $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
+        $htmldata .= '
+            <td>
+            <div class="name"><strong>' . $item->firstname . ' ' . strtoupper($item->lastname) . '</strong>, ' . $item->label . ' (' . $item->cb_schoolyear . ')</div>';
+        if (isset($item->maiden_name)) {
+            $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
+        }
     }
+
+
 	$date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
 
     if (in_array("aid", $options)) {
@@ -146,7 +163,7 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
     if (in_array("afnum", $options)) {
         $htmldata .= '<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>';
     }
-    if (in_array("aemail", $options)) {
+    if (!$anonymize_data && in_array("aemail", $options)) {
         $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>';
     }
     if (in_array("aapp-sent", $options)) {
@@ -168,34 +185,39 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 } elseif ($options[0] == "0") {
     $htmldata .= '';
 } else {
-    $htmldata .= '<div class="card">
-                <table width="100%"><tr>';
-    if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar)) {
-        $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar.'" width="100" align="left" /></td>';
-    } elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar)) {
-        $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar.'" width="100" align="left" /></td>';
-    }
-    $htmldata .= '
-    <td width="80%">
+    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
+        $htmldata .= '<div class="card">
+                    <table width="100%"><tr>';
+        if (file_exists(EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar) && !empty($item->avatar)) {
+            $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar . '" width="100" align="left" /></td>';
+        } elseif (file_exists(EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar) && !empty($item->avatar)) {
+            $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar . '" width="100" align="left" /></td>';
+        }
+        $htmldata .= '
+        <td width="80%">
+    
+        <div class="name"><strong>' . $item->firstname . ' ' . strtoupper(@$item->lastname) . '</strong>, ' . $item->label . ' (' . $item->cb_schoolyear . ')</div>';
 
-    <div class="name"><strong>'.$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.$item->label.' ('.$item->cb_schoolyear.')</div>';
-
-    if (isset($item->maiden_name)) {
-        $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
+        if (isset($item->maiden_name)) {
+            $htmldata .= '<div class="maidename">' . JText::_('MAIDEN_NAME') . ' : ' . $item->maiden_name . '</div>';
+        }
     }
 
     $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
 
+    $applicant_email = (!$anonymize_data) ? '<div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>' : '';
     $htmldata .= '
-	    <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
-	    <div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
-	    <div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>
-	    <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
-	    <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>
-	    </td>
-	    </tr>
-	    </table>
-	    </div>';
+    <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
+    <div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
+    '. $applicant_email .'
+    <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
+    <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>
+    </td>
+    </tr>
+    </table>
+    </div>';
 }
 /**  END APPLICANT   ****/
 

@@ -53,7 +53,7 @@ function getUrlParameter(url, sParam) {
 function search() {
     var quick = [];
 
-    $('div[data-value]').each( function () {
+    $('#quick div[data-value]').each(function () {
         quick.push($(this).attr('data-value')) ;
     });
 
@@ -453,7 +453,7 @@ function openFiles(fnum) {
 
 }
 
-    function getApplicationMenu() {
+function getApplicationMenu() {
     $.ajax({
         type:'get',
         url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&Itemid='.itemId,
@@ -1028,7 +1028,7 @@ $(document).ready(function() {
         //$.ajaxQ.abortAll();
         if (e.handle != true) {
             e.handle = true;
-            var id = $(this).attr('id');
+            var id = this.id;
             switch (id) {
                 case 'del-filter':
                     $.ajaxQ.abortAll();
@@ -1090,6 +1090,108 @@ $(document).ready(function() {
                     $('#em-files-filters').show();
                     $('.em-check:checked').prop('checked', false);
                     $(".main-panel .panel.panel-default").show();
+                    break;
+
+                case 'em-next-file':
+                    $.ajaxQ.abortAll();
+
+                    var cfnum = document.querySelector('.em-check:checked').id;
+                    if (typeof cfnum !== 'undefined') {
+                        cfnum = cfnum.split('_')[0];
+                    }
+
+                    var fnumsOnPage = document.getElementsByClassName('em_file_open');
+                    for (var fop = 0; fop < fnumsOnPage.length; fop++) {
+                        if (fnumsOnPage[fop].id === cfnum) {
+                            // In case we are on the last fnum of the page, we loop around to -1 so the i+1 value is 0.
+                            if (fop === fnumsOnPage.length-1) {
+                                fop = -1;
+                            }
+                            break;
+                        }
+                    }
+                    fop++;
+
+
+                    var fnum = new Object();
+                    fnum.fnum = fnumsOnPage[fop].id;
+                    $('.em-check:checked').prop('checked', false);
+                    $('#'+fnum.fnum+'_check').prop('checked', true);
+
+                    addDimmer();
+                    fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+                    fnum.cid = parseInt(fnum.fnum.substr(14, 7));
+
+                    $.ajax({
+                        type: 'get',
+                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
+                        dataType: "json",
+                        data: ({
+                            fnum: fnum.fnum
+                        }),
+                        success: function (result) {
+                            if (result.status) {
+                                var fnumInfos = result.fnumInfos;
+                                fnum.name = fnumInfos.name;
+                                fnum.label = fnumInfos.label;
+                                openFiles(fnum);
+                            }
+                        },
+                        error: function (jqXHR) {
+                            console.log(jqXHR.responseText);
+                        }
+                    });
+                    break;
+
+                case 'em-prev-file':
+                    $.ajaxQ.abortAll();
+
+                    var cfnum = document.querySelector('.em-check:checked').id;
+                    if (typeof cfnum !== 'undefined') {
+                        cfnum = cfnum.split('_')[0];
+                    }
+
+                    var fnumsOnPage = document.getElementsByClassName('em_file_open');
+                    for (var fop = 0; fop < fnumsOnPage.length; fop++) {
+                        if (fnumsOnPage[fop].id === cfnum) {
+                            // In case we are on the first fnum of the page, we loop around to the length so the i-1 value is equal to the last fnum index.
+                            if (fop === 0) {
+                                fop = fnumsOnPage.length;
+                            }
+                            break;
+                        }
+                    }
+                    fop--;
+
+
+                    var fnum = new Object();
+                    fnum.fnum = fnumsOnPage[fop].id;
+                    $('.em-check:checked').prop('checked', false);
+                    $('#'+fnum.fnum+'_check').prop('checked', true);
+
+                    addDimmer();
+                    fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+                    fnum.cid = parseInt(fnum.fnum.substr(14, 7));
+
+                    $.ajax({
+                        type: 'get',
+                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
+                        dataType: "json",
+                        data: ({
+                            fnum: fnum.fnum
+                        }),
+                        success: function (result) {
+                            if (result.status) {
+                                var fnumInfos = result.fnumInfos;
+                                fnum.name = fnumInfos.name;
+                                fnum.label = fnumInfos.label;
+                                openFiles(fnum);
+                            }
+                        },
+                        error: function (jqXHR) {
+                            console.log(jqXHR.responseText);
+                        }
+                    });
                     break;
 
                 case 'em-see-files':
@@ -1283,7 +1385,7 @@ $(document).ready(function() {
     });
 
     $(document).on('keyup', 'input:text', function(e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode == 13 && this.id !== 'cc-bcc-mails-selectized') {
             search();
         }
     });
@@ -4552,12 +4654,38 @@ $(document).ready(function() {
                 var data = {
                     recipients 		: $('#fnums').val(),
                     template		: $('#message_template :selected').val(),
-                    Bcc 			: $('#sendUserACopy').prop('checked'),
                     mail_from_name 	: $('#mail_from_name').text(),
                     mail_from 		: $('#mail_from').text(),
                     mail_subject 	: $('#mail_subject').text(),
-                    message			: $('#mail_body').val()
+                    message			: $('#mail_body').val(),
+                    bcc             : [],
+                    cc              : []
                 };
+
+                $('#cc-bcc div[data-value]').each(function () {
+                    let val = $(this).attr('data-value');
+
+                    var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                    if (val.split(':')[0] === 'BCC') {
+
+                        // Here we format the string from BCC: Bcc: <email@email.com> to just email@email.com
+                        val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
+                        if (REGEX_EMAIL.test(val)) {
+                            data.bcc.push(val);
+                        }
+
+                    } else if (val.split(':')[0] === 'CC') {
+
+                        // Here we format the string from CC: Cc: <email@email.com> to just email@email.com
+                        val = val.substring(val.lastIndexOf(":") + 1).trim().slice(1,-1);
+                        if (REGEX_EMAIL.test(val)) {
+                            data.cc.push(val);
+                        }
+                        
+                    }
+                });
+
 
                 // Attachments object used for sorting the different attachment types.
                 var attachments = {
@@ -4582,61 +4710,94 @@ $(document).ready(function() {
 
                 data.attachments = attachments;
 
-                $('#em-email-messages').empty();
-                $('#em-modal-sending-emails').css('display', 'block');
-
                 $.ajax({
-                    type: "POST",
-                    url: "index.php?option=com_emundus&controller=messages&task=applicantemail",
+                    type: 'POST',
+                    url: 'index.php?option=com_emundus&controller=messages&task=previewemail',
                     data: data,
                     success: function(result) {
 
-                        $('#em-modal-sending-emails').css('display', 'none');
-
                         result = JSON.parse(result);
+
                         if (result.status) {
+                            Swal.fire({
+                                position: 'center',
+                                type: 'info',
+                                title: Joomla.JText._('EMAIL_PREVIEW'),
+                                html: '<div id="email-recap">'+result.html+'</div>',
+                                width: 1000,
+                                showCancelButton: true,
+                                confirmButtonText: Joomla.JText._('SEND_CUSTOM_EMAIL')
+                            }).then(function(confirm) {
 
-                            if (result.sent.length > 0) {
+                                if (confirm.value) {
+                                    $('#em-email-messages').empty();
+                                    $('#em-modal-sending-emails').css('display', 'block');
 
-                                var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
-                                result.sent.forEach(function (element) {
-                                    sent_to += '<li class="list-group-item alert-success">'+element+'</li>';
-                                    console.log(element);
-                                });
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "index.php?option=com_emundus&controller=messages&task=applicantemail",
+                                        data: data,
+                                        success: function (result) {
 
-                                Swal.fire({
-                                    type: 'success',
-                                    title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
-                                    html:  sent_to + '</ul>'
-                                });
+                                            $('#em-modal-sending-emails').css('display', 'none');
 
-                            } else {
-                                Swal.fire({
-                                    type: 'error',
-                                    title: Joomla.JText._('NO_EMAILS_SENT')
-                                })
-                            }
+                                            result = JSON.parse(result);
+                                            if (result.status) {
 
-                            if (result.failed.length > 0) {
-                                // Block containing the email adresses of the failed emails.
-                                $("#em-email-messages").append('<div class="alert alert-danger">'+Joomla.JText._('EMAILS_FAILED')+'<span class="badge">'+result.failed.length+'</span>'+
-                                    '<ul class="list-group" id="em-mails-failed"></ul>');
+                                                if (result.sent.length > 0) {
 
-                                result.failed.forEach(function (element) {
-                                    $('#em-mails-sent').append('<li class="list-group-item alert-danger">'+element+'</li>');
-                                });
+                                                    var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                                                    result.sent.forEach(function (element) {
+                                                        sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
+                                                    });
 
-                                $('#em-email-messages').append('</div>');
-                            }
+                                                    Swal.fire({
+                                                        type: 'success',
+                                                        title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
+                                                        html: sent_to + '</ul>'
+                                                    });
 
-                        } else {
-                            $("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+                                                } else {
+                                                    Swal.fire({
+                                                        type: 'error',
+                                                        title: Joomla.JText._('NO_EMAILS_SENT')
+                                                    })
+                                                }
+
+                                                if (result.failed.length > 0) {
+                                                    // Block containing the email adresses of the failed emails.
+                                                    $("#em-email-messages").append('<div class="alert alert-danger">' + Joomla.JText._('EMAILS_FAILED') + '<span class="badge">' + result.failed.length + '</span>' +
+                                                        '<ul class="list-group" id="em-mails-failed"></ul>');
+
+                                                    result.failed.forEach(function (element) {
+                                                        $('#em-mails-sent').append('<li class="list-group-item alert-danger">' + element + '</li>');
+                                                    });
+
+                                                    $('#em-email-messages').append('</div>');
+                                                }
+
+                                            } else {
+                                                $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
+                                            }
+                                        },
+                                        error: function () {
+                                            $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
+                                        }
+                                    });
+                                }
+                            });
                         }
+
                     },
-                    error : function () {
-                        $("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+                    error: function() {
+                        Swal.fire({
+                            type: 'error',
+                            title: Joomla.JText._('ERROR_GETTING_PREVIEW')
+                        })
                     }
                 });
+
+
                 break;
 
 

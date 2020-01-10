@@ -207,7 +207,7 @@ endif; ?>
 <script type="text/javascript">
     function deletefile(fnum) {
         if (confirm("<?= JText::_('CONFIRM_DELETE_FILE'); ?>")) {
-            document.location.href = "<?= JRoute::_('index.php?option=com_emundus&task=deletefile&fnum='); ?>" + fnum+"&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
+            document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum+"&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
         }
     }
 </script>

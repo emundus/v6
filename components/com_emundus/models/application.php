@@ -910,9 +910,9 @@ class EmundusModelApplication extends JModelList {
 	                $title = explode('-', JText::_($itemt->label));
 
 	                if (empty($title[1])) {
-		                $forms .= JText::_($itemt->label);
+		                $forms .= JText::_(trim($itemt->label));
 	                } else {
-		                $forms .= JText::_($title[1]);
+		                $forms .= JText::_(trim($title[1]));
 	                }
                     $forms .= '</h3>';
 	                if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
@@ -1421,9 +1421,9 @@ class EmundusModelApplication extends JModelList {
                     $forms .= '<hr><h3 '.$breaker.'>';
                     $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1])) {
-	                    $forms .= JText::_($itemt->label);
+                        $forms .= JText::_(trim($itemt->label));
                     } else {
-	                    $forms .= JText::_($title[1]);
+                        $forms .= JText::_(trim($title[1]));
                     }
                 }
 
@@ -2190,16 +2190,16 @@ class EmundusModelApplication extends JModelList {
                         LEFT JOIN #__emundus_setup_attachments as sa on sa.id = eu.attachment_id
                         WHERE fnum like ".$this->_db->quote($fnum);
 
-            if (isset($attachment_id) && !empty($attachment_id) && $attachment_id[0] != "" ){
-                if (is_array($attachment_id)) {
-	                $query .= " AND attachment_id IN (".implode(',', $attachment_id).")";
+            if (isset($attachment_id) && !empty($attachment_id)){
+                if (is_array($attachment_id) && $attachment_id[0] != "") {
+	                $query .= " AND eu.attachment_id IN (".implode(',', $attachment_id).")";
                 } else {
-	                $query .= " AND attachment_id = ".$attachment_id;
+	                $query .= " AND eu.attachment_id = ".$attachment_id;
                 }
             }
 
             if (!empty($ids) && $ids != "null") {
-	            $query .= " AND id in ($ids)";
+	            $query .= " AND eu.id in ($ids)";
             }
 
             $query .= " ORDER BY sa.value DESC";
@@ -2995,10 +2995,9 @@ class EmundusModelApplication extends JModelList {
 
             // Send emails defined in trigger
             $m_emails = new EmundusModelEmails;
-            $step = 1;
             $code = array($applicant->code);
             $to_applicant = '0,1';
-            $m_emails->sendEmailTrigger($step, $code, $to_applicant, $applicant);
+            $m_emails->sendEmailTrigger($status, $code, $to_applicant, $applicant);
 
         } catch (Exception $e) {
             // catch any database errors.

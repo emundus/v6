@@ -30,6 +30,10 @@ JFactory::getSession()->set('application_layout', 'admission');
                 <?php if (!empty($this->url_form)):?>
                     <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_ADMISSION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_ADMISSION_FORM_IN_NEW_TAB'); ?></a>
                 <?php endif;?>
+                <div class="btn-group pull-right">
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
+                </div>
             </div>
             <div class="panel-body em-container-admission-body">
                 <div class="content">

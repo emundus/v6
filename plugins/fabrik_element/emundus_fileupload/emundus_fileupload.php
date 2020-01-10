@@ -46,16 +46,19 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $db = JFactory::getDBO();
 
         if (JFactory::getUser()->guest) {
-	        echo json_encode(['status' => 'false']);
-	        return false;
+            echo json_encode(['status' => 'false']);
+            return false;
         }
+
+        $fnum = $jinput->post->get($this->getTableName().'___fnum');
+        $user = (int)substr($fnum, -7);
 
         $attachId = $this->getAttachId();
         $name = $this->getFullName();
-        $cid = $this->getCampaignId($current_user->fnum);
+        $cid = $this->getCampaignId($fnum);
 
         $attachmentResult = $this->getAttachment($attachId);
-        $uploadResult = $this->getUploads($attachId, $current_user->id, $cid);
+        $uploadResult = $this->getUploads($attachId, $user, $cid);
 
         $nbMax = (int)$attachmentResult->nbmax;
         $insert = [];
@@ -63,7 +66,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         for ($i = 0; $i < $attachmentResult->nbmax; $i++) {
             $fileName = $jinput->post->get($name.'_filename'.$i);
             if (!empty($fileName)) {
-                $insert[] = $current_user->id.' , '.$db->quote($current_user->fnum).' , '.$cid.' , '.$attachId.' , '.$db->quote($fileName).' , '.'0'.' , '.'1';
+                $insert[] = $user.' , '.$db->quote($fnum).' , '.$cid.' , '.$attachId.' , '.$db->quote($fileName).' , '.'0'.' , '.'1';
             }
         }
 
@@ -75,7 +78,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
             if ($nbMax == 1) {
                 $fileNameUpdate = $jinput->post->get($name.'_filename0');
                 if (!empty($fileNameUpdate)) {
-                    $this->updateFile($current_user->fnum, $cid, $attachId, $fileNameUpdate);
+                    $this->updateFile($fnum, $cid, $attachId, $fileNameUpdate);
                 }
             }
             if ($nbMax > 1 && count($uploadResult) < $nbMax) {
@@ -102,6 +105,9 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
             return false;
         }
 
+        $fnum = $jinput->post->get('fnum');
+        $user = (int)substr($fnum, -7);
+
         $attachId = $jinput->post->get('attachId');
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -111,35 +117,38 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $label = $attachmentResult->lbl;
 
         $files = $jinput->files->get('file');
-        $cid = $this->getCampaignId($current_user->fnum);
 
-        $uploadResult = $this->getUploads($attachId, $current_user->id, $cid);
+        $cid = $this->getCampaignId($fnum);
+        $uploadResult = $this->getUploads($attachId, $user, $cid);
         $nbAttachment = count($uploadResult);
         $lengthFile = count($files);
         $nbMaxFile = (int)$attachmentResult->nbmax;
 
         $acceptedExt = [];
 
-        if (!file_exists(EMUNDUS_PATH_ABS.$current_user->id)) {
+        if (!file_exists(EMUNDUS_PATH_ABS.$user)) {
             // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
             if (!file_exists(EMUNDUS_PATH_ABS.'index.html')) {
-	            touch(EMUNDUS_PATH_ABS.'index.html');
+                touch(EMUNDUS_PATH_ABS.'index.html');
             }
 
-            if (!mkdir(EMUNDUS_PATH_ABS.$current_user->id) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$current_user->id.DS.'index.html')){
-                $error = JUri::getInstance().' :: USER ID : '.$current_user->id.' -> Unable to create user file';
+            if (!mkdir(EMUNDUS_PATH_ABS.$user) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user.DS.'index.html')){
+                $error = JUri::getInstance().' :: USER ID : '.$user.' -> Unable to create user file';
                 JLog::add($error, JLog::ERROR, 'com_emundus');
                 return false;
             }
         }
-        chmod(EMUNDUS_PATH_ABS.$current_user->id, 0755);
+        chmod(EMUNDUS_PATH_ABS.$user, 0755);
 
         foreach ($files as $file) {
 
-            $fileName = $this->getFileName($current_user, $attachId, $label, $file['name']);
+            $fileName = $this->getFileName($user, $attachId, $label, $file['name']);
+
+
+
             $tmp_name = $file['tmp_name'];
             $fileSize = $file['size'];
-            $target = $this->getPath($current_user->id,$fileName);
+            $target = $this->getPath($user,$fileName);
 
             $extension = explode('.', $fileName);
             $extensionAttachment = $attachmentResult->allowed_types;
@@ -158,10 +167,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                     }
                 }
 
-	            // The maximum size is equal to the smallest of the two sizes, either the size configured in the plugin or in the server itself.
-	            $postSize = $jinput->post->getInt('size', 0);
-	            $iniSize = $this->file_upload_max_size();
-	            $sizeMax = ($postSize>=$iniSize)?$iniSize:$postSize;
+                // The maximum size is equal to the smallest of the two sizes, either the size configured in the plugin or in the server itself.
+                $postSize = $jinput->post->getInt('size', 0);
+                $iniSize = $this->file_upload_max_size();
+                $sizeMax = ($postSize>=$iniSize)?$iniSize:$postSize;
 
                 if ($lengthFile <= $nbMaxFile) {
                     if ($nbAttachment < $nbMaxFile) {
@@ -177,14 +186,14 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                     }
                 }
 
-	            $sizeMax = $this->formatBytes($sizeMax);
+                $sizeMax = $this->formatBytes($sizeMax);
 
                 if ($lengthFile > $nbMaxFile) {
                     $nbMax = false;
                 }
                 $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $nbMax, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt, 'maxSize' => $sizeMax);
             } else {
-            	$size = true;
+                $size = true;
                 $ext = false;
                 $result[] = array('size' => $size, 'ext' => $ext,  'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment);
             }
@@ -195,47 +204,47 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         return true;
     }
 
-	// Returns a file size limit in bytes based on the PHP upload_max_filesize
-	// and post_max_size
-	private function file_upload_max_size() {
-		static $max_size = -1;
+    // Returns a file size limit in bytes based on the PHP upload_max_filesize
+    // and post_max_size
+    private function file_upload_max_size() {
+        static $max_size = -1;
 
-		if ($max_size < 0) {
-			// Start with post_max_size.
-			$post_max_size = $this->parse_size(ini_get('post_max_size'));
-			if ($post_max_size > 0) {
-				$max_size = $post_max_size;
-			}
+        if ($max_size < 0) {
+            // Start with post_max_size.
+            $post_max_size = $this->parse_size(ini_get('post_max_size'));
+            if ($post_max_size > 0) {
+                $max_size = $post_max_size;
+            }
 
-			// If upload_max_size is less, then reduce. Except if upload_max_size is
-			// zero, which indicates no limit.
-			$upload_max = $this->parse_size(ini_get('upload_max_filesize'));
-			if ($upload_max > 0 && $upload_max < $max_size) {
-				$max_size = $upload_max;
-			}
-		}
-		return $max_size;
-	}
+            // If upload_max_size is less, then reduce. Except if upload_max_size is
+            // zero, which indicates no limit.
+            $upload_max = $this->parse_size(ini_get('upload_max_filesize'));
+            if ($upload_max > 0 && $upload_max < $max_size) {
+                $max_size = $upload_max;
+            }
+        }
+        return $max_size;
+    }
 
-	private function parse_size($size) {
-		$unit = preg_replace('/[^bkmgtpezy]/i', '', $size); // Remove the non-unit characters from the size.
-		$size = preg_replace('/[^0-9\.]/', '', $size); // Remove the non-numeric characters from the size.
-		if ($unit) {
-			// Find the position of the unit in the ordered string which is the power of magnitude to multiply a kilobyte by.
-			return round($size * pow(1024, stripos('bkmgtpezy', $unit[0])));
-		} else {
-			return round($size);
-		}
-	}
+    private function parse_size($size) {
+        $unit = preg_replace('/[^bkmgtpezy]/i', '', $size); // Remove the non-unit characters from the size.
+        $size = preg_replace('/[^0-9\.]/', '', $size); // Remove the non-numeric characters from the size.
+        if ($unit) {
+            // Find the position of the unit in the ordered string which is the power of magnitude to multiply a kilobyte by.
+            return round($size * pow(1024, stripos('bkmgtpezy', $unit[0])));
+        } else {
+            return round($size);
+        }
+    }
 
-	private function formatBytes($bytes, $precision = 2) {
-		$units = array('KB', 'MB', 'GB', 'TB');
-		$bytes = max($bytes, 0);
-		$pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-		$pow = min($pow, count($units) - 1);
-		$bytes /= pow(1024, $pow);
-		return round($bytes, $precision) . ' ' . $units[$pow];
-	}
+    private function formatBytes($bytes, $precision = 2) {
+        $units = array('KB', 'MB', 'GB', 'TB');
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+        return round($bytes, $precision) . ' ' . $units[$pow];
+    }
 
 
     /**
@@ -247,20 +256,23 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         $current_user = JFactory::getSession()->get('emundusUser');
         if (JFactory::getUser()->guest) {
-	        echo json_encode(['status' => 'false']);
-	        return false;
+            echo json_encode(['status' => 'false']);
+            return false;
         }
 
+        $fnum = $jinput->post->get('fnum');
+        $user = (int)substr($fnum, -7);
+
         $attachId = $jinput->post->get('attachId');
-        $cid = $this->getCampaignId($current_user->fnum);
-        $uploadResult = $this->getUploads($attachId, $current_user->id, $cid);
+        $cid = $this->getCampaignId($fnum);
+        $uploadResult = $this->getUploads($attachId, $user, $cid);
 
         foreach ($uploadResult as $upload) {
             if (!empty($upload->filename)) {
                 $fileName = $upload->filename;
             }
 
-            $target = '/images'.DS.'emundus'.DS.'files'.DS.$current_user->id.DS.$fileName;
+            $target = '/images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fileName;
             $result[] = array('filename' => $fileName, 'target' => $target);
         }
 
@@ -270,10 +282,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
 
-	/**
-	 * @return bool
-	 * @throws Exception
-	 */
+    /**
+     * @return bool
+     * @throws Exception
+     */
     public function onAjax_delete() {
 
         $jinput = $this->app->input;
@@ -286,33 +298,40 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
             return false;
         }
 
-        $cid = $this->getCampaignId($current_user->fnum);
-        $uploadResult = $this->getUploads($attachId, $current_user->id, $cid);
-        $target = $this->getPath($current_user->id, $fileName);
+        $fnum = $jinput->post->get('fnum');
+        $user = (int)substr($fnum, -7);
+
+        $cid = $this->getCampaignId($fnum);
+        $uploadResult = $this->getUploads($attachId, $user, $cid);
+        $target = $this->getPath($user, $fileName);
 
         if (file_exists($target) && !empty($uploadResult)) {
             unlink($target);
-            $this->deleteFile($fileName, $current_user->fnum, $cid, $attachId);
+            $this->deleteFile($fileName, $fnum, $cid, $attachId);
             $status = true;
         }
         if (!file_exists($target) && !empty($uploadResult)) {
-            $this->deleteFile($fileName, $current_user->fnum, $cid, $attachId);
+            $this->deleteFile($fileName, $fnum, $cid, $attachId);
             $status = true;
         }
         if (!file_exists($target) && empty($uploadResult)) {
             $status = false;
         }
 
-	    echo json_encode(['status' => $status]);
+        echo json_encode(['status' => $status]);
         return true;
     }
 
     public function dataConsideredEmptyForValidation($data, $repeatCounter) {
         $current_user = JFactory::getSession()->get('emundusUser');
+        $jinput = JFactory::getApplication()->input;
+
+        $fnum = $jinput->post->get($this->getTableName().'___fnum');
+        $user = (int)substr($fnum, -7);
 
         $attachId = $this->getAttachId();
-        $cid = $this->getCampaignId($current_user->fnum);
-        $uploadResult = $this->getUploads($attachId,$current_user->id,$cid);
+        $cid = $this->getCampaignId($fnum);
+        $uploadResult = $this->getUploads($attachId,$user,$cid);
 
         return (empty($uploadResult) && $data == "");
     }
@@ -424,7 +443,11 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      * @return mixed
      */
     public function getFileName($user, $attachId, $label, $file) {
-        $fileName = strtolower(preg_replace(array('([\40])', '([^a-zA-Z0-9-])', '(-{2,})'), array('_', '', '_'), preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/', '$1', htmlentities(strtoupper($user->lastname) . '_' . ucfirst($user->firstname), ENT_NOQUOTES, 'UTF-8'))));
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        $m_profile = new EmundusModelProfile();
+        $profile = $m_profile->getProfileByApplicant($user);
+
+        $fileName = strtolower(preg_replace(array('([\40])', '([^a-zA-Z0-9-])', '(-{2,})'), array('_', '', '_'), preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/', '$1', htmlentities(strtoupper($profile['lastname']) . '_' . ucfirst($profile['firstname']), ENT_NOQUOTES, 'UTF-8'))));
         $fileName .= $label . '-' . rand() . '.' . pathinfo($file, PATHINFO_EXTENSION);
         return JFile::makeSafe($fileName);
     }
@@ -510,10 +533,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         if (!$this->isEditable()) {
 
-	        $value = $this->format($value, false);
-	        $value = $this->getReadOnlyOutput($value, $value);
+            $value = $this->format($value, false);
+            $value = $this->getReadOnlyOutput($value, $value);
 
-	        return ($element->hidden == '1') ? "<!-- ".$value." -->" : $value;
+            return ($element->hidden == '1') ? "<!-- ".$value." -->" : $value;
 
         }
 
@@ -527,7 +550,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $bits['attachmentId'] = $params->get('attachmentId');
         $bits['size'] = $params->get('size');
 
-	    $eMConfig = JComponentHelper::getParams('com_emundus');
+        $eMConfig = JComponentHelper::getParams('com_emundus');
         $bits['encrypted'] = ($params->get('encrypt') == 2)?$eMConfig->get('can_submit_encrypted', 1):$params->get('encrypt');
 
         $layout = $this->getLayout('form');

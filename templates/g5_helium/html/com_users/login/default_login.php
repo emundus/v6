@@ -84,7 +84,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
 		</fieldset>
 	</form>
 </div>
-<div>
+<div class="nav link">
 	<ul class="nav nav-tabs nav-stacked">
 		<li>
 			<a href="<?php echo JRoute::_('index.php?option=com_users&view=reset'); ?>">

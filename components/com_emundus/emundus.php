@@ -304,6 +304,8 @@ JText::script('COM_EMUNDUS_TROMBI_DOWNLOAD');
 
 // Email to applicant
 JText::script('SEND_CUSTOM_EMAIL');
+JText::script('ERROR_GETTING_PREVIEW');
+JText::script('EMAIL_PREVIEW');
 JText::script('NO_EMAILS_SENT');
 JText::script('EMAILS_SENT');
 JText::script('EMAILS_FAILED');
@@ -325,6 +327,8 @@ JText::script('COM_EMUNDUS_NO_SYNC_NEEDED');
 JText::script('COM_EMUNDUS_CANNOT_RETRIEVE_EMUNDUS_PROGRAMME_LIST');
 JText::script('COM_EMUNDUS_DATA_TO_ADD');
 JText::script('COM_EMUNDUS_ERROR_MISSING_FORM_DATA');
+
+JText::script('CONFIRM_PASSWORD');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');

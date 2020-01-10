@@ -121,21 +121,21 @@ $uri = JUri::getInstance();
 <script type="text/javascript">
     function deletefile(fnum) {
         if (confirm("<?php echo JText::_('CONFIRM_DELETE_FILE'); ?>")) {
-            url = "<?php echo JURI::base().'index.php?option=com_emundus&task=deletefile&fnum='; ?>";
+            url = "index.php?option=com_emundus&task=deletefile&fnum=";
             document.location.href = url+fnum+"&redirect=<?php echo base64_encode($uri->getPath()); ?>";
         }
     }
 
     function completefile(fnum) {
         if (confirm("<?php echo JText::_('CONFIRM_COMPLETE_FILE'); ?>")) {
-            url = "<?php echo JURI::base().'index.php?option=com_emundus&task=completefile&status=2&fnum='; ?>";
+            url = "index.php?option=com_emundus&task=completefile&status=2&fnum=";
             document.location.href = url+fnum+"&redirect=<?php echo base64_encode($uri->getPath()); ?>";
         }
     }
 
     function publishfile(fnum) {
         if (confirm("<?php echo JText::_('CONFIRM_PUBLISH_FILE'); ?>")) {
-            url = "<?php echo JURI::base().'index.php?option=com_emundus&task=publishfile&status=1&fnum='; ?>";
+            url = "index.php?option=com_emundus&task=publishfile&status=1&fnum=";
             document.location.href = url+fnum+"&redirect=<?php echo base64_encode($uri->getPath()); ?>";
         }
     }
