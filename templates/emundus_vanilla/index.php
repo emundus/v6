@@ -10,28 +10,10 @@ $doc = JFactory::getDocument();
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php global $template_path;
 $template_path = JURI::base() . 'templates/' . $app->getTemplate(); ?>
-<?php JLoader::import( 'joomla.version' );
-$version = new JVersion();
-if (version_compare( $version->RELEASE, "2.5", "<=")) {
-  if(JFactory::getApplication()->get('jquery') !== true) {
-    $document = JFactory::getDocument();
-    $headData = $this->getHeadData();
-    reset($headData['scripts']);
-    $newHeadData = $headData['scripts'];
-    $jquery = array(JURI::base() .'/templates/' . $this->template . '/js/jquery.js' => array('mime' => 'text/javascript', 'defer' => FALSE, 'async' => FALSE));
-    $newHeadData = $jquery + $newHeadData;
-    $headData['scripts'] = $newHeadData;
-    $this->setHeadData($headData);
-    $doc->addScript(JURI::base() .'/templates/' . $this->template . '/js/jui/bootstrap.min.js', 'text/javascript');
-  }
-} else {
-  JHtml::_('jquery.framework');
-  JHtml::_('bootstrap.framework');
-} ?>
-<?php
-if (version_compare( $version->RELEASE, "2.5", "<")) {
-  JHtml::_('jquery.ui');
-}
+<?php 
+JHtml::_('jquery.framework');
+JHtml::_('bootstrap.framework');
+
 $doc = JFactory::getDocument();
 $doc->addStyleSheet('templates/'.$this->template.'/css/normalize.css');
 $doc->addStyleSheet('templates/'.$this->template.'/css/webflow.css');
@@ -107,7 +89,7 @@ $showcolumn= $this->countModules('header-a');
     </div>
   </section>
   <div id="g-container" class="g-container">
-    <footer id="g-footer" class="g-footer">
+    <footer id="g-footer" class="g-footer not-co">
       <div id="g-grid" class="g-grid">
         <div id="footer-a" class="g-block-size-100-footer-a">
           <div id="g-content" class="g-content">
@@ -133,5 +115,6 @@ $showcolumn= $this->countModules('footer-a');
   <jdoc:include type="modules" name="debug" style="<?php if(($this->params->get('debug') == 'block') || ($this->params->get('debug') == Null)): echo "block"; else: echo "xhtml"; endif;?>"/>
 <?php } ?>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 </body>
 </html>
