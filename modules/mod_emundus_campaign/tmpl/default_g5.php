@@ -34,6 +34,7 @@ $site_offset = $config->get('offset');
 				<?php endif; ?>
 			</ul>
 		</div>
+        <?php if($mod_em_campaign_show_nav_order): ?>
 		<div class="g-block size-30 navorder">
 			<p><?php if ($order != "end_date") :?>
 					<?php if ($ordertime == "desc") :?>
@@ -77,6 +78,7 @@ $site_offset = $config->get('offset');
 				<?php endif; ?>
 			</p>
 		</div>
+        <?php endif; ?>
 		<div class="g-block size-30 navsearch">
 			<div class="navsearch-content">
 				<div class="g-block size-100">

@@ -33,6 +33,7 @@ $mod_em_campaign_show_formation_start_date = $params->get('mod_em_campaign_show_
 $mod_em_campaign_show_formation_end_date = $params->get('mod_em_campaign_show_formation_end_date', 0);
 $mod_em_campaign_show_admission_start_date = $params->get('mod_em_campaign_show_admission_start_date', 0);
 $mod_em_campaign_show_admission_end_date = $params->get('mod_em_campaign_show_admission_end_date', 0);
+$mod_em_campaign_show_nav_order = $params->get('mod_em_campaign_show_nav_order', 1);
 $showcampaign=$params->get('mod_em_campaign_param_showcampaign');
 $showprogramme=$params->get('mod_em_campaign_param_showprogramme');
 $redirect_url=$params->get('mod_em_campaign_link', 'registration');
