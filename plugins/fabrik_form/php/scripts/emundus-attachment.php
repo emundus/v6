@@ -49,7 +49,7 @@ $attachment_params = $db->loadObject();
 $nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
 if(!isset($attachment_params->displayed) || $attachment_params->displayed === '0') {
     $nom.= "_locked";
-};
+}
 $nom .= $attachment_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
 // test if directory exist
