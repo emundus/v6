@@ -39,7 +39,6 @@ class modEmundusCampaignHelper {
             $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
             $query->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" <= ca.end_date and "'.$this->now.'">= ca.start_date '.$condition);
         }
-
         $db->setQuery($query);
         $list = (array) $db->loadObjectList();
         $this->totalCurrent = count($list);

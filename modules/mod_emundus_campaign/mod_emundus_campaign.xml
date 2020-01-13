@@ -68,6 +68,7 @@
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
+
 					<field type="list" name="mod_em_campaign_get_link" label="MOD_EM_CAMPAIGN_GET_LINK" description="MOD_EM_CAMPAIGN_GET_LINK_DESC" default="0">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
@@ -86,6 +87,18 @@
 						<option value="1">JYES</option>
 					</field>
 					<field type="list" name="mod_em_campaign_show_formation_end_date" label="MOD_EM_CAMPAIGN_SHOW_FORMATION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_FORMATION_END_DATE_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field type="list" name="mod_em_campaign_show_admission_start_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_START_DATE_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field type="list" name="mod_em_campaign_show_admission_end_date" label="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE" description="MOD_EM_CAMPAIGN_SHOW_ADMISSION_END_DATE_DESC" default="0">
+						<option value="0">JNO</option>
+						<option value="1">JYES</option>
+					</field>
+					<field type="list" name="mod_em_campaign_show_nav_order" label="MOD_EM_CAMPAIGN_SHOW_NAV_ORDER" description="MOD_EM_CAMPAIGN_SHOW_NAV_ORDER_DESC" default="1">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
