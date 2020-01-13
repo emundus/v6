@@ -2203,6 +2203,7 @@ class EmundusModelApplication extends JModelList {
             }
 
             $query .= " ORDER BY sa.value DESC";
+
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();
         } catch(Exception $e) {
