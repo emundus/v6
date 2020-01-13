@@ -213,6 +213,9 @@ textarea {
   margin: 0;
   /* 3 */
 }
+li{
+  list-style-type: none;
+}
 /**
  * Address `overflow` set to `hidden` in IE 8/9/10/11.
  */

@@ -34,6 +34,7 @@ $site_offset = $config->get('offset');
 				<?php endif; ?>
 			</ul>
 		</div>
+        <?php if($mod_em_campaign_show_nav_order): ?>
 		<div class="g-block size-30 navorder">
 			<p><?php if ($order != "end_date") :?>
 					<?php if ($ordertime == "desc") :?>
@@ -77,6 +78,7 @@ $site_offset = $config->get('offset');
 				<?php endif; ?>
 			</p>
 		</div>
+        <?php endif; ?>
 		<div class="g-block size-30 navsearch">
 			<div class="navsearch-content">
 				<div class="g-block size-100">
@@ -135,11 +137,13 @@ $site_offset = $config->get('offset');
 			<?php } // end !empty($oldmonth) ?>
 			<div class="g-block size-100 campaignbymonth">
 				<div class="campaign-month-label">
+                    <?php  if($mod_em_campaign_display_groupby): ?>
 					<div class="position-me">
 						<div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
 							<p><?php echo ucfirst($month); ?></p>
 						</div>
 					</div>
+                    <?php endif; ?>
 				</div>
 				<div class="campaign-month-campaigns"><!-- rt12 toclose -->
 				<?php } ?>
@@ -189,7 +193,17 @@ $site_offset = $config->get('offset');
                                 <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br/>
                             <?php endif; ?>
+                            <?php if ($mod_em_campaign_show_admission_start_date && $result->admission_start_date !== '0000-00-00 00:00:00') :?>
+                                <strong><?php echo JText::_('ADMISSION_START_DATE'); ?>:</strong>
+                                <span class="em-formation-start"><?php echo JFactory::getDate(new JDate($result->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                <br>
+                            <?php endif;?>
 
+                            <?php if ($mod_em_campaign_show_admission_end_date && $result->admission_end_date !== '0000-00-00 00:00:00') :?>
+                                <strong><?php echo JText::_('ADMISSION_END_DATE'); ?>:</strong>
+                                <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                <br/>
+                            <?php endif; ?>
                             <hr>
 							<?php echo JText::_('TIMEZONE').$offset; ?>
 						</div>
@@ -255,11 +269,13 @@ $site_offset = $config->get('offset');
 					<?php } ?>
 				<div class="g-block size-100 campaignbymonth">
 					<div class="campaign-month-label">
+                        <?php if($mod_em_campaign_display_groupby): ?>
 						<div class="position-me">
 							<div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
 								<p><?php echo ucfirst($month); ?></p>
 							</div>
 						</div>
+                        <?php endif; ?>
 					</div>
 					<div class="campaign-month-campaigns"><!-- rt12 toclose -->
 				<?php } ?>
@@ -298,13 +314,25 @@ $site_offset = $config->get('offset');
                                 <strong><?php echo JText::_('FORMATION_START_DATE'); ?>:</strong>
                                 <span class="em-formation-start"><?php echo JFactory::getDate(new JDate($result->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br>
-							<?php endif;?>
+                            <?php endif;?>
 
-							<?php if ($mod_em_campaign_show_formation_end_date && $result->formation_end !== '0000-00-00 00:00:00') :?>
+                            <?php if ($mod_em_campaign_show_formation_end_date && $result->formation_end !== '0000-00-00 00:00:00') :?>
                                 <strong><?php echo JText::_('FORMATION_END_DATE'); ?>:</strong>
                                 <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br/>
-							<?php endif; ?>
+                            <?php endif; ?>
+
+                            <?php if ($mod_em_campaign_show_admission_start_date && $result->admission_start_date !== '0000-00-00 00:00:00') :?>
+                                <strong><?php echo JText::_('ADMISSION_START_DATE'); ?>:</strong>
+                                <span class="em-formation-start"><?php echo JFactory::getDate(new JDate($result->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                <br>
+                            <?php endif;?>
+
+                            <?php if ($mod_em_campaign_show_admission_end_date && $result->admission_end_date !== '0000-00-00 00:00:00') :?>
+                                <strong><?php echo JText::_('ADMISSION_END_DATE'); ?>:</strong>
+                                <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                <br/>
+                            <?php endif; ?>
 
 						</div>
 					</div>
@@ -351,11 +379,13 @@ $site_offset = $config->get('offset');
 		<?php } ?>
 		<div class="g-block size-100 campaignbymonth">
 			<div class="campaign-month-label">
+                <?php if($mod_em_campaign_display_groupby): ?>
 				<div class="position-me">
 					<div class="rotate-me <?php echo $mod_em_campaign_class; ?>">
 						<p><?php echo ucfirst($month); ?></p>
 					</div>
 				</div>
+                <?php endif; ?>
 			</div>
 			<div class="campaign-month-campaigns"><!-- rt12 toclose -->
 				<?php } ?>
@@ -401,6 +431,17 @@ $site_offset = $config->get('offset');
                             <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                             <br/>
 						<?php endif; ?>
+                        <?php if ($mod_em_campaign_show_admission_start_date && $result->admission_start_date !== '0000-00-00 00:00:00') :?>
+                            <strong><?php echo JText::_('ADMISSION_START_DATE'); ?>:</strong>
+                            <span class="em-formation-start"><?php echo JFactory::getDate(new JDate($result->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                            <br>
+                        <?php endif;?>
+
+                        <?php if ($mod_em_campaign_show_admission_end_date && $result->admission_end_date !== '0000-00-00 00:00:00') :?>
+                            <strong><?php echo JText::_('ADMISSION_END_DATE'); ?>:</strong>
+                            <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                            <br/>
+                        <?php endif; ?>
 					</div>
 				</div>
 				<div class="below-content">

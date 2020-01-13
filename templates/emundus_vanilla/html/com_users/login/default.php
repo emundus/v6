@@ -18,7 +18,8 @@ if (!empty($cookieLogin) || $this->user->get('guest'))
     // Get campaign ID and course from url
     $this->campaign = $jinput->get->get('cid');
     $this->course   = $jinput->get->get('course');
-
+	
+  	
 	// The user is not logged in or needs to provide a password.
 	echo $this->loadTemplate('login');
 }
