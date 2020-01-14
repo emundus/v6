@@ -63,6 +63,7 @@ class EmundusModelFiles extends JModelLegacy
     {
         parent::__construct();
 
+        $db = JFactory::getDbo();
         $mainframe = JFactory::getApplication();
 
         // Get current menu parameters
@@ -82,8 +83,10 @@ class EmundusModelFiles extends JModelLegacy
         ** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
         */
 
-        if (empty($current_menu))
+        if (empty($current_menu)) {
             return false;
+        }
+
         $menu_params = $menu->getParams($current_menu->id);
         //$em_filters_names = explode(',', $menu_params->get('em_filters_names'));
         //$em_filters_values = explode(',', $menu_params->get('em_filters_values'));
@@ -165,6 +168,10 @@ class EmundusModelFiles extends JModelLegacy
                     $column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
                     //$column = (!empty($attribs->join_val_column_concat) && $attribs->join_val_column_concat!='')?'CONCAT('.$attribs->join_val_column_concat.')':$attribs->join_val_column;
 
+                    // Check if the db table has a published column. So we don't get the unpublished value
+                    $db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
+                    $publish_query = ($db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
+
                    if (@$group_params->repeat_group_button == 1) {
                         $query = '(
                                     select GROUP_CONCAT('.$column.' SEPARATOR ", ")
@@ -174,6 +181,7 @@ class EmundusModelFiles extends JModelLegacy
                                           from '.$def_elmt->table_join.'
                                           where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
                                         )
+                                    '.$publish_query.'
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                     } else {
                         if($attribs->database_join_display_type=="checkbox"){
@@ -183,12 +191,15 @@ class EmundusModelFiles extends JModelLegacy
                                 SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
                                 FROM '.$t.'
                                 WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
+                                '.$publish_query.'
                               ) AS `'.$t.'`';
                         } else {
                             $query = '(
                                 select DISTINCT '.$column.'
                                 from '.$attribs->join_db_name.'
-                                where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+                                where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`
+                                '.$publish_query.'
+                                ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                         }
                     }
 
