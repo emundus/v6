@@ -3828,6 +3828,7 @@ $(document).ready(function() {
 
                                 $('#change-status input[name=export-status]').on('change', function(){
                                     $('#em-action-state').val('');
+                                    $("#em-action-export-state .modal-chzn-select").val('').trigger("chosen:updated");
                                     if(this.value == "yes") {
                                         $("#em-action-export-state").show();
                                     }
