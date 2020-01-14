@@ -850,14 +850,20 @@ class EmundusHelperFiles
         if (!empty($params->join_key_column)) {
             $db = JFactory::getDBO();
 
+            $join_val = $params->join_val_column;
+            if (!empty($params->join_val_column_concat)) {
+                $join_val = '( SELECT '.str_replace('{thistable}', $params->join_db_name, preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0 , 2), $params->join_val_column_concat)).')';
+            }
+
             if ($element_name == 'result_for') {
-                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' WHERE published=1';
+                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$join_val.' AS elt_val FROM '.$params->join_db_name.' WHERE published=1';
             } elseif ($element_name == 'campaign_id') {
-                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name;
-			} elseif ($element_name=='training_id') {
-                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' ORDER BY '.str_replace('{thistable}', $params->join_db_name, $params->join_db_name.'.date_start ');
-			} else {
-                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$params->join_val_column.' AS elt_val FROM '.$params->join_db_name.' '.str_replace('{thistable}', $params->join_db_name, preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $params->database_join_where_sql));
+                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$join_val.' AS elt_val FROM '.$params->join_db_name;
+            } elseif ($element_name=='training_id') {
+                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$join_val.' AS elt_val FROM '.$params->join_db_name.' ORDER BY '.str_replace('{thistable}', $params->join_db_name, $params->join_db_name.'.date_start ');
+            } else {
+                $params->database_join_where_sql = (strpos($params->database_join_where_sql, '{rowid}') === false) ? $params->database_join_where_sql : '';
+                $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$join_val.' AS elt_val FROM '.$params->join_db_name.' '.str_replace('{thistable}', $params->join_db_name, preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $params->database_join_where_sql));
             }
             $db->setQuery($query);
             $result = $db->loadObjectList();
