@@ -60,7 +60,7 @@ var FbFileUpload = {
             var browseButton = jQuery('#' + el.prop('id') + '_browseButton'),
                 c = jQuery('#' + this.options.element + '_container'),
                 diff = browseButton.position().left - c.position().left;
-            // $$$ hugh - working on some IE issues
+            /*  $$$ hugh - working on some IE issues */
             var file_element = c.closest('.fabrikElement').find('input[type=file]');
             if (file_element.length > 0) {
                 var fileContainer = file_element.parent();
@@ -79,10 +79,10 @@ var FbFileUpload = {
                 files = evt.target.files,
                 f = files[0];
 
-            // Only process image files.
+            /*  Only process image files. */
             if (f.type.match('image.*')) {
                 reader = new FileReader();
-                // Closure to capture the file information.
+                /*  Closure to capture the file information. */
                 reader.onload = (function (theFile) {
                     return function (e) {
                         var c = jQuery(self.getContainer()),
@@ -94,7 +94,7 @@ var FbFileUpload = {
                         db.addClass('fabrikHide');
                     };
                 }.bind(this))(f);
-                // Read in the image file as a data URL.
+                /*  Read in the image file as a data URL. */
                 reader.readAsDataURL(f);
 
             } else if (f.type.match('video.*')) {
@@ -132,6 +132,7 @@ var FbFileUpload = {
     },
 
     upload: function(elementId, attachId, size, encrypt) {
+
         var myFormData = new FormData();
         var input = document.querySelector('div#div_'+elementId+' > input#'+elementId);
         var fnum = document.querySelector('input#'+elementId.split('___')[0]+'___fnum').value;
@@ -150,7 +151,7 @@ var FbFileUpload = {
         myFormData.append('encrypt', encrypt);
 
         var xhr = new XMLHttpRequest();
-        // Add any event handlers here...
+        /*  Add any event handlers here... */
         xhr.onreadystatechange = function() {
 
             if (xhr.readyState==4 && xhr.status==200) {
@@ -429,12 +430,12 @@ var FbFileUpload = {
      * original submitEvent is used causing a js error as it still references the files uploaded in the first form
      */
     removeCustomEvents: function () {
-        // Fabrik.removeEvent('fabrik.form.submit.start', this.submitEvent);
+        /*  Fabrik.removeEvent('fabrik.form.submit.start', this.submitEvent); */
     },
 
     cloned: function (c) {
         var el = jQuery(this.element);
-        // replaced cloned image with default image
+        /*  replaced cloned image with default image */
         if (el.closest('.fabrikElement').length === 0) {
             return;
         }
@@ -595,9 +596,9 @@ var FbFileUpload = {
         };
         this.uploader = new plupload.Uploader(plupopts);
 
-        // (1) INIT ACTIONS
+        /*  (1) INIT ACTIONS */
         this.uploader.bind('Init', function (up, params) {
-            // FORCEFULLY NUKE GRACEFUL DEGRADING FALLBACK ON INIT
+            /*  FORCEFULLY NUKE GRACEFUL DEGRADING FALLBACK ON INIT */
             self.pluploadFallback.remove();
             self.pluploadContainer.removeClass('fabrikHide');
 
@@ -612,7 +613,7 @@ var FbFileUpload = {
         this.uploader.bind('FilesRemoved', function (up, files) {
         });
 
-        // (2) ON FILES ADDED ACTION
+        /*  (2) ON FILES ADDED ACTION */
         this.uploader.bind('FilesAdded', function (up, files) {
             self.removeDropArea();
             var rElement = Fabrik.bootstrapped ? 'tr' : 'li', count;
@@ -622,7 +623,7 @@ var FbFileUpload = {
             }
             count = self.droplist.find(rElement).length;
             jQuery.each(files, function (key, file) {
-                //files.each(function (file, idx) {
+                /* files.each(function (file, idx) { */
                 if (file.size > self.options.max_file_size * 1000) {
                     window.alert(Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_FILE_TOO_LARGE_SHORT'));
                 } else {
@@ -657,13 +658,13 @@ var FbFileUpload = {
                 }
             });
 
-            // Automatically start the upload - need delay to ensure up.files is populated
+            /*  Automatically start the upload - need delay to ensure up.files is populated */
             setTimeout(function () {
                 up.start();
             }, 100);
         });
 
-        // (3) ON FILE UPLOAD PROGRESS ACTION
+        /*  (3) ON FILE UPLOAD PROGRESS ACTION */
         this.uploader.bind('UploadProgress', function (up, file) {
             var f = jQuery('#' + file.id);
             if (f.length > 0) {
@@ -733,7 +734,7 @@ var FbFileUpload = {
             } else {
                 name = self.options.elementName;
             }
-            // Stores the cropparams which we need to reload the crop widget in the correct state (rotation, zoom, etc)
+            /*  Stores the cropparams which we need to reload the crop widget in the correct state (rotation, zoom, etc) */
             jQuery(document.createElement('input')).attr({
                 'type': 'hidden',
                 name: name + '[crop][' + response.filepath + ']',
@@ -742,14 +743,14 @@ var FbFileUpload = {
             }).insertAfter(self.pluploadContainer);
 
 
-            // Stores the actual crop image data retrieved from the canvas
+            /*  Stores the actual crop image data retrieved from the canvas */
             jQuery(document.createElement('input')).attr({
                 type: 'hidden',
                 name: name + '[cropdata][' + response.filepath + ']',
                 'id': 'data_' + file.id
             }).insertAfter(self.pluploadContainer);
 
-            // Stores the image id if > 1 fileupload
+            /*  Stores the image id if > 1 fileupload */
             idValue = [file.recordid, '0'].pick();
             jQuery(document.createElement('input')).attr({
                 'type': 'hidden',
@@ -763,7 +764,7 @@ var FbFileUpload = {
             self.isSubmitDone();
         });
 
-        // (5) KICK-START PLUPLOAD
+        /*  (5) KICK-START PLUPLOAD */
         this.uploader.init();
     },
 
@@ -816,7 +817,7 @@ var FbFileUpload = {
                 'display': 'none'
             }).on('click', function (e) {
                 e.preventDefault();
-                //var a = e.target.getParent();
+                /* var a = e.target.getParent(); */
                 self.pluploadResize(jQuery(this));
             });
 
@@ -891,11 +892,11 @@ var FbFileUpload = {
             return;
         }
 
-        var id = jQuery(e.target).closest('tr').prop('id').split('_').pop();// alreadyuploaded_8_13
-        // $$$ hugh - removed ' span' from the find(), as this blows up on some templates
+        var id = jQuery(e.target).closest('tr').prop('id').split('_').pop();/*  alreadyuploaded_8_13 */
+        /*  $$$ hugh - removed ' span' from the find(), as this blows up on some templates */
         var f = jQuery(e.target).closest('tr').find('.plupload_file_name').text();
 
-        // Get a list of all of the uploaders files except the one to be deleted
+        /*  Get a list of all of the uploaders files except the one to be deleted */
         var newFiles = [];
         this.uploader.files.each(function (f) {
             if (f.id !== id) {
@@ -903,10 +904,10 @@ var FbFileUpload = {
             }
         });
 
-        // Update the uploader's files with the new list.
+        /*  Update the uploader's files with the new list. */
         this.uploader.files = newFiles;
 
-        // Send a request to delete the file from the server.
+        /*  Send a request to delete the file from the server. */
         var self = this;
         var data = {
             'option': 'com_fabrik',
@@ -932,7 +933,7 @@ var FbFileUpload = {
                 var li = jQuery(e.target).closest('.plupload_delete');
                 li.remove();
 
-                // Remove hidden fields as well
+                /*  Remove hidden fields as well */
                 jQuery('#id_alreadyuploaded_' + self.options.id + '_' + id).remove();
                 jQuery('#coords_alreadyuploaded_' + self.options.id + '_' + id).remove();
 
@@ -993,11 +994,11 @@ var FbFileUpload = {
                 });
                 f = f.last();
 
-                // $$$ rob - seems reloading ajax fileupload element in ajax form (e.g. from db join add record)
-                // is producing odd effects where old fileupload object contains info to previously uploaded image?
+                /*  $$$ rob - seems reloading ajax fileupload element in ajax form (e.g. from db join add record) */
+                /*  is producing odd effects where old fileupload object contains info to previously uploaded image? */
                 if (f.length > 0) {
 
-                    // Avoid circular reference in chrome when saving in ajax form
+                    /*  Avoid circular reference in chrome when saving in ajax form */
                     var i = image.img;
                     delete (image.img);
                     f.val(JSON.stringify(image));
@@ -1019,6 +1020,3 @@ var FbFileUpload = {
         return uploaded;
     }
 };
-
-
-

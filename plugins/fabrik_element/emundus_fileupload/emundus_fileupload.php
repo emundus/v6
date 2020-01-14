@@ -323,7 +323,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
     }
 
     public function dataConsideredEmptyForValidation($data, $repeatCounter) {
-        $current_user = JFactory::getSession()->get('emundusUser');
         $jinput = JFactory::getApplication()->input;
 
         $fnum = $jinput->post->get($this->getTableName().'___fnum');
