@@ -96,10 +96,10 @@ class EmundusViewChecklist extends JViewLegacy
 
                         if ($eMConfig->get('redirect_after_payment')) {
 
-                            if ($eMConfig->get('status_after_payment', 1) != 1) {
+                            if (!empty($eMConfig->get('status_after_payment'))) {
                                 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
                                 $m_files = new EmundusModelFiles();
-                                $m_files->updateState($this->_user->fnum,$eMConfig->get('status_after_payment', 1));
+                                $m_files->updateState($this->_user->fnum,$eMConfig->get('status_after_payment'));
                             }
 
                             // If redirect after payment is active then the file is not sent and instead we redirect to the submitting form.
