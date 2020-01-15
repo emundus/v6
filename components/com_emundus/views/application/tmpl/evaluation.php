@@ -23,22 +23,21 @@ JFactory::getSession()->set('application_layout', 'evaluation');
         <div class="panel-heading em-container-evaluation-heading">
             <h3 class="panel-title" style="display:inline-block">
             <span class="glyphicon glyphicon-check"></span>
-                <?php echo JText::_('COM_EMUNDUS_ASSESSMENT'); ?>
+                <?= JText::_('COM_EMUNDUS_ASSESSMENT'); ?>
                 <?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum) && !empty($this->url_form)) :?>
-                        <a class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
-                            <button class="btn btn-default" data-title="<?php echo JText::_('DOWNLOAD_PDF'); ?>" data-toggle="tooltip" data-placement="bottom" title="<?= JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-save"></span></button>
+                        <a class="  clean" target="_blank" href="<?= JURI::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf&user=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
+                            <button class="btn btn-default" data-title="<?= JText::_('DOWNLOAD_PDF'); ?>" data-toggle="tooltip" data-placement="bottom" title="<?= JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-save"></span></button>
                         </a>
                 <?php endif;?>
             </h3>
             <?php if (!empty($this->url_form)) :?>
-                <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB'); ?></a>
+                <a href="<?= $this->url_form; ?>" target="_blank" title="<?= JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?= JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB'); ?></a>
             <?php endif;?>
             <?php 
-                if (EmundusHelperAccess::asAccessAction(5, 'd', $this->_user->id, $this->fnum)) {
-                    echo '<div style="display:inline-block"><button class="btn btn-danger btn-xs btn-attach" title="' . JText::_('DELETE_SELECTED_EVALUATIONS') . '" id="em_delete_evals" name="em_delete_evals" link="/index.php?option=com_emundus&controller=evaluation&task=delevaluation&applicant='. $this->student->id.'&fnum='.$this->fnum . '">
+                if (EmundusHelperAccess::asAccessAction(5, 'd', $this->_user->id, $this->fnum)) :?>
+                    <div style="display:inline-block"><button class="btn btn-danger btn-xs btn-attach" title="<?= JText::_('DELETE_SELECTED_EVALUATIONS'); ?>" id="em_delete_evals" name="em_delete_evals" link="index.php?option=com_emundus&controller=evaluation&task=delevaluation&applicant=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
                     <span class="glyphicon glyphicon-trash"></span></button></div> ';
-                }
-            ?>
+            <?php endif; ?>
             <div class="btn-group pull-right">
                 <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
                 <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
@@ -47,9 +46,9 @@ JFactory::getSession()->set('application_layout', 'evaluation');
         <div class="panel-body em-container-evaluation-body">
             <div class="content">
                 <?php if (isset($this->evaluation_select) && count($this->evaluation_select) > 0) :?>
-                    <label for="copy_evaltuations" class="em-container-evaluation-body-label"><?php echo JText::_('PICK_EVAL_TO_COPY'); ?></label>
+                    <label for="copy_evaltuations" class="em-container-evaluation-body-label"><?= JText::_('PICK_EVAL_TO_COPY'); ?></label>
                     <select id="copy_evaluations">
-                        <option value="0" selected><?php echo JText::_('PICK_EVAL_TO_COPY'); ?></option>
+                        <option value="0" selected><?= JText::_('PICK_EVAL_TO_COPY'); ?></option>
                         <?php
                             foreach ($this->evaluation_select as $eval) {
                                 foreach ($eval as $fnum => $evaluators) {
@@ -67,11 +66,11 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                 <div id="formCopy"></div>
                 <div class="form" id="form">
                     <?php if (!empty($this->url_form)) :?>
-                        <div class="holds-iframe"><?php echo JText::_('LOADING'); ?></div>
-                        <iframe id="iframe" src="<?php echo $this->url_form; ?>" align="left" frameborder="0" height="600" width="100%" scrolling="no" marginheight="0" marginwidth="0" onload="resizeIframe(this)"></iframe>
-                    <?php else:?>
-                        <div class="em_no-form"><?php echo JText::_('NO_EVALUATION_FORM_SET'); ?></div>
-                    <?php endif;?>
+                        <div class="holds-iframe"><?= JText::_('LOADING'); ?></div>
+                        <iframe id="iframe" src="<?= $this->url_form; ?>" align="left" frameborder="0" height="600" width="100%" scrolling="no" marginheight="0" marginwidth="0" onload="resizeIframe(this)"></iframe>
+                    <?php else :?>
+                        <div class="em_no-form"><?= JText::_('NO_EVALUATION_FORM_SET'); ?></div>
+                    <?php endif; ?>
                 </div>
                 <div class="evaluations" id="evaluations"></div>
             </div>
