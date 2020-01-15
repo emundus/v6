@@ -37,7 +37,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      * @return bool
      * @throws Exception
      */
-    public function onBeforeStore() {
+    /*public function onBeforeStore() {
 
         jimport('joomla.filesystem.file');
 
@@ -65,6 +65,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         for ($i = 0; $i < $attachmentResult->nbmax; $i++) {
             $fileName = $jinput->post->get($name.'_filename'.$i);
+
             if (!empty($fileName)) {
                 $insert[] = $user.' , '.$db->quote($fnum).' , '.$cid.' , '.$attachId.' , '.$db->quote($fileName).' , '.'0'.' , '.'1';
             }
@@ -87,7 +88,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         }
 
         return true;
-    }
+    }*/
 
 
     /**
@@ -106,7 +107,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         }
 
         $fnum = $jinput->post->get('fnum');
+        $name = $jinput->post->get('elementId');
+
         $user = (int)substr($fnum, -7);
+        $db = JFactory::getDBO();
 
         $attachId = $jinput->post->get('attachId');
 
@@ -148,6 +152,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
             $tmp_name = $file['tmp_name'];
             $fileSize = $file['size'];
+
             $target = $this->getPath($user,$fileName);
 
             $extension = explode('.', $fileName);
@@ -171,6 +176,19 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                 $postSize = $jinput->post->getInt('size', 0);
                 $iniSize = $this->file_upload_max_size();
                 $sizeMax = ($postSize>=$iniSize)?$iniSize:$postSize;
+
+
+
+
+                //for ($i = 0; $i < $attachmentResult->nbmax; $i++) {
+                    //$fileName = $jinput->post->get($name.'_filename'.$i);
+
+                    if (!empty($fileName)) {
+                        $insert[] = $user.' , '.$db->quote($fnum).' , '.$cid.' , '.$attachId.' , '.$db->quote($fileName).' , '.'0'.' , '.'1';
+                    }
+                //}
+
+
 
                 if ($lengthFile <= $nbMaxFile) {
                     if ($nbAttachment < $nbMaxFile) {
@@ -198,6 +216,23 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                 $result[] = array('size' => $size, 'ext' => $ext,  'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment);
             }
 
+        }
+
+
+        if (empty($uploadResult) && $attachmentResult->nbmax >= 1) {
+            $this->insertFile($insert);
+        }
+
+        if (!empty($uploadResult)) {
+            if ($nbMax == 1) {
+                $fileNameUpdate = $jinput->post->get($name.'_filename0');
+                if (!empty($fileNameUpdate)) {
+                    $this->updateFile($fnum, $cid, $attachId, $fileNameUpdate);
+                }
+            }
+            if ($nbMax > 1 && count($uploadResult) < $nbMax) {
+                $this->insertFile($insert);
+            }
         }
 
         echo json_encode($result);

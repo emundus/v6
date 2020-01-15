@@ -135,6 +135,7 @@ var FbFileUpload = {
 
         var myFormData = new FormData();
         var input = document.querySelector('div#div_'+elementId+' > input#'+elementId);
+
         var fnum = document.querySelector('input#'+elementId.split('___')[0]+'___fnum').value;
         var div = document.querySelector('div#div_'+elementId);
         var deleteButton = document.querySelector('div#div_'+elementId+' > a.em-deleteFile');
