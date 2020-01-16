@@ -11,6 +11,13 @@ defined('_JEXEC') or die;
 
 class modemundusApplicationsHelper {
 
+	public static function getdossiersAjax() {
+		$layout = 'vue';
+		$response = modemundusApplicationsHelper::getApplications($layout); 
+		echo json_encode($response);
+   		exit;
+	}
+
 	// get users sorted by activation date
 	static function getApplications($layout) {
 		$user = JFactory::getUser();

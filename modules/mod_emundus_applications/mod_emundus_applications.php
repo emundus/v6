@@ -167,5 +167,3 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 
 	require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
 }
-
-
