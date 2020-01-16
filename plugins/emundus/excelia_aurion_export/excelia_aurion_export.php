@@ -39,6 +39,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             $aurion_url = $this->params->get('url', null);
             $aurion_login = $this->params->get('login', null);
             $aurion_pass = $this->params->get('password', null);
+            $status = $this->params->get('status', null);
 
             // if any one of these params are empty, go no further
             if (empty($aurion_url) || empty($aurion_login) || empty($aurion_pass)) {
@@ -73,6 +74,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $this->db->quoteName('epd.street_2'),
                 $this->db->quoteName('epd.street_3'),
                 $this->db->quoteName('epd.city_1'),
+                $this->db->quoteName('epd.city_2', 'epd_city2'),
                 $this->db->quoteName('epd.birth_date'),
                 $this->db->quoteName('epd.country_1')
             ];
@@ -143,6 +145,11 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $this->db->quoteName('dan.id_TypeDeConvention')
             ];
 
+            // data_aurion_35584331
+            $aurion_city = [
+                $this->db->quoteName('dacity.id_Ville', 'aurion_city')
+            ];
+
             // data_aurion_37241402
             $aurion_concours_1 = [
                 $this->db->quoteName('dacon.id_Module', 'concours_mod')
@@ -157,7 +164,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
             // In the query, we merge all the different tables in the select and join them while checking if the rows we get in the aurion tables are published
             $query
-                ->select(array_merge($campaign_columns, $eu_columns, $pd_columns, $qualification_columns, $scholarship_columns, $concours_columns, $aurion_user, $aurion_em_user, $aurion_civility, $aurion_diplome, $aurion_nationality, $aurion_concours_1, $aurion_concours_2))
+                ->select(array_merge($campaign_columns, $eu_columns, $pd_columns, $qualification_columns, $scholarship_columns, $concours_columns, $aurion_user, $aurion_em_user, $aurion_civility, $aurion_diplome, $aurion_nationality, $aurion_concours_1, $aurion_concours_2, $aurion_city))
                 ->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
                 ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('ecc.campaign_id') . ' = '. $this->db->quoteName('esc.id'))
                 ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('ecc.applicant_id') . ' = '. $this->db->quoteName('eu.user_id'))
@@ -168,10 +175,11 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 ->leftJoin($this->db->quoteName('data_aurion_37736495', 'dau') . ' ON ' . $this->db->quoteName('es.mail_excelia') . ' = '. $this->db->quoteName('dau.MailEcole') . ' AND ' . $this->db->quoteName('dau.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_39177663', 'deu') . ' ON ' . $this->db->quoteName('ecc.applicant_id') . ' = '. $this->db->quoteName('deu.emundus_id')  . ' AND ' . $this->db->quoteName('deu.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_35347585', 'dac') . ' ON ' . $this->db->quoteName('eu.civility') . ' = '. $this->db->quoteName('dac.id_Titre') . ' AND ' . $this->db->quoteName('dac.published') . ' = 1')
+                ->leftJoin($this->db->quoteName('data_aurion_35584331', 'dacity') . ' ON ' . $this->db->quoteName('eq.city') . ' = '. $this->db->quoteName('dacity.id_Ville') . ' AND ' . $this->db->quoteName('dacity.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_35616031', 'dad') . ' ON ' . $this->db->quoteName('eu.candidat') . ' = '. $this->db->quoteName('dad.Code_TypeDiplome') . ' AND ' . $this->db->quoteName('dad.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_35581810', 'dan') . ' ON ' . $this->db->quoteName('eu.nationality') . ' = '. $this->db->quoteName('dan.id_Nationalite') . ' AND ' . $this->db->quoteName('dan.published') . ' = 1')
-                ->leftJoin($this->db->quoteName('data_aurion_37241402', 'dacon') . ' ON ' . $this->db->quoteName('econ.concours_session') . ' = '. $this->db->quoteName('dacon.id_Concours') . ' AND ' . $this->db->quoteName('dacon.published') . ' = 1')
-                ->leftJoin($this->db->quoteName('data_aurion_39124065', 'dacon2') . ' ON ' . $this->db->quoteName('econ.concours_session') . ' = '. $this->db->quoteName('dacon2.id_Concours') . ' AND ' . $this->db->quoteName('dacon2.published') . ' = 1')
+                ->leftJoin($this->db->quoteName('data_aurion_37241402', 'dacon') . ' ON ' . $this->db->quoteName('econ.concours_session') . ' = '. $this->db->quoteName('dacon.id_Concours'))
+                ->leftJoin($this->db->quoteName('data_aurion_39124065', 'dacon2') . ' ON ' . $this->db->quoteName('econ.concours_session') . ' = '. $this->db->quoteName('dacon2.id_Concours'))
                 ->where($this->db->quoteName('ecc.fnum') . ' IN (' . implode(', ', $this->db->quote($fnums)). ')');
 
             try {
@@ -232,7 +240,6 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 // So we can get the xml response after the exec
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-
                 $info = curl_getinfo($ch);
 
                 // Execute transfer
@@ -259,6 +266,18 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 					', JLog::ERROR, 'com_emundus');
                         return false;
                     }
+
+                    if($status) {
+                        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+                        $m_files = new EmundusModelFiles();
+                        $m_files->updateState($fnums, $status);
+                    }
+
+                    JLog::add('
+						XML SENT : \n
+						POST DATA: '.$xml_export.' \n
+					', JLog::INFO, 'com_emundus');
+
                 } else {
                     JLog::add('
 						HTTP ERROR: Response not 200 OK \n 
@@ -284,7 +303,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
     function buildNewUserXml($user) {
 
         // $user_key = LASTNAME_FIRSTNAME_SEX_BIRTHDATE
-        $user_key = strtoupper($user->lastname) . "_" . strtoupper($user->firstname) . "_" . $user->Sexe . "_" . date('dmY', strtotime($user->birth_date));
+        $user_key = strtoupper($this->replaceUserName($user->lastname)) . "_" . strtoupper($this->replaceUserName($user->firstname)) . "_" . $user->Sexe . "_" . date('dmY', strtotime($user->birth_date));
 
         //Only import skype_id if there is one
         if (!empty($user->skype_id)) {
@@ -297,7 +316,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         //Only import User address if there is one
         if (!empty($user->street_1)) {
-            $address = "<adresse key='ADR_PERSO_" . $user_key . "' A500='" . $user->street_1 . "' A501='" . $user->street_2 . "' A502='" . $user->street_3 . "'>
+            $address = "<adresse key='ADR_PERSO_" . $user_key . "' A500='" . htmlspecialchars($user->street_1, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A501='" . htmlspecialchars($user->street_2, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A502='" . htmlspecialchars($user->street_3, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "'>
                         <ville objet_id='" . $user->city_1 . "' ForceImport='true' />
                         <pays objet_id='" . $user->country_1 . "' ForceImport='true' />
                         <type_adresse objet_id='44755' OnRelation='true' ForceImport='true' ForceReplace='true' />
@@ -309,7 +328,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         // Build the user's personal details section
         $individu = "
-                <individu key='" . $user_key . "' code='" . strtoupper($user->lastname) . "' libelle='" . ucfirst($user->firsname) . "' A595='" . date('d-m-Y') . "' A596='" . $user->Sexe . "' A39153560='" . $user->aurion_nationality . "' A39218849='" . $user->user_id . "' A601='true'>
+                <individu key='" . $user_key . "' code='" . strtoupper(htmlspecialchars($user->lastname, ENT_XML1 | ENT_QUOTES, 'UTF-8')) . "' libelle='" . htmlspecialchars(ucfirst($user->firstname), ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A595='" . date('d-m-Y', strtotime($user->birth_date)). "' A596='" . $user->Sexe . "' A39153560='" . $user->first_language . "' A39218849='" . $user->user_id . "' A601='true'>
                     
                     <titre objet_id='" . $user->civility . "' ForceImport='true' ForceReplace='true' />
                     <nationalite objet_id='" . $user->nationality . "' ForceImport='true' />
@@ -332,7 +351,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
         if (!empty($user->es_fnum)) {
 
             $inscription_module = "
-                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A37765483='" . $user->university . "' A37765709='" . $user->state. "' A37765733='" . (!empty($user->city) ? $user->city : $user->city_2) . "' >
+                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A37765709='" . $user->state. "' A37765733='" . ((!empty($user->city)) ? (is_numeric($user->city)) ? $user->aurion_city : htmlspecialchars($user->city, ENT_XML1 | ENT_QUOTES, 'UTF-8') : htmlspecialchars($user->city_2, ENT_XML1 | ENT_QUOTES, 'UTF-8')) . "' >
                     
                     <individu  key='" . $user_key . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
                         <module objet_id='" . $user->aurion_id . "' ForceSource='apprenant'/>
@@ -395,7 +414,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
         if (!empty($user->econ_fnum)) {
 
             $inscription_concours = "
-                <inscription_concours ForceImport='true' key='" . $user->concours_sessions . "_" . $user_key . "'  A4620='" . date('d-m-Y') . "' >
+                <inscription_concours ForceImport='true' key='" . $user->concours_session . "_" . $user_key . "'  A4620='" . date('d-m-Y') . "' >
                     
                     <individu  key='" . $user_key . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
                         <cours objet_id='" . (!empty($user->concours_mod) ? $user->concours_mod : $user->concours_mod2) . "' ForceSource='apprenant'/>
@@ -431,7 +450,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         $xml->startElement("xml");
         // insert data
-        $xml->writeCData ( "
+        $xml->writeCData ("
             <import_candidat DatabaseName='esc_larochelle'>
                 
                 " . $individu . "
@@ -443,7 +462,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 " . $inscription_concours . "
 
             </import_candidat>
-        " );
+        ");
 
         // end xml tag
         $xml->endElement();
@@ -465,7 +484,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
     function buildExistingUserXml($user) {
 
         // $user_key = LASTNAME_FIRSTNAME_SEX_DATE_BIRHTDATE
-        $user_key = strtoupper($user->lastname) . "_" . strtoupper($user->firstname) . "_" . $user->Sexe . "_DATE_" . date('dmY', strtotime($user->birth_date));
+        $user_key = strtoupper($this->replaceUserName($user->lastname)) . "_" . strtoupper($this->replaceUserName($user->firstname)) . "_" . $user->Sexe . "_" . date('dmY', strtotime($user->birth_date));
 
         // get the user's aurion id
         $user_id = !empty($user->id_Individu) ? $user->id_Individu : $user->aurion_user;
@@ -474,7 +493,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
         // Check if the the user has filled out their qualification form AND their scholarship form, don't import if one of them doesn't have a fnum
         if (!empty($user->es_fnum)) {
             $inscription_module = "
-                <inscription_module ForceImport='true' key='". $user->aurion_id ."_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A37765483='" . $user->university . "' A37765709='" . $user->state. "' A37765733='" . (!empty($user->city) ? $user->city : $user->city_2) . "' >
+                <inscription_module ForceImport='true' key='". $user->aurion_id ."_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A37765709='" . $user->state. "' A37765733='" . (!empty($user->city) ? $user->aurion_city : htmlspecialchars($user->city_2, ENT_XML1 | ENT_QUOTES, 'UTF-8')) . "' >
                     
                     <individu objet_id='" . $user_id . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
                         <module objet_id='" . $user->aurion_id . "' ForceSource='apprenant'/>
@@ -534,7 +553,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
         // Check if the the user has filled out their session_concours form, don't import if no fnum
         if (!empty($user->econ_fnum)) {
             $inscription_concours = "
-                <inscription_concours ForceImport='true' key='" . $user->concours_session . "_" . $user_key . "'  A4620='04-12-2019' >
+                <inscription_concours ForceImport='true' key='" . $user->concours_session . "_" . $user_key . "'  A4620='" . date('d-m-Y') . "' >
                     
                     <individu objet_id='" . $user_id . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
                         <cours objet_id='" . (!empty($user->concours_mod) ? $user->concours_mod : $user->concours_mod2) . "' ForceSource='apprenant'/>
@@ -570,7 +589,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
         $xml->startElement("xml");
 
         // insert data
-        $xml->writeCData ( "
+        $xml->writeCData ("
             <import_candidat DatabaseName='esc_larochelle'>
             
                 <individu objet_id='" . $user_id . "' A39218849='" . $user->user_id . "' />
@@ -582,7 +601,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 " . $inscription_concours . "
                 
             </import_candidat>
-        " );
+        ");
 
         // end xml tag
         $xml->endElement();
@@ -591,5 +610,20 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
         $xml->endElement();
 
         return $xml->flush();
+    }
+
+    function replaceUserName($str) {
+
+        $unwanted_array = array(    'Š'=>'S', 'š'=>'s', 'Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+            'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U',
+            'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss', 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c',
+            'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
+            'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y' );
+
+        $newstr = strtr( $str, $unwanted_array );
+
+        $newstr = preg_replace('/[^a-zA-Z0-9\']/', '', $newstr);
+        $newstr = str_replace(array("'", " "), '', $newstr);
+        return $newstr;
     }
 }
