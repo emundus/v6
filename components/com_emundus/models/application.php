@@ -255,40 +255,31 @@ class EmundusModelApplication extends JModelList {
 
     }
 
-    public function deleteComment($id) {
+    public function deleteComment($id, $fnum) {
 
-        // Logging requires the fnum, we have to get this from the comment ID being deleted.
-        // Only get the fnum if logging is on and comments are in the list of actions to be logged.
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $log_actions = $eMConfig->get('log_actions', null);
-        if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array(10, explode(',',$log_actions)))) {
-
-            $query = $this->_db->getQuery(true);
-            $query->select($this->_db->quoteName('fnum'))
-                ->from($this->_db->quoteName('#__emundus_comments'))
-                ->where($this->_db->quoteName('id').'='.$id);
-
-            $this->_db->setQuery($query);
-            $fnum = $this->_db->loadResult();
-
-            // Log the comment in the eMundus logging system.
-            EmundusModelLogs::log(JFactory::getUser()->id, (int) substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_LOGS_DELETE_COMMENT');
-        }
-       
         $query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
         $this->_db->setQuery($query);
-        return $this->_db->Query();
+        $res = $this->_db->execute();
+
+        if ($res) {
+            EmundusModelLogs::log(JFactory::getUser()->id, (int) substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_LOGS_DELETE_COMMENT');
+        }
+
+        return $res;
        
     }
 
     public function deleteTag($id_tag, $fnum) {
         $query = 'DELETE FROM #__emundus_tag_assoc WHERE id_tag = '.$id_tag.' AND fnum like '.$this->_db->Quote($fnum);
         $this->_db->setQuery($query);
+        $res = $this->_db->execute();
 
         // Log the action in the eMundus logging system.
-        EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_LOGS_DELETE_TAG');
+        if ($res) {
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_LOGS_DELETE_TAG');
+        }
 
-        return $this->_db->Query();
+        return $res;
     }
 
     public function addComment($row) {
