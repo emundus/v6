@@ -5129,7 +5129,7 @@ $(document).ready(function() {
                 $('.modal-body').append('<div>' +
                     '<img src="'+loadingLine+'" alt="loading"/>' +
                     '</div>');
-                url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=updatepublish';
+                url = 'index.php?option=com_emundus&controller=files&task=updatepublish';
                 $.ajax({
                     type:'POST',
                     url:url,
