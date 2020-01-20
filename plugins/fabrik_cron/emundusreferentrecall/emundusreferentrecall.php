@@ -88,9 +88,15 @@ class PlgFabrik_Cronemundusreferentrecall extends PlgFabrik_Cron {
         if (!empty($applicants)) {
             include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
             $m_emails = new EmundusModelEmails;
-            $email = $m_emails->getEmailById($reminder_mail_id);
-            
 
+            if(!empty($reminder_mail_id)){
+                $email = $m_emails->getEmailById($reminder_mail_id);
+            }
+            else{
+                $email = $m_emails->getEmail('referent_letter');
+            }
+
+            
             foreach ($applicants as $applicant) {
 
 
