@@ -18,6 +18,8 @@ $site_offset = $config->get('offset');
 
 ?>
 
+<?= $mod_em_campaign_intro; ?>
+
 <form action="index.php" method="post" id="search_program">
 	<?php if (isset($searchword) && !empty($searchword)) :?>
 		<div class="g-block size-100">
@@ -205,8 +207,8 @@ $site_offset = $config->get('offset');
                                 <br/>
                             <?php endif; ?>
                             <hr>
-							<?php echo JText::_('TIMEZONE').$offset; ?>
-						</div>
+                            <?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('TIMEZONE').$offset : ''; ?>
+                        </div>
 					</div>
 					<div class="below-content">
                         <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course='.$result->code.'&cid='.$result->id); ?>
