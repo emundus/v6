@@ -1,1 +1,1 @@
-ALTER TABLE `jos_emundus_hikashop` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;
+UPDATE `jos_emundus_email_templates` SET `Template`=REPLACE(`Template`, 'aria-hidden="true"', '');
