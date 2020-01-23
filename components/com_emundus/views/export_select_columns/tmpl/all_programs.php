@@ -2,7 +2,6 @@
 defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.tooltip');
 JHTML::_('behavior.modal');
-//JHTML::stylesheet('media/com_emundus/css/emundus.css' );
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/css/emundus_export_select_columns.css" );
 $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -16,14 +15,14 @@ $s_elements = $session->get('s_elements');
 $comments = $session->get('comments');
 ?>
 
-    <h1><?=JText::_('EM_TAGS_PAGE_TITLE');?></h1>
+    <h1><?= JText::_('EM_TAGS_PAGE_TITLE'); ?></h1>
 
     <div id="em-select-program">
         <h2><?= JText::_('SELECT_PROG_DESC');?></h2>
         <select id="program" class="form-control" onchange="programSelect();">
-            <option value=""><?= JText::_('PROGRAM_SELECT');?></option>
-            <?php foreach ($this->programs as $program):?>
-                <option value="<?=$program["code"];?>"><?=$program["label"];?></option>
+            <option value=""><?= JText::_('PROGRAM_SELECT'); ?></option>
+            <?php foreach ($this->programs as $program) :?>
+                <option value="<?= $program["code"]; ?>"><?= $program["label"]; ?></option>
             <?php endforeach; ?>
         </select>
     </div>
@@ -31,30 +30,30 @@ $comments = $session->get('comments');
     <div id="program-categories" class="hide">
         <hr>
         <div id="program-categories_desc">
-            <h2><?= JText::_('SELECT_CAT_DESC');?></h2>
+            <h2><?= JText::_('SELECT_CAT_DESC'); ?></h2>
         </div>
 
         <div id="program-categories-group">
             <div id="em-select-campaign">
                 <select id="campaign" class="form-control" onchange="showAll()">
-                    <option value=""><?= JText::_('CAMPAIGN_SELECT');?></option>
+                    <option value=""><?= JText::_('CAMPAIGN_SELECT'); ?></option>
                 </select>
             </div>
 
             <div id="em-select-evaluation">
-                <button class="btn btn-primary" onclick="showEval();"><?=JText::_('EVALUATION_SELECT');?></button>
+                <button class="btn btn-primary" onclick="showEval();"><?= JText::_('EVALUATION_SELECT'); ?></button>
             </div>
 
             <div id="em-select-decision">
-                <button class="btn btn-primary" onclick="showDecision();"><?=JText::_('DECISION_SELECT');?></button>
+                <button class="btn btn-primary" onclick="showDecision();"><?= JText::_('DECISION_SELECT'); ?></button>
             </div>
 
             <div id="em-select-admission">
-                <button class="btn btn-primary" onclick="showAdmission();"><?=JText::_('ADMISSION_SELECT');?></button>
+                <button class="btn btn-primary" onclick="showAdmission();"><?= JText::_('ADMISSION_SELECT'); ?></button>
             </div>
 
             <div id="em-select-other">
-                <button class="btn btn-primary" onclick="showOther();"><?=JText::_('OTHER_TAG_SELECT');?></button>
+                <button class="btn btn-primary" onclick="showOther();"><?= JText::_('OTHER_TAG_SELECT'); ?></button>
             </div>
         </div>
 
@@ -65,31 +64,31 @@ $comments = $session->get('comments');
     <div id="other-result" class="hide">
         <hr>
         <div class="em-program-title">
-            <h1><?=JText::_('TAG_TABLE_TITLE'); ?></h1>
+            <h1><?= JText::_('TAG_TABLE_TITLE'); ?></h1>
         </div>
         <div id="emundus_elements">
             <div class="panel panel-primary excel" id="emundus_tag_table">
                 <div class="panel-heading">
                     <legend>
-                        <label><?=JText::_('OTHER_TAG_SELECT'); ?></label>
+                        <label><?= JText::_('OTHER_TAG_SELECT'); ?></label>
                     </legend>
                 </div>
 
                 <div class="panel-body">
-                    <div class="panel panel-info excel" id="emundus_grp_<?php echo$t->group_id; ?>">
+                    <div class="panel panel-info excel" id="emundus_grp_<?= $t->group_id; ?>">
                         <div class="panel-heading">
                             <legend>
-                                <label for="emundus_checkall_grp_'<?php echo $t->group_id; ?>"><?php echo JText::_($t->group_label); ?></label>
+                                <label for="emundus_checkall_grp_'<?= $t->group_id; ?>"><?= JText::_($t->group_label); ?></label>
                             </legend>
                         </div>
 
                         <div class="panel-body" id="other-result-body">
                             <div class="em-element-title em-element-main-title">
                                 <div class="em-element-title-id em-element-main-title-id col-md-3">
-                                    <b><?=JText::_('ID')?></b>
+                                    <b><?= JText::_('ID'); ?></b>
                                 </div>
                                 <div class="em-element-title-label em-element-main-title-label col-md-9">
-                                    <b><?=JText::_('LABEL')?></b>
+                                    <b><?= JText::_('LABEL'); ?></b>
                                 </div>
                                 <br>
                             </div>
@@ -100,8 +99,6 @@ $comments = $session->get('comments');
         </div>
     </div>
 
-
-
 <script>
     function programSelect() {
         let course = document.getElementById('program').options[document.getElementById('program').selectedIndex].value;
@@ -110,7 +107,7 @@ $comments = $session->get('comments');
             httpRequest.responseType = 'json';
             httpRequest.onreadystatechange = function(data) {
 
-                if(httpRequest.status == 200 && httpRequest.readyState == 4 && httpRequest.response) {
+                if (httpRequest.status == 200 && httpRequest.readyState == 4 && httpRequest.response) {
                     var campaigns = httpRequest.response.campaigns;
                     campaigns.forEach(function(campaign) {
                         var opt = document.createElement('option');
@@ -121,7 +118,7 @@ $comments = $session->get('comments');
                     });
                 }
             };
-            httpRequest.open("GET", '<?= JURI::root(); ?>/index.php?option=com_emundus&controller=campaign&task=getcampaignsbyprogram&course='+course, true);
+            httpRequest.open("GET", '<?= JURI::base(); ?>/index.php?option=com_emundus&controller=campaign&task=getcampaignsbyprogram&course='+course, true);
             httpRequest.send();
         }
         else {
@@ -137,13 +134,13 @@ $comments = $session->get('comments');
 
         var httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = function(data) {
-            if(httpRequest.status == 200 && httpRequest.readyState == 4) {
+            if (httpRequest.status == 200 && httpRequest.readyState == 4) {
                 document.getElementById('result').innerHTML = "";
                 document.getElementById('result').innerHTML = "<hr>" + httpRequest.responseText;
                 document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('EXPORT_EVAL_TITLE');?>";
             }
         };
-        httpRequest.open("GET", '<?= JURI::root(); ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=evaluation&all=1', true);
+        httpRequest.open("GET", '<?= JURI::base(); ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=evaluation&all=1', true);
         httpRequest.send();
     }
 
@@ -154,13 +151,13 @@ $comments = $session->get('comments');
 
         var httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = function(data) {
-            if(httpRequest.status == 200 && httpRequest.readyState == 4) {
+            if (httpRequest.status == 200 && httpRequest.readyState == 4) {
                 document.getElementById('result').innerHTML = "";
                 document.getElementById('result').innerHTML = "<hr>" + httpRequest.responseText;
                 document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('EXPORT_ADMISSION_TITLE');?>";
             }
         };
-        httpRequest.open("GET", '<?= JURI::root(); ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=admission&all=1', true);
+        httpRequest.open("GET", '<?= JURI::base(); ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=admission&all=1', true);
         httpRequest.send();
     }
 
@@ -177,7 +174,7 @@ $comments = $session->get('comments');
                 document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('EXPORT_DECISION_TITLE');?>";
             }
         };
-        httpRequest.open("GET", '<?= JURI::root(); ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=decision&all=1', true);
+        httpRequest.open("GET", '<?= JURI::base(); ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=decision&all=1', true);
         httpRequest.send();
     }
 
@@ -199,7 +196,7 @@ $comments = $session->get('comments');
                     document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - "+camp.text;
                 }
             };
-            httpRequest.open("GET", '<?= JURI::root(); ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&camp='+camp.value+'&all=1', true);
+            httpRequest.open("GET", '<?= JURI::base(); ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&camp='+camp.value+'&all=1', true);
             httpRequest.send();
         }
 
@@ -211,7 +208,7 @@ $comments = $session->get('comments');
         var httpRequest = new XMLHttpRequest();
         httpRequest.responseType = 'json';
         httpRequest.onreadystatechange = function(data) {
-            if(httpRequest.status == 200 && httpRequest.readyState == 4 && httpRequest.response) {
+            if (httpRequest.status == 200 && httpRequest.readyState == 4 && httpRequest.response) {
                 document.getElementById('result').innerHTML = "";
                 document.getElementById('other-result').classList.remove('hide');
                 var tags = httpRequest.response.tags;
@@ -255,12 +252,9 @@ $comments = $session->get('comments');
                 document.getElementsByClassName('em-element-id')[0].style["min-width"] = setWidth;
             }
         };
-        httpRequest.open("GET", '<?= JURI::root(); ?>/index.php?option=com_emundus&controller=export_select_columns&task=getalltags', true);
+        httpRequest.open("GET", '<?= JURI::base(); ?>/index.php?option=com_emundus&controller=export_select_columns&task=getalltags', true);
         httpRequest.send();
     }
-
-
-
 
     function copyid(t) {
         var text = document.createElement("textarea");
@@ -274,7 +268,7 @@ $comments = $session->get('comments');
             timer: 1500,
             showConfirmButton: false,
             type: 'success',
-            title: "<?=JText::_('TAG_COPIED');?> :<br>" + t
+            title: "<?= JText::_('TAG_COPIED'); ?> :<br>" + t
         });
     }
 </script>
