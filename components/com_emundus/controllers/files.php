@@ -1211,17 +1211,6 @@ class EmundusControllerFiles extends JControllerLegacy
         return(array) json_decode(stripcslashes($elts));
     }
 
-    public function getcolumnSup($objs) {
-
-        /* $menu = @JFactory::getApplication()->getMenu();
-         $current_menu  = $menu->getActive();
-         $menu_params = $menu->getParams($current_menu->id);
-         $columnSupl = explode(',', $menu_params->get('em_actions'));*/
-        $objs = (array) json_decode(stripcslashes($objs));
-        //$columnSupl = array_merge($columnSupl, $objs);
-        return $objs;
-    }
-
 	/**
 	 * Add lines to temp CSV file
 	 * @return String json
@@ -1265,7 +1254,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $opts = $this->getcolumn($opts);
 
         $col    = $this->getcolumn($elts);
-        $colsup = $this->getcolumnSup($objs);
+        $colsup = $this->getcolumn($objs);
         $colOpt = array();
 
         if (!$csv = fopen(JPATH_BASE.DS.'tmp'.DS.$file, 'a')) {
@@ -1347,6 +1336,12 @@ class EmundusControllerFiles extends JControllerLegacy
                 case 'tags':
                     $colOpt['tags'] = $m_files->getTagsByFnum($fnums);
                     break;
+	            case 'group-assoc':
+	            	$colOpt['group-assoc'] = $m_files->getAssocByFnums($fnums, true, false);
+	            	break;
+	            case 'user-assoc':
+	            	$colOpt['user-asoc'] = $m_files->getAssocByFnums($fnums, false, true);
+	            	break;
             }
         }
         $status = $m_files->getStatusByFnums($fnums);
@@ -1374,7 +1369,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         if (in_array("form-title", $opts) && in_array("form-group", $opts)) {
                             $line .= JText::_($fLine->form_label)." > ".JText::_($fLine->group_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                             $nbcol++;
-                        } elseif(count($opts) == 1) {
+                        } elseif (count($opts) == 1) {
                             if (in_array("form-title", $opts)) {
                                 $line .= JText::_($fLine->form_label)." > ".preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)). "\t";
                                 $nbcol++;
@@ -1397,7 +1392,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
 
             foreach ($colsup as $kOpt => $vOpt) {
-                if ($vOpt=="forms" || $vOpt=="attachment") {
+                if ($vOpt == "forms" || $vOpt == "attachment") {
 	                $line .= $vOpt."(%)\t";
                 } else {
 	                $line .= '"'.preg_replace("/\r|\n|\t/", "", $vOpt).'"'."\t";
@@ -1529,6 +1524,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         break;
 
 	                default:
+	                	$line .= $vOpt[$fnum['fnum']]."\t";
                         break;
                 }
             }

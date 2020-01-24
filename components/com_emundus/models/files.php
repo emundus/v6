@@ -2759,6 +2759,96 @@ if (JFactory::getUser()->id == 63)
         }
     }
 
+	/**
+	 * Gets the associated groups, users, or both, for an array of fnums. Used for XLS exports.
+	 *
+	 * @param         $fnums
+	 * @param   bool  $groups Should we get associated groups ?
+	 * @param   bool  $users
+	 *
+	 * @return array|bool
+	 */
+	public function getAssocByFnums($fnums, $groups = true, $users = true) {
+
+		$access = [];
+		$db = $this->getDbo();
+
+		if ($groups) {
+
+			$query = "SELECT jecc.fnum, group_concat(jesg.label) AS label
+					  FROM #__emundus_campaign_candidature as jecc
+	                  LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
+	                  LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
+	                  LEFT JOIN #__emundus_setup_groups_repeat_course as jesgrc on jesgrc.course = jesp.code
+	                  LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jesgrc.parent_id
+	                  LEFT JOIN #__emundus_acl as jea on jea.group_id = jesg.id
+	                  WHERE jea.action_id = 1 and jea.r = 1 and jecc.fnum in ('".implode("','", $fnums)."')
+	                  GROUP BY jecc.fnum";
+			try {
+				$db->setQuery($query);
+				$access = $db->loadAssocList('fnum', 'label');
+			} catch(Exception $e) {
+				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				return false;
+			}
+
+			$query = "SELECT jega.fnum, group_concat(jesg.label) AS label
+					  FROM #__emundus_group_assoc as jega
+                      LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jega.group_id
+                      WHERE jega.action_id = 1 and jega.r = 1  and jega.fnum in ('".implode("','", $fnums)."')";
+
+			try {
+				$db->setQuery($query);
+				$res = $db->loadAssocList('fnum', 'label');
+			} catch(Exception $e) {
+				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				return false;
+			}
+
+			foreach ($res as $k => $r) {
+				if (isset($access[$k])) {
+					$access[$k] .= ','.$r;
+				} else {
+					$access[$k] = $r;
+				}
+			}
+		}
+
+
+		if ($users) {
+
+			$query = $db->getQuery(true);
+			$query->select([$db->quoteName('jeua.fnum'), 'group_assoc('.$db->quoteName('ju.name').') AS name'])
+				->from($db->quoteName('#__emundus_users_assoc', 'jeua'))
+				->leftJoin($db->quoteName('#__users', 'ju').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeua.user_id'))
+				->leftJoin($db->quoteName('#__emundus_users', 'jeu').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeu.user_id'))
+				->leftJoin($db->quoteName('#__emundus_setup_profiles', 'jesp').' ON '.$db->quoteName('jeu.profile').' = '.$db->quoteName('jesp.id'))
+				->where($db->quoteName('jeua.action_id').' = 1 AND '.$db->quoteName('jeua.r').' = 1 AND '.$db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")');
+			$db = $this->getDbo();
+
+			try {
+				$db->setQuery($query);
+				$res = $db->loadAssocList('fnum', 'name');
+			} catch(Exception $e) {
+				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				return false;
+			}
+
+
+			foreach ($res as $k => $r) {
+				if (isset($access[$k])) {
+					$access[$k] .= ','.$r;
+				} else {
+					$access[$k] = $r;
+				}
+			}
+		}
+
+		return $access;
+	}
+
+
+
     /**
      * @param $fnums
      * @return mixed
