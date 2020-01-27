@@ -87,7 +87,6 @@ class EmundusHelperFiles
         $filts_values   = explode(',', $menu_params->get('em_filters_values'));
         $filts_types    = explode(',', $menu_params->get('em_filters_options'));
 
-        //var_dump($menu_params);die;
         // All types of filters
         $filts_details  = [
             'profile'           => NULL,
@@ -108,7 +107,8 @@ class EmundusHelperFiles
             'group'             => NULL,
             'institution'       => NULL,
             'spam_suspect'      => NULL,
-            'not_adv_filter'    => NULL
+            'not_adv_filter'    => NULL,
+	        'tag'               => NULL
         ];
         $filts_options  = [
             'profile'           => NULL,
@@ -129,14 +129,11 @@ class EmundusHelperFiles
             'group'             => NULL,
             'institution'       => NULL,
             'spam_suspect'      => NULL,
-            'not_adv_filter'    => NULL
+            'not_adv_filter'    => NULL,
+	        'tag'               => NULL
         ];
-        /*  $validate_id    = explode(',', $menu_params->get('em_validate_id'));
-            $columnSupl = explode(',', $menu_params->get('em_actions'));*/
 
-        $filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile_users', 'group', 'institution');
-
-        //$tab_params = array();
+        $filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile_users', 'group', 'institution', 'tag');
         
         foreach ($filts_names as $key => $filt_name) {
 
@@ -145,25 +142,33 @@ class EmundusHelperFiles
                     $params[$filt_name] = array();
                     $params[$filt_name] = explode('|', $filts_values[$key]);
                     $params[$filt_name] = array_unique($params[$filt_name]);
-                } else $params[$filt_name] = $filts_values[$key];
+                } else {
+                	$params[$filt_name] = $filts_values[$key];
+                }
             }
             
             if (array_key_exists($key, $filts_values)) {
-                if (in_array($filt_name, $filter_multi_list))
-                    $filts_details[$filt_name] = explode('|', $filts_values[$key]);
-                else
-                    $filts_details[$filt_name] = $filts_values[$key];
-            } else $filts_details[$filt_name] = '';
+                if (in_array($filt_name, $filter_multi_list)) {
+	                $filts_details[$filt_name] = explode('|', $filts_values[$key]);
+                } else {
+	                $filts_details[$filt_name] = $filts_values[$key];
+                }
+            } else {
+            	$filts_details[$filt_name] = '';
+            }
 
             if (array_key_exists($key, $filts_types)) {
                 if ($filts_types[$key] == "hidden") {
-                    if(in_array($filt_name, $filter_multi_list))
-                        $params[$filt_name] = explode('|', $filts_values[$key]);
-                    else
-                        $params[$filt_name] = $filts_values[$key];
+                    if (in_array($filt_name, $filter_multi_list)) {
+	                    $params[$filt_name] = explode('|', $filts_values[$key]);
+                    } else {
+	                    $params[$filt_name] = $filts_values[$key];
+                    }
                 }
                 $filts_options[$filt_name] = $filts_types[$key];
-            } else $filts_options[$filt_name] = '';
+            } else {
+            	$filts_options[$filt_name] = '';
+            }
 
         }
         /*
@@ -174,20 +179,16 @@ class EmundusHelperFiles
             $filts_details['status'] = $fd_with_param;
         }
         */
-		if (is_array($filts_details['group'])) {
-			if (count($filts_details['group']) > 0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
-				$fd_with_param          = $params['group'] + $filts_details['group'];
-				$params['group']        = $filts_details['group'];
-				$filts_details['group'] = $fd_with_param;
-			}
+		if (is_array($filts_details['group']) && count($filts_details['group']) > 0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
+			$fd_with_param          = $params['group'] + $filts_details['group'];
+			$params['group']        = $filts_details['group'];
+			$filts_details['group'] = $fd_with_param;
 		}
 
-	    if (is_array($filts_details['institution'])) {
-	        if (count($filts_details['institution']) > 0 && isset($filts_details['institution'][0]) && !empty($filts_details['institution'][0])) {
-	            $fd_with_param = $params['institution'] + $filts_details['institution'];
-	            $params['institution'] = $filts_details['institution'];
-	            $filts_details['institution'] = $fd_with_param;
-	        }
+	    if (is_array($filts_details['institution']) && count($filts_details['institution']) > 0 && isset($filts_details['institution'][0]) && !empty($filts_details['institution'][0])) {
+            $fd_with_param = $params['institution'] + $filts_details['institution'];
+            $params['institution'] = $filts_details['institution'];
+            $filts_details['institution'] = $fd_with_param;
 	    }
         
         // Else statement is present due to the fact that programmes are group limited
@@ -199,11 +200,11 @@ class EmundusHelperFiles
             $codes = $m_files->getAssociatedProgrammes($current_user->id);
 
             // ONLY FILES LINKED TO MY GROUP
-            if (((is_array($filts_details['programme']) && count($filts_details['programme']) > 0)) || $filts_details['programme'] !== NULL)
-                $programme = !empty($m_files->code) ? $m_files->code:'';
+            if ((is_array($filts_details['programme']) && count($filts_details['programme']) > 0) || $filts_details['programme'] !== NULL) {
+	            $programme = !empty($m_files->code) ? $m_files->code : '';
+            }
            
             //////////////////////////////////////////
-            //var_dump($params['programme']);
             if ((is_array($filts_details['programme']) && count(@$params['programme']) == 0) || @$params['programme'][0] == '%') {
                 $params['programme'] = $programme;
                 $filts_details['programme'] = $programme;
@@ -217,10 +218,10 @@ class EmundusHelperFiles
         }
 
 
-        // Used for adding default collumns when no programme is loaded.
-        
-        if (empty($params['programme']))
-            $params['programme'] = ["%"];
+        // Used for adding default columns when no programme is loaded.
+        if (empty($params['programme'])) {
+	        $params['programme'] = ["%"];
+        }
         
         
         $session->set('filt_params', $params);
@@ -238,7 +239,6 @@ class EmundusHelperFiles
     public function resetFilter() {
         $h_files = new EmundusHelperFiles;
         $filters = $h_files->setMenuFilter();
-        //var_dump($filters['tables']);
         return $h_files->createFilterBlock($filters['filts_details'], $filters['filts_options'], $filters['tables']);
     }
 
