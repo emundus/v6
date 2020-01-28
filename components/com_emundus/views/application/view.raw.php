@@ -342,7 +342,7 @@ class EmundusViewApplication extends JViewLegacy {
 							$formsProgress = $m_application->getFormsProgress($pid, $fnum);
 							$this->assignRef('formsProgress', $formsProgress);
 
-							$forms = $m_application->getforms(intval($fnumInfos['applicant_id']), $fnum, $pid);
+							$forms = $m_application->getForms(intval($fnumInfos['applicant_id']), $fnum, $pid);
 							$this->assignRef('forms', $forms);
 
 						} else {

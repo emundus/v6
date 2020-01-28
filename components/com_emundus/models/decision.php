@@ -921,13 +921,23 @@ class EmundusModelDecision extends JModelList
 
 					case 'tag':
                         if ($value) {
-                            if ($value[0] == "%" || !isset($value[0]) || $value[0] == '') {
+                            if ($value[0] == "%" || !isset($value[0]) || $value[0] === '') {
 	                            $query['q'] .= ' ';
                             } else {
                                 $query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
                             }
                         }
                         break;
+
+					case 'group_assoc':
+						if (!empty($value)) {
+							$query['join'] .= ' 
+	                            LEFT JOIN #__emundus_group_assoc as ga on ga.fnum = c.fnum 
+	                            LEFT JOIN #__emundus_setup_groups_repeat_course as grc on grc.course LIKE esc.training 
+	                            LEFT JOIN #__emundus_setup_groups as sg on grc.parent_id = sg.id ';
+							$query['q'] .= ' and (ga.group_id IN ('.implode(',', $value).') OR sg.id IN ('.implode(',', $value).')) ';
+						}
+						break;
 
                     case 'published':
                         if ($value == "-1") {

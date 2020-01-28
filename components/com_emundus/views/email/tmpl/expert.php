@@ -14,10 +14,10 @@ JHTML::_('behavior.tooltip');
 $jinput = JFactory::getApplication()->input;
 
 $document = JFactory::getDocument();
-//$document->addStyleSheet(JURI::base()."media/com_emundus/css/emundus_trombinoscope.css" );
 $document->addStyleSheet(JURI::base()."media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css" );
 unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css']);
 JHTML::stylesheet('media/com_emundus/css/emundus_email.css');
+
 // AJAX upload
 $document->addScript('media/com_emundus/js/webtoolkit.aim.js');
 
@@ -69,7 +69,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 	<?php  
 	$attachments = $evaluations->getEvaluationDocuments($this->fnums->fnum, $this->fnums->cid, 0); 
 
-	if ( count($attachments) == 0 ) {
+	if (count($attachments) == 0) {
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php'); 
 		$files = letter_pdf($this->fnums->sid, $this->fnums->status, $campaign['training'], $this->fnums->cid, 0, "F", $this->fnums->fnum);
 	} else {
@@ -110,10 +110,6 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 				document.getElementById("em_attachment").innerHTML += html;
 
 				$('mail_attachments').value += "," + "<?php echo str_replace('\\', '\\\\', EMUNDUS_PATH_ABS.$student_id.DS); ?>" + objJSON.filename;
-
-
-				//document.getElementById("nr").innerHTML = parseInt(document.getElementById("nr").innerHTML) + 1;
-				//document.getElementById("r").innerHTML = response;
 			}
 		</script>
  <?php 
@@ -150,7 +146,6 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 
 		foreach ($files as $file) {
 			$files_path .= str_replace('\\', '\\\\', $file['path']).',';
-			//echo '<li><a href="'.$file['url'].'" target="_blank"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('ATTACHMENTS').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /> '.$file['name'].'</a></li>';
 			echo '<div id="em_attachment">
 				<div id="em_dl_'.$file['id'].'" class="em_dl">
 					<a class="dO" target="_blank" href="'.$file['url'].'">
@@ -209,6 +204,9 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 			$('#em-email-messages').empty();
             $('#em-modal-sending-emails').css('display', 'block');
 
+            // update the textarea with the WYSIWYG content.
+            tinymce.triggerSave();
+
             var data = {
                 mail_attachments: $('#mail_attachments').val(),
                 mail_to			: $('#mail_to').val(),
@@ -240,7 +238,7 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
                             result.sent.forEach(function (element) {
                                 sent_to += '<li class="list-group-item alert-success">'+element+'</li>';
                                 console.log(element);
-                            })
+                            });
 
                             Swal.fire({
                                 type: 'success',
@@ -287,6 +285,4 @@ if (!EmundusHelperAccess::asAccessAction(18, 'c', $current_user->id, $this->fnum
 
 	</script>
 
-<?php
-}
-?>
+<?php } ?>

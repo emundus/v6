@@ -877,8 +877,9 @@ class EmundusModelEvaluation extends JModelList {
 							$query['q'] .= ' and fg.final_grade like "%' . $value . '%"';
 							if (!isset($query['final_g'])) {
 								$query['final_g'] = true;
-								if (!array_key_exists('jos_emundus_final_grade', $tableAlias))
-									$query['join'] .=' left join #__emundus_final_grade as fg on fg.fnum like c.fnum ';
+								if (!array_key_exists('jos_emundus_final_grade', $tableAlias)) {
+									$query['join'] .= ' left join #__emundus_final_grade as fg on fg.fnum like c.fnum ';
+								}
 							}
 
 						}
@@ -887,10 +888,11 @@ class EmundusModelEvaluation extends JModelList {
 					case 'schoolyear':
 						if (!empty($value)) {
 
-							if (($value[0] == "%") || empty($value[0]))
+							if (($value[0] == "%") || empty($value[0])) {
 								$query['q'] .= '';
-							else
+							} else {
 								$query['q'] .= ' and esc.year IN ("' . implode('","', $value) . '") ';
+							}
 
 						}
 						break;
@@ -898,10 +900,11 @@ class EmundusModelEvaluation extends JModelList {
 					case 'programme':
 						if (!empty($value)) {
 
-							if ($value[0] == "%" || empty($value[0]))
+							if ($value[0] == "%" || empty($value[0])) {
 								$query['q'] .= ' ';
-							else
+							} else {
 								$query['q'] .= ' and sp.code IN ("' . implode('","', $value) . '") ';
+							}
 
 						}
 						break;
@@ -910,10 +913,11 @@ class EmundusModelEvaluation extends JModelList {
 						if ($value) {
 							$query['q'] .= ' AND esc.published=1 ';
 
-							if ($value[0] == "%" || empty($value[0]))
+							if ($value[0] == "%" || empty($value[0])) {
 								$query['q'] .= ' ';
-							else
+							} else {
 								$query['q'] .= ' and esc.id IN (' . implode(',', $value) . ') ';
+							}
 
 						}
 						break;
@@ -933,6 +937,16 @@ class EmundusModelEvaluation extends JModelList {
 						}
 						break;
 
+					case 'group_assoc':
+						if (!empty($value)) {
+							$query['join'] .= ' 
+	                            LEFT JOIN #__emundus_group_assoc as ga on ga.fnum = c.fnum 
+	                            LEFT JOIN #__emundus_setup_groups_repeat_course as grc on grc.course LIKE esc.training 
+	                            LEFT JOIN #__emundus_setup_groups as sg on grc.parent_id = sg.id ';
+							$query['q'] .= ' and (ga.group_id IN ('.implode(',', $value).') OR sg.id IN ('.implode(',', $value).')) ';
+ 						}
+						break;
+
 					case 'user':
 						if (!empty($value)) {
 
@@ -942,8 +956,9 @@ class EmundusModelEvaluation extends JModelList {
 
 							if (!isset($query['group_eval'])) {
 								$query['group_eval'] = true;
-								if (!array_key_exists('jos_emundus_groups_eval', $tableAlias))
+								if (!array_key_exists('jos_emundus_groups_eval', $tableAlias)) {
 									$query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = c.applicant_id and ge.campaign_id = c.campaign_id ';
+								}
 							}
 
 						}
@@ -975,8 +990,9 @@ class EmundusModelEvaluation extends JModelList {
 						if (!empty($value)) {
 
 							$query['q'] .=' and (' . $value . ' NOT IN (SELECT attachment_id FROM #__emundus_uploads eup WHERE #__emundus_uploads.user_id = u.id)) ';
-							if (!array_key_exists('jos_emundus_uploads', $tableAlias))
+							if (!array_key_exists('jos_emundus_uploads', $tableAlias)) {
 								$query['join'] = ' left join #__emundus_uploads on #__emundus_uploads.user_id = c.applicant_id ';
+							}
 
 						}
 						break;
@@ -984,10 +1000,11 @@ class EmundusModelEvaluation extends JModelList {
 					case 'complete':
 						if (!empty($value)) {
 
-							if ($value == 1)
+							if ($value == 1) {
 								$query['q'] .= 'and #__users.id IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
-							else
+							} else {
 								$query['q'] .= 'and #__users.id NOT IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
+							}
 
 						}
 						break;
@@ -995,10 +1012,11 @@ class EmundusModelEvaluation extends JModelList {
 					case 'validate':
 						if (!empty($value)) {
 
-							if ($value == 1)
+							if ($value == 1) {
 								$query['q'] .= ' and #__emundus_declaration.validated = 1 ';
-							else
+							} else {
 								$query['q'] .= ' and #__emundus_declaration.validated = 0 ';
+							}
 
 						}
 						break;
@@ -1011,21 +1029,24 @@ class EmundusModelEvaluation extends JModelList {
                             // session filter is empty
                             if ($value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
 
-                                if (!$filt_menu_defined)
-                                    $query['q'] .= ' ';
-                                else
-                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                if (!$filt_menu_defined) {
+                                	$query['q'] .= ' ';
+                                } else {
+                                	$query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                }
 
                             } else {
                                 // Check if session filter exist in menu filter, if at least one session filter not in menu filter, reset to menu filter
                                 $diff = array();
-                                if (is_array($value) && $filt_menu_defined) 
-                                    $diff = array_diff($value, $filt_menu['status']);
+                                if (is_array($value) && $filt_menu_defined) {
+                                	$diff = array_diff($value, $filt_menu['status']);
+                                }
                                 
-                                if (count($diff) == 0)
-                                    $query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
-                                else
-                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                if (count($diff) == 0) {
+                                	$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
+                                } else {
+                                	$query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                }
 
                             }
                         }
@@ -1034,20 +1055,22 @@ class EmundusModelEvaluation extends JModelList {
 					case 'tag':
                         if ($value) {
 
-                            if ($value[0] == "%" || !isset($value[0]) || $value[0] == '')
-                                $query['q'] .= ' ';
-                            else
-                                $query['q'] .= ' and (eta.id_tag like "%' . implode('%" OR eta.id_tag like "%', $value) . '%") ';
+                            if ($value[0] == "%" || !isset($value[0]) || $value[0] === '') {
+                            	$query['q'] .= ' ';
+                            } else{
+                            	$query['q'] .= ' and (eta.id_tag like "%' . implode('%" OR eta.id_tag like "%', $value) . '%") ';
+                            }
                         }
                         break;
 
                     case 'published':
-                        if ($value == "-1")
-                            $query['q'] .= ' and c.published=-1 ';
-                        elseif ($value == 0)
-                            $query['q'] .= ' and c.published=0 ';
-                        else
-                            $query['q'] .= ' and c.published=1 ';
+                        if ($value == "-1") {
+	                        $query['q'] .= ' and c.published=-1 ';
+                        } elseif ($value == 0) {
+                        	$query['q'] .= ' and c.published=0 ';
+                        } else {
+                        	$query['q'] .= ' and c.published=1 ';
+                        }
                         break;
 				}
 			}
@@ -1249,11 +1272,9 @@ class EmundusModelEvaluation extends JModelList {
         return $q;
     }
 
-	public function getUsers($current_fnum = null)
-	{
+	public function getUsers($current_fnum = null) {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 
-		//$userModel = new EmundusModelUsers();
 		$session = JFactory::getSession();
 		$dbo = $this->getDbo();
 		$eMConfig = JComponentHelper::getParams('com_emundus');
@@ -1261,6 +1282,9 @@ class EmundusModelEvaluation extends JModelList {
 		$current_user = JFactory::getUser();
 
 		$query = 'select c.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class ';
+
+		$group_by = 'GROUP BY c.fnum ';
+
 		// prevent double left join on query
 		$lastTab = array('#__emundus_setup_status', 'jos_emundus_setup_status',
 						 '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
@@ -1271,19 +1295,24 @@ class EmundusModelEvaluation extends JModelList {
 						 '#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
 						 );
 		$leftJoin = '';
-		if (count($this->_elements)>0) {
+		if (count($this->_elements) > 0) {
 			foreach ($this->_elements as $elt) {
-				if(!isset($lastTab))
+				if (!isset($lastTab)) {
 					$lastTab = array();
-				if(!in_array($elt->tab_name, $lastTab))
-					$leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = c.fnum ';
+				}
+				if (!in_array($elt->tab_name, $lastTab)) {
+					$leftJoin .= 'left join '.$elt->tab_name.' ON '.$elt->tab_name.'.fnum = c.fnum ';
+				}
 				$lastTab[] = $elt->tab_name;
+				$group_by .= ', '.$elt->tab_name.'___'.$elt->element_name;
 			}
 		}
-		if (count($this->_elements_default)>0)
+		if (count($this->_elements_default) > 0) {
 			$query .= ', '.implode(',', $this->_elements_default);
+		}
 
 		$query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
+		$group_by .= ', evaluation_id';
 
 		$query .= ' FROM #__emundus_campaign_candidature as c
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status
@@ -1298,32 +1327,36 @@ class EmundusModelEvaluation extends JModelList {
 					) eta ON c.fnum = eta.fnum ' ;
 		$q = $this->_buildWhere($lastTab);
 
-		if (EmundusHelperAccess::isCoordinator($current_user->id) || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1))
+		if (EmundusHelperAccess::isCoordinator($current_user->id) || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1)) {
 			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum ';
-		else
+		} else {
 			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
+		}
 
-		if (!empty($leftJoin))
+		if (!empty($leftJoin)) {
 			$query .= $leftJoin;
+		}
 		$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = jos_emundus_evaluations.user ';
 		$query .= $q['join'];
 
-		if (empty($current_fnum))
+		if (empty($current_fnum)) {
 			$query .= ' WHERE c.status > 0 ';
-		else
-			$query .= ' WHERE c.fnum like ' . $current_fnum;
+		} else {
+			$query .= ' WHERE c.fnum like '.$current_fnum;
+		}
 
 
 		$query .= $q['q'];
+		$query .= $group_by;
 
 		$query .=  $this->_buildContentOrderBy();
+
 /*
-if (JFactory::getUser()->id == 655)
+if (JFactory::getUser()->id == 63)
     echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
 */
 		$dbo->setQuery($query);
-		try
-		{
+		try {
 			$res = $dbo->loadAssocList();
 			$this->_applicants = $res;
 
@@ -1335,11 +1368,8 @@ if (JFactory::getUser()->id == 655)
 			}
 
 			$dbo->setQuery($query);
-			$res = $dbo->loadAssocList();
-			return $res;
-		}
-		catch(Exception $e)
-		{
+			return $dbo->loadAssocList();
+		} catch(Exception $e) {
 			echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.str_replace('#_', 'jos', $query), JLog::ERROR, 'com_emundus');
 		}

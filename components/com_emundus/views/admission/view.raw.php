@@ -130,8 +130,9 @@ class EmundusViewAdmission extends JViewLegacy
 					];
 				}
 
-				if (isset($eltarr))
+				if (isset($eltarr)) {
 					$elements = $eltarr;
+				}
 
 				// Columns
 				$defaultElements = $this->get('DefaultElements');
@@ -179,6 +180,19 @@ class EmundusViewAdmission extends JViewLegacy
 								break;
 							case 'photos':
 								$displayPhoto = true;
+								break;
+							case 'module':
+								// Get every module without a positon.
+								$mod_emundus_custom = array();
+								foreach (JModuleHelper::getModules('') as $module) {
+									if ($module->module == 'mod_emundus_custom' && ($module->menuid == 0 || $module->menuid == $jinput->get('Itemid', null))) {
+										$mod_emundus_custom[$module->title] = $module->content;
+										$data[0][$module->title] = JText::_($module->title);
+										$colsSup[$module->title] = array();
+									}
+								}
+								break;
+							default:
 								break;
 						}
 					}
@@ -266,26 +280,35 @@ class EmundusViewAdmission extends JViewLegacy
 										$userObj->type = 'html';
 										$line[$key] = $userObj;
 									}
+								} elseif (!empty($mod_emundus_custom) && array_key_exists($key, $mod_emundus_custom)) {
+									$line[$key] = "";
 								}
-
 							}
 						}
 						$data[$line['fnum']->val.'-'.$i] = $line;
 						$i++;
 					}
 
-					if(isset($colsSup['id_tag']))
-					{
+					if (isset($colsSup['id_tag'])) {
 						$tags = $m_files->getTagsByFnum($fnumArray);
 						$colsSup['id_tag'] = @EmundusHelperFiles::createTagsList($tags);
 					}
 
-                    if(isset($colsSup['access']))
-				    {
+                    if (isset($colsSup['access'])) {
 					    $objAccess = $m_files->getAccessorByFnums($fnumArray);
 				    }
 
-				} else $data = JText::_('NO_RESULT');
+					if (!empty($mod_emundus_custom)) {
+						foreach ($mod_emundus_custom as $key => $module) {
+							if (isset($colsSup[$key])) {
+								$colsSup[$key] = $h_files->createHTMLList($module, $fnumArray);
+							}
+						}
+					}
+
+				} else {
+					$data = JText::_('NO_RESULT');
+				}
 
 			/* Get the values from the state object that were inserted in the model's construct function */
 		    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
