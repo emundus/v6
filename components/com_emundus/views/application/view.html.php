@@ -101,7 +101,7 @@ class EmundusViewApplication extends JViewLegacy{
 		$logged = $application->getlogged($aid);
 		$this->assignRef('logged', $logged);
 
-		$forms = $application->getforms($aid);
+		$forms = $application->getForms($aid);
 		$this->assignRef('forms', $forms);
 
 		$email = $application->getEmail($aid);
