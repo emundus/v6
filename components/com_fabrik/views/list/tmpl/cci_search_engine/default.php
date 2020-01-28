@@ -19,10 +19,11 @@ $doc->addStyleSheet('templates/g5_helium/custom/css/moteur-de-recherche.css');
 $pageClass = $this->params->get('pageclass_sfx', '');
 
 function jsonDecode($val) {
-    if (empty(json_decode($val)))
+    if (empty(json_decode($val))) {
         return $val;
-    else
+    } else {
         return json_decode($val);
+    }
 }
 
 
@@ -51,9 +52,11 @@ echo $this->table->intro;
 
 $page_title = "Rechercher une formation";
 
-$category = JFactory::getApplication()->input->get->get('category');
-$cible = JFactory::getApplication()->input->get->get('cible');
-if(!empty($category)) {
+$jinput = JFactory::getApplication()->input;
+$category = $jinput->get->get('category');
+$cible = $jinput->get->get('cible');
+
+if (!empty($category)) {
     $db = JFactory::getDbo();
     $query = $db->getQuery(true);
 
@@ -140,23 +143,22 @@ $doc->setTitle($page_title);
                 </div>
             <?php endif; ?>
 
-			<?php
-			if ($this->hasButtons)
+			<?php if ($this->hasButtons):
 				echo $this->loadTemplate('buttons');
-			?>
+			 endif; ?>
 
             <div class="em-search-engine-filters">
-		        <?php if ($this->showFilters && $this->bootShowFilters)
+		        <?php if ($this->showFilters && $this->bootShowFilters) :
 			        echo $this->layoutFilters();
-		        ?>
+		        endif; ?>
             </div>
 
 
             <div class="fabrikDataContainer">
 
-				<?php foreach ($this->pluginBeforeList as $c) {
+				<?php foreach ($this->pluginBeforeList as $c) :
 					echo $c;
-				}
+				 endforeach;
 
 				$data = array();
 				$i = 0;
@@ -195,46 +197,55 @@ $doc->setTitle($page_title);
                                 <?php
                                 $gCounter = 0;
                                 foreach ($data as $d) {
-	                                $cat_div = "";
+                                    $cat_div = "";
 
                                     $themes = explode(', ', $d['jos_emundus_setup_programmes___programmes_raw']);
 
 
                                     if (sizeof($themes) > 1) {
                                         foreach ($themes as $theme) {
-	                                        $t = getThematic($theme);
-	                                        $cat_div .= "<div class=\"em-theme em-theme-$t->color\"><a href=\"/formations/".str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $t->title))))."\">$t->label</a></div>";
+                                            $t = getThematic($theme);
+                                            $cat_div .= "<div class=\"em-theme em-theme-$t->color\"><a href=\"/formations/".str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $t->title))))."\">$t->label</a></div>";
                                         }
                                     }
                                     else {
-	                                    // Parse theme info because Fabrik groups them if there are multiple.
-	                                    $theme_color = jsonDecode($d['jos_emundus_setup_thematiques___color_raw']);
-	                                    if (is_array($theme_color))
-		                                    $theme_color = $theme_color[0];
+                                        // Parse theme info because Fabrik groups them if there are multiple.
+                                        $theme_color = jsonDecode($d['jos_emundus_setup_thematiques___color_raw']);
+                                        if (is_array($theme_color)) {
+                                            $theme_color = $theme_color[0];
+                                        }
 
-	                                    $theme_title = jsonDecode($d['jos_emundus_setup_thematiques___title_raw']);
+                                        $theme_title = jsonDecode($d['jos_emundus_setup_thematiques___title_raw']);
 
-	                                    if (is_array($theme_title))
-		                                    $theme_title = $theme_title[0];
+                                        if (is_array($theme_title)) {
+                                            $theme_title = $theme_title[0];
+                                        }
 
-	                                    $theme_label = jsonDecode($d['jos_emundus_setup_thematiques___label_raw']);
-	                                    if (is_array($theme_label))
-		                                    $theme_label = $theme_label[0];
+                                        $theme_label = jsonDecode($d['jos_emundus_setup_thematiques___label_raw']);
+                                        if (is_array($theme_label)) {
+                                            $theme_label = $theme_label[0];
+                                        }
 
-	                                    $cat_div = "<div class=\"em-theme em-theme-$theme_color\"><a href=\"/formations/".str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $d['jos_emundus_setup_thematiques___title_raw']))))."\">$theme_label</a></div>";
+                                        $cat_div = "<div class=\"em-theme em-theme-$theme_color\"><a href=\"/formations/".str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace('---','-', $d['jos_emundus_setup_thematiques___title_raw']))))."\">$theme_label</a></div>";
                                     }
 
                                     $days = jsonDecode($d['jos_emundus_setup_teaching_unity___days_raw']);
-                                    if (is_array($days))
+                                    if (is_array($days)) {
                                         $days = $days[0];
-	                                $title = jsonDecode($d['jos_emundus_setup_teaching_unity___label_raw']);
-	                                if (is_array($title))
-		                                $title = $title[0];
+                                    }
 
-	                                if (($gCounter % 2) == 1)
-	                                    $class = "light-stripe";
-                                    else
+                                    $title = jsonDecode($d['jos_emundus_setup_teaching_unity___label_raw']);
+
+                                    if (is_array($title)) {
+                                        $title = $title[0];
+                                    }
+
+                                    if (($gCounter % 2) == 1) {
+                                        $class = "light-stripe";
+                                    } else {
                                         $class = "dark-stripe";
+                                    }
+
                                     ?>
 
 
@@ -243,11 +254,14 @@ $doc->setTitle($page_title);
                                             <div class="em-title">
                                                 <h3 class="em-offre-title">
                                                     <?php echo "<a href='".$d['fabrik_view_url']."' >".$title."</a>"; ?>
+                                                    <?php if (!empty($d['jos_emundus_setup_programmes___numcpf_raw'])) :?>
+                                                        <img class="cpf-picto" src="images/custom/ccirs/icons/picto-CPF1.png" alt="cpf-icon"></img>
+                                                    <?php endif; ?>
                                                 </h3>
                                             </div>
 
                                             <div class="em-themes em-theme-title">
-	                                            <?php echo $cat_div;?>
+                                                <?php echo $cat_div;?>
                                             </div>
 
                                         </div>
@@ -257,10 +271,12 @@ $doc->setTitle($page_title);
                                             <div class="em-people-details">
                                                 <p>
                                                     <?php
-                                                    if (!empty($d['jos_emundus_setup_programmes___audience_raw']))
-                                                        echo $d['jos_emundus_setup_programmes___audience_raw'];
-                                                    else
-                                                        echo "Aucun public précisé."
+                                                        if (!empty($d['jos_emundus_setup_programmes___audience_raw'])) {
+                                                            echo $d['jos_emundus_setup_programmes___audience_raw'];
+                                                        }
+                                                        else {
+                                                            echo "Aucun public précisé.";
+                                                        }
                                                     ?>
                                                 </p>
                                             </div>
@@ -268,10 +284,12 @@ $doc->setTitle($page_title);
                                             <div  class="em-day-details">
                                                 <p>
                                                     <?php
-                                                    if (floatval($days) > 1)
+                                                    if (floatval($days) > 1) {
                                                         echo $days." jours";
-                                                    elseif (floatval($days) == 1)
+                                                    }
+                                                    elseif (floatval($days) == 1) {
                                                         echo $days." jour";
+                                                    }
                                                     ?>
                                                 </p>
                                             </div>
@@ -288,9 +306,9 @@ $doc->setTitle($page_title);
                         <tfoot>
                             <tr class="fabrik___heading">
                                 <?php if (!empty($data)) :?>
-                                <td colspan="<?php echo count($this->headings);?>">
-                                    <?php echo $this->nav;?>
-                                </td>
+                                    <td colspan="<?php echo count($this->headings);?>">
+                                        <?php echo $this->nav;?>
+                                    </td>
                                 <?php endif; ?>
                             </tr>
                         </tfoot>
@@ -337,16 +355,16 @@ $doc->setTitle($page_title);
                 document.getElementById("formation-search").value = '<?php echo JFactory::getApplication()->input->post->getString('search'); ?>';
             <?php endif; ?>
 
-            // This fixes the issue with Fakrik not having GREATER or LESS THAN in date filters.
+            /* This fixes the issue with Fakrik not having GREATER or LESS THAN in date filters. */
             fixDateRangeFilters();
 
-            // This fixes the issue with Fabrik not having CONTAINS checkbox.
+            /* This fixes the issue with Fabrik not having CONTAINS checkbox. */
             singleToggleCheckboxes();
         });
 
         function singleToggleCheckboxes() {
 
-            // Build a single checkbox that controls multiple.
+            /* Build a single checkbox that controls multiple. */
             var cpfContainer = jQuery('[data-filter-row="jos_emundus_setup_programmes___numcpf"]');
             cpfContainer.children().hide();
             cpfContainer.append('' +
@@ -357,11 +375,11 @@ $doc->setTitle($page_title);
                     '</div>\n' +
                 '</div>');
 
-            // Precheck the checkbox in case data is already selected in the session.
+            /* Precheck the checkbox in case data is already selected in the session. */
             if (jQuery('[data-filter-row="jos_emundus_setup_programmes___numcpf"] input:checkbox:checked').not('#cpfCheckbox').length > 0)
                 jQuery('#cpfCheckbox').prop('checked', true);
 
-            // Build a single checkbox that controls multiple.
+            /* Build a single checkbox that controls multiple. */
             var certContainer = jQuery('[data-filter-row="jos_emundus_setup_programmes___certificate"]');
             certContainer.children().hide();
             certContainer.append('' +
@@ -372,7 +390,7 @@ $doc->setTitle($page_title);
                     '</div>\n' +
                 '</div>');
 
-            // Precheck the checkbox in case data is already selected in the session.
+            /* Precheck the checkbox in case data is already selected in the session. */
             if (jQuery('[data-filter-row="jos_emundus_setup_programmes___certificate"] input:checkbox:checked').not('#certCheckbox').length > 0)
                 jQuery('#certCheckbox').prop('checked', true);
 

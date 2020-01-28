@@ -15,6 +15,9 @@ if ($locallang == "fr-FR") {
 }
 
 ?>
+
+<?= $mod_em_campaign_intro; ?>
+
 <form action="index.php" method="post" id="search_program">
     <?php if (isset($searchword) && !empty($searchword)) :?>
         <div class="rt-grid-12">
@@ -118,7 +121,7 @@ if ($locallang == "fr-FR") {
                                     <?php echo date('d/m/Y H:i', strtotime($result->start_date)); ?><br>
                                     <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
                                     <?php echo date('d/m/Y H:i', strtotime($result->end_date)); ?> <hr>
-                                    <?php echo JText::_('TIMEZONE').$offset; ?>
+                                    <?php echo (!empty($mod_em_campaign_show_timezone)) ? JText::_('TIMEZONE').$offset : ''; ?>
                                 </div>
                             </div>
                             <div class="below-content">
@@ -197,7 +200,7 @@ if ($locallang == "fr-FR") {
                                     <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
                                     <?php echo date('d/m/Y H:i', strtotime($result->start_date)); ?><br>
                                     <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
-                                    <?php echo date('d/m/Y H:i', strtotime($result->end_date)); ?>
+                                    <?= date('d/m/Y H:i', strtotime($result->end_date)); ?>
                                 </div>
                             </div>
                             <div class="below-content">

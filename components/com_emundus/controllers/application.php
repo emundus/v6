@@ -283,11 +283,11 @@ class EmundusControllerApplication extends JControllerLegacy
         $uid = $comment['user_id'];
 
         if($uid == $user->id){
-            $result = $m_application->deleteComment($comment_id);
+            $result = $m_application->deleteComment($comment_id, $comment['fnum']);
             $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETED'));
         }else{
             if(EmundusHelperAccess::asAccessAction(10, 'd', $user->id, $comment['fnum'])){
-                $result = $m_application->deleteComment($comment_id);
+                $result = $m_application->deleteComment($comment_id, $comment['fnum']);
                 $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETED'));
             }else{
                 $result = 0;
@@ -297,20 +297,6 @@ class EmundusControllerApplication extends JControllerLegacy
 
         }
 
-        /*if( !EmundusHelperAccess::asAccessAction(10, 'd', $user->id, $comment['fnum']))
-        {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        }
-        else
-        {
-            $result = $m_application->deleteComment($comment_id);
-            if($result!=1)
-                $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETE_ERROR'));
-            else
-                $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETED'));
-        }*/
-        
         echo json_encode((object)$tab);
         exit;
     }

@@ -3828,6 +3828,7 @@ $(document).ready(function() {
 
                                 $('#change-status input[name=export-status]').on('change', function(){
                                     $('#em-action-state').val('');
+                                    $("#em-action-export-state .modal-chzn-select").val('').trigger("chosen:updated");
                                     if(this.value == "yes") {
                                         $("#em-action-export-state").show();
                                     }
@@ -5128,7 +5129,7 @@ $(document).ready(function() {
                 $('.modal-body').append('<div>' +
                     '<img src="'+loadingLine+'" alt="loading"/>' +
                     '</div>');
-                url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=updatepublish';
+                url = 'index.php?option=com_emundus&controller=files&task=updatepublish';
                 $.ajax({
                     type:'POST',
                     url:url,

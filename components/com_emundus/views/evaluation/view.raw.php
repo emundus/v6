@@ -57,8 +57,7 @@ class EmundusViewEvaluation extends JViewLegacy
 		$jinput = JFactory::getApplication()->input;
 		$layout = $jinput->getString('layout', 0);
 
-		switch  ($layout)
-		{
+		switch ($layout) {
 			case 'menuactions':
 				$display = JFactory::getApplication()->input->getString('display', 'none');
 
@@ -75,8 +74,9 @@ class EmundusViewEvaluation extends JViewLegacy
 							$item->action = $actions[$note[0]];
 							$menuActions[] = $item;
 						}
-					} else
+					} else {
 						$menuActions[] = $item;
+					}
 				}
 
 				$this->assignRef('items', $menuActions);
@@ -182,6 +182,17 @@ class EmundusViewEvaluation extends JViewLegacy
 							case 'photos':
 								$displayPhoto = true;
 								break;
+							case 'module':
+								// Get every module without a positon.
+								$mod_emundus_custom = array();
+								foreach (JModuleHelper::getModules('') as $module) {
+									if ($module->module == 'mod_emundus_custom' && ($module->menuid == 0 || $module->menuid == $jinput->get('Itemid', null))) {
+										$mod_emundus_custom[$module->title] = $module->content;
+										$datas[0][$module->title] = JText::_($module->title);
+										$colsSup[$module->title] = array();
+									}
+								}
+								break;
 							default:
 								break;
 						}
@@ -282,6 +293,8 @@ class EmundusViewEvaluation extends JViewLegacy
 										$userObj->type = 'html';
 										$line[$key] = $userObj;
 									}
+								} elseif (!empty($mod_emundus_custom) && array_key_exists($key, $mod_emundus_custom)) {
+									$line[$key] = "";
 								}
 							}
 						}
@@ -297,6 +310,14 @@ class EmundusViewEvaluation extends JViewLegacy
                     if (isset($colsSup['access'])) {
 	                    $objAccess = $m_files->getAccessorByFnums($fnumArray);
                     }
+
+					if (!empty($mod_emundus_custom)) {
+						foreach ($mod_emundus_custom as $key => $module) {
+							if (isset($colsSup[$key])) {
+								$colsSup[$key] = $h_files->createHTMLList($module, $fnumArray);
+							}
+						}
+					}
 
 				} else {
 					$datas = JText::_('NO_RESULT');

@@ -32,6 +32,7 @@ class EmundusViewDecision extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
@@ -92,6 +93,7 @@ class EmundusViewDecision extends JViewLegacy
 				$m_decision = $this->getModel('Decision');
 				$userModel = new EmundusModelUsers();
 				$m_files = new EmundusModelFiles();
+				$h_files = new EmundusHelperFiles();
 
                 $m_decision->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
 		        $groups = $userModel->getUserGroups($this->_user->id, 'Column');
@@ -160,6 +162,19 @@ class EmundusViewDecision extends JViewLegacy
 								break;
 							case 'photos':
 								$displayPhoto = true;
+								break;
+							case 'module':
+								// Get every module without a positon.
+								$mod_emundus_custom = array();
+								foreach (JModuleHelper::getModules('') as $module) {
+									if ($module->module == 'mod_emundus_custom' && ($module->menuid == 0 || $module->menuid == $jinput->get('Itemid', null))) {
+										$mod_emundus_custom[$module->title] = $module->content;
+										$data[0][$module->title] = JText::_($module->title);
+										$colsSup[$module->title] = array();
+									}
+								}
+								break;
+							default:
 								break;
 						}
 					}
@@ -232,6 +247,8 @@ class EmundusViewDecision extends JViewLegacy
 										$userObj->type = 'html';
 										$line[$key] = $userObj;
 									}
+								} elseif (!empty($mod_emundus_custom) && array_key_exists($key, $mod_emundus_custom)) {
+									$line[$key] = "";
 								}
 							}
 						}
@@ -247,6 +264,14 @@ class EmundusViewDecision extends JViewLegacy
                     if (isset($colsSup['access'])) {
 					    $objAccess = $m_files->getAccessorByFnums($fnumArray);
 				    }
+
+					if (!empty($mod_emundus_custom)) {
+						foreach ($mod_emundus_custom as $key => $module) {
+							if (isset($colsSup[$key])) {
+								$colsSup[$key] = $h_files->createHTMLList($module, $fnumArray);
+							}
+						}
+					}
 
 				} else {
 				    $data = JText::_('NO_RESULT');
