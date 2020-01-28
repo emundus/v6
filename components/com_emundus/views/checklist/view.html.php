@@ -19,8 +19,7 @@ jimport( 'joomla.application.component.view');
  * @package    eMundus
  */
 
-class EmundusViewChecklist extends JViewLegacy
-{
+class EmundusViewChecklist extends JViewLegacy {
     var $_user = null;
     var $_db = null;
 
@@ -31,8 +30,9 @@ class EmundusViewChecklist extends JViewLegacy
         $this->_user = JFactory::getSession()->get('emundusUser');
         $this->_db = JFactory::getDBO();
 
-        if (!EmundusHelperAccess::isApplicant($this->_user->id))
+        if (!EmundusHelperAccess::isApplicant($this->_user->id)) {
             die(JText::_('ACCESS_DENIED'));
+        }
 
         parent::__construct($config);
     }
@@ -64,7 +64,7 @@ class EmundusViewChecklist extends JViewLegacy
             $m_checklist->setDelete(1, $this->_user);
         }
 
-        switch  ($layout) {
+        switch ($layout) {
 
             // layout displayed when paid
             case 'paid':
