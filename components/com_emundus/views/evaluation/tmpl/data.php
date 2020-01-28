@@ -88,10 +88,10 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             </thead>
             <tbody>
             <?php foreach ($this->datas as $key => $line):?>
-                <?php if($key != 0): ?>
+                <?php if ($key != 0): ?>
                     <tr>
                         <?php foreach ($line as $k => $value):?>
-                            <?php if($k != 'evaluation_id'): ?>
+                            <?php if ($k != 'evaluation_id'): ?>
 
                                 <td <?php if($k == 'check' && $value->class != null) {echo 'class="'.$value->class.'"';}?>>
                                     <div class="em-cell" >
@@ -124,6 +124,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                             <?php echo $this->accessObj[$line['fnum']->val]?>
                                         <?php elseif ($k == "id_tag") :?>
                                             <?php echo $this->colsSup['id_tag'][$line['fnum']->val]?>
+                                        <?php elseif (array_key_exists($k, $this->colsSup)) :?>
+	                                        <?= @$this->colsSup[$k][$line['fnum']->val] ?>
                                         <?php else :?>
                                             <?php if ($value->type == 'text' ) :?>
                                                 <?php echo strip_tags(JText::_($value->val)); ?>

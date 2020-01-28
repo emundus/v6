@@ -768,7 +768,7 @@ class EmundusModelFiles extends JModelLegacy
 
                     case 'tag':
                         if ($value) {
-                            if ($value[0] == "%" || !isset($value[0])) {
+                            if ($value[0] == "%" || !isset($value[0]) || $value[0] === '') {
 	                            $query['q'] .= ' ';
                             } else {
 	                            $query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
@@ -1558,7 +1558,7 @@ if (JFactory::getUser()->id == 63)
 
 	        $query = $db->getQuery(true);
 	        $query->delete($db->quoteName('#__emundus_group_assoc'))
-		        ->where($db->quoteName('group_id').' IN ('.implode($groups).') AND '.$db->quoteName('fnum').' IN ('.implode($fnums).')');
+		        ->where($db->quoteName('group_id').' IN ('.implode(',',$groups).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
 	        $db->setQuery($query);
 	        $db->execute();
 
@@ -1601,7 +1601,7 @@ if (JFactory::getUser()->id == 63)
 
 	        $query = $db->getQuery(true);
 	        $query->delete($db->quoteName('#__emundus_users_assoc'))
-                ->where($db->quoteName('user_id').' IN ('.implode($users).') AND '.$db->quoteName('fnum').' IN ('.implode($fnums).')');
+                ->where($db->quoteName('user_id').' IN ('.implode(',',$users).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
 	        $db->setQuery($query);
 	        $db->execute();
 
