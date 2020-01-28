@@ -45,7 +45,6 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 	 * @throws Exception
 	 */
 	public function process(&$data, &$listModel) {
-		$app = JFactory::getApplication();
 		jimport('joomla.mail.helper');
 
 		$params = $this->getParams();
@@ -68,7 +67,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
 					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DATEDIFF( esc.end_date , now()) IN ('.$reminder_deadline.')';
 
-		if (isset($reminder_programme_id) && !empty($reminder_programme_id)) {
+		if (!empty($reminder_programme_code)) {
 			$query .= ' AND esc.training IN ('.$reminder_programme_code.')';
 		}
 
@@ -104,10 +103,6 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
                 $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
                 $body = $m_emails->setTagsFabrik($body, [$applicant->fnum]);
 
-                //$attachment[] = $path_file;
-                $replyto = $from;
-                $replytoname = $fromname;
-
                 $config = JFactory::getConfig();
                 $email_from_sys = $config->get('mailfrom');
 				$email_from = $email->emailfrom;
@@ -126,6 +121,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 				];
 
                 $mailer->setSender($sender);
+				$mailer->addReplyTo($from, $fromname);
                 $mailer->addRecipient($to);
                 $mailer->setSubject($subject);
                 $mailer->isHTML(true);

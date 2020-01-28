@@ -57,8 +57,7 @@ class EmundusViewEvaluation extends JViewLegacy
 		$jinput = JFactory::getApplication()->input;
 		$layout = $jinput->getString('layout', 0);
 
-		switch  ($layout)
-		{
+		switch ($layout) {
 			case 'menuactions':
 				$display = JFactory::getApplication()->input->getString('display', 'none');
 
@@ -75,8 +74,9 @@ class EmundusViewEvaluation extends JViewLegacy
 							$item->action = $actions[$note[0]];
 							$menuActions[] = $item;
 						}
-					} else
+					} else {
 						$menuActions[] = $item;
+					}
 				}
 
 				$this->assignRef('items', $menuActions);

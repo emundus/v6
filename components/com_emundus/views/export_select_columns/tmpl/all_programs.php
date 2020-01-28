@@ -118,7 +118,7 @@ $comments = $session->get('comments');
                     });
                 }
             };
-            httpRequest.open("GET", '<?= JURI::base(); ?>/index.php?option=com_emundus&controller=campaign&task=getcampaignsbyprogram&course='+course, true);
+            httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&controller=campaign&task=getcampaignsbyprogram&course='+course, true);
             httpRequest.send();
         }
         else {
@@ -140,7 +140,7 @@ $comments = $session->get('comments');
                 document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('EXPORT_EVAL_TITLE');?>";
             }
         };
-        httpRequest.open("GET", '<?= JURI::base(); ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=evaluation&all=1', true);
+        httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=evaluation&all=1', true);
         httpRequest.send();
     }
 
@@ -157,7 +157,7 @@ $comments = $session->get('comments');
                 document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('EXPORT_ADMISSION_TITLE');?>";
             }
         };
-        httpRequest.open("GET", '<?= JURI::base(); ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=admission&all=1', true);
+        httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=admission&all=1', true);
         httpRequest.send();
     }
 
@@ -174,7 +174,7 @@ $comments = $session->get('comments');
                 document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('EXPORT_DECISION_TITLE');?>";
             }
         };
-        httpRequest.open("GET", '<?= JURI::base(); ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=decision&all=1', true);
+        httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=decision&all=1', true);
         httpRequest.send();
     }
 
@@ -196,7 +196,7 @@ $comments = $session->get('comments');
                     document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - "+camp.text;
                 }
             };
-            httpRequest.open("GET", '<?= JURI::base(); ?>/index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&camp='+camp.value+'&all=1', true);
+            httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&camp='+camp.value+'&all=1', true);
             httpRequest.send();
         }
 
@@ -252,7 +252,7 @@ $comments = $session->get('comments');
                 document.getElementsByClassName('em-element-id')[0].style["min-width"] = setWidth;
             }
         };
-        httpRequest.open("GET", '<?= JURI::base(); ?>/index.php?option=com_emundus&controller=export_select_columns&task=getalltags', true);
+        httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&controller=export_select_columns&task=getalltags', true);
         httpRequest.send();
     }
 
