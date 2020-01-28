@@ -255,13 +255,34 @@ class EmundusModelApplication extends JModelList {
 
     }
 
-    public function deleteComment($id, $fnum) {
+    public function deleteComment($id, $fnum = null) {
 
-        $query = 'DELETE FROM #__emundus_comments WHERE id = '.$id;
+    	$query = $this->_db->getQuery(true);
+
+    	if (empty($fnum)) {
+    		$query->select($this->_db->quoteName('fnum'))
+			    ->from($this->_db->quoteName('#__emundus_comments'))
+			    ->where($this->_db->quoteName('id').' = '.$id);
+		    $this->_db->setQuery($query);
+
+		    try {
+			    $this->_db->execute();
+		    } catch (Exception $e) {
+		    	JLog::add('Error getting fnum for comment id '.$id.' in m/application.', JLog::ERROR, 'com_emundus');
+		    }
+	    }
+
+    	$query->clear()->delete($this->_db->quoteName('#__emundus_comments'))
+		    ->where($this->_db->quoteName('id').' = '.$id);
         $this->_db->setQuery($query);
-        $res = $this->_db->execute();
+        try {
+            $res = $this->_db->execute();
+        } catch (Exception $e) {
+	        JLog::add('Error deleting comment id '.$id.' in m/application. ERROR -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+	        return false;
+        }
 
-        if ($res) {
+        if ($res && !empty($fnum)) {
             EmundusModelLogs::log(JFactory::getUser()->id, (int) substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_LOGS_DELETE_COMMENT');
         }
 
