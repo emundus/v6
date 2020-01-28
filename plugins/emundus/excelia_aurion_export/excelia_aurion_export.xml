@@ -19,6 +19,7 @@
 				<field name="url" type="text" description="PLG_CRON_AURION_URL_DESC" label="PLG_CRON_AURION_URL_LABEL" size="30" />
 				<field name="login" type="text" label="PLG_CRON_AURION_LOGIN_LABEL" size="30" />
 				<field name="password" type="text" label="PLG_CRON_AURION_PASS_LABEL" size="30" />
+				<field name="status" type="text" description="PLG_CRON_AURION_STATUS_DESC" label="PLG_CRON_AURION_STATUS" size="30" />
 			</fieldset>
 		</fields>
 	</config>

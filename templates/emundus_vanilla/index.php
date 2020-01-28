@@ -15,9 +15,11 @@ JHtml::_('jquery.framework');
 JHtml::_('bootstrap.framework');
 
 $doc = JFactory::getDocument();
+//$doc->addStyleSheet( 'media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css' );
 $doc->addStyleSheet('templates/'.$this->template.'/css/normalize.css');
 $doc->addStyleSheet('templates/'.$this->template.'/css/webflow.css');
 $doc->addStyleSheet('templates/'.$this->template.'/css/template.css');
+
 $style = $this->params->get('custom_css');
 if (($style || $style == Null) && !empty($style)) {
  $doc->addStyleDeclaration($style);
@@ -44,6 +46,20 @@ $showcolumn= $this->countModules('header-a');
 ?>
 <?php if($showcolumn): ?>
 <jdoc:include type="modules" name="header-a" style="<?php if(($this->params->get('header-a') == 'block') || ($this->params->get('header-a') == Null)): echo "block"; else: echo "xhtml"; endif;?>"/>
+<?php endif; ?>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="g-block-size-100" class="g-block-size-100">
+          <div id="g-content" class="g-content">
+            <div id="platform-content" class="platform-content">
+              <div id="moduletable" class="moduletable">
+<?php
+$showcolumn= $this->countModules('header-b');
+?>
+<?php if($showcolumn): ?>
+<jdoc:include type="modules" name="header-b" style="<?php if(($this->params->get('header-b') == 'block') || ($this->params->get('header-b') == Null)): echo "block"; else: echo "xhtml"; endif;?>"/>
 <?php endif; ?>
               </div>
             </div>

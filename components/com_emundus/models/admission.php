@@ -40,7 +40,7 @@ class EmundusModelAdmission extends JModelList
 		parent::__construct();
 
 		$this->_files = new EmundusModelFiles;
-
+        $db = JFactory::getDbo();
 		$mainframe = JFactory::getApplication();
 
 		// Get current menu parameters
@@ -51,8 +51,9 @@ class EmundusModelAdmission extends JModelList
 		** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
 		*/
 
-		if (empty($current_menu))
-			return false;
+        if (empty($current_menu)) {
+            return false;
+        }
 
 		$menu_params = $menu->getParams($current_menu->id);
 		$em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
@@ -135,6 +136,10 @@ class EmundusModelAdmission extends JModelList
 					$join_val_column_concat = str_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $join_val_column_concat);
 					$join_val_column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
 
+                    // Check if the db table has a published column. So we don't get the unpublished value
+                    $db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
+                    $publish_query = ($db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
+
 					if ($group_params->repeat_group_button == 1) {
 						$query = '(
 									select GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
@@ -144,6 +149,7 @@ class EmundusModelAdmission extends JModelList
 										  from '.$def_elmt->table_join.'
 										  where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
 										)
+                                    '.$publish_query.'
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 					}
 					else {
@@ -154,11 +160,14 @@ class EmundusModelAdmission extends JModelList
                                 SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
                                 FROM '.$t.'
                                 WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
+                                '.$publish_query.'
                               ) AS `'.$t.'`';
                         } else {
                             $query = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
                                 from '.$attribs->join_db_name.'
-                                where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+                                where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`
+                                '.$publish_query.'
+                                ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                         }
                     }
 
@@ -838,7 +847,7 @@ class EmundusModelAdmission extends JModelList
 									$tab = explode('.', $k);
 									if (count($tab)>1) {
 
-										if ($tab[0]=='jos_emundus_training') {
+										if ($tab[0] == 'jos_emundus_training') {
 
 											$query['q'] .= ' AND ';
 											$query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
@@ -851,8 +860,9 @@ class EmundusModelAdmission extends JModelList
 											if (!isset($query[$tab[0]])) {
 
 												$query[$tab[0]] = true;
-												if (!array_key_exists($tab[0], $tableAlias))
+												if (!array_key_exists($tab[0], $tableAlias)) {
 													$query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like c.fnum ';
+												}
 
 											}
 										}
@@ -867,16 +877,20 @@ class EmundusModelAdmission extends JModelList
 
 							$q = $this->_buildSearch($value, $tableAlias);
 							
-							foreach($q['q'] as $v)
-                                $query['q'] .= $v;
+							foreach ($q['q'] as $v) {
+								$query['q'] .= $v;
+							}
 
-                            foreach($q['join'] as $u)
-                                $query['join'] .= $u;
+                            foreach ($q['join'] as $u) {
+	                            $query['join'] .= $u;
+                            }
 
-							if (isset($q['users']))
+							if (isset($q['users'])) {
 								$query['users'] = true;
-							if (isset($q['em_user']))
+							}
+							if (isset($q['em_user'])) {
 								$query['em_user'] = true;
+							}
 
 						}
 						break;
@@ -898,10 +912,11 @@ class EmundusModelAdmission extends JModelList
 					case 'schoolyear':
 						if (!empty($value)) {
 
-							if (($value[0] == "%") || empty($value[0]))
+							if (($value[0] == "%") || empty($value[0])) {
 								$query['q'] .= '';
-							else
+							} else {
 								$query['q'] .= ' and esc.year IN ("' . implode('","', $value) . '") ';
+							}
 
 						}
 						break;
@@ -909,10 +924,11 @@ class EmundusModelAdmission extends JModelList
 					case 'programme':
 						if (!empty($value)) {
 
-							if ($value[0] == "%" || empty($value[0]))
+							if ($value[0] == "%" || empty($value[0])) {
 								$query['q'] .= ' ';
-							else
+							} else {
 								$query['q'] .= ' and #__emundus_setup_programmes.code IN ("' . implode('","', $value) . '") ';
+							}
 
 						}
 						break;
@@ -921,10 +937,11 @@ class EmundusModelAdmission extends JModelList
 						if ($value) {
 							$query['q'] .= ' AND esc.published=1 ';
 
-							if ($value[0] == "%" || empty($value[0]))
+							if ($value[0] == "%" || empty($value[0])) {
 								$query['q'] .= ' ';
-							else
+							} else {
 								$query['q'] .= ' and esc.id IN (' . implode(',', $value) . ') ';
+							}
 
 						}
 						break;
@@ -936,8 +953,9 @@ class EmundusModelAdmission extends JModelList
 							if (!isset($query['group_eval'])) {
 
 								$query['group_eval'] = true;
-								if (!array_key_exists('jos_emundus_groups_eval', $tableAlias))
+								if (!array_key_exists('jos_emundus_groups_eval', $tableAlias)) {
 									$query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = c.applicant_id and ge.campaign_id = c.campaign_id ';
+								}
 
 							}
 						}
@@ -952,8 +970,9 @@ class EmundusModelAdmission extends JModelList
 							if (!isset($query['group_eval'])) {
 
 								$query['group_eval'] = true;
-								if (!array_key_exists('jos_emundus_groups_eval', $tableAlias))
+								if (!array_key_exists('jos_emundus_groups_eval', $tableAlias)) {
 									$query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = c.applicant_id and ge.campaign_id = c.campaign_id ';
+								}
 
 							}
 						}
@@ -963,8 +982,9 @@ class EmundusModelAdmission extends JModelList
 						if (!empty($value)) {
 
 							$query['q'] .=' and (' . $value . ' NOT IN (SELECT attachment_id FROM #__emundus_uploads eup WHERE #__emundus_uploads.user_id = u.id)) ';
-							if (!array_key_exists('jos_emundus_uploads', $tableAlias))
+							if (!array_key_exists('jos_emundus_uploads', $tableAlias)) {
 								$query['join'] = ' left join #__emundus_uploads on #__emundus_uploads.user_id = c.applicant_id ';
+							}
 
 						}
 						break;
@@ -972,10 +992,11 @@ class EmundusModelAdmission extends JModelList
 					case 'complete':
 						if (!empty($value)) {
 
-							if ($value == 1)
+							if ($value == 1) {
 								$query['q'] .= 'and #__users.id IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
-							else
+							} else {
 								$query['q'] .= 'and #__users.id NOT IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
+							}
 
 						}
 						break;
@@ -983,37 +1004,38 @@ class EmundusModelAdmission extends JModelList
 					case 'validate':
 						if (!empty($value)) {
 
-							if ($value == 1)
+							if ($value == 1) {
 								$query['q'] .= ' and #__emundus_declaration.validated = 1 ';
-							else
+							} else {
 								$query['q'] .= ' and #__emundus_declaration.validated = 0 ';
+							}
 
 						}
 						break;
 
 					case 'status':
-						if ($value)
-                        {
+						if ($value) {
                             $filt_menu_defined = ( isset($filt_menu['status'][0]) && $filt_menu['status'][0] != '' && $filt_menu['status'] != "%" ) ? true : false;
 
                             // session filter is empty
                             if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
-                                if ( !$filt_menu_defined )
-                                    $query['q'] .= ' ';
-                                else
-                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
-                            }
-                            else
-                            {
+                                if (!$filt_menu_defined) {
+                                	$query['q'] .= ' ';
+                                } else {
+                                	$query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                }
+                            } else {
                                 // Check if session filter exist in menu filter, if at least one session filter not in menu filter, reset to menu filter
                                 $diff = array();
-                                if (is_array($value) && $filt_menu_defined) 
-                                    $diff = array_diff($value, $filt_menu['status']);
+                                if (is_array($value) && $filt_menu_defined) {
+                                	$diff = array_diff($value, $filt_menu['status']);
+                                }
                                 
-                                if ( count($diff) == 0 )
-                                    $query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
-                                else
-                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                if ( count($diff) == 0 ) {
+                                	$query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
+                                } else {
+                                	$query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
+                                }
                             }
                         }
 						break;
@@ -1021,21 +1043,34 @@ class EmundusModelAdmission extends JModelList
 					case 'tag':
                         if ($value) {
 
-							if ( $value[0] == "%" || !isset($value[0]) || $value[0] == '' )
-                                $query['q'] .= ' ';
-                            else
-                                $query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
+							if ($value[0] == "%" || !isset($value[0]) || $value[0] === '') {
+								$query['q'] .= ' ';
+							} else {
+								$query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
+							}
 
                         }
                         break;
 
+					case 'group_assoc':
+						if (!empty($value)) {
+							$query['join'] .= ' 
+	                            LEFT JOIN #__emundus_group_assoc as ga on ga.fnum = c.fnum 
+	                            LEFT JOIN #__emundus_setup_groups_repeat_course as grc on grc.course LIKE esc.training 
+	                            LEFT JOIN #__emundus_setup_groups as sg on grc.parent_id = sg.id ';
+							$query['q'] .= ' and (ga.group_id IN ('.implode(',', $value).') OR sg.id IN ('.implode(',', $value).')) ';
+							$query['group_by'] = ' jos_emundus_evaluations.id ';
+						}
+						break;
+
                     case 'published':
-                        if ($value == "-1")
-                            $query['q'] .= ' and c.published=-1 ';
-                        elseif ($value == "0")
-                            $query['q'] .= ' and c.published=0 ';
-                        else
-                            $query['q'] .= ' and c.published=1 ';
+                        if ($value == "-1") {
+                        	$query['q'] .= ' and c.published=-1 ';
+                        } elseif ($value == "0") {
+                        	$query['q'] .= ' and c.published=0 ';
+                        } else {
+                        	$query['q'] .= ' and c.published=1 ';
+                        }
                         break;
 
 				}
@@ -1047,49 +1082,46 @@ class EmundusModelAdmission extends JModelList
 	private function _buildSearch($str_array, $tableAlias = array()) {
 		$q = array('q' => array(), 'join' => array());
 		$all = 0; $fnum = 0; $id = 0; $email = 0; $username = 0; $lastname = 0; $firstname = 0;
-        foreach($str_array as $str){
+
+        foreach ($str_array as $str) {
            
 			$val = explode(': ', $str);
 			
-			if($val[0] == "ALL"){
+			if ($val[0] == "ALL") {
            
-                if (is_numeric($val[1]))
-                {
+                if (is_numeric($val[1])) {
                     //possibly fnum ou uid
-                    if($all > 0){
-                        $q['q'][]= ' or (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
-                    }else{
-                        $q['q'][]= ' and (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
+                    if ($all > 0) {
+                        $q['q'][] = ' or (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
+                    } else {
+                        $q['q'][] = ' and (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
                     }
                    
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+                    if (!in_array('jos_users', $tableAlias)) {
+                    	$q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+                    }
                     $q['users'] = true;
                     
-                }
-                else
-                {
-                    if(filter_var($val[1], FILTER_VALIDATE_EMAIL) !== false)
-                    {
+                } else {
+                    if (filter_var($val[1], FILTER_VALIDATE_EMAIL) !== false) {
                         //the request is an email
-                        if($all > 0){
-                            $q['q'][]= ' or (u.email = "'.$val[1].'") ';
-                        }else{
-                            $q['q'][]= ' and (u.email = "'.$val[1].'") ';
+                        if ($all > 0) {
+                            $q['q'][] = ' or (u.email = "'.$val[1].'") ';
+                        } else {
+                            $q['q'][] = ' and (u.email = "'.$val[1].'") ';
                         }
-                        //$q['q'][] .= ' (u.email = "'.$val[1].'") ';
-                        if (!in_array('jos_users', $tableAlias))
-                            $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+
+                        if (!in_array('jos_users', $tableAlias)) {
+                        	$q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+                        }
                         $q['users'] = true;
-                    }
-                    else
-                    {
-                        if($all > 0){
-                            $q['q'][]= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
-                        }else{
-                            $q['q'][]= ' and (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
+                    } else {
+                        if ($all > 0) {
+                            $q['q'][] = ' or (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
+                        } else {
+                            $q['q'][] = ' and (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
                         }
-                        if (!in_array('jos_users', $tableAlias)){
+                        if (!in_array('jos_users', $tableAlias)) {
                             $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id';
                             $q['users'] = true;
                         }
@@ -1103,77 +1135,80 @@ class EmundusModelAdmission extends JModelList
                 
                 $all = $all + 1;
             }
-            if($val[0] == "FNUM"){
-                
-                if (is_numeric($val[1]))
-                {
-                    //possibly fnum ou uid
-                    if($fnum > 0){
-                        $q['q'][]= ' or (c.fnum like "'.$val[1].'%") ';
-                    }else{
-                        $q['q'][]= ' and (c.fnum like "'.$val[1].'%") ';
-                    }
 
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
-                    $q['users'] = true;
-                    
-                    $fnum = $fnum + 1;
+            if ($val[0] == "FNUM" && is_numeric($val[1])) {
+
+                //possibly fnum ou uid
+                if ($fnum > 0) {
+                    $q['q'][] = ' or (c.fnum like "'.$val[1].'%") ';
+                } else {
+                    $q['q'][] = ' and (c.fnum like "'.$val[1].'%") ';
                 }
-            }
-            if($val[0] == "ID"){
-                
-                if (is_numeric($val[1]))
-                {
-                    //possibly fnum ou uid
-                    if($id > 0){
-                        $q['q'][]= ' or (u.id = ' . $val[1] . ') ';
-                    }else{
-                        $q['q'][]= ' and (u.id = ' . $val[1] . ') ';
-                    }
-                   
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
-                    $q['users'] = true;
-                   
-                    $id = $id + 1;
+
+                if (!in_array('jos_users', $tableAlias)) {
+                    $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
                 }
+                $q['users'] = true;
+
+                $fnum = $fnum + 1;
             }
-            if($val[0] == "EMAIL"){
+
+            if ($val[0] == "ID" && is_numeric($val[1])) {
+
+                //possibly fnum ou uid
+                if ($id > 0) {
+                    $q['q'][]= ' or (u.id = ' . $val[1] . ') ';
+                } else {
+                    $q['q'][]= ' and (u.id = ' . $val[1] . ') ';
+                }
+
+                if (!in_array('jos_users', $tableAlias)) {
+                	$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+                }
+                $q['users'] = true;
+
+                $id = $id + 1;
+            }
+
+            if ($val[0] == "EMAIL") {
                
                     //the request is an email
-                    if($email > 0){
-                        $q['q'][]= ' or ( u.email like "%'.$val[1].'%") ';
-                    }else{
-                        $q['q'][]= ' and ( u.email like "%'.$val[1].'%") ';
+                    if ($email > 0) {
+                        $q['q'][] = ' or ( u.email like "%'.$val[1].'%") ';
+                    } else {
+                        $q['q'][] = ' and ( u.email like "%'.$val[1].'%") ';
                     }
-                    //$q['q'][] = ' ( u.email like "%'.$val[1].'%") ';
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+
+                    if (!in_array('jos_users', $tableAlias)) {
+                    	$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+                    }
                     $q['users'] = true;
                     
                     $email = $email + 1;
             }
-            if($val[0] == "USERNAME"){
+
+            if ($val[0] == "USERNAME") {
                  //the request is an username
-                if($username > 0){
-                    $q['q'][]= ' or ( u.username LIKE "%' . ($val[1]) . '%" ) ';
-                }else{
+                if ($username > 0) {
+                    $q['q'][] = ' or ( u.username LIKE "%' . ($val[1]) . '%" ) ';
+                } else {
                     $q['q'][]= ' and ( u.username LIKE "%' . ($val[1]) . '%" ) ';
                 }
-				//$q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
-				if (!in_array('jos_users', $tableAlias))
+
+				if (!in_array('jos_users', $tableAlias)) {
 					$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+				}
 				$q['users'] = true;
                
                 $username = $username + 1;
             }
-            if($val[0] == "LAST_NAME"){
+
+            if ($val[0] == "LAST_NAME") {
                 //the request is a lastname
-                if($lastname > 0){
-                    $q['q'][]= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
-                }else{
-                    $q['q'][]= ' and (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
+                if ($lastname > 0) {
+                    $q['q'][] = ' or (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
+                } else {
+                    $q['q'][] = ' and (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
                 }
                 
                 if (!in_array('jos_emundus_users', $tableAlias)){
@@ -1183,15 +1218,16 @@ class EmundusModelAdmission extends JModelList
                 
                 $lastname = $lastname + 1;
             }
-            if($val[0] == "FIRST_NAME"){
+
+            if ($val[0] == "FIRST_NAME") {
                 //the request is a firstname
-                    if($firstname > 0){
-                        $q['q'][]= ' or (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    }else{
-                        $q['q'][]= ' and (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
+                    if ($firstname > 0) {
+                        $q['q'][] = ' or (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
+                    } else {
+                        $q['q'][] = ' and (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
                     }
-                    //$q['q'][] = ' and (ue.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    if (!in_array('jos_emundus_users', $tableAlias)){
+
+                    if (!in_array('jos_emundus_users', $tableAlias)) {
                         $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
                         $q['em_user'] = true;
                     }

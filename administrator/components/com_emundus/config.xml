@@ -118,7 +118,7 @@
 			<option value="1">JYES</option>
 			<option value="2">COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS_ALLOW_ALL</option>
 		</field>
-		<field name="status_after_payment" menu="hide" type="text" default="1" label="COM_EMUNDUS_STATUS_AFTER_PAYMENT" description="COM_EMUNDUS_STATUS_AFTER_PAYMENT_DESC" />
+		<field name="status_after_payment" menu="hide" type="text" default="" label="COM_EMUNDUS_STATUS_AFTER_PAYMENT" description="COM_EMUNDUS_STATUS_AFTER_PAYMENT_DESC" />
 		<field name="redirect_after_payment" menu="hide" type="list" default="0" label="COM_EMUNDUS_REDIRECT_AFTER_PAYMENT" description="COM_EMUNDUS_REDIRECT_AFTER_PAYMENT_DESC" >
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
