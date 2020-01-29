@@ -789,6 +789,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     	$file_lbl = "_application";
     }
 
+    $eMConfig = JComponentHelper::getParams('com_emundus');
+    $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25'); //déclaration couleur principale
+
     $config = JFactory::getConfig();
     $offset = $config->get('offset');
 
@@ -876,27 +879,41 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+    $pdf->setCellPaddings('L');//Set Padding
+ 
+    //$pdf->SetLineWidth();
+
 	// set default monospaced font
 	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 	// set default font subsetting mode
 	$pdf->setFontSubsetting(true);
 	// set font
-	$pdf->SetFont('freeserif', '', 10);
+    $pdf->SetFont('freeserif', '', 10);
 	$pdf->AddPage();
 	$dimensions = $pdf->getPageDimensions();
 
 	/*** Applicant   ***/
-	$htmldata .=
-	'<style>
-	.card  { border: none; display:block; line-height:80%;}
-	.name  { display: block; font-size: 12pt; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
-	.maidename  { display: block; font-size: 20pt; margin: 0 0 0 20px; padding:0; }
-	.nationality { display: block; margin: 0 0 0 20px;  padding:0;}
-	.sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
-	.birthday { display: block; margin: 0 0 0 20px; padding:0;}
+	$htmldata .= "<style>
 
-	.label		   {white-space:nowrap; color:black; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
+    @import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
+    
+    .en-tete { width :100%;  }
+    .candidat { width :80%;  }
+    .avatar { width :20%;  }
+    .dossier { width :100%;  }
+    
+          
+	.card  { border: none; display:block;  text-align:right; font-family: 'Poppins', sans-serif; }
+	.name  { display: block;  display:block; font-family: 'Poppins', sans-serif; }
+	.maidename  {display: block; font-family: 'Poppins', sans-serif; }
+    .nationality { display: block; font-weight:normal!important; font-family: 'Poppins', sans-serif; }
+    .idcandidat{ display: block; font-weight:normal!important;  color: ".$cTitle."; font-family: 'Poppins', sans-serif;  }
+    .sent { display: block; font-family: 'Poppins', sans-serif; text-align:left;  }
+    .statut { display: block; font-family: 'Poppins', sans-serif; text-align:left; color: ".$cTitle."  }
+	.birthday { display: block; font-family: 'Poppins', sans-serif; }
+
+	.label		   {color:black;  }
 	.label-default {background-color:#999999;}
 	.label-primary {background-color:#337ab7;}
 	.label-success {background-color:#5cb85c;}
@@ -923,9 +940,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	.label-darkred { background-color: #96281B }
 	.label-lightpink { background-color: #e08283; }
 	.label-pink { background-color: #d2527f; }
-	.label-darkpink { background-color: #db0a5b; }
+    .label-darkpink { background-color: #db0a5b; }
+    h3 {  font-family: 'Poppins', sans-serif; font-size:35px;  color: #000000; text-align:left!important; font-weight:bold;}
 
-	</style>';
+	</style>";
 
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 
@@ -934,11 +952,11 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
 
 	        $htmldata .= '<div class="card">
-						<table width="100%"><tr>';
+						<table  width="100%"><tr>';
 	        if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar)) {
-	            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
+	            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="right" /></td>';
 	        } elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar)) {
-	            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
+	            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="right" /></td>';
 	        }
 
 	        $htmldata .= '
@@ -967,7 +985,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>';
         }
         if (in_array("aapp-sent", $options)) {
-            $htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
+            $htmldata .= '<div class="statut">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
         }
         if (in_array("adoc-print", $options)) {
             $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>';
@@ -985,7 +1003,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             }
             $htmldata .='</td></tr></table>';
         }
-        $htmldata .= '</td></tr></table></div>';
+        $htmldata .= '</td></tr></table>';
     } elseif ($options[0] == "0") {
         $htmldata .= '';
     } else {
@@ -993,43 +1011,85 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 	    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
-		    $htmldata .= '<div class="card">
-					<table width="100%"><tr>';
-		    if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar)) {
-			    $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
-		    } elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar)) {
-			    $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
-		    }
-		    $htmldata .= '
-				<td width="80%">
-				<div class="name"><strong>'.@$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
+        $htmldata .= '
+                
+        <table class="en-tete"> 
+            <tr>
+            ';
+                     /* td candidat */ 
+                    $htmldata .= '
+                   
+                    <td class="candidat">
+                    
+                    <h3>'.JText::_('PDF_HEADER_INFO_CANDIDAT').'</h3>
 
-		    if (isset($item->maiden_name)) {
-			    $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
-		    }
-	    }
+                    <table>
 
-        $date_submitted = (!empty($item->date_submitted) && $item->date_submitted != '0000-00-00 00:00:00')?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
+                    <tr><td class="name">'.@$item->firstname.' '.strtoupper(@$item->lastname).'</td></tr>';
+                        
+                        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+                        if (!$anonymize_data) {
+                            $htmldata .= '
+                            <tr><td class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</td></tr>
+                            <tr><td class="idcandidat">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</td></tr>';
+                        }
+                    
 
-        // create a $dt object with the UTC timezone
-        $dt = new DateTime('NOW', new DateTimeZone('UTC'));
-        // change the timezone of the object without changing it's time
-        $dt->setTimezone(new DateTimeZone($offset));
+                    if (isset($item->maiden_name)) {
+                        $htmldata .= ' <tr><td class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</td></tr>';
+                    }
+                }
 
-	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-	    if (!$anonymize_data) {
-	        $htmldata .= '
-				<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>
-				<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
-				<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>';
-        }
+                $htmldata .= ' </table></td>';
+ 
 
-	    $htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
-						<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>
-						</td>
-						</tr>
-						</table>
-						</div>';
+                 /* td image */
+                $htmldata .= '<td class="avatar">';
+
+                if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar)) {
+                    $htmldata .= '<img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" />';
+                } elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar)) {
+                        $htmldata .= '<img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" />';
+                }
+
+                $htmldata .= '</td>';
+
+
+
+
+
+                $htmldata .= '</tr>';
+                
+            
+                $date_submitted = (!empty($item->date_submitted) && $item->date_submitted != '0000-00-00 00:00:00')?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
+
+                // create a $dt object with the UTC timezone
+                $dt = new DateTime('NOW', new DateTimeZone('UTC'));
+                // change the timezone of the object without changing it's time
+                $dt->setTimezone(new DateTimeZone($offset));
+
+                $htmldata .= '
+                
+                    <tr>
+                    <td class="dossier">
+                
+                    <h3>'.JText::_('PDF_HEADER_INFO_DOSSIER').'</h3>
+
+                        <table>
+                            <tr><td class="name">'.@$item->label.' ('.@$item->cb_schoolyear.')</td></tr>
+                            <tr><td class="nationality">'.JText::_('FNUM').' : '.$fnum.'</td></tr>
+                            <tr><td class="statut">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</td></tr>
+                            <tr><td class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</td></tr>
+                        
+                        </table>
+
+                    </td>
+                    </tr>
+        </table>
+     
+     
+        ';  
+        
     }
     /**  END APPLICANT   ****/
 
@@ -1043,7 +1103,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $nbuploads++;
             }
         }
-        $titleupload = $nbuploads>0?JText::_('FILES_UPLOADED'):JText::_('FILE_UPLOADED');
+       $titleupload = $nbuploads>0?JText::_('FILES_UPLOADED'):JText::_('FILE_UPLOADED');
 
         $htmldata .='
 		<h2>'.$titleupload.' : '.$nbuploads.'</h2>';
@@ -1208,13 +1268,13 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $htmldata .=
         '<style>
 	.card  { border: none; display:block; line-height:80%;}
-	.name  { display: block; font-size: 12pt; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
-	.maidename  { display: block; font-size: 20pt; margin: 0 0 0 20px; padding:0; }
+	.name  { display: block; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
+	.maidename  { display: block; margin: 0 0 0 20px; padding:0; }
 	.nationality { display: block; margin: 0 0 0 20px;  padding:0;}
 	.sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
 	.birthday { display: block; margin: 0 0 0 20px; padding:0;}
 
-	.label		   {white-space:nowrap; color:black; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
+    .label		   {white-space:nowrap; color:black; border-radius: 2px; padding:2px 2px 2px 2px;}
 	.label-default {background-color:#999999;}
 	.label-primary {background-color:#337ab7;}
 	.label-success {background-color:#5cb85c;}
@@ -1261,7 +1321,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 	        $htmldata .= '
 			<td width="80%">
 	
-			<div class="name"><strong>'.@$item->firstname.' '.strtoupper(@$item->lastname).'</strong>, '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
+			<div class="name">'.@$item->firstname.' '.strtoupper(@$item->lastname).', '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
 
 	        if (isset($item->maiden_name)) {
 		        $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
@@ -1275,16 +1335,17 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
         // change the timezone of the object without changing it's time
         $dt->setTimezone(new DateTimeZone($offset));
 
-
+        if (!$anonymize_data && in_array("aemail", $options)) {
+            $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>';
+        }
+        
         if (in_array("aid", $options)) {
             $htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>';
         }
         if (in_array("afnum", $options)) {
             $htmldata .= '<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>';
         }
-        if (!$anonymize_data && in_array("aemail", $options)) {
-            $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>';
-        }
+      
         if (in_array("aapp-sent", $options)) {
             $htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
         }
