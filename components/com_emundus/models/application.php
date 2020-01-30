@@ -1747,7 +1747,7 @@ class EmundusModelApplication extends JModelList {
                                                 $elt = JText::_($r_elt);
                                             }
 
-                                            if ($show_empty_fields == 0 && empty($elt)) {
+                                            if ($show_empty_fields == 1 || !empty($elt)) {
                                                 if ($elements[$j]->plugin == 'textarea') {
                                                     $forms .= '<tr><td colspan="2" style=" border-right: 1px solid black;"><span style="color: #000071;">'.JText::_($elements[$j]->label).'</span> <br>'.$elt.'</td></tr>';
                                                 } else {
