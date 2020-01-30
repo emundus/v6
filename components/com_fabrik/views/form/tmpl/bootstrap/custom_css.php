@@ -920,7 +920,7 @@ footer#g-footer {
 
 /*Position du bouton aligné avec le titre*/
 
-.fabrikForm fieldset.fabrikGroup{
+.fabrikForm .fabrikSubGroup{
     position: relative;
 }
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
@@ -928,8 +928,6 @@ footer#g-footer {
     top: 17px;
     right: 10px;
 }
-
-
 
 /* END - Your CSS styling ends here */
 
