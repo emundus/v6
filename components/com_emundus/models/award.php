@@ -31,20 +31,31 @@ class EmundusModelAward extends JModelList
 
         $this->locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
     }
-    public function getUpload($fnum,$attachment_id){
+    public function getUpload($fnum,$cid){
 
 
         $query = $this->_db->getQuery(true);
 
         $query->select($this->_db->quoteName('filename'));
         $query->from($this->_db->quoteName('#__emundus_uploads'));
-        $query->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum). ' AND' . $this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($attachment_id));
-
+        $query->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum). ' AND' . $this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($cid));
+        //var_dump($query->__toString()).die();
         $this->_db->setQuery($query);
 
         return $this->_db->loadResult();
     }
-    public function getSecondaryUpload($fnum,$attachment_id){
+    public function getCampaignId($fnum){
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query->select($db->quoteName('campaign_id'))
+            ->from($db->quoteName('#__emundus_campaign_candidature'))
+            ->where($db->quoteName('fnum') . " LIKE " . $db->quote($fnum));
+        $db->setQuery($query);
+
+        return $db->loadResult();
+    }
+    /*public function getSecondaryUpload($fnum,$attachment_id){
 
 
         $query = $this->_db->getQuery(true);
@@ -82,34 +93,28 @@ class EmundusModelAward extends JModelList
        $this->_db->setQuery($query);
 
        return $this->_db->loadObject();
-   }
-   public function updatePlusNbVote($fnum, $user,$thematique){
+   }*/
+   public function updatePlusNbVote($fnum,$user,$thematique,$engagement,$engagement_financier,$engagement_materiel){
 
-        $nb_vote = $this->getNbVote($fnum);
+       $db = JFactory::getDbo();
+       $date_time = new DateTime('NOW');
+       $date = $date_time->format('Y-m-d h:i:s');
 
-       $date = new DateTime();
-       $date = $date->format('U = Y-m-d H:i:s');
+       $query = $db->getQuery(true);
 
-       $query = $this->_db->getQuery(true);
+       $columns = array('time_date', 'fnum', 'user', 'thematique','engagement','engagement_financier','engagement_materiel');
 
-
-       $columns = array('time_date', 'fnum', 'user', 'thematique','','','');
-
-
-       $values = array($date, $fnum, $user,$this->_db->quote('Inserting a record using insert()'), 1);
-
+       $values = array($db->quote($date), $db->quote($fnum), $user, $db->quote($thematique), $db->quote($engagement),$db->quote($engagement_financier),$db->quote($engagement_materiel));
 
        $query
-           ->insert($this->_db->quoteName('#__emundus_vote'))
-           ->columns($this->_db->quoteName($columns))
+           ->insert($db->quoteName('#__emundus_vote'))
+           ->columns($db->quoteName($columns))
            ->values(implode(',', $values));
-
-
-       $this->_db->setQuery($query);
-       $this->_db->execute();
+       $db->setQuery($query);
+       $db->execute();
 
    }
-    public function updateMinusNbVote($fnum){
+    /*public function updateMinusNbVote($fnum){
 
         $nb_vote = $this->getNbVote($fnum);
         $query = $this->_db->getQuery(true);
@@ -126,5 +131,5 @@ class EmundusModelAward extends JModelList
         $this->_db->setQuery($query);
 
         return $this->_db->execute();
-    }
+    }*/
 }

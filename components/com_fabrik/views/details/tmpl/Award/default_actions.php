@@ -13,16 +13,20 @@
 defined('_JEXEC') or die('Restricted access');
 
 $form = $this->form;
+
+
 if ($this->hasActions) : ?>
 <div class="fabrikActions form-actions">
 	<div class="row-fluid">
-		<div class="<?php echo FabrikHelperHTML::getGridSpan('12'); ?>">
-			<div class="btn-group">
-				<?php echo $form->prevButton . ' ' . $form->nextButton;
-				echo $form->gobackButton  . ' ' . $this->message;
-				?>
-			</div>
-		</div>
+        <div class="<?php echo FabrikHelperHTML::getGridSpan(4); ?>">
+            <div class="btn-group">
+                <?php
+                echo $form->submitButton . ' ';
+                echo $form->applyButton . ' ';
+                echo $form->copyButton;
+                ?>
+            </div>
+        </div>
 	</div>
 </div>
 <?php

@@ -25,6 +25,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 jimport( 'joomla.user.helper' );
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'award.php');
 
 /**
  * eMundus Component Controller
@@ -40,7 +41,7 @@ class EmundusControllerAward extends JControllerLegacy
 {
     public function __construct($config = array())
     {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'award.php');
+
 
         $this->_user = JFactory::getSession()->get('emundusUser');
 
@@ -52,26 +53,31 @@ class EmundusControllerAward extends JControllerLegacy
 
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->post->getString('fnum', null);
+        $user = $jinput->post->getString('user', null);
+        $thematique = $jinput->post->getString('thematique', null);
+        $engagement = $jinput->post->getString('engagement', null);
+        $engagement_financier = $jinput->post->getString('engagement_financier', null);
+        $engagement_materiel = $jinput->post->getString('engagement_materiel', null);
+
 
         $m_model = new EmundusModelAward();
 
         try{
-            $res = $m_model->updatePlusNbVote($fnum);
+            $m_model->updatePlusNbVote($fnum,$user,$thematique,$engagement,$engagement_financier,$engagement_materiel);
+            $res = true;
+
         }
         catch(Exception $e){
             $res = false;
             echo "Captured Throwable: " . $e->getMessage() . PHP_EOL;
         }
 
-        $nb_vote_update = $m_model->getNbVote($fnum);
-
-
-        $results = array('status'=>$res,'nb_vote'=>$nb_vote_update);
+        $results = array('status'=>$res);
 
         echo json_encode($results);
         exit;
     }
-    public function deletevote(){
+    /*public function deletevote(){
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->post->getString('fnum', null);
 
@@ -92,5 +98,5 @@ class EmundusControllerAward extends JControllerLegacy
 
         echo json_encode($results);
         exit;
-    }
+    }*/
 }

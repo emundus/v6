@@ -10,12 +10,12 @@
  */
 
 // No direct access
-defined('_JEXEC') or die('Restricted access');
+//defined('_JEXEC') or die('Restricted access');
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'award.php');
 $m_award = new EmundusModelAward();
 $form = $this->form;
-$model = $this->getModel();
 
+$model = $this->getModel();
 if ($this->params->get('show_page_heading', 1)) : ?>
 	<div class="componentheading<?php echo $this->params->get('pageclass_sfx')?>">
 		<?php echo $this->escape($this->params->get('page_heading')); ?>
@@ -39,6 +39,8 @@ endif;
 echo $this->plugintop;
 echo $this->loadTemplate('buttons');
 echo $this->loadTemplate('relateddata');
+
+
 /*foreach ($this->groups as $group) :
 	$this->group = $group;
 	?>
@@ -73,14 +75,22 @@ echo $this->loadTemplate('relateddata');
 	</div>
 <?php
 endforeach;*/
-$fnum = $this->elements['fnum']->element;
-$current_user = JFactory::getUser();
 
-$thematique = $this->elements['thematique']->element;
+
+$user = JFactory::getUser();
+
 foreach ($this->groups as $group) :
+
+
     $this->elements = $group->elements;
-    $filename1 = $m_award->getUpload($this->elements['fnum']->element,$this->elements['attachment_id']->element);
-    $filename2 = $m_award->getUpload($this->elements['fnum']->element,$this->elements['attachment_id_2']->element);
+    $fnum = $this->elements['fnum']->element_raw;
+    $uid = $this->elements['user']->element_raw;
+    $cid = $m_award->getCampaignId($fnum);
+
+
+    $thematique = $this->elements['thematique']->value[0];
+
+    $filename1 = $m_award->getUpload($fnum,$cid);
     ?>
 
 <section class="award">
@@ -88,7 +98,7 @@ foreach ($this->groups as $group) :
         <div class="em-cardContainer-card">
             <div class="em-cardContainer-card-image">
 
-                <img src="<?= JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$uid.DS.$this->picture; ?>" alt="">
+                <img src="<?= JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$uid.DS.$filename1; ?>" alt="">
             </div>
             <div class="em-cardContainer-card-content">
                 <h1><?= $this->elements['titre']->element; ?></h1>
@@ -100,30 +110,90 @@ foreach ($this->groups as $group) :
         <img src="<?= JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$uid.DS.$image; ?>" alt="">
     <?php } ?>
 </div>
-<div class="em-cardContainer-card-vote">
-    <hr>
-    <p id="em-vote">Votez: <?= $this->nb_vote ;?></p>
-    <div class="em-cardContainer-card-vote-button">
-        <a onclick="addVote('<?= $fnum.','.$current_user->id;?>')">YES <i class="fas fa-thumbs-up"></i></a>
-        <a onclick="deleteVote('<?= $fnum;?>')">NO <i class="fas fa-thumbs-down"></i></a>
+
+    <?php
+    if ($this->CountThematique($user->id, $thematique) == 0) {
+    if($this->CountVote($fnum,$user->id) == 0) {
+         ?>
+            <div class="em-cardContainer-card-vote">
+                <div class="em-engagement">
+                    <div class="fabrikgrid_radio span2">
+                        <label for="engagement" class="radio">
+                        <input type="checkbox" onClick="checkboxEngagement()" class="fabrik" id="engagement" name="engagement" value="1">
+                        <?= JText::_('ENGAGEMENT'); ?></label>
+
+                        <label for="engagement_financier" class="radio">
+                        <input type="checkbox" class="fabrik" onClick="checkboxEngagementFinancier()" id="engagement_financier" name="engagement_financier" value="2">
+                        <?= JText::_('ENGAGEMENT_FINANCIER'); ?></label>
+
+                        <label for="engagement_materiel" class="radio">
+                        <input type="checkbox" class="fabrik" onClick="checkboxEngagementMateriel()" id="engagement_materiel"  name="engagement_materiel" value="3">
+                        <?= JText::_('ENGAGEMENT_MATERIEL'); ?></label>
+                    </div>
+                </div>
+
+
+                <a class="btn" onclick="addVote('<?= $fnum; ?>','<?= $user->id; ?>','<?= $thematique; ?>')" ><?= JText::_('VOTE'); ?></a>
+            </div>
+        <?php }
+    }
+    else {  ?>
+    <div class="em-cardContainer-card-vote">
+        <p><?= JText::_('ALREADY_VOTE'); ?></p>
     </div>
-</div>
+    <?php } ?>
+
 </div>
 </div>
 </section>
-<?php endforeach; ?>
-<script>
-    var button = document.querySelector('.em-cardContainer-card-vote-button a');
-    button.addEventListener('click', () => {button.classList.add("active")});
 
-    function addVote(fnum, user) {
+<?php endforeach; ?>
+
+<script>
+
+
+    var engagement='';
+    var engagement_financier='';
+    var engagement_materiel ='';
+
+    function checkboxEngagement() {
+        if (document.getElementById('engagement').checked == true) {
+            document.getElementById('engagement').value = true;
+        } else {
+            document.getElementById('engagement').value = false;
+        }
+         return engagement = document.getElementById('engagement').value;
+    }
+    function checkboxEngagementFinancier() {
+        if (document.getElementById('engagement_financier').checked == true) {
+            document.getElementById('engagement_financier').value = true;
+        } else {
+            document.getElementById('engagement_financier').value = false;
+        }
+        return engagement_financier = document.getElementById('engagement_financier').value;
+    }
+    function checkboxEngagementMateriel() {
+        if (document.getElementById('engagement_materiel').checked == true) {
+            document.getElementById('engagement_materiel').value = true;
+        } else {
+            document.getElementById('engagement_materiel').value = false;
+        }
+         return engagement_materiel = document.getElementById('engagement_materiel').value;
+    }
+
+    function addVote(fnum, user, thematique) {
+
         jQuery.ajax({
             type: 'POST',
             dataType: 'json',
             url: 'index.php?option=com_emundus&controller=award&task=addvote',
             data: ({
                 fnum: fnum,
-                user: user
+                user: user,
+                thematique: thematique,
+                engagement: engagement,
+                engagement_financier: engagement_financier,
+                engagement_materiel: engagement_materiel
             }),
             success: function (result) {
 
@@ -132,8 +202,10 @@ foreach ($this->groups as $group) :
                     Swal.fire({
                         type: 'success',
                         title: "<?php echo JText::_('COM_EMUNDUS_VOTE_ACCEPTED'); ?>"
+                    }).then((result) => {
+                        window.location.href="index.php";
                     });
-                    jQuery('#em-vote').html('Votez: '+result.nb_vote);
+
                 } else {
                     Swal.fire({
                         type: 'error',
@@ -150,38 +222,7 @@ foreach ($this->groups as $group) :
             }
         });
     }
-    function deleteVote(fnum) {
-        jQuery.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: 'index.php?option=com_emundus&controller=award&task=deletevote',
-            data: ({
-                fnum: fnum
-            }),
-            success: function (result) {
-                if (result.status) {
 
-                    Swal.fire({
-                        type: 'success',
-                        title: "<?php echo JText::_('COM_EMUNDUS_VOTE_ACCEPTED'); ?>"
-                    });
-                    jQuery('#em-vote').html('Votez: '+result.nb_vote);
-                } else {
-                    Swal.fire({
-                        type: 'error',
-                        text: "<?php echo JText::_('COM_EMUNDUS_VOTE_NON_ACCEPTED'); ?>"
-                    });
-                }
-            },
-            error: function (jqXHR, textStatus) {
-                console.log(textStatus);
-                Swal.fire({
-                    type: 'error',
-                    text: "<?php echo JText::_('COM_EMUNDUS_VOTE_NON_ACCEPTED'); ?>"
-                });
-            }
-        });
-    }
 </script>
 
 
