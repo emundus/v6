@@ -925,7 +925,6 @@ footer#g-footer {
 }
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
     position: absolute;
-    top: 17px;
     right: 10px;
 }
 
