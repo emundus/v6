@@ -917,6 +917,17 @@ footer#g-footer {
 	background: transparent;
 	border-top: 1px solid #bbb;
 }
+
+/*Position du bouton aligné avec le titre*/
+
+.fabrikForm .fabrikSubGroup{
+    position: relative;
+}
+.fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
+    position: absolute;
+    right: 10px;
+}
+
 /* END - Your CSS styling ends here */
 
 EOT;

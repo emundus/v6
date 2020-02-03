@@ -12,7 +12,7 @@
             <div class="panel-heading em-container-share-heading">
                 <h3 class="panel-title">
                 	<span class="glyphicon glyphicon-eye-open"></span>
-                	<?php echo JText::_('CHECK_ACL'); ?> 
+                	<?= JText::_('CHECK_ACL'); ?>
                 </h3>
             </div>
             <div class="panel-body em-container-share-body">
@@ -24,28 +24,28 @@
                                 <th></th>
                             </tr>
                             <tr>
-                                <th><?php echo JText::_('Groups')?></th>
+                                <th><?= JText::_('Groups')?></th>
                             </tr>
                             </thead>
                             <tbody>
-                            <?php foreach($this->access['groups'] as $gid => $groups):?>
+                            <?php foreach($this->access['groups'] as $gid => $groups) :?>
                                 <tr>
                                     <td>
-                                        <?php echo $groups['gname']?>
-                                        <?php if($groups['isAssoc'] && EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)):?>
+                                        <?= $groups['gname']?>
+                                        <?php if ($groups['isAssoc'] && EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)) :?>
                                             <?php if($groups['isACL']):?>
-                                                <a class = "btn btn-info btn-xs pull-right em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?php echo $this->fnum ?>&id=<?php echo $gid ?>&type=groups">
+                                                <a class = "btn btn-info btn-xs pull-right em-del-access" href="index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=groups">
                                                     <span class = "glyphicon glyphicon-retweet"></span>
                                                 </a>
-                                            <?php else:?>
-                                                <a class = "btn btn-danger btn-xs pull-right em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?php echo $this->fnum ?>&id=<?php echo $gid ?>&type=groups">
+                                            <?php else :?>
+                                                <a class = "btn btn-danger btn-xs pull-right em-del-access" href="index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=groups">
                                                     <span class = "glyphicon glyphicon-remove"></span>
                                                 </a>
-                                            <?php endif;?>
-                                        <?php endif;?>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
-                            <?php endforeach;?>
+                            <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>
@@ -53,21 +53,22 @@
                         <table class="table table-bordered" id="groups-access-table" >
                             <thead>
                             <tr>
-                                <?php foreach($this->access['groups'] as $gid => $groups):?>
-                                    <?php foreach($groups['actions'] as $aid => $action):?>
-                                        <th colspan="4" id="<?php echo $aid?>">
-                                            <?php echo JText::_($action['aname'])?>
+                                <?php foreach ($this->access['groups'] as $gid => $groups) :?>
+                                    <?php foreach ($groups['actions'] as $aid => $action) :?>
+                                        <th colspan="4" id="<?= $aid?>">
+                                            <?= JText::_($action['aname'])?>
                                         </th>
                                     <?php endforeach;?>
-                                    <?php break; endforeach;?>
+                                    <?php break;
+                                    endforeach;?>
                             </tr>
                             <tr>
-                                <?php foreach($this->access['groups'] as $gid => $groups):?>
-                                    <?php foreach($groups['actions'] as $actions):?>
-                                        <th><?php echo JText::_('CREATE')?></th>
-                                        <th><?php echo JText::_('RETRIEVE')?></th>
-                                        <th><?php echo JText::_('UPDATE')?></th>
-                                        <th><?php echo JText::_('DELETE')?></th>
+                                <?php foreach($this->access['groups'] as $gid => $groups) :?>
+                                    <?php foreach($groups['actions'] as $actions) :?>
+                                        <th><?= JText::_('CREATE')?></th>
+                                        <th><?= JText::_('RETRIEVE')?></th>
+                                        <th><?= JText::_('UPDATE')?></th>
+                                        <th><?= JText::_('DELETE')?></th>
                                     <?php endforeach;?>
                                     <?php break; endforeach;?>
                             </tr>
@@ -77,52 +78,52 @@
                                 <tr>
                                     <?php foreach($groups['actions'] as $aid => $actions):?>
                                         <?php if($this->defaultActions[$aid]['c'] == 1):?>
-                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-c'?>" state="<?php echo $actions['c']?>">
+                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-c'?>" state="<?= $actions['c']?>">
                                                 <?php if($actions['c'] > 0): ?>
-                                                    <span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
+                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
                                                 <?php elseif($actions['c'] < 0):?>
-                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
+                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
                                                 <?php else:?>
-                                                    <span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
+                                                    <span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
                                                 <?php endif?>
                                             </td>
                                         <?php else:?>
                                             <td></td>
                                         <?php endif;?>
                                         <?php if($this->defaultActions[$aid]['r'] == 1):?>
-                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-r'?>" state="<?php echo $actions['r']?>">
+                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-r'?>" state="<?= $actions['r']?>">
                                                 <?php if($actions['r'] > 0): ?>
-                                                    <span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
+                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
                                                 <?php elseif($actions['r'] < 0):?>
-                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
+                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
                                                 <?php else:?>
-                                                    <span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
+                                                    <span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
                                                 <?php endif?>
                                             </td>
                                         <?php else:?>
                                             <td></td>
                                         <?php endif;?>
                                         <?php if($this->defaultActions[$aid]['u'] == 1): ?>
-                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-u'?>" state="<?php echo $actions['u']?>">
+                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-u'?>" state="<?= $actions['u']?>">
                                                 <?php if($actions['u'] > 0): ?>
-                                                    <span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
+                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
                                                 <?php elseif($actions['u'] < 0):?>
-                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
+                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
                                                 <?php else:?>
-                                                    <span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
+                                                    <span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
                                                 <?php endif?>
                                             </td>
                                         <?php else:?>
                                             <td></td>
                                         <?php endif;?>
                                         <?php if($this->defaultActions[$aid]['d'] == 1):?>
-                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-d'?>" state="<?php echo $actions['d']?>">
+                                            <td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-d'?>" state="<?= $actions['d']?>">
                                                 <?php if($actions['d'] > 0): ?>
-                                                    <span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
+                                                    <span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
                                                 <?php elseif($actions['d'] < 0):?>
-                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
+                                                    <span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
                                                 <?php else:?>
-                                                    <span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
+                                                    <span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
                                                 <?php endif?>
                                             </td>
                                         <?php else:?>
@@ -148,16 +149,16 @@
 					<th></th>
 				</tr>
 				<tr>
-					<th><?php echo JText::_('Users')?></th>
+					<th><?= JText::_('Users')?></th>
 				</tr>
 				</thead>
 				<tbody>
 				<?php foreach($this->access['users'] as $gid => $groups):?>
 					<tr>
 						<td>
-							<?php echo $groups['uname']?>
+							<?= $groups['uname']?>
 							<?php if(EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)):?>
-								<a class = "btn btn-danger btn-xs pull-right em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?php echo $this->fnum ?>&id=<?php echo $gid ?>&type=users">
+								<a class = "btn btn-danger btn-xs pull-right em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=users">
 									<span class = "glyphicon glyphicon-remove"></span>
 								</a>
 							<?php endif;?>
@@ -173,8 +174,8 @@
 				<tr>
 					<?php foreach($this->access['users'] as $gid => $groups):?>
 						<?php foreach($groups['actions'] as $aid => $action):?>
-							<th colspan="4" id="<?php echo $aid?>">
-								<?php echo JText::_($action['aname'])?>
+							<th colspan="4" id="<?= $aid?>">
+								<?= JText::_($action['aname'])?>
 							</th>
 						<?php endforeach;?>
 						<?php break; endforeach;?>
@@ -182,10 +183,10 @@
 				<tr>
 					<?php foreach($this->access['users'] as $gid => $groups):?>
 						<?php foreach($groups['actions'] as $actions):?>
-							<th><?php echo JText::_('CREATE')?></th>
-							<th><?php echo JText::_('RETRIEVE')?></th>
-							<th><?php echo JText::_('UPDATE')?></th>
-							<th><?php echo JText::_('DELETE')?></th>
+							<th><?= JText::_('CREATE')?></th>
+							<th><?= JText::_('RETRIEVE')?></th>
+							<th><?= JText::_('UPDATE')?></th>
+							<th><?= JText::_('DELETE')?></th>
 						<?php endforeach;?>
 						<?php break; endforeach;?>
 				</tr>
@@ -195,54 +196,54 @@
 					<tr>
 						<?php foreach($groups['actions'] as $aid => $actions):?>
 							<?php if($this->defaultActions[$aid]['c'] == 1): ?>
-								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-c'?>" state="<?php echo $actions['c']?>">
+								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-c'?>" state="<?= $actions['c']?>">
 										<?php if($actions['c'] > 0): ?>
-											<span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
+											<span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
 										<?php elseif($actions['c'] < 0):?>
-											<span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
+											<span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
 										<?php else:?>
-											<span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
+											<span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
 										<?php endif?>
 								</td>
 							<?php else:?>
 								<td></td>
 							<?php endif;?>
 							<?php if($this->defaultActions[$aid]['r'] == 1):?>
-								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-r'?>" state="<?php echo $actions['r']?>">
+								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-r'?>" state="<?= $actions['r']?>">
 
 										<?php if($actions['r'] > 0): ?>
-											<span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
+											<span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
 										<?php elseif($actions['r'] < 0):?>
-											<span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
+											<span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
 										<?php else:?>
-											<span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
+											<span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
 										<?php endif?>
 								</td>
 							<?php else:?>
 								<td></td>
 							<?php endif;?>
 							<?php if($this->defaultActions[$aid]['u'] == 1):?>
-								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-u'?>" state="<?php echo $actions['u']?>">
+								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-u'?>" state="<?= $actions['u']?>">
 
 									<?php if($actions['u'] > 0): ?>
-										<span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
+										<span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
 									<?php elseif($actions['u'] < 0):?>
-										<span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
+										<span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
 									<?php else:?>
-										<span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
+										<span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
 									<?php endif?>
 								</td>
 							<?php else:?>
 								<td></td>
 							<?php endif;?>
 							<?php if($this->defaultActions[$aid]['d'] == 1):?>
-								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?php echo $gid.'-'.$aid.'-d'?>" state="<?php echo $actions['d']?>">
+								<td class="<?php if($this->canUpdate){echo"can-update";}?>" id="<?= $gid.'-'.$aid.'-d'?>" state="<?= $actions['d']?>">
 									<?php if($actions['d'] > 0): ?>
-										<span class="glyphicon glyphicon-ok green" title="<?php echo JText::_('ACTIVE')?>"></span>
+										<span class="glyphicon glyphicon-ok green" title="<?= JText::_('ACTIVE')?>"></span>
 									<?php elseif($actions['d'] < 0):?>
-										<span class="glyphicon glyphicon-ban-circle red " title="<?php echo JText::_('BLOCKED')?>"></span>
+										<span class="glyphicon glyphicon-ban-circle red " title="<?= JText::_('BLOCKED')?>"></span>
 									<?php else:?>
-										<span class="glyphicon glyphicon-unchecked" title="<?php echo JText::_('UNDEFINED')?>"></span>
+										<span class="glyphicon glyphicon-unchecked" title="<?= JText::_('UNDEFINED')?>"></span>
 									<?php endif?>
 								</td>
 							<?php else:?>
@@ -259,7 +260,7 @@
 <?php endif;?>
 
 <script type="text/javascript">
-	var fnum = "<?php echo $this->fnum?>";
+	var fnum = "<?= $this->fnum?>";
 	glyphArray = ["glyphicon glyphicon-ban-circle red", "glyphicon glyphicon-unchecked","glyphicon glyphicon-ok green"];
 	$(document).off('click', '.table-right td.can-update');
 	$(document).on('click', '.table-right td.can-update', function(e)
@@ -337,7 +338,7 @@
 		if(e.handle !== true)
 		{
 			e.handle = true;
-			var r = confirm("<?php echo JText::_("COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
+			var r = confirm("<?= JText::_("COM_EMUNDUS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
 			if(r)
 			{
 				var url = $(this).attr('href');
@@ -349,7 +350,7 @@
 					       {
 						       if(result.status)
 						       {
-								   var url = "index.php?option=com_emundus&view=application&format=raw&layout=share&fnum=<?php echo $this->fnum; ?>";
+								   var url = "index.php?option=com_emundus&view=application&format=raw&layout=share&fnum=<?= $this->fnum; ?>";
 
 								   $.ajax({
 									   type:"get",

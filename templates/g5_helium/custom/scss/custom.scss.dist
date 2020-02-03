@@ -2071,18 +2071,8 @@ div:not(.header-right) > .btn-danger {
     font-weight: 700;
 }
 
-.applicant-form .fabrikForm fieldset {
-    position: relative;
-}
-
 .applicant-form .fabrikForm fieldset > .row-fluid, .applicant-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
     padding: 0 100px;
-}
-
-.fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
-    position: absolute;
-    top: 17px;
-    right: 10px;
 }
 
 .form-actions .row-fluid {
