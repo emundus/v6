@@ -32,7 +32,16 @@ foreach($answers as $answer) {
     }
 }
 
-$query = "UPDATE `jos_emundus_qcm` set qcm_date_submitted=NOW(), result=".$result.", qcm_time_elapsed=ROUND(time_to_sec((TIMEDIFF(NOW(), time_date))) / 60) WHERE fnum like ".$db->Quote($user->fnum);
+$offset = $mainframe->get('offset', 'UTC');
+try {
+    $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+    $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+    $now = $dateTime->format('Y-m-d H:i:s');
+} catch(Exception $e) {
+    echo $e->getMessage() . '<br />';
+}
+
+$query = "UPDATE `jos_emundus_qcm` set qcm_date_submitted='".$now."', result=".$result.", qcm_time_elapsed=ROUND(time_to_sec((TIMEDIFF('".$now."', time_date))) / 60) WHERE fnum like ".$db->Quote($user->fnum);
 $db->setQuery( $query );
 $db->execute();
 
