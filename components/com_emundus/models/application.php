@@ -1293,7 +1293,6 @@ class EmundusModelApplication extends JModelList {
         return $forms;
     }
 
-   /* DEBUT DE GETFORMSPDF*/
 
 
     // @description  generate HTML to send to PDF librairie
@@ -1301,14 +1300,13 @@ class EmundusModelApplication extends JModelList {
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
     function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) {
-           /* COULEURS*/
+
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
 	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
     	$em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
-      
-        $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25');
-     
-
+    	$bcTitle = $eMConfig->get('export_application_pdf_color', '#FFFFFF');
+    	$bcSubTitle = $eMConfig->get('export_application_pdf_color2', '#FFFFFF');
+    	$cTitle = $eMConfig->get('export_application_pdf_txt_color', '#000000');
         
     	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list = new EmundusHelperList;
@@ -1316,85 +1314,36 @@ class EmundusModelApplication extends JModelList {
         $tableuser  = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
 
         $forms = "<style>
-
-            @import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
-            
-
-            table {
-                font-family: 'Poppins', sans-serif;  
-            }
-
-            h2 {
-                font-family: 'Poppins', sans-serif;
-                font-size:40px;
-                 color: ".$cTitle.";
-               font-weight:500;
-    
-            }
-  
-           h3 {
-                font-family: 'Poppins', sans-serif;
-                font-size:35px;
-                 color: #000000;
-                text-align:left!important;
-             
-            }
-
-            h5 {
-                font-family: 'Poppins', sans-serif;
-                color: #000000;
-                font-size: 18px;
-                text-align: left;
-            }
-
-            tr  {
-                font-family: 'Poppins', sans-serif;
-
-            }
-
-     
-            th {
-                color: #000000;
-                font-size: 33px!important;
-
-                font-family: 'Poppins', sans-serif;
-             
-            }
-
-            td {
-                color: #000000;
-                font-size: 33px!important;
-                font-family: 'Poppins', sans-serif;
-           
-            }
-
-            p {
-                font-family: 'Poppins', sans-serif;
-            }
-
-           .background {
-
-            background-color: #F7F7F7;
-       
-            
-             }
-
-             .background-light {
-
-              border-top: 0.5px solid #D3D3D3;
-              border-bottom: 0.5px solid #D3D3D3;
-                
-    
-            }
-
-            
-            @media print {
-                .breaker{ 
-                    page-break-before: always;
-                }
-            }
-        </style>";
-
+                    table {
+                        border-spacing: 1px;
+                        background-color: #f2f2f2;
+                        width: 100%;
+                    }
+                    h3 {
+                        background-color: ".$bcTitle.";
+                        color:".$cTitle.";
+                    }
+                    h4 {
+                        background-color: ".$bcSubTitle.";
+                        color:".$cTitle.";
+                    }
+                    th {
+                        border-spacing: 1px;
+                        color: #000;
+                        padding:5px;
+                    }
+                    td {
+                        border-spacing: 2px;
+                        background-color: #FFFFFF;
+                        padding:5px;
+                    }
+                    
+                    @media print {
+                    	.breaker{ 
+							page-break-before: always;
+						}
+                    }
+                    </style>";
 
         if (isset($tableuser)) {
 
@@ -1426,8 +1375,8 @@ class EmundusModelApplication extends JModelList {
                 }
 
                 if (count($groupes) > 0) {
-                  /*  $forms .= '<br>';*/
-                    $forms .= '<hr class="sections"><h2'.$breaker.'>';
+                    $forms .= '<br>';
+                    $forms .= '<hr><h3 '.$breaker.'>';
                     $title = explode('-', JText::_($itemt->label));
                     if (empty($title[1])) {
                         $forms .= JText::_(trim($itemt->label));
@@ -1436,15 +1385,15 @@ class EmundusModelApplication extends JModelList {
                     }
                 }
 
-                $forms .= '</h2>';
+                $forms .= '</h3>';
 
                 /*-- Liste des groupes -- */
                 foreach ($groupes as $itemg) {
 
 	                if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
-		                $forms .= '<h2>'.JText::_($itemg->label).'</h2>';
+		                $forms .= '<hr><h4>'.JText::_($itemg->label).'</h4>';
 		                $forms .= '<table>
-										<thead><tr><th>'.JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP').'</th></tr></thead>
+										<thead><tr><td>'.JText::_('COM_EMUNDUS_CANNOT_SEE_GROUP').'</td></tr></thead>
 									</table>';
 		                continue;
 	                }
@@ -1473,15 +1422,15 @@ class EmundusModelApplication extends JModelList {
                             }
                         }
 
-                        $forms .= '<h3>';
+                        $forms .= '<hr><h4>';
                         $forms .= JText::_($itemg->label);
-                        $forms .= '</h3>';
+                        $forms .= '</h4>';
 
                         if ($itemg->group_id == 14) {
                             $forms .= '<table>';
                             foreach ($elements as $element) {
                                 if (!empty($element->label) && $element->label != ' ' && !empty($element->content)) {
-                                    $forms .= '<tbody><tr><td>'.JText::_($element->label).'</td></tr><tbody>';
+                                    $forms .= '<tr><td style="padding-right:35px; border-right: 1px solid black;"><b>'.JText::_($element->label).'</b></td> <td> </td></tr>';
                                 }
                             }
                             $forms .= '</table>';
@@ -1491,13 +1440,13 @@ class EmundusModelApplication extends JModelList {
 
                             $forms .= '<p><table class="adminlist">
                             <thead>
-                            <tr  class="background"> ';
+                            <tr class="background"> ';
 
                             //-- Entrée du tableau -- */
                             $t_elt = array();
                             foreach ($elements as &$element) {
                                 $t_elt[] = $element->name;
-                                $forms .= '<th scope="col" class="background"><strong>'.JText::_($element->label).'</strong></th>';
+                                $forms .= '<th scope="col" class="background">'.JText::_($element->label).'</th>';
                             }
                             unset($element);
 
@@ -1587,8 +1536,7 @@ class EmundusModelApplication extends JModelList {
 
                                                     // Load the Fabrik join for the element to it's respective repeat_repeat table.
                                                     $query = $this->_db->getQuery(true);
-                                                    $query
-                                                        ->select([$this->_db->quoteName('join_from_table'), $this->_db->quoteName('table_key'), $this->_db->quoteName('table_join'), $this->_db->quoteName('table_join_key')])
+                                                    $query->select([$this->_db->quoteName('join_from_table'), $this->_db->quoteName('table_key'), $this->_db->quoteName('table_join'), $this->_db->quoteName('table_join_key')])
                                                         ->from($this->_db->quoteName('#__fabrik_joins'))
                                                         ->where($this->_db->quoteName('element_id').' = '.$elements[$j]->id);
                                                     $this->_db->setQuery($query);
@@ -1631,7 +1579,7 @@ class EmundusModelApplication extends JModelList {
 
                                             // trick to prevent from blank value in PDF when string is to long without spaces (usually emails)
                                             $elt = str_replace('@', '<br>@', $elt);
-                                            $forms .= '<td class="background-light" style="border-right: 1px solid black;"><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.JText::_($elt).'</div></td>';
+                                            $forms .= '<td style="border-right: 1px solid black;"><div id="em_training_'.$r_element->id.'" class="course '.$r_element->id.'">'.JText::_($elt).'</div></td>';
                                         }
                                         $j++;
                                     }
@@ -1749,9 +1697,9 @@ class EmundusModelApplication extends JModelList {
 
                                             if ($show_empty_fields == 1 || !empty($elt)) {
                                                 if ($elements[$j]->plugin == 'textarea') {
-                                                    $forms .= '<tr><td colspan="2" style=" border-right: 1px solid black;"><span style="color: #000071;">'.JText::_($elements[$j]->label).'</span> <br>'.$elt.'</td></tr>';
+                                                    $forms .= '<tr><td colspan="2" style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span> <br>'.$elt.'</td></tr>';
                                                 } else {
-                                                    $forms .= '<tr><td style=" border-right: 1px solid black;"><span style="color: #000071;">'.JText::_($elements[$j]->label).'</span></td> <td > '.$elt.'</td></tr>';
+                                                    $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($elements[$j]->label).'</b></span></td> <td style="padding-right:30px;"> '.$elt.'</td></tr>';
 												}
                                             }
                                         }
@@ -1885,18 +1833,18 @@ class EmundusModelApplication extends JModelList {
                                         }
 
                                         if ($element->plugin == 'textarea') {
-                                            $forms .= '<tr><td   colspan="2" ><span style="color: #000000;">'.JText::_($element->label).' : '.'</span>'.JText::_($elt).'</td></tr>';
+                                            $forms .= '<tr><td colspan="2" style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span> <br>'.JText::_($elt).'</td></tr>';
                                         } else {
-                                            $forms .= '<tr ><td ><span style="color: #000000;">'.JText::_($element->label).' : '.'</span></td> <td> '.JText::_($elt).'</td></tr>';
+                                            $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;"> '.JText::_($elt).'</td></tr>';
 										}
                                     }
                                 } elseif (empty($element->content)) {
                                     if (!empty($element->label) && $element->label!=' ') {
-                                        $forms .= '<tr><td ><span style="color: #000000;">'.JText::_($element->label).' : '.'</span></td> <td> </td></tr>';
+                                        $forms .= '<tr><td style="padding-right:25px; border-right: 1px solid black;"><span style="color: #000071;"><b>'.JText::_($element->label).'</b></span></td> <td style="padding-right:30px;"> </td></tr>';
                                     }
                                 }
                             }
-                            $forms .= '</table><div></div>';
+                            $forms .= '</table>';
                         }
                     }
                 }
