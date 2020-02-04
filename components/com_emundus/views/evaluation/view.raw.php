@@ -44,8 +44,7 @@ class EmundusViewEvaluation extends JViewLegacy
 		parent::__construct($config);
 	}
 
-    public function display($tpl = null)
-    {
+    public function display($tpl = null) {
 
 		$this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 
@@ -323,21 +322,20 @@ class EmundusViewEvaluation extends JViewLegacy
 					$datas = JText::_('NO_RESULT');
 				}
 
-
-			/* Get the values from the state object that were inserted in the model's construct function */
-		    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
-			$lists['order']     = JFactory::getSession()->get( 'filter_order' );
-		    $this->assignRef('lists', $lists);
-		    $pagination = $this->get('Pagination');
-		    $this->assignRef('pagination', $pagination);
-			$this->assignRef('accessObj', $objAccess);
-			$this->assignRef('colsSup', $colsSup);
-			$this->assignRef('users', $users);
-			$this->assignRef('datas', $datas);
-		break;
+				/* Get the values from the state object that were inserted in the model's construct function */
+			    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
+				$lists['order']     = JFactory::getSession()->get( 'filter_order' );
+			    $this->assignRef('lists', $lists);
+			    $pagination = $this->get('Pagination');
+			    $this->assignRef('pagination', $pagination);
+				$this->assignRef('accessObj', $objAccess);
+				$this->assignRef('colsSup', $colsSup);
+				$this->assignRef('users', $users);
+				$this->assignRef('datas', $datas);
+			break;
+		}
+		parent::display($tpl);
 	}
-	parent::display($tpl);
-}
 
 }
 

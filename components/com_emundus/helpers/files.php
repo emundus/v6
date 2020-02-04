@@ -1008,6 +1008,7 @@ class EmundusHelperFiles
         $current_group          = @$filt_params['group'];
         $current_institution    = @$filt_params['institution'];
         $spam_suspect           = @$filt_params['spam_suspect'];
+        $current_group_assoc    = @$filt_params['group_assoc'];
 
         $filters = '';
         
@@ -1537,6 +1538,35 @@ class EmundusHelperFiles
 
             $filters .= $tag;
         }
+
+	    if (@$params['group_assoc'] !== NULL) {
+		    $hidden = $types['group_assoc'] == 'hidden';
+		    $group_assoc = '';
+
+		    if (!$hidden) {
+			    $group_assoc .= '<div id="group_assoc" class="em-filter">
+                    		<div class="em_label">
+                    			<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_ASSOCIATED_GROUPS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_group_assoc\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a></label>
+                            </div>
+                    		<div class="em_filtersElement">';
+		    }
+		    $group_assoc .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_group_assoc" name="group_assoc" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
+
+		    $groupList = $m_files->getUserAssocGroups();
+		    foreach ($groupList as $p) {
+			    $group_assoc .= '<option value="'.$p['id'].'"';
+			    if (!empty($current_group_assoc) && in_array($p['id'], (array)$current_group_assoc)) {
+				    $group_assoc .= ' selected="true"';
+			    }
+			    $group_assoc .= '>'.$p['label'].'</option>';
+		    }
+		    $group_assoc .= '</select>';
+		    if (!$hidden) {
+			    $group_assoc .= '</div></div>';
+		    }
+
+		    $filters .= $group_assoc;
+	    }
         
         //Advance filter builtin
         if (@$params['adv_filter'] !== NULL) {
