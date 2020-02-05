@@ -1414,32 +1414,4 @@ class FabrikViewFormBase extends FabrikView
 
 		$aHiddenFields = array_merge($aHiddenFields, array_values($fields));
 	}
-    public function CountVote($fnum,$user){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query
-            ->select('COUNT(*)')
-            ->from($db->quoteName('#__emundus_vote'))
-            ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum).' AND '.$db->quoteName('user').' = '. $db->quote($user));
-
-        $db->setQuery($query);
-
-        return $db->loadResult();
-    }
-    public function CountThematique($user,$thematique){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query
-            ->select('COUNT(*)')
-            ->from($db->quoteName('#__emundus_vote'))
-            ->where($db->quoteName('thematique').' = '.$db->quote($thematique).' AND '.$db->quoteName('user').' = '. $db->quote($user));
-
-
-
-        $db->setQuery($query);
-
-        return $db->loadResult();
-    }
 }

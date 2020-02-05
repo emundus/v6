@@ -55,45 +55,7 @@ class EmundusModelAward extends JModelList
 
         return $db->loadResult();
     }
-    /*public function getSecondaryUpload($fnum,$attachment_id){
 
-
-        $query = $this->_db->getQuery(true);
-
-        $query->select($this->_db->quoteName('filename'));
-        $query->from($this->_db->quoteName('#__emundus_uploads'));
-        $query->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum). ' AND' . $this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($attachment_id));
-
-        $this->_db->setQuery($query);
-
-        return $this->_db->loadColumn();
-    }
-   public function getNbVote($fnum){
-
-
-       $query = $this->_db->getQuery(true);
-
-       $query->select($this->_db->quoteName('nb_vote'));
-       $query->from($this->_db->quoteName('#__emundus_challenges'));
-       $query->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
-
-
-       $this->_db->setQuery($query);
-
-       return $this->_db->loadResult();
-   }
-   public function getDataChallenge($fnum){
-       $query = $this->_db->getQuery(true);
-
-       $query->select($this->_db->quoteName('*'));
-       $query->from($this->_db->quoteName('#__emundus_challenges'));
-       $query->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
-
-
-       $this->_db->setQuery($query);
-
-       return $this->_db->loadObject();
-   }*/
    public function updatePlusNbVote($fnum,$user,$thematique,$engagement,$engagement_financier,$engagement_materiel){
 
        $db = JFactory::getDbo();
@@ -114,22 +76,78 @@ class EmundusModelAward extends JModelList
        $db->execute();
 
    }
-    /*public function updateMinusNbVote($fnum){
+    public function CountVote($fnum,$user){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-        $nb_vote = $this->getNbVote($fnum);
-        $query = $this->_db->getQuery(true);
-        $fields = array(
-            $this->_db->quoteName('nb_vote') . ' = ' . $this->_db->quote($nb_vote-1)
-        );
+        $query
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__emundus_vote'))
+            ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum).' AND '.$db->quoteName('user').' = '. $db->quote($user));
+
+        $db->setQuery($query);
+
+        return $db->loadResult();
+    }
+    public function CountThematique($user,$thematique){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__emundus_vote'))
+            ->where($db->quoteName('thematique').' = '.$db->quote($thematique).' AND '.$db->quoteName('user').' = '. $db->quote($user));
+
+        $db->setQuery($query);
+
+        return $db->loadResult();
+    }
+    public function getFavoris($fnum,$user){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__emundus_favoris'))
+            ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum).' AND '.$db->quoteName('user').' = '. $db->quote($user));
+
+        $db->setQuery($query);
+
+        return $db->loadResult();
+    }
+    public function addToFavoris($fnum, $user){
+        $db = JFactory::getDbo();
+        $date_time = new DateTime('NOW');
+        $date = $date_time->format('Y-m-d h:i:s');
+
+        $query = $db->getQuery(true);
+
+        $columns = array('date_time', 'fnum', 'user');
+
+        $values = array($db->quote($date), $db->quote($fnum), $user);
+
+        $query
+            ->insert($db->quoteName('#__emundus_favoris'))
+            ->columns($db->quoteName($columns))
+            ->values(implode(',', $values));
+        $db->setQuery($query);
+        $db->execute();
+    }
+    public function deleteToFavoris($fnum,$user){
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
 
         $conditions = array(
-            $this->_db->quoteName('fnum') . 'LIKE' . $this->_db->quote($fnum)
+            $db->quoteName('user') . ' = ' . $user,
+            $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum)
         );
 
-        $query->update($this->_db->quoteName('#__emundus_challenges'))->set($fields)->where($conditions);
+        $query->delete($db->quoteName('#__emundus_favoris'));
+        $query->where($conditions);
 
-        $this->_db->setQuery($query);
+        $db->setQuery($query);
 
-        return $this->_db->execute();
-    }*/
+        $db->execute();
+    }
 }

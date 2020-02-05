@@ -1986,9 +1986,16 @@ a:hover {
 }
 
 .em-titleproject {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   color: #482683;
   font-size: 36px;
+  line-height: 36px;
+}
+.em-thematiqueproject {
+  margin-bottom: 15px;
+  margin-top: 0;
+  color: #482683;
+  font-size: 20px;
   line-height: 36px;
 }
 
@@ -2696,7 +2703,10 @@ html.w-mod-js *[data-ix="center"] {
     padding-left: 40px;
   }
 }
-
+/* Favoris */
+.starActive{
+color:#e39809;
+}
 @media (max-width: 767px) {
   .em-wrappermenu {
     display: none;

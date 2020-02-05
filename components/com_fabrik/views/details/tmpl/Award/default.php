@@ -78,20 +78,31 @@ endforeach;*/
 
 
 $user = JFactory::getUser();
+$table = $form->db_table_name;
+$thematique = $this->data[$table.'___thematique_projet_raw'];
+$fnum = $this->data[$table.'___fnum_raw'];
+$cid = $m_award->getCampaignId($fnum);
+$filename1 = $m_award->getUpload($fnum,$cid);
+$countThematique = $m_award->CountThematique($user->id, $thematique);
+$countVote = $m_award->CountVote($fnum,$user->id);
 
-foreach ($this->groups as $group) :
-
-
+/*foreach ($this->groups as $group) :
     $this->elements = $group->elements;
     $fnum = $this->elements['fnum']->element_raw;
     $uid = $this->elements['user']->element_raw;
     $cid = $m_award->getCampaignId($fnum);
 
 
-    $thematique = $this->elements['thematique']->value[0];
+    $thematique = $this->elements['thematique_projet']->value[0];
 
     $filename1 = $m_award->getUpload($fnum,$cid);
     ?>
+<?php endforeach;
+
+
+<?= $this->elements['titre_projet']->element; ?>
+
+*/ ?>
 
 <section class="award">
     <div class="em-cardContainer">
@@ -101,19 +112,12 @@ foreach ($this->groups as $group) :
                 <img src="<?= JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$uid.DS.$filename1; ?>" alt="">
             </div>
             <div class="em-cardContainer-card-content">
-                <h1><?= $this->elements['titre']->element; ?></h1>
-<p><?= $this->elements['description']->element; ?></p>
-
-</div>
-<div class="em-cardContainer-card-galerie">
-    <?php foreach ($this->pictureSecondary as $image){ ?>
-        <img src="<?= JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$uid.DS.$image; ?>" alt="">
-    <?php } ?>
-</div>
-
+                <h1><?= $this->data[$table.'___titre_projet']; ?></h1>
+                <p><?= $this->data[$table.'___description_projet']; ?></p>
+            </div>
     <?php
-    if ($this->CountThematique($user->id, $thematique) == 0) {
-    if($this->CountVote($fnum,$user->id) == 0) {
+    if ($countThematique == 0) {
+    if($countVote == 0) {
          ?>
             <div class="em-cardContainer-card-vote">
                 <div class="em-engagement">
@@ -147,7 +151,7 @@ foreach ($this->groups as $group) :
 </div>
 </section>
 
-<?php endforeach; ?>
+
 
 <script>
 

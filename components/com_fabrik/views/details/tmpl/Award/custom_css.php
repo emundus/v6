@@ -40,6 +40,9 @@ echo <<<EOT
 /* BEGIN - Your CSS styling starts here */
 
 /* Add a padding on list program-year-page for example */
+#g-container-main .span12{
+width:100%;
+}
 hr{
     color: rgba(181,181,181,1);
 }

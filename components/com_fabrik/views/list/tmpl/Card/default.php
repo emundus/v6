@@ -12,13 +12,17 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'award.php');
+
 $m_award = new EmundusModelAward();
 $pageClass = $this->params->get('pageclass_sfx', '');
 $document = JFactory::getDocument();
+$document->addStyleSheet('media/com_fabrik/css/fabrik.css');
 $app = JFactory::getApplication();
 
 $menu = $app->getMenu();
 $menu_id = $menu->getActive();
+
+$current_user = JFactory::getUser();
 
 
 if ($pageClass !== '') :
@@ -86,167 +90,196 @@ echo $this->loadTemplate('tabs');
             </div>
         </div>
 
-<?php foreach ($this->pluginBeforeList as $c) :
-	echo $c;
-endforeach;
-?>
+        <?php foreach ($this->pluginBeforeList as $c) :
+            echo $c;
+        endforeach;
+
+
+        ?>
+
         <?php
         $gCounter = 0;
         $id_projet = $this->table->db_table_name.'___id_raw';
         $fnum_element = $this->table->db_table_name.'___fnum';
         $user = $this->table->db_table_name.'___user_raw';
 
-        $i = 0;
+        $i = 0; ?>
 
+        <table class="<?php echo $this->list->class;?>" id="list_<?php echo $this->table->renderid;?>" >
+            <tr><?php echo $headingsHtml?></tr>
+	    </table>
+        <?php
         foreach ($this->rows as $groupedby => $group) {
 
-        //Création d'un tableau pour récupérer les classes des éléments
-        foreach($this->cellClass as $key => $val){
+            //Création d'un tableau pour récupérer les classes des éléments
+            foreach($this->cellClass as $key => $val){
 
-            $keys = array($i);
-            $classArray[] = array_fill_keys($keys,$val);
+                $keys = array($i);
+                $classArray[] = array_fill_keys($keys,$val);
 
-            $i = $i +1;
+                $i = $i +1;
 
-        }
-        // Décalage des indexes du tableau de 1 pour les modulos
-        array_unshift($group,"");
-        unset($group[0]);
-        //var_dump($group).die();
-        //Boucle de création des éléments spécifique à afficher dans la carte en fonction de la classe de l'élément
-        for($j=0; $j < count($classArray); $j++) {
-            for ($h = 0; $h < count($classArray); $h++) {
+            }
+            // Décalage des indexes du tableau de 1 pour les modulos
+            array_unshift($group,"");
+            unset($group[0]);
+            //var_dump($group).die();
+            //Boucle de création des éléments spécifique à afficher dans la carte en fonction de la classe de l'élément
+            for($j=0; $j < count($classArray); $j++) {
+                for ($h = 0; $h < count($classArray); $h++) {
 
-                $element = explode(' ', $classArray[$j][$h]['class']);
+                    $element = explode(' ', $classArray[$j][$h]['class']);
 
-                //ajouter une classe sur l'élément fabrik souhaité
-                if (end($element) == 'em-title') {
-                    $titre = $element[0];
-                }
-                if (end($element) == 'em-description') {
-                    $description = $element[0];
+                    //ajouter une classe sur l'élément fabrik souhaité
+                    if (end($element) == 'em-title') {
+                        $titre = $element[0];
+                    }
+                    if (end($element) == 'em-description') {
+                        $description = $element[0];
+                    }
+                    if (end($element) == 'em-thematique') {
+                        $thematique = $element[0];
+                        $thematique_raw = $element[0].'_raw';
+
+                    }
                 }
             }
-        }
-
-        for($i=1; $i <= count($group); $i++) {
-            $fnum = $group[$i]->data->$fnum_element;
-            $id = $group[$i]->data->$id_projet;
-
-            $cid = $m_award->getCampaignId($fnum);
 
 
-        //récupération du nom de l'image
-        $filename = $m_award->getUpload($fnum,$cid);
-        $current_user = JFactory::getUSer();
+            for($i=1; $i <= count($group); $i++) {
+                $countThematique = $m_award->CountThematique($current_user->id, $group[$i]->data->$thematique_raw);
 
-        $url_detail = 'index.php?option=com_fabrik&view=details&formid='.$form_id.'&Itemid=2820&usekey=fnum&rowid='.$fnum;
+                $fnum = $group[$i]->data->$fnum_element;
+                $id = $group[$i]->data->$id_projet;
 
-        //Pair
-        if (($i % 2) == 0 ) {
-        ?>
-            <div class="em-wrapper-project-row">
-                <div class="em-rowproject rowinvert w-row">
-                    <div class="w-col w-col-6">
-                        <div class="em-wrappercontainerimage imageinvert w-clearfix">
-                            <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="em-containerimage"><img src="<?= JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename; ?>" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject"></div>
-                        </div>
-                    </div>
-                    <div class="w-col w-col-6">
-                        <div class="em-wrappertextproject textinvert">
-                            <h2 class="em-titleproject"><?= $group[$i]->data->$titre; ?></h2>
-                            <h3><?= $group[$i]->data->$titre; ?></h3>
-                            <p class="em-paragrapheprojet"><?= $group[$i]->data->$description; ?><br></p>
+                $cid = $m_award->getCampaignId($fnum);
 
-                            <?php
-                            if($current_user->id == 0){
 
-                                $url = JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($url_detail));
-                            }
-                            else{
+                //récupération du nom de l'image
+                $filename = $m_award->getUpload($fnum,$cid);
+                $current_user = JFactory::getUSer();
 
-                                $url = $url_detail;
-                            }
+                $url_detail = 'index.php?option=com_fabrik&view=details&formid='.$form_id.'&Itemid='.$menu_id->id.'&usekey=id&rowid='.$id;
 
-                            ?>
+                //Pair
+                if (($i % 2) == 0 ) {
+                    ?>
+                    <div class="em-wrapper-project-row">
+                        <div class="em-rowproject rowinvert w-row">
+                            <div class="w-col w-col-6">
+                                <div class="em-wrappercontainerimage imageinvert w-clearfix">
+                                    <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="em-containerimage"><img src="<?= JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename; ?>" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject"></div>
+                                </div>
+                            </div>
+                            <div class="w-col w-col-6">
+                                <div class="em-wrappertextproject textinvert">
+                                    <h2 class="em-titleproject"><?= $group[$i]->data->$titre; ?></h2>
+                                    <?php if ($countThematique == 0) { ?>
+                                        <h3 class="em-thematiqueproject"><?= $group[$i]->data->$thematique; ?></h3>
+                                    <?php }
+                                    else{ ?>
+                                         <h3 class="em-thematiqueproject"><?= JText::_('ALREADY_VOTE') ?></h3>
+                                    <?php } ?>
+                                    <p class="em-paragrapheprojet"><?= $group[$i]->data->$description; ?></p>
 
-                            <a href="<?= $url; ?>" class="em-button-project w-inline-block" data-ix="arrowcta-menu-2">
-                                <div class="em-containerarrow2"><img src="images/custom/5e049464ed2a2711565ccae1_arrow.svg" alt="" class="em-arrowcta-purple2"><img src="images/custom/arrow.svg" alt="" class="em-arrowcta-white2"></div>
-                                <div class="em-textcta">VOIR LE PROJET</div>
-                                <div class="em-overlay"></div>
+                                    <?php
+                                    if($current_user->id == 0){
 
-                            </a>
-                            <div class="em-partage">
-                                <a><i class="fas fa-star"></i></a>
-                                <a id="share<?=$i;?>" data-fnum="<?= $fnum; ?>" data-url="<?= JRoute::_($url);?>" onclick="share(<?=$i;?>)"><i class="fas fa-share-square"></i></a>
+                                        $url = JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($url_detail));
+                                    }
+                                    else{
+
+                                        $url = $url_detail;
+                                    }
+
+                                    ?>
+
+                                    <a href="<?= $url; ?>" class="em-button-project w-inline-block" data-ix="arrowcta-menu-2">
+                                        <div class="em-containerarrow2"><img src="images/custom/5e049464ed2a2711565ccae1_arrow.svg" alt="" class="em-arrowcta-purple2"><img src="images/custom/arrow.svg" alt="" class="em-arrowcta-white2"></div>
+                                        <div class="em-textcta"><?= JText::_('SEE_MORE'); ?></div>
+                                        <div class="em-overlay"></div>
+
+                                    </a>
+                                    <div class="em-partage">
+                                        <?php if($current_user->id != 0){ ?>
+                                            <a id="favoris<?=$i?>" data-fnum="<?=$fnum?>" onclick="favoris(<?=$i?>,<?=$current_user->id?>)"><i class="fas fa-star"></i></a>
+                                        <?php } ?>
+                                        <a id="share<?=$i;?>" data-fnum="<?= $fnum; ?>" data-url="<?= JRoute::_($url);?>" onclick="share(<?=$i;?>)"><i class="fas fa-share-square"></i></a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
- <?php
-        }
-        //Impair
-        if (($i % 2) == 1) {
-        ?>
-            <div class="em-wrapper-project-row">
-                <div class="em-rowproject w-row">
-                    <div class="w-col w-col-6">
-                        <div class="em-wrappercontainerimage w-clearfix">
-                            <div data-w-id="af322628-4776-a3e3-4b5a-818fd075779b" class="em-containerimage"><img src="<?= JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename; ?>" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject"></div>
-                        </div>
-                    </div>
-                    <div class="w-col w-col-6">
-                        <div class="em-wrappertextproject">
-                            <h2 class="em-titleproject"><?= $group[$i]->data->$titre; ?></h2>
-                            <h3></h3>
-                            <p class="em-paragrapheprojet"><?= $group[$i]->data->$description; ?><br></p>
-                            <?php
-                            if($current_user->id == 0){
-                                $url = JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($url_detail));
-                            }
-                            else{
-                                $url = $url_detail;
-                            } ?>
+                    <?php
+                }
+                //Impair
+                if (($i % 2) == 1) {
+                    ?>
+                    <div class="em-wrapper-project-row">
+                        <div class="em-rowproject w-row">
+                            <div class="w-col w-col-6">
+                                <div class="em-wrappercontainerimage w-clearfix">
+                                    <div data-w-id="af322628-4776-a3e3-4b5a-818fd075779b" class="em-containerimage"><img src="<?= JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename; ?>" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject"></div>
+                                </div>
+                            </div>
+                            <div class="w-col w-col-6">
+                                <div class="em-wrappertextproject">
+                                    <h2 class="em-titleproject"><?= $group[$i]->data->$titre; ?></h2>
+                                    <?php if ($countThematique == 0) { ?>
+                                        <h3 class="em-thematiqueproject"><?= $group[$i]->data->$thematique; ?></h3>
+                                    <?php }
+                                    else{ ?>
+                                        <h3 class="em-thematiqueproject"><?= JText::_('ALREADY_VOTE') ?></h3>
+                                    <?php } ?>
+                                    <p class="em-paragrapheprojet"><?= $group[$i]->data->$description; ?></p>
+                                    <?php
+                                    if($current_user->id == 0){
+                                        $url = JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($url_detail));
+                                    }
+                                    else{
+                                        $url = $url_detail;
+                                    } ?>
 
-                            <a href="<?= $url;?>" class="em-button-project w-inline-block" data-ix="arrowcta-menu-2">
-                                <div class="em-containerarrow2"><img src="images/custom/5e049464ed2a2711565ccae1_arrow.svg" alt="" class="em-arrowcta-purple2"><img src="images/custom/arrow.svg" alt="" class="em-arrowcta-white2"></div>
-                                <div class="em-textcta"><?= JText::_('SEE_MORE'); ?></div>
-                                <div class="em-overlay"></div>
-                            </a>
-                            <div class="em-partage">
-                                <a><i class="fas fa-star"></i></a>
-                                <a id="share<?=$i;?>" data-fnum="<?= $fnum; ?>" data-url="<?= JRoute::_($url);?>" onclick="share(<?=$i;?>)"><i class="fas fa-share-square"></i></a>
+                                    <a href="<?= $url;?>" class="em-button-project w-inline-block" data-ix="arrowcta-menu-2">
+                                        <div class="em-containerarrow2"><img src="images/custom/5e049464ed2a2711565ccae1_arrow.svg" alt="" class="em-arrowcta-purple2"><img src="images/custom/arrow.svg" alt="" class="em-arrowcta-white2"></div>
+                                        <div class="em-textcta"><?= JText::_('SEE_MORE'); ?></div>
+                                        <div class="em-overlay"></div>
+                                    </a>
+                                    <div class="em-partage">
+                                        <?php if($current_user->id != 0){ ?>
+                                            <a id="favoris<?=$i?>" data-fnum="<?=$fnum?>" onclick="favoris(<?=$i?>,<?=$current_user->id?>)"><i class="fas fa-star"></i></a>
+                                        <?php } ?>
+                                        <a id="share<?=$i;?>" data-fnum="<?= $fnum; ?>" data-url="<?= JRoute::_($url);?>" onclick="share(<?=$i;?>)"><i class="fas fa-share-square"></i></a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-          <?php }
+                <?php }
             }
         } ?>
 
-    <div class="em-sectionfooter">
-        <div class="em-divcontainerfooter">
-            <div class="em-rowfooter"><a href="protections-des-donnees.html" class="em-protections-des-donnees">Protection des données</a><a href="mentions-legales.html" class="em-mentionslegales-2">Mentions légales</a>
-                <div class="div-block-2">
-                    <div class="em-wrappermenufooter"><a href="index.html" class="em-menufooter-2 w--current">Le challenge</a><a href="reglement.html" class="em-menufooter-2">règlement</a><a href="a-propos.html" class="em-menufooter-2">à propos</a></div>
+        <div class="em-sectionfooter">
+            <div class="em-divcontainerfooter">
+                <div class="em-rowfooter"><a href="protections-des-donnees.html" class="em-protections-des-donnees">Protection des données</a><a href="mentions-legales.html" class="em-mentionslegales-2">Mentions légales</a>
+                    <div class="div-block-2">
+                        <div class="em-wrappermenufooter"><a href="index.html" class="em-menufooter-2 w--current">Le challenge</a><a href="reglement.html" class="em-menufooter-2">règlement</a><a href="a-propos.html" class="em-menufooter-2">à propos</a></div>
+                    </div>
+                    <div><img src="images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg" alt="VYV groupe logo" srcset="images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF-p-500.jpeg 500w, images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF-p-800.jpeg 800w, images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg 1000w" sizes="(max-width: 479px) 94vw, (max-width: 767px) 81vw, (max-width: 991px) 58vw, 63vw" class="em-logofooter"></div>
                 </div>
-                <div><img src="images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg" alt="VYV groupe logo" srcset="images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF-p-500.jpeg 500w, images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF-p-800.jpeg 800w, images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg 1000w" sizes="(max-width: 479px) 94vw, (max-width: 767px) 81vw, (max-width: 991px) 58vw, 63vw" class="em-logofooter"></div>
             </div>
         </div>
-    </div>
 
-    <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.4.1.min.220afd743d.js" type="text/javascript" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="/templates/emundus_vanilla/js/vyv-project.js" type="text/javascript"></script>
-    <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
-	<?php print_r($this->hiddenFields);?>
-</div>
+        <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.4.1.min.220afd743d.js" type="text/javascript" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script src="/templates/emundus_vanilla/js/vyv-project.js" type="text/javascript"></script>
+        <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
+        <?php print_r($this->hiddenFields);?>
+    </div>
 </form>
 <?php
 echo $this->table->outro;
 if ($pageClass !== '') :
-	echo '</div>';
+    echo '</div>';
 endif;
 ?>
 <script>
@@ -268,6 +301,29 @@ endif;
                 '<a href="https://www.linkedin.com/shareArticle?mini=true&url=index.php?option=com_fabrik%26view=details%26formid=' + form_id + '%26Itemid='+menu_id+'%26usekey=fnum%26rowid=' + fnum_projet + '&title=&summary=&source="><i class="fab fa-linkedin"></i></a>' +
                 '</div>' +
                 '<input type="text" value="'+url+'">'
+        });
+    }
+    function favoris(index,user) {
+        var favoris = document.getElementById('favoris' + index);
+        var star = document.querySelector('#favoris' + index + ' i');
+        var fnum_favoris = favoris.getAttribute('data-fnum');
+        jQuery.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'index.php?option=com_emundus&controller=award&task=favoris',
+            data: ({
+                fnum: fnum_favoris,
+                user: user
+            }),
+            success: function (result) {
+
+                if (result.status == 'add') {
+                    star.addClass('starActive');
+                }
+                if (result.status == 'delete') {
+                    star.removeClass('starActive');
+                }
+            }
         });
     }
 </script>

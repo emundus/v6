@@ -77,26 +77,33 @@ class EmundusControllerAward extends JControllerLegacy
         echo json_encode($results);
         exit;
     }
-    /*public function deletevote(){
+    public function favoris(){
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->post->getString('fnum', null);
+        $user = $jinput->post->getString('user', null);
 
         $m_model = new EmundusModelAward();
 
         try{
-            $res = $m_model->updateMinusNbVote($fnum);
+            $favoris = $m_model->getFavoris($fnum,$user);
+            if(empty($favoris)){
+                $m_model->addToFavoris($fnum,$user);
+                $res='add';
+            }
+            else{
+                $m_model->deleteToFavoris($fnum,$user);
+                $res='delete';
+            }
+
         }
         catch(Exception $e){
             $res = false;
             echo "Captured Throwable: " . $e->getMessage() . PHP_EOL;
         }
-
-        $nb_vote_update = $m_model->getNbVote($fnum);
-
-
-        $results = array('status'=>$res,'nb_vote'=>$nb_vote_update);
+        $results = array('status'=>$res);
 
         echo json_encode($results);
         exit;
-    }*/
+
+    }
 }
