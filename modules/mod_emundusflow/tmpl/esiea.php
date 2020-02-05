@@ -8,7 +8,7 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-$deadline = new JDate($user->end_date);
+$deadline = !empty($admission) ? new JDate($user->fnums[$user->fnum]->admission_end_date) : new JDate($user->end_date);
 
 $renew='';
 $step_form = $forms<100?'':'completed';
