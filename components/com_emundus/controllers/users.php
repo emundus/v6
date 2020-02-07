@@ -581,7 +581,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 		    $users = (array) json_decode(stripslashes($users));
 		}
 
-		$users = $m_users->getNonApplicantId($users);
+		$users = array_filter($users, function ($user) {
+		    return $user !== 'em-check-all';
+		});
+
+        $users = $m_users->getNonApplicantId($users);
 		$res = $m_users->affectToGroups($users, explode(',', $groups));
 
 		if ($res === true) {
