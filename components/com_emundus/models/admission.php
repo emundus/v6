@@ -431,6 +431,18 @@ class EmundusModelAdmission extends JModelList
 			}
 
 		}
+        else {
+
+            $groups = $this->getGroupsApplicantAdmissionByProgramme($programme_code);
+            if (!empty($groups)) {
+                $admission_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
+                if (count($admission_elt_list)>0) {
+                    foreach ($admission_elt_list as $eel) {
+                        $elements_id[] = $eel->element_id;
+                    }
+                }
+            }
+        }
         return @$elements_id;
     }
 

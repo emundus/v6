@@ -676,8 +676,13 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $fnum       = $jinput->getString('fnum', null);
         $student_id = $jinput->getString('student_id', null);
 
-        if (!EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum))
-            die(JText::_('RESTRICTED_ACCESS'));
+        if (!EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
+            if (EmundusHelperAccess::asApplicantAccessLevel($this->_user->id)) {
+                $student_id = $this->_user->id;
+            } else {
+                die(JText::_('RESTRICTED_ACCESS'));
+            }
+        }
 
         $m_profile  = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
