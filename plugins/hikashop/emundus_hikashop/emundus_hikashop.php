@@ -16,8 +16,14 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-class PlgHikashopEmundus_hikashop extends JPlugin
-{
+class PlgHikashopEmundus_hikashop extends JPlugin {
+
+    function __construct(&$subject, $config) {
+        parent::__construct($subject, $config);
+        jimport('joomla.log.log');
+        JLog::addLogger(array('text_file' => 'com_emundus.emundus_hikashop_plugin.php'), JLog::ALL, array('com_emundus'));
+    }
+
     public function onAfterOrderCreate(&$order){
 
         // We get the emundus payment type from the config
@@ -36,6 +42,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin
             $cid = $session->campaign_id;
         }
         else {
+            JLog::add('Could not get session on order ID. -> '. $order, JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -52,13 +59,6 @@ class PlgHikashopEmundus_hikashop extends JPlugin
         $query = $db->getQuery(true);
 
         switch ($em_application_payment) {
-            case 'user':
-                $query
-                    ->clear()
-                    ->select('*')
-                    ->from($db->quoteName('#__emundus_hikashop'))
-                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('user_id') . ' = ' . $user);
-            break;
 
             case 'campaign':
                 $query
@@ -75,6 +75,15 @@ class PlgHikashopEmundus_hikashop extends JPlugin
                     ->from($db->quoteName('#__emundus_hikashop'))
                     ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
             break;
+
+            case 'user':
+            default :
+                $query
+                    ->clear()
+                    ->select('*')
+                    ->from($db->quoteName('#__emundus_hikashop'))
+                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('user_id') . ' = ' . $user);
+                break;
 
         }
         try {
@@ -95,15 +104,8 @@ class PlgHikashopEmundus_hikashop extends JPlugin
 
                 $db->setQuery($query);
 
-
-                if ($db->execute()) {
-                    return true;
-                }
-
-                return false;
             }
             else {
-
                 $fields = array(
                     $db->quoteName('order_id') . ' = ' . $db->quote($order_id)
                 );
@@ -119,18 +121,18 @@ class PlgHikashopEmundus_hikashop extends JPlugin
                     ->set($fields)
                     ->where($update_conditions);
 
-
                 $db->setQuery($query);
-
-
-                if ($db->execute()) {
-                    return true;
-                }
-
-                return false;
             }
-            return false;
+
+            $res = $db->execute();
+
+            if ($res) {
+                JLog::add('Order '. $order_id .' update -> '. $query->__toString(), JLog::INFO, 'com_emundus');
+            }
+            return $res;
+
         } catch (Exception $exception) {
+            JLog::add('Error SQL -> '. $query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
