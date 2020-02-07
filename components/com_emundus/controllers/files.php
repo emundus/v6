@@ -553,6 +553,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
 
         $validFnums = array();
+
+        if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all") {
+            $fnums = $m_files->getAllFnums();
+        }
+
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum) && $fnum != 'em-check-all') {
                 $validFnums[] = $fnum;
