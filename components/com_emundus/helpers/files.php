@@ -2300,69 +2300,71 @@ class EmundusHelperFiles
         }
 
         // Get information from the applicant form filled out by the coordinator
-        $element_id     = $m_admission->getAllAdmissionElements(1, $fnumInfo['training']);
-        $elements       = $h_files->getElementsName(implode(',',$element_id));
-        $admissions     = $m_files->getFnumArray($fnums, $elements);
+        if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnumInfo['fnum'])) {
+            $element_id     = $m_admission->getAllAdmissionElements(1, $fnumInfo['training']);
+            $elements       = $h_files->getElementsName(implode(',',$element_id));
+            $admissions     = $m_files->getFnumArray($fnums, $elements);
 
-        $data = array();
+            $data = array();
 
-        foreach ($admissions as $adm) {
-            $str = '<br><hr>';
-            $str .= '<h1>Institutional Admission</h1>';
-            foreach ($elements as $element) {
+            foreach ($admissions as $adm) {
+                $str = '<br><hr>';
+                $str .= '<h1>Institutional Admission</h1>';
+                foreach ($elements as $element) {
 
-                if ($element->element_name == 'time_date') {
-                    $str .= '<em>'.JHtml::_('date', $adm[$element->tab_name.'___'.$element->element_name], JText::_('DATE_FORMAT_LC')).'</em>';
-                }
-
-                if ($element->element_name == 'user') {
-                    $str .= '<h2>'.JFactory::getUser($adm[$element->tab_name.'___'.$element->element_name])->name.'</h2>';
-                }
-            }
-
-            $str .= '<br><hr>';
-            $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
-
-            foreach ($elements as $element) {
-                $k = $element->tab_name.'___'.$element->element_name;
-
-                if ($element->element_name != 'id' &&
-                    $element->element_name != 'time_date' &&
-                    $element->element_name != 'date_time' &&
-                    $element->element_name != 'campaign_id' &&
-                    $element->element_name != 'student_id'&&
-                    $element->element_name != 'user' &&
-                    $element->element_name != 'fnum' &&
-                    $element->element_name != 'email' &&
-                    $element->element_name != 'label' &&
-                    $element->element_name != 'code' &&
-                    array_key_exists($k, $adm))
-                {
-                    $str .= '<tr>';
-                    if (strpos($element->element_plugin, 'textarea') !== false) {
-	                    $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.JText::_($adm[$k]).'</td>';
-                    } else {
-	                    $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.JText::_($adm[$k]).'</td>';
+                    if ($element->element_name == 'time_date') {
+                        $str .= '<em>'.JHtml::_('date', $adm[$element->tab_name.'___'.$element->element_name], JText::_('DATE_FORMAT_LC')).'</em>';
                     }
-                    $str .= '</tr>';
+
+                    if ($element->element_name == 'user') {
+                        $str .= '<h2>'.JFactory::getUser($adm[$element->tab_name.'___'.$element->element_name])->name.'</h2>';
+                    }
                 }
+
+                $str .= '<br><hr>';
+                $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+
+                foreach ($elements as $element) {
+                    $k = $element->tab_name.'___'.$element->element_name;
+
+                    if ($element->element_name != 'id' &&
+                        $element->element_name != 'time_date' &&
+                        $element->element_name != 'date_time' &&
+                        $element->element_name != 'campaign_id' &&
+                        $element->element_name != 'student_id'&&
+                        $element->element_name != 'user' &&
+                        $element->element_name != 'fnum' &&
+                        $element->element_name != 'email' &&
+                        $element->element_name != 'label' &&
+                        $element->element_name != 'code' &&
+                        array_key_exists($k, $adm))
+                    {
+                        $str .= '<tr>';
+                        if (strpos($element->element_plugin, 'textarea') !== false) {
+                            $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.JText::_($adm[$k]).'</td>';
+                        } else {
+                            $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.JText::_($adm[$k]).'</td>';
+                        }
+                        $str .= '</tr>';
+                    }
+                }
+
+                $str .= '</table>';
+                $str .= '<p></p><hr>';
+
+                if ($format != 'html') {
+                    $str = str_replace('<br>', chr(10), $str);
+                    $str = str_replace('<br />', chr(10), $str);
+                    $str = str_replace('<h1>', '* ', $str);
+                    $str = str_replace('</h1>', ' : ', $str);
+                    $str = str_replace('<b>', chr(10), $str);
+                    $str = str_replace('</b>', ' : ', $str);
+                    $str = str_replace('&nbsp;', ' ', $str);
+                    $str = strip_tags($str, '<h1>');
+                }
+
+                $data[$adm['fnum']][0] = $str;
             }
-
-            $str .= '</table>';
-            $str .= '<p></p><hr>';
-
-            if ($format != 'html') {
-                $str = str_replace('<br>', chr(10), $str);
-                $str = str_replace('<br />', chr(10), $str);
-                $str = str_replace('<h1>', '* ', $str);
-                $str = str_replace('</h1>', ' : ', $str);
-                $str = str_replace('<b>', chr(10), $str);
-                $str = str_replace('</b>', ' : ', $str);
-                $str = str_replace('&nbsp;', ' ', $str);
-                $str = strip_tags($str, '<h1>');
-            }
-
-            $data[$adm['fnum']][0] = $str;
         }
 
         // Get information from application form filled out by the student
@@ -2397,9 +2399,9 @@ class EmundusHelperFiles
                 {
                     $str .= '<tr>';
                     if (strpos($element->element_plugin, 'textarea') !== false) {
-	                    $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.JText::_($adm[$k]).'</td>';
+	                    $str .= '<td colspan="2"><b>'.JText::_($element->element_label).'</b> <br>'.JText::_($adm[$k]).'</td>';
                     } else {
-	                    $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.JText::_($adm[$k]).'</td>';
+	                    $str .= '<td width="70%"><b>'.JText::_($element->element_label).'</b> </td><td width="30%">'.JText::_($adm[$k]).'</td>';
                     }
                     $str .= '</tr>';
                 }
