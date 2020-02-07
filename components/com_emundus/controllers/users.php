@@ -572,13 +572,14 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$m_users = new EmundusModelUsers();
 
 		if ($users === 'all') {
-			$us = $m_users->getAllUsers(0,0);
+			$us = $m_users->getUsers(0,0);
 			$users = array();
 			foreach ($us as $u) {
 				$users[] = $u->id;
 			}
+		} else {
+		    $users = (array) json_decode(stripslashes($users));
 		}
-		else $users = (array) json_decode(stripslashes($users));
 
 		$users = $m_users->getNonApplicantId($users);
 		$res = $m_users->affectToGroups($users, explode(',', $groups));

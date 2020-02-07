@@ -816,9 +816,9 @@ class EmundusModelFiles extends JModelLegacy
             $sql_fnum = $and.' jos_emundus_campaign_candidature.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
         }
 
-        if (!empty($sql_code) || !empty($sql_fnum)) {
+        if (!empty($sql_code) || !empty($sql_fnum) ) {
 	        $query['q'] .= ' AND (' . $sql_code . ' ' . $sql_fnum . ') ';
-        } else {
+        } else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0]))) {
         	$query['q'] .= ' AND 1=2 ';
         }
         return $query;
