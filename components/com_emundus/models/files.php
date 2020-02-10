@@ -2853,13 +2853,12 @@ if (JFactory::getUser()->id == 63)
 		if ($users) {
 
 			$query = $db->getQuery(true);
-			$query->select([$db->quoteName('jeua.fnum'), 'group_assoc('.$db->quoteName('ju.name').') AS name'])
+			$query->select([$db->quoteName('jeua.fnum'), 'group_concat('.$db->quoteName('ju.name').') AS name'])
 				->from($db->quoteName('#__emundus_users_assoc', 'jeua'))
 				->leftJoin($db->quoteName('#__users', 'ju').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeua.user_id'))
 				->leftJoin($db->quoteName('#__emundus_users', 'jeu').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeu.user_id'))
 				->leftJoin($db->quoteName('#__emundus_setup_profiles', 'jesp').' ON '.$db->quoteName('jeu.profile').' = '.$db->quoteName('jesp.id'))
 				->where($db->quoteName('jeua.action_id').' = 1 AND '.$db->quoteName('jeua.r').' = 1 AND '.$db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")');
-			$db = $this->getDbo();
 
 			try {
 				$db->setQuery($query);
