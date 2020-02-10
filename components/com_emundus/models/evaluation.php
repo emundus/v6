@@ -937,6 +937,16 @@ class EmundusModelEvaluation extends JModelList {
 						}
 						break;
 
+					case 'group_assoc':
+						if (!empty($value)) {
+							$query['join'] .= ' 
+	                            LEFT JOIN #__emundus_group_assoc as ga on ga.fnum = c.fnum 
+	                            LEFT JOIN #__emundus_setup_groups_repeat_course as grc on grc.course LIKE esc.training 
+	                            LEFT JOIN #__emundus_setup_groups as sg on grc.parent_id = sg.id ';
+							$query['q'] .= ' and (ga.group_id IN ('.implode(',', $value).') OR sg.id IN ('.implode(',', $value).')) ';
+ 						}
+						break;
+
 					case 'user':
 						if (!empty($value)) {
 
@@ -1272,6 +1282,9 @@ class EmundusModelEvaluation extends JModelList {
 		$current_user = JFactory::getUser();
 
 		$query = 'select c.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class ';
+
+		$group_by = 'GROUP BY c.fnum ';
+
 		// prevent double left join on query
 		$lastTab = array('#__emundus_setup_status', 'jos_emundus_setup_status',
 						 '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
@@ -1291,6 +1304,7 @@ class EmundusModelEvaluation extends JModelList {
 					$leftJoin .= 'left join '.$elt->tab_name.' ON '.$elt->tab_name.'.fnum = c.fnum ';
 				}
 				$lastTab[] = $elt->tab_name;
+				$group_by .= ', '.$elt->tab_name.'___'.$elt->element_name;
 			}
 		}
 		if (count($this->_elements_default) > 0) {
@@ -1298,6 +1312,7 @@ class EmundusModelEvaluation extends JModelList {
 		}
 
 		$query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
+		$group_by .= ', evaluation_id';
 
 		$query .= ' FROM #__emundus_campaign_candidature as c
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status
@@ -1332,10 +1347,12 @@ class EmundusModelEvaluation extends JModelList {
 
 
 		$query .= $q['q'];
+		$query .= $group_by;
 
 		$query .=  $this->_buildContentOrderBy();
+
 /*
-if (JFactory::getUser()->id == 655)
+if (JFactory::getUser()->id == 63)
     echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
 */
 		$dbo->setQuery($query);

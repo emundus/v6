@@ -672,6 +672,17 @@ class EmundusModelFiles extends JModelLegacy
                         }
                         break;
 
+	                case 'group_assoc':
+		                if (!empty($value)) {
+			                $query['join'] .= ' 
+	                            LEFT JOIN #__emundus_group_assoc as ga on ga.fnum = jos_emundus_campaign_candidature.fnum 
+	                            LEFT JOIN #__emundus_setup_groups_repeat_course as grc on grc.course LIKE esc.training 
+	                            LEFT JOIN #__emundus_setup_groups as sg on grc.parent_id = sg.id ';
+			                $query['q'] .= ' and (ga.group_id IN ('.implode(',', $value).') OR sg.id IN ('.implode(',', $value).')) ';
+
+		                }
+		                break;
+
                     case 'user':
                         if (!empty($value)) {
                             $query['q'] .= ' and (ge.user_id=' . $db->Quote($value) .
@@ -1089,9 +1100,10 @@ class EmundusModelFiles extends JModelLegacy
         return $q;
     }
 
-    /**
-     * @return mixed
-     */
+	/**
+	 * @return mixed
+	 * @throws Exception
+	 */
     public function getUsers()
     {
         $session = JFactory::getSession();
@@ -1101,16 +1113,17 @@ class EmundusModelFiles extends JModelLegacy
         return $this->getAllUsers($limitStart, $limit);
     }
 
-    /**
-     * @param $limitStart   int     request start
-     * @param $limi         int     request limit
-     * @return mixed
-     */
-    public function getAllUsers($limitStart=0, $limit=20)
-    {
+	/**
+	 * @param $limitStart   int     request start
+	 * @param $limit        int     request limit
+	 *
+	 * @return mixed
+	 * @throws Exception
+	 */
+    public function getAllUsers($limitStart = 0, $limit = 20) {
         $app = JFactory::getApplication();
         $current_menu = $app->getMenu()->getActive();
-        if( !empty($current_menu) ) {
+        if (!empty($current_menu)) {
             $menu_params = $current_menu->params;
             $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
         } else {
@@ -1119,7 +1132,6 @@ class EmundusModelFiles extends JModelLegacy
 
         $dbo = $this->getDbo();
         $query = 'select jos_emundus_campaign_candidature.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, jos_emundus_campaign_candidature.applicant_id, jos_emundus_campaign_candidature.campaign_id ';
-
 
         // prevent double left join on query
         $lastTab = [
@@ -1132,27 +1144,25 @@ class EmundusModelFiles extends JModelLegacy
             '#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
         ];
 
-        if (in_array('overall', $em_other_columns))
-            $lastTab[] = ['#__emundus_evaluations', 'jos_emundus_evaluations'];
+        if (in_array('overall', $em_other_columns)) {
+        	$lastTab[] = ['#__emundus_evaluations', 'jos_emundus_evaluations'];
+        }
 
-        if (count($this->_elements)>0) {
+        if (count($this->_elements) > 0) {
             $leftJoin = '';
             
-            foreach ($this->_elements as $elt)
-            {
-                if(!isset($lastTab))
-                {
+            foreach ($this->_elements as $elt) {
+                if (!isset($lastTab)) {
                     $lastTab = array();
                 }
-                if(!in_array($elt->tab_name, $lastTab))
-                {
+                if (!in_array($elt->tab_name, $lastTab)) {
                     $leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jos_emundus_campaign_candidature.fnum ';
                 }
                 $lastTab[] = $elt->tab_name;
             }
             
         }
-        if (count($this->_elements_default)>0) {
+        if (count($this->_elements_default) > 0) {
             $query .= ', '.implode(',', $this->_elements_default);
         }
 
@@ -1165,12 +1175,14 @@ class EmundusModelFiles extends JModelLegacy
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jos_emundus_campaign_candidature.fnum ';
 
-        if (in_array('overall', $em_other_columns))
-            $query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jos_emundus_campaign_candidature.fnum ';
+        if (in_array('overall', $em_other_columns)) {
+        	$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jos_emundus_campaign_candidature.fnum ';
+        }
         
         $q = $this->_buildWhere($lastTab);
-        if (!empty($leftJoin))
-            $query .= $leftJoin;
+        if (!empty($leftJoin)) {
+        	$query .= $leftJoin;
+        }
         $query .= $q['join'];
         $query .= " where u.block=0 ".$q['q'];
         
@@ -1178,26 +1190,24 @@ class EmundusModelFiles extends JModelLegacy
 
         $query .=  $this->_buildContentOrderBy();
         $dbo->setQuery($query);
-        try
-        {
+        try {
             $res = $dbo->loadAssocList();
             $this->_applicants = $res;
 
-            if($limit > 0)
-            {
+            if ($limit > 0) {
                 $query .= " limit $limitStart, $limit ";
             }
 
-            $dbo->setQuery($query);
-            $res = $dbo->loadAssocList();
 /*
 if (JFactory::getUser()->id == 63)
-    echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
+	echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
 */
-            return $res;
-        }
-        catch(Exception $e)
-        {
+
+
+            $dbo->setQuery($query);
+            return $dbo->loadAssocList();
+
+        } catch(Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
         }
@@ -1652,6 +1662,31 @@ if (JFactory::getUser()->id == 63)
             throw $e;
         }
     }
+
+	/** Gets the groups the user is a part of OR if the user has read access on groups, all groups.
+	 * @return mixed
+	 * @throws Exception
+	 */
+	public function getUserAssocGroups() {
+
+		$user = JFactory::getUser();
+
+		if (EmundusHelperAccess::asAccessAction(19, 'c', $user->id)) {
+			$query = 'select * from #__emundus_setup_groups where published=1';
+		} else {
+			$query = 'SELECT * from #__emundus_setup_groups AS sg 
+					WHERE sg.id IN (SELECT g.group_id FROM jos_emundus_groups AS g WHERE g.user_id = '.$user->id.') AND sg.published = 1';
+		}
+
+		$db = $this->getDbo();
+
+		try {
+			$db->setQuery($query);
+			return $db->loadAssocList();
+		} catch(Exception $e) {
+			throw $e;
+		}
+	}
 
     /**
      * @return mixed
@@ -2758,6 +2793,95 @@ if (JFactory::getUser()->id == 63)
             return false;
         }
     }
+
+	/**
+	 * Gets the associated groups, users, or both, for an array of fnums. Used for XLS exports.
+	 *
+	 * @param         $fnums
+	 * @param   bool  $groups Should we get associated groups ?
+	 * @param   bool  $users
+	 *
+	 * @return array|bool
+	 */
+	public function getAssocByFnums($fnums, $groups = true, $users = true) {
+
+		$access = [];
+		$db = $this->getDbo();
+
+		if ($groups) {
+
+			$query = "SELECT jecc.fnum, group_concat(jesg.label) AS label
+					  FROM #__emundus_campaign_candidature as jecc
+	                  LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
+	                  LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
+	                  LEFT JOIN #__emundus_setup_groups_repeat_course as jesgrc on jesgrc.course = jesp.code
+	                  LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jesgrc.parent_id
+	                  LEFT JOIN #__emundus_acl as jea on jea.group_id = jesg.id
+	                  WHERE jea.action_id = 1 and jea.r = 1 and jecc.fnum in ('".implode("','", $fnums)."')
+	                  GROUP BY jecc.fnum";
+			try {
+				$db->setQuery($query);
+				$access = $db->loadAssocList('fnum', 'label');
+			} catch(Exception $e) {
+				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				return false;
+			}
+
+			$query = "SELECT jega.fnum, group_concat(jesg.label) AS label
+					  FROM #__emundus_group_assoc as jega
+                      LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jega.group_id
+                      WHERE jega.action_id = 1 and jega.r = 1  and jega.fnum in ('".implode("','", $fnums)."')";
+
+			try {
+				$db->setQuery($query);
+				$res = $db->loadAssocList('fnum', 'label');
+			} catch(Exception $e) {
+				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				return false;
+			}
+
+			foreach ($res as $k => $r) {
+				if (isset($access[$k])) {
+					$access[$k] .= ','.$r;
+				} else {
+					$access[$k] = $r;
+				}
+			}
+		}
+
+
+		if ($users) {
+
+			$query = $db->getQuery(true);
+			$query->select([$db->quoteName('jeua.fnum'), 'group_concat('.$db->quoteName('ju.name').') AS name'])
+				->from($db->quoteName('#__emundus_users_assoc', 'jeua'))
+				->leftJoin($db->quoteName('#__users', 'ju').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeua.user_id'))
+				->leftJoin($db->quoteName('#__emundus_users', 'jeu').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeu.user_id'))
+				->leftJoin($db->quoteName('#__emundus_setup_profiles', 'jesp').' ON '.$db->quoteName('jeu.profile').' = '.$db->quoteName('jesp.id'))
+				->where($db->quoteName('jeua.action_id').' = 1 AND '.$db->quoteName('jeua.r').' = 1 AND '.$db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")');
+
+			try {
+				$db->setQuery($query);
+				$res = $db->loadAssocList('fnum', 'name');
+			} catch(Exception $e) {
+				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				return false;
+			}
+
+
+			foreach ($res as $k => $r) {
+				if (isset($access[$k])) {
+					$access[$k] .= ','.$r;
+				} else {
+					$access[$k] = $r;
+				}
+			}
+		}
+
+		return $access;
+	}
+
+
 
     /**
      * @param $fnums

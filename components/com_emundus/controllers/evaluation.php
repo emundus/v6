@@ -1137,17 +1137,6 @@ class EmundusControllerEvaluation extends JControllerLegacy
         return(array) json_decode(stripcslashes($elts));
     }
 
-    public function getcolumnSup($objs) {
-
-        /* $menu = @JFactory::getApplication()->getMenu();
-         $current_menu  = $menu->getActive();
-         $menu_params = $menu->getParams($current_menu->id);
-         $columnSupl = explode(',', $menu_params->get('em_actions'));*/
-        $objs = (array) json_decode(stripcslashes($objs));
-        //$columnSupl = array_merge($columnSupl, $objs);
-        return $objs;
-    }
-
     public function generate_array() {
         $current_user = JFactory::getUser();
 
@@ -1172,7 +1161,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         $col = $this->getcolumn($elts);
 
-        $colsup  = $this->getcolumnSup($objs);
+        $colsup  = $this->getcolumn($objs);
         $colOpt = array();
         if (!$csv = fopen(JPATH_BASE.DS.'tmp'.DS.$file, 'a')){
             $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$file);
