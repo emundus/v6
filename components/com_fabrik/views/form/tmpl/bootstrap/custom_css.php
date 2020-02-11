@@ -261,10 +261,6 @@ form legend a, form legend a:hover, form legend a:focus {
     display: flex !important;
 }
 
-.fb_el_jos_emundus_personal_detail___last_name {
-    margin-top: 20px !important;
-}
-
 .groupintro h2 {
     font-weight: 300;
     font-size: 2em;
@@ -699,9 +695,6 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
     padding: 10px 0;
 }
 
-.fb_el_jos_emundus_personal_detail___gender, .fb_el_jos_emundus_projet___project_label {
-    margin-top: 20px;
-}
 
 #form_323 .fabrikGroupRepeater {
     margin-bottom: 10px !important;
@@ -942,6 +935,10 @@ footer#g-footer {
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
     position: absolute;
     right: 10px;
+}
+
+.radio input[type="radio"], .checkbox input[type="checkbox"] {
+    margin-left: 0px !important;
 }
 
 /* END - Your CSS styling ends here */
