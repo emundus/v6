@@ -402,7 +402,7 @@ form#member-profile .form-horizontal .control-label {
 
 /* ---- VALIDATION STARS ----- */
 /* --- hiding icon atm because i'm not sure what they want yet... --- */
-.applicant-form .icon-star.small {
+/*.applicant-form .icon-star.small {
     display: none;
 }
 
@@ -416,6 +416,22 @@ form#member-profile .form-horizontal .control-label {
 
 .fabrikLabel[opts*="Validation"] > .icon-star{
     display: none !important;
+}*/
+.fabrikForm .fabrikLabel[opts*="Validation"] {
+    flex-direction: row-reverse;
+    align-items: center !important;
+    justify-content: flex-end;
+}
+.icon-star.small {
+    margin-top: -10px;
+    padding-top: 0px;
+    padding-left:5px;
+    position: relative;
+    color:red;
+    font-size:7px;
+}
+.icon-.small {
+    display: none;
 }
 
 /* -- BUDGET FORM --- */

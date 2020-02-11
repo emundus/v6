@@ -405,7 +405,7 @@ button#back:hover, button#back:active, button#back:focus,
     margin-right: 10px;
 
 }
-.fabrikLabel[opts*="Validation"]::after,
+/*.fabrikLabel[opts*="Validation"]::after,
 body.view-login label#password-lbl::after,
 body.view-login label#username-lbl::after,
 body.view-reset label#jform_email-lbl::after,
@@ -420,7 +420,7 @@ body.view-reset label#jform_username-lbl::after,
 
 .fabrikLabel[opts*="Validation"] > .icon-star{
     display: none !important;
-}
+}*/
 @media screen and (max-width: 767px){
     .applicant-form .fabrikActions.form-actions .span4:not(.offset1){
         justify-content: flex-end;
