@@ -425,10 +425,10 @@ form#member-profile .form-horizontal .control-label {
 .icon-star.small {
     margin-top: -10px;
     padding-top: 0px;
-    padding-left:5px;
     position: relative;
-    color:red;
-    font-size:7px;
+    padding-left: 2px;
+    color: #c30505;
+    font-size: 5px;
 }
 .icon-.small {
     display: none;
