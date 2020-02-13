@@ -327,6 +327,7 @@ function tableOrder(order) {
 // Open Application file
 function openFiles(fnum) {
 
+    jQuery("html, body").animate({scrollTop : 0}, 300);
     // Run the reload actions function without waiting for return.
     setTimeout(function(){reloadActions(undefined, fnum.fnum, false, true);},0);
 
