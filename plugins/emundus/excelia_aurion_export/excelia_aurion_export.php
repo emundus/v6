@@ -375,7 +375,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                    
                     <cours ForceDest='cours§99785' objet_id='" . $user->speciality . "' ForceImport='true' />
                     
-                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 103509 : 103503) . "' ForceImport='true' />
+                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 40400743 : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
                     
@@ -398,7 +398,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     
                     <cours objet_id='" . $user->speciality . "' ForceImport='true'/>
                     
-                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 103509 : 103503) . "' ForceImport='true' />
+                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 40400743 : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
                     
@@ -422,7 +422,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     
                     <concours objet_id='" . $user->concours_session . "' ForceImport='true'/>
                     
-                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 103509 : 103503) . "' ForceImport='true' />
+                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 40400743 : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
                     
@@ -517,7 +517,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     
                     <cours ForceDest='cours§99785' objet_id='" . $user->speciality . "' ForceImport='true' />
                     
-                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 103509 : 103503) . "' ForceImport='true' />
+                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 40400743 : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
                     
@@ -539,7 +539,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     
                     <cours objet_id='" . $user->speciality . "' ForceImport='true'/>
                     
-                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 103509 : 103503) . "' ForceImport='true' />
+                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 40400743 : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
                     
@@ -561,7 +561,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     
                     <concours objet_id='" . $user->concours_session . "' ForceImport='true'/>
                     
-                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 103509 : 103503) . "' ForceImport='true' />
+                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 40400743 : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
                     
@@ -637,7 +637,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         $newstr = strtr( $str, $unwanted_array );
 
-        $newstr = preg_replace('/[^a-zA-Z0-9\']/', '', $newstr);
+        $newstr = preg_replace("/[^\w#& ]/", '', $newstr);
         $newstr = str_replace("'", '', $newstr);
         return $newstr;
     }
