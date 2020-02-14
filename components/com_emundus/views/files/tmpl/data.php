@@ -45,9 +45,6 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                         </div>
 
                                     </div>
-                                    <div id="tooltipSelect">
-                                        <p><?= JText::_('COM_EMUNDUS_SELECT'); ?></p>
-                                    </div>
                                     <div class="selectAll" id="selectAll">
                                         <label for="em-check-all">
                                             <input value="-1" id="em-check-all" type="checkbox" class="em-check" />
@@ -222,6 +219,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 	<?php endif;?>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
 <script type="text/javascript">
     function checkurl() {
 
@@ -276,34 +274,10 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
     window.parent.$("html, body").animate({scrollTop : 0}, 300);
 </script>
 
-<script>
 
-    $('#selectContainer').on("mouseenter", function() {
-
-        $('#tooltipSelect').css({
-            'height':'30px',
-            'width':'70px',
-            'display':'flex',
-            'opacity':'1',
-            'transiition':'display,500ms',
-            'background':'#33332E',
-            'border-radius':'10px'
-        });
-        $('#tooltipSelect p').css({
-            'color':'white',
-            'font-size':'0.6rem',
-        });
-
-    }).on("mouseleave", function() {
-        $('#tooltipSelect').css({
-            'display':'none',
-            'transiition':'display,500ms'
-        })
-    });
-</script>
 <script>
     $('.selectAll').css('display','none');
-    $('.selectContainer').click(function() {
+    $('.selectDropdown').click(function() {
 
         $('.selectContainer').removeClass('borderSelect');
         $('.selectAll').slideToggle(function() {
@@ -323,6 +297,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             }
         });
     });
+
 
     $('.selectAll>span').click(function() {
         $('.selectAll').slideUp();

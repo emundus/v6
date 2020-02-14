@@ -327,6 +327,7 @@ function tableOrder(order) {
 // Open Application file
 function openFiles(fnum) {
 
+    jQuery("html, body").animate({scrollTop : 0}, 300);
     // Run the reload actions function without waiting for return.
     setTimeout(function(){reloadActions(undefined, fnum.fnum, false, true);},0);
 
@@ -2558,7 +2559,10 @@ $(document).ready(function() {
                                 '<label for="em-ex-comment">'+Joomla.JText._('COM_EMUNDUS_COMMENT')+'</label> <br/>' +
                                 '<input class="em-ex-check" type="checkbox" value="tags" name="em-ex-tags" id="em-ex-tags" style="max-height:20px"/>' +
                                 '<label for="em-ex-tags">'+Joomla.JText._('JTAG')+'</label> <br/>' +
-
+                                '<input class="em-ex-check" type="checkbox" value="group-assoc" name="em-ex-group" id="em-ex-group" style="max-height: 20px;"/>' +
+                                '<label for="em-ex-group">'+Joomla.JText._('COM_EMUNDUS_ASSOCIATED_GROUPS')+'</label> <br/>' +
+                                '<input class="em-ex-check" type="checkbox" value="user-assoc" name="em-ex-user" id="em-ex-user" style="max-height: 20px;"/>' +
+                                '<label for="em-ex-user">'+Joomla.JText._('COM_EMUNDUS_ASSOCIATED_USERS')+'</label> <br/>' +
                                 '</div></div></div>');
 
                             $('#data').append( '<div id="methode">'+
@@ -2572,11 +2576,11 @@ $(document).ready(function() {
                                 '<div id="forms" class="panel panel-default">'+
                                 '<b style="margin-left:15px; color:#32373D; text-transform:uppercase;">'+Joomla.JText._('COM_EMUNDUS_CHOOSE_OTHER_OPTION')+'</b>'+
                                 '<div id="forms1">'+
-                                '<input class="em-ex-check0" type="checkbox" value="form-title" name="form-title" id="form-title" max-height: 20px;/>' +
+                                '<input class="em-ex-check0" type="checkbox" value="form-title" name="form-title" id="form-title" style="max-height: 20px;"/>' +
                                 '<label for="form-title">'+Joomla.JText._('COM_EMUNDUS_FORM_TITLE')+'</label> <br/>' +
-                                '<input class="em-ex-check0" type="checkbox" value="form-group" name="form-group" id="form-group" max-height: 20px;/>' +
+                                '<input class="em-ex-check0" type="checkbox" value="form-group" name="form-group" id="form-group" style="max-height: 20px;"/>' +
                                 '<label for="form-group">'+Joomla.JText._('COM_EMUNDUS_FORM_GROUP')+'</label> <br/>' +
-                                '<input class="em-ex-check0" type="checkbox" value="upper-case" name="upper-case" id="upper-case" max-height: 20px;/>' +
+                                '<input class="em-ex-check0" type="checkbox" value="upper-case" name="upper-case" id="upper-case" style="max-height: 20px;"/>' +
                                 '<label for="upper-case">'+Joomla.JText._('COM_EMUNDUS_TO_UPPER_CASE')+'</label> <br/>' +
                                 '</div>'+
                                 '</div>'+
@@ -3926,7 +3930,7 @@ $(document).ready(function() {
 
 
             // Access
-            case 11:
+            /*case 11:
                 var checkInput = getUserCheck();
                 $('#can-val').empty();
                 $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
@@ -3934,6 +3938,7 @@ $(document).ready(function() {
                 $('#can-val').show();
                 $('.modal-dialog').addClass('modal-lg');
                 $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
+
 
                 $.ajax({
                     type:'GET',
@@ -3949,8 +3954,46 @@ $(document).ready(function() {
                         console.log(jqXHR.responseText);
                     }
                 });
-                break;
+                break;*/
 
+            case 11:
+                //var checkInput = getUserCheck();
+                $('#can-val').empty();
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
+                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                $('#can-val').show();
+                $('.modal-dialog').addClass('modal-lg');
+                $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
+
+                if ($('#em-check-all-all').is(':checked')) {
+                    var fnums = 'all';
+                } else {
+                    var fnums = [];
+                    $('.em-check:checked').each(function() {
+                        fnum = $(this).attr('id').split('_')[0];
+                        cid = parseInt(fnum.substr(14, 7));
+                        sid = parseInt(fnum.substr(21, 7));
+                        fnums.push({fnum: fnum, cid: cid, sid:sid});
+                    });
+                }
+
+                $.ajax({
+                    type:'POST',
+                    url:'index.php?option=com_emundus&view=files&format=raw&layout=access',
+                    data: {
+                        fnums: JSON.stringify(fnums)
+                    },
+                    dataType:'html',
+                    success: function(result) {
+                        $('.modal-body').empty();
+                        $('.modal-body').append(result);
+                        $('.modal-chzn-select').chosen({width:'75%'});
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+                break;
 
             // Status
             case 13:
@@ -4922,6 +4965,7 @@ $(document).ready(function() {
                     '<img src="'+loadingLine+'" alt="loading"/>' +
                     '</div>');
                 url = 'index.php?option=com_emundus&controller=files&task=share';
+
                 $.ajax({
                     type:'POST',
                     url:url,

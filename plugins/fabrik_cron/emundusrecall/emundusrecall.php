@@ -54,7 +54,11 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 		$reminder_programme_code = $params->get('reminder_programme_code', '');
 		$reminder_days = $params->get('reminder_days', '30');
 		$reminder_deadline = $params->get('reminder_deadline', '30, 15, 7, 1, 0');
-		$status_for_send = $eMConfig->get('status_for_send', 0);
+
+		$status_for_send = $params->get('reminder_status', '');
+		if ($status_for_send === "") {
+            $status_for_send = $eMConfig->get('status_for_send', 0);
+        }
 
 		$this->log = '';
 

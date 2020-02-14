@@ -676,8 +676,13 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $fnum       = $jinput->getString('fnum', null);
         $student_id = $jinput->getString('student_id', null);
 
-        if (!EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum))
-            die(JText::_('RESTRICTED_ACCESS'));
+        if (!EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
+            if (EmundusHelperAccess::asApplicantAccessLevel($this->_user->id)) {
+                $student_id = $this->_user->id;
+            } else {
+                die(JText::_('RESTRICTED_ACCESS'));
+            }
+        }
 
         $m_profile  = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
@@ -793,17 +798,6 @@ class EmundusControllerAdmission extends JControllerLegacy {
         return(array) json_decode(stripcslashes($elts));
     }
 
-    public function getcolumnSup($objs) {
-
-        /* $menu = @JFactory::getApplication()->getMenu();
-         $current_menu  = $menu->getActive();
-         $menu_params = $menu->getParams($current_menu->id);
-         $columnSupl = explode(',', $menu_params->get('em_actions'));*/
-        $objs = (array) json_decode(stripcslashes($objs));
-        //$columnSupl = array_merge($columnSupl, $objs);
-        return $objs;
-    }
-
     public function generate_array() {
         $current_user = JFactory::getUser();
 
@@ -830,7 +824,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
         $col = $this->getcolumn($elts);
 
-        $colsup = $this->getcolumnSup($objs);
+        $colsup = $this->getcolumn($objs);
         $colOpt = array();
         if (!$csv = fopen(JPATH_BASE.DS.'tmp'.DS.$file, 'a')) {
             $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$file);

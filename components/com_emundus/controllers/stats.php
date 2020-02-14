@@ -217,6 +217,26 @@ class EmundusControllerStats extends JControllerLegacy {
 	    exit;
     }
 
+    public function getage() {
+        $nbArray = [];
+        $natArray = [];
+
+        $m_stats = new EmundusModelStats();
+        $ages = $m_stats->getAge();
+        
+        foreach ($ages as $age) {
+            $nbArray[] = $age['age'];
+            $natArray[] = $age['campaign'];
+        }
+        echo json_encode((object) [
+            'status' => true,
+            'campaign' => $natArray,
+            'age' => $nbArray
+            
+        ]);
+        exit;
+    }
+
     public function getfiles() {
 
         $m_stats = new EmundusModelStats();

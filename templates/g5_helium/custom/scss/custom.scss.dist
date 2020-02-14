@@ -2238,7 +2238,7 @@ div:not(.header-right) > .btn-danger {
 
 
 /**** VALIDATION STARS ****/
-.applicant-form, .em-formRegistrationCenter {
+.em-formRegistrationCenter {
     .icon-star.small {
         display: none;
     }
@@ -2255,7 +2255,7 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
 }
 
 /*** ALLOW * TO BE AT THE END OF TEXT ****/
-.applicant-form, .em-formRegistrationCenter {
+.em-formRegistrationCenter {
     form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
         display: inline !important;
     }

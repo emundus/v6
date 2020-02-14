@@ -193,6 +193,21 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
     </div>
 </div>
 
+<!-- Shows age info  -->
+<div class="row" id="ageRow" style="display:none;">
+
+    <div class="col-md-12">
+        <canvas id="age" ></canvas>
+    </div>
+
+    <div class="col-md-6" style="padding-left: 10%;">
+        <div id='summaryAge'></div>
+    </div>
+    <div class="col-md-12">
+        <hr style='width: 100%; border-top: 5px solid #fff;'>
+    </div>
+</div>
+
 <!-- Shows files info  -->
 <div class="row" id="filesRow" style="display:none;">
 
@@ -227,6 +242,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
     var relationChart;
     var genderChart;
     var nationChart;
+    var ageChart;
     var filesChart;
     var projectChart;
     // global options for graphs so it doesn't show decimals
@@ -714,6 +730,47 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             }
         });
     }
+    function afficheAge() {
+        jQuery.ajax({
+            type: "post",
+            url: "index.php?option=com_emundus&controller=stats&task=getage",
+            dataType: 'json',
+            success: function(result) {
+                if (result.status) {
+                    if (ageChart != undefined || ageChart != null)
+                        ageChart.destroy();
+                    var colorArray = setColorGradient(result.campaign.length);
+                    var elem = document.getElementById('age');
+                    elem.height = 400;
+                    ageChart = new Chart(elem, {
+                        type: 'bar',
+                        data: {
+                            labels: result.campaign,
+                            datasets: [{
+                                data: result.age,
+                                backgroundColor: colorArray
+                            }],
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            legend: {
+                                display: false,
+                            },
+                            title:{
+                                display: true,
+                                text: "<?php echo JText::_('MOD_EMUNDUS_GRAPHS_AGES'); ?>",
+                                fontSize: 20
+                            },
+                            scales: options
+                        }
+                    });
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
     function afficheFiles() {
         jQuery.ajax({
             type: "post",
@@ -851,6 +908,22 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
             document.getElementById("summaryGender").append(button);
             document.getElementById("summaryGender").append(document.createElement("br"));
             afficheGenre();
+        }
+        if (<?php echo $age; ?>) {
+            document.getElementById("ageRow").setAttribute("style", "display:block;");
+            var button = document.createElement("div");
+            button.className = "btn";
+            var icon = document.createElement("i");
+            icon.className = "search icon";
+            button.append(icon);
+            var OffreClick = document.createElement("a");
+            var text = document.createTextNode("<?php echo JText::_("MOD_EM_LIST_ID10"); ?>");
+            OffreClick.setAttribute('href', 'index.php?option=com_fabrik&task=list.view&listid=<?php echo $params->get('mod_em_list_id10');?>&Itemid=0' );
+            OffreClick.append(text);
+            button.append(OffreClick);
+            document.getElementById("summaryAge").append(button);
+            document.getElementById("summaryAge").append(document.createElement("br"));
+            afficheAge();
         }
         if (<?php echo $files; ?>) {
             document.getElementById("filesRow").setAttribute("style", "display:block;");

@@ -6,7 +6,7 @@ require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'stats.p
 JHtml::script('media/com_emundus/js/jquery.cookie.js');
 JHtml::script('media/jui/js/bootstrap.min.js');
 
-$document 	= JFactory::getDocument();
+$document   = JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_graphs/style/mod_emundus_graph.css" );
 
 $listUrl1 = $params->get('mod_em_list_id1');
@@ -25,7 +25,8 @@ $viewArray = [
     "jos_emundus_stats_nationality" => "Nationalité",
     "jos_emundus_stats_gender" => "Genre",
     "jos_emundus_stats_files_graph" => "Dossiers",
-    "jos_emundus_stats_relation_realise_accepte_par_profil" => " Nombre de demandes réalisée/acceptées par profil"
+    "jos_emundus_stats_relation_realise_accepte_par_profil" => " Nombre de demandes réalisée/acceptées par profil",
+    "jos_emundus_stats_files_age" => " Age moyen des candidats par campagne"
 ];
 
 $tableField ="";
@@ -40,6 +41,7 @@ $comptes = 'false';
 $con = 'false';
 $rels = 'false';
 $proj= 'false';
+$age= 'false';
 
 // Loop to check which views are in the Db
 foreach ($viewArray as $key => $value) {
@@ -96,6 +98,10 @@ foreach ($viewArray as $key => $value) {
             case 'jos_emundus_stats_gender':
                 $gender = 'true';
             break;
+            
+            case 'jos_emundus_stats_files_age':
+                $age = 'true';
+            break;
 
             case 'jos_emundus_stats_relation_realise_accepte_par_profil':
                 $proj= 'true';
@@ -105,6 +111,5 @@ foreach ($viewArray as $key => $value) {
 
     }
 }
-
 
 require(JModuleHelper::getLayoutPath('mod_emundus_graphs','default.php'));
