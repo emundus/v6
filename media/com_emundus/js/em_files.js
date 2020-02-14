@@ -4965,7 +4965,7 @@ $(document).ready(function() {
                     '<img src="'+loadingLine+'" alt="loading"/>' +
                     '</div>');
                 url = 'index.php?option=com_emundus&controller=files&task=share';
-                console.log(checkInput);
+
                 $.ajax({
                     type:'POST',
                     url:url,
