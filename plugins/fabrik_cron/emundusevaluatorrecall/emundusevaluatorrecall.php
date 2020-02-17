@@ -91,7 +91,7 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
                     foreach ($EmptyEvals as $applicant) {
                         // We check if the fnum is in the list of associated fnums 
                         // If it is, this means we have to notify the evaluator, meaning, adding it in the emailArray
-                        if(array_search($applicant->fnum, $val) !== false) {
+                        if (array_search($applicant->fnum, $val) !== false) {
 
                             /**
                              * the list is built as the following :
@@ -166,7 +166,7 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
                             // Send emails
                             $send = $mailer->Send();
                             if ($send !== true) {
-                                $this->log .= "\n Error sending email : " . $to;
+	                            JLog::add("Error sending email to: " . $to. '\n message: '.$body, JLog::ERROR, 'com_emundus');
                             } else {
                                 $message = array(
                                     'user_id_from' => $from_id,
@@ -175,7 +175,6 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
                                     'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
                                 );
                                 $m_emails->logEmail($message);
-                                $this->log .= '\n' . JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.' :: '.$body;
                             }
                             // to avoid been considered as a spam process or DDoS
                             sleep(0.1);
