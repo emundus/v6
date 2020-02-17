@@ -32,6 +32,14 @@
 				size="30"
 				default="14,7,1" />
 
+			<field name="reminder_status"
+				   type="text"
+				   cols="60"
+				   description="PLG_CRON_DEADLINE_STATUS_DESC"
+				   label="PLG_CRON_DEADLINE_STATUS"
+				   size="30"
+				   default="" />
+
 		</fieldset>
 
 	</fields>

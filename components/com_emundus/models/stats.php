@@ -610,6 +610,24 @@ class EmundusModelStats extends JModelLegacy {
 	    }
     }
 
+    public function getAge() {
+        $db = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+
+        $query
+            ->select($db->quoteName(array('age', 'campaign')))
+            ->from($db->quoteName('#__emundus_stats_files_age'));
+
+        $db->setQuery($query);
+        
+        try {
+        return $db->loadAssocList();
+        } catch(Exception $e) {
+                var_dump($e->getMessage());
+        JLog::add('Error getting stats on ages at m/stats in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+        }
+    }
+    
     public function getFiles() {
         $db = JFactory::getDbo();
         $query  = $db->getQuery(true);

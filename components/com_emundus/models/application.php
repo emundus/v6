@@ -1487,7 +1487,7 @@ class EmundusModelApplication extends JModelList {
 
                                     foreach ($r_element as $key => $r_elt) {
 
-                                        if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
+                                        if ($key != 'id' && $key != 'parent_id' && isset($elements[$j]) && $elements[$j]->plugin != 'display') {
 
 	                                        // Do not display elements with no value inside them.
 	                                        if ($show_empty_fields == 0 && trim($r_elt) == '') {
@@ -1497,7 +1497,6 @@ class EmundusModelApplication extends JModelList {
                                             $params = json_decode($elements[$j]->params);
 
                                             if ($elements[$j]->plugin == 'date') {
-                                                $params = json_decode($elements[$j]->params);
 	                                            $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
 	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
 	                                            $elt = $dt->format($params->date_form_format);
@@ -1634,7 +1633,7 @@ class EmundusModelApplication extends JModelList {
 
                                             if ($elements[$j]->plugin == 'date') {
                                                 $date_params = json_decode($elements[$j]->params);
-	                                            $dt = new DateTime($elements[$j]->content, new DateTimeZone('UTC'));
+	                                            $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
 	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
 	                                            $elt = $dt->format($date_params->date_form_format);
                                             }

@@ -810,26 +810,14 @@ input[type='radio'],input[type='checkbox'] {
 }
 
 .modal {
-  position: fixed;
-  top: 10%;
-  left: 50%;
-  z-index: 1050;
-  width: 560px;
-  margin-left: -280px;
-  background-color: #ffffff;
-  border: 1px solid #999;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  *border: 1px solid #999;
-  -webkit-border-radius: 6px;
-     -moz-border-radius: 6px;
-          border-radius: 6px;
-  outline: none;
-  -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-     -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-          box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-  -webkit-background-clip: padding-box;
-     -moz-background-clip: padding-box;
-          background-clip: padding-box;
+    position: relative !important;
+    background-color: #fff !important;
+    margin: 0 !important;
+    width: 100% !important;
+    left: 0 !important;
+    top: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .modal.fade {

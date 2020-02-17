@@ -261,10 +261,6 @@ form legend a, form legend a:hover, form legend a:focus {
     display: flex !important;
 }
 
-.fb_el_jos_emundus_personal_detail___last_name {
-    margin-top: 20px !important;
-}
-
 .groupintro h2 {
     font-weight: 300;
     font-size: 2em;
@@ -402,7 +398,7 @@ form#member-profile .form-horizontal .control-label {
 
 /* ---- VALIDATION STARS ----- */
 /* --- hiding icon atm because i'm not sure what they want yet... --- */
-.applicant-form .icon-star.small {
+/*.applicant-form .icon-star.small {
     display: none;
 }
 
@@ -416,6 +412,22 @@ form#member-profile .form-horizontal .control-label {
 
 .fabrikLabel[opts*="Validation"] > .icon-star{
     display: none !important;
+}*/
+.fabrikForm .fabrikLabel[opts*="Validation"] {
+    flex-direction: row-reverse;
+    align-items: center !important;
+    justify-content: flex-end;
+}
+.icon-star.small {
+    margin-top: -10px;
+    padding-top: 0px;
+    position: relative;
+    padding-left: 2px;
+    color: #c30505;
+    font-size: 5px;
+}
+.icon-.small {
+    display: none;
 }
 
 /* -- BUDGET FORM --- */
@@ -683,9 +695,6 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
     padding: 10px 0;
 }
 
-.fb_el_jos_emundus_personal_detail___gender, .fb_el_jos_emundus_projet___project_label {
-    margin-top: 20px;
-}
 
 #form_323 .fabrikGroupRepeater {
     margin-bottom: 10px !important;
@@ -926,6 +935,10 @@ footer#g-footer {
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
     position: absolute;
     right: 10px;
+}
+
+.radio input[type="radio"], .checkbox input[type="checkbox"] {
+    margin-left: 0px !important;
 }
 
 /* END - Your CSS styling ends here */

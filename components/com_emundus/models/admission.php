@@ -431,6 +431,18 @@ class EmundusModelAdmission extends JModelList
 			}
 
 		}
+        else {
+
+            $groups = $this->getGroupsApplicantAdmissionByProgramme($programme_code);
+            if (!empty($groups)) {
+                $admission_elt_list = $this->getAllElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
+                if (count($admission_elt_list)>0) {
+                    foreach ($admission_elt_list as $eel) {
+                        $elements_id[] = $eel->element_id;
+                    }
+                }
+            }
+        }
         return @$elements_id;
     }
 
@@ -1051,6 +1063,17 @@ class EmundusModelAdmission extends JModelList
 
                         }
                         break;
+
+					case 'group_assoc':
+						if (!empty($value)) {
+							$query['join'] .= ' 
+	                            LEFT JOIN #__emundus_group_assoc as ga on ga.fnum = c.fnum 
+	                            LEFT JOIN #__emundus_setup_groups_repeat_course as grc on grc.course LIKE esc.training 
+	                            LEFT JOIN #__emundus_setup_groups as sg on grc.parent_id = sg.id ';
+							$query['q'] .= ' and (ga.group_id IN ('.implode(',', $value).') OR sg.id IN ('.implode(',', $value).')) ';
+							$query['group_by'] = ' jos_emundus_evaluations.id ';
+						}
+						break;
 
                     case 'published':
                         if ($value == "-1") {
