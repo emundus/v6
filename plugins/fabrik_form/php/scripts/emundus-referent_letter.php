@@ -113,8 +113,8 @@ foreach ($recipients as $recipient) {
         if ($is_uploaded == 0) {
             $key = md5(date('Y-m-d h:m:i').'::'.$fnum.'::'.$student_id.'::'.$attachment_id.'::'.rand());
             // 2. MAJ de la table emundus_files_request
-            $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum, email) 
-                          VALUES (NOW(), '.$student->id.', "'.$key.'", "'.$attachment_id.'", '.$current_user->fnum.', '.$db->Quote($recipient['email']).')';
+            $query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, campaign_id, fnum, email) 
+                          VALUES ('.$db->Quote($now).', '.$student->id.', '.$db->Quote($key).', '.$attachment_id.', '.$fnum_detail['id'].', '.$db->Quote($current_user->fnum).', '.$db->Quote($recipient['email']).')';
             $db->setQuery($query);
             $db->execute();
             $request_id = $db->insertid();
@@ -155,7 +155,7 @@ foreach ($recipients as $recipient) {
                 $body = JText::_('SENT_TO'). ' '.$recipient['email'].'<br><a href="index.php?option=com_fabrik&view=details&formid=264&rowid='.$request_id.'&listid=273" target="_blank">'.JText::_('INVITATION_LINK').'</a><br>'.$body;
 
                 $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-                            VALUES ('62', '-1', ".$db->quote($subject).", ".$db->quote($body).", NOW())";
+                            VALUES ('62', '-1', ".$db->quote($subject).", ".$db->quote($body).", ".$db->quote($now).")";
                 $db->setQuery($sql);
                 try {
                     $db->execute();
