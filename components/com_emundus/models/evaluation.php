@@ -1327,7 +1327,7 @@ class EmundusModelEvaluation extends JModelList {
 					) eta ON c.fnum = eta.fnum ' ;
 		$q = $this->_buildWhere($lastTab);
 
-		if (EmundusHelperAccess::isCoordinator($current_user->id) || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1) || asAccessAction(5, 'r', $current_user->id)){
+		if (EmundusHelperAccess::isCoordinator($current_user->id) || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1) || EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id)){
 			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum ';
 		} else {
 			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
