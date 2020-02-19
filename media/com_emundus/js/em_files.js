@@ -1386,7 +1386,8 @@ $(document).ready(function() {
     });
 
     $(document).on('keyup', 'input:text', function(e) {
-        if (e.keyCode == 13 && this.id !== 'cc-bcc-mails-selectized') {
+
+        if ($(this).closest('.modal').length === 0 && e.keyCode == 13 ) {
             search();
         }
     });
