@@ -4982,6 +4982,8 @@ $(document).ready(function() {
                                 showConfirmButton: false,
                                 timer: 1500
                             });
+                            reloadData($('#view').val());
+
                         } else {
                             $('.modal-body').empty();
                             Swal.fire({
