@@ -100,7 +100,7 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 			$fnum = $jinput->get->get('jos_emundus_evaluations___fnum');
 			$rowid = $jinput->get->getInt('rowid');
 
-			if ((!empty($fnum[0]) || !empty($rowid)) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			if ((!empty($fnum[0]) || !empty($rowid)) && EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 
 				$db = JFactory::getDbo();
 				$query = $db->getQuery(true);
@@ -127,7 +127,7 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 							position: 'top',
 							type: 'info',
 							title: '".JText::_('COM_EMUNDUS_EVALUATION_ALREADY_CONFIRMED')."',
-							text: '".JText::_('COM_EMUNDUS_EVALUATION_ALREADY_CONFIRMED_DESC')."'
+							text: '".JText::_('COM_EMUNDUS_EVALUATION_ALREADY_CONFIRMED_DESC')."',
 							showConfirmButton: false,
 							allowOutsideClick: false,
 							allowEscapeKey: false,
