@@ -1793,7 +1793,7 @@ class EmundusModelApplication extends JModelList {
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
                                                 $query  = preg_replace('#{shortlang}#', $this->locales, $query);
 
-                                                $this->_db->setQuery( $query );
+                                                $this->_db->setQuery($query);
                                                 $elt = JText::_($this->_db->loadResult());
                                             }
                                         } elseif ($element->plugin == 'cascadingdropdown') {
@@ -1809,15 +1809,13 @@ class EmundusModelApplication extends JModelList {
                                             $query = preg_replace('#{my->id}#', $aid, $query);
                                             $query  = preg_replace('#{shortlang}#', $this->locales, $query);
 
-                                            $this->_db->setQuery( $query );
+                                            $this->_db->setQuery($query);
                                             $elt = JText::_($this->_db->loadResult());
 
                                         } elseif ($element->plugin == 'textarea') {
                                             $elt = JText::_($element->content);
-
-                                        } elseif (@$elements[$j]->plugin == 'checkbox') {
+                                        } elseif ($element->plugin == 'checkbox') {
                                             $elt = JText::_(implode(", ", json_decode (@$element->content)));
-
                                         } elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
                                             $index = array_search($element->content, $params->sub_options->sub_values);
                                             if (strlen($index) > 0) {
@@ -1825,7 +1823,7 @@ class EmundusModelApplication extends JModelList {
                                             } else {
                                                 $elt = "";
                                             }
-                                        } elseif ($elements[$j]->plugin == 'internalid') {
+                                        } elseif ($element->plugin == 'internalid') {
 		                                    $elt = '';
                                         } else {
                                             $elt = JText::_($element->content);

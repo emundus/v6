@@ -1386,7 +1386,8 @@ $(document).ready(function() {
     });
 
     $(document).on('keyup', 'input:text', function(e) {
-        if (e.keyCode == 13 && this.id !== 'cc-bcc-mails-selectized') {
+
+        if ($(this).closest('.modal').length === 0 && e.keyCode == 13 ) {
             search();
         }
     });
@@ -4892,11 +4893,13 @@ $(document).ready(function() {
                     return;
                 }
 
-                if ((groupeEval != undefined &&  groupeEval.length > 0 ))
+                if ((groupeEval != undefined &&  groupeEval.length > 0 )) {
                     groupeEval = JSON.stringify(groupeEval);
+                }
 
-                if (evaluators != undefined && evaluators.length > 0)
+                if (evaluators != undefined && evaluators.length > 0) {
                     evaluators = JSON.stringify(evaluators);
+                }
 
                 var actionsCheck = [];
                 var tableSize = parseInt($('.em-actions-table-line').parent('tbody').attr('size'));
@@ -4970,7 +4973,13 @@ $(document).ready(function() {
                     type:'POST',
                     url:url,
                     dataType:'json',
-                    data:({fnums: checkInput, actions:actionsCheck, groups:groupeEval, evals:evaluators}),
+                    data:({
+                        fnums: checkInput,
+                        actions: actionsCheck,
+                        groups: groupeEval,
+                        evals: evaluators,
+                        notify: $('#evaluator-email').is(':checked')
+                    }),
                     success: function(result) {
 
                         if (result.status) {
@@ -4982,6 +4991,8 @@ $(document).ready(function() {
                                 showConfirmButton: false,
                                 timer: 1500
                             });
+                            reloadData($('#view').val());
+
                         } else {
                             $('.modal-body').empty();
                             Swal.fire({

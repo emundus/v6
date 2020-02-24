@@ -546,6 +546,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $actions = $jinput->getString('actions', null);
         $groups = $jinput->getString('groups', null);
         $evals = $jinput->getString('evals', null);
+        $notify = $jinput->getBool('notify', false);
 
         $actions = (array) json_decode(stripslashes($actions));
         $fnums = (array) json_decode(stripslashes($fnums));
@@ -597,9 +598,69 @@ class EmundusControllerFiles extends JControllerLegacy
                 $msg = JText::_('SHARE_SUCCESS');
             } else {
                 $msg = JText::_('SHARE_ERROR');
-
             }
         }
+
+        if ($notify && $res !== false && !empty($evals)) {
+
+        	if (empty($fnums)) {
+        		$fnums = $validFnums;
+	        }
+
+			require_once (JPATH_COMPONENT.DS.'controllers'.DS.'messages.php');
+	        require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+	        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+
+	        $c_messages = new EmundusControllerMessages();
+			$m_users = new EmundusModelUsers();
+			$m_profile = new EmundusModelProfile();
+
+	        $evals = $m_users->getUsersByIds($evals);
+
+	        $menu = JFactory::getApplication()->getMenu();
+
+	        $fnums = $m_files->getFnumsInfos($fnums);
+
+			foreach ($evals as $eval) {
+
+				$menutype = $m_profile->getProfileByApplicant($eval->id)['menutype'];
+				$items = $menu->getItems('menutype', $menutype);
+
+				if (empty($items)) {
+					echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+					exit;
+				}
+
+				// We're getting the first link in the user's menu that's from com_emundus, which is PROBABLY a files/evaluation view, but this does not guarantee it.
+				$index = 0;
+				foreach ($items as $k => $item) {
+					if ($item->component === 'com_emundus') {
+						$index = $k;
+						break;
+					}
+				}
+
+				if (JFactory::getConfig()->get('sef') == 1) {
+					$userLink = $items[$index]->alias;
+				} else {
+					$userLink = $items[$index]->link.'&Itemid='.$items[0]->id;
+				}
+
+				$fnumList = '<ul>';
+				foreach ($fnums as $fnum) {
+					$fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
+				}
+				$fnumList .= '</ul>';
+
+				$post = [
+					'FNUMS' => $fnumList,
+					'NAME' => $eval->name,
+					'SITE_URL' => JURI::base()
+				];
+				$c_messages->sendEmailNoFnum($eval->email, 'share_with_evaluator', $post);
+			}
+        }
+
         echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
         exit;
     }

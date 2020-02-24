@@ -27,7 +27,7 @@ if (version_compare( phpversion(), '5.0.0', '<')) {
 
 // Update this to Joomla 3.7.3 once done
 if (version_compare( phpversion(), '5.3', '>=') && ($version->RELEASE <= 1.5 && $version->DEV_LEVEL <= 14)) {
-	JError::raiseNotice(500, 'You are using PHP ' .  phpversion() . ". but Joomla $sversion does not fully suport this!");
+	JError::raiseNotice(500, 'You are using PHP ' .  phpversion() . ". but Joomla $sversion does not fully support this!");
 }
 
 if (ini_get('magic_quotes_sybase') == 1){
@@ -42,9 +42,10 @@ if (in_array( 'suhosin', get_loaded_extensions()) ) {
 // Require the base controller
 require_once( JPATH_COMPONENT.DS.'controller.php' );
 
-$controllers = explode(',', 'panel,actions');
+$controllers = explode(',', 'panel,actions,fabrik');
 if (!JRequest::getWord('controller'))
 	JRequest::setVar( 'controller', $controllers[0] );
+
 foreach ($controllers as $controller) {
 	$link = JRoute::_("index.php?option=com_emundus&controller=".$controller);
 	$selected = ($controller == JRequest::getWord('controller'));
