@@ -2826,11 +2826,12 @@ if (JFactory::getUser()->id == 63)
 				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
 				return false;
 			}
-
+			
 			$query = "SELECT jega.fnum, group_concat(jesg.label) AS label
 					  FROM #__emundus_group_assoc as jega
                       LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jega.group_id
-                      WHERE jega.action_id = 1 and jega.r = 1  and jega.fnum in ('".implode("','", $fnums)."')";
+                      WHERE jega.action_id = 1 and jega.r = 1  and jega.fnum in ('".implode("','", $fnums)."')
+                      GROUP BY jega.fnum ";
 
 			try {
 				$db->setQuery($query);
@@ -2858,7 +2859,8 @@ if (JFactory::getUser()->id == 63)
 				->leftJoin($db->quoteName('#__users', 'ju').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeua.user_id'))
 				->leftJoin($db->quoteName('#__emundus_users', 'jeu').' ON '.$db->quoteName('ju.id').' = '.$db->quoteName('jeu.user_id'))
 				->leftJoin($db->quoteName('#__emundus_setup_profiles', 'jesp').' ON '.$db->quoteName('jeu.profile').' = '.$db->quoteName('jesp.id'))
-				->where($db->quoteName('jeua.action_id').' = 1 AND '.$db->quoteName('jeua.r').' = 1 AND '.$db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")');
+				->where($db->quoteName('jeua.action_id').' = 1 AND '.$db->quoteName('jeua.r').' = 1 AND '.$db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")')
+				->group($db->quoteName('jeua.fnum'));
 
 			try {
 				$db->setQuery($query);
