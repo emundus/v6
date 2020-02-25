@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @package   admintools
+  ~ @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~ @license   GNU General Public License version 3, or later
+  -->
+
 <extension version="2.5.0" type="plugin" group="system" method="upgrade">
 	<name>PLG_SYSTEM_ADMINTOOLS</name>
 	<author>Nicholas K. Dionysopoulos</author>
@@ -6,8 +12,8 @@
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
 	<copyright>Copyright (c)2010-2019 Nicholas K. Dionysopoulos</copyright>
 	<license>GNU General Public License version 3, or later</license>
-	<creationDate>2019-10-21</creationDate>
-	<version>5.4.0</version>
+	<creationDate>2020-01-03</creationDate>
+	<version>5.5.0</version>
 	<description>PLG_SYSTEM_ADMINTOOLS_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="admintools">admintools.php</filename>

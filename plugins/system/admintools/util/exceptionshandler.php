@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -758,13 +758,6 @@ HTML;
 		$country   = '';
 		$continent = '';
 
-		if (class_exists('AkeebaGeoipProvider'))
-		{
-			$geoip     = new AkeebaGeoipProvider();
-			$country   = $geoip->getCountryCode($ip);
-			$continent = $geoip->getContinent($ip);
-		}
-
 		if (empty($country))
 		{
 			$country = '(unknown country)';
@@ -981,7 +974,7 @@ HTML;
 	 */
 	private function logSecurityException($reason, $extraLogInformation, $extraLogTableInformation, $txtReason, $tokens)
 	{
-		$reasons_nolog = $this->cparams->getValue('reasons_nolog', 'geoblocking');
+		$reasons_nolog = $this->cparams->getValue('reasons_nolog', '');
 		$reasons_nolog = explode(',', $reasons_nolog);
 
 		if (!$this->cparams->getValue('logbreaches', 0) || in_array($reason, $reasons_nolog))
@@ -1149,7 +1142,7 @@ END;
 	private function emailSecurityException($reason, $tokens)
 	{
 		$emailbreaches   = $this->cparams->getValue('emailbreaches', '');
-		$reasons_noemail = $this->cparams->getValue('reasons_noemail', 'geoblocking');
+		$reasons_noemail = $this->cparams->getValue('reasons_noemail', '');
 		$reasons_noemail = explode(',', $reasons_noemail);
 
 		if (empty($emailbreaches) || in_array($reason, $reasons_noemail))

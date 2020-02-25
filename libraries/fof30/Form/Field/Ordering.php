@@ -185,7 +185,7 @@ class Ordering extends \JFormField implements FieldInterface
 
 		$ordering = $view->getLists()->order == $this->item->getFieldAlias('ordering');
 
-		if (!$view->hasAjaxOrderingSupport())
+		if ($view->hasAjaxOrderingSupport() === false)
 		{
 			// Ye olde Joomla! 2.5 method
 			$disabled = $ordering ? '' : 'disabled="disabled"';
@@ -207,7 +207,7 @@ class Ordering extends \JFormField implements FieldInterface
 
 				$hasAjaxOrderingSupport = $view->hasAjaxOrderingSupport();
 
-				if (!$hasAjaxOrderingSupport['saveOrder'])
+				if (!is_array($hasAjaxOrderingSupport) || !$hasAjaxOrderingSupport['saveOrder'])
 				{
 					$disabledLabel = JText::_('JORDERINGDISABLED');
 					$disableClassName = 'inactive tip-top';

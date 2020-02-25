@@ -94,14 +94,6 @@ class Input extends \JInput
 			$hash = 'REQUEST';
 		}
 
-		// Magic quotes GPC handling (something JInput simply can't handle at all)
-		// @codeCoverageIgnoreStart
-		if (($hash == 'REQUEST') && get_magic_quotes_gpc() && class_exists('\\JRequest', true))
-		{
-			$source = \JRequest::get('REQUEST', 2);
-		}
-		// @codeCoverageIgnoreEnd
-
 		parent::__construct($source, $options);
 	}
 

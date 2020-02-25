@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -296,12 +296,12 @@ class plgSystemAdmintools extends JPlugin
 			return;
 		}
 
-		$enableWorkarounds = $this->componentParams->getValue('ipworkarounds', -1);
+		$workaroundOption  = $this->componentParams->getValue('ipworkarounds', -1);
 
 		// Upgrade from older versions (default: enable IP workarounds)
-		if ($enableWorkarounds == -1)
+		if ($workaroundOption == -1)
 		{
-			$enableWorkarounds = 1;
+			$workaroundOption = 1;
 			$this->componentParams->setValue('ipworkarounds', 1, true);
 		}
 
@@ -310,8 +310,68 @@ class plgSystemAdmintools extends JPlugin
 			return;
 		}
 
-		Ip::setAllowIpOverrides($enableWorkarounds);
+		$enableWordarounds = (bool) $workaroundOption;
+
+		// Auto mode, let's detect what's the user IP and set the IP workarounds for him if required
+		if ($workaroundOption == 2)
+		{
+			$enableWordarounds = $this->detectWorkaroundIP();
+		}
+
+		Ip::setAllowIpOverrides($enableWordarounds);
 		Ip::workaroundIPIssues();
+	}
+
+	/**
+	 * Detects if the incoming address is an internal one or belongs to CloudFlare.
+	 *
+	 * @return bool Should we enable IP Workarounds, based on visitor's IP?
+	 */
+	protected function detectWorkaroundIP()
+	{
+		// Disable overrides and get the IP
+		Ip::setAllowIpOverrides(false);
+
+		$ip = Ip::getIp();
+
+		$checklist = [
+			// Private Network IPs
+			'10.0.0.0-10.255.255.255',
+			'172.16.0.0-172.31.255.255',
+			'192.168.0.0-192.168.255.255',
+			// CloudFlare IPs - IPv4
+			'173.245.48.0/20',
+			'103.21.244.0/22',
+			'103.22.200.0/22',
+			'103.31.4.0/22',
+			'141.101.64.0/18',
+			'108.162.192.0/18',
+			'190.93.240.0/20',
+			'188.114.96.0/20',
+			'197.234.240.0/22',
+			'198.41.128.0/17',
+			'162.158.0.0/15',
+			'104.16.0.0/12',
+			'172.64.0.0/13',
+			'131.0.72.0/22',
+			// CloudFlare IPs - IPv6
+			'2400:cb00::/32',
+			'2606:4700::/32',
+			'2803:f800::/32',
+			'2405:b500::/32',
+			'2405:8100::/32',
+			'2a06:98c0::/29',
+			'2c0f:f248::/32',
+		];
+
+		AtsystemUtilFilter::setIp($ip);
+
+		$shouldEnable = AtsystemUtilFilter::IPinList($checklist);
+
+		// Avoid polluting the class object
+		AtsystemUtilFilter::setIp(null);
+
+		return $shouldEnable;
 	}
 
 	/**
@@ -411,31 +471,6 @@ class plgSystemAdmintools extends JPlugin
 				}
 
 				$this->featuresPerHook[$method][] = $feature;
-			}
-		}
-	}
-
-	/**
-	 * Loads the GeoIP library if it's not already loaded and the plugin is enabled
-	 *
-	 * @return  void
-	 */
-	protected function loadGeoIpProvider()
-	{
-		// Load the GeoIP library if it's not already loaded
-		if (!class_exists('AkeebaGeoipProvider'))
-		{
-			if (!JPluginHelper::isEnabled('system', 'akgeoip'))
-			{
-				return;
-			}
-
-			if (@file_exists(JPATH_PLUGINS . '/system/akgeoip/lib/akgeoip.php'))
-			{
-				if (@include_once JPATH_PLUGINS . '/system/akgeoip/lib/vendor/autoload.php')
-				{
-					@include_once JPATH_PLUGINS . '/system/akgeoip/lib/akgeoip.php';
-				}
 			}
 		}
 	}
@@ -832,9 +867,6 @@ class plgSystemAdmintools extends JPlugin
 
 		// Work around IP issues with transparent proxies etc
 		$this->workaroundIP();
-
-		// Load the GeoIP library, if necessary
-		$this->loadGeoIpProvider();
 
 		// Preload the security exceptions handler object
 		$this->loadExceptionsHandler();
