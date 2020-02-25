@@ -20,6 +20,10 @@ $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
 $active = ($form->error != '') ? '' : ' fabrikHide';
 
+?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<?php
+
 if ($this->params->get('show_page_heading', 1)) : ?>
 	<div class="componentheading= $this->params->get('pageclass_sfx')?>">
 		<?= $this->escape($this->params->get('page_heading')); ?>

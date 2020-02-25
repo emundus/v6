@@ -64,8 +64,19 @@ if ($this->hasActions) : ?>
 
 <script>
     function confirmEvaluation() {
-        document.getElementById('jos_emundus_evaluations___confirm').value = 1;
-        document.getElementById('form_<?= $form->id; ?>').submit();
+        Swal.fire({
+            position: 'center',
+            type: 'warning',
+            title: '<?= JText::_('CONFIRM_ARE_YOU_SURE'); ?>',
+            text: '<?= JText::_('CONFIRM_EXPLANATION'); ?>',
+            width: 1000,
+            showCancelButton: true
+        }).then(confirm => {
+            if (confirm.value) {
+                document.getElementById('jos_emundus_evaluations___confirm').value = 1;
+                document.getElementById('form_<?= $form->id; ?>').submit();
+            }
+        });
     }
 </script>
 
