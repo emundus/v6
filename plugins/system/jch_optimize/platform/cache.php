@@ -4,10 +4,9 @@
  * JCH Optimize - Joomla! plugin to aggregate and minify external resources for
  * optmized downloads
  *
- * @author Samuel Marshall <sdmarshall73@gmail.com>
+ * @author    Samuel Marshall <sdmarshall73@gmail.com>
  * @copyright Copyright (c) 2014 Samuel Marshall
- * @license GNU/GPLv3, See LICENSE file
- *
+ * @license   GNU/GPLv3, See LICENSE file
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,43 +19,51 @@
  *
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
+
+namespace JchOptimize\Platform;
+
 defined('_JEXEC') or die('Restricted access');
 
-class JchPlatformCache implements JchInterfaceCache
+use JchOptimize\Interfaces\CacheInterface;
+use Joomla\Event\Dispatcher;
+
+class Cache implements CacheInterface
 {
 	/* Array of instances of cache objects */
 	protected static $aCacheObject = array();
-        /**
-         * 
-         * @param type $id
-         * @param type $lifetime
-         * @return type
-         */
-        public static function getCache($id, $checkexpire=false)
-        {
-                $oCache = self::getCacheObject();
-                $aCache = $oCache->get($id);
 
-		if($aCache === false)
+	/**
+	 *
+	 * @param   string  $id
+	 * @param   bool    $checkexpire
+	 *
+	 * @return bool
+	 */
+	public static function getCache($id, $checkexpire = false)
+	{
+		$oCache = self::getCacheObject();
+		$aCache = $oCache->get($id);
+
+		if ($aCache === false)
 		{
 			return false;
 		}
 
-                return $aCache['result'];
-        }
+		return $aCache['result'];
+	}
 
-        /**
-         * 
-         * @param type $id
-         * @param type $lifetime
-         * @param type $function
-         * @param type $args
-         * @return type
-         */
-        public static function getCallbackCache($id, $function, $args)
-        {
-                $oCache = self::getCacheObject('callback');
-                $oCache->get($function, $args, $id);
+	/**
+	 *
+	 * @param   string    $id
+	 * @param   callable  $function
+	 * @param   array     $args
+	 *
+	 * @return bool|array
+	 */
+	public static function getCallbackCache($id, $function, $args)
+	{
+		$oCache = self::getCacheObject('callback');
+		$oCache->get($function, $args, $id);
 
 		//Joomla! doesn't check if the cache is stored so we gotta check ourselves
 		$aCache = self::getCache($id);
@@ -65,42 +72,43 @@ class JchPlatformCache implements JchInterfaceCache
 		{
 			$oCache->clean('plg_jch_optimize');
 		}
-		
-		return $aCache;
-        }
 
-        /**
-         * 
-         * @param type $type
-         * @return type
-         */
-        public static function getCacheObject($argtype='output')
-        {
-		if(empty(self::$aCacheObject[$argtype]))
+		return $aCache;
+	}
+
+	/**
+	 *
+	 * @param   string  $argtype
+	 *
+	 * @return mixed
+	 */
+	public static function getCacheObject($argtype = 'output')
+	{
+		if (empty(self::$aCacheObject[$argtype]))
 		{
 			$cachebase = JPATH_SITE . '/cache';
-			$group = 'plg_jch_optimize';
-			$type = $argtype;
+			$group     = 'plg_jch_optimize';
+			$type      = $argtype;
 
-			if($argtype == 'static')
+			if ($argtype == 'static')
 			{
-				$cachebase = JchPlatformPaths::cachePath(false);
-				$type = 'output';
-				$group = '';
+				$cachebase = Paths::cachePath(false);
+				$type      = 'output';
+				$group     = '';
 			}
 
-			if($argtype == 'jchgc')
+			if ($argtype == 'jchgc')
 			{
 				$cachebase = JPATH_SITE . '/cache/plg_jch_optimize';
-				$type = 'output';
-				$group = '';
+				$type      = 'output';
+				$group     = '';
 			}
 
 			if (!file_exists($cachebase))
 			{
-				JchPlatformUtility::createFolder($cachebase);
+				Utility::createFolder($cachebase);
 			}
-			
+
 
 			$aOptions = array(
 				'defaultgroup' => $group,
@@ -108,54 +116,53 @@ class JchPlatformCache implements JchInterfaceCache
 				'application'  => 'site',
 				'language'     => 'en-GB',
 				'cachebase'    => $cachebase,
-				'storage'      => 'file'
+				'storage'      => 'file',
+				'lifetime'     => self::getLifetime(),
+				'caching'      => true
 			);
 
-			$oCache = JCache::getInstance($type, $aOptions);
-
-			$oCache->setCaching(true);
-			$oCache->setLifeTime(self::getLifetime());
+			$oCache = \JCache::getInstance($type, $aOptions);
 
 			self::$aCacheObject[$argtype] = $oCache;
 		}
 
-                return self::$aCacheObject[$argtype];
+		return self::$aCacheObject[$argtype];
 	}
-	
+
 	protected static function getLifetime()
 	{
 		static $lifetime;
 
-		if(!$lifetime)
+		if (!$lifetime)
 		{
-			$params = JchPlatformPlugin::getPluginParams();
+			$params = Plugin::getPluginParams();
 
 			$lifetime = $params->get('cache_lifetime', '15');
 		}
 
 		return (int) $lifetime;
 	}
-        
 
-        /**
-         * 
-         * @param type $lifetime
-         */
-        public static function gc()
-        {
-                $oCache = self::getCacheObject('jchgc');
-                $oCache->gc();
+
+	/**
+	 *
+	 */
+	public static function gc()
+	{
+		$oCache = self::getCacheObject('jchgc');
+		$oCache->gc();
 
 		$oStaticCache = self::getCacheObject('static');
 		$oStaticCache->gc();
 
 		//Only delete page cache
-		self::deleteCache(true);
-        }
+		self::deleteCache('page');
+	}
 
 	/**
 	 *
-	 *
+	 * @param   string  $content
+	 * @param   string  $id
 	 */
 	public static function saveCache($content, $id)
 	{
@@ -165,31 +172,33 @@ class JchPlatformCache implements JchInterfaceCache
 
 	/**
 	 *
+	 * @param   string  $context
 	 *
+	 * @return bool
 	 */
-	public static function deleteCache($page=false)
+	public static function deleteCache($context = 'both')
 	{
 		$return = false;
+		$oCache = Cache::getCacheObject();
 
-		//Don't delete if we're only deleting page cache
-		if(!$page)
+		if ($context != 'page')
 		{
-			$oJchCache = JchPlatformCache::getCacheObject();
-			$oStaticCache = JchPlatformCache::getCacheObject('static');
-			
-			$return |= $oJchCache->clean('plg_jch_optimize');
+			$oStaticCache = Cache::getCacheObject('static');
+
+			$return |= $oCache->clean('plg_jch_optimize');
 			$return |= $oStaticCache->clean();
 		}
 
-		$oJCache = JCache::getInstance();
+		if ($context != 'plugin')
+		{
+			$return |= $oCache->clean('page');
 
-		$return |= $oJCache->clean('page');
+			//Clean LiteSpeed cache
+			$dispatcher = new Dispatcher();
+			$dispatcher->triggerEvent('onLSCacheExpired');
 
-		//Clean LiteSpeed cache
-		$dispatcher = JEventDispatcher::getInstance();
-		$dispatcher->trigger('onLSCacheExpired');
-
-		header('X-LiteSpeed-Purge: *');
+			header('X-LiteSpeed-Purge: *');
+		}
 
 		return (bool) $return;
 	}

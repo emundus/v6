@@ -21,7 +21,12 @@
  * This plugin includes other copyrighted works. See individual 
  * files for details.
  */
+
 defined('_JEXEC') or die('Restricted access');
+
+use JchOptimize\Platform\Plugin;
+use JchOptimize\Core\Admin;
+use JchOptimize\Core\Helper;
 
 class Pkg_jch_optimizeInstallerScript
 {
@@ -41,7 +46,7 @@ class Pkg_jch_optimizeInstallerScript
                 }
                 
                 $compatible = TRUE;
-                $minimum_version = '3.6.5';
+                $minimum_version = '3.7.0';
 
                 if (version_compare(JVERSION, $minimum_version, '<'))
                 {
@@ -55,14 +60,14 @@ class Pkg_jch_optimizeInstallerScript
                         return FALSE;
                 }
 
-                $manifest    = $parent->get('manifest');
+                $manifest    = $parent->getManifest();
                 $new_variant = (string) $manifest->variant;
 
                 $file = JPATH_PLUGINS . '/system/jch_optimize/jch_optimize.xml';
 
                 if (file_exists($file))
                 {
-                        $xml         = JFactory::getXML($file);
+                        $xml         = simplexml_load_file($file);
                         $old_variant = (string) $xml->variant;
 
                         if ($old_variant == 'PRO' && $new_variant == 'FREE')
@@ -83,6 +88,7 @@ class Pkg_jch_optimizeInstallerScript
         {
                 require_once(JPATH_ROOT . '/plugins/system/jch_optimize/jchoptimize/loader.php');
                 require_once(JPATH_ROOT . '/plugins/system/jch_optimize/fields/autoorder.php'); 
+
                 if ($type == 'install')
                 {
                         JFormFieldAutoorder::fixFilePermissions(true);
@@ -92,15 +98,9 @@ class Pkg_jch_optimizeInstallerScript
                 if ($type == 'update')
                 {
                         JFormFieldAutoorder::cleanCache(true);
-
-                        $params = JchPlatformPlugin::getPluginParams();
-
-                        if ($params->get('bottom_js', '0') == '1')
-                        {
-                                $params->set('pro_bottom_js', '1');
-
-                                JchPlatformPlugin::saveSettings($params);
-                        }
+			##<procode>##
+			Helper::updateNewSettings();
+			##</procode>##
                 }
 
                 JFormFieldAutoorder::orderPlugins(true);
@@ -124,7 +124,7 @@ class Pkg_jch_optimizeInstallerScript
                 }
 
 		JFormFieldAutoorder::cleanCache(true);
-		JchOptimizeAdmin::cleanHtaccess();
+		Admin::cleanHtaccess();
         }
 
 }

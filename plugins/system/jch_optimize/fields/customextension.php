@@ -1,4 +1,3 @@
-
 <?php
 
 /**
@@ -23,10 +22,9 @@ defined('_JEXEC') or die;
 
 include_once dirname(__FILE__) . '/exclude.php';
 
-class JFormFieldCustomextension extends JFormFieldExclude
-{
+class JFormFieldCustomextension extends JFormFieldExclude {
 
-        public $type = 'customextension';
+	public $type = 'customextension';
 	public $filetype = 'url';
 	public $filegroup = 'file';
 

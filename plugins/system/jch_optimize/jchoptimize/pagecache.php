@@ -20,11 +20,16 @@
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
 
+namespace JchOptimize\Core;
 
 defined('_JCH_EXEC') or die('Restricted access');
 
+use JchOptimize\Platform\Uri;
+use JchOptimize\Platform\Cache;
+use JchOptimize\Platform\Plugin;
+use JchOptimize\Platform\Utility;
 
-class JchOptimizePagecache
+class Pagecache
 {
 
 	/**
@@ -37,14 +42,14 @@ class JchOptimizePagecache
 		{
 			if ($_SERVER['REQUEST_METHOD'] === 'POST') 
 			{
-				JchPlatformCache::deleteCache();
+				Cache::deleteCache();
 
 				return;
 			}
 
-			$html = JchPlatformCache::getCache(self::getPageCacheId(), true);
+			$html = Cache::getCache(self::getPageCacheId(), true);
 
-			if ($html !== false)
+			if ($html != false)
 			{
 
 				while (@ob_end_clean());
@@ -63,8 +68,8 @@ class JchOptimizePagecache
 		{
 			$parts = array();
 
-			$parts[] = JchOptimizeBrowser::getInstance()->getFontHash();
-			$parts[] = JchPlatformUri::getInstance()->toString();
+			$parts[] = Browser::getInstance()->getFontHash();
+			$parts[] = Uri::getInstance()->toString();
 
 			//Add a value to the array that will be used to determine the page cache id
 			//@TODO Remove function to platform codes
@@ -88,7 +93,7 @@ class JchOptimizePagecache
 				$sHtml = str_replace('</body>', $tag, $sHtml);
 			}
 			
-			JchPlatformCache::saveCache($sHtml, self::getPageCacheId());
+			Cache::saveCache($sHtml, self::getPageCacheId());
 		}
 	}
 
@@ -96,7 +101,7 @@ class JchOptimizePagecache
 	{
 		$cache_exclude = $params->get('cache_exclude', array());
 		
-		if (JchOptimizeHelper::findExcludes($cache_exclude, JchPlatformUri::getInstance()->toString()))
+		if (Helper::findExcludes($cache_exclude, Uri::getInstance()->toString()))
 		{
 			return true;
 		}
@@ -115,9 +120,9 @@ class JchOptimizePagecache
 			return false;
 		}
 		
-		$params = JchPlatformPlugin::getPluginParams();
+		$params = Plugin::getPluginParams();
 
-		if ($params->get('cache_enable', '0') && JchPlatformUtility::isGuest() && !self::isExcluded($params))
+		if ($params->get('cache_enable', '0') && Utility::isGuest() && !self::isExcluded($params))
 		{
 			return true;
 		}

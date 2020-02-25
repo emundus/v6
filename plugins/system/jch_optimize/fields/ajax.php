@@ -1,4 +1,3 @@
-
 <?php
 
 /**
@@ -19,10 +18,15 @@
  *
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
+
 defined('_JEXEC') or die;
 
-include_once dirname(dirname(__FILE__)) . '/jchoptimize/loader.php';
+use JchOptimize\Core\Helper;
+use JchOptimize\Platform\Plugin;
+use JchOptimize\Platform\Utility;
+use Joomla\CMS\HTML\HTMLHelper;
 
+include_once dirname(dirname(__FILE__)) . '/jchoptimize/loader.php';
 
 class JFormFieldAjax extends JFormField
 {
@@ -34,10 +38,10 @@ class JFormFieldAjax extends JFormField
 
 		if (!defined('JCH_VERSION'))
 		{
-			define('JCH_VERSION', '5.4.3');
+			define('JCH_VERSION', '6.0.0');
 		}
 
-		$params = JchPlatformPlugin::getPluginParams();
+		$params = Plugin::getPluginParams();
 
                 if (!defined('JCH_DEBUG'))
                 {
@@ -48,17 +52,27 @@ class JFormFieldAjax extends JFormField
 
 		if($cnt == 1)
 		{
-			JHtml::script('jui/jquery.min.js', false, true);
+			$script_options = array('framework' => false, 'relative' => true);
+
+			if (version_compare(JVERSION, '4.0', 'lt'))
+			{
+				JHtml::script('jui/jquery.min.js', $script_options);
+			}
+			else
+			{
+				HTMLHelper::_('script', 'vendor/jquery/jquery.min.js', $script_options);
+			}
 
 			$oDocument = JFactory::getDocument();
 			$sScript   = '';
 
-			$oDocument->addStyleSheetVersion(JUri::root(true) . '/media/plg_jchoptimize/css/admin.css', JCH_VERSION);
-			$oDocument->addScriptVersion(JUri::root(true) . '/media/plg_jchoptimize/js/admin-joomla.js', JCH_VERSION);
-			$oDocument->addScriptVersion(JUri::root(true) . '/media/plg_jchoptimize/js/admin-utility.js', JCH_VERSION);
+			$options = array('version' => JCH_VERSION);
+			$oDocument->addStyleSheet(JUri::root(true) . '/media/plg_jchoptimize/css/admin.css', $options);
+			$oDocument->addScript(JUri::root(true) . '/media/plg_jchoptimize/js/admin-joomla.js', $options);
+			$oDocument->addScript(JUri::root(true) . '/media/plg_jchoptimize/js/admin-utility.js', $options);
 
 			$uri         = clone JUri::getInstance();
-			$domain      = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port')) . JchOptimizeHelper::getBaseFolder();
+			$domain      = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port')) . Helper::getBaseFolder();
 			$plugin_path = 'plugins/system/jch_optimize/';
 
 			$ajax_url = $domain . 'administrator/index.php?option=com_jch_optimize';
@@ -77,7 +91,7 @@ JCHSCRIPT;
 
 			$oDocument->addScriptDeclaration($sScript);
 			$oDocument->addStyleSheet('//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css');
-			JHtml::script('plg_jchoptimize/jquery.collapsible.js', FALSE, TRUE);
+			JHtml::script('plg_jchoptimize/jquery.collapsible.js', $script_options);
 
 	                
 		}

@@ -4,9 +4,9 @@
  * JCH Optimize - Joomla! plugin to aggregate and minify external resources for
  * optmized downloads
  *
- * @author Samuel Marshall <sdmarshall73@gmail.com>
+ * @author    Samuel Marshall <sdmarshall73@gmail.com>
  * @copyright Copyright (c) 2014 Samuel Marshall
- * @license GNU/GPLv3, See LICENSE file
+ * @license   GNU/GPLv3, See LICENSE file
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,78 +20,95 @@
  *
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
+
+namespace JchOptimize\Platform;
+
+use JchOptimize\Interfaces\SettingsInterface;
+use Joomla\Registry\Registry;
+
 defined('_JEXEC') or die('Restricted access');
 
-class JchPlatformSettings implements JchInterfaceSettings
+class Settings implements SettingsInterface
 {
-        private $params;
-        
-        /**
-         * 
-         * @param type $params
-         * @return \JchOptimizeSettings
-         */
-        public static function getInstance($params)
-        {
-                return new JchPlatformSettings($params);
-        }
+	private $params;
 
-        /**
-         * 
-         * @param type $param
-         * @param type $default
-         * @return type
-         */
-        public function get($param, $default = NULL)
-        {
-                return $this->params->get($param, $default);
-        }
-
-        /**
-         * 
-         * @param type $params
-         */
-        private function __construct($params)
-        {
-                $this->params = $params;
-        }
-        
-        /**
-         * 
-         * @param type $param
-         * @param type $value
-         */
-        public function set($param, $value)
-        {
-                $this->params->set($param, $value);
-        }
-        
-        /**
-         * 
-         * @param type $param
-         * @param type $value
-         */
-        public function toArray()
-        {
-                return $this->params->toArray();
-        }
-        
-                
-        /**
-         * 
-         */
-        public function __clone()
+	/**
+	 *
+	 * @param   Registry  $params
+	 *
+	 * @return Settings
+	 */
+	public static function getInstance($params)
 	{
-		
-                $this->params = unserialize(serialize($this->params));
+		return new Settings($params);
 	}
 
-        /**
-         * 
-         */
-        public function getOptions()
-        {
-                return $this->params->toObject();
-        }
+	/**
+	 *
+	 * @param   mixed  $param
+	 * @param   mixed  $default
+	 *
+	 * @return mixed
+	 */
+	public function get($param, $default = null)
+	{
+		return $this->params->get($param, $default);
+	}
 
+	/**
+	 *
+	 * @param   Registry  $params
+	 */
+	private function __construct($params)
+	{
+		$this->params = $params;
+	}
+
+	/**
+	 *
+	 * @param   mixed  $param
+	 * @param   mixed  $value
+	 */
+	public function set($param, $value)
+	{
+		$this->params->set($param, $value);
+	}
+
+	/**
+	 *
+	 */
+	public function toArray()
+	{
+		return $this->params->toArray();
+	}
+
+
+	/**
+	 *
+	 */
+	public function __clone()
+	{
+
+		$this->params = unserialize(serialize($this->params));
+	}
+
+	/**
+	 *
+	 */
+	public function getOptions()
+	{
+		return $this->params->toObject();
+	}
+
+	/**
+	 * Delete a value from the settings object
+	 *
+	 * @param   mixed  $param  The parameter value to be deleted
+	 *
+	 * @return   null
+	 */
+	public function remove($param)
+	{
+		return $this->params->remove($param);
+	}
 }

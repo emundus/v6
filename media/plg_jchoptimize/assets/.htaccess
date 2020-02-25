@@ -43,5 +43,5 @@ RewriteEngine On
 
 RewriteRule ^(.*?)(test_mod_rewrite) /$1media/plg_jchoptimize/assets/modrewrite.php?q=$2
 
-RewriteRule ^(.*?)(gz|nz)/([^/]+)/([^/]+)\.(js|css)$  /$1media/plg_jchoptimize/assets/jscss.php?f=$4&type=$5&gz=$2&i=$3
+RewriteRule ^(.*?)(gz|nz)/([^/]+)\.(js|css)$  /$1media/plg_jchoptimize/assets/jscss.php?f=$3&type=$4&gz=$2
 </IfModule>

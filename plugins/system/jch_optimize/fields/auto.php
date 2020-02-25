@@ -20,46 +20,49 @@
  */
 defined('_JEXEC') or die;
 
+use JchOptimize\Core\Admin;
+
 require_once dirname(__FILE__) . '/compat.php';
 include_once dirname(dirname(__FILE__)) . '/jchoptimize/loader.php';
 
-abstract class JFormFieldAuto extends JFormFieldCompat
-{
+abstract class JFormFieldAuto extends JFormField {
 
-        protected $bResources = FALSE;
+	protected $bResources = FALSE;
 
-        /**
-         * 
-         * @return string
-         */
-        protected function getInput()
-        {
-                //JCH_DEBUG ? JchPlatformProfiler::mark('beforeGetInput - ' . $this->type) : null;
+	public function setup(SimpleXMLElement $element, $value, $group = NULL) {
+		return parent::setup($element, $value, $group);
+	}
 
-                $aButtons = $this->getButtons();
-                $sField   = JchOptimizeAdmin::generateIcons($aButtons);
+	/**
+	 * 
+	 * @return string
+	 */
+	protected function getInput() {
+		//JCH_DEBUG ? Profiler::mark('beforeGetInput - ' . $this->type) : null;
 
-                // JCH_DEBUG ? JchPlatformProfiler::mark('beforeGetInput - ' . $this->type) : null;
+		$aButtons = $this->getButtons();
+		$sField = Admin::generateIcons($aButtons);
 
-                return $sField;
-        }
+		// JCH_DEBUG ? Profiler::mark('beforeGetInput - ' . $this->type) : null;
 
-        /**
-         * 
-         * @param type $oController
-         */
-        protected static function display($oController)
-        {
-                $oUri = clone JUri::getInstance();
-                $oUri->delVar('jchtask');
-                $oUri->delVar('jchdir');
-                $oUri->delVar('status');
-                $oUri->delVar('msg');
-                $oUri->delVar('dir');
-                $oUri->delVar('cnt');
-                $oController->setRedirect($oUri->toString());
-                $oController->redirect();
-        }
+		return $sField;
+	}
 
-        abstract protected function getButtons();
+	/**
+	 * 
+	 * @param type $oController
+	 */
+	protected static function display($oController) {
+		$oUri = clone JUri::getInstance();
+		$oUri->delVar('jchtask');
+		$oUri->delVar('jchdir');
+		$oUri->delVar('status');
+		$oUri->delVar('msg');
+		$oUri->delVar('dir');
+		$oUri->delVar('cnt');
+		$oController->setRedirect($oUri->toString());
+		$oController->redirect();
+	}
+
+	abstract protected function getButtons();
 }
