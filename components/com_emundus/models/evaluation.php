@@ -83,6 +83,7 @@ class EmundusModelEvaluation extends JModelList {
 		$col_other = $this->getState('elements_other');
 
 		$this->elements_id = $menu_params->get('em_elements_id');
+		$this->elements_id = rtrim($this->elements_id, ',') . ',';
 
 		// get evaluation element
 		$show_in_list_summary = 1;
@@ -97,7 +98,6 @@ class EmundusModelEvaluation extends JModelList {
 			if (!empty($adv)) {
 				$this->elements_id .= ','.implode(',', $adv);
 			}
-
 		}
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
 
@@ -1327,7 +1327,7 @@ class EmundusModelEvaluation extends JModelList {
 					) eta ON c.fnum = eta.fnum ' ;
 		$q = $this->_buildWhere($lastTab);
 
-		if (EmundusHelperAccess::isCoordinator($current_user->id) || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1)) {
+		if (EmundusHelperAccess::isCoordinator($current_user->id) || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1) || EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id)){
 			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum ';
 		} else {
 			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';

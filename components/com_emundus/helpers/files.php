@@ -74,7 +74,7 @@ class EmundusHelperFiles
         $current_user   = JFactory::getUser();
         $menu           = @JFactory::getApplication()->getMenu();
         $current_menu   = $menu->getActive();
-        $Itemid         = JFactory::getApplication()->input->getInt('Itemid', $current_menu->id);
+        $Itemid         = JFactory::getApplication()->input->getInt('Itemid', @$current_menu->id);
         $menu_params    = $menu->getParams($Itemid);
         $m_files        = new EmundusModelFiles();
         
@@ -200,6 +200,7 @@ class EmundusHelperFiles
             $codes = $m_files->getAssociatedProgrammes($current_user->id);
 
             // ONLY FILES LINKED TO MY GROUP
+	        $programme = null;
             if ((is_array($filts_details['programme']) && count($filts_details['programme']) > 0) || $filts_details['programme'] !== NULL) {
 	            $programme = !empty($m_files->code) ? $m_files->code : '';
             }

@@ -83,38 +83,33 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 	 * and if so store the form data in the session.
 	 *
 	 * @return  bool  should the form model continue to save
+	 * @throws Exception
 	 */
-	public function onAfterStore()
-	{
+	public function onAfterProcess() {
 
 		/********************************************
 		 *
 		 * Duplicate data on each applicant file for current campaigns
 		 */
 		jimport('joomla.log.log');
-		JLog::addLogger(
-			array(
-				// Sets file name
-				'text_file' => 'com_emundus.duplicate.php'
-			),
-			JLog::ALL,
-			array('com_emundus')
-		);
+		JLog::addLogger(['text_file' => 'com_emundus.redirect.php'], JLog::ALL, ['com_emundus']);
 
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-		$copy_application_form = $eMConfig->get('copy_application_form', 0);
-
-		$user 	= JFactory::getSession()->get('emundusUser');
-		$db 	= JFactory::getDBO();
+		$user = JFactory::getSession()->get('emundusUser');
+		$db = JFactory::getDBO();
 
 		include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
 		$m_profile = new EmundusModelProfile();
 		$applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
+		$copy_form = (Int)$this->getParam('copy_form', '0');
+		
 		// duplication is defined
-		if ($copy_application_form == 1 && isset($user->fnum)) {
+		if ($copy_form === 1 && isset($user->fnum)) {
+
+			JLog::addLogger(['text_file' => 'com_emundus.duplicate.php'], JLog::ALL, ['duplicate']);
 
 			// Get some form definition
+			$data = $this->getProcessData();
 			$table = explode('___', key($data));
 			$table_name = $table[0];
 			$table_key = $table[1];
@@ -476,11 +471,12 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 	/**
 	 * Raise an error - depends on whether you are in admin or not as to what to do
 	 *
-	 * @param   array   &$err   Form models error array
-	 * @param   string  $field  Name
-	 * @param   string  $msg    Message
+	 * @param   array   &$err    Form models error array
+	 * @param   string   $field  Name
+	 * @param   string   $msg    Message
 	 *
 	 * @return  void
+	 * @throws Exception
 	 */
 
 	protected function raiseError(&$err, $field, $msg)
