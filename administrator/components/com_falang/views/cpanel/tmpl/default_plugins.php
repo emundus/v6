@@ -13,10 +13,16 @@ defined('_JEXEC') or die;
 
 <table class="adminlist  table table-striped">
 	<?php $i = 0; ?>
+    <tr>
+        <th><?php echo JText::_('COM_FALANG_CPANEL_PLUGIN_NAME'); ?></th>
+        <th><?php echo JText::_('COM_FALANG_CPANEL_CURRENT_VERSION'); ?></th>
+        <th><?php echo JText::_('COM_FALANG_CPANEL_LATEST_VERSION'); ?></th>
+        <th>&nbsp;</th>
+    </tr>
 	<?php foreach ($this->pluginsInfos as $plugin => $values) : ?>
-        <tr class="row<?php echo $i % 2; ?>">
+        <tr id="row_<?php echo $plugin; ?>" class="row<?php echo $i % 2; ?>">
             <th width="180" align="left"><?php echo JText::_($values['title']); ?></th>
-            <td><?php
+            <td width="180"><?php
 				if ($values['installed'] == 0)
 				{ ?>
 					<?php if ($this->versionType != 'free')
@@ -56,6 +62,21 @@ defined('_JEXEC') or die;
 					<?php } ?>
                     <span class="version"><?php if (isset($values['version_local'])){echo $values['version_local'];}?> </span>
 				<?php } ?>
+            </td>
+            <td width="100px">
+                <span class="new_version"></span>
+            </td>
+            <td width="auto">
+                <!-- display donwload link for installed extension if update exist -->
+                <?php 	if ($values['installed'] == 1) { ?>
+                     <span class="new_version_link" style="display: none">
+                         <i class="fa fa-download" aria-hidden="true"></i>
+                     <a href="http://www.faboba.com/index.php?option=com_ars&view=release&id=<?php echo $values['ars_id']; ?>"
+                        target="_blank" alt="download"><?php echo JText::_('COM_FALANG_DOWNLOAD_PLUGIN_LINK_UPDATE'); ?></a>
+                     </span>
+                <?php } else { ?>
+                    &nbsp;
+                <?php } ?>
             </td>
         </tr>
 		<?php $i++; ?>

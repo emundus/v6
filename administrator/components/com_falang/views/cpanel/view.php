@@ -97,50 +97,59 @@ class CPanelViewCpanel extends FalangViewDefault
 
     protected function getPluginsInfos(){
 	    $plugins = array(
-		    'falangContent'     => array(
+	        //key use in the display table row and ajax
+		    'joomlacontentsearch'     => array(
+		        'name' => 'falangContent', //name is used to look in extension filter with folter too
 			    'folder' => 'search',
 			    'title'  => 'Joomla Content search',
 			    'ars_id' => 41,
 			    'type'   => 'free',
 		    ),
-		    'falangK2'          => array(
+		    'k2contentsearch'          => array(
+		            'name' => 'falangK2',
 			    'folder' => 'search',
 			    'title'  => 'K2 Content search',
 			    'ars_id' => 42,
 			    'type'   => 'free',
 		    ),
-		    'falangmissing'     => array(
+		    'falangmissingtranslation'     => array(
+		            'name' => 'falangmissing',
 			    'folder' => 'system',
 			    'title'  => 'Missing Translation',
 			    'ars_id' => 46,
 			    'type'   => 'free',
 		    ),
 		    'falangextraparams' => array(
+			    'name' => 'falangextraparams',
 			    'folder' => 'system',
 			    'title'  => 'Falang Extra Params',
 			    'ars_id' => 47,
 			    'type'   => 'paid',
 		    ),
-		    'falangk2'          => array(
+		    'k2extrafield'          => array(
+			    'name' => 'falangk2',
 			    'folder' => 'system',
 			    'title'  => 'K2 extra field',
 			    'ars_id' => 43,
 			    'type'   => 'paid',
 		    ),
-		    'falangcontent'     => array(
+		    'smartsearchcontent'     => array(
+			    'name' => 'falangcontent',
 			    'folder' => 'finder',
 			    'title'  => 'Smart Search - Joomla Content',
 			    'ars_id' => 109,
 			    'type'   => 'paid',
 		    ),
 	    );
+
+
 	    $db = JFactory::getDbo();
         foreach ($plugins as $plugin => $values){
             //search if installed
 	        $query = $db->getQuery(true)
                     ->select('enabled,manifest_cache')
                     ->from($db->qn('#__extensions'))
-                    ->where($db->qn('element').' = '.$db->q($plugin))
+                    ->where($db->qn('element').' = '.$db->q($values['name']))
                     ->where($db->qn('folder').' = '.$db->q($values['folder']));
             $db->setQuery($query);
             $row = $db->loadObject();
