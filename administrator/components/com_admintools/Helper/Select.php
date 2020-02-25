@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -86,8 +86,7 @@ class Select
 
 		$reasons = [
 			'other', 'adminpw', 'ipwl', 'ipbl', 'sqlishield', 'antispam',
-			'tmpl', 'template', 'muashield', 'sessionshield', 'csrfshield',
-			'geoblocking', 'rfishield', 'dfishield', 'uploadshield',
+			'tmpl', 'template', 'muashield', 'sessionshield', 'csrfshield', 'rfishield', 'dfishield', 'uploadshield',
 			'httpbl', 'loginfailure', 'external', 'awayschedule', 'admindir',
 			'nonewadmins', 'nonewfrontendadmins', 'phpshield', '404shield', 'wafblacklist',
 		];
@@ -481,6 +480,60 @@ class Select
 		return self::genericlist(array_map(function($data) {
 			return JHtml::_('FEFHelper.select.option', $data['value'], $data['text']);
 		}, $db->setQuery($query, 0, 100)->loadAssocList()), $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Creates a three state list to set the IP Workarounds value
+	 *
+	 * @param   string $name     Field name
+	 * @param   array  $attribs  Field attributes
+	 * @param   string $selected Selected value
+	 *
+	 * @return  string  The HTML of the field
+	 *
+	 * @since   5.5.0
+	 */
+	public static function ipworkarounds($name, $attribs = null, $selected = null)
+	{
+		if (empty($attribs))
+		{
+			$attribs = array('class' => 'akeeba-toggle');
+		}
+		else
+		{
+			if (isset($attribs['class']))
+			{
+				$attribs['class'] .= ' akeeba-toggle';
+			}
+			else
+			{
+				$attribs['class'] = 'akeeba-toggle';
+			}
+		}
+
+		$temp = '';
+
+		foreach ($attribs as $key => $value)
+		{
+			$temp .= $key . ' = "' . $value . '"';
+		}
+
+		$attribs = $temp;
+
+		$checked_1 = $selected == '0' ? 'checked ' : '';
+		$checked_2 = $selected == '1' ? 'checked ' : '';
+		$checked_3 = $selected == '2' ? 'checked ' : '';
+
+		$html  = '<div '.$attribs.'>';
+		$html .= 	'<input type="radio" class="" name="'.$name.'" '.$checked_2.'id="'.$name .'-2" value="1">';
+		$html .=	'<label for="'.$name.'-2" class="primary">'.JText::_('JYES').'</label>';
+		$html .=	'<input type="radio" class="" name="'.$name.'" '.$checked_1.'id="'.$name .'-1" value="0">';
+		$html .= 	'<label for="'.$name.'-1" class="primary">'.JText::_('JNO').'</label>';
+		$html .=	'<input type="radio" class="" name="'.$name.'" '.$checked_3.'id="'.$name .'-3" value="2">';
+		$html .= 	'<label for="'.$name.'-3" class="primary">'.JText::_('COM_ADMINTOOLS_LBL_CONFIGUREWAF_OPT_IPWORKAROUNDS_AUTO').'</label>';
+		$html .= '</div>';
+
+		return $html;
 	}
 
 	protected static function genericlist($list, $name, $attribs, $selected, $idTag)

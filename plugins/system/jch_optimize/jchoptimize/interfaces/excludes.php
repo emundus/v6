@@ -2,11 +2,11 @@
 
 /**
  * JCH Optimize - Aggregate and minify external resources for optmized downloads
- * 
- * @author Samuel Marshall <sdmarshall73@gmail.com>
+ *
+ * @author    Samuel Marshall <sdmarshall73@gmail.com>
  * @copyright Copyright (c) 2010 Samuel Marshall
- * @license GNU/GPLv3, See LICENSE file
- * 
+ * @license   GNU/GPLv3, See LICENSE file
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,16 +20,38 @@
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
 
+namespace JchOptimize\Interfaces;
 
 defined('_JCH_EXEC') or die('Restricted access');
 
-interface JchInterfaceExcludes
+interface ExcludesInterface
 {
-        public static function extensions();
-        
-        public static function head($type, $section='file');
-        
-        public static function body($type, $section='file');
-        
-        public static function editors($url);
+	/**
+	 *
+	 * @return string
+	 */
+	public static function extensions();
+
+	/**
+	 * @param   string  $type
+	 * @param   string  $section
+	 *
+	 * @return array
+	 */
+	public static function head($type, $section = 'file');
+
+	/**
+	 * @param   string  $type
+	 * @param   string  $section
+	 *
+	 * @return array
+	 */
+	public static function body($type, $section = 'file');
+
+	/**
+	 * @param   string  $url
+	 *
+	 * @return boolean
+	 */
+	public static function editors($url);
 }

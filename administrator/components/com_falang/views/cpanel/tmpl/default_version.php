@@ -17,6 +17,7 @@ defined('_JEXEC') or die;
             <th width="120" align="left"><?php echo JText::_('COM_FALANG_CPANEL_VERSION_TYPE'); ?>:</th>
             <td><?php echo $this->versionType; ?></td>
         </tr>
+        <tr>
         <th width="120" align="left"><?php echo JText::_('COM_FALANG_CPANEL_CURRENT_VERSION'); ?>:</th>
             <td><?php echo $this->currentVersion; ?></td>
         </tr>

@@ -1,14 +1,13 @@
 <?php
 
-namespace JchOptimize;
+namespace JchOptimize\LIBS;
 
 use CURLFile;
 use curl_init;
 use curl_exec;
 use RuntimeException;
-use Exception;
-
-//use JchOptimizeFileRetriever;
+use JchOptimize\Core\FileRetriever;
+use JchOptimize\Core\Json;
 
 class ImageOptimizer
 {
@@ -29,7 +28,7 @@ class ImageOptimizer
         {
                 if (empty($opts['files'][0]))
                 {
-                        throw new Exception('File parameter was not provided', 500);
+                        throw new \Exception('File parameter was not provided', 500);
                 }
 
                 //if (!files_exists($opts['files']))
@@ -62,14 +61,19 @@ class ImageOptimizer
 
         private function request($data, $url)
         {
+		ini_set('upload_max_filesize', '50M');
+		ini_set('post_max_size', '50M');
+		ini_set('max_input_time', 300);
+		ini_set('max_execution_time', 300);
+
 		$aHeaders = array('Content-Type' => 'multipart/form-data');
-		$oFileRetriever = \JchOptimizeFileRetriever::getInstance(array('curl'));
+		$oFileRetriever = FileRetriever::getInstance(array('curl'));
 
 		$response = $oFileRetriever->getFileContents($url, $data, $aHeaders, '', 30);
 
 		if($oFileRetriever->response_code === 0 && $oFileRetriever->response_error !== '')
 		{
-			return new \JchOptimizeJson(new Exception($oFileRetriever->response_error), 500);
+			return new Json(new \Exception($oFileRetriever->response_error), 500);
 		}
 
 		return json_decode($response);
@@ -97,8 +101,8 @@ class ImageOptimizer
 
                 if ($error > 0)
                 {
-                        $curl_error = new RuntimeException(sprintf('cURL returned with the following error: "%s"', $message), $error);
-			$response = new \JchOptimizeJson($curl_error);
+                        $curl_error = new \RuntimeException(sprintf('cURL returned with the following error: "%s"', $message), $error);
+			$response = new Json($curl_error);
                 }
 
 		return array(

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ @package   admintools
-  ~ @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~ @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
   ~ @license   GNU General Public License version 3, or later
   -->
 <config>
@@ -159,6 +159,7 @@
 		<field name="detected_exceptions_from_private_network" type="hidden" default="0" label=""/>
 		<field name="detected_proxy_header" type="hidden" default="0" label=""/>
 		<field name="default_super_user_groups" type="hidden" default=""/>
+		<field name="ipworkarounds_migrated" type="hidden" default="0"/>
 	</fieldset>
 
 	<fieldset name="frontend" label="COM_ADMINTOOLS_JCONFIG_FRONTEND_LABEL"

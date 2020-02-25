@@ -17,7 +17,10 @@ use FOF30\Render\RenderInterface;
 use FOF30\Template\Template;
 use FOF30\TransparentAuthentication\TransparentAuthentication as TransparentAuth;
 use FOF30\View\Compiler\Blade;
+use JFactory;
+use Joomla\CMS\Factory;
 use Joomla\Registry\Registry;
+use JSession;
 
 defined('_JEXEC') or die;
 
@@ -65,7 +68,7 @@ defined('_JEXEC') or die;
  * @property-read  \FOF30\Input\Input                  $input              The input object
  * @property-read  \FOF30\Platform\PlatformInterface   $platform           The platform abstraction layer object
  * @property-read  \FOF30\Render\RenderInterface       $renderer           The view renderer
- * @property-read  \JSession                           $session            Joomla! session storage
+ * @property-read  JSession                           $session            Joomla! session storage
  * @property-read  \FOF30\Template\Template            $template           The template helper
  * @property-read  TransparentAuth                     $transparentAuth    Transparent authentication handler
  * @property-read  \FOF30\Toolbar\Toolbar              $toolbar            The component's toolbar
@@ -654,9 +657,14 @@ END;
 		// Session service
 		if (!isset($this['session']))
 		{
-			$this['session'] = function ()
+			$this['session'] = function (Container $c)
 			{
-				return \JFactory::getSession();
+				if (version_compare(JVERSION, '3.999.999', 'le'))
+				{
+					return \JFactory::getSession();
+				}
+
+				return Factory::getApplication()->getSession();
 			};
 		}
 
@@ -805,7 +813,7 @@ END;
 		// Get the site's secret
 		try
 		{
-			$app = \JFactory::getApplication();
+			$app = JFactory::getApplication();
 
 			if (method_exists($app, 'get'))
 			{

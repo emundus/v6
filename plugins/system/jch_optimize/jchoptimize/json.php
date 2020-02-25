@@ -19,13 +19,15 @@
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
 
+namespace JchOptimize\Core;
+
 // No direct access
 defined('_JCH_EXEC') or die('Restricted access');
 
 /**
  * 
  */
-class JchOptimizeJson
+class Json
 {
 	/**
 	 * Determines whether the request was successful
@@ -66,7 +68,7 @@ class JchOptimizeJson
 		$this->message = $message;
 
 		// Check if we are dealing with an error
-		if ($response instanceof Exception)
+		if ($response instanceof \Exception)
 		{
 			// Prepare the error response
 			$this->success = false;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -38,8 +38,9 @@ trait SendTroubleshootingEmail
 			// The Core version does not have the ConfigureWAF model and must therefore not send such emails.
 			return;
 		}
+
 		$wafConfig   = $configModel->getConfig();
-		$sendEmail   = isset($wafConfig['sendTroubleshootingEmail']) ? $wafConfig['sendTroubleshootingEmail'] : 1;
+		$sendEmail   = isset($wafConfig['troubleshooteremail']) ? $wafConfig['troubleshooteremail'] : 1;
 
 		if (!$sendEmail)
 		{

@@ -20,6 +20,9 @@
  */
 defined('_JEXEC') or die;
 
+use JchOptimize\Platform\Utility;
+use JchOptimize\Core\FileRetriever;
+
 include_once dirname(dirname(__FILE__)) . '/jchoptimize/loader.php';
 
 /**
@@ -49,7 +52,7 @@ class JFormFieldJchmenuitem extends JFormFieldMenuitem
                 try
                 {
                         $this->checkPcreVersion();
-                        $oFileRetriever = JchOptimizeFileRetriever::getInstance();
+                        $oFileRetriever = FileRetriever::getInstance();
                 }
                 catch (Exception $ex)
                 {
@@ -114,7 +117,7 @@ class JFormFieldJchmenuitem extends JFormFieldMenuitem
                 $oDocument->addScriptVersion(JUri::root(true) . '/media/plg_jchoptimize/js/admin-utility.js', JCH_VERSION);
 
                 $uri         = clone JUri::getInstance();
-                $domain      = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port')) . JchOptimizeHelper::getBaseFolder();
+                $domain      = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port')) . Helper::getBaseFolder();
                 $plugin_path = 'plugins/system/jch_optimize/';
 
                 $ajax_url = JURI::getInstance()->toString() . '&jchajax=1';

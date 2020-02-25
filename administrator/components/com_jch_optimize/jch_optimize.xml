@@ -4,14 +4,14 @@
 	<name>JCH Optimize</name>
 	<element>com_jch_optimize</element>
 	<!-- The following elements are optional and free of formatting constraints -->
-	<creationDate>September 2019</creationDate>
+	<creationDate>February 2020</creationDate>
 	<author>Samuel Marshall</author>
 	<authorEmail>samuel@jch-optimize.net</authorEmail>
 	<authorUrl>https://www.jch-optimize.net</authorUrl>
 	<copyright>(c) 2017 JCH Optimize All rights reserved</copyright>
 	<license>GNU General Public License version 2 or later</license>
 	<!--  The version string is recorded in the components table -->
-	<version>5.4.3</version>
+	<version>6.0.0</version>
 	<!-- The description is optional and defaults to the name -->
 	<description>Provides Ajax support to the JCH Optimize plugin</description>
 

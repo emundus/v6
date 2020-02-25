@@ -104,5 +104,5 @@ function ucFirst(string) {
 
 function getTimeStamp() {
         return new Date().getTime();
-}
+};
 

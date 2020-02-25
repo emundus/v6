@@ -372,7 +372,7 @@ abstract class FEFHelperBrowse
 			// DO NOT REMOVE! It will initialize Joomla libraries and javascript functions
 			$hasAjaxOrderingSupport = $view->hasAjaxOrderingSupport();
 
-			if (!$hasAjaxOrderingSupport['saveOrder'])
+			if (!is_array($hasAjaxOrderingSupport) || !$hasAjaxOrderingSupport['saveOrder'])
 			{
 				$disabledLabel    = JText::_('JORDERINGDISABLED');
 				$disableClassName = 'inactive tip-top hasTooltip';

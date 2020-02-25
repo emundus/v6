@@ -21,7 +21,7 @@ JHtml::_('behavior.formvalidator');
 			</h1>
 		</div>
 	<?php endif; ?>
-	<form id="user-registration" action="<?php echo JRoute::_('index.php?option=com_emundus&controller=users&task=passrequest'); ?>" method="post" class="form-validate form-horizontal well">
+	<form id="user-registration" action="<?php echo 'index.php?option=com_emundus&controller=users&task=passrequest'; ?>" method="post" class="form-validate form-horizontal well">
 		<?php foreach ($this->form->getFieldsets() as $fieldset) : ?>
 			<fieldset>
 				<?php if (isset($fieldset->label)) : ?>

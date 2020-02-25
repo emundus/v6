@@ -28,78 +28,48 @@ if (!defined('_JCH_EXEC'))
 defined('_JCH_EXEC') or die('Restricted access');
 
 
-function loadJchOptimizeClass($sClass)
+function jchoptimize_class_autoload($class)
 {
-        if(is_array($sClass))
-        {
-                foreach($sClass as $class)
-                {
-                        loadJchOptimizeClass($class);
-                }
-        }
-        else
-        {
-                $class  = $sClass;
-        }
-        
-        $prefix = substr($class, 0, 3);
+	$class = ltrim($class, '\\');
+	$file = dirname(__FILE__) . DIRECTORY_SEPARATOR; 
 
-        // If the class already exists do nothing.
-        if (class_exists($class, false))
-        {
-                return true;
-        }
+	if (substr($class, 0, 17) == 'JchOptimize\\LIBS\\')
+	{
+		$file .= 'libs' . DIRECTORY_SEPARATOR . substr($class, 17) . '.php'; 
+	}
+	elseif(substr($class, 0, 17) == 'JchOptimize\\Core\\')
+	{
+		$file .=  strtolower(substr($class, 17)) . '.php';
+       	}
+	elseif(substr($class, 0, 21) == 'JchOptimize\\Platform\\')
+	{
+		$file = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'platform' . DIRECTORY_SEPARATOR . strtolower(substr($class, 21)) . '.php';
+	}
+	elseif(substr($class, 0, 23) == 'JchOptimize\\Interfaces\\')
+	{
+		$file .= 'interfaces' . DIRECTORY_SEPARATOR . strtolower(substr($class, 23, -9)) . '.php';
+	}
+	elseif(substr($class, 0, 19) == 'JchOptimize\\Minify\\')
+	{
+		$file .= 'minify' . DIRECTORY_SEPARATOR . strtolower(substr($class, 19)) . '.php';
+	}
+	elseif(substr($class, 0, 17) == 'JchOptimize\\Root\\')
+	{
+		$file = dirname(dirname(__FILE__)) . substr($class, 17) . '.php';
+	}
+	else
+	{
+		return false;
+	}
 
-        if ($prefix !== 'Jch')
-        {
-                return false;
-        }
-        else
-        {
-                $class = str_replace($prefix, '', $class);
-        }
 
-        if (strpos($class, '\\') !== FALSE)
-        {
-                $filename = str_replace('Optimize\\', '', $class);
-                $file     = dirname(__FILE__) . '/libs/' . $filename . '.php';
-        }
-        elseif (strpos($class, 'Platform') === 0)
-        {
-                $class    = str_replace('Platform', '', $class);
-                $filename = strtolower($class);
-                $file     = dirname(dirname(__FILE__)) . '/platform/' . $filename . '.php';
-
-                loadJchOptimizeClass('JchInterface' . $class);
-        }
-        elseif (strpos($class, 'Interface') === 0)
-        {
-                $filename = strtolower(str_replace('Interface', '', $class));
-                $file     = dirname(__FILE__) . '/interfaces/' . $filename . '.php';
-        }
-        else
-        {
-                $filename = str_replace('Optimize', '', $class);
-                $filename = strtolower(($class == 'Optimize') ? 'jchoptimize' : $filename);
-                $file     = dirname(__FILE__) . '/' . $filename . '.php';
-        }
-
-        if (!file_exists($file))
-        {
-                return false;
-        }
-        else
-        {
-                include $file;
-
-                if (!class_exists($sClass) && !interface_exists($sClass))
-                {
-                        return false;
-                }
-        }
+	if (file_exists($file))
+	{
+		require_once($file);
+	}
 }
 
-spl_autoload_register('loadJchOptimizeClass', true, true);
+spl_autoload_register('jchoptimize_class_autoload', true, true);
 
 
 
