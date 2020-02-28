@@ -2384,11 +2384,14 @@ if (JFactory::getUser()->id == 63)
 
         $query .= 'where u.block=0 AND c.fnum in ("'.implode('","', $fnums).'") ';
 
-        if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && (!empty(JFactory::getSession()->get('emundusUser')->fnums) && !empty(array_diff($fnums, array_keys(JFactory::getSession()->get('emundusUser')->fnums)))) || ((@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) && $eval_can_see_eval == 0)) {
+        $current_user = JFactory::getSession()->get('emundusUser');
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $eval_can_see_eval = $eMConfig->get('evaluators_can_see_other_eval', 0);
+        if (!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && (!empty($current_user->fnums) && !empty(array_diff($fnums, array_keys($current_user->fnums)))) || ((@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) && $eval_can_see_eval == 0)) {
             $query .= ' AND jos_emundus_evaluations.user = '.JFactory::getUser()->id;
         }
 
-        if ($pas !=0 ) {
+        if ($pas != 0) {
 	        $query .= ' LIMIT '.$pas.' OFFSET '.$start;
         }
 
