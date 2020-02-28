@@ -166,8 +166,12 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 		foreach ($recipients as $recipient) {
 			if (isset($recipient['email']) && !empty($recipient['email'])) {
+				
 				$attachment_id = $recipient['attachment_id']; //ID provenant de la table emundus_attachments
-				$query = 'SELECT count(id) as cpt FROM #__emundus_uploads WHERE user_id='.$student->id.' AND attachment_id='.$attachment_id.' AND fnum like '.$db->Quote($current_user->fnum);
+				
+				$query = 'SELECT count(id) as cpt FROM #__emundus_files_request 
+							WHERE student_id='.$student->id.' AND attachment_id='.$attachment_id.' AND uploaded=1 AND fnum like '.$db->Quote($current_user->fnum);
+
 				$db->setQuery($query);
 				$db->execute();
 				$is_uploaded = $db->loadResult();
