@@ -1521,28 +1521,6 @@ class EmundusModelDecision extends JModelList
 	}
 
 	/*
-	* 	Get list of documents generated for email attachment
-	*	@param fnum 		Application File number
-	*	@param campaign_id 	Campaign ID
-	*	@param result 		status ID for eligibility
-	* 	@return array
-	*/
-	function getEvaluationDocuments($fnum, $campaign_id, $result) {
-		$query = 'SELECT *, eu.id as id, esa.id as attachment_id
-					FROM #__emundus_uploads eu
-					LEFT JOIN #__emundus_setup_attachments esa ON esa.id=eu.attachment_id
-					WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND campaign_id='.$campaign_id.'
-					AND eu.attachment_id IN (
-						SELECT DISTINCT(esl.attachment_id) FROM #__emundus_setup_letters esl WHERE esl.status='.$result.'
-						)
-					AND eu.filename NOT LIKE "%lock%"
-					ORDER BY eu.timedate';
-//die(str_replace('#_', 'jos', $query));
-		$this->_db->setQuery( $query );
-		return $this->_db->loadObjectList();
-	}
-
-	/*
 	* 	Get evaluations for fnum
 	*	@param fnum 		Application File number
 	* 	@return array

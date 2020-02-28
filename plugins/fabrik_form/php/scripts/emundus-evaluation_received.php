@@ -21,10 +21,10 @@ $mailer = JFactory::getMailer();
 
 $email 		= $m_emails->getEmail('evaluation_received');
 
-$body 		= $m_emails->setBody($user, $email->message, "");
-$from 	    = $m_emails->setBody($user, $email->emailfrom, "");
-$fromname 	= $m_emails->setBody($user, $email->name, "");
-$subject 	= $m_emails->setBody($user, $email->subject, "");
+$body 		= $m_emails->setBody($user, $email->message);
+$from 	    = $m_emails->setBody($user, $email->emailfrom);
+$fromname 	= $m_emails->setBody($user, $email->name);
+$subject 	= $m_emails->setBody($user, $email->subject);
 
 $config = JFactory::getConfig();
 $sender = array(

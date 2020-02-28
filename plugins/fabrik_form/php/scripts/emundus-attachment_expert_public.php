@@ -178,7 +178,7 @@ if ($uid > 0) {
 
 // 2.1.2. Envoie des identifiants à l'expert + Envoie d'un message d'invitation à se connecter pour evaluer le dossier
 	$email = $m_emails->getEmail('expert_accept');
-	$body = $m_emails->setBody($user, $email->message, "");
+	$body = $m_emails->setBody($user, $email->message);
 
     $config = JFactory::getConfig();
 	$email_from_sys = $config->get('mailfrom');
@@ -288,7 +288,7 @@ if ($uid > 0) {
 
 // 2.1.2. Envoie des identifiants à l'expert + Envoie d'un message d'invitation à se connecter pour evaluer le dossier
 	$email = $m_emails->getEmail('new_account');
-	$body = $m_emails->setBody($user, $email->message, $fnum, $password);
+	$body = $m_emails->setBody($user, $email->message, $password);
 
     $config = JFactory::getConfig();
     $email_from_sys = $config->get('mailfrom');

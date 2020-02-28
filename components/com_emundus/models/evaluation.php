@@ -1609,7 +1609,7 @@ if (JFactory::getUser()->id == 63)
 	*	@param result 		status ID for eligibility
 	* 	@return array
 	*/
-	function getEvaluationDocuments($fnum, $campaign_id, $result) {
+	function getEvaluationDocuments($fnum, $campaign_id) {
 		$query = 'SELECT *, eu.id as id, esa.id as attachment_id
 					FROM #__emundus_uploads eu
 					LEFT JOIN #__emundus_setup_attachments esa ON esa.id=eu.attachment_id

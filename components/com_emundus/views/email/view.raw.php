@@ -9,23 +9,20 @@
 
 // no direct access
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
-jimport( 'joomla.application.component.view');
-//error_reporting(E_ALL);
+jimport('joomla.application.component.view');
 /**
  * HTML View class for the Emundus Component
  *
  * @package    Emundus
  */
 
-class EmundusViewEmail extends JViewLegacy
-{
+class EmundusViewEmail extends JViewLegacy {
 	var $_user = null;
 	var $_db = null;
 
-	function __construct($config = array())
-	{
+	function __construct($config = array()) {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
@@ -41,18 +38,16 @@ class EmundusViewEmail extends JViewLegacy
 		parent::__construct($config);
 	}
 
-	function display($tpl = null)
-	{
+	function display($tpl = null) {
 
 		$jinput = JFactory::getApplication()->input;
 		$fnums = $jinput->getString('fnums', null);
 
 		$fnums = json_decode($fnums, true);
-		require_once(JPATH_BASE . '/components/com_emundus/models/application.php');
-		$appModel = new EmundusModelApplication();
-		foreach ($fnums as $fnum)
-		{
-			$users[] = $appModel->getApplicantInfos($fnum['sid'], ['jos_emundus_personal_detail.last_name', 'jos_emundus_personal_detail.first_name', 'jos_users.username', 'jos_users.email']);
+		require_once(JPATH_BASE.'/components/com_emundus/models/application.php');
+		$m_application = new EmundusModelApplication();
+		foreach ($fnums as $fnum) {
+			$users[] = $m_application->getApplicantInfos($fnum['sid'], ['jos_emundus_personal_detail.last_name', 'jos_emundus_personal_detail.first_name', 'jos_users.username', 'jos_users.email']);
 		}
 		$mailBlock = EmundusHelperEmails::createEmailBlock(['applicant_list']);
 
@@ -65,4 +60,3 @@ class EmundusViewEmail extends JViewLegacy
 		parent::display($tpl);
 	}
 }
-?>

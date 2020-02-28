@@ -68,7 +68,7 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	</div>
 
 	<?php
-	$attachments = $evaluations->getEvaluationDocuments($student_id, $campaign['id'], $result_id); 
+	$attachments = $evaluations->getEvaluationDocuments($student_id, $campaign['id']);
 
 	if ( (!empty($result_id) && empty($final_grade['result_sent'])) || count($attachments) == 0 ) {
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php'); 
