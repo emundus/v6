@@ -113,22 +113,22 @@ $site_offset = $config->get('offset');
 						$j = $dteDiff->format("%a");
 						$h = $dteDiff->format("%H");
 
-						switch ($order) {
-						    case "start_date":
-						        $month = ($result->start_date !== '0000-00-00 00:00:00') ? utf8_encode(strftime("%B %Y", strtotime($result->start_date))) : "";
-						        break;
+                        switch ($order) {
+                            case "start_date":
+                                $month = ($result->start_date !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($result->start_date, $site_offset))->format("F Y") : "";
+                                break;
 
                             case "end_date":
-						        $month = ($result->end_date !== '0000-00-00 00:00:00') ? utf8_encode(strftime("%B %Y", strtotime($result->end_date))) : "";
-						        break;
+                                $month = ($result->end_date !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($result->end_date, $site_offset))->format("F Y") : "";
+                                break;
 
                             case "formation_start":
-						        $month = ($result->formation_start !== '0000-00-00 00:00:00') ? utf8_encode(strftime("%B %Y", strtotime($result->formation_start))) : "";
-						        break;
+                                $month = ($result->formation_start !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($result->formation_start, $site_offset))->format("F Y") : "";
+                                break;
 
                             case "formation_end":
-						        $month = ( $result->formation_end !== '0000-00-00 00:00:00') ? utf8_encode(strftime("%B %Y", strtotime($result->formation_end))) : "";
-						        break;
+                                $month = ( $result->formation_end !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($result->formation_end, $site_offset))->format("F Y") : "";
+                                break;
                         }
 
 						if ($oldmonth != $month) {
