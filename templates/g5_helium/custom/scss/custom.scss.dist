@@ -3389,7 +3389,7 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
         background-position-y: 58%;
         -webkit-appearance: none;
         border: 2px solid $base-secondary-color;
-        background: transparent url(https://www.cfjparis.emundus.fr/images/custom/cfj/arrow-down.png) no-repeat;
+        background: transparent url(https://www.cfjparis.emundus.fr/images/custom/arrow-down.png) no-repeat 98% 52%;
         background-size: 10px;
         padding: 0 30px 0 10px;
     }
