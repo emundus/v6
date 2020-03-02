@@ -118,7 +118,7 @@
 			<option value="1">JYES</option>
 			<option value="2">COM_EMUNDUS_ACCEPT_CREATED_PAYMENTS_ALLOW_ALL</option>
 		</field>
-		<field name="status_after_payment" menu="hide" type="text" default="" label="COM_EMUNDUS_STATUS_AFTER_PAYMENT" description="COM_EMUNDUS_STATUS_AFTER_PAYMENT_DESC" />
+		<field name="status_after_payment" menu="hide" type="text" default="1" label="COM_EMUNDUS_STATUS_AFTER_PAYMENT" description="COM_EMUNDUS_STATUS_AFTER_PAYMENT_DESC" />
 		<field name="redirect_after_payment" menu="hide" type="list" default="0" label="COM_EMUNDUS_REDIRECT_AFTER_PAYMENT" description="COM_EMUNDUS_REDIRECT_AFTER_PAYMENT_DESC" >
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
@@ -148,9 +148,12 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		<field name="export_application_pdf_color" type="text" default="0" label="COM_EMUNDUS_EXPORT_APPLICATION_COLOR" description="COM_EMUNDUS_EXPORT_APPLICATION_COLOR_DESC"/>
-		<field name="export_application_pdf_color2" type="text" default="0" label="COM_EMUNDUS_EXPORT_APPLICATION_COLOR_SUBTITLE" description="COM_EMUNDUS_EXPORT_APPLICATION_COLOR_SUBTITLE_DESC"/>
-		<field name="export_application_pdf_txt_color" type="text" default="0" label="COM_EMUNDUS_EXPORT_APPLICATION_TXT_COLOR" description="COM_EMUNDUS_EXPORT_APPLICATION_TXT_COLOR__DESC"/>
+
+		<field name="export_application_pdf_title_color" type="text" default="#ee1c25" label="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR" description="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR_DESC"/>
+
+
+
+
 		<filed name="show_empty_fields" type="radio" default="1" label="COM_EMUNDUS_SHOW_EMPTY_FIELDS" description="COM_EMUNDUS_SHOW_EMPTY_FIELDS_DESC"/>
 		<field name="export_path" type="text" size="6" label="COM_EMUNDUS_EXPORT_PATH" description="COM_EMUNDUS_EXPORT_PATH_DESC"/>
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
@@ -161,45 +164,45 @@
 		<field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH" description="NB_EMAIL_PER_BATCH_DESC" />
 		<field name="time_sleep_per_batch" type="text" size="6" default="1000" label="TIME_SLEEP_PER_BATCH" description="TIME_SLEEP_PER_BATCH_DESC" />
 		<field
-			name="spacer1"
-			type="spacer"
-			hr="true"
-			/>
-<!--
-		<field name="reminder" type="text" default="30" label="NUMBER_OF_DAYS_BETWEEN_EACH_REMIND" description="NUMBER_OF_DAYS_BETWEEN_EACH_REMIND_DESC" />
-		<field name="reminder_mail_id" type="text" default="" label="EMAIL_SENT_TO_APPLICANTS" description="EMAIL_SENT_TO_APPLICANTS_DESC" />
-		<field name="particular_remind" type="text" default="14,7,1" label="PARTICULAR_REMIND" description="PARTICULAR_REMIND_DESC" />
-		<field
-			name="spacer2"
-			type="spacer"
-			hr="true"
-			/>
-		<field name="reminder_element_date_id" type="text" default="" label="DATE_OF_BEGIN_REMIND" description="DATE_OF_BEGIN_REMIND_DESC" />
-		<field name="report_remind_mail_id" type="text" default="16" label="EMAIL_SENT_TO_APPLICANTS" description="EMAIL_SENT_TO_APPLICANTS_DESC" />
-		<field name="remind_days" type="text" default="90,120,150" label="REMIND_DAYS" description="REMIND_DAYS_DESC" />
-		<field name="reminder_attanchment_id" type="text" default="" label="ATTACHMENT_EXIST" description="ATTACHMENT_EXIST_DESC" />
-		<field name="reminder_profile_id" type="text" default="" label="PROFILES_CONCERNED" description="PROFILES_CONCERNED_DESC" />
-		<field
-			name="spacer3"
-			type="spacer"
-			hr="true"
-			/>
-		<field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" />
-		<field name="reference_table" type="text" label="COM_EMUNDUS_REFERENCE_TABLE" description="COM_EMUNDUS_REFERENCE_TABLE_DESC" />
-		<field name="reference_field" type="text" label="COM_EMUNDUS_REFERENCE_FIELD" description="COM_EMUNDUS_REFERENCE_FIELD_DESC" />
--->
+				name="spacer1"
+				type="spacer"
+				hr="true"
+		/>
+		<!--
+                <field name="reminder" type="text" default="30" label="NUMBER_OF_DAYS_BETWEEN_EACH_REMIND" description="NUMBER_OF_DAYS_BETWEEN_EACH_REMIND_DESC" />
+                <field name="reminder_mail_id" type="text" default="" label="EMAIL_SENT_TO_APPLICANTS" description="EMAIL_SENT_TO_APPLICANTS_DESC" />
+                <field name="particular_remind" type="text" default="14,7,1" label="PARTICULAR_REMIND" description="PARTICULAR_REMIND_DESC" />
+                <field
+                    name="spacer2"
+                    type="spacer"
+                    hr="true"
+                    />
+                <field name="reminder_element_date_id" type="text" default="" label="DATE_OF_BEGIN_REMIND" description="DATE_OF_BEGIN_REMIND_DESC" />
+                <field name="report_remind_mail_id" type="text" default="16" label="EMAIL_SENT_TO_APPLICANTS" description="EMAIL_SENT_TO_APPLICANTS_DESC" />
+                <field name="remind_days" type="text" default="90,120,150" label="REMIND_DAYS" description="REMIND_DAYS_DESC" />
+                <field name="reminder_attanchment_id" type="text" default="" label="ATTACHMENT_EXIST" description="ATTACHMENT_EXIST_DESC" />
+                <field name="reminder_profile_id" type="text" default="" label="PROFILES_CONCERNED" description="PROFILES_CONCERNED_DESC" />
+                <field
+                    name="spacer3"
+                    type="spacer"
+                    hr="true"
+                    />
+                <field name="keyid" type="text" label="Key id for the reminder email" description="REMINDERKEY" />
+                <field name="reference_table" type="text" label="COM_EMUNDUS_REFERENCE_TABLE" description="COM_EMUNDUS_REFERENCE_TABLE_DESC" />
+                <field name="reference_field" type="text" label="COM_EMUNDUS_REFERENCE_FIELD" description="COM_EMUNDUS_REFERENCE_FIELD_DESC" />
+        -->
 		<field name="expert_fabrikformid" type="text" default="110" label="COM_EMUNDUS_EXPERT_FIELD" description="COM_EMUNDUS_EXPERT_FIELD_DESC" />
 		<field name="expert_document_id" type="text" default="36" label="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD" description="COM_EMUNDUS_EXPERT_DOCUMENT_FIELD_DESC" />
 		<field name="default_email_tmpl" type="text" default="expert" label="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD" description="COM_EMUNDUS_EXPERT_DEFAULT_EMAIL_TMPL_FIELD_DESC" />
-    </fieldset>
+	</fieldset>
 	<fieldset label="COM_EMUNDUS_IMPORTS" name="imports" description="COM_EMUNDUS_IMPORTS_DESC">
 		<field name="ldapFiltersImport" type="text" required="false" label="COM_EMUNDUS_LDAP_FILTERS_IMPORT_LABEL" description="COM_EMUNDUS_LDAP_FILTERS_IMPORT_DESC" />
 	</fieldset>
-<!--
-	<fieldset addfieldpath="/administrator/components/com_emundus/models/fields" label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >
-        <field name="export_pdf" type="text" size="60" default="" label="Select items for the pdf export"/>
-	</fieldset>
--->
+	<!--
+        <fieldset addfieldpath="/administrator/components/com_emundus/models/fields" label="COM_EMUNDUS_PDF" name="pdf" description="COM_EMUNDUS_PDF_DESC" >
+            <field name="export_pdf" type="text" size="60" default="" label="Select items for the pdf export"/>
+        </fieldset>
+    -->
 
 	<fieldset label="COM_EMUNDUS_CALENDAR" name="calendar" description="COM_EMUNDUS_CALENDAR_DESC">
 		<field name="useGoogle" menu="hide" type="list" default="0" label="COM_EMUNDUS_USE_GOOGLE" description="COM_EMUNDUS_USE_GOOGLE_DESC">
@@ -235,15 +238,15 @@
 		<field name="ametys_sync_default_synthesis" type="editor" default="[APPLICANT_NAME]" label="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_SYNTHESIS" description="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_SYNTHESIS_DESC" />
 	</fieldset>
 	<fieldset
-        name="permissions"
-		description="JCONFIG_PERMISSIONS_DESC"
-		label="JCONFIG_PERMISSIONS_LABEL">
+			name="permissions"
+			description="JCONFIG_PERMISSIONS_DESC"
+			label="JCONFIG_PERMISSIONS_LABEL">
 
 		<field
-			name="rules" type="rules" component="com_emundus"
-			class="inputbox" filter="rules" validate="rules"
-			label="JCONFIG_PERMISSIONS_LABEL"
-			section="component" />
+				name="rules" type="rules" component="com_emundus"
+				class="inputbox" filter="rules" validate="rules"
+				label="JCONFIG_PERMISSIONS_LABEL"
+				section="component" />
 	</fieldset>
 	<fieldset name="users" label="COM_EMUNDUS_USERS_LABEL" description="COM_EMUNDUS_USERS_DESC">
 		<field name="showUniversities" type="list" menu="hide" default="1" label="COM_EMUNDUS_SHOW_UNIVERSITIES" description="COM_EMUNDUS_SHOW_UNIVERSITIES_DESC">
