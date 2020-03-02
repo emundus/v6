@@ -1876,7 +1876,13 @@ if (JFactory::getUser()->id == 63)
 			    foreach ($fnums as $fnum) {
 
 				    $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);
-				    $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
+                    $query = $db->getQuery(true);
+
+                    $query
+                        ->update($db->quoteName('#__emundus_campaign_candidature'))
+                        ->set($db->quoteName('status').' = '.$state)
+                        ->where($db->quoteName('fnum').' LIKE '. $db->Quote($fnum));
+
 				    $db->setQuery($query);
 				    $res = $db->execute();
 				    $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
@@ -1895,7 +1901,13 @@ if (JFactory::getUser()->id == 63)
 		    }
 		    else {
 			    $dispatcher->trigger('onBeforeStatusChange', [$fnums, $state]);
-			    $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnums) ;
+                $query = $db->getQuery(true);
+
+                $query
+                    ->update($db->quoteName('#__emundus_campaign_candidature'))
+                    ->set($db->quoteName('status').' = '.$state)
+                    ->where($db->quoteName('fnum').' LIKE '. $db->Quote($fnums));
+
 			    $db->setQuery($query);
 			    $res = $db->execute();
 			    $dispatcher->trigger('onAfterStatusChange', [$fnums, $state]);
