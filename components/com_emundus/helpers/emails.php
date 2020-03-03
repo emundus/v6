@@ -33,7 +33,9 @@ class EmundusHelperEmails {
 		$fnumsArray = (array) json_decode($fnums);
 		if (count($fnumsArray) > 0) {
 			foreach ($fnumsArray as $value) {
-				$fnums_tab[] = $value->fnum;
+				if ($value->fnum !== 'em-check-all') {
+					$fnums_tab[] = $value->fnum;
+				}
 			}
 			$fnums = json_encode($fnums_tab);
 		}
@@ -183,14 +185,14 @@ class EmundusHelperEmails {
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
 			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
-			$student_id = $jinput->get('jos_emundus_evaluations___student_id', null, 'INT');
-			$campaign_id = $jinput->get('jos_emundus_evaluations___campaign_id', null, 'INT');
+			$student_id = $jinput->getInt('jos_emundus_evaluations___student_id');
+			$campaign_id = $jinput->getInt('jos_emundus_evaluations___campaign_id');
 			$applicant = JFactory::getUser($student_id);
 
 			$email .= '<fieldset>
 				<legend>
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_APPLICATION_RESULT').'::'.JText::_('EMAIL_APPLICATION_RESULT_TIP').'">
-						<img src="'.JURI::base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_TO').'"/> '.JText::_( 'EMAIL_TO' ).' '.$applicant->name.' &bull; <i>'.$applicant->email.'</i>
+						<img src="'.JURI::base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_TO').'"/> '.JText::_('EMAIL_TO').' '.$applicant->name.' &bull; <i>'.$applicant->email.'</i>
 					</span>
 				</legend>
 				<div>';
@@ -198,9 +200,7 @@ class EmundusHelperEmails {
 					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
 					<input name="mail_to" type="hidden" class="inputbox input-xlarge" id="mail_to" value="'.$applicant->id.'" />
 					<input name="campaign_id" type="hidden" class="inputbox" id="campaign_id" value="'.$campaign_id.'" size="100" />
-				</div>';
-				$email .= $mail_body;
-				$email .= '
+				</div>'.$mail_body.'
 				</p>
 					<input name="mail_attachments" type="hidden" class="inputbox" id="mail_attachments" value="" />
 					<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="evaluation_result" />
@@ -250,7 +250,7 @@ class EmundusHelperEmails {
 
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
-			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
+			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params);
 
 			$experts = "";
 
@@ -275,7 +275,16 @@ class EmundusHelperEmails {
 							</div>
 						</p>
 						
+					<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/tinymce.min.js"></script>
+					<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/js/tinymce.min.js"></script>
+					<script data-cfasync="false" type="text/javascript">tinyMCE.init({menubar:false,statusbar: false})</script>
 					<script>
+					
+						// Editor loads disabled by default, we apply must toggle it active on page load.
+					    $(document).ready(function() {
+					        tinyMCE.execCommand(\'mceToggleEditor\', true, \'mail_body\');
+					    });
+					
 						var REGEX_EMAIL = "([a-z0-9!#$%&\\\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\\\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)";
 						$("#mail_to").selectize({
 					        plugins: ["remove_button"],
@@ -366,10 +375,9 @@ class EmundusHelperEmails {
 
 			$email .= $mail_body.'<div><input class="btn btn-large btn-success" type="submit" name="applicant_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>';
 		}
-		$email .= '</div>';
-		$email .= '
-<script>$(document).on("click", "input[type=\'submit\']", function() { if($("#mail_subject").val() == ""){$("#mail_subject").css("border", "2px solid red"); return false;} else document.pressed=this.name; }); </script>';
-		$email .='<script>'.EmundusHelperJavascript::getTemplate().'</script>';
+		$email .= '</div>
+					<script>$(document).on("click", "input[type=\'submit\']", function() { if($("#mail_subject").val() == ""){$("#mail_subject").css("border", "2px solid red"); return false;} else document.pressed=this.name; }); </script>
+					<script>'.EmundusHelperJavascript::getTemplate().'</script>';
 
 		return $email;
 	}

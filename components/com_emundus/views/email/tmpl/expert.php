@@ -204,8 +204,6 @@ document.getElementById("adminForm").addEventListener("submit", event => {
         // update the textarea with the WYSIWYG content.
         tinymce.triggerSave();
 
-        console.log($('#mail_to').val());
-
         var data = {
             mail_attachments : $('#mail_attachments').val(),
             mail_to	: $('#mail_to').val(),
