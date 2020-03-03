@@ -4,9 +4,9 @@
  * JCH Optimize - Joomla! plugin to aggregate and minify external resources for
  * optmized downloads
  *
- * @author Samuel Marshall <sdmarshall73@gmail.com>
+ * @author    Samuel Marshall <sdmarshall73@gmail.com>
  * @copyright Copyright (c) 2014 Samuel Marshall
- * @license GNU/GPLv3, See LICENSE file
+ * @license   GNU/GPLv3, See LICENSE file
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,56 +20,61 @@
  *
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
+
+namespace JchOptimize\Platform;
+
+use JchOptimize\Interfaces\ProfilerInterface;
+
 defined('_JEXEC') or die('Restricted access');
 
-class JchPlatformProfiler implements JchInterfaceProfiler
+class Profiler implements ProfilerInterface
 {
-        /**
-         * 
-         * @global type $_PROFILER
-         * @param type $text
-         * @return type
-         */
-        public static function mark($text)
-        {
-                global $_PROFILER;
-                
-                $_PROFILER->mark($text . ' plgSystem (JCH Optimize)');
-        }
-        
-        /**
-         * 
-         * @param type $sHtml
-         */
-        public static function attachProfiler(&$sHtml, $bAmpPage=false)
-        {
-                
-        }
-        
-                
-        /**
-         * 
-         * @param type $text
-         * @param type $mark
-         */
-        public static function start($text, $mark=FALSE)
-        {
-                if($mark)
-                {
-                        self::mark('before' . $text);
-                }
-        }
-        
-        /**
-         * 
-         * @param type $text
-         * @param type $mark
-         */
-        public static function stop($text, $mark=FALSE)
-        {
-                if($mark)
-                {
-                        self::mark('after' . $text);
-                }
-        }
+	/**
+	 *
+	 * @param   string  $text
+	 */
+	public static function mark($text)
+	{
+		global /** @var \Joomla\CMS\Profiler\Profiler $_PROFILER */
+		$_PROFILER;
+
+		$_PROFILER->mark($text . ' plgSystem (JCH Optimize)');
+	}
+
+	/**
+	 *
+	 * @param   string  $sHtml
+	 * @param   bool    $bAmpPage
+	 */
+	public static function attachProfiler(&$sHtml, $bAmpPage = false)
+	{
+
+	}
+
+
+	/**
+	 *
+	 * @param   string   $text
+	 * @param   boolean  $mark
+	 */
+	public static function start($text, $mark = false)
+	{
+		if ($mark)
+		{
+			self::mark('before' . $text);
+		}
+	}
+
+	/**
+	 *
+	 * @param   string   $text
+	 * @param   boolean  $mark
+	 */
+	public static function stop($text, $mark = false)
+	{
+		if ($mark)
+		{
+			self::mark('after' . $text);
+		}
+	}
 }

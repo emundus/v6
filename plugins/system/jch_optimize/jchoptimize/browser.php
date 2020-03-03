@@ -19,9 +19,13 @@
  *
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
+namespace JchOptimize\Core;
+
 defined('_JCH_EXEC') or die('Restricted access');
 
-class JchOptimizeBrowser
+use JchOptimize\Platform\Profiler;
+
+class Browser
 {
 
         //adler32 hash of response from http://fonts.googleapis.com/css?family=Racing+Sans+One/file type
@@ -46,7 +50,7 @@ class JchOptimizeBrowser
 
                 if (!isset(self::$instances[$signature]))
                 {
-                        self::$instances[$signature] = new JchOptimizeBrowser($userAgent);
+                        self::$instances[$signature] = new Browser($userAgent);
                 }
 
                 return self::$instances[$signature];
@@ -54,7 +58,7 @@ class JchOptimizeBrowser
 
         public function parseUserAgent($userAgent)
         {
-                JCH_DEBUG ? JchPlatformProfiler::start('ParseUserAgent') : null;
+                JCH_DEBUG ? Profiler::start('ParseUserAgent') : null;
 
                 //Chrome
                 if (preg_match('#^(?:(?=[^(]*+\([^AM)]*+(Android|Macintosh)))?(?>(?:Mozilla|AppleWebKit|Safari)/[\d. ]*+(?:\([^)]*+\)(?:[^()]*+\))*\s*+)?|Chrome/(\d++\.\d++)[\d. ]*+|Mobile\s*+){4,5}$|'
@@ -263,7 +267,7 @@ class JchOptimizeBrowser
 
                 }
                 
-                JCH_DEBUG ? JchPlatformProfiler::stop('ParseUserAgent', TRUE) : null;
+                JCH_DEBUG ? Profiler::stop('ParseUserAgent', TRUE) : null;
         }
 
         public function getBrowser()

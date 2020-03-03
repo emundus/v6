@@ -2,9 +2,9 @@
 <extension type="package" version="3.3.0" method="upgrade">
 	<name>JCH Optimize Package</name>
 	<author>Samuel Marshall</author>
-	<creationDate>September 2019</creationDate>
+	<creationDate>February 2020</creationDate>
 	<packagename>jch_optimize</packagename>
-	<version>5.4.3</version>
+	<version>6.0.0</version>
 	<packager>JCH Optimize</packager>
 	<packageurl>https://www.jch-optimize.net</packageurl>
 	<copyright>Copyright (c) 2017 Samuel Marshall</copyright> 

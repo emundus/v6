@@ -18,6 +18,7 @@
  *
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
+
 defined('_JEXEC') or die('No direct access');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_menus/helpers/menus.php';

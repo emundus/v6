@@ -19,13 +19,16 @@
  *
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
+
 defined('_JEXEC') or die;
+
+use JchOptimize\Platform\Plugin;
 
 class Jch_optimizeHelper{
 
 	public static function prepareUpdate(&$update, &$headers)
 	{
-                $uri = JUri::getInstance($update->downloadurl->_data);
+                $uri = JUri::getInstance(trim($update->downloadurl->_data));
 
                 // I don't care about download URLs not coming from our site
                 $host = $uri->getHost();
@@ -36,7 +39,7 @@ class Jch_optimizeHelper{
 
 		include_once JPATH_PLUGINS . '/system/jch_optimize/jchoptimize/loader.php';
 
-		$params = JchPlatformPlugin::getPluginParams();
+		$params = Plugin::getPluginParams();
                 // Get the download ID
                 $dlid = trim($params->get('pro_downloadid', ''));
 

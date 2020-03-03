@@ -20,32 +20,18 @@
  */
 defined('_JEXEC') or die;
 
-if (version_compare(PHP_VERSION, '5.3.0', '<'))
+use JchOptimize\Core\Admin;
+
+include_once dirname(__FILE__) . '/auto.php';
+
+class JFormFieldAutosettings extends JFormFieldAuto
 {
-        require_once dirname(__FILE__) . '/compat.php';
+	protected $type = 'autosettings';
 
-        class JFormFieldAutosettings extends JFormFieldCompat
-        {
-                public $type = 'autosettings';
+	protected function getButtons()
+	{
+		return Admin::getSettingsIcons();
+	}
 
-                protected function getInput()
-                {
-                        
-                }
-        }
 }
-else
-{
-        include_once dirname(__FILE__) . '/auto.php';
 
-        class JFormFieldAutosettings extends JFormFieldAuto
-        {
-                protected $type = 'autosettings';
-                
-                protected function getButtons()
-                {
-                        return JchOptimizeAdmin::getSettingsIcons();
-                }
-
-        }
-}

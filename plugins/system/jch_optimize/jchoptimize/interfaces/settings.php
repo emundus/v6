@@ -20,10 +20,11 @@
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
 
+namespace JchOptimize\Interfaces;
 
 defined('_JCH_EXEC') or die('Restricted access');
 
-interface JchInterfaceSettings
+interface SettingsInterface
 {
         static public function getInstance($params);
         
@@ -32,4 +33,13 @@ interface JchInterfaceSettings
         public function set($param, $value);
         
         public function getOptions();
+
+	/**
+	 * Delete a value from the settings object
+	 *
+	 * @param    mixed    $param    The parameter value to be deleted
+	 *
+	 * @return   null
+	 */
+	public function remove($param);
 }

@@ -19,9 +19,9 @@ defined('_JEXEC') or die('Restricted access');
 class PlgHikashopEmundus_hikashop extends JPlugin {
 
     function __construct(&$subject, $config) {
-        parent::__construct($subject, $config);
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.emundus_hikashop_plugin.php'), JLog::ALL, array('com_emundus'));
+        parent::__construct($subject, $config);
     }
 
     public function onAfterOrderCreate(&$order){
@@ -30,19 +30,16 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $em_application_payment = $eMConfig->get('application_payment', 'user');
 
-
-
         $session = JFactory::getSession()->get('emundusUser');
         $order_id = $order->order_id;
 
-        
         if (!empty($session)) {
             $user = $session->id;
             $fnum = $session->fnum;
             $cid = $session->campaign_id;
         }
         else {
-            JLog::add('Could not get session on order ID. -> '. $order, JLog::ERROR, 'com_emundus');
+            JLog::add('Could not get session on order ID. -> '. $order_id, JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -66,7 +63,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
                     ->select('*')
                     ->from($db->quoteName('#__emundus_hikashop'))
                     ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR (' . $db->quoteName('campaign_id') . ' = ' . $cid . ' AND ' . $db->quoteName('user') . ' = ' . $user .' ) ');
-            break;
+                break;
 
             case 'fnum':
                 $query
@@ -74,7 +71,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
                     ->select('*')
                     ->from($db->quoteName('#__emundus_hikashop'))
                     ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-            break;
+                break;
 
             case 'user':
             default :
@@ -128,6 +125,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
             if ($res) {
                 JLog::add('Order '. $order_id .' update -> '. $query->__toString(), JLog::INFO, 'com_emundus');
+                return true;
             }
             return $res;
 
@@ -140,4 +138,4 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     public function onAfterOrderUpdate(&$order){
         $this->onAfterOrderCreate($order);
     }
-}
+}   

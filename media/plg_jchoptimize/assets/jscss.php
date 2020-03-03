@@ -26,6 +26,6 @@
 
 require_once dirname(dirname(dirname(dirname(__FILE__)))) . '/plugins/system/jch_optimize/bootstrap.php';
 
-loadJchOptimizeClass('JchOptimizeOutput');
+jchoptimize_class_autoload('JchOptimize\\Core\\Output');
 
-JchOptimizeOutput::getCombinedFile();
+JchOptimize\Core\Output::getCombinedFile();

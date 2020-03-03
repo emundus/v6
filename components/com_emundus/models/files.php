@@ -59,8 +59,7 @@ class EmundusModelFiles extends JModelLegacy
      *
      * @since 1.5
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
 
         $db = JFactory::getDbo();
@@ -88,8 +87,6 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         $menu_params = $menu->getParams($current_menu->id);
-        //$em_filters_names = explode(',', $menu_params->get('em_filters_names'));
-        //$em_filters_values = explode(',', $menu_params->get('em_filters_values'));
         $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 
         $session = JFactory::getSession();
@@ -108,17 +105,14 @@ class EmundusModelFiles extends JModelLegacy
             }
         }
 
-        if(!$session->has('limit'))
-        {
+        if (!$session->has('limit')) {
             $limit = $mainframe->getCfg('list_limit');
             $limitstart = 0;
             $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
             $session->set('limit', $limit);
             $session->set('limitstart', $limitstart);
-        }
-        else
-        {
+        } else {
             $limit = intval($session->get('limit'));
             $limitstart = intval($session->get('limitstart'));
             $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
@@ -131,11 +125,9 @@ class EmundusModelFiles extends JModelLegacy
         $col_other = $this->getState('elements_other');
 
         $this->elements_id = $menu_params->get('em_elements_id');
-        if ($session->has('adv_cols'))
-        {
+        if ($session->has('adv_cols')) {
             $adv = $session->get('adv_cols');
-            if (!empty($adv))
-            {
+            if (!empty($adv)) {
                 $this->elements_id .= ','.implode(',', $adv);
             }
 
@@ -145,21 +137,20 @@ class EmundusModelFiles extends JModelLegacy
         $this->_elements_default = array();
         $this->_elements = $h_files->getElementsName($this->elements_id);
 
-        if (!empty($this->_elements))
-        {
-            foreach ($this->_elements as $def_elmt)
-            {
+        if (!empty($this->_elements)) {
+            foreach ($this->_elements as $def_elmt) {
                 $group_params = json_decode($def_elmt->group_attribs);
 
-                if($def_elmt->element_plugin == 'date') {
+                if ($def_elmt->element_plugin == 'date') {
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
                                                         SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->table_join.'.'.$def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
                                                         FROM '.$def_elmt->table_join.'
                                                         WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
                                                       ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
-                    } else
-                        $this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+                    } else {
+	                    $this->_elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name.' AS `'.$def_elmt->tab_name.'___'.$def_elmt->element_name.'`';
+                    }
                 }
                 elseif ($def_elmt->element_plugin == 'databasejoin') {
                     $attribs = json_decode($def_elmt->element_attribs);
@@ -184,7 +175,7 @@ class EmundusModelFiles extends JModelLegacy
                                     '.$publish_query.'
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                     } else {
-                        if($attribs->database_join_display_type=="checkbox"){
+                        if ($attribs->database_join_display_type == "checkbox") {
 
                             $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
                             $query = '(
@@ -204,9 +195,7 @@ class EmundusModelFiles extends JModelLegacy
                     }
 
                     $this->_elements_default[] = $query;
-                    //$this->_elements_default[] = ' (SELECT esc.label FROM jos_emundus_setup_campaigns AS esc WHERE esc.id = jos_emundus_campaign_candidature.campaign_id) as `jos_emundus_campaign_candidature.campaign_id` ';
-                }
-                elseif($def_elmt->element_plugin == 'cascadingdropdown') {
+                } elseif ($def_elmt->element_plugin == 'cascadingdropdown') {
                     $attribs = json_decode($def_elmt->element_attribs);
                     $cascadingdropdown_id = $attribs->cascadingdropdown_id;
                     $r1 = explode('___', $cascadingdropdown_id);
@@ -214,7 +203,7 @@ class EmundusModelFiles extends JModelLegacy
                     $r2 = explode('___', $cascadingdropdown_label);
                     $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
                     $from = $r2[0];
-                    $where = $r1[1].'='.$def_elmt->element_name;
+                    $where = $r1[1].'='.$def_elmt->tab_name.'.'.$def_elmt->element_name;
                     $query = "(SELECT ".$select." FROM ".$from." WHERE ".$where.") AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
                     $query = preg_replace('#{thistable}#', $from, $query);
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
@@ -238,36 +227,38 @@ class EmundusModelFiles extends JModelLegacy
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
-                }
-                else {
+                } else {
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
                                                         SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
                                                         FROM '.$def_elmt->table_join.'
                                                         WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
                                                       ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
-                    } else
-                        $this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
+                    } else {
+	                    $this->_elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name.' AS '.$def_elmt->tab_name.'___'.$def_elmt->element_name;
+                    }
                 }
 
-                //$this->_elements_default_name[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
             }
         }
-        if (in_array('overall', $em_other_columns))
+        if (in_array('overall', $em_other_columns)) {
             $this->_elements_default[] = ' AVG(ee.overall) as overall ';
-
-        if (empty($col_elt))
-            $col_elt = array();
-        if (empty($col_other))
-            $col_other = array();
-        if (empty(@$this->_elements_default_name))
-            $this->_elements_default_name = array();
+		}
+        if (empty($col_elt)) {
+	        $col_elt = array();
+        }
+        if (empty($col_other)) {
+	        $col_other = array();
+        }
+        if (empty(@$this->_elements_default_name)) {
+	        $this->_elements_default_name = array();
+        }
 
         $this->col = array_merge($col_elt, $col_other, $this->_elements_default_name);
 
         if (count($this->col) > 0) {
 
-            $elements_names = '"' . implode('", "', $this->col) . '"';
+            $elements_names = '"'.implode('", "', $this->col).'"';
 
             $h_list = new EmundusHelperList;
 
@@ -275,8 +266,7 @@ class EmundusModelFiles extends JModelLegacy
             $result = $h_files->insertValuesInQueryResult($result, array("sub_values", "sub_labels"));
 
             $this->details = new stdClass();
-            foreach ($result as $res)
-            {
+            foreach ($result as $res) {
                 $this->details->{$res->tab_name . '___' . $res->element_name} = array('element_id' => $res->element_id,
                                                                                       'plugin' => $res->element_plugin,
                                                                                       'attribs' => $res->params,
@@ -290,16 +280,15 @@ class EmundusModelFiles extends JModelLegacy
     /**
      * @return array
      */
-    public function getElementsVar()
-    {
+    public function getElementsVar() {
         return $this->_elements;
     }
 
-    /**
-     * @return string
-     */
-    public function _buildContentOrderBy()
-    {
+	/**
+	 * @return string
+	 * @throws Exception
+	 */
+    public function _buildContentOrderBy() {
         $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
         $menu_params = $menu->getParams($current_menu->id);
@@ -310,7 +299,7 @@ class EmundusModelFiles extends JModelLegacy
         $filter_order_Dir = $session->get('filter_order_Dir');
 
         $can_be_ordering = array();
-        if(count($this->_elements) > 0) {
+        if (count($this->_elements) > 0) {
             foreach ($this->_elements as $element) {
                 $can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
                 $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
@@ -326,11 +315,11 @@ class EmundusModelFiles extends JModelLegacy
         $can_be_ordering[] = 'eta.id_tag';
 
 
-        if (in_array('overall', $em_other_columns))
-            $can_be_ordering[] = 'overall';
+        if (in_array('overall', $em_other_columns)) {
+	        $can_be_ordering[] = 'overall';
+        }
 
-        if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering))
-        {
+        if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
             return ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
         }
 
@@ -347,15 +336,20 @@ class EmundusModelFiles extends JModelLegacy
         if (is_array($multi_array)) {
 
             foreach ($multi_array as $key => $row_array) {
-                if (is_array($row_array))
-                    @$key_array[$key] = $row_array[$sort_key];
-                else return -1;
+                if (is_array($row_array)) {
+	                @$key_array[$key] = $row_array[$sort_key];
+                } else {
+                	return -1;
+                }
             }
 
-        } else return -1;
+        } else {
+        	return -1;
+        }
 
-        if (!empty($key_array))
-            array_multisort($key_array, $sort, $multi_array);
+        if (!empty($key_array)) {
+	        array_multisort($key_array, $sort, $multi_array);
+        }
 
         return $multi_array;
     }
@@ -363,8 +357,7 @@ class EmundusModelFiles extends JModelLegacy
     /**
      * @return mixed
      */
-    public function getCampaign()
-    {
+    public function getCampaign() {
         $h_files = new EmundusHelperFiles;
         return $h_files->getCampaign();
     }
@@ -373,8 +366,7 @@ class EmundusModelFiles extends JModelLegacy
      * @return mixed
      * @throws Exception
      */
-    public function getCurrentCampaign()
-    {
+    public function getCurrentCampaign() {
         $h_files = new EmundusHelperFiles;
         return $h_files->getCurrentCampaign();
     }
@@ -383,8 +375,7 @@ class EmundusModelFiles extends JModelLegacy
      * @return mixed
      * @throws Exception
      */
-    public function getCurrentCampaignsID()
-    {
+    public function getCurrentCampaignsID() {
         $h_files = new EmundusHelperFiles;
         return $h_files->getCurrentCampaignsID();
     }
@@ -393,16 +384,13 @@ class EmundusModelFiles extends JModelLegacy
      * @param $user
      * @return mixed
      */
-    public function getProfileAcces($user)
-    {
+    public function getProfileAcces($user) {
         $db = JFactory::getDBO();
         $query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
                     LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
                     WHERE esg.published=1 AND eg.user_id=' . $user;
         $db->setQuery($query);
-        $profiles = $db->loadResultArray();
-
-        return $profiles;
+        return $db->loadResultArray();
     }
 
 
@@ -430,20 +418,14 @@ class EmundusModelFiles extends JModelLegacy
      * @param    array $head_val header name
      * @param    object $applicant array of applicants indexed by database column
      **/
-    public function setEvalList($search, &$eval_list, $head_val, $applicant)
-    {
-        //print_r($applicant); die();
+    public function setEvalList($search, &$eval_list, $head_val, $applicant) {
         $h_list = new EmundusHelperList;
         if (!empty($search)) {
             foreach ($search as $c) {
                 if (!empty($c)) {
                     $name = explode('.', $c);
                     if (!in_array($name[0] . '___' . $name[1], $head_val)) {
-                        $print_val = '';
-                        if ($this->details->{$name[0] . '___' . $name[1]}['group_by']
-                            && array_key_exists($name[0] . '___' . $name[1], $this->subquery)
-                            && array_key_exists($applicant->user_id, $this->subquery[$name[0] . '___' . $name[1]])
-                        ) {
+                        if ($this->details->{$name[0] . '___' . $name[1]}['group_by'] && array_key_exists($name[0] . '___' . $name[1], $this->subquery) && array_key_exists($applicant->user_id, $this->subquery[$name[0] . '___' . $name[1]])) {
                             $eval_list[$name[0] . '___' . $name[1]] = $h_list->createHtmlList(explode(",",
                                 $this->subquery[$name[0] . '___' . $name[1]][$applicant->user_id]));
                         } elseif ($name[0] == 'jos_emundus_training') {
@@ -452,8 +434,9 @@ class EmundusModelFiles extends JModelLegacy
                             $eval_list[$name[0] . '___' . $name[1]] =
                                 $h_list->getBoxValue($this->details->{$name[0] . '___' . $name[1]},
                                     $applicant->{$name[0] . '___' . $name[1]}, $name[1]);
-                        } else
-                            $eval_list[$name[0] . '___' . $name[1]] = $applicant->{$name[0] . '___' . $name[1]};
+                        } else {
+	                        $eval_list[$name[0].'___'.$name[1]] = $applicant->{$name[0].'___'.$name[1]};
+                        }
                     }
                 }
             }
@@ -485,7 +468,7 @@ class EmundusModelFiles extends JModelLegacy
                         if (!empty($value)) {
                             foreach ($value as $k => $v) {
                                 $tab = explode('.', $k);
-
+                                
                                 if (isset($v['select'])) {
                                 	$adv_select = $v['select'];
                                 }
@@ -555,7 +538,7 @@ class EmundusModelFiles extends JModelLegacy
                                             } else {
                                                 $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
                                             }
-
+                                            
                                             if (!isset($query[$tab[0]])) {
                                                 $query[$tab[0]] = true;
                                                 if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias)) {
@@ -750,7 +733,7 @@ class EmundusModelFiles extends JModelLegacy
 
                     case 'status':
                         if ($value) {
-                            $filt_menu_defined = ( isset($filt_menu['status'][0]) && $filt_menu['status'][0] != '' && $filt_menu['status'] != "%" ) ? true : false;
+                            $filt_menu_defined = (isset($filt_menu['status'][0]) && $filt_menu['status'][0] != '' && $filt_menu['status'] != "%" );
 
                             // session filter is empty
                             if ($value[0] == "%" || !isset($value[0]) || $value[0] == '') {
@@ -1876,7 +1859,13 @@ if (JFactory::getUser()->id == 63)
 			    foreach ($fnums as $fnum) {
 
 				    $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);
-				    $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnum) ;
+                    $query = $db->getQuery(true);
+
+                    $query
+                        ->update($db->quoteName('#__emundus_campaign_candidature'))
+                        ->set($db->quoteName('status').' = '.$state)
+                        ->where($db->quoteName('fnum').' LIKE '. $db->Quote($fnum));
+
 				    $db->setQuery($query);
 				    $res = $db->execute();
 				    $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
@@ -1895,7 +1884,13 @@ if (JFactory::getUser()->id == 63)
 		    }
 		    else {
 			    $dispatcher->trigger('onBeforeStatusChange', [$fnums, $state]);
-			    $query = 'update #__emundus_campaign_candidature set status = '.$state.' WHERE fnum like '.$db->Quote($fnums) ;
+                $query = $db->getQuery(true);
+
+                $query
+                    ->update($db->quoteName('#__emundus_campaign_candidature'))
+                    ->set($db->quoteName('status').' = '.$state)
+                    ->where($db->quoteName('fnum').' LIKE '. $db->Quote($fnums));
+
 			    $db->setQuery($query);
 			    $res = $db->execute();
 			    $dispatcher->trigger('onAfterStatusChange', [$fnums, $state]);

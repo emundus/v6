@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -299,15 +299,6 @@ HTML;
 	public function onBadWordsEdit()
 	{
 		$this->onBadWordsAdd();
-	}
-
-	public function onGeographicBlockingsBrowse()
-	{
-		JToolbarHelper::save();
-		JToolbarHelper::divider();
-		JToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools&view=WebApplicationFirewall');
-
-		JToolbarHelper::title(JText::_('COM_ADMINTOOLS_TITLE_GEOBLOCK'), 'admintools');
 	}
 
 	public function onSecurityExceptionsBrowse()

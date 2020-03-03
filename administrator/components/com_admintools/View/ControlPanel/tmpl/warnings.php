@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -60,25 +60,11 @@ echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/needsipworkaround
 
 <?php
 // Obsolete PHP version check
-if (version_compare(PHP_VERSION, '5.5.0', 'lt')):
-	JLoader::import('joomla.utilities.date');
-	$akeebaCommonDatePHP = new Date('2015-09-03 00:00:00', 'GMT');
-	$akeebaCommonDateObsolescence = new Date('2016-06-03 00:00:00', 'GMT');
-	?>
-	<div id="phpVersionCheck" class="akeeba-block--warning">
-		<h3><?php echo \JText::_('AKEEBA_COMMON_PHPVERSIONTOOOLD_WARNING_TITLE'); ?></h3>
-		<p>
-			<?php echo JText::sprintf(
-				'AKEEBA_COMMON_PHPVERSIONTOOOLD_WARNING_BODY',
-				PHP_VERSION,
-				$akeebaCommonDatePHP->format(JText::_('DATE_FORMAT_LC1')),
-				$akeebaCommonDateObsolescence->format(JText::_('DATE_FORMAT_LC1')),
-				'5.6'
-			);
-			?>
-		</p>
-	</div>
-<?php endif; ?>
+echo $this->loadAnyTemplate('admin:com_admintools/ControlPanel/phpversion_warning', [
+	'softwareName'  => 'Admin Tools',
+	'minPHPVersion' => '5.6.0',
+]);
+?>
 
 <?php if ($this->oldVersion): ?>
 	<div class="akeeba-block--warning">
@@ -132,29 +118,4 @@ if (version_compare(PHP_VERSION, '5.5.0', 'lt')):
 		    <?php echo \JText::_('COM_ADMINTOOLS_CPANEL_SERVERCONFIGWARN_IGNORE')?>
         </a>
     </div>
-<?php endif; ?>
-
-<?php if ($this->isPro && !$this->hasplugin): ?>
-	<div class="akeeba-block--info">
-		<h3><?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_GEOIPPLUGINSTATUS'); ?></h3>
-
-		<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_GEOIPPLUGINMISSING'); ?></p>
-
-		<a class="akeeba-btn--primary--small" href="https://www.akeebabackup.com/download/akgeoip.html" target="_blank">
-			<span class="akion-ios-download-outline"></span>
-			<?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_DOWNLOADGEOIPPLUGIN'); ?>
-		</a>
-	</div>
-<?php elseif ($this->isPro && $this->pluginNeedsUpdate): ?>
-	<div class="akeeba-block--info">
-		<h3><?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_GEOIPPLUGINEXISTS'); ?></h3>
-
-		<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_GEOIPPLUGINCANUPDATE'); ?></p>
-
-		<a class="akeeba-btn--dark--small"
-		   href="index.php?option=com_admintools&view=ControlPanel&task=updategeoip&<?php echo $this->container->platform->getToken(true); ?>=1">
-			<span class="akion-refresh"></span>
-			<?php echo \JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_UPDATEGEOIPDATABASE'); ?>
-		</a>
-	</div>
 <?php endif; ?>

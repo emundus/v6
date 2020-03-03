@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ @package   admintools
-  ~ @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~ @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
   ~ @license   GNU General Public License version 3, or later
   -->
 
@@ -488,6 +488,60 @@ VALUES('rescueurl', '*', 'Rescue URL requested on [SITENAME] for [USER]', '<div 
 <p>In any other case your issue is unrelated to Admin Tools. Do you have another security plugin on your site? If you do, check its settings. If not, check with your host. More often than not hosts have their own server security systems which can block you out of your site.</p>
 </div>
 </div>', 1, 1, 1, 'minute', '2017-06-20 09:50:00', 800, '2017-06-20 09:50:00', 800);
+			]]></query>
+		</action>
+
+		<action table="#__admintools_scans" canfail="1">
+			<condition type="index" value="idx_fullstatus" />
+			<query><![CDATA[
+ALTER TABLE [#__admintools_scans] DROP CONSTRAINT [idx_fullstatus];
+			]]></query>
+		</action>
+
+		<action table="#__admintools_scans" canfail="0">
+			<condition type="missing" operator="not" value="description"/>
+			<query><![CDATA[
+ALTER TABLE [#__admintools_scans] DROP COLUMN [description];
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE [#__admintools_scans] DROP COLUMN [type];
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE [#__admintools_scans] DROP COLUMN [profile_id];
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE [#__admintools_scans] DROP COLUMN [archivename];
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE [#__admintools_scans] DROP COLUMN [absolute_path];
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE [#__admintools_scans] DROP COLUMN [tag];
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE [#__admintools_scans] DROP COLUMN [backupid];
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE [#__admintools_scans] DROP COLUMN [filesexist];
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE [#__admintools_scans] DROP COLUMN [remote_filename];
+			]]></query>
+			<query><![CDATA[
+ALTER TABLE [#__admintools_scans] DROP COLUMN [total_size];
+			]]></query>
+		</action>
+
+		<action table="#__admintools_scans" canfail="0">
+			<condition type="missing" value="scanstart"/>
+			<query><![CDATA[
+sp_rename '#__admintools_scans.backupstart', 'scanstart', 'COLUMN';
+			]]></query>
+			<query><![CDATA[
+sp_rename '#__admintools_scans.backupend', 'scanend', 'COLUMN';
+			]]></query>
+			<query><![CDATA[
+sp_rename '#__admintools_scans.multipart', 'totalfiles', 'COLUMN';
 			]]></query>
 		</action>
 	</sql>

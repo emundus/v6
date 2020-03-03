@@ -1,11 +1,13 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access
+use Akeeba\AdminTools\Admin\Model\ConfigureWAF;
+
 defined('_JEXEC') or die();
 
 // Load FOF if not already loaded
@@ -302,6 +304,11 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			// Refactored PHP File Change Scanner
 			'administrator/components/com_admintools/Controller/Scanner.php',
 			'administrator/components/com_admintools/Model/Scanner.php',
+
+			// Removed Geographic IP blocking
+			'administrator/components/com_admintools/Controller/GeographicBlocking.php',
+			'administrator/components/com_admintools/Model/GeographicBlocking.php',
+			'plugins/system/admintools/feature/geoblock.php',
 		],
 		'folders' => [
 			// Obsolete folders from AT 1.x, 2.x and 3.x
@@ -335,13 +342,38 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_admintools/platform',
 			'administrator/components/com_admintools/View/Scanner',
 
+			// Old CLI base script, replaced by FOF's base CLI script
+			'administrator/components/com_admintools/assets/cli',
+
+			// Removed Geographic IP blocking
+			'administrator/components/com_admintools/View/GeographicBlocking',
 		],
 	];
 
 	/**
+	 * The list of obsolete extra modules and plugins to uninstall on component upgrade / installation.
+	 *
+	 * @var array
+	 */
+	protected $uninstallation_queue = [
+		// modules => { (folder) => { (module) }* }*
+		'modules' => [
+			'admin' => [],
+			'site'  => [],
+		],
+		// plugins => { (folder) => { (element) }* }*
+		'plugins' => [
+			'system' => [
+				'atoolsjupdatecheck',
+			],
+		],
+	];
+
+
+	/**
 	 * Runs on installation
 	 *
-	 * @param   JInstallerAdapterComponent $parent The parent object
+	 * @param   JInstallerAdapterComponent  $parent  The parent object
 	 *
 	 * @return  void
 	 */
@@ -357,8 +389,8 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 	 * Joomla! pre-flight event. This runs before Joomla! installs or updates the component. This is our last chance to
 	 * tell Joomla! if it should abort the installation.
 	 *
-	 * @param   string                     $type   Installation type (install, update, discover_install)
-	 * @param   JInstallerAdapterComponent $parent Parent object
+	 * @param   string                      $type    Installation type (install, update, discover_install)
+	 * @param   JInstallerAdapterComponent  $parent  Parent object
 	 *
 	 * @return  boolean  True to let the installation proceed, false to halt the installation
 	 */
@@ -377,7 +409,7 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 	/**
 	 * Runs after install, update or discover_update
 	 *
-	 * @param   string                      $type install, update or discover_update
+	 * @param   string                      $type  install, update or discover_update
 	 * @param   JInstallerAdapterComponent  $parent
 	 *
 	 * @return  boolean  True to let the installation proceed, false to halt the installation
@@ -450,13 +482,15 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 		 */
 
 		if (!defined('ADMINTOOLS_THIS_IS_INSTALLATION_FROM_SCRATCH'))
-        {
-	        $this->_upgradeDisableMonitorSuperUsers($parent);
+		{
+			$this->_upgradeDisableMonitorSuperUsers($parent);
 
-	        $this->_upgradeRemoveObsoleteLoginSecurityLogEntries($parent);
+			$this->_upgradeRemoveObsoleteLoginSecurityLogEntries($parent);
 
-	        $this->_upgradeDeleteTextLogfiles();
-        }
+			$this->_upgradeDeleteTextLogfiles();
+
+			$this->migrateIpWorkarounds($container);
+		}
 
 		// Replace the system plugin with the actionlog plugin for logging user actions
 		$this->switchActionLogPlugins();
@@ -465,7 +499,7 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 	/**
 	 * Renders the post-installation message
 	 */
-	function renderPostInstallation($parent)
+	public function renderPostInstallation($parent)
 	{
 		try
 		{
@@ -488,23 +522,28 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 		}
 
 		?>
-		<img src="../administrator/components/com_admintools/media/images/admintools-48.png" width="48" height="48" alt="Admin Tools" align="right"/>
+		<img src="../administrator/components/com_admintools/media/images/admintools-48.png" width="48" height="48"
+		     alt="Admin Tools" align="right" />
 
 		<h2>Welcome to Admin Tools!</h2>
 
 		<fieldset>
 			<?php if (ADMINTOOLS_PRO): ?>
-			<p>
-				We strongly recommend watching our <a href="https://www.akeebabackup.com/videos/1207-admin-tools.html">video
-				tutorials</a> before using this component.
-			</p>
+				<p>
+					We strongly recommend watching our <a
+						href="https://www.akeebabackup.com/videos/1207-admin-tools.html">video
+						tutorials</a> before using this component.
+				</p>
 
-			<p>
-				If this is the first time you install Admin Tools on your site please run the
-				<a href="index.php?option=com_admintools&view=QuickStart">Quick Setup Wizard</a>. It will guide you through
-				tailoring Admin Tools for your site. <strong>Pay attention to the messages on that page. They contain
-				information to unblock yourself should you inadvertently block yourself out of your site!</strong>
-			</p>
+				<p>
+					If this is the first time you install Admin Tools on your site please run the
+					<a href="index.php?option=com_admintools&view=QuickStart">Quick Setup Wizard</a>. It will guide you
+					through
+					tailoring Admin Tools for your site. <strong>Pay attention to the messages on that page. They
+						contain
+						information to unblock yourself should you inadvertently block yourself out of your
+						site!</strong>
+				</p>
 			<?php endif; ?>
 
 			<p>
@@ -549,8 +588,8 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 		try
 		{
 			if (is_object($model) && class_exists('Akeeba\\AdminTools\\Admin\\Model\\Stats')
-			    && ($model instanceof Akeeba\AdminTools\Admin\Model\Stats)
-			    && method_exists($model, 'collectStatistics'))
+				&& ($model instanceof Akeeba\AdminTools\Admin\Model\Stats)
+				&& method_exists($model, 'collectStatistics'))
 			{
 				$iframe = $model->collectStatistics(true);
 
@@ -576,6 +615,75 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 	}
 
 	/**
+	 * Removes obsolete update sites created for the component (we are now using an update site for the package, not the
+	 * component).
+	 *
+	 * @param   JInstallerAdapterComponent  $parent  The parent installer
+	 */
+	protected function removeObsoleteUpdateSites($parent)
+	{
+		$db = $parent->getParent()->getDBO();
+
+		$query = $db->getQuery(true)
+			->select($db->qn('extension_id'))
+			->from($db->qn('#__extensions'))
+			->where($db->qn('type') . ' = ' . $db->q('component'))
+			->where($db->qn('name') . ' = ' . $db->q($this->componentName));
+
+		try
+		{
+			$extensionId = $db->setQuery($query)->loadResult();
+		}
+		catch (Exception $e)
+		{
+			// Your database is broken.
+			return;
+		}
+
+		if (!$extensionId)
+		{
+			return;
+		}
+
+		$query = $db->getQuery(true)
+			->select($db->qn('update_site_id'))
+			->from($db->qn('#__update_sites_extensions'))
+			->where($db->qn('extension_id') . ' = ' . $db->q($extensionId));
+
+		try
+		{
+			$ids = $db->setQuery($query)->loadColumn(0);
+		}
+		catch (Exception $e)
+		{
+			// Your database is broken.
+			return;
+		}
+
+		if (!is_array($ids) && empty($ids))
+		{
+			return;
+		}
+
+		foreach ($ids as $id)
+		{
+			$query = $db->getQuery(true)
+				->delete($db->qn('#__update_sites'))
+				->where($db->qn('update_site_id') . ' = ' . $db->q($id));
+			$db->setQuery($query);
+
+			try
+			{
+				$db->execute();
+			}
+			catch (\Exception $e)
+			{
+				// Do not fail in this case
+			}
+		}
+	}
+
+	/**
 	 * The PowerAdmin extension makes menu items disappear. People assume it's our fault. JSN PowerAdmin authors don't
 	 * own up to their software's issue. I have no choice but to warn our users about the faulty third party software.
 	 */
@@ -583,12 +691,12 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 	{
 		$db = JFactory::getDbo();
 
-		$query = $db->getQuery(true)
-		            ->select('COUNT(*)')
-		            ->from($db->qn('#__extensions'))
-		            ->where($db->qn('type') . ' = ' . $db->q('component'))
-		            ->where($db->qn('element') . ' = ' . $db->q('com_poweradmin'))
-		            ->where($db->qn('enabled') . ' = ' . $db->q('1'));
+		$query         = $db->getQuery(true)
+			->select('COUNT(*)')
+			->from($db->qn('#__extensions'))
+			->where($db->qn('type') . ' = ' . $db->q('component'))
+			->where($db->qn('element') . ' = ' . $db->q('com_poweradmin'))
+			->where($db->qn('enabled') . ' = ' . $db->q('1'));
 		$hasPowerAdmin = $db->setQuery($query)->loadResult();
 
 		if (!$hasPowerAdmin)
@@ -596,12 +704,12 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			return;
 		}
 
-		$query = $db->getQuery(true)
-		            ->select('manifest_cache')
-		            ->from($db->qn('#__extensions'))
-		            ->where($db->qn('type') . ' = ' . $db->q('component'))
-		            ->where($db->qn('element') . ' = ' . $db->q('com_poweradmin'))
-		            ->where($db->qn('enabled') . ' = ' . $db->q('1'));
+		$query      = $db->getQuery(true)
+			->select('manifest_cache')
+			->from($db->qn('#__extensions'))
+			->where($db->qn('type') . ' = ' . $db->q('component'))
+			->where($db->qn('element') . ' = ' . $db->q('com_poweradmin'))
+			->where($db->qn('enabled') . ' = ' . $db->q('1'));
 		$paramsJson = $db->setQuery($query)->loadResult();
 
 		$className = class_exists('JRegistry') ? 'JRegistry' : '\Joomla\Registry\Registry';
@@ -639,10 +747,10 @@ HTML;
 	 */
 	private function removeFOFUpdateSites()
 	{
-		$db = JFactory::getDbo();
+		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true)
-		            ->delete($db->qn('#__update_sites'))
-		            ->where($db->qn('location') . ' = ' . $db->q('http://cdn.akeebabackup.com/updates/fof.xml'));
+			->delete($db->qn('#__update_sites'))
+			->where($db->qn('location') . ' = ' . $db->q('http://cdn.akeebabackup.com/updates/fof.xml'));
 		try
 		{
 			$db->setQuery($query)->execute();
@@ -658,19 +766,19 @@ HTML;
 	{
 		$db = JFactory::getDbo();
 
-		$obsoleteTitleKeys = array(
+		$obsoleteTitleKeys = [
 			'COM_ADMINTOOLS_POSTSETUP_LBL_AUTOJUPDATE',
 			'COM_ADMINTOOLS_POSTSETUP_LBL_ACCEPTLICENSE',
 			'COM_ADMINTOOLS_POSTSETUP_LBL_ACCEPTSUPPORT',
-		);
+		];
 
 		foreach ($obsoleteTitleKeys as $obsoleteKey)
 		{
 
 			// Remove the "Upgrade profiles to ANGIE" post-installation message
 			$query = $db->getQuery(true)
-			            ->delete($db->qn('#__postinstall_messages'))
-			            ->where($db->qn('title_key') . ' = ' . $db->q($obsoleteKey));
+				->delete($db->qn('#__postinstall_messages'))
+				->where($db->qn('title_key') . ' = ' . $db->q($obsoleteKey));
 			try
 			{
 				$db->setQuery($query)->execute();
@@ -683,83 +791,14 @@ HTML;
 	}
 
 	/**
-	 * Removes obsolete update sites created for the component (we are now using an update site for the package, not the
-	 * component).
-	 *
-	 * @param   JInstallerAdapterComponent  $parent  The parent installer
-	 */
-	protected function removeObsoleteUpdateSites($parent)
-	{
-		$db = $parent->getParent()->getDBO();
-
-		$query = $db->getQuery(true)
-		            ->select($db->qn('extension_id'))
-		            ->from($db->qn('#__extensions'))
-		            ->where($db->qn('type') . ' = ' . $db->q('component'))
-		            ->where($db->qn('name') . ' = ' . $db->q($this->componentName));
-
-		try
-		{
-			$extensionId = $db->setQuery($query)->loadResult();
-		}
-		catch (Exception $e)
-		{
-			// Your database is broken.
-			return;
-		}
-
-		if (!$extensionId)
-		{
-			return;
-		}
-
-		$query = $db->getQuery(true)
-		            ->select($db->qn('update_site_id'))
-		            ->from($db->qn('#__update_sites_extensions'))
-		            ->where($db->qn('extension_id') . ' = ' . $db->q($extensionId));
-
-		try
-		{
-			$ids = $db->setQuery($query)->loadColumn(0);
-		}
-		catch (Exception $e)
-		{
-			// Your database is broken.
-			return;
-		}
-
-		if (!is_array($ids) && empty($ids))
-		{
-			return;
-		}
-
-		foreach ($ids as $id)
-		{
-			$query = $db->getQuery(true)
-			            ->delete($db->qn('#__update_sites'))
-			            ->where($db->qn('update_site_id') . ' = ' . $db->q($id));
-			$db->setQuery($query);
-
-			try
-			{
-				$db->execute();
-			}
-			catch (\Exception $e)
-			{
-				// Do not fail in this case
-			}
-		}
-	}
-
-	/**
 	 * If this is an update, disable the "Monitor Super User accounts" feature. It only happens ONCE. This will
 	 * prevent people from complaining about this feature doing exactly what it's supposed to do.
-     *
+	 *
 	 * @param   JInstallerAdapterComponent  $parent
-     *
-     * @return  void
-     *
-     * @since   5.0.0
+	 *
+	 * @return  void
+	 *
+	 * @since   5.0.0
 	 */
 	private function _upgradeDisableMonitorSuperUsers($parent)
 	{
@@ -769,18 +808,18 @@ HTML;
 		}
 
 		if (!class_exists('Akeeba\\AdminTools\\Admin\\Helper\\Storage'))
-        {
-            return;
-        }
+		{
+			return;
+		}
 
 		$params = new \Akeeba\AdminTools\Admin\Helper\Storage();
 		$params->load();
 
 
 		if ($params->getValue('disabled_superuserslist', 0) != 0)
-        {
-            return;
-        }
+		{
+			return;
+		}
 
 		$params->setValue('superuserslist', 0, false);
 		$params->setValue('disabled_superuserslist', 1, true);
@@ -789,10 +828,10 @@ HTML;
 	/**
 	 * If this is an update, find the security exception logs for failed logins which may have contained failed
 	 * login passwords and remove them from the database.
-     *
+	 *
 	 * @param   JInstallerAdapterComponent  $parent
-     *
-     * @return  void
+	 *
+	 * @return  void
 	 *
 	 * @since   5.1.0
 	 */
@@ -804,34 +843,34 @@ HTML;
 		}
 
 		if (!class_exists('Akeeba\\AdminTools\\Admin\\Helper\\Storage'))
-        {
-            return;
-        }
+		{
+			return;
+		}
 
 		$params = new \Akeeba\AdminTools\Admin\Helper\Storage();
 		$params->load();
 
 		if ($params->getValue('showpwonloginfailure', 0) != 1)
-        {
-            return;
-        }
+		{
+			return;
+		}
 
 		// Delete existing records
-        $db = JFactory::getDbo();
+		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true)
-            ->delete($db->qn('#__admintools_log'))
-            ->where($db->qn('reason') . ' = ' . $db->q('loginfailure'))
-            ->where($db->qn('reason') . ' = ' . $db->q('loginfailure'))
+			->delete($db->qn('#__admintools_log'))
+			->where($db->qn('reason') . ' = ' . $db->q('loginfailure'))
+			->where($db->qn('reason') . ' = ' . $db->q('loginfailure'))
 			->where($db->qn('extradata') . ' LIKE ' . $db->q('%Password%'));
 
 		try
-        {
-		    $db->setQuery($query)->execute();
-        }
-        catch (Exception $e)
-        {
-            // Don't die if that fails
-        }
+		{
+			$db->setQuery($query)->execute();
+		}
+		catch (Exception $e)
+		{
+			// Don't die if that fails
+		}
 
 		$params->setValue('showpwonloginfailure', 0, true);
 	}
@@ -846,7 +885,7 @@ HTML;
 		$logpath = JFactory::getConfig()->get('log_path');
 		$files   = [
 			$logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log',
-			$logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log.1'
+			$logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log.1',
 		];
 
 		foreach ($files as $file)
@@ -863,6 +902,38 @@ HTML;
 
 			JFile::delete($file);
 		}
+	}
+
+	/**
+	 * If IP Workarounds are set to No, migrate them to Auto
+	 *
+	 * @param   \FOF30\Container\Container  $container
+	 */
+	private function migrateIpWorkarounds($container)
+	{
+		/**
+		 * The ConfigureWAF model does not exist in the Core version. Moreover, the Core version lacks the IP
+		 * Workarounds feature. It makes no sense running this when installing Core. Worse, since the model is not
+		 * present it causes an installation failure.
+		 */
+		if (!$this->isPaid)
+		{
+			return;
+		}
+
+		// Value already migrated, stop here
+		if ($container->params->get('ipworkarounds_migrated', 0))
+		{
+			return;
+		}
+
+		/** @var ConfigureWAF $wafModel */
+		$wafModel = $container->factory->model('ConfigureWAF');
+		$wafModel->migrateIpWorkarounds();
+
+		// Finally save the flag so we won't do it again
+		$container->params->set('ipworkarounds_migrated', 1);
+		$container->params->save();
 	}
 
 	private function switchActionLogPlugins()

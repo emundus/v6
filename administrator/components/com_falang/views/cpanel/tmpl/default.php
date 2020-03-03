@@ -14,6 +14,11 @@ $downloadid = $params->get('downloadid');
 $version = new FalangVersion();
 
 ?>
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        checkPluginsUpdate();
+    });
+</script>
 <?php if (!empty( $this->sidebar)): ?>
     <div id="j-sidebar-container" class="span2">
         <?php echo $this->sidebar; ?>

@@ -20,133 +20,118 @@
  *
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
+
 defined('_JEXEC') or die;
 
-if (version_compare(PHP_VERSION, '5.3.0', '<'))
+use JchOptimize\Platform\Utility;
+
+include_once dirname(__FILE__) . '/auto.php';
+
+class JFormFieldOptimizeimages extends JFormFieldAuto
 {
 
-        class JFormFieldOptimizeimages extends JFormField
-        {
+	public $type = 'optimizeimages';
 
-                public $type = 'optimizeimages';
+	/**
+	 * 
+	 * @return type
+	 */
+	protected function getInput()
+	{
+		$curl_enabled = function_exists('curl_version') && curl_version();
+		// $allow_url_fopen = (bool) ini_get('allow_url_fopen');
 
-                protected function getInput()
-                {
-                        
-                }
+		if ($curl_enabled)// && $allow_url_fopen)
+		{
+			if (JFactory::getApplication()->input->get('jchtask') == 'optimizeimages')
+			{
+				$this->optimizeImages();
+			}
 
-        }
+			$field = '<div id="optimize-images-container" >'
+				. '<div id="file-tree-container"></div>';
 
-}
-else
-{
-        include_once dirname(__FILE__) . '/auto.php';
+			$field .= '<div id="files-container"></div>';
 
-        class JFormFieldOptimizeimages extends JFormFieldAuto
-        {
+			$field .= parent::getInput();
+			$field .= '<div style="clear:both"></div>';
+			$field .= '</div>';
+		}
+		else
+		{
+			$header  = JText::_('Error');
+			//$message = !$allow_url_fopen ? JText::_('JCH_OPTIMIZE_IMAGE_NO_URL_FOPEN_MESSAGE') : '';
+			$message = !$curl_enabled ? JText::_('JCH_OPTIMIZE_IMAGE_NO_CURL_MESSAGE'): $message;
 
-                public $type = 'optimizeimages';
+			if (version_compare(JVERSION, '3.0', '<'))
+			{
+				$field = '<dl id="system-message">
+					<dt class="message">' . $header . '</dt>
+					<dd class="message warning">
+					<ul>
+					<li>' . $message . '</li>
+					</ul>
+					</dd>
+					</dl>';
+			}
+			else
+			{
+				$field = '<div class="alert">
+					<h4 class="alert-heading">' . $header . '</h4>
+					<p>' . $message . '</p>
+					</div>';
+			}
+		}
 
-                /**
-                 * 
-                 * @return type
-                 */
-                protected function getInput()
-                {
-                        $curl_enabled = function_exists('curl_version') && curl_version();
-                       // $allow_url_fopen = (bool) ini_get('allow_url_fopen');
-                        
-                        if ($curl_enabled)// && $allow_url_fopen)
-                        {
-                                if (JFactory::getApplication()->input->get('jchtask') == 'optimizeimages')
-                                {
-                                        $this->optimizeImages();
-                                }
+		return $field;
+	}
 
-                                $field = '<div id="optimize-images-container" >'
-                                        . '<div id="file-tree-container"></div>';
-                                
-                                $field .= '<div id="files-container"></div>';
+	/**
+	 * 
+	 * @return string
+	 */
+	protected function getButtons()
+	{
+		$page = JURI::getInstance()->toString() . '&jchtask=optimizeimages';
 
-                                $field .= parent::getInput();
-                                $field .= '<div style="clear:both"></div>';
-                                $field .= '</div>';
-                        }
-                        else
-                        {
-                                $header  = JText::_('Error');
-                                //$message = !$allow_url_fopen ? JText::_('JCH_OPTIMIZE_IMAGE_NO_URL_FOPEN_MESSAGE') : '';
-                                $message = !$curl_enabled ? JText::_('JCH_OPTIMIZE_IMAGE_NO_CURL_MESSAGE'): $message;
+		$aButton              = array();
+		$aButton[0]['link']   = '';
+		$aButton[0]['icon']   = 'fa-compress';
+		$aButton[0]['color']  = '#278EB1';
+		$aButton[0]['text']   = Utility::translate('Optimize Images');
+		$aButton[0]['script'] = 'onclick="jchOptimizeImages(\'' . $page . '\'); return false;"';
+		$aButton[0]['class']  = 'enabled';
 
-                                if (version_compare(JVERSION, '3.0', '<'))
-                                {
-                                        $field = '<dl id="system-message">
-<dt class="message">' . $header . '</dt>
-<dd class="message warning">
-	<ul>
-		<li>' . $message . '</li>
-	</ul>
-</dd>
-</dl>';
-                                }
-                                else
-                                {
-                                        $field = '<div class="alert">
-<h4 class="alert-heading">' . $header . '</h4>
-		<p>' . $message . '</p>
-</div>';
-                                }
-                        }
+		return $aButton;
+	}
 
-                        return $field;
-                }
+	/**
+	 * 
+	 */
+	protected function optimizeImages()
+	{
+		$arr = JFactory::getApplication()->input->getArray(
+			array('dir' => 'string', 'cnt' => 'int', 'status' => 'string', 'msg' => 'string'));
 
-                /**
-                 * 
-                 * @return string
-                 */
-                protected function getButtons()
-                {
-                        $page = JURI::getInstance()->toString() . '&jchtask=optimizeimages';
+		$oController = new JControllerLegacy();
 
-                        $aButton              = array();
-                        $aButton[0]['link']   = '';
-                        $aButton[0]['icon']   = 'fa-compress';
-                        $aButton[0]['color']  = '#278EB1';
-                        $aButton[0]['text']   = JchPlatformUtility::translate('Optimize Images');
-                        $aButton[0]['script'] = 'onclick="jchOptimizeImages(\'' . $page . '\'); return false;"';
-                        $aButton[0]['class']  = 'enabled';
+		if ($arr['status'] == 'fail')
+		{
+			$oController->setMessage(JText::_('The Optimize Image function failed with message "' . $arr['msg'] . '"'),
+				'error');
+		}
+		else
+		{
+			//$dir = Utility::decrypt($arr['dir']);
+			$dir = $arr['dir'];
 
-                        return $aButton;
-                }
+			$oController->setMessage(sprintf(JText::_('%1$d images optimized in %2$s'), $arr['cnt'], $dir));
+		}
 
-                /**
-                 * 
-                 */
-                protected function optimizeImages()
-                {
-                        $arr = JFactory::getApplication()->input->getArray(
-                                array('dir' => 'string', 'cnt' => 'int', 'status' => 'string', 'msg' => 'string'));
-
-                        $oController = new JControllerLegacy();
-
-                        if ($arr['status'] == 'fail')
-                        {
-                                $oController->setMessage(JText::_('The Optimize Image function failed with message "' . $arr['msg'] . '"'),
-                                                                          'error');
-                        }
-                        else
-                        {
-                                $dir = JchPlatformUtility::decrypt($arr['dir']);
-
-                                $oController->setMessage(sprintf(JText::_('%1$d images optimized in %2$s'), $arr['cnt'], $dir));
-                        }
-
-                        $this->display($oController);
-                }
-
-        }
+		$this->display($oController);
+	}
 
 }
+
 
 ?>

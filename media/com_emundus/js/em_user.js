@@ -2,9 +2,8 @@
  * Created by yoan on 16/09/14.
  */
 
-// load Menu action
+/* load Menu action */
 function reloadActions(view) {
-	//addDimmer();
 	var mutli = 0;
 	multi = $('.em-check:checked').length;
 	$.ajax({
@@ -12,9 +11,6 @@ function reloadActions(view) {
 		url: 'index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=inline&multi=' + multi,
 		dataType: 'html',
 		success: function (data) {
-			//$('.em-dimmer').remove();
-			//$(".col-md-9 .panel.panel-default").remove();
-
 			$(".navbar.navbar-inverse").empty();
 			$(".navbar.navbar-inverse").append(data);
 		},
@@ -28,9 +24,7 @@ function reloadActions(view) {
 
 function clearchosen(cible) {
 	$(cible).val("%");
-	//$('#select_multiple_programmes option[value="%"]').attr('selected',true);
 	$(cible).trigger('chosen:updated');
-	// $("#select_multiple_programmes").trigger("chosen:updated");
 }
 
 function getCookie(cname) {
@@ -180,7 +174,7 @@ function search() {
 	});
 	var inputs = [{
 		name: 's',
-		value: quick,//$('#text_s').val(),
+		value: quick,
 		adv_fil : false
 	}];
 
@@ -625,9 +619,8 @@ $(document).ready(function () {
 			$('ul[aria-labelledby="' + id + '"]').removeClass('just-open')
 		}, 300);
 	});
-	//
-	// Button Form actions
-	//
+
+	/* Button Form actions*/
 	$(document).on('click', '.em-actions-form', function (e) {
 		var id = parseInt($(this).attr('id'));
 		var url = $(this).attr('url');
@@ -661,9 +654,8 @@ $(document).ready(function () {
 		$(".modal-body").append('<iframe src="' + url + '" style="width:100%; height:720px; border:none"></iframe>');
 
 	});
-	//
-	// Menu action
-	//
+
+	/* Menu action */
 	$(document).off('click', '.em-actions');
 	$(document).on('click', '.em-actions', function (e) {
 
@@ -711,11 +703,11 @@ $(document).ready(function () {
 		switch (id) {
 
 			case 19:
-			//create group
+			/*create group*/
 			case 20:
-			//create user
+			/*create user*/
 			case 23:
-				//affect
+				/*affect*/
 				$.ajax({
 					type: 'get',
 					url: url,
@@ -730,7 +722,7 @@ $(document).ready(function () {
 				});
 				break;
 			case 24:
-				// edit user
+				/* edit user*/
 				$.ajax({
 					type: 'get',
 					url: url,
@@ -769,7 +761,7 @@ $(document).ready(function () {
                           break;*/
 
 			case 21:
-				//activate
+				/*activate*/
 				$('#em-modal-actions').modal('hide');
 				var checkInput = getUserCheck();
 				$.ajax({
@@ -811,7 +803,7 @@ $(document).ready(function () {
 				break;
 
 			case 22:
-				//desactivate
+				/*desactivate*/
 				$('#em-modal-actions').modal('hide');
 				var checkInput = getUserCheck();
 				$.ajax({
@@ -851,7 +843,7 @@ $(document).ready(function () {
 				break;
 
 			case 25:
-				// Show user rights
+				/* Show user rights*/
 				$('.modal-dialog').addClass('modal-lg');
 				$.ajax({
 					type: 'get',
@@ -870,20 +862,20 @@ $(document).ready(function () {
 				break;
 
 			case 26:
-				// delete user
+				/* delete user*/
 				$('.modal-body').empty();
 				$('.modal-body').append('<div style="padding:26px"><strong>'+ Joomla.JText._('ARE_YOU_SURE_TO_DELETE_USERS') + '</strong></div>');
 				break;
 
 			case 33:
-				//regenerate password
+				/*regenerate password*/
 				$('.modal-body').empty();
 				$('.modal-body').append('<div style="display: flex; flex-direction: row; justify-content: center;"><strong>' + Joomla.JText._('ARE_YOU_SURE_TO_REGENERATE_PASSWORD') + '</strong></div>');
 				break;
 
 			case 34:
-				// Send user an email
-				// TODO: What right to we use? "email applicant"?
+				/*Send user an email*/
+				/*TODO: What right to we use? "email applicant"?*/
 				$('.modal-dialog').addClass('modal-lg');
 				var checkInput = getUserCheck();
 				$.ajax({
@@ -904,7 +896,7 @@ $(document).ready(function () {
 		}
 	});
 
-	// Button on Actions
+	/* Button on Actions*/
 	$(document).off('click', '#em-modal-actions .btn.btn-success');
 	$(document).on('click', '#em-modal-actions .btn.btn-success', function (e) {
 		var id = parseInt($('.modal-body').attr('act-id'));
@@ -934,7 +926,7 @@ $(document).ready(function () {
 		switch (id) {
 			case 19:
 
-				// Group name is required.
+				/* Group name is required.*/
 				if (!formCheck('gname')) {
 					return false;
 				}
@@ -1009,7 +1001,6 @@ $(document).ready(function () {
 					for (var i = 0; i < $("#oprofiles").val().length; i++) {
 						oprofiles += $("#oprofiles").val()[i];
 						oprofiles += ',';
-						//alert($("#oprofiles").val()[i]);
 					}
 				}
 				var login = $('#login').val();
@@ -1086,7 +1077,7 @@ $(document).ready(function () {
 				break;
 
 			case 23:
-				// button action affect user to group(s)
+				/*button action affect user to group(s)*/
 				var checkInput = getUserCheck();
 				if ($('#agroups') == null) {
 					$('#agroups').parent('.form-group').addClass('has-error');
@@ -1099,7 +1090,7 @@ $(document).ready(function () {
 						groups += ',';
 					}
 				}
-				//$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>').hide();
+				/*$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>').hide();*/
 
 				$.ajax({
 					type: 'POST',
@@ -1167,7 +1158,7 @@ $(document).ready(function () {
 					for (var i = 0; i < $("#oprofiles").val().length; i++) {
 						oprofiles += $("#oprofiles").val()[i];
 						oprofiles += ',';
-						//alert($("#oprofiles").val()[i]);
+						/*alert($("#oprofiles").val()[i]);*/
 					}
 				}
 				var login = $('#login').val();
@@ -1295,8 +1286,8 @@ $(document).ready(function () {
 				break;
 
 			case 33 :
-				var usersData = getUserCheck();// get objectJson with id et uid
-				var uid = JSON.parse(usersData);// parsing in json to get only the uid
+				var usersData = getUserCheck();/*get objectJson with id et uid*/
+				var uid = JSON.parse(usersData);/*parsing in json to get only the uid*/
 
 				$.ajax({
 					type: 'POST',
@@ -1329,12 +1320,12 @@ $(document).ready(function () {
 			break;
 
 
-			// Send an email to a user.
+			/* Send an email to a user.*/
 			case 34:
-				// update the textarea with the WYSIWYG content.
+				/* update the textarea with the WYSIWYG content.*/
 				tinymce.triggerSave();
 
-				// Get all form elements.
+				/* Get all form elements.*/
 				let data = {
 					recipients 		: $('#uids').val(),
 					template		: $('#message_template :selected').val(),
@@ -1386,7 +1377,7 @@ $(document).ready(function () {
 							}
 
 							if (result.failed.length > 0) {
-								// Block containing the email adresses of the failed emails.
+								/*Block containing the email adresses of the failed emails.*/
 								$("#em-email-messages").append('<div class="alert alert-danger">'+Joomla.JText._('EMAILS_FAILED')+'<span class="badge">'+result.failed.length+'</span>'+
 									'<ul class="list-group" id="em-mails-failed"></ul>');
 
@@ -1410,7 +1401,7 @@ $(document).ready(function () {
 		}
 	});
 
-	//action fin
+	/*action fin*/
 	$(document).on('change', '#em-modal-actions #em-export-form', function (e) {
 		if (e.handle !== true) {
 			e.handle = true;
@@ -1438,22 +1429,4 @@ $(document).ready(function () {
 			}
 		}
 	});
-	//Duplicate function in em.files
-	/*$(document).on('click', '#em-hide-filters', function () {
-		if ($('.col-md-3').is(':visible')) {
-			$('.col-md-3').hide();
-			$(this).children('span').addClass('glyphicon-chevron-right');
-			$(this).children('span').removeClass('glyphicon-chevron-left');
-			$('.col-md-9').addClass('col-md-12');
-			$('.col-md-9').removeClass('col-md-9');
-
-		} else {
-			$('.col-md-3').show();
-			$(this).children('span').removeClass('glyphicon-chevron-right');
-			$(this).children('span').addClass('glyphicon-chevron-left');
-			$('.col-md-12').addClass('col-md-9');
-			$('.col-md-12').removeClass('col-md-12');
-		}
-
-	})*/
 })

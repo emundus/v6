@@ -4,9 +4,9 @@
  * JCH Optimize - Joomla! plugin to aggregate and minify external resources for
  * optmized downloads
  *
- * @author Samuel Marshall <sdmarshall73@gmail.com>
+ * @author    Samuel Marshall <sdmarshall73@gmail.com>
  * @copyright Copyright (c) 2014 Samuel Marshall
- * @license GNU/GPLv3, See LICENSE file
+ * @license   GNU/GPLv3, See LICENSE file
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,166 +20,176 @@
  *
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
+
+namespace JchOptimize\Platform;
+
 defined('_JEXEC') or die('Restricted access');
 
-class JchPlatformUri implements JchInterfaceUri
+use JchOptimize\Core\Helper;
+use JchOptimize\Interfaces\UriInterface;
+
+class Uri implements UriInterface
 {
-        private $oUri;
+	private $oUri;
 
-        /**
-         * 
-         * @param type $path
-         */
-        public function setPath($path)
-        {
-                $this->oUri->setPath($path);
-        }
-        
-        /**
-         * 
-         * @return type
-         */
-        public function getPath()
-        {
-                return $this->oUri->getPath();
-        }
+	/**
+	 *
+	 * @param   string  $path
+	 */
+	public function setPath($path)
+	{
+		$this->oUri->setPath($path);
+	}
 
-        /**
-         * 
-         * @param array $parts
-         * @return type
-         */
-        public function toString(array $parts = array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'))
-        {
-                return $this->oUri->toString($parts);
-        }
+	/**
+	 *
+	 * @return string
+	 */
+	public function getPath()
+	{
+		return $this->oUri->getPath();
+	}
 
-        /**
-         * 
-         * @param type $pathonly
-         * @return type
-         */
-        public static function base($pathonly = FALSE)
-        {
-                if ($pathonly)
-                {
-                        return str_replace('/administrator', '', JUri::base(TRUE));
-                }
-                
-                return str_replace('/administrator/', '', JUri::base());
-        }
+	/**
+	 *
+	 * @param   array  $parts
+	 *
+	 * @return string
+	 */
+	public function toString(array $parts = array('scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment'))
+	{
+		return $this->oUri->toString($parts);
+	}
 
-        /**
-         * 
-         * @param type $uri
-         * @return \JchPlatformUri
-         */
-        public static function getInstance($uri = 'SERVER')
-        {
-                static $instances = array();
-                
-                if(!isset($instances[$uri]))
-                {
-                        $instances[$uri] = new JchPlatformUri($uri);
-                }
-                
-                return $instances[$uri];
-        }
-        
-        /**
-         * 
-         * @param type $uri
-         * @return type
-         */
-        private function __construct($uri)
-        {
-                $this->oUri = clone JUri::getInstance($uri);
-                
-                if ($uri != 'SERVER')
-                {
-                        $uri = str_replace('\\/', '/', $uri);
-                        $parts = JchOptimizeHelper::parseUrl($uri);
+	/**
+	 * $pathonly == TRUE => /folder or ''
+	 * $pathonly == FALSE => http://localhost/folder/ or http://localhost/
+	 *
+	 * @param   bool  $pathonly
+	 *
+	 * @return string|string[]
+	 */
+	public static function base($pathonly = false)
+	{
+		if ($pathonly)
+		{
+			return str_replace('/administrator', '', \JUri::base(true));
+		}
 
-                        $this->oUri->setScheme(!empty($parts['scheme']) ? $parts['scheme'] : null);
-                        $this->oUri->setUser(!empty($parts['user']) ? $parts['user'] : null);
-                        $this->oUri->setPass(!empty($parts['pass']) ? $parts['pass'] : null);
-                        $this->oUri->setHost(!empty($parts['host']) ? $parts['host'] : null);
-                        $this->oUri->setPort(!empty($parts['port']) ? $parts['port'] : null);
-                        $this->oUri->setPath(!empty($parts['path']) ? $parts['path'] : null);
-                        $this->oUri->setQuery(!empty($parts['query']) ? $parts['query'] : null);
-                        $this->oUri->setFragment(!empty($parts['fragment']) ? $parts['fragment'] : null);
-                }
-                
-                return $this->oUri;
-        }
-        
-        /**
-         * 
-         */
-        public function __clone()
-        {
-                $this->oUri = clone $this->oUri;
-        }
+		return str_replace('/administrator/', '', \JUri::base());
+	}
 
-        /**
-         * 
-         * @param type $query
-         */
-        public function setQuery($query)
-        {
-                $this->oUri->setQuery($query);
-        }
+	/**
+	 *
+	 * @param   string  $uri
+	 *
+	 * @return Uri
+	 */
+	public static function getInstance($uri = 'SERVER')
+	{
+		static $instances = array();
 
-        /**
-         * 
-         * @return type
-         */
-        public static function currentUrl()
-        {
-                return JUri::current();
-        }
-        
-        /**
-         * 
-         * @param type $host
-         */
-        public function setHost($host)
-        {
-                $this->oUri->setHost($host);
-        }
-        
-        /**
-         * 
-         */
-        public function getHost()
-        {
-                return $this->oUri->getHost();
-        }
+		if (!isset($instances[$uri]))
+		{
+			$instances[$uri] = new Uri($uri);
+		}
 
-        /**
-         * 
-         * @return type
-         */
-        public function getQuery()
-        {
-                return $this->oUri->getQuery();
-        }
+		return $instances[$uri];
+	}
 
-        /**
-         * 
-         * @return type
-         */
-        public function getScheme()
-        {
-                return $this->oUri->getScheme();
-        }
+	/**
+	 *
+	 * @param   string  $uri
+	 */
+	private function __construct($uri)
+	{
+		$this->oUri = clone \JUri::getInstance($uri);
 
-        /**
-         * 
-         * @param type $scheme
-         */
-        public function setScheme($scheme)
-        {
-                $this->oUri->setScheme($scheme);
-        }
+		if ($uri != 'SERVER')
+		{
+			$uri   = str_replace('\\/', '/', $uri);
+			$parts = Helper::parseUrl($uri);
+
+			$this->oUri->setScheme(!empty($parts['scheme']) ? $parts['scheme'] : null);
+			$this->oUri->setUser(!empty($parts['user']) ? $parts['user'] : null);
+			$this->oUri->setPass(!empty($parts['pass']) ? $parts['pass'] : null);
+			$this->oUri->setHost(!empty($parts['host']) ? $parts['host'] : null);
+			$this->oUri->setPort(!empty($parts['port']) ? $parts['port'] : null);
+			$this->oUri->setPath(!empty($parts['path']) ? $parts['path'] : null);
+			$this->oUri->setQuery(!empty($parts['query']) ? $parts['query'] : null);
+			$this->oUri->setFragment(!empty($parts['fragment']) ? $parts['fragment'] : null);
+		}
+
+		return $this->oUri;
+	}
+
+	/**
+	 *
+	 */
+	public function __clone()
+	{
+		$this->oUri = clone $this->oUri;
+	}
+
+	/**
+	 *
+	 * @param   mixed  $query
+	 */
+	public function setQuery($query)
+	{
+		$this->oUri->setQuery($query);
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
+	public static function currentUrl()
+	{
+		return \JUri::current();
+	}
+
+	/**
+	 *
+	 * @param   string  $host
+	 */
+	public function setHost($host)
+	{
+		$this->oUri->setHost($host);
+	}
+
+	/**
+	 *
+	 */
+	public function getHost()
+	{
+		return $this->oUri->getHost();
+	}
+
+	/**
+	 *
+	 * @return array|string
+	 */
+	public function getQuery()
+	{
+		return $this->oUri->getQuery();
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
+	public function getScheme()
+	{
+		return $this->oUri->getScheme();
+	}
+
+	/**
+	 *
+	 * @param   string  $scheme
+	 */
+	public function setScheme($scheme)
+	{
+		$this->oUri->setScheme($scheme);
+	}
 }
