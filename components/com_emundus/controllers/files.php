@@ -648,7 +648,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 				$fnumList = '<ul>';
 				foreach ($fnums as $fnum) {
-					$fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
+					$fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
 				}
 				$fnumList .= '</ul>';
 

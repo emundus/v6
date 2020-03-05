@@ -148,7 +148,7 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
 
                             $fnumList = '<ul>';
                             foreach ($campaign['fnums'] as $fnum) {
-                                $fnumList .= '<li><a href="'.JURI::root().$userLink.'#'.$fnum.'">'.$fnum.'</a></li>';
+                                $fnumList .= '<li><a href="'.JURI::root().$userLink.'#'.$fnum.'|open">'.$fnum.'</a></li>';
                             }
                             $fnumList .= '</ul>';
 
