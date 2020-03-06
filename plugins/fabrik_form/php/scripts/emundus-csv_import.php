@@ -53,6 +53,7 @@ $checked_tables = [];
 $repeat_tables = [];
 
 $profile = $formModel->data['jos_emundus_setup_csv_import___profile_raw'][0];
+$group = $formModel->data['jos_emundus_setup_csv_import___group_raw'][0];
 
 $row = 0;
 if (($data = fgetcsv($handle, 0, ';')) !== false) {
@@ -72,6 +73,8 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 				// TODO: Adapt this column name to be the real CAS username column name.
 				// Be careful that the provided cas_username not contain ___.
 				$cas_column = $column_number;
+			} else if ($column[0] == 'group') {
+				$group_column = $column_number;
 			}
 
 			$bad_columns[] = $column_number;
@@ -218,6 +221,8 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 			continue;
 		} elseif ($column_number === $cas_column) {
 			$cas_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
+		} elseif ($column_number === $group_column) {
+			$group_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
 		}
 
 		if (in_array($column_number, $bad_columns)) {
@@ -294,6 +299,10 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	if (!empty($status_row[$row_id]) && is_numeric($status_row[$row_id])) {
 		$status = $status_row[$row_id];
+	}
+
+	if (!empty($group_row[$row_id]) && is_numeric($group_row[$row_id])) {
+		$group = $group_row[$row_id];
 	}
 
 	if (!empty($profile_row[$row_id]) && is_numeric($profile_row[$row_id])) {
@@ -410,7 +419,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		}
 
 		$user = clone(JFactory::getUser(0));
-		if (preg_match('/^[0-9a-zA-Z\_\@\-\.]+$/', $username) !== 1) {
+		if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $username) !== 1) {
 			JLog::add('ERROR: Username format not OK.', JLog::ERROR, 'com_emundus');
 			continue;
 		}
@@ -506,7 +515,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 	}
 
 	// If no fnum is found, generate it.
-	if (empty($fnum)) {
+	if (empty($fnum) && !empty($campaign)) {
 
 		$fnum = date('YmdHis').str_pad($campaign, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
 		$query->clear()
@@ -601,6 +610,22 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$user = $user->id;
 	}
 
+	if (!empty($group)) {
+		$query->clear()
+			->insert($db->quoteName('#__emundus_groups'))
+			->columns($db->quoteName(['user_id', 'group_id']))
+			->values($user.', '.$group);
+		$db->setQuery($query);
+		try {
+			$db->execute();
+			$totals['write']++;
+			JLog::add(' --- INSERTED GROUP :'.$group.' FOR USER : '.$user, JLog::INFO, 'com_emundus');
+		} catch (Exception $e) {
+			JLog::add('ERROR: Could not insert user into group at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			// No continue, just a silent error with logging.
+		}
+	}
+
 	foreach ($insert_row as $table_name => $element) {
 
 		$parent_ids = [];
@@ -642,6 +667,11 @@ foreach ($parsed_data as $row_id => $insert_row) {
 				->set($fields)
 				->where($db->quoteName('user_id').' = '.$user);
 		} else {
+			
+			if (empty($fnum)) {
+				continue;
+			}
+
 			$query->clear()
 				->insert($db->quoteName($table_name))
 				->columns($db->quoteName($columns))
