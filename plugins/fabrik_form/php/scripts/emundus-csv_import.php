@@ -75,6 +75,8 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 				$cas_column = $column_number;
 			} else if ($column[0] == 'group') {
 				$group_column = $column_number;
+			} else if ($column[0] == 'profile') {
+				$profile_column = $column_number;
 			}
 
 			$bad_columns[] = $column_number;
@@ -194,11 +196,15 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 
 	foreach ($data as $column_number => $column) {
 
+		if ($column_number === $profile_column) {
+			$profile_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
+		}
+
 		if ($column_number === $campaign_column) {
 			$campaign_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
 
 			// If we have no profile, we must get the associated one using the campaign.
-			if (empty($profile)) {
+			if (empty($profile) && !isset($profile_column)) {
 
 				$query->clear()
 					->select($db->quoteName('profile_id'))
