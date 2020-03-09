@@ -44,8 +44,12 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$params = $this->getParams();
 		$element = $this->getElement();
 
+		$app = JFactory::getApplication();
+		$jinput = $app->input;
+		$fnum = $jinput->get->get('rowid', null);
+
 		$this->_attachment_id = $params->get('attachment_id');
-		$info = $this->getReferentRequestInfo($this->_attachment_id);
+		$info = $this->getReferentRequestInfo($this->_attachment_id, $fnum);
 		$value = $info[0]['sent'];
 
 		$id = $this->getHTMLId($repeatCounter);
@@ -278,7 +282,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$obj_letter = $db->loadResult();
 		
 		// Reference  /////////////////////////////////////////////////////////////
-		if (!$this->isReferentLetterUploaded($attachment_id)) {
+		if (!$this->isReferentLetterUploaded($attachment_id, $fnum)) {
 			$key = md5($this->rand_string(20).time());
 			// 2. MAJ de la table emundus_files_request
 			$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum, email) 
@@ -348,16 +352,16 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		echo json_encode($response);
 	}
 
-	protected function getReferentRequestInfo($attachment_id) {
+	protected function getReferentRequestInfo($attachment_id, $fnum) {
 		$db = JFactory::getDBO();
-		$query = "SELECT count(id) as sent, SUM(uploaded) uploaded FROM #__emundus_files_request WHERE student_id=".$this->_user->id." AND attachment_id=".$attachment_id;
+		$query = "SELECT count(id) as sent, SUM(uploaded) uploaded FROM #__emundus_files_request WHERE fnum LIKE ".$db->quote($fnum)." AND attachment_id=".$attachment_id;
 		$db->setQuery($query);
 		return $db->loadAssocList();
 	}
 	
-	protected function isReferentLetterUploaded($attachment_id) {
+	protected function isReferentLetterUploaded($attachment_id, $fnum) {
 		$db = JFactory::getDBO();
-		$query = 'SELECT count(id) as cpt FROM #__emundus_uploads WHERE user_id='.$this->_user->id.' AND attachment_id='.$attachment_id;
+		$query = 'SELECT count(id) as cpt FROM #__emundus_uploads WHERE fnum LIKE '.$db->quote($fnum).' AND attachment_id='.$attachment_id;
 		$db->setQuery($query);
 		$db->query();
 		return ($db->loadResult() > 0);
