@@ -52,18 +52,19 @@ class EmundusControllerAward extends JControllerLegacy
     public function addvote(){
 
         $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->post->getString('fnum', null);
+        $fnum = $jinput->post->getVar('fnum', null);
         $user = $jinput->post->getString('user', null);
         $thematique = $jinput->post->getString('thematique', null);
         $engagement = $jinput->post->getString('engagement', null);
-        $engagement_financier = $jinput->post->getString('engagement_financier', null);
-        $engagement_materiel = $jinput->post->getString('engagement_materiel', null);
+        $campaign_id = $jinput->post->getString('campaign_id', null);
+        $student_id = $jinput->post->getString('student_id', null);
+
 
 
         $m_model = new EmundusModelAward();
 
         try{
-            $m_model->updatePlusNbVote($fnum,$user,$thematique,$engagement,$engagement_financier,$engagement_materiel);
+            $m_model->updatePlusNbVote($fnum,$user,$thematique,$engagement, $student_id, $campaign_id);
             $res = true;
 
         }

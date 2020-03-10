@@ -31,14 +31,14 @@ class EmundusModelAward extends JModelList
 
         $this->locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
     }
-    public function getUpload($fnum,$cid){
+    public function getUpload($fnum,$cid,$attachmentId){
 
 
         $query = $this->_db->getQuery(true);
 
         $query->select($this->_db->quoteName('filename'));
         $query->from($this->_db->quoteName('#__emundus_uploads'));
-        $query->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum). ' AND' . $this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($cid));
+        $query->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum). ' AND' . $this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($cid). ' AND '.$this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($attachmentId) );
         //var_dump($query->__toString()).die();
         $this->_db->setQuery($query);
 
@@ -56,7 +56,7 @@ class EmundusModelAward extends JModelList
         return $db->loadResult();
     }
 
-   public function updatePlusNbVote($fnum,$user,$thematique,$engagement,$engagement_financier,$engagement_materiel){
+   public function updatePlusNbVote($fnum,$user,$thematique,$engagement,$student_id, $campaign_id){
 
        $db = JFactory::getDbo();
        $date_time = new DateTime('NOW');
@@ -64,12 +64,12 @@ class EmundusModelAward extends JModelList
 
        $query = $db->getQuery(true);
 
-       $columns = array('time_date', 'fnum', 'user', 'thematique','engagement','engagement_financier','engagement_materiel');
+       $columns = array('time_date', 'fnum', 'user', 'thematique','engagement','student_id','campaign_id');
 
-       $values = array($db->quote($date), $db->quote($fnum), $user, $db->quote($thematique), $db->quote($engagement),$db->quote($engagement_financier),$db->quote($engagement_materiel));
+       $values = array($db->quote($date), $db->quote($fnum), $user, $db->quote($thematique), $engagement, $student_id, $campaign_id);
 
        $query
-           ->insert($db->quoteName('#__emundus_vote'))
+           ->insert($db->quoteName('#__emundus_evaluations'))
            ->columns($db->quoteName($columns))
            ->values(implode(',', $values));
        $db->setQuery($query);
@@ -82,26 +82,54 @@ class EmundusModelAward extends JModelList
 
         $query
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__emundus_vote'))
+            ->from($db->quoteName('#__emundus_evaluations'))
             ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum).' AND '.$db->quoteName('user').' = '. $db->quote($user));
 
         $db->setQuery($query);
 
         return $db->loadResult();
     }
+    public function CountVotes($user){
+    $db = JFactory::getDbo();
+    $query = $db->getQuery(true);
+
+    $query
+        ->select('COUNT(*)')
+        ->from($db->quoteName('#__emundus_evaluations'))
+        ->where($db->quoteName('user').' = '. $db->quote($user));
+
+    $db->setQuery($query);
+
+    return $db->loadResult();
+}
     public function CountThematique($user,$thematique){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         $query
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__emundus_vote'))
+            ->from($db->quoteName('#__emundus_evaluations'))
             ->where($db->quoteName('thematique').' = '.$db->quote($thematique).' AND '.$db->quoteName('user').' = '. $db->quote($user));
 
         $db->setQuery($query);
 
         return $db->loadResult();
     }
+    public function GetThematique($user){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('thematique_name')
+            ->from($db->quoteName('data_thematique', 'dt'))
+            ->join('LEFT', '#__emundus_evaluations AS ee ON dt.id = ee.thematique')
+            ->where($db->quoteName('ee.user').' = '.$db->quote($user));
+
+        $db->setQuery($query);
+
+        return $db->loadColumn();
+    }
+
     public function getFavoris($fnum,$user){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -149,5 +177,22 @@ class EmundusModelAward extends JModelList
         $db->setQuery($query);
 
         $db->execute();
+    }
+    public function getFabrikElement($element){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('params')
+            ->from($db->quoteName('#__fabrik_elements'))
+            ->where($db->quoteName('name').' LIKE '.$db->quote($element));
+
+        $db->setQuery($query);
+
+        $result = $db->loadResult();
+
+        $result = json_decode($result);
+        $attachment_id = $result->attachmentId;
+        return $attachment_id;
     }
 }
