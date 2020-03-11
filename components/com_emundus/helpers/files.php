@@ -758,7 +758,7 @@ class EmundusHelperFiles
     }
 
     public function getElementsName($elements_id) {
-        if (!empty($elements_id) && isset($elements_id)) {
+        if (!empty($elements_id) && !empty(ltrim($elements_id))) {
 
             $db = JFactory::getDBO();
             $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
@@ -774,7 +774,8 @@ class EmundusHelperFiles
                 $db->setQuery($query);
                 $res = $db->loadObjectList('id');
             } catch (Exception $e) {
-                throw new $e->getMessage();
+            	JLog::add('Could not get Evaluation elements name in query -> '.$query, JLog::ERROR, 'com_emundus');
+                return false;
             }
 
             $elementsIdTab = array();

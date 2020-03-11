@@ -20,10 +20,11 @@
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
 
+namespace JchOptimize\Interfaces;
 
 defined('_JCH_EXEC') or die('Restricted access');
 
-interface JchInterfacePlugin
+interface PluginInterface
 {
         public static function getPluginId();
         

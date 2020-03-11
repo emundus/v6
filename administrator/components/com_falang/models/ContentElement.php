@@ -400,8 +400,8 @@ class ContentElement {
 		/* Try to simplify the count queries.
 		Check only on original table including the standard filters as we assume that*/
 
-		$join=null;
-		$where=null;
+		$join=array();
+		$where=array();
 		$referencefield = "";
 		
 		foreach( $contentTable->Fields as $tableField ) {
@@ -447,17 +447,8 @@ class ContentElement {
 	 */
 	function countReferences( $idLanguage=-1, $filters=array() ) {
 		$db = JFactory::getDBO();
-
-		/*
-		$db->setQuery( $this->countContentSQL($idLanguage, $filters) );
-		$result = $db->loadObjectList();
-		echo $db->getErrorMsg();
-		return count( $result );
-		*/
-
 		$db->setQuery( $this->countContentSQL( $idLanguage, $filters ) );
 		$count=$db->loadResult();
-		//echo "count = $count<br/>";
 		return $count;
 	}
 }

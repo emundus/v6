@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -23,7 +23,6 @@ class MasterPassword extends Model
         'EmergencyOffline'           => 'COM_ADMINTOOLS_TITLE_EOM',
         'FixPermissions'             => 'COM_ADMINTOOLS_TITLE_FIXPERMS',
         'ConfigureFixPermissions'    => 'COM_ADMINTOOLS_TITLE_FIXPERMSCONFIG',
-        'GeographicBlocking'         => 'COM_ADMINTOOLS_TITLE_GEOBLOCK',
         'HtaccessMaker'              => 'COM_ADMINTOOLS_TITLE_HTMAKER',
         'NginXConfMaker'             => 'COM_ADMINTOOLS_TITLE_NGINXMAKER',
         'WebConfigMaker'             => 'COM_ADMINTOOLS_TITLE_WCMAKER',

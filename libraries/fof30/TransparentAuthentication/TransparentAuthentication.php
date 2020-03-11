@@ -325,6 +325,24 @@ class TransparentAuthentication
 	{
 		$return = null;
 
+		// Always run onFOFGetTransparentAuthenticationCredentials. These methods take precedence over anything else.
+		$this->container->platform->importPlugin('user');
+		$this->container->platform->importPlugin('fof');
+		$pluginResults = $this->container->platform->runPlugins('onFOFGetTransparentAuthenticationCredentials', [$this->container]);
+
+		foreach ($pluginResults as $result)
+		{
+			if (empty($result))
+			{
+				continue;
+			}
+
+			if (is_array($result))
+			{
+				return $result;
+			}
+		}
+
 		// Make sure there are enabled transparent authentication methods
 		if (empty($this->authenticationMethods))
 		{

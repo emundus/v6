@@ -150,12 +150,12 @@ class modEmundusCampaignHelper {
         return $this->total;
     }
 
-    function getCampaignDiscipline($id) {
+    function getCampaignTags($id) {
         $db = JFactory::getDbo();
         $query  = $db->getQuery(true);
 
         $query->select('d.*')
-            ->from($db->qn('data_disciplines', 'd'))
+            ->from($db->qn('data_tags', 'd'))
             ->leftJoin($db->qn('#__emundus_setup_campaigns_repeat_discipline', 'rd') . ' ON ' . $db->qn('d.id') . " = " . $db->qn("rd.discipline"))
             ->where($db->qn('d.published') . ' = 1 AND ' . $db->qn('rd.parent_id') . ' = ' . $id);
 

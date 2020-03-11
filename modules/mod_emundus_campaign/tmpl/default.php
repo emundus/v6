@@ -117,11 +117,12 @@ if ($locallang == "fr-FR") {
                             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                                 <div class="campaingapplycontent">
                                     <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
-                                    <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
-                                    <?php echo date('d/m/Y H:i', strtotime($result->start_date)); ?><br>
-                                    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
-                                    <?php echo date('d/m/Y H:i', strtotime($result->end_date)); ?> <hr>
-                                    <?php echo (!empty($mod_em_campaign_show_timezone)) ? JText::_('TIMEZONE').$offset : ''; ?>
+                                    <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?> </strong> 
+                                    <?php echo date($mod_em_campaign_date_format, strtotime($result->start_date)); ?><br>
+                                    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?> </strong>
+                                    <?php echo date($mod_em_campaign_date_format, strtotime($result->end_date)); ?> 
+                                    <?php echo (!empty($mod_em_campaign_show_timezone)) ? '<hr>'.JText::_('TIMEZONE').$offset : ''; ?>
+                                    <?php echo (!empty($mod_em_campaign_show_localedate)) ? '<hr>'.JText::_('LOCALDATE').date($mod_em_campaign_date_format, strtotime($now)) : ''; ?>
                                 </div>
                             </div>
                             <div class="below-content">
@@ -197,10 +198,10 @@ if ($locallang == "fr-FR") {
                             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                                 <div class="campaingapplycontent">
                                     <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
-                                    <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
-                                    <?php echo date('d/m/Y H:i', strtotime($result->start_date)); ?><br>
-                                    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
-                                    <?= date('d/m/Y H:i', strtotime($result->end_date)); ?>
+                                    <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?> </strong>
+                                    <?php echo date($mod_em_campaign_date_format, strtotime($result->start_date)); ?><br>
+                                    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?> </strong>
+                                    <?= date($mod_em_campaign_date_format, strtotime($result->end_date)); ?>
                                 </div>
                             </div>
                             <div class="below-content">
@@ -268,10 +269,10 @@ if ($locallang == "fr-FR") {
                             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                                 <div class="campaingapplycontent">
                                     <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
-                                    <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
-                                    <?php echo date('d/m/Y H:i', strtotime($result->start_date)); ?><br>
-                                    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
-                                    <?php echo date('d/m/Y H:i', strtotime($result->end_date)); ?>
+                                    <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?> </strong>
+                                    <?php echo date($mod_em_campaign_date_format, strtotime($result->start_date)); ?><br>
+                                    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?> </strong>
+                                    <?php echo date($mod_em_campaign_date_format, strtotime($result->end_date)); ?>
                                 </div>
                             </div>
                             <div class="below-content">
@@ -339,10 +340,10 @@ if ($locallang == "fr-FR") {
                             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                                 <div class="campaingapplycontent">
                                     <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
-                                    <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
-                                    <?php echo date('d/m/Y H:i', strtotime($result->start_date)); ?><br>
-                                    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
-                                    <?php echo date('d/m/Y H:i', strtotime($result->end_date)); ?>
+                                    <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?> </strong>
+                                    <?php echo date($mod_em_campaign_date_format, strtotime($result->start_date)); ?><br>
+                                    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?> </strong>
+                                    <?php echo date($mod_em_campaign_date_format, strtotime($result->end_date)); ?>
                                 </div>
                             </div>
                             <div class="below-content">

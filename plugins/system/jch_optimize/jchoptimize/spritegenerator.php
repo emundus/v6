@@ -1,14 +1,12 @@
 <?php
 
-use JchOptimize\CssSpriteGen;
-
 /**
  * JCH Optimize - Aggregate and minify external resources for optmized downloads
- * 
- * @author Samuel Marshall <sdmarshall73@gmail.com>
+ *
+ * @author    Samuel Marshall <sdmarshall73@gmail.com>
  * @copyright Copyright (c) 2010 Samuel Marshall
- * @license GNU/GPLv3, See LICENSE file
- * 
+ * @license   GNU/GPLv3, See LICENSE file
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,267 +20,276 @@ use JchOptimize\CssSpriteGen;
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>.
  */
 
-
+namespace JchOptimize\Core;
 
 defined('_JCH_EXEC') or die('Restricted access');
 
-class JchOptimizeSpriteGenerator
+use JchOptimize\LIBS\CssSpriteGen;
+use JchOptimize\Platform\Profiler;
+use JchOptimize\Platform\Paths;
+use JchOptimize\Platform\Settings;
+
+class SpriteGenerator
 {
 
-        public $params = null;
+	public $params = null;
 
-        /**
-         * Constructor
-         * 
-         * @param type $params
-         */
-        public function __construct($params)
-        {
-                $this->params = $params;
-        }
-        
-        /**
-         * 
-         * @return string|boolean
-         */
-        public function getImageLibrary()
-        {
-                if(!extension_loaded('exif'))
-                {
-                      JchOptimizeLogger::log('EXIF extension not loaded', $this->params);
-                      
-                      return FALSE;
-                }
-                
-                if (extension_loaded('imagick'))
-                {
-                        $sImageLibrary = 'imagick';
-                }
-                else
-                {
-                        if (!extension_loaded('gd'))
-                        {
-                                JchOptimizeLogger::log('No image manipulation library installed', $this->params);
-                                
-                                return FALSE;
-                        }
+	/**
+	 * Constructor
+	 *
+	 * @param   Settings  $params
+	 */
+	public function __construct($params)
+	{
+		$this->params = $params;
+	}
 
-                        $sImageLibrary = 'gd';
-                }
-                
-                return $sImageLibrary;
-        }
+	/**
+	 * Returns the name of the Image library imagick|gd that is available, false if failed
+	 *
+	 * @return string|boolean
+	 */
+	public function getImageLibrary()
+	{
+		if (!extension_loaded('exif'))
+		{
+			Logger::log('EXIF extension not loaded', $this->params);
 
-        /**
-         * Grabs background images with no-repeat attribute from css and merge them in one file called a sprite.
-         * Css is updated with sprite url and correct background positions for affected images.
-         * Sprite saved in {Joomla! base}/images/jch-optimize/
-         *
-         * @param string $sCss       Aggregated css file before sprite generation
-         * @return string           Css updated with sprite information on success. Original css on failure
-         */
-        public function getSprite($sCss)
-        {
-                $sImageLibrary = $this->getImageLibrary();
+			return false;
+		}
 
-                $aMatches = $this->processCssUrls($sCss);
-                        
-                if (empty($aMatches) || $sImageLibrary === FALSE)
-                {
-                        return $sCss;
-                }
-                
-                $this->params->set('sprite-path', JchPlatformPaths::spriteDir());
+		if (extension_loaded('imagick'))
+		{
+			$sImageLibrary = 'imagick';
+		}
+		else
+		{
+			if (!extension_loaded('gd'))
+			{
+				Logger::log('No image manipulation library installed', $this->params);
 
-                $aSearch = $this->generateSprite($aMatches, new CssSpriteGen($sImageLibrary, $this->params));
+				return false;
+			}
 
-                return $aSearch;
-        }
+			$sImageLibrary = 'gd';
+		}
 
-        /**
-         * Generates sprite image and return background positions for image replaced with sprite
-         * 
-         * @param array $aMatches       Array of css declarations and image url to be included in sprite
-         * @param object $oSpriteGen    Object of sprite generator
-         * @return array
-         */
-        public function generateSprite($aMatches, $oSpriteGen)
-        {
-                JCH_DEBUG ? JchPlatformProfiler::start('GenerateSprite') : null;
-                
-                $aDeclaration = $aMatches[0];
-                $aImages      = $aMatches[1];
+		return $sImageLibrary;
+	}
 
-                $oSpriteGen->CreateSprite($aImages);
-                $aSpriteCss = $oSpriteGen->GetCssBackground();
+	/**
+	 * Grabs background images with no-repeat attribute from css and merge them in one file called a sprite.
+	 * Css is updated with sprite url and correct background positions for affected images.
+	 *
+	 * @param   string  $sCss  Aggregated css file before sprite generation
+	 *
+	 * @return array
+	 * @throws Exception
+	 */
+	public function getSprite($sCss)
+	{
+		$sImageLibrary = $this->getImageLibrary();
 
-                $aPatterns    = array();
-                $aPatterns[0] = '#background-position:[^;}]+;?#i'; //Background position declaration regex
-                $aPatterns[1] = '#(background:[^;}]*)\b' //Background position regex
-                        . '((?:top|bottom|left|right|center|-?[0-9]+(?:%|[c-x]{2})?)'
-                        . '\s(?:top|bottom|left|right|center|-?[0-9]+(?:%|[c-x]{2})?))([^;}]*[;}])#i';
-                $aPatterns[2] = '#(background-image:)[^;}]+;?#i'; // Background image declaration regex
+		$aMatches = $this->processCssUrls($sCss);
+
+		if (empty($aMatches) || $sImageLibrary === false)
+		{
+			return array();
+		}
+
+		$this->params->set('sprite-path', Paths::spritePath());
+
+		return $this->generateSprite($aMatches, new CssSpriteGen($sImageLibrary, $this->params));
+	}
+
+	/**
+	 * Generates sprite image and return background positions for image replaced with sprite
+	 *
+	 * @param   array         $aMatches    Array of css declarations and image url to be included in sprite
+	 * @param   CssSpriteGen  $oSpriteGen  Object of sprite generator
+	 *
+	 * @return array
+	 * @throws Exception
+	 */
+	public function generateSprite($aMatches, $oSpriteGen)
+	{
+		JCH_DEBUG ? Profiler::start('GenerateSprite') : null;
+
+		$aDeclaration = $aMatches[0];
+		$aImages      = $aMatches[1];
+
+		$oSpriteGen->CreateSprite($aImages);
+		$aSpriteCss = $oSpriteGen->GetCssBackground();
+
+		$aPatterns    = array();
+		$aPatterns[0] = '#background-position:[^;}]+;?#i'; //Background position declaration regex
+		$aPatterns[1] = '#(background:[^;}]*)\b' //Background position regex
+			. '((?:top|bottom|left|right|center|-?[0-9]+(?:%|[c-x]{2})?)'
+			. '\s(?:top|bottom|left|right|center|-?[0-9]+(?:%|[c-x]{2})?))([^;}]*[;}])#i';
+		$aPatterns[2] = '#(background-image:)[^;}]+;?#i'; // Background image declaration regex
 		$aPatterns[3] = '#(background:[^;}]*)\b'
 			. 'url\((?=[^\)]+\.(?:png|gif|jpe?g))[^\)]+\)'
 			. '([^;}]*[;}])#i'; //Background image regex
 
-                $sSpriteName = $oSpriteGen->GetSpriteFilename();
+		$sSpriteName = $oSpriteGen->GetSpriteFilename();
 
-                $aSearch = array();
-		$spritepath = JchPlatformPaths::spriteDir(true) . $sSpriteName;
-		$spritepath = JchOptimizeHelper::cookieLessDomain($this->params, $spritepath, $spritepath);
+		$aSearch    = array();
+		$sRelSpritePath = Paths::spritePath(true) .  DIRECTORY_SEPARATOR . $sSpriteName;
+		$sRelSpritePath = Helper::cookieLessDomain($this->params, $sRelSpritePath, $sRelSpritePath);
 
-                for ($i = 0; $i < count($aSpriteCss); $i++)
-                {
-                        if (isset($aSpriteCss[$i]))
-                        {
-                                $aSearch['needles'][] = $aDeclaration[$i];
-                                
-                                $aReplacements    = array();
-                                $aReplacements[0] = '';
-                                $aReplacements[1] = '$1$3';
-                                $aReplacements[2] = '$1 url(' . $spritepath . '); background-position: ' . $aSpriteCss[$i] . ';';
-                                $aReplacements[3] = '$1url(' . $spritepath . ') ' . $aSpriteCss[$i] . '$2';
+		for ($i = 0; $i < count($aSpriteCss); $i++)
+		{
+			if (isset($aSpriteCss[$i]))
+			{
+				$aSearch['needles'][] = $aDeclaration[$i];
 
-                                $sReplacement = preg_replace($aPatterns, $aReplacements, $aDeclaration[$i]);
+				$aReplacements    = array();
+				$aReplacements[0] = '';
+				$aReplacements[1] = '$1$3';
+				$aReplacements[2] = '$1 url(' . $sRelSpritePath . '); background-position: ' . $aSpriteCss[$i] . ';';
+				$aReplacements[3] = '$1url(' . $sRelSpritePath . ') ' . $aSpriteCss[$i] . '$2';
 
-                                if (is_null($sReplacement))
-                                {
-                                        throw new Exception('Error finding replacements for sprite background positions');
-                                }
+				$sReplacement = preg_replace($aPatterns, $aReplacements, $aDeclaration[$i]);
 
-                                $aSearch['replacements'][] = $sReplacement;
-                        }
-                }
+				if (is_null($sReplacement))
+				{
+					throw new Exception('Error finding replacements for sprite background positions');
+				}
 
-                JCH_DEBUG ? JchPlatformProfiler::stop('GenerateSprite', TRUE) : null;
-                
-                return $aSearch;
-        }
+				$aSearch['replacements'][] = $sReplacement;
+			}
+		}
 
-        /**
-         * Uses regex to find css declarations containing background images to include in sprite
-         * 
-         * @param string $sCss  Aggregated css file
-         * @return array        Array of css declarations and image urls to replace with sprite
-         */
-        public function processCssUrls($sCss, $bBackend = FALSE)
-        {
-                JCH_DEBUG ? JchPlatformProfiler::start('ProcessCssUrls') : null;
-                
-                $params         = $this->params;
-                $aRegexStart    = array();
-                $aRegexStart[0] = '
+		JCH_DEBUG ? Profiler::stop('GenerateSprite', true) : null;
+
+		return $aSearch;
+	}
+
+	/**
+	 * Uses regex to find css declarations containing background images to include in sprite
+	 *
+	 * @param   string  $sCss      Aggregated css file
+	 * @param   bool    $bBackend  True if running in admin
+	 *
+	 * @return array        Array of css declarations and image urls to replace with sprite
+	 * @throws Exception
+	 */
+	public function processCssUrls($sCss, $bBackend = false)
+	{
+		JCH_DEBUG ? Profiler::start('ProcessCssUrls') : null;
+
+		$params         = $this->params;
+		$aRegexStart    = array();
+		$aRegexStart[0] = '
                         #(?:{
                                 (?=\s*+(?>[^}\s:]++[\s:]++)*?url\(
                                         (?=[^)]+\.(?:png|gif|jpe?g))
                                 ([^)]+)\))';
-                $aRegexStart[1] = '
+		$aRegexStart[1] = '
                         (?=\s*+(?>[^}\s:]++[\s:]++)*?no-repeat)';
-                $aRegexStart[2] = '
+		$aRegexStart[2] = '
                         (?(?=\s*(?>[^};]++[;\s]++)*?background(?:-position)?\s*+:\s*+(?:[^;}\s]++[^}\S]++)*?
                                 (?<p>(?:[tblrc](?:op|ottom|eft|ight|enter)|-?[0-9]+(?:%|[c-x]{2})?))(?:\s+(?&p))?)
                                         (?=\s*(?>[^};]++[;\s]++)*?background(?:-position)?\s*+:\s*+(?>[^;}\s]++[\s]++)*?
                                                 (?:left|top|0(?:%|[c-x]{2})?)\s+(?:left|top|0(?:%|[c-x]{2})?)
                                         )
                         )';
-                $sRegexMiddle   = '   
+		$sRegexMiddle   = '   
                         [^{}]++} )';
-                $sRegexEnd      = '#isx';
+		$sRegexEnd      = '#isx';
 
-                $aIncludeImages  = JchOptimizeHelper::getArray($params->get('csg_include_images'));
-                $aExcludeImages  = JchOptimizeHelper::getArray($params->get('csg_exclude_images'));
-                $sIncImagesRegex = '';
+		$aIncludeImages  = Helper::getArray($params->get('csg_include_images'));
+		$aExcludeImages  = Helper::getArray($params->get('csg_exclude_images'));
+		$sIncImagesRegex = '';
 
-                if (!empty($aIncludeImages[0]))
-                {
-                        foreach ($aIncludeImages as &$sImage)
-                        {
-                                $sImage = preg_quote($sImage, '#');
-                        }
+		if (!empty($aIncludeImages[0]))
+		{
+			foreach ($aIncludeImages as &$sImage)
+			{
+				$sImage = preg_quote($sImage, '#');
+			}
 
-                        $sIncImagesRegex .= '
+			$sIncImagesRegex .= '
                                 |(?:{
                                         (?=\s*+(?>[^}\s:]++[\s:]++)*?url';
-                        $sIncImagesRegex .= ' (?=[^)]* [/(](?:' . implode('|', $aIncludeImages) . ')\))';
-                        $sIncImagesRegex .= '\(([^)]+)\)
+			$sIncImagesRegex .= ' (?=[^)]* [/(](?:' . implode('|', $aIncludeImages) . ')\))';
+			$sIncImagesRegex .= '\(([^)]+)\)
                                         )
                                         [^{}]++ })';
-                }
-                $sExImagesRegex = '';
-                if (!empty($aExcludeImages[0]))
-                {
-                        $sExImagesRegex .= '(?=\s*+(?>[^}\s:]++[\s:]++)*?url\(
+		}
+		$sExImagesRegex = '';
+		if (!empty($aExcludeImages[0]))
+		{
+			$sExImagesRegex .= '(?=\s*+(?>[^}\s:]++[\s:]++)*?url\(
                                                         [^)]++  (?<!';
 
-                        foreach ($aExcludeImages as &$sImage)
-                        {
-                                $sImage = preg_quote($sImage, '#');
-                        }
+			foreach ($aExcludeImages as &$sImage)
+			{
+				$sImage = preg_quote($sImage, '#');
+			}
 
-                        $sExImagesRegex .= implode('|', $aExcludeImages) . ')\)
+			$sExImagesRegex .= implode('|', $aExcludeImages) . ')\)
                                                         )';
-                }
+		}
 
-                $sRegexStart = implode('', $aRegexStart);
-                $sRegex      = $sRegexStart . $sExImagesRegex . $sRegexMiddle . $sIncImagesRegex . $sRegexEnd;
+		$sRegexStart = implode('', $aRegexStart);
+		$sRegex      = $sRegexStart . $sExImagesRegex . $sRegexMiddle . $sIncImagesRegex . $sRegexEnd;
 
-                if (preg_match_all($sRegex, $sCss, $aMatches) === FALSE)
-                {
-                        throw new Exception('Error occurred matching for images to sprite');
-                }
+		if (preg_match_all($sRegex, $sCss, $aMatches) === false)
+		{
+			throw new Exception('Error occurred matching for images to sprite');
+		}
 
-                if (isset($aMatches[3]))
-                {
-                        $total = count($aMatches[1]);
-                        
-                        for($i = 0; $i < $total;  $i++)
-                        {
-                                $aMatches[1][$i] = trim($aMatches[1][$i])? $aMatches[1][$i] : $aMatches[3][$i];
-                        }
-                }
+		if (isset($aMatches[3]))
+		{
+			$total = count($aMatches[1]);
 
-                if ($bBackend)
-                {
-                        $aImages        = array();
-                        $aImagesMatches = array();
+			for ($i = 0; $i < $total; $i++)
+			{
+				$aMatches[1][$i] = trim($aMatches[1][$i]) ? $aMatches[1][$i] : $aMatches[3][$i];
+			}
+		}
 
-                        $aImgRegex    = array();
-                        $aImgRegex[0] = $aRegexStart[0];
-                        $aImgRegex[2] = $aRegexStart[1];
-                        $aImgRegex[4] = $sRegexMiddle;
-                        $aImgRegex[5] = $sRegexEnd;
+		if ($bBackend)
+		{
+			$aImages        = array();
+			$aImagesMatches = array();
 
-                        $sImgRegex = implode('', $aImgRegex);
+			$aImgRegex    = array();
+			$aImgRegex[0] = $aRegexStart[0];
+			$aImgRegex[2] = $aRegexStart[1];
+			$aImgRegex[4] = $sRegexMiddle;
+			$aImgRegex[5] = $sRegexEnd;
 
-                        if (preg_match_all($sImgRegex, $sCss, $aImagesMatches) === FALSE)
-                        {
-                                throw new Exception('Error occurred matching for images to include');
-                        }
+			$sImgRegex = implode('', $aImgRegex);
 
-                        $aImagesMatches[0] = array_diff($aImagesMatches[0], $aMatches[0]);
-                        $aImagesMatches[1] = array_diff($aImagesMatches[1], $aMatches[1]);
+			if (preg_match_all($sImgRegex, $sCss, $aImagesMatches) === false)
+			{
+				throw new Exception('Error occurred matching for images to include');
+			}
 
-                        $oImageLibrary = $this->getImageLibrary();
-                        
-                        if($oImageLibrary === FALSE)
-                        {
-                                return array();
-                        }
-                        
-                        $oCssSpriteGen = new CssSpriteGen($oImageLibrary, $this->params, $bBackend);
-                        
-                        $aImages['include'] = $oCssSpriteGen->CreateSprite($aImagesMatches[1]);
-                        $aImages['exclude'] = $oCssSpriteGen->CreateSprite($aMatches[1]);
-                        
-                        
+			$aImagesMatches[0] = array_diff($aImagesMatches[0], $aMatches[0]);
+			$aImagesMatches[1] = array_diff($aImagesMatches[1], $aMatches[1]);
 
-                        return $aImages;
-                }
+			$mImageLibrary = $this->getImageLibrary();
 
-                JCH_DEBUG ? JchPlatformProfiler::stop('ProcessCssUrls', TRUE) : null;
-                
-                return $aMatches;
-        }
+			if ($mImageLibrary === false)
+			{
+				return array();
+			}
+
+			$oCssSpriteGen = new CssSpriteGen($mImageLibrary, $this->params, $bBackend);
+
+			$aImages['include'] = $oCssSpriteGen->CreateSprite($aImagesMatches[1]);
+			$aImages['exclude'] = $oCssSpriteGen->CreateSprite($aMatches[1]);
+
+
+			return $aImages;
+		}
+
+		JCH_DEBUG ? Profiler::stop('ProcessCssUrls', true) : null;
+
+		return $aMatches;
+	}
 
 }

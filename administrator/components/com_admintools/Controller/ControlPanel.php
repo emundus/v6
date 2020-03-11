@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -13,7 +13,6 @@ use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
 use Akeeba\AdminTools\Admin\Helper\ServerTechnology;
 use Akeeba\AdminTools\Admin\Model\MasterPassword;
 use Akeeba\AdminTools\Admin\Model\Updates;
-use AkeebaGeoipProvider;
 use Exception;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
@@ -32,7 +31,6 @@ class ControlPanel extends Controller
 		$this->predefinedTaskList = [
 			'browse',
 			'login',
-			'updategeoip',
 			'updateinfo',
 			'selfblocked',
 			'unblockme',
@@ -91,61 +89,6 @@ class ControlPanel extends Controller
 
 		$url = 'index.php?option=com_admintools';
 		$this->setRedirect($url);
-	}
-
-	public function updategeoip()
-	{
-		$this->csrfProtection();
-
-		// Load the GeoIP library if it's not already loaded
-		if (!class_exists('AkeebaGeoipProvider'))
-		{
-			if (@file_exists(JPATH_PLUGINS . '/system/akgeoip/lib/akgeoip.php'))
-			{
-				if (@include_once JPATH_PLUGINS . '/system/akgeoip/lib/vendor/autoload.php')
-				{
-					@include_once JPATH_PLUGINS . '/system/akgeoip/lib/akgeoip.php';
-				}
-			}
-		}
-
-		$url = 'index.php?option=com_admintools';
-
-		/**
-		 * Sanity check.
-		 *
-		 * We had a case where the user deleted the plugin files but did not uninstall the plugin. Therefore he saw the
-		 * message to update the database, clicked on the button and got an error page because the plugin (therefore,
-		 * the AkeebaGeoipProvider class) did not really exist on his site.
-		 */
-		if (!class_exists('AkeebaGeoipProvider'))
-		{
-			$message = JText::_('COM_ADMINTOOLS_LBL_GEOGRAPHICBLOCKING_GEOIPPLUGINMISSING');
-			$this->setRedirect($url, $message, 'error');
-
-			return;
-		}
-
-		$geoip  = new AkeebaGeoipProvider();
-		$result = $geoip->updateDatabase();
-
-		$customRedirect = $this->input->getBase64('returnurl', '');
-		$customRedirect = empty($customRedirect) ? '' : base64_decode($customRedirect);
-
-		if ($customRedirect && JUri::isInternal($customRedirect))
-		{
-			$url = $customRedirect;
-		}
-
-		if ($result === true)
-		{
-			$msg = JText::_('COM_ADMINTOOLS_MSG_GEOGRAPHICBLOCKING_DOWNLOADEDGEOIPDATABASE');
-			$this->setRedirect($url, $msg);
-		}
-		else
-		{
-			$this->setRedirect($url, $result, 'error');
-		}
 	}
 
 	public function updateinfo()

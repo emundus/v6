@@ -1,19 +1,20 @@
 <?php
 /**
- *  @package     AkeebaFEF
- *  @copyright   Copyright (c)2017-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license     GNU General Public License version 3, or later
+ * Akeeba Frontend Framework (FEF)
+ *
+ * @package   fef
+ * @copyright (c) 2017-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ *
+ * Created by Crystal Dionysopoulou for Akeeba Ltd, https://www.akeeba.com
  */
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
-{
-	throw new RuntimeException('FOF 3.x is required by Akeeba FEF but it is not currently installed', 500);
-}
+@include_once (__DIR__ . '/version.php');
 
-if (!@include_once (__DIR__ . '/version.php') && !defined('AKEEBAFEF_VERSION'))
+if (!defined('AKEEBAFEF_VERSION'))
 {
 	define('AKEEBAFEF_VERSION', 'dev');
 	define('AKEEBAFEF_DATE', gmdate('Y-m-d'));
@@ -39,10 +40,11 @@ class AkeebaFEFHelper
 	 * Loads Akeeba Frontend Framework, both CSS and JS
 	 *
 	 * @param   bool  $withReset  Should I also load the CSS reset for the FEF container?
+	 * @param   bool  $dark       Include Dark Mode CSS and JS?
 	 *
 	 * @return  void
 	 */
-	public static function load($withReset = true)
+	public static function load($withReset = true, $dark = false)
 	{
 		if (self::$loaded)
 		{
@@ -51,12 +53,18 @@ class AkeebaFEFHelper
 
 		if ($withReset)
 		{
-			self::loadCSS('fef/reset.min.css');
+			self::loadCSS('css/fef-reset.min.css');
 		}
 
-		self::loadCSS('fef/style.min.css');
+		self::loadCSS('fef/fef-joomla.min.css');
 		self::loadJS('fef/tabs.min.js');
 		self::loadJS('fef/dropdown.min.js');
+
+		if ($dark)
+		{
+			self::loadCSS('fef/dark.min.css');
+			self::loadJS('fef/darkmode.min.js');
+		}
 
 		self::$loaded = true;
 	}

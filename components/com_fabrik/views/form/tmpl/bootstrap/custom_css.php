@@ -476,7 +476,7 @@ form#member-profile .form-horizontal .control-label {
 
 /* ---- ALLOW * TO BE AT THE END OF TEXT ----- */
 .applicant-form form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
-    display: inline !important;
+    display: inline;
 }
 /* Inscription */
 .view-registration table, .view-registration td {
@@ -702,7 +702,7 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
 
 
 .applicant-form .fabrikGroupRepeater .btn-success {
-    margin-right: 10px !important;
+    margin-right: 0px !important;
 }
 
 .applicant-form .fabrikGroupRepeater .addGroup.btn-success {
@@ -931,10 +931,11 @@ footer#g-footer {
 
 .fabrikForm .fabrikSubGroup{
     position: relative;
+    border-bottom: 1px solid #c4c4c4;
 }
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
     position: absolute;
-    right: 10px;
+    right: 0px;
 }
 
 .radio input[type="radio"], .checkbox input[type="checkbox"] {

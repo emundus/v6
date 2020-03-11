@@ -16,9 +16,12 @@ use FOF30\Platform\Base\Platform as BasePlatform;
 use JApplicationCli;
 use JApplicationCms;
 use JApplicationWeb;
+use JAuthentication;
+use JAuthenticationResponse;
 use JCache;
 use JFactory;
 use Joomla\Registry\Registry;
+use JSession;
 use JUri;
 
 defined('_JEXEC') or die;
@@ -47,8 +50,8 @@ class Platform extends BasePlatform
 	protected static $isAdmin = null;
 
 	/**
-	 * A fake session storage for CLI apps. Since CLI applications cannot have a session we are using a Registry object
-	 * we manage internally.
+	 * A fake session storage for CLI apps. This is only used for legacy CLI applications which are not using the FOF
+	 * Base CLI script.
 	 *
 	 * @var   Registry
 	 */
@@ -801,19 +804,62 @@ class Platform extends BasePlatform
 	public function loginUser($authInfo)
 	{
 		\JLoader::import('joomla.user.authentication');
-		$options = array('remember' => false);
-		$authenticate = \JAuthentication::getInstance();
-		$response = $authenticate->authenticate($authInfo, $options);
+
+		$options      = ['remember' => false];
+
+		$response         = new JAuthenticationResponse();
+		$response->type   = 'fof';
+		$response->status = JAuthentication::STATUS_FAILURE;
+
+		if (isset($authInfo['username']))
+		{
+			$authenticate = JAuthentication::getInstance();
+			$response     = $authenticate->authenticate($authInfo, $options);
+		}
+
+		// Use our own authentication handler, onFOFUserAuthenticate, as a fallback
+		if ($response->status != JAuthentication::STATUS_SUCCESS)
+		{
+			$this->container->platform->importPlugin('user');
+			$this->container->platform->importPlugin('fof');
+			$pluginResults = $this->container->platform->runPlugins('onFOFUserAuthenticate', [$authInfo, $options]);
+
+			/**
+			 * Loop through all plugin results until we find a successful login. On failure we fall back to Joomla's
+			 * previous authentication response.
+			 */
+			foreach ($pluginResults as $result)
+			{
+				if (empty($result))
+				{
+					continue;
+				}
+
+				if (!is_object($result) || !($result instanceof JAuthenticationResponse))
+				{
+					continue;
+				}
+
+				if ($result->status != JAuthentication::STATUS_SUCCESS)
+				{
+					continue;
+				}
+
+				$response = $result;
+
+				break;
+			}
+		}
 
 		// User failed to authenticate: maybe he enabled two factor authentication?
 		// Let's try again "manually", skipping the check vs two factor auth
 		// Due the big mess with encryption algorithms and libraries, we are doing this extra check only
 		// if we're in Joomla 2.5.18+ or 3.2.1+
-		if ($response->status != \JAuthentication::STATUS_SUCCESS && method_exists('JUserHelper', 'verifyPassword'))
+		if ($response->status != JAuthentication::STATUS_SUCCESS && method_exists('JUserHelper', 'verifyPassword') && isset($authInfo['username']))
 		{
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true)
-				->select('id, password')
+			$db     = JFactory::getDbo();
+			$query  = $db->getQuery(true)
+				->select($db->qn(['id', 'password']))
 				->from('#__users')
 				->where('username=' . $db->quote($authInfo['username']));
 			$result = $db->setQuery($query)->loadObject();
@@ -825,8 +871,8 @@ class Platform extends BasePlatform
 				if ($match === true)
 				{
 					// Bring this in line with the rest of the system
-					$user = \JUser::getInstance($result->id);
-					$response->email = $user->email;
+					$user               = \JUser::getInstance($result->id);
+					$response->email    = $user->email;
 					$response->fullname = $user->name;
 
 					list($isCli, $isAdmin) = $this->isCliAdmin();
@@ -840,22 +886,22 @@ class Platform extends BasePlatform
 						$response->language = $user->getParam('language');
 					}
 
-					$response->status = \JAuthentication::STATUS_SUCCESS;
+					$response->status        = JAuthentication::STATUS_SUCCESS;
 					$response->error_message = '';
 				}
 			}
 		}
 
-		if ($response->status == \JAuthentication::STATUS_SUCCESS)
+		if ($response->status == JAuthentication::STATUS_SUCCESS)
 		{
 			$this->importPlugin('user');
-			$results = $this->runPlugins('onLoginUser', array((array)$response, $options));
+			$results = $this->runPlugins('onLoginUser', [(array) $response, $options]);
 
 			unset($results); // Just to make phpStorm happy
 
 			\JLoader::import('joomla.user.helper');
 			$userid = \JUserHelper::getUserId($response->username);
-			$user = $this->getUser($userid);
+			$user   = $this->getUser($userid);
 
 			$session = $this->container->session;
 			$session->set('user', $user);
@@ -1152,7 +1198,7 @@ class Platform extends BasePlatform
 	 */
 	public function setSessionVar($name, $value = null, $namespace = 'default')
 	{
-		if ($this->isCli())
+		if ($this->isCli() && !class_exists('FOFApplicationCLI'))
 		{
 			self::$fakeSession->set("$namespace.$name", $value);
 
@@ -1173,7 +1219,7 @@ class Platform extends BasePlatform
 	 */
 	public function getSessionVar($name, $default = null, $namespace = 'default')
 	{
-		if ($this->isCli())
+		if ($this->isCli() && !class_exists('FOFApplicationCLI'))
 		{
 			return self::$fakeSession->get("$namespace.$name", $default);
 		}
@@ -1236,7 +1282,7 @@ class Platform extends BasePlatform
 		// Web application, go through the regular Joomla! API.
 		if ($formToken)
 		{
-			return \JSession::getFormToken($forceNew);
+			return JSession::getFormToken($forceNew);
 		}
 
 		return $this->container->session->getToken($forceNew);

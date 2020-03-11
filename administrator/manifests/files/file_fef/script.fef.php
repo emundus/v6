@@ -1,8 +1,12 @@
 <?php
 /**
- *  @package     AkeebaFEF
- *  @copyright   Copyright (c)2017-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
- *  @license     GNU General Public License version 3, or later
+ * Akeeba Frontend Framework (FEF)
+ *
+ * @package   fef
+ * @copyright (c) 2017-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ *
+ * Created by Crystal Dionysopoulou for Akeeba Ltd, https://www.akeeba.com
  */
 
 defined('_JEXEC') or die();
@@ -29,21 +33,6 @@ class file_fefInstallerScript
 	 * @var   string
 	 */
 	protected $maximumJoomlaVersion = '4.0.99';
-
-	/**
-	 * The path, relative to JPATH_LIBRARIES, where FOF is expected to be found. If it's not there, the installation
-	 * will abort.
-	 *
-	 * @var   string
-	 */
-	protected $fofLibrariesPath = 'fof30';
-
-	/**
-	 * Constant used to detect whether FOF has been loaded
-	 *
-	 * @var   string
-	 */
-	protected $fofDefine = 'FOF30_INCLUDED';
 
 	/**
 	 * Joomla! pre-flight event. This runs before Joomla! installs or updates the component. This is our last chance to
@@ -104,19 +93,6 @@ class file_fefInstallerScript
 			return false;
 		}
 
-		// Check if we have FOF installed
-		$fofPath = JPATH_LIBRARIES . '/' . $this->fofLibrariesPath;
-		$isFOFInstalled = @is_dir($fofPath);
-
-		if (!$isFOFInstalled)
-		{
-			$msg = "<p>You need to have FOF installed in $fofPath before installing this package.</p>";
-
-			JLog::add($msg, JLog::WARNING, 'jerror');
-
-			return false;
-		}
-
 		// In case of an update, discovery etc I need to check if I am an update
 		if (($type == 'update') && !$this->amIAnUpdate($parent))
 		{
@@ -140,6 +116,14 @@ class file_fefInstallerScript
 					'media/fef/fonts/Ionicon/ionicons.eot',
 					'media/fef/fonts/Ionicon/ionicons.svg',
 					'media/fef/fonts/Ionicon/ionicons.ttf',
+					// Files renamed in 1.0.8
+					'css/reset.min.css',
+					'css/style.min.css',
+					// Files replaced with minified versions in 1.0.8
+					'js/darkmode.js',
+					'js/dropdown.js',
+					'js/menu.js',
+					'js/tabs.js',
 				],
 				'folders' => [
 				],
@@ -173,31 +157,14 @@ class file_fefInstallerScript
 	 */
 	public function postflight($type, JInstallerAdapterFile $parent)
 	{
-		$this->loadFOF30();
+		// Remove the obsolete dependency to FOF
+		$isFOFInstalled = @is_dir(JPATH_LIBRARIES . '/fof30');
 
-		if (!defined($this->fofDefine))
+		if ($isFOFInstalled)
 		{
-			return;
+			// Remove self from FOF 3.0 dependencies
+			$this->removeDependency('fof30', 'file_fef');
 		}
-
-		// Install or update database
-		$db = JFactory::getDbo();
-
-		/** @var JInstaller $grandpa */
-		$grandpa = $parent->getParent();
-		$src = $grandpa->getPath('source');
-		$sqlSource = $src . '/sql';
-
-		$dbInstaller = new FOF30\Database\Installer($db, $sqlSource);
-		$dbInstaller->updateSchema();
-        $dbInstaller->nukeCache();
-
-		// Add self to FOF 3.0 dependency list
-		$this->addDependency('fof30', 'file_fef');
-
-		// Clear the FOF cache
-		$fakeController = \FOF30\Container\Container::getInstance('com_FOOBAR');
-		$fakeController->platform->clearCache();
 	}
 
 	/**
@@ -220,9 +187,6 @@ class file_fefInstallerScript
 
 			throw new RuntimeException($msg, 500);
 		}
-
-		// Remove self from FOF 3.0 dependencies
-		$this->removeDependency('fof30', 'file_fef');
 
 		JLoader::import('joomla.filesystem.folder');
 		JFolder::delete(JPATH_SITE . '/media/fef');
@@ -268,12 +232,11 @@ class file_fefInstallerScript
 		}
 	}
 
-
 	/**
 	 * Is this package an update to the currently installed FEF? If not (we're a downgrade) we will return false
 	 * and prevent the installation from going on.
 	 *
-	 * @param   \JInstallerAdapterComponent $parent The parent object
+	 * @param   \JInstallerAdapterFile $parent The parent object
 	 *
 	 * @return  bool  Am I an update to an existing version>
 	 */
@@ -286,7 +249,7 @@ class file_fefInstallerScript
 
 		$target = JPATH_ROOT . '/media/fef';
 
-		if (!JFolder::exists($source . '/fef'))
+		if (!JFolder::exists($source))
 		{
 			// WTF? I can't find myself. I can't install anything.
 			return false;
@@ -329,23 +292,6 @@ class file_fefInstallerScript
 		$haveToInstallFEF = $fefVersion['package']['date']->toUNIX() >= $fefVersion['installed']['date']->toUNIX();
 
 		return $haveToInstallFEF;
-	}
-
-	/**
-	 * Loads FOF 3.0 if it's not already loaded
-	 */
-	protected function loadFOF30()
-	{
-		// Load FOF if not already loaded
-		if (!defined($this->fofDefine))
-		{
-			$filePath = JPATH_LIBRARIES . '/' . $this->fofLibrariesPath . '/include.php';
-
-			if (!defined($this->fofDefine) && file_exists($filePath))
-			{
-				@include_once $filePath;
-			}
-		}
 	}
 
 	/**

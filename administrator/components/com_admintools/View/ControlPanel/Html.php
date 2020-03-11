@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -9,11 +9,9 @@ namespace Akeeba\AdminTools\Admin\View\ControlPanel;
 
 defined('_JEXEC') or die;
 
-use Akeeba\AdminTools\Admin\Helper\Coloriser;
 use Akeeba\AdminTools\Admin\Helper\ServerTechnology;
 use Akeeba\AdminTools\Admin\Model\AdminPassword;
 use Akeeba\AdminTools\Admin\Model\ControlPanel;
-use Akeeba\AdminTools\Admin\Model\GeographicBlocking;
 use Akeeba\AdminTools\Admin\Model\MasterPassword;
 use Akeeba\AdminTools\Admin\Model\Stats;
 use Akeeba\AdminTools\Admin\View\Mixin\SystemPluginExists;
@@ -131,20 +129,6 @@ class Html extends BaseView
 	public $pluginid;
 
 	/**
-	 * Is the GeoIP plugin available
-	 *
-	 * @var  bool
-	 */
-	public $hasplugin;
-
-	/**
-	 * Does the GeoIP database need to be updated
-	 *
-	 * @var  bool
-	 */
-	public $pluginNeedsUpdate;
-
-	/**
 	 * The error string for the front-end secret word strength issue, blank if there is no problem
 	 *
 	 * @var  string
@@ -254,12 +238,6 @@ class Html extends BaseView
 		/** @var MasterPassword $masterPasswordModel */
 		$masterPasswordModel = $this->container->factory->model('MasterPassword')->tmpInstance();
 
-		if (defined('ADMINTOOLS_PRO') && ADMINTOOLS_PRO)
-		{
-			/** @var GeographicBlocking $geoBlockModel */
-			$geoBlockModel = $this->container->factory->model('GeographicBlocking')->tmpInstance();
-		}
-
 		/** @var Stats $statsModel */
 		$statsModel = $this->container->factory->model('Stats')->tmpInstance();
 
@@ -288,12 +266,6 @@ class Html extends BaseView
 		$this->enable_dbtools       = $masterPasswordModel->accessAllowed('DatabaseTools');
 		$this->enable_dbchcol       = $masterPasswordModel->accessAllowed('ChangeDBCollation');
 		$this->pluginid             = $controlPanelModel->getPluginID();
-
-		if (defined('ADMINTOOLS_PRO') && ADMINTOOLS_PRO)
-		{
-			$this->hasplugin         = $geoBlockModel->hasGeoIPPlugin();
-			$this->pluginNeedsUpdate = $geoBlockModel->dbNeedsUpdate();
-		}
 
 		$this->htMakerSupported      = ServerTechnology::isHtaccessSupported();
 		$this->nginxMakerSupported   = ServerTechnology::isNginxSupported();

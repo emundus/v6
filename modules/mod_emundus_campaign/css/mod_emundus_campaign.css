@@ -64,10 +64,6 @@
     width: 100% !important;
 }
 
-.campaigns-list i.icon-time {
-    display: none;
-}
-
 .campaingapplycontent {
     font-size: 15px;
     padding: 0;
@@ -97,7 +93,7 @@
 }
 
 .campaigns-list .campaignbymonth .campaign-month-label .position-me {
-    top: 36px;
+    top: 27px;
 }
 
 #search_program {

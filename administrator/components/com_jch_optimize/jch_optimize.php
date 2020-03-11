@@ -21,6 +21,9 @@
  */
 defined('_JEXEC') or die;
 
+use Joomla\Event\Dispatcher;
+use JchOptimize\Platform\Plugin;
+
 include_once JPATH_PLUGINS . '/system/jch_optimize/jchoptimize/loader.php';
 
 $app = JFactory::getApplication();
@@ -32,16 +35,23 @@ if (!$action)
 	exit();
 }
 
-jimport('joomla.event.dispatcher');
 
-$plugin = JchPlatformPlugin::getPlugin();
+$plugin = Plugin::getPlugin();
 
 if (!$plugin)
 {
 	exit();
 }
 
-$dispatcher = JDispatcher::getInstance();
+if (class_exists('JEventDispatcher'))
+{
+	$dispatcher = JEventDispatcher::getInstance();
+}
+else
+{
+	$dispatcher = new Dispatcher();
+}
+
 $className  = 'Plg' . $plugin->type . $plugin->name;
 
 if(!class_exists($className))
@@ -55,7 +65,15 @@ $jchoptimize->loadLanguage();
 
 try
 {
-	$results = $dispatcher->trigger('onAjax' . ucfirst($action));
+	if (class_exists('JEventDispatcher'))
+	{
+		$results = $dispatcher->trigger('onAjax' . ucfirst($action));
+	}
+	else
+	{
+		$output = $dispatcher->triggerEvent('onAjax' . ucfirst($action));
+		$results = $output->getArgument('result');
+	}
 }
 catch (Exception $e)
 {

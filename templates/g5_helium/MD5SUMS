@@ -130,14 +130,14 @@ fonts/rockettheme-apps/rockettheme-apps.svg	431a7de65db6fea600722c933bb795ee
 fonts/rockettheme-apps/rockettheme-apps.woff2	0b76f0674592d3d4653e6524045e890e
 fonts/rockettheme-apps/rockettheme-apps.ttf	2185692f8168ab2fa54c0923be97f190
 fonts/rockettheme-apps/rockettheme-apps.eot	371fde3d2b3e06ba11bab5b4706292f2
-templateDetails.xml	2619e4c543cdea7ee9ad85f2929d9ece
+templateDetails.xml	d13504610f4276e6cc8b3f47c7251a55
 layouts/default.yaml	15fd05bda30a83f05ccfde7b970d716f
 layouts/_offline.yaml	8a05c4dde55e6811ac95fdc639c88404
 layouts/home_-_particles.yaml	83439c33dd1e3ee0c16fae1d0bfba5b8
 layouts/_error.yaml	ade3d185bc08148bd7295c1e89f1e4b1
 layouts/_body_only.yaml	43dce3ad03bac74c337c6151f59bc94a
 MD5SUMS	d41d8cd98f00b204e9800998ecf8427e
-gantry/theme.yaml	ac4c6d5513888572a118b46d3e3a066b
+gantry/theme.yaml	dcfbe169ebd62a2bfaa0d64a3a11fb8f
 gantry/presets.yaml	4edfd8f32f98ba3020831b1ed61db43f
 images/header/img01.jpg	fb3b9862ecc04e7206e246659e68f2af
 images/header/img02.jpg	8f73bdf0cf0fad13ce7de37dad9e8d5c

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -10,31 +10,20 @@ namespace Akeeba\AdminTools\Admin\Model;
 defined('_JEXEC') or die;
 
 use FOF30\Model\Model;
-use JFactory;
+use JDatabaseQuery;
+use RuntimeException;
 
 class ChangeDBCollation extends Model
 {
 	/**
-	 * Get all tables starting with this site's prefix
+	 * Change the collation of all tables in the database, even those with a different prefix than your Joomla
+	 * installation.
 	 *
-	 * @return  array
+	 * @param   string  $newCollation  The new collation, e.g. "utf8mb4_unicode_ci"
+	 *
+	 * @return  bool  False if you somehow managed to install Joomla! on MySQL 4.x (very much a leftover from the past)
 	 */
-	public function findTables()
-	{
-		/** @var DatabaseTools $dbtoolsModel */
-		$dbtoolsModel = $this->container->factory->model('DatabaseTools')->tmpInstance();
-
-		return $dbtoolsModel->findTables();
-	}
-
-	/**
-	 * Change the collation of all tables in the database whose name begins with Joomla!'s prefix
-	 *
-	 * @param   string  $new_collation
-	 *
-	 * @return  bool  False if you somehow managed to install Joomla! 3 on MySQL 4.x (what the Hell?!)
-	 */
-	public function changeCollation($new_collation = 'utf8_general_ci')
+	public function changeCollation($newCollation = 'utf8_general_ci')
 	{
 		// Make sure we have at least MySQL 4.1.2
 		$db            = $this->container->db;
@@ -46,89 +35,152 @@ class ChangeDBCollation extends Model
 			return false;
 		}
 
-		// Get the character set's name from the collation
-		$collationParts = explode('_', $new_collation);
-		$charSet        = $collationParts[0];
+		// Change the collation of the database itself
+		$this->changeDatabaseCollation($newCollation);
 
-		// Get this database's name and try to change its collation
-		$conf   = $this->container->platform->getConfig();
-		$dbname = $db->qn($conf->get('db'));
+		// Change the collation of each table
+		$tables = $db->getTableList();
 
-		$queries = [
-			"ALTER DATABASE $dbname CHARACTER SET = $charSet COLLATE = $new_collation",
-		];
-
-		// We need to loop through all Joomla! tables
-		$tables = $this->findTables();
-
-		if (!empty($tables))
+		// No tables to convert...?
+		if (empty($tables))
 		{
-			foreach ($tables as $tableName)
-			{
-				// Convert the table
-				$quotedTableName = $db->qn($tableName);
-				$sql             = "ALTER TABLE $quotedTableName CONVERT TO CHARACTER SET $charSet COLLATE $new_collation";
-
-				$queries[] .= $sql;
-
-				// Convert each text column
-				$sql = "SHOW FULL COLUMNS FROM $quotedTableName";
-				$db->setQuery($sql);
-				$columns = $db->loadAssocList();
-				$mods    = []; // array to hold individual MODIFY COLUMN commands
-
-				if (is_array($columns))
-				{
-					foreach ($columns as $column)
-					{
-						// Make sure we are redefining only columns which do support a collation
-						$col = (object) $column;
-
-						if (empty($col->Collation))
-						{
-							continue;
-						}
-
-						$null    = $col->Null == 'YES' ? 'NULL' : 'NOT NULL';
-						$default = is_null($col->Default) ? '' : "DEFAULT '" . $db->escape($col->Default) . "'";
-						$mods[]  = "MODIFY COLUMN `{$col->Field}` {$col->Type} $null $default COLLATE $new_collation";
-					}
-				}
-
-				// Begin the modification statement
-				$sql = "ALTER TABLE $quotedTableName ";
-
-				// Add commands to modify columns
-				if (!empty($mods))
-				{
-					$sql .= implode(', ', $mods) . ', ';
-				}
-
-				// Add commands to modify the table collation
-				$queries[] = "DEFAULT CHARACTER SET $charSet COLLATE $new_collation;";
-			}
+			return true;
 		}
 
-		// Finally, apply the changes
-		foreach ($queries as $q)
+		foreach ($tables as $tableName)
 		{
-			$q = trim($q);
-
-			if (!empty($q))
-			{
-				$db->setQuery($q);
-
-				try
-				{
-					$db->execute();
-				}
-				catch (\Exception $e)
-				{
-					// Do not fail if this doesn't work
-				}
-			}
+			$this->changeTableCollation($tableName, $newCollation);
 		}
 
 		return true;
+	}
+
+	/**
+	 * Execute a query against the site's database
+	 *
+	 * @param   string|JDatabaseQuery  $query       The query to execute
+	 * @param   bool                   $silentFail  True to suppress exceptions for SQL errors
+	 *
+	 * @return  void
+	 * @throws  RuntimeException  When $silentFail is false and there's a DB error.
+	 */
+	private function query($query, $silentFail = true)
+	{
+		$db = $this->container->db;
+
+		try
+		{
+			$db->setQuery($query)->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			if (!$silentFail)
+			{
+				throw $e;
+			}
+		}
+	}
+
+	/**
+	 * Change the database collation.
+	 *
+	 * This tries to change the collation of the entire database, setting the default for newly created tables and
+	 * columns. We have the reasonable expectation that this will fail on most live hosts.
+	 *
+	 * @param   string  $newCollation  The new collation, e.g. "utf8mb4_unicode_ci"
+	 *
+	 * @return  void
+	 */
+	private function changeDatabaseCollation($newCollation)
+	{
+		$db             = $this->container->db;
+		$collationParts = explode('_', $newCollation);
+		$charset        = $collationParts[0];
+		$dbName         = $this->container->platform->getConfig()->get('db');
+
+		$this->query(sprintf(
+			"ALTER DATABASE %s CHARACTER SET = %s COLLATE = %s",
+			$db->qn($dbName),
+			$charset,
+			$newCollation
+		));
+	}
+
+	/**
+	 * Changes the collation of a table and its text columns
+	 *
+	 * @param   string  $tableName
+	 * @param   string  $newCollation
+	 * @param   bool    $changeColumns
+	 *
+	 * @return  void
+	 */
+	private function changeTableCollation($tableName, $newCollation, $changeColumns = true)
+	{
+		$db             = $this->container->db;
+		$collationParts = explode('_', $newCollation);
+		$charset        = $collationParts[0];
+
+		// Change the collation of the table itself.
+		$this->query(sprintf(
+			"ALTER TABLE %s CONVERT TO CHARACTER SET %s COLLATE %s",
+			$db->qn($tableName),
+			$charset,
+			$newCollation
+		));
+
+		// Are we told not to bother with text columns?
+		if (!$changeColumns)
+		{
+			return;
+		}
+
+		// Convert each text column
+		try
+		{
+			$columns = $db->getTableColumns($tableName, false);
+		}
+		catch (RuntimeException $e)
+		{
+			$columns = [];
+		}
+
+		// The table is broken or MySQL cannot report any columns for it. Early return.
+		if (!is_array($columns) || empty($columns))
+		{
+			return;
+		}
+
+		$modifyColumns = [];
+
+		foreach ($columns as $col)
+		{
+			// Make sure we are redefining only columns which do support a collation
+			if (empty($col->Collation))
+			{
+				continue;
+			}
+
+			$modifyColumns[] = sprintf("MODIFY COLUMN %s %s %s %s COLLATE %s",
+				$db->qn($col->Field),
+				$col->Type,
+				(strtoupper($col->Null) == 'YES') ? 'NULL' : 'NOT NULL',
+				is_null($col->Default) ? '' : sprintf('DEFAULT %s', $db->q($col->Default)),
+				$newCollation
+			);
+		}
+
+		// No text columns to modify? Return immediately.
+		if (empty($modifyColumns))
+		{
+			return;
+		}
+
+		// Issue an ALTER TABLE statement which modifies all text columns.
+		$this->query(sprintf(
+			'ALTER TABLE %s %s',
+			$db->qn($tableName),
+			implode(', ', $modifyColumns
+			)));
 	}
 }
