@@ -60,7 +60,7 @@ $site_offset = $config->get('offset');
                                 <?php echo $result->label; ?>
                             </h4>
                             <div class = "em-disciplines">
-                                <?php echo '<div class = "em-discipline label">'.implode('</div><div class = "em-discipline label">', $helper->getCampaignDiscipline($result->id)).'</div>';?>
+                                <?php echo '<div class = "em-discipline label">'.implode('</div><div class = "em-discipline label">', $helper->getCampaignTags($result->id)).'</div>';?>
                             </div>
                             <p>
                                 <?php echo $result->short_description;?>

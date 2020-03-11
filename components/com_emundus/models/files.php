@@ -202,9 +202,9 @@ class EmundusModelFiles extends JModelLegacy
                     $cascadingdropdown_label = $attribs->cascadingdropdown_label;
                     $r2 = explode('___', $cascadingdropdown_label);
                     $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
-                    $from = $r2[0];
+                    $from = $r2[0]; 
                     $where = $r1[1].'='.$def_elmt->tab_name.'.'.$def_elmt->element_name;
-                    $query = "(SELECT ".$select." FROM ".$from." WHERE ".$where.") AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
+                    $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
                     $query = preg_replace('#{thistable}#', $from, $query);
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
 	                $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);

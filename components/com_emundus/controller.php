@@ -1257,14 +1257,16 @@ class EmundusController extends JControllerLegacy {
             $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads WHERE user_id = ' . $uid . ' AND filename like ' . $db->Quote($file);
             $db->setQuery($query);
             $fileInfo = $db->loadObject();
-            if (empty($fileInfo))
-                $fileInfo->fnum = explode('_', $file)[0];
+            if (empty($fileInfo)) {
+	            $fileInfo->fnum = explode('_', $file)[0];
+            }
         }
 
         // Check if the user is an applicant and it is his file.
-        if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid) {
-            if ($fileInfo->can_be_viewed != 1)
-                die (JText::_( 'ACCESS_DENIED' ));
+        if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid && !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
+            if ($fileInfo->can_be_viewed != 1) {
+	            die (JText::_('ACCESS_DENIED'));
+            }
         }
         // If the user has the rights to open attachments.
         elseif (!empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum)) {
