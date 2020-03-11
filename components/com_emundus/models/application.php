@@ -1068,12 +1068,6 @@ class EmundusModelApplication extends JModelList {
 	                                                $where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
 	                                                $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 
-                                                    // Check if the db table has a published column. So we don't get the unpublished value
-                                                    $this->_db->setQuery("SHOW COLUMNS FROM $from LIKE 'published'");
-                                                    if ($this->_db->loadResult()) {
-                                                        $query .= " AND published = 1 ";
-                                                    }
-
 	                                                $query = preg_replace('#{thistable}#', $from, $query);
 	                                                $query = preg_replace('#{my->id}#', $aid, $query);
                                                     $query  = preg_replace('#{shortlang}#', $this->locales, $query);
@@ -1210,12 +1204,6 @@ class EmundusModelApplication extends JModelList {
 	                                            $from = $params->join_db_name;
 	                                            $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
 	                                            $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-
-                                                // Check if the db table has a published column. So we don't get the unpublished value
-                                                $this->_db->setQuery("SHOW COLUMNS FROM $from LIKE 'published'");
-                                                if ($this->_db->loadResult()) {
-                                                    $query .= " AND published = 1 ";
-                                                }
 
 	                                            $query = preg_replace('#{thistable}#', $from, $query);
 	                                            $query = preg_replace('#{my->id}#', $aid, $query);
@@ -1488,11 +1476,7 @@ class EmundusModelApplication extends JModelList {
                                                 $from = $params->join_db_name;
                                                 $where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-                                                // Check if the db table has a published column. So we don't get the unpublished value
-                                                $this->_db->setQuery("SHOW COLUMNS FROM $from LIKE 'published'");
-                                                if ($this->_db->loadResult()) {
-                                                    $query .= " AND published = 1 ";
-                                                }
+
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
                                                 $query  = preg_replace('#{shortlang}#', $this->locales, $query);
@@ -1632,12 +1616,6 @@ class EmundusModelApplication extends JModelList {
                                                 $where = $params->join_key_column.'='.$this->_db->Quote($r_elt);
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
 
-                                                // Check if the db table has a published column. So we don't get the unpublished value
-                                                $this->_db->setQuery("SHOW COLUMNS FROM $from LIKE 'published'");
-                                                if ($this->_db->loadResult()) {
-                                                    $query .= " AND published = 1 ";
-                                                }
-
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
                                                 $query  = preg_replace('#{shortlang}#', $this->locales, $query);
@@ -1775,11 +1753,7 @@ class EmundusModelApplication extends JModelList {
                                                 $from = $params->join_db_name;
                                                 $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-                                                // Check if the db table has a published column. So we don't get the unpublished value
-                                                $this->_db->setQuery("SHOW COLUMNS FROM $from LIKE 'published'");
-                                                if ($this->_db->loadResult()) {
-                                                    $query .= " AND published = 1 ";
-                                                }
+                                                
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
                                                 $query  = preg_replace('#{shortlang}#', $this->locales, $query);
