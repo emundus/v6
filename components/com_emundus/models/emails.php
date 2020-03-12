@@ -219,14 +219,16 @@ class EmundusModelEmails extends JModelList
                     $to = $recipient['email'];
                     $to_id = $recipient['id'];
                     $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
-                    $body = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['message']);
-                    $body = $this->setTagsFabrik($body, array($student->fnum));
 
+                    $body = $trigger_email[$student->code]['tmpl']['message'];
                     if ($trigger_email[$student->code]['tmpl']['template']) {
                         $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$student->code]['tmpl']['template']);
                     }
+	                $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+	                $body = $this->setTagsFabrik($body, array($student->fnum));
 
-                    // If the email sender has the same domain as the system sender address.
+
+	                // If the email sender has the same domain as the system sender address.
                     if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
                         $mail_from_address = $from;
                     } else {

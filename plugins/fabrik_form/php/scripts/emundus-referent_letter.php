@@ -126,11 +126,12 @@ foreach ($recipients as $recipient) {
 
             $replacements = array($student->id, $student->name, $student->email, $link_upload, $fnum_detail['label'], $recipient['name'], $recipient['firstname']);
             $subject = preg_replace($patterns, $replacements, $obj->subject);
-            $body = preg_replace($patterns, $replacements, $obj->message);
+            $body = $obj->message;
 
 	        if ($obj->Template) {
 		        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj->Template);
 	        }
+	        $body = preg_replace($patterns, $replacements, $body);
 
             $to = array($recipient['email']);
 
