@@ -74,7 +74,7 @@ if ($this->hasActions) : ?>
         }).then(confirm => {
             if (confirm.value) {
                 document.getElementById('jos_emundus_evaluations___confirm').value = 1;
-                document.getElementById('form_<?= $form->id; ?>').submit();
+                document.querySelector('[id^="form_<?= $form->id; ?>"]').submit();
             }
         });
     }
