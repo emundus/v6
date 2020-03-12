@@ -100,7 +100,7 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 			$fnum = $jinput->get->get('jos_emundus_evaluations___fnum');
 			$rowid = $jinput->get->getInt('rowid');
 
-			if ((!empty($fnum[0]) || !empty($rowid)) && EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			if ((!empty($fnum[0]) || !empty($rowid)) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 
 				$db = JFactory::getDbo();
 				$query = $db->getQuery(true);
