@@ -122,7 +122,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                             <?php echo $this->accessObj[$line['fnum']->val]?>
                                         <?php elseif ($k == "id_tag") :?>
                                             <?php echo $this->colsSup['id_tag'][$line['fnum']->val]?>
-                                        <?php elseif (array_key_exists($k, $this->colsSup)) :?>
+                                        <?php elseif (isset($this->colsSup) && array_key_exists($k, $this->colsSup)) :?>
 	                                        <?= @$this->colsSup[$k][$line['fnum']->val] ?>
                                         <?php else :?>
                                             <?php if ($value->type == 'text' ) :?>

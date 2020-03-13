@@ -379,7 +379,7 @@ class EmundusModelEmails extends JModelList {
             $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
         );
 
-        if(count($post) > 0) {
+        if(isset($post)) {
             foreach ($post as $key => $value) {
                 $patterns[] = '/\['.$key.'\]/';
                 $replacements[] = $value;

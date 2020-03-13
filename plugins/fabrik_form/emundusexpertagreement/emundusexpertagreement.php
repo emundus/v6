@@ -272,6 +272,9 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			$user->lastvisitDate = "0000-00-00-00:00:00";
 			$user->block = 0;
 
+			// Set a new param to skip the activation email
+            $user->setParam('skip_activation', true);
+
 			$other_param['firstname'] = $firstname;
 			$other_param['lastname'] = $lastname;
 			$other_param['profile'] = $profile_id;

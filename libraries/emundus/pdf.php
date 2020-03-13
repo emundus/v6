@@ -265,26 +265,33 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
     $letters = $m_evaluation->getLettersTemplate($eligibility, $training);
 
-    try {
+    if (!empty($letters)) {
+        try {
 
-        $query = "SELECT * FROM #__emundus_setup_teaching_unity
-					WHERE published=1 AND date_start>'".$now."' AND code IN (".$db->Quote($letters[0]['training']).")
+            $query = "SELECT * FROM #__emundus_setup_teaching_unity
+					WHERE published=1 AND date_start > '".$now."' AND code IN (".$db->Quote($letters[0]['training']).")
 					ORDER BY date_start ASC";
-        $db->setQuery($query);
-        $courses = $db->loadAssocList();
+            $db->setQuery($query);
+            $courses = $db->loadAssocList();
 
-    } catch (Exception $e) {
-        JLog::add('SQL Error in Emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+        } catch (Exception $e) {
+            JLog::add('SQL Error in Emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+        }
     }
+
+
 
     $courses_list = '';
     $courses_fee = ' ';
-    foreach ($courses as $c) {
-        $ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
-        $de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
-        $courses_list .= '<img src="'.JPATH_BASE.DS."media".DS."com_emundus".DS."images".DS."icones".DS."checkbox-unchecked_16x16.png".'" width="8" height="8" align="left" /> ';
-        $courses_list .= $ds.' - '.$de.'<br />';
-        $courses_fee  .= 'Euro '.$c['price'].',-- ';
+
+    if (!empty($courses)) {
+        foreach ($courses as $c) {
+            $ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
+            $de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
+            $courses_list .= '<img src="'.JPATH_BASE.DS."media".DS."com_emundus".DS."images".DS."icones".DS."checkbox-unchecked_16x16.png".'" width="8" height="8" align="left" /> ';
+            $courses_list .= $ds.' - '.$de.'<br />';
+            $courses_fee  .= 'Euro '.$c['price'].',-- ';
+        }
     }
 
     $campaign = $m_campaign->getCampaignByID($campaign_id);
