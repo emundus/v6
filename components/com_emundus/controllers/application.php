@@ -140,12 +140,13 @@ class EmundusControllerApplication extends JControllerLegacy
      * Upload an applicant attachment (one by one)
      */
     public function upload_attachment() {
+
         $user = JFactory::getUser();
 
-        if(!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) die(JText::_("ACCESS_DENIED"));
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+	        die(JText::_("ACCESS_DENIED"));
+        }
 
-        $view = JRequest::getVar('view', null, 'GET', 'none',0);
-        $itemid = JRequest::getVar('Itemid', null, 'GET', 'none',0);
         $aid = JRequest::getVar('attachment_id', null, 'POST', 'none',0);
         $uid = JRequest::getVar('uid', null, 'POST', 'none',0);
         $filename = JRequest::getVar('filename', null, 'POST', 'none',0);
@@ -155,14 +156,13 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $targetFolder = EMUNDUS_PATH_ABS.$uid;
 
-
-        //echo $stringData . $targetFolder . $_FILES['filename']['name'];
-
         if (!empty($_FILES)) {
             $msg = "";
             $data = "{";
             switch ($_FILES['filename']['error']) {
-                case 0:     $msg .= JText::_("FILE_UPLOADED");
+
+            	case 0:
+                	$msg .= JText::_("FILE_UPLOADED");
                     $data .= '"message":"'.$msg.'",';
                     $tempFile = $_FILES['filename']['tmp_name'];
                     $targetPath = $targetFolder;
@@ -200,40 +200,53 @@ class EmundusControllerApplication extends JControllerLegacy
                     $data .= '"path":"'.str_replace("\\", "\\\\", $targetPath).'",';
                     $data .= '"aid":"'.$aid.'",';
                     $data .= '"uid":"'.$uid.'"';
-                    //$data .= '"html":"'.$html.'"';
+                    break;
 
+                case 1:
+                	$msg .= "The file is bigger than this PHP installation allows";
+                    $data .= '"message":"'.$msg.'"';
+                    break;
 
-                    break;
-                case 1:     $msg .= "The file is bigger than this PHP installation allows";
+                case 2:
+                	$msg .= "The file is bigger than this form allows";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                case 2:     $msg .= "The file is bigger than this form allows";
+
+                case 3:
+                	$msg .= "Only part of the file was uploaded";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                case 3:     $msg .= "Only part of the file was uploaded";
+
+                case 4:
+                	$msg .= "No file was uploaded";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                case 4:     $msg .= "No file was uploaded";
+
+                case 6:
+                	$msg .= "Missing a temporary folder";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                case 6:     $msg .= "Missing a temporary folder";
+
+                case 7:
+                	$msg .= "Failed to write file to disk";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                case 7:     $msg .= "Failed to write file to disk";
+
+                case 8:
+                	$msg .= "File upload stopped by extension";
                     $data .= '"message":"'.$msg.'"';
                     break;
-                case 8:     $msg .= "File upload stopped by extension";
-                    $data .= '"message":"'.$msg.'"';
-                    break;
-                default:    $msg .= "Unknown error ".$_FILES['filename']['error'];
+
+                default:
+                	$msg .= "Unknown error ".$_FILES['filename']['error'];
                     $data .= '"message":"'.$msg.'",';
                     break;
             }
             $data .= "}";
             echo $data;
-            //echo json_encode($data);
         }
     }
+
 
     public function editcomment() {
 

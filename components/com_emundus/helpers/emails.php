@@ -23,29 +23,30 @@ jimport('joomla.application.component.helper');
  * @subpackage	Helper
  * @since 1.5
  */
-class EmundusHelperEmails
-{
-	function createEmailBlock($params, $users = null)
-	{
+class EmundusHelperEmails {
+
+	function createEmailBlock($params, $users = null) {
 		$jinput = JFactory::getApplication()->input;
 		$itemid = $jinput->get('Itemid', null, 'INT');
 		$fnums = $jinput->get('fnums', null, 'RAW');
 
 		$fnumsArray = (array) json_decode($fnums);
 		if (count($fnumsArray) > 0) {
-			foreach ($fnumsArray as $key => $value) {
-				$fnums_tab[] = $value->fnum;
+			foreach ($fnumsArray as $value) {
+				if ($value->fnum !== 'em-check-all') {
+					$fnums_tab[] = $value->fnum;
+				}
 			}
 			$fnums = json_encode($fnums_tab);
 		}
 
 		$current_user = JFactory::getUser();
-		$email = '<div class="em_email_block" id="em_email_block">';
-		$email.= '<input placeholder="'.JText::_( 'EMAIL_FROM' ).'" name="mail_from_name" type="text" class="inputbox input-xlarge" id="mail_from_name" value="'.$current_user->name.'" /> ';
-		$email.= '<input placeholder="'.JText::_( 'EMAIL' ).'" name="mail_from" type="text" class="inputbox input-xlarge" id="mail_from" value="'.$current_user->email.'" /> ';
-		$email.= '<input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="'.$current_user->id.'" /><br>';
+		$email = '<div class="em_email_block" id="em_email_block">
+					<input placeholder="'.JText::_('NAME_FROM').'" name="mail_from_name" type="text" class="inputbox input-xlarge" id="mail_from_name" value="'.$current_user->name.'" />
+					<input placeholder="'.JText::_('EMAIL_FROM').'" name="mail_from" type="text" class="inputbox input-xlarge" id="mail_from" value="'.$current_user->email.'" />
+					<input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="'.$current_user->id.'" /><br>';
 
-		if(in_array('default',$params)){
+		if (in_array('default',$params)) {
 			$email .= '<fieldset class="em_email_block-fieldset">
 				<legend>
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_ASSESSORS_DEFAULT').'::'.JText::_('EMAIL_ASSESSORS_DEFAULT_TIP').'">
@@ -55,17 +56,16 @@ class EmundusHelperEmails
 				<div><input type="submit" class="btn btn-large btn-success" name="default_email" value="'.JText::_( 'SEND_DEFAULT_EMAIL' ).'" ></div>
 			</fieldset>';
 		}
-		if(in_array('groups',$params)){
+
+		if (in_array('groups', $params)) {
 			$default_template = EmundusHelperEmails::getEmail('assessors_set');
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', $default_template->message, '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
 			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
-			//$current_eval = JRequest::getVar('user', null, 'POST', 'none',0);
-			$current_group = $jinput->get('groups', null, 'INT'); //JRequest::getVar('groups', null, 'POST', 'none',0);
+			$current_group = $jinput->get('groups', null, 'INT');
 			$all_groups = EmundusHelperFilters::getGroups();
-			//$evaluators = EmundusHelperFilters::getEvaluators();
 
 			$email .= '<select name="mail_group[]" id="mail_group" multiple="multiple" size="6">
 						<option value=""> '.JText::_('PLEASE_SELECT_GROUP').' </option>' ;
@@ -86,16 +86,15 @@ class EmundusHelperEmails
 			$email.='</select>';
 			$email.= ' <input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$default_template->subject.'" size="100" style="width: inherit !important;" />';
 			$email .= $mail_body.'<input class="btn btn-large btn-success" type="submit" name="group_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >';
-
 		}
-		if(in_array('applicants', $params)){
+
+		if (in_array('applicants', $params)) {
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
 			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
-			if(is_null($users))
-			{
+			if (is_null($users)) {
 				$email.= '<label for="select_template">'.JText::_( 'TEMPLATE' ).'</label>';
 				$AllEmail_template = EmundusHelperEmails::getAllEmail(2);
 				$email.='<select name="select_template" onChange="getTemplate(this);">
@@ -107,13 +106,10 @@ class EmundusHelperEmails
 				$email.= '<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />';
 				$email .=$mail_body.'<input class="btn btn-large btn-success" type="submit" name="applicant_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >';
 
-			}
-			else
-			{
+			} else {
 				$email .= '<div class="well well-sm">';
 				$email_list = array();
-				foreach ($users as $user)
-				{
+				foreach ($users as $user) {
 					if (!empty($user['email']) && !in_array($user['email'], $email_list)) {
 						$email_list[] = $user['email'];
 						$email .= '<span class="label label-primary">';
@@ -130,40 +126,36 @@ class EmundusHelperEmails
 				foreach ($AllEmail_template as $email_template){
 					$email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
 				}
-				$email.='</select>';
-				$email.= ' <input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />';
+				$email .='</select>';
+				$email .= ' <input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />';
 				$email .= $mail_body.'<div><input class="btn btn-large btn-success" type="submit" name="applicant_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>';
 			}
 		}
-		if(in_array('evaluators', $params)){
+
+		if (in_array('evaluators', $params)) {
+
 			$default_template = EmundusHelperEmails::getEmail('assessors_set');
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', $default_template->message, '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
 			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
-			if(is_null($users))
-			{
+			if (is_null($users)) {
 
 				$email = '<input type="text" name="ud[]" value=""/> ';
 				$AllEmail_template = EmundusHelperEmails::getAllEmail(2);
-				$email.='<select name="select_template" onChange="getTemplate(this);">
+				$email .= '<select name="select_template" onChange="getTemplate(this);">
 					<option value="%">-- '.JText::_( 'SELECT_TEMPLATE' ).' --</option>';
 				foreach ($AllEmail_template as $email_template){
-					$email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
+					$email .= '<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
 				}
-				$email.='</select>';
+				$email .= '</select>';
 
-				$email.= '<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$default_template->subject.'" size="100" style="width: inherit !important;" />';
+				$email .= '<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="'.$default_template->subject.'" size="100" style="width: inherit !important;" />';
 				$email .= '<input placeholder="'.JText::_( 'EMAIL_TO' ).'" type="text" name="ud[]" value=""/> ';
-
-
 				$email .= $mail_body.'<input type="submit" class="btn btn-large btn-success" name="applicant_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >';
-			}
-			else
-			{
-				foreach ($users as $user)
-				{
+			} else {
+				foreach ($users as $user) {
 					$email_list = array();
 					if (!empty($user['email']) && !in_array($user['email'], $email_list)) {
 						$email_list[] = $user['email'];
@@ -186,20 +178,21 @@ class EmundusHelperEmails
 				$email .= $mail_body.'<input type="submit" class="btn btn-large btn-success" name="applicant_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >';
 			}
 		}
-		if(in_array('evaluation_result', $params)){
+
+		if (in_array('evaluation_result', $params)) {
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
 			$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
 
-			$student_id = $jinput->get('jos_emundus_evaluations___student_id', null, 'INT'); //JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0);
-			$campaign_id = $jinput->get('jos_emundus_evaluations___campaign_id', null, 'INT'); //JRequest::getVar('jos_emundus_evaluations___campaign_id', null, 'GET', 'INT',0);
+			$student_id = $jinput->getInt('jos_emundus_evaluations___student_id');
+			$campaign_id = $jinput->getInt('jos_emundus_evaluations___campaign_id');
 			$applicant = JFactory::getUser($student_id);
 
 			$email .= '<fieldset>
 				<legend>
 					<span class="editlinktip hasTip" title="'.JText::_('EMAIL_APPLICATION_RESULT').'::'.JText::_('EMAIL_APPLICATION_RESULT_TIP').'">
-						<img src="'.JURI::base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_TO').'"/> '.JText::_( 'EMAIL_TO' ).' '.$applicant->name.' &bull; <i>'.$applicant->email.'</i>
+						<img src="'.JURI::base().'media/com_emundus/images/icones/mail_replay_22x22.png" alt="'.JText::_('EMAIL_TO').'"/> '.JText::_('EMAIL_TO').' '.$applicant->name.' &bull; <i>'.$applicant->email.'</i>
 					</span>
 				</legend>
 				<div>';
@@ -207,10 +200,7 @@ class EmundusHelperEmails
 					<input name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
 					<input name="mail_to" type="hidden" class="inputbox input-xlarge" id="mail_to" value="'.$applicant->id.'" />
 					<input name="campaign_id" type="hidden" class="inputbox" id="campaign_id" value="'.$campaign_id.'" size="100" />
-				</div>';
-				//$email .= '<p><label for="mail_body"> '.JText::_( 'MESSAGE' ).' </label><br/>';
-				$email .= $mail_body;
-				$email .= '
+				</div>'.$mail_body.'
 				</p>
 					<input name="mail_attachments" type="hidden" class="inputbox" id="mail_attachments" value="" />
 					<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="evaluation_result" />
@@ -238,16 +228,14 @@ class EmundusHelperEmails
 
 				return xhr;
 			}
-			function deleteAttachment(id){
+			function deleteAttachment(id) {
 				var xhr = getXMLHttpRequest();
-				xhr.onreadystatechange = function()
-				{
-					if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
-					{
-						if(xhr.responseText != "SQL Error"){
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0)) {
+						if (xhr.responseText != "SQL Error") {
 							$("em_dl_"+id).innerHTML = "";
 							document.getElementById("em_dl_"+id).style.visibility="hidden";
-						}else{
+						} else {
 							alert(xhr.responseText);
 						}
 					}
@@ -255,80 +243,115 @@ class EmundusHelperEmails
 				xhr.open("GET", "/index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 				xhr.send("&id="+id);
-			}</script>';
+			} </script>';
 		}
-		if(in_array('expert', $params)){
+
+		if (in_array('expert', $params)) {
+
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
-			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
-
-			$student_id = $jinput->get('student_id', null, 'INT'); //JRequest::getVar('student_id', null, 'GET', 'INT',0);
-			$campaign_id = $jinput->get('campaign_id', null, 'INT'); //JRequest::getVar('campaign_id', null, 'GET', 'INT',0);
-			$applicant = JFactory::getUser($student_id);
+			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params);
 
 			$experts = "";
 
 			$email .= '<div>';
-				$AllEmail_template = EmundusHelperEmails::getAllEmail(2);
-				$email.='<select name="select_template" onChange="getTemplate(this);">
-					<option value="%">-- '.JText::_( 'SELECT_TEMPLATE' ).' --</option>';
-				foreach ($AllEmail_template as $email_template){
-					$email.='<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
-				}
-				$email .='</select>';
-				$email .= '<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />';
-				$email .= '<input placeholder="'.JText::_( 'EMAIL_TO' ).'"  name="mail_to" type="text" class="inputbox" id="mail_to" value="'.$experts.'" size="100" style="width: 100% !important;" />';
-				$email .= '<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />';
-				$email .= '<input name="delete_attachment" type="hidden" class="inputbox" id="delete_attachment" value=0 />';
-				$email .= $mail_body;
-				$email .= '
-					<input name="mail_attachments" type="hidden" class="inputbox" id="mail_attachments" value="" />
-					<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="expert" />
-				<p><div><input class="btn btn-large btn-success" type="submit" name="expert" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div></p>';
 
-			$email .= '<script>
-			function getXMLHttpRequest() {
-				var xhr = null;
-
-				if (window.XMLHttpRequest || window.ActiveXObject) {
-					if (window.ActiveXObject) {
-						try {
-							xhr = new ActiveXObject("Msxml2.XMLHTTP");
-						} catch(e) {
-							xhr = new ActiveXObject("Microsoft.XMLHTTP");
-						}
-					} else {
-						xhr = new XMLHttpRequest();
-					}
-				} else {
-					alert("Votre navigateur ne supporte pas l\'objet XMLHTTPRequest...");
-					return null;
-				}
-
-				return xhr;
+			$AllEmail_template = EmundusHelperEmails::getAllEmail(2);
+			$email .= '<select name="select_template" onChange="getTemplate(this);">
+						<option value="%">-- '.JText::_( 'SELECT_TEMPLATE' ).' --</option>';
+			foreach ($AllEmail_template as $email_template) {
+				$email .= '<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
 			}
-			function deleteAttachment(id){
-				var xhr = getXMLHttpRequest();
-				xhr.onreadystatechange = function()
-				{
-					if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
-					{
-						if(xhr.responseText != "SQL Error"){
-							$("em_dl_"+id).innerHTML = "";
-							document.getElementById("em_dl_"+id).style.visibility="hidden";
-						}else{
-							alert(xhr.responseText);
+			$email .= '</select>
+						<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
+						<input placeholder="'.JText::_( 'EMAIL_TO' ).'"  name="mail_to" type="text" class="inputbox" id="mail_to" value="'.$experts.'" size="100" style="width: 100% !important;" />
+						<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />
+						<input name="delete_attachment" type="hidden" class="inputbox" id="delete_attachment" value=0 />'.$mail_body.'
+						<input name="mail_attachments" type="hidden" class="inputbox" id="mail_attachments" value="" />
+						<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="expert" />
+						<p>
+							<div>
+								<input class="btn btn-large btn-success" type="submit" name="expert" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" >
+							</div>
+						</p>
+						
+					<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/tinymce.min.js"></script>
+					<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/js/tinymce.min.js"></script>
+					<script data-cfasync="false" type="text/javascript">tinyMCE.init({menubar:false,statusbar: false})</script>
+					<script>
+					
+						// Editor loads disabled by default, we apply must toggle it active on page load.
+					    $(document).ready(function() {
+					        tinyMCE.execCommand(\'mceToggleEditor\', true, \'mail_body\');
+					    });
+					
+						var REGEX_EMAIL = "([a-z0-9!#$%&\\\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\\\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)";
+						$("#mail_to").selectize({
+					        plugins: ["remove_button"],
+					        delimiter: ",",
+					        persist: false,
+					        createOnBlur: true,
+					        render: {
+					            item: function(data, escape) {
+					                return "<div>" + escape(data.value.trim()) + "</div>";
+					            }
+					        },
+					        onDelete: function() {
+					            return true;
+					        },
+					        create: function(input) {
+					            let val = input;
+					            val = val.substring(val.indexOf(":") + 1).trim();
+						        if ((new RegExp(\'^\' + REGEX_EMAIL + \'$\', \'i\')).test(val)) {
+						            return {
+							            value: val
+							        }
+						        }
+						        alert(\'Invalid email address.\');
+						        return false;
+						    }
+                        });
+					
+						function getXMLHttpRequest() {
+							var xhr = null;
+			
+							if (window.XMLHttpRequest || window.ActiveXObject) {
+								if (window.ActiveXObject) {
+									try {
+										xhr = new ActiveXObject("Msxml2.XMLHTTP");
+									} catch(e) {
+										xhr = new ActiveXObject("Microsoft.XMLHTTP");
+									}
+								} else {
+									xhr = new XMLHttpRequest();
+								}
+							} else {
+								alert("Votre navigateur ne supporte pas l\'objet XMLHTTPRequest...");
+								return null;
+							}
+			
+							return xhr;
 						}
-					}
-				};
-				xhr.open("GET", "/index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
-				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-				xhr.send("&id="+id);
-			}</script>';
+						function deleteAttachment(id){
+							var xhr = getXMLHttpRequest();
+							xhr.onreadystatechange = function() {
+								if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0)) {
+									if (xhr.responseText !== "SQL Error") {
+										$("em_dl_"+id).innerHTML = "";
+										document.getElementById("em_dl_"+id).style.visibility = "hidden";
+									} else {
+										alert(xhr.responseText);
+									}
+								}
+							};
+							xhr.open("GET", "/index.php?option=com_emundus&controller=application&format=raw&task=delete_attachment&Itemid='.$itemid.'&id="+id, true);
+							xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+							xhr.send("&id="+id);
+						}
+					</script>';
 		}
 
-		if(in_array('this_applicant', $params))
-		{
+		if (in_array('this_applicant', $params)) {
 			$editor = JFactory::getEditor('tinymce');
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params );
@@ -352,10 +375,9 @@ class EmundusHelperEmails
 
 			$email .= $mail_body.'<div><input class="btn btn-large btn-success" type="submit" name="applicant_email" value="'.JText::_( 'SEND_CUSTOM_EMAIL' ).'" ></div>';
 		}
-		$email .= '</div>';
-		$email .= '
-<script>$(document).on("click", "input[type=\'submit\']", function() { if($("#mail_subject").val() == ""){$("#mail_subject").css("border", "2px solid red"); return false;} else document.pressed=this.name; }); </script>';
-		$email .='<script>'.EmundusHelperJavascript::getTemplate().'</script>';
+		$email .= '</div>
+					<script>$(document).on("click", "input[type=\'submit\']", function() { if($("#mail_subject").val() == ""){$("#mail_subject").css("border", "2px solid red"); return false;} else document.pressed=this.name; }); </script>
+					<script>'.EmundusHelperJavascript::getTemplate().'</script>';
 
 		return $email;
 	}
