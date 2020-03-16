@@ -181,6 +181,10 @@ class plgUserEmundus_registration_email extends JPlugin {
 	 */
 	private function sendActivationEmail($data, $token) {
 
+	    if (json_decode($data['params'])->skip_activation) {
+	        return true;
+        }
+
 	    $jinput = JFactory::getApplication()->input;
 	    $civility = is_array($jinput->post->get('jos_emundus_users___civility')) ? $jinput->post->get('jos_emundus_users___civility')[0] : $jinput->post->get('jos_emundus_users___civility');
 	    $password = !empty($data['password_clear']) ? $data['password_clear'] : $jinput->post->get('jos_emundus_users___password');

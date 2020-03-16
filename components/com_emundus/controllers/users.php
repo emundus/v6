@@ -157,12 +157,13 @@ class EmundusControllerUsers extends JControllerLegacy {
         $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
         $fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
         $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
-        $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-        $body = $m_emails->setTagsFabrik($body);
+        $body = $email->message;
 
         if (!empty($email->Template)) {
 	        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $email->Template);
         }
+		$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+		$body = $m_emails->setTagsFabrik($body);
 
         $app = JFactory::getApplication();
 		$email_from_sys = $app->getCfg('mailfrom');

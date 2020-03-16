@@ -564,12 +564,13 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
 		$fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
 		$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
-		$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
-		$body = $m_emails->setTagsFabrik($body, [$fnum]);
+		$body = $email->message;
 
 		if (!empty($email->Template)) {
 			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $email->Template);
 		}
+		$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+		$body = $m_emails->setTagsFabrik($body, [$fnum]);
 
 		// If the email sender has the same domain as the system sender address.
 		if (!empty($email->emailfrom) && substr(strrchr($email->emailfrom, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {

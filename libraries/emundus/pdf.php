@@ -265,65 +265,74 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
     $letters = $m_evaluation->getLettersTemplate($eligibility, $training);
 
-    try {
+    if (!empty($letters)) {
+        try {
 
-        $query = "SELECT * FROM #__emundus_setup_teaching_unity
-					WHERE published=1 AND date_start>'".$now."' AND code IN (".$db->Quote($letters[0]['training']).")
+            $query = "SELECT * FROM #__emundus_setup_teaching_unity
+					WHERE published=1 AND date_start > '".$now."' AND code IN (".$db->Quote($letters[0]['training']).")
 					ORDER BY date_start ASC";
-        $db->setQuery($query);
-        $courses = $db->loadAssocList();
+            $db->setQuery($query);
+            $courses = $db->loadAssocList();
 
-    } catch (Exception $e) {
-        JLog::add('SQL Error in Emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+        } catch (Exception $e) {
+            JLog::add('SQL Error in Emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+        }
     }
+
+
 
     $courses_list = '';
     $courses_fee = ' ';
-    foreach ($courses as $c) {
-        $ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
-        $de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
-        $courses_list .= '<img src="'.JPATH_BASE.DS."media".DS."com_emundus".DS."images".DS."icones".DS."checkbox-unchecked_16x16.png".'" width="8" height="8" align="left" /> ';
-        $courses_list .= $ds.' - '.$de.'<br />';
-        $courses_fee  .= 'Euro '.$c['price'].',-- ';
+
+    if (!empty($courses)) {
+        foreach ($courses as $c) {
+            $ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
+            $de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
+            $courses_list .= '<img src="'.JPATH_BASE.DS."media".DS."com_emundus".DS."images".DS."icones".DS."checkbox-unchecked_16x16.png".'" width="8" height="8" align="left" /> ';
+            $courses_list .= $ds.' - '.$de.'<br />';
+            $courses_fee  .= 'Euro '.$c['price'].',-- ';
+        }
     }
 
     $campaign = $m_campaign->getCampaignByID($campaign_id);
 
     // Extend the TCPDF class to create custom Header and Footer
-    class MYPDF extends TCPDF {
+	if (!class_exists('MYPDF')) {
+		class MYPDF extends TCPDF {
 
-        var $logo = "";
-        var $logo_footer = "";
-        var $footer = "";
+			var $logo = "";
+			var $logo_footer = "";
+			var $footer = "";
 
-        //Page header
-        public function Header() {
-            // Logo
-            if (is_file($this->logo)) {
-	            $this->Image($this->logo, 0, 0, 200, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-            }
-            // Set font
-            $this->SetFont('helvetica', 'B', 16);
-            // Title
-            $this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
-        }
+			//Page header
+			public function Header() {
+				// Logo
+				if (is_file($this->logo)) {
+					$this->Image($this->logo, 0, 0, 200, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+				}
+				// Set font
+				$this->SetFont('helvetica', 'B', 16);
+				// Title
+				$this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+			}
 
-        // Page footer
-        public function Footer() {
-            // Position at 15 mm from bottom
-            $this->SetY(-15);
-            // Set font
-            $this->SetFont('helvetica', 'I', 8);
-            // Page number
-            $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-            // footer
-            $this->writeHTMLCell($w=0, $h=0, $x='', $y=250, $this->footer, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
-            //logo
-            if (is_file($this->logo_footer)) {
-	            $this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-            }
-        }
-    }
+			// Page footer
+			public function Footer() {
+				// Position at 15 mm from bottom
+				$this->SetY(-15);
+				// Set font
+				$this->SetFont('helvetica', 'I', 8);
+				// Page number
+				$this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+				// footer
+				$this->writeHTMLCell($w = 0, $h = 0, $x = '', $y = 250, $this->footer, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
+				//logo
+				if (is_file($this->logo_footer)) {
+					$this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+				}
+			}
+		}
+	}
 
     //
     // Evaluation result
@@ -399,7 +408,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
             chmod(EMUNDUS_PATH_ABS.$user_id, 0755);
         }
 
-        if (count($file) > 0 && strpos($file['filename'], 'lock') === false && $letter['template_type'] != 4) {
+        if (!empty($file) && strpos($file['filename'], 'lock') === false && $letter['template_type'] != 4) {
 
             try {
 

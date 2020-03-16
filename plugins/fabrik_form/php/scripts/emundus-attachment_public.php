@@ -124,7 +124,7 @@ try {
 	$fromname = $obj->name;
 	$recipient[] = $student->email;
 	$subject = preg_replace($patterns, $replacements, $obj->subject);
-	$body = preg_replace($patterns, $replacements, $obj->message).'<br/>';
+	$body = $obj->message.'<br/>';
 	$mode = 1;
 	$replyto = $obj->emailfrom;
 	$replytoname = $obj->name;
@@ -132,6 +132,7 @@ try {
 	if ($obj->Template) {
 		$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj->Template);
 	}
+	$body = preg_replace($patterns, $replacements, $body);
 
     // setup mail
     $app = JFactory::getApplication();

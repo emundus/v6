@@ -296,15 +296,16 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
 			$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid=68&keyid='.$key.'&sid='.$this->_user->id;
 
-			$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', '/\[PROGRAMME_NAME\]/');
+			$patterns = array('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', '/\[PROGRAMME_NAME\]/');
 			$replacements = array($this->_user->id, $this->_user->name, $this->_user->email, $link_upload, $fnum_detail['label']);
 
 			$subject = preg_replace($patterns, $replacements, $obj->subject);
-			$body = preg_replace($patterns, $replacements, $obj->message);
+			$body = $obj->message;
 
 			if ($obj->Template) {
 				$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj->Template);
 			}
+			$body = preg_replace($patterns, $replacements, $body);
 
 			// Mail 
 			$from = $obj->emailfrom;

@@ -12,9 +12,6 @@ defined( '_JEXEC' ) or die();
  * See COPYRIGHT.php for copyright notices and details.
  * @description gestion du document Confidentiality agreement et création automatique d'un compte d'accès au profil Expert pour l'évaluation.
  */
-/*$this->formModel->_arErrors['jos_emundus_uploads___filename'][] = 'woops!';
-return false;
-*/
 
 $mainframe 	= JFactory::getApplication();
 $jinput 	= $mainframe->input;
@@ -43,27 +40,27 @@ $m_emails = new EmundusModelEmails;
 $m_application = new EmundusModelApplication;
 $m_profile = new EmundusModelProfile;
 
-//$params =& $this->getParams();
-
-if (empty($email) || !isset($email))
-	die("NO_EMAIL_FOUND");
+if (empty($email) || !isset($email)) {
+    die("NO_EMAIL_FOUND");
+}
 
 $db->setQuery('SELECT student_id, attachment_id, keyid FROM #__emundus_files_request WHERE keyid='.$db->Quote($key_id));
 $file_request=$db->loadObject();
 
 if ($files['jos_emundus_uploads___filename']['size'] == 0) {
 		$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$formid.'&jos_emundus_uploads___user_id[value]='.$sid.'&jos_emundus_uploads___attachment_id[value]='.$file_request->attachment_id.'&sid='.$sid.'&keyid='.$key_id.'&cid='.$campaign_id.'&email='.$email;
-		if($files['jos_emundus_uploads___filename']['error'] == 4)
-			JError::raiseWarning(500, JText::_('WARNING: No file selected, please select a file','error')); // no file
-		else
-			JError::raiseWarning(500, JText::_('WARNING: You just upload an empty file, please check out your file','error')); // file empty
+		if($files['jos_emundus_uploads___filename']['error'] == 4) {
+            JError::raiseWarning(500, JText::_('WARNING: No file selected, please select a file', 'error'));
+        } // no file
+		else {
+            JError::raiseWarning(500, JText::_('WARNING: You just upload an empty file, please check out your file', 'error'));
+        } // file empty
 		$mainframe->redirect($link_upload);
 		exit();
 }
 
 
 if ($user_id != $file_request->student_id || $attachment_id != $file_request->attachment_id) {
-	// die('data1:'.$file_request->student_id.'-'.$user_id.'-'.$file_request->attachment_id.'-'.$attachment_id.'-'.$key_id.'-'.$db->getErrorMsg());
 	header('Location: '.$baseurl.'index.php');
 	exit();
 }
@@ -72,18 +69,11 @@ $student = JUser::getInstance($user_id);
 
 
 if (!isset($student)) {
-	// die('data2:'.$key_id.'-'.$user_id.'-'.$attachment_id);
 	header('Location: '.$baseurl.'index.php');
 	exit();
 }
 
-/*
-$query = 'SELECT profile FROM #__emundus_users WHERE user_id='.$user_id.'';
-$db->setQuery( $query );
-$profile=$db->loadResult();
-*/
 $profile = $m_profile->getFnumDetails($fnum);
-//die('data2:'.$profile.'-'.print_r($attachement_params, true).'-'.print_r($upload, true).'-'.$db->getErrorMsg());
 
 // 1. Récupération des informations sur l'étudiant et le fichier qui doit être chargé par la tierce personne
 $query = 'SELECT ap.displayed, attachment.lbl
@@ -92,25 +82,26 @@ $query = 'SELECT ap.displayed, attachment.lbl
 			WHERE attachment.id ='.$attachment_id.' ';
 $db->setQuery( $query );
 $attachement_params=$db->loadObject();
-//die('data3:'.$attachement_params->displayed.'-'.$attachement_params->lbl.'-'.$attachment_id.'-'.$profile.'-'.$db->getErrorMsg().'-'.$db->getQuery());
 
 // 2. Récupération des données du fichier qui vient d'être uploadé par la tierce personne
 $query = 'SELECT id, filename FROM #__emundus_uploads WHERE attachment_id='.$attachment_id.' AND user_id='.$user_id.' ORDER BY id DESC';
 $db->setQuery( $query );
 $upload=$db->loadObject();
 $nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
-if(!isset($attachement_params->displayed) || $attachement_params->displayed === '0')
-	$nom.= "_locked";
+
+if(!isset($attachement_params->displayed) || $attachement_params->displayed === '0') {
+    $nom .= "_locked";
+}
 $nom .= $attachement_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
-if (!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
-	if (!mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user_id.DS.'index.html'))
-			die(JError::raiseWarning(500, 'Unable to create user file'));
+if (!file_exists(EMUNDUS_PATH_ABS . $user_id) && (!mkdir(EMUNDUS_PATH_ABS . $user_id, 0777, true) || !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $user_id . DS . 'index.html'))) {
+    die(JError::raiseWarning(500, 'Unable to create user file'));
 }
 
 // 1. Chargement du document Confidentiality agreement
-if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$user_id.DS.$nom))
-	die("ERROR_MOVING_UPLOAD_FILE");
+if (!rename(JPATH_SITE.$upload->filename, EMUNDUS_PATH_ABS.$user_id.DS.$nom)) {
+    die("ERROR_MOVING_UPLOAD_FILE");
+}
 
 $db->setQuery('UPDATE #__emundus_uploads SET filename="'.$nom.'" WHERE id='.$upload->id);
 $db->execute();
@@ -144,18 +135,15 @@ if ($uid > 0) {
 		$db->setQuery( $query );
 		$db->execute();
 
-		/*$query = "INSERT INTO #__emundus_users_profiles_history (user_id, profile_id, var) VALUES (".$user->id.", ".$profile['profile_id'].", 'profile')";
-		$db->setQuery( $query );
-		$db->execute();*/
-
 	// Modification du profil courant en profil Expert
 		$user->groups=$acl_aro_groups;
 
 		$usertype = $m_users->found_usertype($acl_aro_groups[0]);
 		$user->usertype=$usertype;
 
-		if (!$user->save())
-		 	JFactory::getApplication()->enqueueMessage(JText::_('CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
+		if (!$user->save()) {
+            JFactory::getApplication()->enqueueMessage(JText::_('CAN_NOT_SAVE_USER') . '<BR />' . $user->getError(), 'error');
+        }
 
 		$query = "UPDATE #__emundus_users SET profile=".$profile['profile_id']." WHERE user_id=".$user->id;
 		$db->setQuery( $query );
@@ -178,22 +166,24 @@ if ($uid > 0) {
 
 // 2.1.2. Envoie des identifiants à l'expert + Envoie d'un message d'invitation à se connecter pour evaluer le dossier
 	$email = $m_emails->getEmail('expert_accept');
-	$body = $m_emails->setBody($user, $email->message, "");
+	$body = $m_emails->setBody($user, $email->message);
 
     $config = JFactory::getConfig();
 	$email_from_sys = $config->get('mailfrom');
 	$email_from = $email->emailfrom;
 
 	// If the email sender has the same domain as the system sender address.
-	if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-		$mail_from_address = $email_from;
-	else
-		$mail_from_address = $email_from_sys;
+	if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+        $mail_from_address = $email_from;
+    }
+	else {
+        $mail_from_address = $email_from_sys;
+    }
 
 	// Set sender
 	$sender = [
 		$mail_from_address,
-		$mail_from_name
+        $email->name
 	];
 
     $mailer = JFactory::getMailer();
@@ -264,7 +254,7 @@ if ($uid > 0) {
 	$user->groups=$acl_aro_groups;
 
 	$usertype = $m_users->found_usertype($acl_aro_groups[0]);
-	$user->usertype=$usertype;
+	$user->usertype = $usertype;
 
 	$uid = $m_users->adduser($user, $other_param);
 
@@ -288,22 +278,24 @@ if ($uid > 0) {
 
 // 2.1.2. Envoie des identifiants à l'expert + Envoie d'un message d'invitation à se connecter pour evaluer le dossier
 	$email = $m_emails->getEmail('new_account');
-	$body = $m_emails->setBody($user, $email->message, $fnum, $password);
+	$body = $m_emails->setBody($user, $email->message, $password);
 
     $config = JFactory::getConfig();
     $email_from_sys = $config->get('mailfrom');
 	$email_from = $email->emailfrom;
 
 	// If the email sender has the same domain as the system sender address.
-	if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
-		$mail_from_address = $email_from;
-	else
-		$mail_from_address = $email_from_sys;
+	if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+        $mail_from_address = $email_from;
+    }
+	else {
+        $mail_from_address = $email_from_sys;
+    }
 
 	// Set sender
 	$sender = [
 		$mail_from_address,
-		$mail_from_name
+        $email->name
 	];
 
     $mailer->setSender($sender);
@@ -335,8 +327,6 @@ if ($uid > 0) {
 	);
 	$m_application->addComment($row);
 
-	/*$credentials['username'] = $user->username;
-    $credentials['password'] = $password;*/
     $logged = $m_users->plainLogin( array('username' => $user->username, 'password' => $password) );
 	JFactory::getApplication()->enqueueMessage(JText::_('USER_LOGGED'), 'message');
 }

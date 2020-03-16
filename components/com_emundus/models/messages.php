@@ -201,32 +201,37 @@ class EmundusModelMessages extends JModelList {
 	function getEmail($id, $candidateAttachments = false, $letterAttachments = false) {
 
 		$db = JFactory::getDBO();
-
         $query = $db->getQuery(true);
 
         $select = 'e.*, et.*';
 
-        if ($candidateAttachments)
-            $select .= ', GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments';
+        if ($candidateAttachments) {
+	        $select .= ', GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments';
+        }
 
-        if ($letterAttachments)
-            $select .= ', GROUP_CONCAT(la.letter_attachment) AS letter_attachments';
+        if ($letterAttachments) {
+	        $select .= ', GROUP_CONCAT(la.letter_attachment) AS letter_attachments';
+        }
 
         $query->select($select)
                 ->from($db->quoteName('#__emundus_setup_emails','e'))
                 ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'));
 
-        if ($candidateAttachments)
+        if ($candidateAttachments) {
             $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'));
+		}
 
-        if ($letterAttachments)
+        if ($letterAttachments) {
             $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'));
+		}
 
         // Allow the function to dynamically decide if it is getting by ID or label depending on the value submitted.
-		if (is_numeric($id))
+		if (is_numeric($id)) {
             $query->where($db->quoteName('e.id').' = '.$id);
-		else
+		} else {
 			$query->where($db->quoteName('e.lbl').' LIKE '.$db->quote($id));
+		}
+
 
         try {
 
