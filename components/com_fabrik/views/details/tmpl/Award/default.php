@@ -174,7 +174,7 @@ $uid= $user->id;
                         <div class="w-form-formradioinput w-form-formradioinput--inputType-custom em-buttonradioyesno w-radio-input"></div>
                         <input type="radio" data-name="Radio" id="radio" name="radio" value="1" style="opacity:0;position:absolute;z-index:-1">
                         <span class="em-labelyesno w-form-label">Oui</span></label><label class="em-center w-radio">
-                        <div class="w-form-formradioinput w-form-formradioinput--inputType-custom em-buttonradioyesno w-radio-input"></div>
+                        <div class="w-form-formradioinput w-form-formradioinput--inputType-custom em-buttonradioyesno w-radio-input w--redirected-checked"></div>
                         <input type="radio" data-name="Radio 2" id="radio-2" name="radio" value="0" style="opacity:0;position:absolute;z-index:-1">
                         <span class="em-labelyesno w-form-label">Non</span>
                     </label>
@@ -186,12 +186,12 @@ $uid= $user->id;
                     <div>Oops! Something went wrong while submitting the form.</div>
                 </div>
             </div>
-            <a href="#" class="em-button-finalvote w-inline-block" data-ix="arrowcta-menu-3">
+            <a href="#" class="em-button-finalvote w-inline-block" data-ix="arrowcta-menu-3" onclick="addVote(<?=$uid?>,<?=$thematique;?>,<?=$cid;?>,<?=$student_id;?>)">
                 <div class="em-containerarrow2"><img src="/projet/images/custom/vyv/arrow.svg" alt="" class="em-arrowcta-white2"></div>
-                <div class="em-textcta" onclick="addVote(<?=$uid?>,<?=$thematique;?>,<?=$cid;?>,<?=$student_id;?>)">Valider et voter</div>
+                <div class="em-textcta" >Valider et voter</div>
                 <div class="em-overlay2"></div>
             </a>
-            <input type="hidden" name="choiceLabel" id="choiceLabel" value="null">
+            <input type="hidden" name="choiceLabel" id="choiceLabel" value="0">
         </div>
         <?php
         if ($countThematique == 0) {
@@ -270,7 +270,7 @@ $uid= $user->id;
                         type: 'success',
                         title: "<?php echo JText::_('COM_EMUNDUS_VOTE_ACCEPTED'); ?>"
                     }).then((result) => {
-                        window.history.go(-1);
+                        window.location.href = 'index.php?option=com_fabrik&view=list&listid=349';
                     });
 
                 } else {

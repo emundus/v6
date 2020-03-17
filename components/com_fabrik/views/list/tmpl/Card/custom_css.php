@@ -3893,7 +3893,7 @@ color:#e39809;
   .em-sectionfooter-2-copy {
     padding: 30px 15px;
   }
-}
+
 
 @font-face {
   font-family: 'Wigrum';

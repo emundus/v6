@@ -99,23 +99,43 @@ $form_id = $form->id;
 
         <?php
         $thematiques_name = $m_award->GetThematique($current_user->id);
+        
+        $countByThematique1 = $m_award->CountByThematique(1);
+        $countByThematique2 = $m_award->CountByThematique(2);
+        $countByThematique3 = $m_award->CountByThematique(3);
+        $countByThematique4 = $m_award->CountByThematique(4);
+        $countByThematique5 = $m_award->CountByThematique(5);
+        $countByThematique6 = $m_award->CountByThematique(6);
+        $countByThematique7 = $m_award->CountByThematique(7);
+        
         $theme = '';
-        $comma_separated = implode(', ',$thematiques_name);
-
+        $nbVote = $m_award->CountVotes($current_user->id);
+        $totalVote = $m_award->TotalVotes(); ?>
+        <p class="em-paragrapheprojet-explain">Un total de <?= $totalVote ?> projets a été déposés sur la plateforme de la manière suivante:</p>
+        <ul>
+            <li>Bien-être (sport, alimentation & santé): <?= $countByThematique1 ?></li>
+            <li>Education et accès à la culture pour tous: <?= $countByThematique2 ?></li>
+            <li>Amélioration du cadre de vie et de l’habitat: <?= $countByThematique3 ?></li>
+            <li>Maitrise des avancées technologiques: <?= $countByThematique4 ?></li>
+            <li>Eco responsabilité individuelle et collective: <?= $countByThematique5 ?></li>
+            <li>Respect des diversités et de l’inclusion: <?= $countByThematique6 ?></li>
+            <li>Autres: <?= $countByThematique6 ?></li>
+        </ul>
+            <?php
         if ($this->showFilters && $this->bootShowFilters) :
             echo $this->loadTemplate('filter');
         endif; ?>
-        <?php $nbVote = $m_award->CountVotes($current_user->id); ?>
-        <?php if($current_user->guest == 1 && $nbVote == 0){ ?>
-            <p class="em-paragrapheprojet-explain">Pour pouvoir voter, vous devez cliquer sur le bouton "> VOIR CE PROJET ET VOTER" puis vous connecter à votre compte. Attention, vous ne pourrez voter qu'une seule fois dans chaque thématique, soit une limite d'un projet soutenu par thématique.</p>
+        
+        <?php if($current_user->guest == 1 && $nbVote == 0 || $current_user->guest == 0 && $nbVote == 0){ ?>
+            <p class="em-divprojet-explain">Pour pouvoir voter, vous devez cliquer sur le bouton "> VOIR CE PROJET ET VOTER" puis vous connecter à votre compte. Attention, vous ne pourrez voter qu'une seule fois dans chaque thématique, soit une limite d'un projet soutenu par thématique.</p>
         <?php } ?>
         <?php if($nbVote == 1 && $current_user->guest == 0){ ?>
             <p class="em-paragrapheprojet-explain">Vous ne pouvez voter qu'une seule fois dans chaque thématique, soit une limite d'un projet soutenu par thématique.
-                Vous avez déjà voté pour un dossier dans la thématique <span class="em-thematique-deja-votee"><?=$theme;?></span>. Donc vous ne pourrez plus voter pour un autre projet appartenant à cette thématique, c'est pourquoi tous les autres projets rattachés à cette thématique seront désormais grisés.</p>
+                Vous avez déjà voté pour un dossier dans la thématique <span class="em-thematique-deja-votee"><?= $theme ?></span>. Donc vous ne pourrez plus voter pour un autre projet appartenant à cette thématique, c'est pourquoi tous les autres projets rattachés à cette thématique seront désormais grisés.</p>
         <?php } ?>
         <?php if($nbVote > 1 && $current_user->guest == 0){ ?>
-            <p class="em-paragrapheprojet-explain">Vous ne pouvez voter qu'une seule fois dans chaque thématique, soit une limite d'un projet soutenu par thématique.
-                Vous avez déjà voté pour un dossier dans les thématiques <span class="em-thematique-deja-votee"><?=$comma_separated;?></span>. Donc vous ne pourrez plus voter pour un autre projet appartenant à l'une de ces thématiques, c'est pourquoi tous les autres projets rattachés à ces thématiques seront désormais grisés.</p>
+            <div class="em-divprojet-explain">Vous ne pouvez voter qu'une seule fois dans chaque thématique, soit une limite d'un projet soutenu par thématique.
+                Vous avez déjà voté pour un dossier dans les thématiques : <?php for($i=0; $i < $nbVote; $i++){ echo '<p class="em-thematique-deja-votee">'.  $thematiques_name[$i]. '</p>'; }?><p class="em-paragrapheprojet-explain"> Donc vous ne pourrez plus voter pour un autre projet appartenant à l'une de ces thématiques, c'est pourquoi tous les autres projets rattachés à ces thématiques seront désormais grisés.</p></div>
         <?php } ?>
 
         <?php foreach ($this->pluginBeforeList as $c) :

@@ -102,6 +102,18 @@ class EmundusModelAward extends JModelList
 
     return $db->loadResult();
 }
+    public function TotalVotes(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__emundus_projet'));
+
+        $db->setQuery($query);
+
+        return $db->loadResult();
+    }
     public function CountThematique($user,$thematique){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -115,6 +127,21 @@ class EmundusModelAward extends JModelList
 
         return $db->loadResult();
     }
+
+    public function CountByThematique($thematique){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__emundus_projet'))
+            ->where($db->quoteName('thematique_projet').' = '.$thematique);
+
+        $db->setQuery($query);
+
+        return $db->loadResult();
+    }
+
     public function GetThematique($user){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
