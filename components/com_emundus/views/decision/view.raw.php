@@ -91,14 +91,14 @@ class EmundusViewDecision extends JViewLegacy
 				$evaluators_can_see_other_eval = $params->get('evaluators_can_see_other_eval', 0);
 
 				$m_decision = $this->getModel('Decision');
-				$userModel = new EmundusModelUsers();
+				$m_users = new EmundusModelUsers();
 				$m_files = new EmundusModelFiles();
 				$h_files = new EmundusHelperFiles();
 
-                $m_decision->code = $userModel->getUserGroupsProgrammeAssoc($this->_user->id);
-		        $groups = $userModel->getUserGroups($this->_user->id, 'Column');
-        		$fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
-		        $fnum_assoc = $userModel->getApplicantsAssoc($this->_user->id);
+                $m_decision->code = $m_users->getUserGroupsProgrammeAssoc($this->_user->id);
+		        $groups = $m_users->getUserGroups($this->_user->id, 'Column');
+        		$fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
+		        $fnum_assoc = $m_users->getApplicantsAssoc($this->_user->id);
 		        $m_decision->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
                 $this->assignRef('code', $m_decision->code);
                 $this->assignRef('fnum_assoc', $m_decision->fnum_assoc);
@@ -150,6 +150,7 @@ class EmundusViewDecision extends JViewLegacy
 								break;
 							case 'overall':
 								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
+								$colsSup['overall'] = array();
 								break;
 							case 'tags':
 								$taggedFile = $m_decision->getTaggedFile();
@@ -254,6 +255,12 @@ class EmundusViewDecision extends JViewLegacy
 						}
 						$data[$line['fnum']->val.'-'.$i] = $line;
 						$i++;
+					}
+
+					if (isset($colsSup['overall'])) {
+						require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+						$m_evaluation = new EmundusModelEvaluation();
+						$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
 					}
 
 					if (isset($colsSup['id_tag'])) {
