@@ -480,9 +480,10 @@ class EmundusControllerCifre extends JControllerLegacy {
 			// Tags are replaced with their corresponding values using the PHP preg_replace function.
 			$tags    = $m_emails->setTags($user_from->id, $post);
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
-			$body    = preg_replace($tags['patterns'], $tags['replacements'], $template->message);
+			$body    = $template->message;
 			if ($template != false)
 				$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+			$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
 			// Configure email sender
 			$mailer = JFactory::getMailer();
@@ -693,10 +694,11 @@ class EmundusControllerCifre extends JControllerLegacy {
 				// Tags are replaced with their corresponding values using the PHP preg_replace function.
 				$tags    = $m_emails->setTags($user_from->id, $post);
 				$subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
-				$body    = preg_replace($tags['patterns'], $tags['replacements'], $template->message);
+				$body    = $template->message;
 				if ($template != false) {
 					$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 				}
+				$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
 				// Configure email sender
 				$mailer = JFactory::getMailer();

@@ -4081,8 +4081,10 @@ $(document).ready(function() {
                 break;
 
 
+            // email groups
             // email evaluator
             case 15:
+            case 16:
                 $('#can-val').empty();
                 $('.modal-body').append('<div>' +
                     '<img src="'+loadingLine+'" alt="loading"/>' +
@@ -4093,21 +4095,23 @@ $(document).ready(function() {
                 $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
                 break;
 
-            // email groups
-            case 16:
-                $('#can-val').empty();
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
-                $('.modal-footer').hide();
-                $('.modal-dialog').addClass('modal-lg');
-                $('.modal-body').empty();
-                $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
-
 
             // email custom
             case 17:
             case 18:
+
+                if ($('#em-check-all-all').is(':checked')) {
+                    var fnums = 'all';
+                } else {
+                    var fnums = [];
+                    $('.em-check:checked').each(function() {
+                        fnum = $(this).attr('id').split('_')[0];
+                        cid = parseInt(fnum.substr(14, 7));
+                        sid = parseInt(fnum.substr(21, 7));
+                        fnums.push({fnum: fnum, cid: cid, sid:sid});
+                    });
+                }
+
                 $('#can-val').empty();
                 $('.modal-body').append('<div>' +
                     '<img src="'+loadingLine+'" alt="loading"/>' +
@@ -4115,7 +4119,22 @@ $(document).ready(function() {
                 $('.modal-footer').hide();
                 $('.modal-dialog').addClass('modal-lg');
                 $('.modal-body').empty();
-                $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    dataType: 'html',
+                    data: {
+                        fnums: JSON.stringify(fnums)
+                    },
+                    success: function(result) {
+                        $('.modal-body').empty();
+                        $('.modal-body').append(result);
+                    },
+                    error: function (jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                });
+                //$('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
                 break;
 
 

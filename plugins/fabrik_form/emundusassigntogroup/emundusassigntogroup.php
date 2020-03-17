@@ -94,14 +94,40 @@ class PlgFabrik_FormEmundusassigntogroup extends plgFabrik_Form {
 			return false;
 
 		$request = explode('___', $fabrik_elt);
+		$repeated_group = strpos($request[0], '_repeat');
 		$values = explode(',', $value);
 		$groups_id = explode(',', $group_id);
 
 		if (!empty($request[0]) && !empty($request[1])) {
 		
 			// get value from application form
-			// @TODO manage data from join table without fnum column
-			$query = 'SELECT `'.$request[1].'` FROM `'.$request[0].'` WHERE `fnum` LIKE '.$db->Quote($fnum);
+			if ($repeated_group) {
+				$query = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join LIKE '.$db->Quote($request[0]);
+				try {
+
+					$db->setQuery($query);
+					$table = $db->loadResult();
+
+				} catch (Exception $e) {
+					JLog::add('Error in script/assign-to-group getting parent table at query: '.$query, JLog::ERROR, 'com_emundus');
+				}
+
+				$query = 'SELECT `'.$request[1].'` FROM `'.$request[0].'` AS rt 
+							LEFT JOIN `'.$table.'` AS t ON t.id = rt.parent_id 
+							WHERE `t`.`fnum` LIKE '.$db->Quote($fnum);
+
+				try {
+
+					$db->setQuery($query);
+					$columns = $db->loadColumn();
+
+				} catch (Exception $e) {
+					JLog::add('Error in script/assign-to-group getting application values from repeated_group at query: '.$query, JLog::ERROR, 'com_emundus');
+				}
+
+			} else {
+				$query = 'SELECT `'.$request[1].'` FROM `'.$request[0].'` WHERE `fnum` LIKE '.$db->Quote($fnum);
+			}
 
 			try {
 
@@ -130,7 +156,14 @@ class PlgFabrik_FormEmundusassigntogroup extends plgFabrik_Form {
 		// for each value compared make the good group_id association 
 		foreach ($values as $key => $value) {
 
-			if ($column == $value) {
+			if ($repeated_group) {
+				$match = (in_array($value, $columns)) ? true : false;			
+			} else {
+				$match = ($column == $value) ? true : false;
+			}
+			 
+
+			if ($match) {
 
 				$query = 'SELECT COUNT(id) FROM #__emundus_group_assoc
 	                WHERE group_id = '.$groups_id[$key].' AND action_id = 1 AND fnum LIKE '.$db->Quote($fnum);

@@ -109,7 +109,7 @@ class EmundusModelEvaluation extends JModelList {
 				$group_params = json_decode($def_elmt->group_attribs);
 
 				if ($def_elmt->element_plugin == 'date') {
-					if ($group_params->repeat_group_button == 1) {
+					if (!empty($group_params->repeat_group_button)) {
 						$this->_elements_default[] = '(
 														SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
 														FROM '.$def_elmt->table_join.'
@@ -127,7 +127,7 @@ class EmundusModelEvaluation extends JModelList {
                     $db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
                     $publish_query = ($db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
 
-					if ($group_params->repeat_group_button == 1) {
+					if (!empty($group_params->repeat_group_button)) {
 						$query = '(
 									select GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
 									from '.$attribs->join_db_name.'
@@ -173,7 +173,7 @@ class EmundusModelEvaluation extends JModelList {
 					$this->_elements_default[] = implode(',', $if).','.$select.$endif.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
 				}
 				else {
-					if (@$group_params->repeat_group_button == 1) {
+					if (!empty(@$group_params->repeat_group_button)) {
 						$this->_elements_default[] = '(
 														SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
 														FROM '.$def_elmt->table_join.'
@@ -1609,7 +1609,7 @@ if (JFactory::getUser()->id == 63)
 	*	@param result 		status ID for eligibility
 	* 	@return array
 	*/
-	function getEvaluationDocuments($fnum, $campaign_id, $result) {
+	function getEvaluationDocuments($fnum, $campaign_id) {
 		$query = 'SELECT *, eu.id as id, esa.id as attachment_id
 					FROM #__emundus_uploads eu
 					LEFT JOIN #__emundus_setup_attachments esa ON esa.id=eu.attachment_id

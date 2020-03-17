@@ -1,5 +1,5 @@
 <?php
-defined( '_JEXEC' ) or die();
+defined('_JEXEC') or die();
 /**
  * @version 1.5: emundus-expert_check.php 89 2017-10-01 Benjamin Rivalland
  * @package Fabrik
@@ -13,46 +13,44 @@ defined( '_JEXEC' ) or die();
  * @description Vérification de l'autorisation d'accès à un dossier par un expert
  */
 
-$jinput 	= JFactory::getApplication()->input;
-$key_id 	= $jinput->get->get('keyid');
-$sid 		= $jinput->get->get('sid');
-$email 		= JRequest::getVar('email', null,'GET');
-$campaign_id= JRequest::getVar('cid', null,'GET');
-$formid 	= JRequest::getVar('formid', null,'GET');
+$app = JFactory::getApplication();
+$jinput = $app->input;
+$key_id = $jinput->get->get('keyid');
+$email = $jinput->get->getRaw('email');
+$campaign_id = $jinput->get->get('cid');
+$formid = $jinput->get->get('formid');
 
-$baseurl 	= JURI::base();
+$baseurl = JURI::base();
+$db = JFactory::getDBO();
 
-$db 		= JFactory::getDBO();
-
-$query = 'SELECT * FROM #__emundus_files_request  WHERE keyid like "'.$key_id.'" AND student_id='.$sid.' AND (uploaded=0 OR uploaded IS NULL)';
-$db->setQuery( $query );
-$obj=$db->loadObject();
-
+$query = $db->getQuery(true);
+$query->select('*')
+	->from($db->quoteName('#__emundus_files_request'))
+	->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id).' AND ('.$db->quoteName('uploaded').' = 0 OR '.$db->quoteName('uploaded').' IS NULL)');
+$db->setQuery($query);
+$obj = $db->loadObject();
 
 if (isset($obj)) {
-	$s = $jinput->get->get('s');
-	if ($s != 1) { echo "1";
-		$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$formid.'&jos_emundus_files_request___student_id='.$sid.'&jos_emundus_files_request___attachment_id='.$obj->attachment_id.'&jos_emundus_files_request___campaign_id='.$obj->campaign_id.'&jos_emundus_files_request___fnum='.$obj->fnum.'&sid='.$sid.'&keyid='.$key_id.'&email='.$email.'&cid='.$campaign_id.'&rowid='.$obj->id.'&s=1';
-//die("<hr>".$link_upload);
-		header('Location: '.$link_upload);
-		exit();
+
+	$s = $jinput->get->getInt('s');
+	if ($s !== 1) {
+
+		$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$formid.'&jos_emundus_files_request___attachment_id='.$obj->attachment_id.'&jos_emundus_files_request___campaign_id='.$obj->campaign_id.'&keyid='.$key_id.'&email='.$email.'&cid='.$campaign_id.'&rowid='.$obj->id.'&s=1';
+		$app->redirect($link_upload);
+
 	} else {
-		$up_uid = $jinput->get('jos_emundus_files_request___student_id');
+
 		$up_attachment = $jinput->get('jos_emundus_files_request___attachment_id');
-		$student_id = !empty($up_uid)?$jinput->get('jos_emundus_files_request___student_id'):$jinput->get->get('jos_emundus_files_request___student_id');
 		$attachment_id = !empty($up_attachment)?$jinput->get('jos_emundus_files_request___attachment_id'):$jinput->get->get('jos_emundus_files_request___attachment_id');
-		if (empty($student_id) || empty($key_id) || empty($attachment_id) || $attachment_id != $obj->attachment_id || !is_numeric($sid) || $sid != $student_id) { 
-			$baseurl = JURI::base();
-			JError::raiseWarning(500, JText::_('ERROR: please try again','error'));
-			header('Location: '.$baseurl);
-			exit();
-		} 
+
+		if (empty($key_id) || empty($attachment_id) || $attachment_id != $obj->attachment_id) {
+			$app->redirect(JURI::base());
+			throw new Exception(JText::_('ERROR: please try again'), 500);
+		}
 	}
+
 } else {
-	JFactory::getApplication()->enqueueMessage(JText::_('PLEASE_LOGIN'), 'message');
-	header('Location: '.$baseurl.'index.php?option=com_users&view=login');
+	$app->enqueueMessage(JText::_('PLEASE_LOGIN'), 'message');
+	$app->redirect($baseurl.'index.php?option=com_users&view=login');
 	exit();
 }
-
-
-?>

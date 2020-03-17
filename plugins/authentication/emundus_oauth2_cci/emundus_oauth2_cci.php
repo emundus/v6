@@ -230,10 +230,11 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
 
             // Tags are replaced with their corresponding values using the PHP preg_replace function.
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
-            $body = preg_replace($tags['patterns'], $tags['replacements'], $template->message);
+            $body = $template->message;
             if (!empty($template->Template)) {
                 $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
             }
+		    $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
             // Configure email sender
             $mailer = JFactory::getMailer();
