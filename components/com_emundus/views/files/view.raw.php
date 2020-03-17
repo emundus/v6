@@ -41,8 +41,9 @@ class EmundusViewFiles extends JViewLegacy {
 		$current_user = JFactory::getUser();
 		$h_files = new EmundusHelperFiles;
 
-		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-			die( JText::_('RESTRICTED_ACCESS') );
+		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+			die(JText::_('RESTRICTED_ACCESS'));
+		}
 
 	   	$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_emundus');
@@ -53,7 +54,6 @@ class EmundusViewFiles extends JViewLegacy {
 		$layout = $app->input->getString('layout', null);
 		
 		$m_files = $this->getModel('Files');
-
 		$h_files->setMenuFilter();
 
 		switch ($layout) {
@@ -102,11 +102,11 @@ class EmundusViewFiles extends JViewLegacy {
 
 					$params = $menu->getParams($Itemid);
 
-					if ($fnum === "0")
-                        $items = $h_files->getMenuList($params);
-					else
-                        $items = $h_files->getMenuList($params, $fnum);
-
+					if ($fnum === "0") {
+						$items = $h_files->getMenuList($params);
+					} else {
+						$items = $h_files->getMenuList($params, $fnum);
+					}
 
 					$this->assignRef('items', $items);
 					$this->assignRef('display', $display);
@@ -227,6 +227,7 @@ class EmundusViewFiles extends JViewLegacy {
 							    break;
 							case 'overall':
 								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
+								$colsSup['overall'] = array();
 								break;
                             case 'tags':
                                 $taggedFile = $m_files->getTaggedFile();
@@ -255,13 +256,7 @@ class EmundusViewFiles extends JViewLegacy {
 						    	break;
 					    }
 				    }
-				/*	$hasAccess = false;
-				    if(EmundusHelperAccess::asAccessAction(11, 'r', JFactory::getUser()->id))
-				    {
-					    $hasAccess = true;
-					    $data[0]['access'] = JText::_("COM_EMUNDUS_ASSOCIATED_TO");
-				    }
-*/
+
 				    foreach ($users as $user) {
 					    $usObj = new stdClass();
 					    $usObj->val = 'X';
@@ -338,8 +333,8 @@ class EmundusViewFiles extends JViewLegacy {
 					}
 
 					if (isset($colsSup['overall'])) {
-						// $m_evaluation = new EmundusModelEvaluation;
-						//$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
+						$m_evaluation = new EmundusModelEvaluation;
+						$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
 					}
 
 					if (isset($colsSup['id_tag'])) {

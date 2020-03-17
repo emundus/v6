@@ -1911,7 +1911,6 @@ if (JFactory::getUser()->id == 63)
 	/**
      * @param $fnums
      * @return mixed
-     * @throws Exception
      */
 	public function getEvaluationAverageByFnum($fnums) {
 		$dbo = $this->getDbo();
@@ -1923,7 +1922,8 @@ if (JFactory::getUser()->id == 63)
 			return $dbo->loadAssocList('fnum', 'overall');
 
 		} catch(Exception $e) {
-			throw $e;
+			JLog::add('Error getting evaluation averages : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			return false;
 		}
 	}
 

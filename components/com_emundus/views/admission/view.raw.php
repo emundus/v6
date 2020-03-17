@@ -168,6 +168,7 @@ class EmundusViewAdmission extends JViewLegacy
 								break;
 							case 'overall':
 								$data[0]['overall'] = JText::_('EVALUATION_OVERALL');
+								$colsSup['overall'] = array();
 								break;
 							case 'tags':
 								$taggedFile = $m_admission->getTaggedFile();
@@ -226,8 +227,9 @@ class EmundusViewAdmission extends JViewLegacy
 								$line['fnum'] = $userObj;
 							}
 
-							elseif ($key == 'name' || $key == 'evaluation_id' || $key == 'admission_id' || $key == 'recorded_by' || $key == 'status_class' || $key == 'step')
+							elseif ($key == 'name' || $key == 'evaluation_id' || $key == 'admission_id' || $key == 'recorded_by' || $key == 'status_class' || $key == 'step') {
 								continue;
+							}
 
 							elseif ($key == 'evaluator') {
 
@@ -287,6 +289,12 @@ class EmundusViewAdmission extends JViewLegacy
 						}
 						$data[$line['fnum']->val.'-'.$i] = $line;
 						$i++;
+					}
+
+					if (isset($colsSup['overall'])) {
+						require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+						$m_evaluation = new EmundusModelEvaluation();
+						$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
 					}
 
 					if (isset($colsSup['id_tag'])) {
