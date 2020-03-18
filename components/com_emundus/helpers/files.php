@@ -2294,6 +2294,7 @@ class EmundusHelperFiles
         $m_files = new EmundusModelFiles;
         $h_files = new EmundusHelperFiles;
 
+        $user = JFactory::getUser();
         if (!is_array($fnums)) {
             $fnumInfo = $m_files->getFnumInfos($fnums);
             $fnums = array($fnums);
@@ -2302,7 +2303,7 @@ class EmundusHelperFiles
         }
 
         // Get information from the applicant form filled out by the coordinator
-        if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnumInfo['fnum'])) {
+        if (EmundusHelperAccess::asAccessAction(8, 'c', $user->id, $fnumInfo['fnum'])) {
             $element_id     = $m_admission->getAllAdmissionElements(1, $fnumInfo['training']);
             $elements       = $h_files->getElementsName(implode(',',$element_id));
             $admissions     = $m_files->getFnumArray($fnums, $elements);
@@ -2374,6 +2375,7 @@ class EmundusHelperFiles
         $elements       = $h_files->getElementsName(implode(',',$element_id));
         $admissions     = $m_files->getFnumArray($fnums, $elements);
 
+        /*
         foreach ($admissions as $adm) {
            
             $str = '<br><hr>';
@@ -2426,6 +2428,17 @@ class EmundusHelperFiles
             $data[$adm['fnum']][1] = $str;
         }
 
+        */
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+        $m_application  = new EmundusModelApplication;
+
+        $form_ids = [];
+        
+        foreach ($elements as $els) {
+            array_push($form_ids, $els->form_id);
+        }
+        $form_ids = array_unique($form_ids);
+        $data = $m_application->getFormsPDF(109, $fnumInfo['fnum'], $form_ids, null, 1003);
         return $data;
     }
 
