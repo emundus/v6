@@ -56,6 +56,20 @@ class EmundusModelInterview extends JModelList
 
         }
     }
+    // get string of fabrik group ID use for evaluation form
+    public function getGroupsInterviewByProgramme($code) {
+        $db = $this->getDbo();
+        $query = 'select fabrik_interview_group_id from #__emundus_setup_programmes where code like '.$db->Quote($code);
+        
+        try {
+            if (!empty($code)) {
+                $db->setQuery($query);
+                return $db->loadResult();
+            } else return null;
+        } catch(Exception $e) {
+            throw $e;
+        }
+    }
     function getEvaluationsFnumUser($fnum, $user) {
 
         try {
@@ -85,6 +99,60 @@ class EmundusModelInterview extends JModelList
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
+    }
+    // get ALL elements by groups
+    // @params string List of Fabrik groups comma separated
+    function getAllElementsByGroups($groups){
+        return @EmundusHelperFilters::getAllElementsByGroups($groups);
+    }
+    /**
+     * Get list of ALL evaluation element
+     *
+     * @param int $show_in_list_summary
+     * @param      string code of the programme
+     *
+     * @return array list of Fabrik element ID used in evaluation form
+     * @throws Exception
+     */
+    public function getAllInterviewElements($show_in_list_summary=1, $programme_code) {
+        $session = JFactory::getSession();
+
+        $jinput = JFactory::getApplication()->input;
+        $fnums = $jinput->getString('cfnums', null);
+
+        if ($session->has('filt_params')) {
+            //var_dump($session->get('filt_params'));
+            $elements_id = array();
+            $filt_params = $session->get('filt_params');
+
+            if (is_array(@$filt_params['programme']) && $filt_params['programme'][0] != '%') {
+                foreach ($filt_params['programme'] as $value) {
+                    if ($value == $programme_code) {
+                        $groups = $this->getGroupsInterviewByProgramme($value);
+                        if (!empty($groups)) {
+                            $eval_elt_list = $this->getAllElementsByGroups($groups); // $show_in_list_summary
+                            if (count($eval_elt_list)>0) {
+                                foreach ($eval_elt_list as $eel) {
+                                    $elements_id[] = $eel->element_id;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                $groups = $this->getGroupsInterviewByProgramme($programme_code);
+                if (!empty($groups)) {
+                    $eval_elt_list = $this->getAllElementsByGroups($groups); // $show_in_list_summary
+                    if (count($eval_elt_list)>0) {
+                        foreach ($eval_elt_list as $eel) {
+                            $elements_id[] = $eel->element_id;
+                        }
+                    }
+                }
+            }
+        }
+
+        return @$elements_id;
     }
 
 }

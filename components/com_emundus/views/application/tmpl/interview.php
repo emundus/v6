@@ -26,7 +26,7 @@ JFactory::getSession()->set('application_layout', 'interview');
             <span class="glyphicon glyphicon-check"></span>
                 <?= JText::_('COM_EMUNDUS_ASSESSMENT'); ?>
                 <?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum) && !empty($this->url_form)) :?>
-                        <a class="  clean" target="_blank" href="<?= JURI::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf&user=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
+                        <a class="  clean" target="_blank" href="<?= JURI::base(); ?>index.php?option=com_emundus&controller=interview&task=pdf&user=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
                             <button class="btn btn-default" data-title="<?= JText::_('DOWNLOAD_PDF'); ?>" data-toggle="tooltip" data-placement="bottom" title="<?= JText::_('DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-save"></span></button>
                         </a>
                 <?php endif;?>
@@ -35,7 +35,7 @@ JFactory::getSession()->set('application_layout', 'interview');
                 <a href="<?= $this->url_form; ?>" target="_blank" title="<?= JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?= JText::_('OPEN_EVALUATION_FORM_IN_NEW_TAB'); ?></a>
             <?php endif;?>
             <?php
-                if (EmundusHelperAccess::asAccessAction(5, 'd', $this->_user->id, $this->fnum)) :?>
+                if (EmundusHelperAccess::asAccessAction(34, 'd', $this->_user->id, $this->fnum)) :?>
                     <div style="display:inline-block"><button class="btn btn-danger btn-xs btn-attach" title="<?= JText::_('DELETE_SELECTED_EVALUATIONS'); ?>" id="em_delete_evals" name="em_delete_evals" link="index.php?option=com_emundus&controller=evaluation&task=delevaluation&applicant=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
                     <span class="glyphicon glyphicon-trash"></span></button></div>
             <?php endif; ?>

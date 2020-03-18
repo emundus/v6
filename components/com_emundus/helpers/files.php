@@ -2429,6 +2429,84 @@ class EmundusHelperFiles
         return $data;
     }
 
+    // getInterview
+    function getInterview($format='html', $fnums) {
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'interview.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
+        $m_interview   = new EmundusModelInterview();
+        $m_files        = new EmundusModelFiles;
+        $h_files        = new EmundusHelperFiles;
+
+        if (!is_array($fnums)) {
+            $fnumInfo = $m_files->getFnumInfos($fnums);
+            $fnums = array($fnums);
+        } else {
+            $fnumInfo = $m_files->getFnumInfos($fnums[0]);
+        }
+
+        $element_id = $m_interview->getAllInterviewElements(1, $fnumInfo['training']);
+        $elements = $h_files->getElementsName(implode(',',$element_id));
+        $evaluations = $m_files->getFnumArray($fnums, $elements);
+
+        $data = array();
+        foreach ($evaluations as $eval) {
+
+            if ($eval['jos_emundus_evaluations___user_raw'] > 0) {
+
+                $str = '<br><hr>';
+                $str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
+                $str .= '<h1>'.JText::_('EVALUATOR').': '.JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name.'</h1>';
+                $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
+
+                foreach ($elements as $element) {
+                    $k = $element->tab_name.'___'.$element->element_name;
+
+                    if ($element->element_name != 'id' &&
+                        $element->element_name != 'time_date' &&
+                        $element->element_name != 'campaign_id' &&
+                        $element->element_name != 'student_id'&&
+                        $element->element_name != 'user' &&
+                        $element->element_name != 'fnum' &&
+                        $element->element_name != 'email' &&
+                        $element->element_name != 'label' &&
+                        $element->element_name != 'code' &&
+                        $element->element_name != 'spacer' &&
+                        array_key_exists($k, $eval))
+                    {
+                        $str .= '<tr>';
+                        if (strpos($element->element_name, 'comment') !== false) {
+                            $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
+                        } else {
+                            $str .= '<td width="70%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="30%">'.JText::_($eval[$k]).'</td>';
+                        }
+                        $str .= '</tr>';
+                    }
+                }
+
+                $str .= '</table>';
+                $str .= '<p></p><hr>';
+
+                if ($format != 'html') {
+                    $str = str_replace('<br>', chr(10), $str);
+                    $str = str_replace('<br />', chr(10), $str);
+                    $str = str_replace('<h1>', '* ', $str);
+                    $str = str_replace('</h1>', ' : ', $str);
+                    $str = str_replace('<b>', chr(10), $str);
+                    $str = str_replace('</b>', ' : ', $str);
+                    $str = str_replace('&nbsp;', ' ', $str);
+                    $str = strip_tags($str, '<h1>');
+                }
+
+                if ($format == "simple") {
+                    $str = $eval['label'].' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.JFactory::getUser($eval['jos_emundus_evaluations___user_raw'])->name;
+                }
+
+                $data[$eval['fnum']][$eval['jos_emundus_evaluations___user_raw']] = $str;
+            }
+        }
+        return $data;
+    }
 
     /**
      * Function to create a new FNUM
