@@ -2375,7 +2375,6 @@ class EmundusHelperFiles
         $elements       = $h_files->getElementsName(implode(',',$element_id));
         $admissions     = $m_files->getFnumArray($fnums, $elements);
 
-        /*
         foreach ($admissions as $adm) {
            
             $str = '<br><hr>';
@@ -2428,17 +2427,6 @@ class EmundusHelperFiles
             $data[$adm['fnum']][1] = $str;
         }
 
-        */
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-        $m_application  = new EmundusModelApplication;
-
-        $form_ids = [];
-        
-        foreach ($elements as $els) {
-            array_push($form_ids, $els->form_id);
-        }
-        $form_ids = array_unique($form_ids);
-        $data = $m_application->getFormsPDF(109, $fnumInfo['fnum'], $form_ids, null, 1003);
         return $data;
     }
 
