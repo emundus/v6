@@ -1914,7 +1914,7 @@ if (JFactory::getUser()->id == 63)
      */
 	public function getEvaluationAverageByFnum($fnums) {
 		$dbo = $this->getDbo();
-		$query = 'SELECT AVG(overall) AS overall, fnum FROM #__emundus_evaluations WHERE fnum IN ("'.implode('","', $fnums).'") GROUP BY fnum';
+		$query = 'SELECT AVG(overall) AS overall, fnum FROM #__emundus_evaluations WHERE fnum IN ("'.implode('","', $fnums).'") AND overall IS NOT NULL GROUP BY fnum';
 
 		try {
 
