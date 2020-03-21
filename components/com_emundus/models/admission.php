@@ -1715,8 +1715,8 @@ if (JFactory::getUser()->id == 63)
             $query->select($db->quoteName('fnum'))
 	            ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
 	            ->leftJoin($db->quoteName('#__emundus_setup_status', 'ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
-	            ->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
-	            ->where($db->quoteName('cc.applicant_id').' = '.$sid.' AND '.$db->quoteName('ss.profile').' = 8 AND '.$db->quoteName('cc.admission_start_date').' < NOW() AND '.$db->quoteName('cc.admission_start_date').' > NOW()')
+	            ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
+	            ->where($db->quoteName('cc.applicant_id').' = '.$sid.' AND '.$db->quoteName('ss.profile').' = 8 AND '.$db->quoteName('sc.admission_start_date').' < NOW() AND '.$db->quoteName('sc.admission_start_date').' > NOW()')
                 ->order($db->quoteName('cc.date_time').' DESC');
 
             try {
