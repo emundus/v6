@@ -132,14 +132,14 @@ class EmundusViewChecklist extends JViewLegacy {
                 $current_menu = $menu->getActive();
                 $menu_params = $menu->getParams(@$current_menu->id);
 
-                $show_browse_button   = $menu_params->get('show_browse_button', 0);
+                $show_browse_button = $menu_params->get('show_browse_button', 0);
                 $show_shortdesc_input = $menu_params->get('show_shortdesc_input', 0);
-                $show_info_panel 	  = $menu_params->get('show_info_panel', 0);
-                $show_info_legend 	  = $menu_params->get('show_info_legend', 0);
-                $show_nb_column 	  = $menu_params->get('show_nb_column', 0);
-                $custom_title         = $menu_params->get('custom_title', null);
-                $is_admission         = $menu_params->get('is_admission', 0);
-
+                $show_info_panel = $menu_params->get('show_info_panel', 0);
+                $show_info_legend = $menu_params->get('show_info_legend', 0);
+                $show_nb_column = $menu_params->get('show_nb_column', 0);
+                $custom_title = $menu_params->get('custom_title', null);
+                $is_admission = $menu_params->get('is_admission', 0);
+                $required_desc = $menu_params->get('required_desc', 0);
 
                 $forms 				= $this->get('FormsList');
                 $attachments 		= $this->get('AttachmentsList');
@@ -170,10 +170,10 @@ class EmundusViewChecklist extends JViewLegacy {
                 $this->assignRef('show_info_legend', $show_info_legend);
                 $this->assignRef('show_nb_column', $show_nb_column);
                 $this->assignRef('is_admission', $is_admission);
+                $this->assignRef('required_desc', $required_desc);
 
                 $result = $this->get('Result');
                 $this->assignRef('result', $result);
-
         }
 
         parent::display($tpl);
