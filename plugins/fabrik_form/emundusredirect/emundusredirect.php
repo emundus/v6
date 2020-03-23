@@ -43,12 +43,10 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 	 *
 	 * @return	string	element full name
 	 */
-	public function getFieldName($pname, $short = false)
-	{
+	public function getFieldName($pname, $short = false) {
 		$params = $this->getParams();
 
-		if ($params->get($pname) == '')
-		{
+		if ($params->get($pname) == '') {
 			return '';
 		}
 
@@ -66,12 +64,10 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 	 *
 	 * @return  mixed  value
 	 */
-	public function getParam($pname, $default = '')
-	{
+	public function getParam($pname, $default = '') {
 		$params = $this->getParams();
 
-		if ($params->get($pname) == '')
-		{
+		if ($params->get($pname) == '') {
 			return $default;
 		}
 
@@ -112,8 +108,6 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			$data = $this->getProcessData();
 			$table = explode('___', key($data));
 			$table_name = $table[0];
-			$table_key = $table[1];
-			$table_key_value = array_values($data)[0];
 			$fnums = $user->fnums;
 			unset($fnums[$user->fnum]);
 
@@ -136,7 +130,6 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 					$db->setQuery( $query );
 					$fabrik_group_rowids_key[$key] = $db->loadColumn();
 				}
-
 			}
 
 			// Only if other application files found
@@ -344,20 +337,18 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 				$db->setQuery($query);
 				$db->execute();
 
-			} catch (Exceptions $e) {
+			} catch (Exception $e) {
 				JLog::add('Error updating file status at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			}
-
 		}
 
 
 		/*
 		* REDIRECTION ONCE DUPLICATION IS DONE
 		*/
-
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
-		$user 	= JFactory::getSession()->get('emundusUser');
+		$user = JFactory::getSession()->get('emundusUser');
 		$jinput = JFactory::getApplication()->input;
 		$formid = $jinput->get('formid');
 
@@ -448,7 +439,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 
 				$query = 'UPDATE `'.$db_table_name.'` SET `user`='.$sid.' WHERE fnum like '.$db->Quote($fnum);
 
-				$db->setQuery( $query );
+				$db->setQuery($query);
 				$db->execute();
 
 			} catch (Exception $e) {
@@ -462,10 +453,53 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
 			echo "<hr>";
 			exit;
-
 		}
-		header('Location: '.$link);
-		exit();
+
+
+		if ($this->getParam('notify_complete_file', 0) == 1) {
+
+			require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+			require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+			$m_application = new EmundusModelApplication;
+			$m_checklist = new EmundusModelChecklist();
+
+			$attachments = $m_application->getAttachmentsProgress($user->profile, $user->fnum);
+			$forms = $m_application->getFormsProgress($user->profile, $user->fnum);
+			$send_file_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
+
+			if ($attachments >= 100 && $forms >= 100) {
+
+				echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>';
+				echo '<script src="https://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>';
+				die("<script>
+				    	$(document).ready(() => {
+				      		Swal.fire({
+					        	position: 'top',
+					        	type: 'info',
+					        	title: '".JText::_('PLG_FABRIK_FORM_EMUNDUSREDIRECT_FILE_COMPLETE')."',
+					        	confirmButtonText: '".JText::_('PLG_FABRIK_FORM_EMUNDUSREDIRECT_SEND_FILE')."',
+					        	showCancelButton: true,
+					        	cancelButtonText: '".JText::_('PLG_FABRIK_FORM_EMUNDUSREDIRECT_CONTINUE')."',
+					        	onClose: () => {
+					            	window.location.href = '".$link."';
+					        	}
+				            })
+			                .then(confirm => {
+                                if (confirm.value) {
+                                    window.location.href = '".$send_file_url."';
+                                } else {
+                                    window.location.href = '".$link."';
+                                }
+                            })
+				      });
+				  </script>");
+
+			}
+
+		} else {
+			header('Location: '.$link);
+			exit();
+		}
 	}
 
 	/**
