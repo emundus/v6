@@ -546,7 +546,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $actions = $jinput->getString('actions', null);
         $groups = $jinput->getString('groups', null);
         $evals = $jinput->getString('evals', null);
-        $notify = $jinput->getBool('notify', false);
+        $notify = $jinput->getVar('notify', 'false');
 
         $actions = (array) json_decode(stripslashes($actions));
         $fnums = (array) json_decode(stripslashes($fnums));
@@ -601,7 +601,7 @@ class EmundusControllerFiles extends JControllerLegacy
             }
         }
 
-        if ($notify && $res !== false && !empty($evals)) {
+        if ($notify !== 'false' && $res !== false && !empty($evals)) {
 
         	if (empty($fnums)) {
         		$fnums = $validFnums;
