@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.0" method="upgrade">
+
+	<name>eMundus on board</name>
+	<!-- The following elements are optional and free of formatting constraints -->
+	<creationDate>July 2019</creationDate>
+	<author>James Dean</author>
+	<authorEmail>james.dean@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<copyright>Copyright Info</copyright>
+	<license>License Info</license>
+	<!--  The version string is recorded in the components table -->
+	<version>0.0.1</version>
+	<!-- The description is optional and defaults to the name -->
+	<description>This is the futur of eMundus</description>
+
+	<!-- Site Main File Copy Section -->
+	<!-- Note the folder attribute: This attribute describes the folder
+		to copy FROM in the package to install therefore files copied
+		in this section are copied from /site/ in the package -->
+	<files folder="site">
+		<folder>language</folder>
+		<filename>index.html</filename>
+		<filename>emundus_onboard.php</filename>
+	</files>
+
+	<languages folder="language">
+		<language tag="fr-FR">fr-FR.com_emundusonboard.ini</language>
+		<language tag="en-GB">en-GB.com_emundusonboard.ini</language>
+	</languages>
+
+	<administration>
+		<!-- Administration Menu Section -->
+		<menu link='index.php?option=com_emundus_onboard'>eMundus onboard</menu>
+		<!-- Administration Main File Copy Section -->
+		<!-- Note the folder attribute: This attribute describes the folder
+			to copy FROM in the package to install therefore files copied
+			in this section are copied from /admin/ in the package -->
+		<files folder="admin">
+			<folder>language</folder>
+			<!-- Admin Main File Copy Section -->
+			<filename>index.html</filename>
+			<filename>emundus_onboard.php</filename>
+		</files>
+	</administration>
+
+</extension>

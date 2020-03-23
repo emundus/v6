@@ -2196,6 +2196,10 @@ class PlgFabrik_Element extends FabrikPlugin
 		return $this->element->label;
 	}
 
+	public function vue_jsonLabel()
+    {
+        return $this-> getRawLabel();
+    }
 	/**
 	 * This was in the views display and _getElement code but seeing as its used
 	 * by multiple views its safer to have it here

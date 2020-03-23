@@ -1,0 +1,154 @@
+.fabrikgrid_radio {
+  display: flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+  float: left !important;
+  margin: 0 120px 0 0;
+  height: 12px;
+}
+.fabrikgrid_radio label.radio {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-height: 20px;
+  padding-left: 20px;
+  margin-bottom: 5px !important;
+  font-weight: bold !important;
+  margin-top: 10px;
+  position: relative;
+}
+.fabrikgrid_radio label.radio input.fabrikinput {
+  position: relative !important;
+  margin-right: 7px;
+}
+.row-fluid {
+  display: inline-block;
+}
+
+.fabrikLabel {
+  margin: 15px 0 5px;
+}
+.legend {
+  padding: 50px 20px 10px;
+}
+
+.ViewerLegend {
+  margin-bottom: -25px;
+}
+.introP {
+  margin-bottom: -27px;
+}
+.input-append {
+  display: inline-flex;
+}
+.input-medium {
+  height: 100%;
+}
+.dinherit {
+  display: inherit;
+}
+.fa-plus-circle {
+  margin-right: 5px;
+}
+.btnPM {
+  cursor: pointer;
+  text-transform: capitalize;
+  transition-duration: 0.4s;
+}
+.btnPM:hover {
+  background-color: #1b1f3c;
+  color: white;
+}
+.legendSide {
+  display: flex;
+  margin: -3px 0 12px;
+}
+.mr-rightS {
+  margin: auto 3px 2px auto;
+}
+.BtnModal {
+  border-radius: 12px 0 12px 0;
+  background: #1b1f3c;
+  border: none;
+  color: #fff;
+  font: bold 12px Verdana;
+  padding: 6px 12px 6px 12px;
+  margin-right: 15px;
+  cursor: pointer;
+  text-transform: capitalize;
+  transition-duration: 0.4s;
+}
+.BtnModal:hover {
+  background-color: white;
+  color: black;
+  border: 1px solid #1b1f3c;
+}
+.BtnModal:hover .tooltiptext {
+  visibility: visible;
+
+  opacity: 1;
+}
+.BtnModal:hover + .tooltiptextSide {
+  visibility: visible;
+
+  opacity: 1;
+}
+.inputF {
+  display: block;
+  width: inherit;
+  height: inherit;
+  padding: 0;
+  margin: 0 0 0 5px;
+}
+
+.tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 999;
+  top: 17px;
+  left: 97%;
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent black transparent transparent;
+}
+.tooltiptextSide {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 999;
+  top: 5px;
+  left: 57%;
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.tooltiptextSide::after {
+  content: "";
+  position: absolute;
+  left: 72%;
+  top: 100%;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #000 transparent transparent transparent;
+}
