@@ -1284,6 +1284,7 @@ $(document).ready(function() {
 
             $('.em-check:checked').prop('checked', false);
             $('#em-check-all:checked').prop('checked', false);
+            $('#em-check-all-all:checked').prop('checked', false);
             $('#'+fnum.fnum+'_check').prop('checked', true);
 
             $.ajax({
@@ -4997,7 +4998,7 @@ $(document).ready(function() {
                         actions: actionsCheck,
                         groups: groupeEval,
                         evals: evaluators,
-                        notify: $('#evaluator-email').is(':checked')
+                        notify: document.querySelector('#evaluator-email').checked
                     }),
                     success: function(result) {
 
