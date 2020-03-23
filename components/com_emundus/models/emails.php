@@ -119,7 +119,7 @@ class EmundusModelEmails extends JModelList {
             foreach ($emails_tmpl as $key => $codes) {
                 $trigger_id = $key;
 
-                foreach ($codes as $tmpl) {
+                foreach ($codes as $key => $tmpl) {
                     $code = $key;
                     $recipients = array();
                     $as_where = false;
