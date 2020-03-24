@@ -22,6 +22,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
 	// Load Joomla framework classes
 	$document 	= JFactory::getDocument();
@@ -32,8 +33,9 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
 	$document->addStyleSheet("modules/mod_emundusflow/style/emundus.css" );
 	$header_class = $params->get('header_class', '');
-	if (!empty($header_class))
+	if (!empty($header_class)){
 		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
+	}
 
 	// Jinput
 	$option = $jinput->get('option');
@@ -61,9 +63,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$m_checklist 	= new EmundusModelChecklist;
 	$m_application 	= new EmundusModelApplication;
 	$m_files 		= new EmundusModelFiles;
+	$m_profile 		= new EmundusModelProfile;
 
+    $application_fee  		= (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 	$paid = null;
-	if ($application_fee == 1) {
+
+	if ($application_fee) {
 		$fnumInfos = $m_files->getFnumInfos($user->fnum);
 		if ($admission) {
 			$paid_orders = $m_application->getHikashopOrder($fnumInfos, false, $admission);

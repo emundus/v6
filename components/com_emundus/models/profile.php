@@ -690,4 +690,24 @@ class EmundusModelProfile extends JModelList
         }
         return $emundus_user;
     }
+
+
+    public function getHikashopMenu($profile) {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select($db->quoteName('m.link'))
+            ->from($db->quoteName('#__menu', 'm'))
+            ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype').' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
+            ->where($db->quoteName('esp.id').' = ' . $profile . ' AND ' . $db->quoteName('m.link') . ' LIKE ' . $db->quote('%com_hikashop%') . ' AND ' . $db->quoteName('m.published') . ' = 1');
+        $db->setQuery($query);
+
+        try {
+            return $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 }
