@@ -140,6 +140,7 @@ class EmundusViewChecklist extends JViewLegacy {
                 $custom_title = $menu_params->get('custom_title', null);
                 $is_admission = $menu_params->get('is_admission', 0);
                 $required_desc = $menu_params->get('required_desc', 0);
+                $notify_complete_file = $menu_params->get('notify_complete_file', 0);
 
                 $forms 				= $this->get('FormsList');
                 $attachments 		= $this->get('AttachmentsList');
@@ -171,6 +172,7 @@ class EmundusViewChecklist extends JViewLegacy {
                 $this->assignRef('show_nb_column', $show_nb_column);
                 $this->assignRef('is_admission', $is_admission);
                 $this->assignRef('required_desc', $required_desc);
+                $this->assignRef('notify_complete_file', $notify_complete_file);
 
                 $result = $this->get('Result');
                 $this->assignRef('result', $result);
