@@ -104,7 +104,7 @@ class EmundusController extends JControllerLegacy {
             application_form_pdf($user->id, $fnum, true, 1, null, null, null, $profile_id);
             exit;
         } else {
-        	die(JText::_('ACCESS_DENIED'));
+            die(JText::_('ACCESS_DENIED'));
         }
     }
 
@@ -244,13 +244,13 @@ class EmundusController extends JControllerLegacy {
         // Redirect URL is currently only used in Hesam template of mod_emundus_application, it allows for the module to be located on a page other than index.php.
 
         if (empty($redirect)) {
-	        $redirect = 'index.php';
+            $redirect = 'index.php';
         } else {
-	        $redirect = base64_decode($redirect);
+            $redirect = base64_decode($redirect);
         }
 
         if (empty($fnum)) {
-	        $app->redirect($redirect);
+            $app->redirect($redirect);
         }
 
         $current_user  = JFactory::getSession()->get('emundusUser');
@@ -333,8 +333,8 @@ class EmundusController extends JControllerLegacy {
         $m_profile = new EmundusModelProfile;
 
         $student_id    = $jinput->get->get('sid', null);
-	    $fnum          = $jinput->get->getVar('fnum', null);
-	    $status          = $jinput->get->get('status', null);
+        $fnum          = $jinput->get->getVar('fnum', null);
+        $status          = $jinput->get->get('status', null);
         $redirect      = $jinput->get->getBase64('redirect', null);
         // Redirect URL is currently only used in Hesam template of mod_emundus_application, it allows for the module to be located on a page other than index.php.
 
@@ -367,7 +367,7 @@ class EmundusController extends JControllerLegacy {
         if (in_array($user->fnum, array_keys($user->fnums))) {
             $app->redirect($redirect);
         } else {
-	        $fnum = array_shift($current_user->fnums);
+            $fnum = array_shift($current_user->fnums);
             $app->redirect($redirect);
         }
 
@@ -512,11 +512,11 @@ class EmundusController extends JControllerLegacy {
         if (empty($redirect)) {
             $redirect = JURI::base().'index.php';
         } else {
-	        $redirect = base64_decode($redirect);
+            $redirect = base64_decode($redirect);
         }
 
         if (empty($fnum)) {
-	        $app->redirect($redirect);
+            $app->redirect($redirect);
         }
 
         $session = JFactory::getSession();
@@ -526,18 +526,27 @@ class EmundusController extends JControllerLegacy {
         $infos = $m_profile->getFnumDetails($fnum);
 
         if ($aid->id != $infos['applicant_id']) {
-	        return;
+            return;
         }
 
-        $profile = $m_profile->getProfileByCampaign($infos['campaign_id']);
         $campaign = $m_profile->getCampaignById($infos['campaign_id']);
         $application = $m_profile->getFnumDetails($fnum);
+
+        // Get profil depending on application status
+        $profile = $m_profile->getProfileByStatus($application['status']);
+        
+        if (count($profile) == 0) {
+            // Get profil depending on campaign
+            $profile = $m_profile->getProfileByCampaign($infos['campaign_id']);
+        }
 
         $aid->profile = $profile['profile_id'];
         $aid->profile_label = $profile['label'];
         $aid->menutype = $profile['menutype'];
         $aid->start_date = $profile['start_date'];
         $aid->end_date = $profile['end_date'];
+        $aid->admission_start_date = $infos['admission_start_date'];
+        $aid->admission_end_date = $infos['admission_end_date'];
         $aid->candidature_posted = $infos['submitted'];
         $aid->candidature_incomplete = $infos['status']==0?1:0;
         $aid->schoolyear = $campaign['year'];
@@ -602,7 +611,7 @@ class EmundusController extends JControllerLegacy {
                         $aid->profile       = $profile;
                         $aid->fnum          = $ids[1];
                         $profiles = $m_profile->getProfileById($profile);
-	                    $aid->applicant     = 1;
+                        $aid->applicant     = 1;
                         $aid->profile_label = $profiles["label"];
                         $aid->menutype      = $profiles["menutype"];
                     }
@@ -714,8 +723,8 @@ class EmundusController extends JControllerLegacy {
 	            echo '{"aid":"0","status":false,"message":"'.$error.' -> empty $_FILES" }';
             }
 
-	        JFactory::getApplication()->enqueueMessage(JText::_('FILE_TOO_BIG'), 'error');
-	        $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid);
+            JFactory::getApplication()->enqueueMessage(JText::_('FILE_TOO_BIG'), 'error');
+            $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid);
             return false;
         }
 
@@ -1272,14 +1281,14 @@ class EmundusController extends JControllerLegacy {
             $db->setQuery($query);
             $fileInfo = $db->loadObject();
             if (empty($fileInfo)) {
-	            $fileInfo->fnum = explode('_', $file)[0];
+                $fileInfo->fnum = explode('_', $file)[0];
             }
         }
 
         // Check if the user is an applicant and it is his file.
         if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid && !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
             if ($fileInfo->can_be_viewed != 1) {
-	            die (JText::_('ACCESS_DENIED'));
+                die (JText::_('ACCESS_DENIED'));
             }
         }
         // If the user has the rights to open attachments.

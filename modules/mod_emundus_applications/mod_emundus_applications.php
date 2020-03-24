@@ -109,13 +109,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 	$forms = $m_application->getFormsProgress($user->profile, $fnums);
 	$confirm_form_url = $m_application->getConfirmUrl($fnums);
 	$first_page = $m_application->getFirstPage('index.php', $fnums);
-
-	// If the user can
-	$profile = $m_profile->getCurrentProfile($user->id);
-	if ($profile['profile'] == 8) {
-		$admissionInfo = @EmundusModelAdmission::getAdmissionInfo($user->id);
-		$admission_fnum = $admissionInfo->fnum;
-	}
+	$profile_first_page = $m_application->getFirstPage('index.php');
 
 	// Check to see if the applicant meets the criteria to renew a file.
 	switch ($applicant_can_renew) {

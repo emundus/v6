@@ -1727,7 +1727,7 @@ if (JFactory::getUser()->id == 63)
 
             try {
 	            $db->setQuery($query);
-	            $admissionInfo->fnum = $db->loadResult();
+	            $admissionInfo = $db->loadObject();
             } catch (Exception $e) {
 	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             }

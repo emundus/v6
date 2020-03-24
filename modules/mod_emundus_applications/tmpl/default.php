@@ -18,8 +18,18 @@ echo $description;
 <?php if (!empty($applications)) : ?>
     <div class="<?= $moduleclass_sfx ?>">
     <?php foreach ($applications as $application) : ?>
+        <?php 
+            $is_admission = in_array($application->status, $admission_status);
 
-        <?php $state=$states[$application->fnum]['published']; ?>
+            if ($is_admission) {
+                $first_page_url = 'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($profile_first_page);
+            }
+            else {
+                $first_page_url = 'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link']);
+            }
+
+            $state = $states[$application->fnum]['published']; 
+        ?>
 
         <?php if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
             <?php 
@@ -39,26 +49,36 @@ echo $description;
                 $tags = $m_email->setTags($user->id, $post, $application->fnum);
                 $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
                 $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
+               }
+
+            if(!empty($m_profile->getProfileByFnum($application->fnum))) {
+                $confirm_url = $m_checklist->getConfirmUrl($m_profile->getProfileByFnum($application->fnum)).'&usekey=fnum&rowid='.$user->fnum;
+            } else {
+                $confirm_url = $confirm_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url[$application->fnum]['link']);
             }
             ?>
             <div class="row" id="row<?= $application->fnum; ?>">
                 <div class="col-md-12 main-page-application-title">
-                    <a href="<?= JRoute::_('index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>">
-                        <?= (in_array($application->status, $admission_status) &&  $add_admission_prefix)?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?>
+
+                    <a href="<?= JRoute::_($first_page_url); ?>">
+                        <?= ($is_admission &&  $add_admission_prefix)?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?>
                     </a>
+
                 </div>
 
                 <div class="col-xs-12 col-md-6 main-page-file-info">
                     <p class="em-tags-display"><?= $file_tags_display; ?></i></p>
-                    <a class="btn btn-warning" href="<?php echo JRoute::_('index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>" role="button">
-                        <i class="folder open outline icon"></i> <?= (in_array($application->status, $admission_status))?JText::_('OPEN_ADMISSION'):JText::_('OPEN_APPLICATION'); ?>
+                    <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
+                        <i class="folder open outline icon"></i> <?= ($is_admission) ? JText::_('OPEN_ADMISSION') : JText::_('OPEN_APPLICATION'); ?>
                     </a>
 
                     <?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
-                        <a id='send' class="btn btn-xs" href="<?= JRoute::_('index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url)); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
+
+                        <a id='send' class="btn btn-xs" href="<?= JRoute::_($confirm_url); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
+
                     <?php endif; ?>
 
-                    <a id='print' class="btn btn-info btn-xs" href="<?= in_array($application->status, $admission_status) ? 'index.php?option=com_emundus&controller=admission&task=pdf_admission&user=' . $user->id .'&fnum=' . $application->fnum : JRoute::_('index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
+                    <a id='print' class="btn btn-info btn-xs" href="<?= ($is_admission) ? JRoute::_('index.php?option=com_emundus&controller=admission&task=pdf_admission&user='.$user->id.'&fnum=' .$application->fnum) : JRoute::_('index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
                     <?php if ($application->status <= $file_status) : ?>
                         <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?= $application->fnum; ?>');" href="#row<?php !empty($attachments) ? $attachments[$application->fnum] : ''; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
                     <?php endif; ?>
@@ -69,8 +89,8 @@ echo $description;
                     <?php if ($show_progress == 1) : ?>
                         <div id="file<?= $application->fnum; ?>"></div>
                         <script type="text/javascript">
-                            $(document).ready(function () {
-                                $("#file<?= $application->fnum; ?>").circliful({
+                            jQuery(document).ready(function () {
+                                jQuery("#file<?= $application->fnum; ?>").circliful({
                                     animation: 1,
                                     animationStep: 5,
                                     foregroundBorderWidth: 15,
@@ -87,8 +107,8 @@ echo $description;
                     <?php if ($show_progress_forms == 1) : ?>
                         <div id="forms<?= $application->fnum; ?>"></div>
                         <script type="text/javascript">
-                            $(document).ready(function () {
-                                $("#forms<?= $application->fnum; ?>").circliful({
+                            jQuery(document).ready(function () {
+                                jQuery("#forms<?= $application->fnum; ?>").circliful({
                                     animation: 1,
                                     animationStep: 5,
                                     foregroundBorderWidth: 15,
@@ -106,8 +126,8 @@ echo $description;
                     <?php if ($show_progress_documents == 1) : ?>
                         <div id="documents<?= $application->fnum; ?>"></div>
                         <script type="text/javascript">
-                            $(document).ready(function () {
-                                $("#documents<?= $application->fnum; ?>").circliful({
+                            jQuery(document).ready(function () {
+                                jQuery("#documents<?= $application->fnum; ?>").circliful({
                                     animation: 1,
                                     animationStep: 5,
                                     foregroundBorderWidth: 15,
@@ -184,10 +204,12 @@ endif; ?>
 
     <script type="text/javascript">
         var poll_url = "<?= $poll_url; ?>";
-        $(".modal-body").html('<iframe src="' + poll_url + '" style="width:' + window.getWidth() * 0.8 + 'px; height:' + window.getHeight() * 0.8 + 'px; border:none"></iframe>');
-        setTimeout(function () {
-            $('#em-modal-form').modal({backdrop: true, keyboard: true}, 'toggle');
-        }, 1000);
+        if ($poll_url !== "") {
+            jQuery(".modal-body").html('<iframe src="' + poll_url + '" style="width:' + window.getWidth() * 0.8 + 'px; height:' + window.getHeight() * 0.8 + 'px; border:none"></iframe>');
+            setTimeout(function () {
+                jQuery('#em-modal-form').modal({backdrop: true, keyboard: true}, 'toggle');
+            }, 1000);
+        }
     </script>
 
 <?php endif; ?>
@@ -195,12 +217,12 @@ endif; ?>
 <script type="text/javascript">
     function deletefile(fnum) {
         if (confirm("<?= JText::_('CONFIRM_DELETE_FILE'); ?>")) {
-            document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum;
+            document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum+"&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
         }
     }
 </script>
 <script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
+    jQuery(function () {
+        jQuery('[data-toggle="tooltip"]').tooltip()
     })
 </script>
