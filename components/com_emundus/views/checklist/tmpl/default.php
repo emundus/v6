@@ -446,24 +446,21 @@ function processSelectedFiles(fileInput) {
     }
 }
 
-<?php if ($this->notify_complete_file == 1 && !$block_upload) {
+<?php if ($this->notify_complete_file == 1 && !$block_upload && $this->attachments >= 100 && $this->forms >= 100) :?>
+    $(document).ready(() => {
+        Swal.fire({
+            position: 'top',
+            type: 'success',
+            title: '<?= JText::_('COM_EMUNDUS_CHECKLIST_FILE_COMPLETE'); ?>',
+            confirmButtonText: '<?= JText::_('COM_EMUNDUS_CHECKLIST_SEND_FILE'); ?>',
+            showCancelButton: false
+        })
+        .then(confirm => {
+            if (confirm.value) {
+                window.location.href = '<?= $this->confirm_form_url; ?>';
+            }
+        })
+    });
+<?php endif; ?>
 
-    if ($this->attachments >= 100 && $this->forms >= 100) :?>
-        $(document).ready(() => {
-            Swal.fire({
-                position: 'top',
-                type: 'success',
-                title: '<?= JText::_('COM_EMUNDUS_CHECKLIST_FILE_COMPLETE'); ?>',
-                confirmButtonText: '<?= JText::_('COM_EMUNDUS_CHECKLIST_SEND_FILE'); ?>',
-                showCancelButton: false
-            })
-                .then(confirm => {
-                    if (confirm.value) {
-                        window.location.href = '<?= $this->confirm_form_url; ?>';
-                    }
-                })
-        });
-    <?php endif;
-
-} ?>
 </script>
