@@ -129,12 +129,15 @@ class EmundusModelCampaign extends JModelList
 		} catch (Exception $e) {
 			JLog::add('Error at model/campaign -> query: '.$query, JLog::ERROR, 'com_emundus');
 		}
-
-
 	}
 
-	function getMyCampaign()
-	{
+	/**
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	function getMyCampaign() {
 		$query = 'SELECT esc.*
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
@@ -144,8 +147,14 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadObjectList();
 	}
 
-	function getCampaignByID($campaign_id)
-	{
+	/**
+	 * @param $campaign_id
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	function getCampaignByID($campaign_id) {
 		$query = 'SELECT esc.*
 					FROM #__emundus_setup_campaigns AS esc
 					WHERE esc.id='.$campaign_id.' ORDER BY esc.end_date DESC';
@@ -153,8 +162,43 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadAssoc();
 	}
 
-	function getProgrammeByCampaignID($campaign_id)
-	{
+	/**
+	 * @param   bool  $published
+	 *
+	 * @return array|mixed
+	 *
+	 * @since version
+	 */
+	function getAllCampaigns($published = true) {
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select(['tu.*'])
+			->from($db->quoteName('#__emundus_setup_teaching_unity', 'tu'));
+
+		if ($published) {
+			$query->where($db->quoteName('c.published').' = 1');
+		}
+
+		try {
+			$db->setQuery($query);
+			return $db->loadObjectList();
+		} catch (Exception $e) {
+			JLog::add('Error getting campaigns at model/campaign at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return [];
+		}
+
+	}
+
+	/**
+	 * @param $campaign_id
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	function getProgrammeByCampaignID($campaign_id) {
 		$campaign = $this->getCampaignByID($campaign_id);
 
 		$query = 'SELECT esp.*
@@ -164,8 +208,14 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadAssoc();
 	}
 
-	function getProgrammeByTraining($training)
-	{
+	/**
+	 * @param $training
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	function getProgrammeByTraining($training) {
 		$query = 'SELECT esp.*
 					FROM #__emundus_setup_programmes AS esp
 					WHERE esp.code like "'.$training.'"';
@@ -173,8 +223,14 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadObject();
 	}
 
-	function getCampaignsByCourse($course)
-	{
+	/**
+	 * @param $course
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	function getCampaignsByCourse($course) {
 		$query = 'SELECT esc.*
 					FROM #__emundus_setup_campaigns AS esc
 					WHERE esc.training like '.$this->_db->Quote($course).' ORDER BY esc.end_date DESC';
@@ -182,8 +238,14 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadAssoc();
 	}
 
-    function getCampaignsByProgram($code)
-    {
+	/**
+	 * @param $code
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+    function getCampaignsByProgram($code) {
         $query = 'SELECT esc.*
 					FROM #__emundus_setup_campaigns AS esc
 					LEFT JOIN #__emundus_setup_programmes AS esp on esp.code = esc.training
@@ -192,8 +254,15 @@ class EmundusModelCampaign extends JModelList
         return $this->_db->loadObjectList();
     }
 
-	function getCampaignsByCourseCampaign($course, $camp)
-	{
+	/**
+	 * @param $course
+	 * @param $camp
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	function getCampaignsByCourseCampaign($course, $camp) {
 
 		$query = 'SELECT esc.*
 				FROM #__emundus_setup_campaigns AS esc
@@ -204,8 +273,14 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadAssoc();
 	}
 
-	static function getLastCampaignByCourse($course)
-	{
+	/**
+	 * @param $course
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	static function getLastCampaignByCourse($course) {
 		$db = JFactory::getDBO();
 
 		$query = 'SELECT esc.*
@@ -215,8 +290,13 @@ class EmundusModelCampaign extends JModelList
 		return $db->loadObject();
 	}
 
-	function getMySubmittedCampaign()
-	{
+	/**
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	function getMySubmittedCampaign() {
 		$query = 'SELECT esc.*
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
@@ -226,8 +306,14 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadObjectList();
 	}
 
-	function getCampaignByApplicant($aid)
-	{
+	/**
+	 * @param $aid
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	function getCampaignByApplicant($aid) {
 		$query = 'SELECT esc.*,ecc.fnum, esp.menutype, esp.label as profile_label
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
@@ -238,8 +324,14 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadObjectList();
 	}
 
-	function getCampaignByFnum($fnum)
-	{
+	/**
+	 * @param $fnum
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	function getCampaignByFnum($fnum) {
 		$query = 'SELECT esc.*,ecc.fnum, esp.menutype, esp.label as profile_label
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
@@ -250,8 +342,14 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadObject();
 	}
 
-	function getCampaignSubmittedByApplicant($aid)
-	{
+	/**
+	 * @param $aid
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	function getCampaignSubmittedByApplicant($aid) {
 		$query = 'SELECT esc.*
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
@@ -261,6 +359,13 @@ class EmundusModelCampaign extends JModelList
 		return $this->_db->loadObjectList();
 	}
 
+	/**
+	 * @param $cid
+	 * @param $aid
+	 *
+	 *
+	 * @since version
+	 */
 	function setSelectedCampaign($cid, $aid) {
 
 		$query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `campaign_id`, `fnum`)
@@ -428,8 +533,7 @@ class EmundusModelCampaign extends JModelList
      * Gets all elements in teaching unity table
      * @return array
      */
-
-    function getTeachingUnity() {
+    function getCCITU() {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -445,7 +549,35 @@ class EmundusModelCampaign extends JModelList
             return $db->loadObjectList();
         } catch (Exception $e) {
             JLog::add('Error getting latest programme at model/campaign at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        return [];
         }
     }
 
+	/**
+	 * @param   null  $id
+	 *
+	 * @return array|mixed
+	 *
+	 * @since version
+	 */
+    function getTeachingUnity($id = null) {
+
+	    $db = JFactory::getDbo();
+	    $query = $db->getQuery(true);
+
+	    $query->select(['tu.*'])
+		    ->from($db->quoteName('#__emundus_setup_teaching_unity', 'tu'));
+
+	    if (!empty($id) && is_numeric($id)) {
+		    $query->where($db->quoteName('tu.id').' = '.$id);
+	    }
+
+	    try {
+		    $db->setQuery($query);
+		    return $db->loadObjectList();
+	    } catch (Exception $e) {
+		    JLog::add('Error getting latest programme at model/campaign at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
+		    return [];
+	    }
+    }
 }
