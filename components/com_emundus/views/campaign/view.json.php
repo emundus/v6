@@ -35,33 +35,52 @@ class EmundusViewCampaign extends JViewLegacy {
     }
 
     function display($tpl = null) {
-            
-        $m_campaign = new EmundusModelCampaign();
-        $data = $m_campaign->getTeachingUnity();
 
-        foreach ($data as $key => $row) {
+    	$app = JFactory::getApplication();
+    	$jinput = $app->input;
+    	$request = $jinput->get->get('request');
 
-            // Process city name
-            $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($row->location_city))));
-            $town =  ucwords(strtolower($town), '\',. ');
-            $beforeComma = strpos($town, "D'");
-            if (!empty($beforeComma)) {
-                $replace = strpbrk($town, "D'");
-                $row->location_city = substr_replace($town,lcfirst($replace), $beforeComma);
-            }
+	    $m_campaign = new EmundusModelCampaign();
 
-            // Proccess address
-            $row->location_address = ucfirst(strtolower($row->location_address));
+    	switch ($request) {
 
-            // Proccess URL
-            $row->url = 'https://www.competencesetformation.fr/formation?rowid='.$row->row_id;
+		    case 'years':
+		    	$data = $m_campaign->getTeachingUnity();
+			    break;
 
-            // Process tax.
-            $row->prix_ttc = !empty($row->tax_rate);
+    		case 'campaigns':
+			    $data = $m_campaign->getAllCampaigns();
+    			break;
 
-            $data[$key] = $row;
+    		default:
+    			// For retro-compatibility reasons, the default case is the CCI export.
+		        $data = $m_campaign->getCCITU();
 
-        }
+		        foreach ($data as $key => $row) {
+
+			        // Process city name
+			        $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($row->location_city))));
+			        $town = ucwords(strtolower($town), '\',. ');
+			        $beforeComma = strpos($town, "D'");
+			        if (!empty($beforeComma)) {
+				        $replace = strpbrk($town, "D'");
+				        $row->location_city = substr_replace($town,lcfirst($replace), $beforeComma);
+			        }
+
+			        // Proccess address
+			        $row->location_address = ucfirst(strtolower($row->location_address));
+
+			        // Proccess URL
+			        $row->url = 'https://www.competencesetformation.fr/formation?rowid='.$row->row_id;
+
+			        // Process tax.
+			        $row->prix_ttc = !empty($row->tax_rate);
+
+			        $data[$key] = $row;
+		        }
+		        break;
+
+	    }
 
         echo json_encode($data);
     }
