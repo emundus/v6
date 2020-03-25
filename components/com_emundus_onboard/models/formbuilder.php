@@ -44,7 +44,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $db->execute();
                 }
                 catch(Exception $e) {
-                    error_log($e->getMessage(), 0);
+                    JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                     return $e->getMessage();
                 }
             } 
@@ -86,7 +86,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             
         }
         catch(Exception $e) {
-            error_log($e->getMessage(), 0);
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return $e->getMessage();
         }
         
@@ -136,7 +136,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $db->execute();                    
                 }
                 catch(Exception $e) {
-                    error_log($e->getMessage(), 0);
+                    JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                     return $e->getMessage();
                 }
             }
@@ -181,7 +181,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             return $db->execute();            
         }
         catch(Exception $e) {
-            error_log($e->getMessage(), 0);
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return $e->getMessage();
         }        
     }
@@ -214,7 +214,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $db->execute();                    
             }
             catch(Exception $e) {
-                error_log($e->getMessage(), 0);
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
         }
@@ -260,7 +260,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                         $db->execute();                    
                     }
                     catch(Exception $e) {
-                        error_log($e->getMessage(), 0);
+                        JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                         return $e->getMessage();
                     }
                 }

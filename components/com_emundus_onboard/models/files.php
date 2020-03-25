@@ -74,7 +74,7 @@ class EmundusonboardModelfiles extends JModelList {
             return $candidaturesInfos;
         }
         catch(Exception $e) {
-            error_log($e->getMessage(), 0);
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return;
         }
     }
@@ -97,7 +97,7 @@ class EmundusonboardModelfiles extends JModelList {
             return $db->loadObjectList();
         }
         catch(Exception $e) {
-            error_log($e->getMessage(), 0);
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return;
         }
     }
@@ -118,7 +118,7 @@ class EmundusonboardModelfiles extends JModelList {
             return $db->loadObjectList();
         }
         catch(Exception $e) {
-            error_log($e->getMessage(), 0);
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return;
         }
     }
@@ -152,7 +152,7 @@ class EmundusonboardModelfiles extends JModelList {
             return $db->loadObjectList();
         }
         catch(Exception $e) {
-            error_log($e->getMessage(), 0);
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return;
         }
     }
