@@ -16,7 +16,6 @@ defined('_JEXEC') or die();
 $app = JFactory::getApplication();
 $jinput = $app->input;
 $key_id = $jinput->get->get('keyid');
-$email = $jinput->get->getRaw('email');
 $campaign_id = $jinput->get->get('cid');
 $formid = $jinput->get->get('formid');
 
@@ -35,7 +34,7 @@ if (isset($obj)) {
 	$s = $jinput->get->getInt('s');
 	if ($s !== 1) {
 
-		$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$formid.'&jos_emundus_files_request___attachment_id='.$obj->attachment_id.'&jos_emundus_files_request___campaign_id='.$obj->campaign_id.'&keyid='.$key_id.'&email='.$email.'&cid='.$campaign_id.'&rowid='.$obj->id.'&s=1';
+		$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$formid.'&jos_emundus_files_request___attachment_id='.$obj->attachment_id.'&jos_emundus_files_request___campaign_id='.$obj->campaign_id.'&keyid='.$key_id.'&cid='.$campaign_id.'&rowid='.$obj->id.'&s=1';
 		$app->redirect($link_upload);
 
 	} else {

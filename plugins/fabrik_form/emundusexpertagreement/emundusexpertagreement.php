@@ -84,7 +84,6 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 
 		$jinput = $app->input;
 		$key_id = $jinput->get->get('keyid');
-		$email = $jinput->get->getRaw('email');
 		$firstname = ucfirst($jinput->get('jos_emundus_files_request___firstname'));
 		$lastname = strtoupper($jinput->get('jos_emundus_files_request___lastname'));
 
@@ -100,11 +99,18 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		$m_emails = new EmundusModelEmails;
 		$m_application = new EmundusModelApplication;
 
+		$query->select($db->quoteName('email'))
+			->from($db->quoteName('#__emundus_files_request'))
+			->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id));
+		$db->setQuery($query);
+		$email = $db->loadResult();
+
 		if (empty($email) || !isset($email)) {
 			die("NO_EMAIL_FOUND");
 		}
 
-		$query->select($db->quoteName('fnum'))
+		$query->clear()
+			->select($db->quoteName('fnum'))
 			->from($db->quoteName('#__emundus_files_request'))
 			->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id));
 		$db->setQuery($query);
