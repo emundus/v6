@@ -1259,7 +1259,7 @@ $(document).ready(function () {
 								'<strong>' + result.msg + '</strong> ' +
 								'</div>');*/
 							reloadData();
-
+							$('body').removeClass('modal-open');
 							reloadActions($('#view').val());
 							$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
 							setTimeout(function () {
