@@ -43,7 +43,7 @@
               >
               <a
                 :href="
-                  'index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=' + data.id
+                  '/files&cid=' + data.id
                 "
                 class="cta-block"
                 >{{ Visualize }}</a
