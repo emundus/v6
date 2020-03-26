@@ -150,6 +150,18 @@ form {
   text-align: center;
   font-weight: 500;
 }
+.em-ulprojet-explain {
+  width: 40%;
+  margin-top: 10px;
+  margin-bottom: 50px;
+  margin-right: auto;
+  margin-left: auto;
+  color: #636363;
+  font-size: 18px;
+  line-height: 24px;
+  text-align: left;
+  font-weight: 500;
+}
 
 .em-wrappernavbar {
   position: fixed;

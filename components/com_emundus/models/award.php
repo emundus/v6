@@ -157,6 +157,21 @@ class EmundusModelAward extends JModelList
         return $db->loadColumn();
     }
 
+    public function GetProjet($user){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('titre_projet')
+            ->from($db->quoteName('#__emundus_projet', 'ep'))
+            ->join('LEFT', '#__emundus_evaluations AS ee ON ep.fnum = ee.fnum')
+            ->where($db->quoteName('ee.user').' = '.$db->quote($user));
+
+        $db->setQuery($query);
+
+        return $db->loadColumn();
+    }
+
     public function getFavoris($fnum,$user){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);

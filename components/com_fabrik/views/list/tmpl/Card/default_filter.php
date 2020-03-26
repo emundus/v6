@@ -55,7 +55,7 @@ $style = $this->toggleFilters ? 'style="display:none"' : ''; ?>
 
                                 ?>
                                 <tr data-filter-row="<?php echo $key;?>" class="fabrik_row oddRow<?php echo ($c % 2) . $required;?>">
-                                    <td style="text-align:right;" class="fabrik-filter-element"><?php echo $filter->label;?><?php echo $filter->element;?></td>
+                                    <td style="text-align:right;" class="fabrik-filter-element"><?php echo '<p class="em-filter-label">'. $filter->label.'</p>'?><?php echo $filter->element;?></td>
                                 </tr>
                             <?php
                             endif;

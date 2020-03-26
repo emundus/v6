@@ -73,12 +73,12 @@ $form_id = $form->id;
     <input type="hidden" id="menu_id" value="<?= $menu_id->id; ?>">
     <div data-w-id="3c3b9df0-751a-cd4b-5fc9-0b3c7fa86d77" class="em-wrappernavbar">
         <div class="em-navbar w-container">
-            <div class="em-wrappermenu"><a href="../index.html" class="em-logonavbar w-inline-block w--current"><img src="../projet/images/custom/vyv/Groupe_VYV_Q.png" alt="Logo Groupe VYV"></a>
+            <div class="em-wrappermenu"><a href="../index.html" class="em-logonavbar w-inline-block w--current"><img src="../projet/images/custom/Groupe_VYV_Q.png" alt="Logo Groupe VYV"></a>
                 <div class="em-miniwrappermenu">
                     <div class="em-wrapperitemmenu"><a href="/index.html" class="em-itemmenu w--current">LE challenge</a><a href="../projet/index.php?option=com_fabrik&view=list&listid=349" class="em-itemmenu">Projets</a><a href="/reglement.html" class="em-itemmenu">règlement</a><a href="/a-propos.html" class="em-itemmenu">à propos</a></div>
                 </div>
                 <a href="../projet/index.php?option=com_fabrik&view=list&listid=349" class="em-button-nav w-inline-block" data-ix="arrowcta-menu">
-                    <div class="em-containerarrow"><img src="/projet/images/custom/vyv/5e049464ed2a2711565ccae1_arrow.svg" alt="" class="em-arrowcta-purple"><img src="/projet/images/custom/vyv/arrow.svg" alt="" class="em-arrowcta-white"></div>
+                    <div class="em-containerarrow"><img src="/projet/images/custom/5e049464ed2a2711565ccae1_arrow.svg" alt="" class="em-arrowcta-purple"><img src="/projet/images/custom/arrow.svg" alt="" class="em-arrowcta-white"></div>
                     <div class="em-textcta2">VOTER</div>
                     <div class="em-overlay"></div>
                 </a>
@@ -99,6 +99,7 @@ $form_id = $form->id;
 
         <?php
         $thematiques_name = $m_award->GetThematique($current_user->id);
+        $project_name = $m_award->GetProjet($current_user->id);
         
         $countByThematique1 = $m_award->CountByThematique(1);
         $countByThematique2 = $m_award->CountByThematique(2);
@@ -112,14 +113,14 @@ $form_id = $form->id;
         $nbVote = $m_award->CountVotes($current_user->id);
         $totalVote = $m_award->TotalVotes(); ?>
         <p class="em-paragrapheprojet-explain">Un total de <?= $totalVote ?> projets a été déposés sur la plateforme de la manière suivante:</p>
-        <ul>
+        <ul class="em-ulprojet-explain">
             <li>Bien-être (sport, alimentation & santé): <?= $countByThematique1 ?></li>
             <li>Education et accès à la culture pour tous: <?= $countByThematique2 ?></li>
             <li>Amélioration du cadre de vie et de l’habitat: <?= $countByThematique3 ?></li>
             <li>Maitrise des avancées technologiques: <?= $countByThematique4 ?></li>
             <li>Eco responsabilité individuelle et collective: <?= $countByThematique5 ?></li>
             <li>Respect des diversités et de l’inclusion: <?= $countByThematique6 ?></li>
-            <li>Autres: <?= $countByThematique6 ?></li>
+            <li>Autres: <?= $countByThematique7 ?></li>
         </ul>
             <?php
         if ($this->showFilters && $this->bootShowFilters) :
@@ -127,15 +128,15 @@ $form_id = $form->id;
         endif; ?>
         
         <?php if($current_user->guest == 1 && $nbVote == 0 || $current_user->guest == 0 && $nbVote == 0){ ?>
-            <p class="em-divprojet-explain">Pour pouvoir voter, vous devez cliquer sur le bouton "> VOIR CE PROJET ET VOTER" puis vous connecter à votre compte. Attention, vous ne pourrez voter qu'une seule fois dans chaque thématique, soit une limite d'un projet soutenu par thématique.</p>
+            <p class="em-divprojet-explain">Pour pouvoir voter, vous devez cliquer sur le bouton "> VOIR CE PROJET ET VOTER" puis vous connecter à votre compte. Attention, vous ne pourrez voter qu'une seule fois pour un projet, dans une limite de six projets.</p>
         <?php } ?>
         <?php if($nbVote == 1 && $current_user->guest == 0){ ?>
-            <p class="em-paragrapheprojet-explain">Vous ne pouvez voter qu'une seule fois dans chaque thématique, soit une limite d'un projet soutenu par thématique.
-                Vous avez déjà voté pour un dossier dans la thématique <span class="em-thematique-deja-votee"><?= $theme ?></span>. Donc vous ne pourrez plus voter pour un autre projet appartenant à cette thématique, c'est pourquoi tous les autres projets rattachés à cette thématique seront désormais grisés.</p>
+            <p class="em-paragrapheprojet-explain">Vous ne pouvez voter qu'une seule fois dans chaque thématique, dans une limite de six projets.
+                Vous avez déjà voté pour un projet <span class="em-thematique-deja-votee"><?= $project_name[0] ?></span>. Donc vous ne pourrez plus voter pour ce projet, c'est pourquoi ce projet est désormais grisé.</p>
         <?php } ?>
         <?php if($nbVote > 1 && $current_user->guest == 0){ ?>
-            <div class="em-divprojet-explain">Vous ne pouvez voter qu'une seule fois dans chaque thématique, soit une limite d'un projet soutenu par thématique.
-                Vous avez déjà voté pour un dossier dans les thématiques : <?php for($i=0; $i < $nbVote; $i++){ echo '<p class="em-thematique-deja-votee">'.  $thematiques_name[$i]. '</p>'; }?><p class="em-paragrapheprojet-explain"> Donc vous ne pourrez plus voter pour un autre projet appartenant à l'une de ces thématiques, c'est pourquoi tous les autres projets rattachés à ces thématiques seront désormais grisés.</p></div>
+            <div class="em-divprojet-explain">Vous ne pouvez voter qu'une seule fois dans chaque thématique, dans une limite de six projets.
+                Vous avez déjà voté pour plusieurs projets : <?php for($i=0; $i < $nbVote; $i++){ echo '<p class="em-thematique-deja-votee">'.  $project_name[$i]. '</p>'; }?><p class="em-paragrapheprojet-explain"> Donc vous ne pourrez plus voter pour un autre projet appartenant à l'une de ces thématiques, c'est pourquoi tous les autres projets rattachés à ces thématiques seront désormais grisés.</p></div>
         <?php } ?>
 
         <?php foreach ($this->pluginBeforeList as $c) :
@@ -203,8 +204,8 @@ $form_id = $form->id;
             for($i=1; $i <= count($group); $i++) {
 
                 $countThematique = $m_award->CountThematique($current_user->id, $group[$i]->data->$thematique_raw);
-
                 $fnum = $group[$i]->data->$fnum_element;
+                $countVote = $m_award->CountVote($fnum,$current_user->id);
                 $id = $group[$i]->data->$id_projet;
 
                 $cid = $m_award->getCampaignId($fnum);
@@ -220,20 +221,20 @@ $form_id = $form->id;
                 if (($i % 2) == 0 ) {
                     ?>
                     <div class="em-wrapper-project-row">
-                        <?php if ($countThematique == 1) { ?>
+                        <?php if ($countVote == 1 || $nbVote >= 6) { ?>
                         <div class="overlay"></div>
                         <?php } ?>
                         <div class="em-rowproject rowinvert w-row">
                             <div class="w-col w-col-6">
                                 <div class="em-wrappercontainerimage imageinvert w-clearfix">
                                     <?php if (($i % 3) == 0 ) { ?>
-                                        <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="<?= $countThematique == 0 ? "em-containerimage" : "em-containerimage-bloque"; ?>"><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">' :'' ?></div>
+                                        <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="<?= $countVote == 0 ? "em-containerimage" : "em-containerimage-bloque"; ?>"><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">' :'' ?></div>
                                     <?php } ?>
                                     <?php if (($i % 3) == 1 ) { ?>
-                                        <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="<?= $countThematique == 0 ? "em-containerimage2" : "em-containerimage2-bloque"; ?>"><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">' :'' ?></div>
+                                        <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="<?= $countVote == 0 ? "em-containerimage2" : "em-containerimage2-bloque"; ?>"><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">' :'' ?></div>
                                     <?php } ?>
                                     <?php if (($i % 3) == 2 ) { ?>
-                                        <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="<?= $countThematique == 0 ? "em-containerimage3" : "em-containerimage3-bloque"; ?>"><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">' :'' ?></div>
+                                        <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="<?= $countVote == 0 ? "em-containerimage3" : "em-containerimage3-bloque"; ?>"><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">' :'' ?></div>
                                     <?php } ?>
                                 </div>
                             </div>
@@ -242,6 +243,7 @@ $form_id = $form->id;
                                     <h2 class="em-titleproject"><?= $group[$i]->data->$titre; ?></h2>
                                     <h3 class="em-thematiqueproject"><?= $group[$i]->data->$thematique; ?></h3>
                                     <p class="em-paragrapheprojet"><?= $group[$i]->data->$description; ?></p>
+
 
                                     <?php
                                     if($current_user->id == 0){
@@ -256,7 +258,7 @@ $form_id = $form->id;
                                     ?>
 
                                     <a href="<?= $url; ?>" class="em-button-vyv-projet w-inline-block" data-ix="arrowcta">
-                                        <img src="/projet/images/custom/vyv/arrow.svg" alt="" class="em-arrowcta">
+                                        <img src="/projet/images/custom/arrow.svg" alt="" class="em-arrowcta">
                                         <div class="em-textcta"><?= JText::_('VOIR CE PROJET ET VOTER'); ?></div>
                                     </a>
                                     <!--<div class="em-partage">
@@ -275,20 +277,20 @@ $form_id = $form->id;
                 if (($i % 2) == 1) {
                     ?>
                     <div class="em-wrapper-project-row">
-                        <?php if ($countThematique == 1) { ?>
+                        <?php if ($countVote == 1 || $nbVote <= 6) { ?>
                             <div class="overlay"></div>
                         <?php } ?>
                         <div class="em-rowproject w-row">
                             <div class="w-col w-col-6">
                                 <div class="em-wrappercontainerimage w-clearfix">
                                     <?php if (($i % 3) == 0 ) { ?>
-                                        <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="<?= $countThematique == 0 ? "em-containerimage" : "em-containerimage-bloque"; ?>"><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">' :'' ?></div>
+                                        <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="<?= $countVote == 0 ? "em-containerimage" : "em-containerimage-bloque"; ?>"><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">' :'' ?></div>
                                     <?php } ?>
                                     <?php if (($i % 3) == 1 ) { ?>
-                                        <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="<?= $countThematique == 0 ? "em-containerimage2" : "em-containerimage2-bloque"; ?>"><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">' :'' ?></div>
+                                        <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="<?= $countVote == 0 ? "em-containerimage2" : "em-containerimage2-bloque"; ?>"><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">' :'' ?></div>
                                     <?php } ?>
                                     <?php if (($i % 3) == 2 ) { ?>
-                                        <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="<?= $countThematique == 0 ? "em-containerimage3" : "em-containerimage3-bloque"; ?>"><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">' :'' ?></div>
+                                        <div data-w-id="afa6a3c8-1634-0848-b10c-b657a0400b11" class="<?= $countVote == 0 ? "em-containerimage3" : "em-containerimage3-bloque"; ?>"><?= !empty($filename) ? '<img src="'.JUri::base() .'images'.DS.'emundus'.DS.'files'.DS.$group[$i]->data->$user.DS.$filename.'" alt="Challenge solidaire" sizes="(max-width: 479px) 86vw, (max-width: 767px) 87vw, (max-width: 991px) 43vw, 36vw" class="em-imageproject">' :'' ?></div>
                                     <?php } ?>
                                 </div>
                             </div>
@@ -297,6 +299,8 @@ $form_id = $form->id;
                                     <h2 class="em-titleproject"><?= $group[$i]->data->$titre; ?></h2>
                                     <h3 class="em-thematiqueproject"><?= $group[$i]->data->$thematique; ?></h3>
                                     <p class="em-paragrapheprojet"><?= $group[$i]->data->$description; ?></p>
+
+
                                     <?php
                                     if($current_user->id == 0){
                                         $url = 'index.php?option=com_users&view=login&return=' . base64_encode($url_detail);
@@ -306,7 +310,7 @@ $form_id = $form->id;
                                     } ?>
 
                                     <a href="<?= $url; ?>" class="em-button-vyv-projet w-inline-block" data-ix="arrowcta">
-                                        <img src="/projet/images/custom/vyv/arrow.svg" alt="" class="em-arrowcta">
+                                        <img src="/projet/images/custom/arrow.svg" alt="" class="em-arrowcta">
                                         <div class="em-textcta"><?= JText::_('VOIR CE PROJET ET VOTER'); ?></div>
                                     </a>
                                     <!--<div class="em-partage">
@@ -329,7 +333,7 @@ $form_id = $form->id;
                     <div class="div-block-2">
                         <div class="em-wrappermenufooter"><a href="/index.html" class="em-menufooter">Le challenge</a><a href="/projet/index.php?option=com_fabrik&view=list&listid=349" class="em-menufooter">PROJETS</a><a href="/reglement.html" class="em-menufooter">règlement</a><a href="/a-propos.html" class="em-menufooter">à propos</a></div>
                     </div>
-                    <div><img src="/projet/images/custom/vyv/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg" alt="VYV groupe logo" srcset="/projet/images/custom/vyv/Composite_Grpe-VYVEMV_9entites_Q-VF-p-500.jpeg 500w, /projet/images/custom/vyv/Composite_Grpe-VYVEMV_9entites_Q-VF-p-800.jpeg 800w, /projet/images/custom/vyv/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg 1000w" sizes="(max-width: 479px) 94vw, (max-width: 767px) 81vw, (max-width: 991px) 58vw, 63vw" class="em-logofooter"></div>
+                    <div><img src="/projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg" alt="VYV groupe logo" srcset="/projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF-p-500.jpeg 500w, /projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF-p-800.jpeg 800w, /projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg 1000w" sizes="(max-width: 479px) 94vw, (max-width: 767px) 81vw, (max-width: 991px) 58vw, 63vw" class="em-logofooter"></div>
                 </div>
             </div>
         </div>

@@ -42,7 +42,7 @@ echo $this->loadTemplate('buttons');
 echo $this->loadTemplate('relateddata');
 $document = JFactory::getDocument();
 
-$document->addScript('/templates/emundus_vanilla/js/vyv-inner-project.js');
+$document->addScript('/projet/templates/emundus_vanilla/js/vyv-inner-project.js');
 
 
 
@@ -92,6 +92,7 @@ $attachment_id = $m_award->getFabrikElement('visuel');
 $filename1 = $m_award->getUpload($fnum,$cid,$attachment_id);
 $countThematique = $m_award->CountThematique($user->id, $thematique);
 $countVote = $m_award->CountVote($fnum,$user->id);
+$VoteTotal = $m_award->CountVotes($user->id);
 $uid= $user->id;
 
 /*foreach ($this->groups as $group) :
@@ -124,12 +125,12 @@ $uid= $user->id;
 </div>
 <div class="em-wrappernavbar">
     <div class="em-navbar w-container">
-        <div class="em-wrappermenu"><a href="/index.html" class="em-logonavbar w-inline-block"><img src="/projet/images/custom/vyv/Groupe_VYV_Q.png" alt="Logo Groupe VYV"></a>
+        <div class="em-wrappermenu"><a href="/index.html" class="em-logonavbar w-inline-block"><img src="/projet/images/custom/Groupe_VYV_Q.png" alt="Logo Groupe VYV"></a>
             <div class="em-miniwrappermenu">
                 <div class="em-wrapperitemmenu"><a href="/index.html" class="em-itemmenu">Le challenge</a><a href="/projet/index.php?option=com_fabrik&view=list&listid=349" class="em-itemmenu">PROJETS</a><a href="/reglement.html" class="em-itemmenu">règlement</a><a href="/a-propos.html" class="em-itemmenu">à propos</a></div>
             </div>
             <a href="/projet/index.php?option=com_fabrik&view=list&listid=349" class="em-button-nav w-inline-block" data-ix="arrowcta-menu">
-                <div class="em-containerarrow"><img src="/projet/images/custom/vyv/5e049464ed2a2711565ccae1_arrow.svg" alt="" class="em-arrowcta-purple"><img src="/projet/images/custom/vyv/arrow.svg" alt="" class="em-arrowcta-white"></div>
+                <div class="em-containerarrow"><img src="/projet/images/custom/5e049464ed2a2711565ccae1_arrow.svg" alt="" class="em-arrowcta-purple"><img src="/projet/images/custom/arrow.svg" alt="" class="em-arrowcta-white"></div>
                 <div class="em-textcta">VOTER</div>
                 <div class="em-overlay"></div>
             </a>
@@ -187,21 +188,21 @@ $uid= $user->id;
                 </div>
             </div>
             <a href="#" class="em-button-finalvote w-inline-block" data-ix="arrowcta-menu-3" onclick="addVote(<?=$uid?>,<?=$thematique;?>,<?=$cid;?>,<?=$student_id;?>)">
-                <div class="em-containerarrow2"><img src="/projet/images/custom/vyv/arrow.svg" alt="" class="em-arrowcta-white2"></div>
+                <div class="em-containerarrow2"><img src="/projet/images/custom/arrow.svg" alt="" class="em-arrowcta-white2"></div>
                 <div class="em-textcta" >Valider et voter</div>
                 <div class="em-overlay2"></div>
             </a>
             <input type="hidden" name="choiceLabel" id="choiceLabel" value="0">
         </div>
         <?php
-        if ($countThematique == 0) {
-            if($countVote == 0) {
+
+            if($countVote == 0 && $VoteTotal < 6) {
                 ?>
                 <div class="em-containervotetext">
                     <h2 class="em-h2vote">Vous voulez soutenir ce projet ?</h2>
                     <p class="em-soutenir-le-projet">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. <br></p>
                     <a class="em-button-vote w-inline-block" data-ix="arrowcta-menu-4">
-                        <div class="em-containerarrow2"><img src="/projet/images/custom/vyv/arrow.svg" alt="" class="em-arrowcta-white2"></div>
+                        <div class="em-containerarrow2"><img src="/projet/images/custom/arrow.svg" alt="" class="em-arrowcta-white2"></div>
                         <div class="em-textcta">JE VOTE POUR CE PROJET</div>
                         <div class="em-overlay2"></div>
                     </a>
@@ -209,7 +210,7 @@ $uid= $user->id;
 
 
             <?php }
-        }
+
         else {  ?>
             <div class="em-cardContainer-card-vote">
                 <p><?= JText::_('ALREADY_VOTE'); ?></p>
@@ -224,7 +225,7 @@ $uid= $user->id;
             <div class="div-block-2">
                 <div class="em-wrappermenufooter"><a href="/index.html" class="em-menufooter">Le challenge</a><a href="/projet/index.php?option=com_fabrik&view=list&listid=349" class="em-menufooter">PROJETS</a><a href="/reglement.html" class="em-menufooter">règlement</a><a href="/a-propos.html" class="em-menufooter">à propos</a></div>
             </div>
-            <div><img src="/projet/images/custom/vyv/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg" alt="VYV groupe logo" srcset="/projet/images/custom/vyv/Composite_Grpe-VYVEMV_9entites_Q-VF-p-500.jpeg 500w, /projet/images/custom/vyv/Composite_Grpe-VYVEMV_9entites_Q-VF-p-800.jpeg 800w, /projet/images/custom/vyv/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg 1000w" sizes="(max-width: 479px) 94vw, (max-width: 767px) 81vw, (max-width: 991px) 58vw, 63vw" class="em-logofooter"></div>
+            <div><img src="/projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg" alt="VYV groupe logo" srcset="/projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF-p-500.jpeg 500w, /projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF-p-800.jpeg 800w, /projet/images/custom/Composite_Grpe-VYVEMV_9entites_Q-VF.jpg 1000w" sizes="(max-width: 479px) 94vw, (max-width: 767px) 81vw, (max-width: 991px) 58vw, 63vw" class="em-logofooter"></div>
         </div>
     </div>
 </div>
