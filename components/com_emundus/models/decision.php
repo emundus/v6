@@ -98,7 +98,7 @@ class EmundusModelDecision extends JModelList
 		$show_in_list_summary = 1;
         $hidden = 0;
 		$elements_eval = $this->getAllDecisionElements($show_in_list_summary, $hidden);
-		if (count($elements_eval)) {
+		if (is_array($elements_eval) && count($elements_eval)) {
 			$this->elements_id .= implode(',', $elements_eval);
 		}
 
