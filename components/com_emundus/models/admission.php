@@ -1476,8 +1476,9 @@ if (JFactory::getUser()->id == 63)
             if (!empty($code)) {
                 $db->setQuery($query);
                 return $db->loadResult();
-            } else return null;
-
+            } else {
+                return null;
+            }
 		} catch(Exception $e) {
             throw $e;
         }
@@ -1493,10 +1494,13 @@ if (JFactory::getUser()->id == 63)
             if (!empty($code)) {
                 $db->setQuery($query);
                 return $db->loadResult();
-            } else return null;
+            } else {
+                return null;
+            }
 
 		} catch(Exception $e) {
-            throw $e;
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return null;
         }
     }
 
