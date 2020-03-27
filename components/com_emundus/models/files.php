@@ -301,8 +301,14 @@ class EmundusModelFiles extends JModelLegacy
         $can_be_ordering = array();
         if (!empty($this->_elements)) {
             foreach ($this->_elements as $element) {
-                $can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
-                $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
+                if(!empty($element->table_join)) {
+                    $can_be_ordering[] = $element->table_join.'___'.$element->element_name;
+                    $can_be_ordering[] = $element->table_join.'.'.$element->element_name;
+                }
+                else {
+                    $can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
+                    $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
+                }
             }
         }
 

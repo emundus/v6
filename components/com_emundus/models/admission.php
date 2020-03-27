@@ -459,8 +459,14 @@ class EmundusModelAdmission extends JModelList
         $can_be_ordering = array();
         if (count($this->_elements) > 0) {
             foreach ($this->_elements as $element) {
-                $can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
-                $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
+                if(!empty($element->table_join)) {
+	                $can_be_ordering[] = $element->table_join.'___'.$element->element_name;
+	                $can_be_ordering[] = $element->table_join.'.'.$element->element_name;
+                }
+                else {
+                	$can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
+	                $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
+                }
             }
         }
 
@@ -1288,7 +1294,13 @@ class EmundusModelAdmission extends JModelList
 					$lastTab = array();
 				if (!in_array($elt->tab_name, $lastTab))
 					$leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = c.fnum ';
-				$lastTab[] = $elt->tab_name;
+				if(!empty($elt->table_join)) {
+			        $lastTab[] = $elt->table_join;
+					$group_by .= ', '.$elt->table_join.'___'.$elt->element_name;
+                } else {
+					$lastTab[] = $elt->tab_name;
+					$group_by .= ', '.$elt->tab_name.'___'.$elt->element_name;
+				}
 
 			}
 		}
