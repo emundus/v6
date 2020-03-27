@@ -69,7 +69,7 @@ echo $description;
                     <?php endif; ?>
 
                     <a id='print' class="btn btn-info btn-xs" href="<?= (in_array($application->status, $admission_status)) ? JRoute::_('index.php?option=com_emundus&controller=admission&task=pdf_admission&user='.$user->id.'&fnum=' .$application->fnum) : JRoute::_('index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
-                    <?php if ($application->status <= $file_status) : ?>
+                    <?php if (in_array($application->status, $status_for_send)) : ?>
                         <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?= $application->fnum; ?>');" href="#row<?php !empty($attachments) ? $attachments[$application->fnum] : ''; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
                     <?php endif; ?>
                 </div>
