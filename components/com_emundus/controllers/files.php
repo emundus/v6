@@ -2823,7 +2823,12 @@ class EmundusControllerFiles extends JControllerLegacy
 						    mkdir(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'], 0775);
 						}
 
-						$name = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".pdf";
+                        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+                        if (!$anonymize_data) {
+                            $name = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".pdf";
+                        } else {
+                            $name = $this->sanitize_filename($fnumsInfos[$fnum]).$attachInfos['lbl']."-".md5($rand.time()).".pdf";
+                        }
 
                         $path = EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $name;
                         $url = JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/';
@@ -3396,6 +3401,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $eval = $m_eval->getGroupsEvalByProgramme($code);
         $dec = $m_eval->getGroupsDecisionByProgramme($code);
         $adm = $m_adm->getGroupsAdmissionByProgramme($code);
+        $adm .= $m_adm->getGroupsApplicantAdmissionByProgramme($code);
 
         $hasAccessAtt  = EmundusHelperAccess::asAccessAction(4,  'r', $user_id);
         $hasAccessEval = EmundusHelperAccess::asAccessAction(5,  'r', $user_id);
@@ -3409,16 +3415,21 @@ class EmundusControllerFiles extends JControllerLegacy
         $showadm  = 0;
         $showtag  =0;
 
-        if ($hasAccessAtt)
+        if ($hasAccessAtt) {
             $showatt = 1;
-        if (!empty($eval) && $hasAccessEval)
+        }
+        if (!empty($eval) && $hasAccessEval) {
             $showeval = 1;
-        if (!empty($dec) && $hasAccessDec)
+        }
+        if (!empty($dec) && $hasAccessDec) {
             $showdec = 1;
-        if (!empty($adm) && $hasAccessAdm)
+        }
+        if (!empty($adm) && $hasAccessAdm) {
             $showadm = 1;
-        if ($hasAccessTags)
+        }
+        if ($hasAccessTags) {
             $showtag = 1;
+        }
 
         echo json_encode((object)(array('status' => true,'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm, 'tag' => $showtag)));
         exit;
