@@ -111,3 +111,13 @@
     background-color: #bf0e04;
     border-color: #bf0e04;
 }
+
+.em-flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.em-flex-row {
+    display: flex;
+    flex-direction: row;
+}

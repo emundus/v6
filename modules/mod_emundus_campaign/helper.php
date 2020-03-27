@@ -174,4 +174,33 @@ class modEmundusCampaignHelper {
         $db->setQuery($query);
         return $db->loadObject();
     }
+
+    /***
+     * Custoom function for Nantes
+     * @param $id
+     *
+     * @return mixed|null
+     *
+     * @since version
+     */
+    function getNantesInfos($id) {
+        $db = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+
+        $query
+            ->select([$db->quoteName('p.public'), $db->quoteName('tu.formation_length'), $db->quoteName('tu.date_start')])
+            ->from($db->qn('#__emundus_setup_programmes', 'p'))
+            ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->quoteName('tu.code') . ' = '. $db->quoteName('p.code'))
+            ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.training') . ' = '. $db->quoteName('tu.code') . ' AND ' .$db->quoteName('esc.year') . ' LIKE ' . $db->quoteName('tu.schoolyear'))
+            ->where($db->quoteName('esc.id') . ' = ' . $id);
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObject();
+        } catch (Exception $e) {
+            return null;
+        }
+    }
 }
+
+
