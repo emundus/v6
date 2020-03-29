@@ -1284,6 +1284,7 @@ $(document).ready(function() {
 
             $('.em-check:checked').prop('checked', false);
             $('#em-check-all:checked').prop('checked', false);
+            $('#em-check-all-all:checked').prop('checked', false);
             $('#'+fnum.fnum+'_check').prop('checked', true);
 
             $.ajax({
@@ -2564,7 +2565,9 @@ $(document).ready(function() {
                                 '<label for="em-ex-group">'+Joomla.JText._('COM_EMUNDUS_ASSOCIATED_GROUPS')+'</label> <br/>' +
                                 '<input class="em-ex-check" type="checkbox" value="user-assoc" name="em-ex-user" id="em-ex-user" style="max-height: 20px;"/>' +
                                 '<label for="em-ex-user">'+Joomla.JText._('COM_EMUNDUS_ASSOCIATED_USERS')+'</label> <br/>' +
-                                '</div></div></div>');
+                                '<input class="em-ex-check" type="checkbox" value="overall" name="em-ex-overall" id="em-ex-overall" style="max-height: 20px;"/>' +
+                                '<label for="em-ex-overall">'+Joomla.JText._('EVALUATION_OVERALL')+'</label> <br/>' +
+                                '</div></div></div>')
 
                             $('#data').append( '<div id="methode">'+
                                 '<div id="exp" class="panel panel-default">'+
@@ -4997,7 +5000,7 @@ $(document).ready(function() {
                         actions: actionsCheck,
                         groups: groupeEval,
                         evals: evaluators,
-                        notify: $('#evaluator-email').is(':checked')
+                        notify: document.querySelector('#evaluator-email').checked
                     }),
                     success: function(result) {
 

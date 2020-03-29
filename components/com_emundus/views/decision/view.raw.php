@@ -197,21 +197,22 @@ class EmundusViewDecision extends JViewLegacy
 							$usObj->class = null;
 						}
 
-						foreach ($user as  $key => $value) {
+						foreach ($user as $key => $value) {
 							$userObj = new stdClass();
 
 							if ($key == 'fnum') {
 								$userObj->val = $value;
 								$userObj->class = $class;
 								$userObj->type = 'fnum';
-								if ($displayPhoto)
+								if ($displayPhoto) {
 									$userObj->photo = EmundusHelperFiles::getPhotos($value);
+								}
 								$userObj->user = JFactory::getUser((int)substr($value, -7));
 								$userObj->user->name = $user['name'];
 								$line['fnum'] = $userObj;
 							}
 
-							elseif ($key == 'name' || $key == 'status_class' || $key == 'step') {
+							elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'overall') {
 								continue;
 							}
 
@@ -220,7 +221,8 @@ class EmundusViewDecision extends JViewLegacy
 									$userObj->val = !empty($value) ? '<a href="#" data-toggle="modal" data-target="#basicModal" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'">
 											<span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span>
 										</a>'.$value : '';
-								} else {
+								}
+								else {
 									$userObj->val = $value;
 								}
 
@@ -260,7 +262,7 @@ class EmundusViewDecision extends JViewLegacy
 					if (isset($colsSup['overall'])) {
 						require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 						$m_evaluation = new EmundusModelEvaluation();
-						$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
+						$colsSup['overall'] = @$m_evaluation->getEvaluationAverageByFnum($fnumArray);
 					}
 
 					if (isset($colsSup['id_tag'])) {
@@ -284,18 +286,16 @@ class EmundusViewDecision extends JViewLegacy
 				    $data = JText::_('NO_RESULT');
 			    }
 
-			/* Get the values from the state object that were inserted in the model's construct function */
-		    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
-			$lists['order']     = JFactory::getSession()->get( 'filter_order' );
-		    $this->assignRef('lists', $lists);
-		   /* $this->assignRef('actions', $actions);*/
-		    $pagination = $this->get('Pagination');
-		    $this->assignRef('pagination', $pagination);
-			$this->assignRef('accessObj', $objAccess);
-			$this->assignRef('colsSup', $colsSup);
-			$this->assignRef('users', $users);
-			$this->assignRef('datas', $data);
-
+				/* Get the values from the state object that were inserted in the model's construct function */
+			    $lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
+				$lists['order']     = JFactory::getSession()->get( 'filter_order' );
+			    $this->assignRef('lists', $lists);
+			    $pagination = $this->get('Pagination');
+			    $this->assignRef('pagination', $pagination);
+				$this->assignRef('accessObj', $objAccess);
+				$this->assignRef('colsSup', $colsSup);
+				$this->assignRef('users', $users);
+				$this->assignRef('datas', $data);
 			break;
 		}
 		parent::display($tpl);

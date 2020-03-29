@@ -346,9 +346,33 @@ class EmundusModelProfile extends JModelList
 
     function getProfileByCampaign($id) {
         $query = 'SELECT esp.*, esc.*
-					FROM  #__emundus_setup_profiles AS esp
-					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = esp.id
-					WHERE esc.id='.$id;
+                    FROM  #__emundus_setup_profiles AS esp
+                    LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = esp.id
+                    WHERE esc.id='.$id;
+
+        try
+        {
+            $this->_db->setQuery( $query );
+            $res = $this->_db->loadAssoc();
+            return $res;
+        }
+        catch(Exception $e)
+        {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
+    }
+
+    /**
+     * @description : Get profile by status
+     * @param   int $step application file status
+     * @return  array
+     **/
+    function getProfileByStatus($step) {
+        $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype 
+                    FROM  #__emundus_setup_profiles AS esp
+                    LEFT JOIN #__emundus_setup_status AS ess ON ess.profile = esp.id
+                    WHERE ess.step='.$step;
 
         try
         {
@@ -554,17 +578,17 @@ class EmundusModelProfile extends JModelList
         if (in_array($profile['profile'], $profile_array)) {
 
             // Get the current user profile
-
+/* 
             // If the profile number is 8 that means he has been admitted
             // This means that regardless of his other applications he must be considered admitted
             if ($profile['profile'] != 8) {
-
+*/
                 $campaign = $this->getCurrentCampaignInfoByApplicant($current_user->id);
 
                 if (!empty($campaign)) {
                     $profile = $this->getProfileByCampaign($campaign["id"]);
                 }
-
+/*
             } else {
 
                 $admissionInfo = $m_admission->getAdmissionInfo($current_user->id);
@@ -580,9 +604,8 @@ class EmundusModelProfile extends JModelList
                         $profile = $this->getProfileByCampaign($campaign["id"]);
                     }
                 }
-
             }
-
+*/
             // If the user is admitted then we fill the session with information about the admitted file
             // regardeless of the current campaign
             $emundusSession->fnum               	= $campaign["fnum"];
@@ -689,5 +712,25 @@ class EmundusModelProfile extends JModelList
             $emundus_user->applicant              = 0;
         }
         return $emundus_user;
+    }
+
+
+    public function getHikashopMenu($profile) {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select($db->quoteName('m.link'))
+            ->from($db->quoteName('#__menu', 'm'))
+            ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp').' ON '.$db->quoteName('m.menutype').' = '.$db->quoteName('esp.menutype').' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
+            ->where($db->quoteName('esp.id').' = ' . $profile . ' AND ' . $db->quoteName('m.link') . ' LIKE ' . $db->quote('%com_hikashop%') . ' AND ' . $db->quoteName('m.published') . ' = 1');
+        $db->setQuery($query);
+
+        try {
+            return $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
     }
 }

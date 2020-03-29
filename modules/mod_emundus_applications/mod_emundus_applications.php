@@ -41,7 +41,6 @@ $status_for_send 			= explode(',', $eMConfig->get('status_for_send', 0));
 $applicant_can_renew 		= $eMConfig->get('applicant_can_renew', '0');
 $display_poll 				= $eMConfig->get('display_poll', 0);
 $display_poll_id 			= $eMConfig->get('display_poll_id', null);
-$application_fee			= $eMConfig->get('application_fee', 0);
 $id_applicants 			 	= $eMConfig->get('id_applicants', '0');
 $applicants 			 	= explode(',',$id_applicants);
 
@@ -110,13 +109,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 	$forms = $m_application->getFormsProgress($user->profile, $fnums);
 	$confirm_form_url = $m_application->getConfirmUrl($fnums);
 	$first_page = $m_application->getFirstPage('index.php', $fnums);
-
-	// If the user can
-	$profile = $m_profile->getCurrentProfile($user->id);
-	if ($profile['profile'] == 8) {
-		$admissionInfo = @EmundusModelAdmission::getAdmissionInfo($user->id);
-		$admission_fnum = $admissionInfo->fnum;
-	}
+	$profile_first_page = $m_application->getFirstPage('index.php');
 
 	// Check to see if the applicant meets the criteria to renew a file.
 	switch ($applicant_can_renew) {

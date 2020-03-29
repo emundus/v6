@@ -23,6 +23,7 @@ include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campai
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'profile.php');
 
 jimport('joomla.log.log');
 JLog::addLogger(
@@ -52,9 +53,12 @@ $application = new EmundusModelApplication;
 $filesModel = new EmundusModelFiles;
 $campaigns = new EmundusModelCampaign;
 $emails = new EmundusModelEmails;
+$m_profile = new EmundusModelProfile;
+
+$application_fee  		= (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 
 // Application fees
-if ($application_fee == 1) {
+if ($application_fee) {
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
     $fnumInfos = $filesModel->getFnumInfos($student->fnum);

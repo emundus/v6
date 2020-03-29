@@ -35,8 +35,7 @@ class EmundusModelDecision extends JModelList
 	 *
 	 * @since 1.5
 	 */
-	public function __construct()
-	{
+	public function __construct() {
 
 		parent::__construct();
 
@@ -56,12 +55,12 @@ class EmundusModelDecision extends JModelList
         }
 
 		$menu_params = $menu->getParams($current_menu->id);
-		$em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
+		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 		$session = JFactory::getSession();
 
 		if (!$session->has('filter_order') || $session->get('filter_order') == 'c.id') {
 
-            if (in_array('overall', $em_blocks_names)) {
+            if (in_array('overall', $em_other_columns)) {
 
                 $session->set('filter_order', 'overall');
                 $session->set('filter_order_Dir', 'desc');
@@ -74,17 +73,14 @@ class EmundusModelDecision extends JModelList
 			}
         }
 
-		if(!$session->has('limit'))
-		{
+		if (!$session->has('limit')) {
 			$limit = $mainframe->getCfg('list_limit');
 			$limitstart = 0;
 			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
 			$session->set('limit', $limit);
 			$session->set('limitstart', $limitstart);
-		}
-		else
-		{
+		} else {
 			$limit = intval($session->get('limit'));
 			$limitstart = intval($session->get('limitstart'));
 			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
@@ -102,15 +98,13 @@ class EmundusModelDecision extends JModelList
 		$show_in_list_summary = 1;
         $hidden = 0;
 		$elements_eval = $this->getAllDecisionElements($show_in_list_summary, $hidden);
-		if (count($elements_eval)) {
+		if (is_array($elements_eval) && count($elements_eval)) {
 			$this->elements_id .= implode(',', $elements_eval);
 		}
 
-		if ($session->has('adv_cols'))
-		{
+		if ($session->has('adv_cols')) {
 			$adv = $session->get('adv_cols');
-			if (!empty($adv))
-			{
+			if (!empty($adv)) {
 				$this->elements_id .= ','.implode(',', $adv);
 			}
 
@@ -121,23 +115,21 @@ class EmundusModelDecision extends JModelList
 		$this->_elements = @EmundusHelperFiles::getElementsName($this->elements_id);
 
 
-		if (!empty($this->_elements))
-		{
-			foreach ($this->_elements as $def_elmt)
-			{
+		if (!empty($this->_elements)) {
+			foreach ($this->_elements as $def_elmt) {
 				$group_params = json_decode($def_elmt->group_attribs);
 
-				if($def_elmt->element_plugin == 'date') {
+				if ($def_elmt->element_plugin == 'date') {
 					if ($group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
 														SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
 														FROM '.$def_elmt->table_join.'
 														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
 													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
-					} else
-						$this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
-				}
-				elseif ($def_elmt->element_plugin == 'databasejoin') {
+					} else {
+						$this->_elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name.' AS `'.$def_elmt->tab_name.'___'.$def_elmt->element_name.'`';
+					}
+				} elseif ($def_elmt->element_plugin == 'databasejoin') {
 					$attribs = json_decode($def_elmt->element_attribs);
 					$join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat);
 					$join_val_column_concat = str_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $join_val_column_concat);
@@ -158,9 +150,8 @@ class EmundusModelDecision extends JModelList
 										)
                                     '.$publish_query.'
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
-					} 
-					else {
-                        if($attribs->database_join_display_type=="checkbox"){
+					} else {
+                        if ($attribs->database_join_display_type == "checkbox") {
                             
                             $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
                             $query = '(
@@ -180,36 +171,34 @@ class EmundusModelDecision extends JModelList
                     }
 
 					$this->_elements_default[] = $query;
-					//$this->_elements_default[] = ' (SELECT esc.label FROM jos_emundus_setup_campaigns AS esc WHERE esc.id = jos_emundus_campaign_candidature.campaign_id) as `jos_emundus_campaign_candidature.campaign_id` ';
-				}
-				elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
+				} elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
 					$element_attribs = json_decode($def_elmt->element_attribs);
 					$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 					foreach ($element_attribs->sub_options->sub_values as $key => $value) {
 						$select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
 					}
 					$this->_elements_default[] = $select.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
-				}
-				else {
+				} else {
 					if (@$group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
 														SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
 														FROM '.$def_elmt->table_join.'
 														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
 													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
-					} else
+					} else {
 						$this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
+					}
 				}
 			}
 		}
 
-		if (in_array('overall', $em_blocks_names)) {
+		if (in_array('overall', $em_other_columns)) {
 			$this->_elements_default[] = ' AVG(ee.overall) as overall ';
 		}
-		if (is_array($col_elt) && count($col_elt) == 0) {
+		if (empty($col_elt)) {
 			$col_elt = array();
 		}
-		if (is_array($col_other) && count($col_other) == 0) {
+		if (empty($col_other)) {
 			$col_other = array();
 		}
 		if (empty(@$this->_elements_default_name)) {
@@ -234,41 +223,41 @@ class EmundusModelDecision extends JModelList
 		}
 	}
 
-	public function getElementsVar()
-	{
+	public function getElementsVar() {
 		return $this->_elements;
 	}
 
 
-   /**
-     * Get list of decision elements
-     * @param 	  int show_in_list_summary get elements displayed in Fabrik List ; yes=1
-     * @param 	  int hidden get hidden elements ; yes=1
-     * @param 	  array code get elements from Decision form defined for programme list
-     * @return    string list of Fabrik element ID used in decision form
-     **/
-    public function getDecisionElementsName($show_in_list_summary=1, $hidden=0, $code = array(), $all = null)
-    {
+	/**
+	 * Get list of decision elements
+	 *
+	 * @param   int show_in_list_summary get elements displayed in Fabrik List ; yes=1
+	 * @param   int hidden get hidden elements ; yes=1
+	 * @param   array code get elements from Decision form defined for programme list
+	 *
+	 * @return  mixed list of Fabrik element ID used in decision form
+	 **@throws Exception
+	 */
+    public function getDecisionElementsName($show_in_list_summary=1, $hidden=0, $code = array(), $all = null) {
         $session = JFactory::getSession();
         $h_list = new EmundusHelperList;
 
         $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->getString('cfnums', null);
         $view = $jinput->getString('view', null);
 
         $elements = array();
 
-        if ($session->has('filt_params') || !empty($all))
-        {
+        if ($session->has('filt_params') || !empty($all)) {
 
             $filt_params = $session->get('filt_params');
             
-            if ( $view != 'export_select_columns' && is_array(@$filt_params['programme']) && count(@$filt_params['programme'])>0 ) 
-            	$programmes = $filt_params['programme'];
-            elseif(!empty($code))
-            	$programmes = $code;
-            else
-            	return array();
+            if ($view != 'export_select_columns' && is_array(@$filt_params['programme']) && count(@$filt_params['programme']) > 0) {
+	            $programmes = $filt_params['programme'];
+            } elseif (!empty($code)) {
+	            $programmes = $code;
+            } else {
+	            return array();
+            }
 
             foreach ($programmes as $value) { 
                 $groups = $this->getGroupsDecisionByProgramme($value);
@@ -292,12 +281,15 @@ class EmundusModelDecision extends JModelList
     }
 
 
-    /**
-     * Get list of ALL decision elements
-     * @param 	  int displayed in Fabrik List ; yes=1
-     * @param 	  string code of the programme
-     * @return    string list of Fabrik element ID used in evaluation form
-     **/
+	/**
+	 * Get list of ALL decision elements
+	 *
+	 * @param   int displayed in Fabrik List ; yes=1
+	 * @param   string code of the programme
+	 *
+	 * @return    array list of Fabrik element ID used in evaluation form
+	 * @throws Exception
+	 */
     public function getAllDecisionElements($show_in_list_summary=1, $programme_code) {
         $session = JFactory::getSession();
 
@@ -334,22 +326,34 @@ class EmundusModelDecision extends JModelList
         return @$elements_id;
     }
 
-	public function _buildContentOrderBy()
-    {
+	/**
+	 *
+	 * @return string
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function _buildContentOrderBy() {
 
 		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
 		$menu_params = $menu->getParams($current_menu->id);
-		$em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
+	    $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 
         $filter_order = JFactory::getSession()->get('filter_order');
         $filter_order_Dir = JFactory::getSession()->get('filter_order_Dir');
 
         $can_be_ordering = array();
-        if(count($this->_elements) > 0) {
+        if (count($this->_elements) > 0) {
             foreach ($this->_elements as $element) {
-                $can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
-                $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
+                if(!empty($element->table_join)) {
+	                $can_be_ordering[] = $element->table_join.'___'.$element->element_name;
+	                $can_be_ordering[] = $element->table_join.'.'.$element->element_name;
+                }
+                else {
+                	$can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
+	                $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
+                }
             }
         }
 
@@ -361,69 +365,81 @@ class EmundusModelDecision extends JModelList
         $can_be_ordering[] = 'c.status';
         $can_be_ordering[] = 'name';
 		$can_be_ordering[] = 'eta.id_tag';
-		if (in_array('overall', $em_blocks_names))
-        	$can_be_ordering[] = 'overall';
+		if (in_array('overall', $em_other_columns)) {
+			$can_be_ordering[] = 'overall';
+		}
 
-        if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering))
-        {
+        if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
             return ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
         }
 
         return '';
     }
 
-	public function multi_array_sort($multi_array = array(), $sort_key, $sort = SORT_ASC)
-	{
-		if (is_array($multi_array))
-		{
-			foreach ($multi_array as $key => $row_array)
-			{
-				if (is_array($row_array))
-				{
+	/**
+	 * @param   array  $multi_array
+	 * @param          $sort_key
+	 * @param   int    $sort
+	 *
+	 * @return array|int
+	 *
+	 * @since version
+	 */
+	public function multi_array_sort($multi_array = array(), $sort_key, $sort = SORT_ASC) {
+		if (is_array($multi_array)) {
+			foreach ($multi_array as $key => $row_array) {
+				if (is_array($row_array)) {
 					@$key_array[$key] = $row_array[$sort_key];
-				}
-				else
-				{
+				} else {
 					return -1;
 				}
 			}
 		} else {
 			return -1;
 		}
-		if (!empty($key_array))
+		if (!empty($key_array)) {
 			array_multisort($key_array, $sort, $multi_array);
+		}
 		return $multi_array;
 	}
 
-	public function getCampaign()
-	{
+	public function getCampaign() {
 		return @EmundusHelperFiles::getCampaign();
 	}
 
-	public function getCurrentCampaign()
-	{
+	public function getCurrentCampaign() {
 		return @EmundusHelperFiles::getCurrentCampaign();
 	}
 
-	public function getCurrentCampaignsID()
-	{
+	public function getCurrentCampaignsID() {
 		return @EmundusHelperFiles::getCurrentCampaignsID();
 	}
 
-	public function getProfileAcces($user)
-	{
+	/**
+	 * @param $user
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	public function getProfileAcces($user) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
 					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
 					WHERE esg.published=1 AND eg.user_id=' . $user;
 		$db->setQuery($query);
-		$profiles = $db->loadResultArray();
-
-		return $profiles;
+		return $db->loadResultArray();
 	}
 
-	public function setSubQuery($tab, $elem)
-	{
+	/**
+	 * @param $tab
+	 * @param $elem
+	 *
+	 * @return array
+	 *
+	 * @since version
+	 */
+	public function setSubQuery($tab, $elem) {
 		$search = JRequest::getVar('elements', NULL, 'POST', 'array', 0);
 		$search_values = JRequest::getVar('elements_values', NULL, 'POST', 'array', 0);
 		$search_other = JRequest::getVar('elements_other', NULL, 'POST', 'array', 0);
@@ -454,53 +470,78 @@ class EmundusModelDecision extends JModelList
 		$list = array();
 		$tmp = '';
 		foreach ($obj as $unit) {
-			if ($tmp != $unit->user_id)
-				$list[$unit->user_id] =
-					@EmundusHelperList::getBoxValue($this->details->{$tab . '__' . $elem}, $unit->{$tab . '__' . $elem},
-						$elem);
-			else
-				$list[$unit->user_id] .= ',' . @EmundusHelperList::getBoxValue($this->details->{$tab . '__' . $elem},
-						$unit->{$tab . '__' . $elem}, $elem);
+			if ($tmp != $unit->user_id) {
+				$list[$unit->user_id] = @EmundusHelperList::getBoxValue($this->details->{$tab.'__'.$elem}, $unit->{$tab.'__'.$elem}, $elem);
+			} else {
+				$list[$unit->user_id] .= ','.@EmundusHelperList::getBoxValue($this->details->{$tab.'__'.$elem}, $unit->{$tab.'__'.$elem}, $elem);
+			}
 			$tmp = $unit->user_id;
 		}
 		return $list;
 	}
 
-	public function setSelect($search)
-	{
+	/**
+	 * @param $search
+	 *
+	 * @return array|string
+	 *
+	 * @since version
+	 */
+	public function setSelect($search) {
 		$cols = array();
 		if (!empty($search)) {
 			asort($search);
 			$i = 0;
-			$old_table = '';
 			foreach ($search as $c) {
 				if (!empty($c)) {
 					$tab = explode('.', $c);
 					if ($tab[0] == 'jos_emundus_training') {
 						$cols[] = ' search_' . $tab[0] . '.label as ' . $tab[1] . ' ';
 					} else {
-						if ($this->details->{$tab[0] . '__' . $tab[1]}['group_by'])
-							$this->subquery[$tab[0] . '__' . $tab[1]] = $this->setSubQuery($tab[0], $tab[1]);
-						else $cols[] = $c . ' AS ' . $tab[0] . '__' . $tab[1];
+						if ($this->details->{$tab[0] . '__' . $tab[1]}['group_by']) {
+							$this->subquery[$tab[0].'__'.$tab[1]] = $this->setSubQuery($tab[0], $tab[1]);
+						} else {
+							$cols[] = $c . ' AS ' . $tab[0] . '__' . $tab[1];
+						}
 					}
 				}
 				$i++;
 			}
-			if (count($cols > 0) && !empty($cols))
+			if (count($cols > 0) && !empty($cols)) {
 				$cols = implode(', ', $cols);
+			}
 		}
 		return $cols;
 	}
 
-	public function isJoined($tab, $joined)
-	{
-		foreach ($joined as $j)
-			if ($tab == $j) return true;
+	/**
+	 * @param $tab
+	 * @param $joined
+	 *
+	 * @return bool
+	 *
+	 * @since version
+	 */
+	public function isJoined($tab, $joined) {
+		// This function is just like in_array() but less optimized..
+		foreach ($joined as $j) {
+			if ($tab == $j) {
+				return true;
+			}
+		}
 		return false;
 	}
 
-	public function setJoins($search, $query, $joined)
-	{
+	/**
+	 * @param $search
+	 * @param $query
+	 * @param $joined
+	 *
+	 * @return array
+	 *
+	 * @since version
+	 */
+	public function setJoins($search, $query, $joined) {
 		$tables_list = array();
 		if (!empty($search)) {
 			$old_table = '';
@@ -509,20 +550,15 @@ class EmundusModelDecision extends JModelList
 				$tab = explode('.', $s);
 				if (count($tab) > 1) {
 					if ($tab[0] != $old_table && !$this->isJoined($tab[0], $joined)) {
-						if ($tab[0] == 'jos_emundus_groups_eval' || $tab[0] == 'jos_emundus_comments')
-							$query .= ' LEFT JOIN ' . $tab[0] . ' ON ' . $tab[0] . '.applicant_id=#__users.id ';
-						elseif ($tab[0] == 'jos_emundus_evaluations' || $tab[0] == 'jos_emundus_final_grade' ||
-						        $tab[0] == 'jos_emundus_academic_transcript'
-						        || $tab[0] == 'jos_emundus_bank' || $tab[0] == 'jos_emundus_files_request' ||
-						        $tab[0] == 'jos_emundus_mobility'
-						)
-							$query .= ' LEFT JOIN ' . $tab[0] . ' ON ' . $tab[0] . '.student_id=#__users.id ';
-						elseif ($tab[0] == "jos_emundus_training")
-							$query .=
-								' LEFT JOIN #__emundus_setup_teaching_unity AS search_' . $tab[0] . ' ON search_' .
-								$tab[0] . '.code=#__emundus_setup_campaigns.training ';
-						else
-							$query .= ' LEFT JOIN ' . $tab[0] . ' ON ' . $tab[0] . '.user=#__users.id ';
+						if ($tab[0] == 'jos_emundus_groups_eval' || $tab[0] == 'jos_emundus_comments') {
+							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.applicant_id=#__users.id ';
+						} elseif ($tab[0] == 'jos_emundus_evaluations' || $tab[0] == 'jos_emundus_final_grade' || $tab[0] == 'jos_emundus_academic_transcript' || $tab[0] == 'jos_emundus_bank' || $tab[0] == 'jos_emundus_files_request' || $tab[0] == 'jos_emundus_mobility') {
+							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.student_id=#__users.id ';
+						} elseif ($tab[0] == "jos_emundus_training") {
+							$query .= ' LEFT JOIN #__emundus_setup_teaching_unity AS search_'.$tab[0].' ON search_'.$tab[0].'.code=#__emundus_setup_campaigns.training ';
+						} else {
+							$query .= ' LEFT JOIN '.$tab[0].' ON '.$tab[0].'.user=#__users.id ';
+						}
 						$joined[] = $tab[0];
 					}
 					$old_table = $tab[0];
@@ -533,8 +569,17 @@ class EmundusModelDecision extends JModelList
 		return $tables_list;
 	}
 
-	public function _buildSelect(&$tables_list, &$tables_list_other, &$tables_list_default)
-	{
+	/**
+	 * @param $tables_list
+	 * @param $tables_list_other
+	 * @param $tables_list_default
+	 *
+	 * @return string
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function _buildSelect(&$tables_list, &$tables_list_other, &$tables_list_default) {
 		$current_user = JFactory::getUser();
 		$search = $this->getState('elements');
 		$search_other = $this->getState('elements_other');
@@ -567,10 +612,18 @@ class EmundusModelDecision extends JModelList
 		$query = 'SELECT #__emundus_users.user_id, #__emundus_users.user_id as user, #__emundus_users.user_id as id, #__emundus_users.lastname, #__emundus_users.firstname,
 		#__users.name, #__users.registerDate, #__users.email, #__emundus_setup_profiles.id as profile, #__emundus_campaign_candidature.date_submitted,
 		#__emundus_setup_campaigns.year as schoolyear, #__emundus_setup_campaigns.label, #__emundus_campaign_candidature.date_submitted, #__emundus_campaign_candidature.campaign_id';
-		if (!empty($cols)) $query .= ', ' . $cols;
-		if (!empty($cols_other)) $query .= ', ' . $cols_other;
-		if (!empty($cols_default)) $query .= ', ' . $cols_default;
-		if (!empty($col_validate)) $query .= ', ' . $col_validate;
+		if (!empty($cols)) {
+			$query .= ', ' . $cols;
+		}
+		if (!empty($cols_other)) {
+			$query .= ', ' . $cols_other;
+		}
+		if (!empty($cols_default)) {
+			$query .= ', ' . $cols_default;
+		}
+		if (!empty($col_validate)) {
+			$query .= ', ' . $col_validate;
+		}
 		$query .= '	FROM #__emundus_campaign_candidature
 					LEFT JOIN #__emundus_users ON #__emundus_declaration.user=#__emundus_users.user_id
 					LEFT JOIN #__emundus_setup_campaigns ON #__emundus_setup_campaigns.id=#__emundus_campaign_candidature.campaign_id
@@ -582,27 +635,28 @@ class EmundusModelDecision extends JModelList
 		$this->setJoins($search_other, $query, $joined);
 		$this->setJoins($this->_elements_default, $query, $joined);
 
-		if (((isset($gid) && !empty($gid)) || (isset($uid) && !empty($uid))) &&
-		    !$this->isJoined('jos_emundus_groups_eval', $joined)
-		)
+		if (((isset($gid) && !empty($gid)) || (isset($uid) && !empty($uid))) && !$this->isJoined('jos_emundus_groups_eval', $joined)) {
 			$query .= ' LEFT JOIN #__emundus_groups_eval ON #__emundus_groups_eval.applicant_id=#__users.id ';
+		}
 
-		if (!empty($miss_doc) && !$this->isJoined('jos_emundus_uploads', $joined))
+		if (!empty($miss_doc) && !$this->isJoined('jos_emundus_uploads', $joined)) {
 			$query .= ' LEFT JOIN #__emundus_uploads ON #__emundus_uploads.user_id=#__users.id';
+		}
 
-		if (!empty($validate_application) && !$this->isJoined('jos_emundus_declaration', $joined))
+		if (!empty($validate_application) && !$this->isJoined('jos_emundus_declaration', $joined)) {
 			$query .= ' LEFT JOIN #__emundus_declaration ON #__emundus_declaration.user=#__users.id';
+		}
 
 		$query .= ' WHERE #__emundus_campaign_candidature.submitted = 1 AND #__users.block = 0 ';
-		if (empty($schoolyears))
-			$query .= ' AND #__emundus_campaign_candidature.year IN ("' . implode('","', $this->getCurrentCampaign()) . '")';
+		if (empty($schoolyears)) {
+			$query .= ' AND #__emundus_campaign_candidature.year IN ("'.implode('","', $this->getCurrentCampaign()).'")';
+		}
 
-		if (!empty($programmes) && isset($programmes) && $programmes[0] != "%")
-			$query .= ' AND #__emundus_setup_campaigns.training IN ("' . implode('","', $programmes) . '")';
+		if (!empty($programmes) && isset($programmes) && $programmes[0] != "%") {
+			$query .= ' AND #__emundus_setup_campaigns.training IN ("'.implode('","', $programmes).'")';
+		}
 
-		if (!EmundusHelperAccess::isAdministrator($current_user->id) &&
-		    !EmundusHelperAccess::isCoordinator($current_user->id)
-		) {
+		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) {
 			$pa = EmundusHelperAccess::getProfileAccess($current_user->id);
 			$query .= ' AND (#__emundus_users.user_id IN (
 								SELECT user_id
@@ -623,19 +677,14 @@ class EmundusModelDecision extends JModelList
 	 * @param    array $head_val header name
 	 * @param    object $applicant array of applicants indexed by database column
 	 **/
-	public function setEvalList($search, &$eval_list, $head_val, $applicant)
-	{
-		//print_r($applicant); die();
+	public function setEvalList($search, &$eval_list, $head_val, $applicant) {
 		if (!empty($search)) {
 			foreach ($search as $c) {
 				if (!empty($c)) {
 					$name = explode('.', $c);
 					if (!in_array($name[0] . '__' . $name[1], $head_val)) {
-						$print_val = '';
-						if ($this->details->{$name[0] . '__' . $name[1]}['group_by']
-						    && array_key_exists($name[0] . '__' . $name[1], $this->subquery)
-						    && array_key_exists($applicant->user_id, $this->subquery[$name[0] . '__' . $name[1]])
-						) {
+
+						if ($this->details->{$name[0] . '__' . $name[1]}['group_by'] && array_key_exists($name[0] . '__' . $name[1], $this->subquery) && array_key_exists($applicant->user_id, $this->subquery[$name[0] . '__' . $name[1]])) {
 							$eval_list[$name[0] . '__' . $name[1]] = @EmundusHelperList::createHtmlList(explode(",",
 								$this->subquery[$name[0] . '__' . $name[1]][$applicant->user_id]));
 						} elseif ($name[0] == 'jos_emundus_training') {
@@ -644,8 +693,10 @@ class EmundusModelDecision extends JModelList
 							$eval_list[$name[0] . '__' . $name[1]] =
 								@EmundusHelperList::getBoxValue($this->details->{$name[0] . '__' . $name[1]},
 									$applicant->{$name[0] . '__' . $name[1]}, $name[1]);
-						} else
-							$eval_list[$name[0] . '__' . $name[1]] = $applicant->{$name[0] . '__' . $name[1]};
+						} else {
+							$eval_list[$name[0].'__'.$name[1]] = $applicant->{$name[0].'__'.$name[1]};
+						}
+
 					}
 				}
 			}
@@ -653,7 +704,13 @@ class EmundusModelDecision extends JModelList
 	}
 
 
-
+	/**
+	 * @param   array  $tableAlias
+	 *
+	 * @return array
+	 *
+	 * @since version
+	 */
 	private function _buildWhere($tableAlias = array()) {
 		$session = JFactory::getSession();
         $params = $session->get('filt_params'); // came from search box
@@ -952,10 +1009,7 @@ class EmundusModelDecision extends JModelList
 			}
 		}
 		// force menu filter
-        if (count($filt_menu['status'])>0 &&
-            isset($filt_menu['status']) &&
-            !empty($filt_menu['status']) &&
-            $filt_menu['status'][0] != "%") {
+        if (!empty($filt_menu['status']) && $filt_menu['status'][0] != "%") {
             $query['q'] .= ' AND c.status IN ("' . implode('","', $filt_menu['status']) . '") ';
         }
 
@@ -987,6 +1041,14 @@ class EmundusModelDecision extends JModelList
         return $query;
 	}
 
+	/**
+	 * @param          $str_array
+	 * @param   array  $tableAlias
+	 *
+	 * @return array
+	 *
+	 * @since version
+	 */
 	private function _buildSearch($str_array, $tableAlias = array()) {
 		$q = array('q' => array(), 'join' => array());
 		$all = 0; $fnum = 0; $id = 0; $email = 0; $username = 0; $lastname = 0; $firstname = 0;
@@ -995,50 +1057,45 @@ class EmundusModelDecision extends JModelList
            
 			$val = explode(': ', $str);
 			
-			if($val[0] == "ALL"){
+			if ($val[0] == "ALL") {
            
-                if (is_numeric($val[1]))
-                {
+                if (is_numeric($val[1])) {
                     //possibly fnum ou uid
-                    if($all > 0){
-                        $q['q'][]= ' or (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
-                    }else{
-                        $q['q'][]= ' and (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
+                    if ($all > 0) {
+                        $q['q'][] = ' or (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
+                    } else {
+                        $q['q'][] = ' and (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
                     }
                    
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+                    if (!in_array('jos_users', $tableAlias)) {
+	                    $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+                    }
                     $q['users'] = true;
                     
-                }
-                else
-                {
-                    if(filter_var($val[1], FILTER_VALIDATE_EMAIL) !== false)
-                    {
+                } else {
+                    if (filter_var($val[1], FILTER_VALIDATE_EMAIL) !== false) {
                         //the request is an email
-                        if($all > 0){
-                            $q['q'][]= ' or (u.email = "'.$val[1].'") ';
-                        }else{
-                            $q['q'][]= ' and (u.email = "'.$val[1].'") ';
+                        if ($all > 0) {
+                            $q['q'][] = ' or (u.email = "'.$val[1].'") ';
+                        } else {
+                            $q['q'][] = ' and (u.email = "'.$val[1].'") ';
                         }
-                        //$q['q'][] .= ' (u.email = "'.$val[1].'") ';
-                        if (!in_array('jos_users', $tableAlias))
-                            $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+                        if (!in_array('jos_users', $tableAlias)) {
+	                        $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
+                        }
                         $q['users'] = true;
-                    }
-                    else
-                    {
-                        if($all > 0){
-                            $q['q'][]= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
-                        }else{
-                            $q['q'][]= ' and (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
+                    } else {
+                        if ($all > 0) {
+                            $q['q'][] = ' or (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
+                        } else {
+                            $q['q'][] = ' and (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
                         }
-                        if (!in_array('jos_users', $tableAlias)){
+                        if (!in_array('jos_users', $tableAlias)) {
                             $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id';
                             $q['users'] = true;
                         }
                             
-                        if (!in_array('jos_emundus_users', $tableAlias)){
+                        if (!in_array('jos_emundus_users', $tableAlias)) {
                             $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
                             $q['em_user'] = true;
                         }
@@ -1047,119 +1104,121 @@ class EmundusModelDecision extends JModelList
                 
                 $all = $all + 1;
             }
-            if($val[0] == "FNUM"){
-                
-                if (is_numeric($val[1]))
-                {
-                    //possibly fnum ou uid
-                    if($fnum > 0){
-                        $q['q'][]= ' or (c.fnum like "'.$val[1].'%") ';
-                    }else{
-                        $q['q'][]= ' and (c.fnum like "'.$val[1].'%") ';
-                    }
 
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
-                    $q['users'] = true;
-                    
-                    $fnum = $fnum + 1;
-                }
-            }
-            if($val[0] == "ID"){
+            if ($val[0] == "FNUM" && is_numeric($val[1])) {
                 
-                if (is_numeric($val[1]))
-                {
-                    //possibly fnum ou uid
-                    if($id > 0){
-                        $q['q'][]= ' or (u.id = ' . $val[1] . ') ';
-                    }else{
-                        $q['q'][]= ' and (u.id = ' . $val[1] . ') ';
-                    }
-                   
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
-                    $q['users'] = true;
-                   
-                    $id = $id + 1;
+                //possibly fnum ou uid
+                if ($fnum > 0) {
+                    $q['q'][]= ' or (c.fnum like "'.$val[1].'%") ';
+                } else {
+                    $q['q'][]= ' and (c.fnum like "'.$val[1].'%") ';
                 }
+
+                if (!in_array('jos_users', $tableAlias)) {
+                    $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+                }
+                $q['users'] = true;
+
+                $fnum = $fnum + 1;
+
             }
-            if($val[0] == "EMAIL"){
+
+            if ($val[0] == "ID" && is_numeric($val[1])){
+                //possibly fnum ou uid
+                if ($id > 0) {
+                    $q['q'][]= ' or (u.id = ' . $val[1] . ') ';
+                } else {
+                    $q['q'][]= ' and (u.id = ' . $val[1] . ') ';
+                }
+
+                if (!in_array('jos_users', $tableAlias)) {
+                    $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+                }
+                $q['users'] = true;
+
+                $id = $id + 1;
+            }
+
+            if ($val[0] == "EMAIL") {
                
-                    //the request is an email
-                    if($email > 0){
-                        $q['q'][]= ' or ( u.email like "%'.$val[1].'%") ';
-                    }else{
-                        $q['q'][]= ' and ( u.email like "%'.$val[1].'%") ';
-                    }
-                    //$q['q'][] = ' ( u.email like "%'.$val[1].'%") ';
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
-                    $q['users'] = true;
-                    
-                    $email = $email + 1;
-            }
-            if($val[0] == "USERNAME"){
-                 //the request is an username
-                if($username > 0){
-                    $q['q'][]= ' or ( u.username LIKE "%' . ($val[1]) . '%" ) ';
-                }else{
-                    $q['q'][]= ' and ( u.username LIKE "%' . ($val[1]) . '%" ) ';
+                //the request is an email
+                if ($email > 0) {
+                    $q['q'][] = ' or ( u.email like "%'.$val[1].'%") ';
+                } else {
+                    $q['q'][] = ' and ( u.email like "%'.$val[1].'%") ';
                 }
-				//$q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
-				if (!in_array('jos_users', $tableAlias))
+                if (!in_array('jos_users', $tableAlias)) {
+                    $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+                }
+                $q['users'] = true;
+
+                $email = $email + 1;
+            }
+            if ($val[0] == "USERNAME") {
+                 //the request is an username
+                if ($username > 0) {
+                    $q['q'][] = ' or ( u.username LIKE "%' . ($val[1]) . '%" ) ';
+                } else {
+                    $q['q'][] = ' and ( u.username LIKE "%' . ($val[1]) . '%" ) ';
+                }
+				if (!in_array('jos_users', $tableAlias)) {
 					$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
+				}
 				$q['users'] = true;
                
                 $username = $username + 1;
             }
-            if($val[0] == "LAST_NAME"){
+            if ($val[0] == "LAST_NAME") {
                 //the request is a lastname
-                if($lastname > 0){
-                    $q['q'][]= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
-                }else{
-                    $q['q'][]= ' and (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
+                if ($lastname > 0) {
+                    $q['q'][] = ' or (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
+                } else {
+                    $q['q'][] = ' and (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
                 }
-                
-                if (!in_array('jos_emundus_users', $tableAlias)){
+
+                if (!in_array('jos_emundus_users', $tableAlias)) {
                     $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
                     $q['em_user'] = true;
                 }
                 
                 $lastname = $lastname + 1;
             }
-            if($val[0] == "FIRST_NAME"){
+            if ($val[0] == "FIRST_NAME") {
                 //the request is a firstname
-                    if($firstname > 0){
-                        $q['q'][]= ' or (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    }else{
-                        $q['q'][]= ' and (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    }
-                    //$q['q'][] = ' and (ue.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    if (!in_array('jos_emundus_users', $tableAlias)){
-                        $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
-                        $q['em_user'] = true;
-                    }
-                    
-                    $firstname = $firstname + 1;
+                if ($firstname > 0) {
+                    $q['q'][] = ' or (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
+                } else {
+                    $q['q'][] = ' and (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
+                }
+                if (!in_array('jos_emundus_users', $tableAlias)) {
+                    $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
+                    $q['em_user'] = true;
+                }
+
+                $firstname = $firstname + 1;
             }
 
 		}
 		return $q;
 	}
 
-	public function getUsers($current_fnum = null)
-	{
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+	/**
+	 * @param null  $current_fnum
+	 *
+	 * @return mixed
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function getUsers($current_fnum = null) {
 
-		//$userModel = new EmundusModelUsers();
-		$session 	= JFactory::getSession();
-		$app 		= JFactory::getApplication();
-		$dbo 		= $this->getDbo();
-		$eMConfig 	= JComponentHelper::getParams('com_emundus');
+		$session = JFactory::getSession();
+		$app = JFactory::getApplication();
+		$dbo = $this->getDbo();
 
 		$current_menu = $app->getMenu()->getActive();
 		$menu_params = $current_menu->params;
-        $em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
+		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 
 		$query = 'select c.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name ';
 		// prevent double left join on query
@@ -1172,26 +1231,30 @@ class EmundusModelDecision extends JModelList
 			'#__users', 'jos_users',
 			'#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
 		];
-		if (in_array('overall', $em_blocks_names))
+		if (in_array('overall', $em_other_columns)) {
 			$lastTab[] = ['#__emundus_evaluations', 'jos_emundus_evaluations'];
+		}
 
 		$leftJoin = '';
 
 		if (count($this->_elements)>0) {
-			foreach ($this->_elements as $elt)
-			{
-				if(!isset($lastTab))
-				{
+			foreach ($this->_elements as $elt) {
+				if (!isset($lastTab)) {
 					$lastTab = array();
 				}
-				if(!in_array($elt->tab_name, $lastTab))
-				{
+				if (!in_array($elt->tab_name, $lastTab)) {
 					$leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = c.fnum ';
 				}
-				$lastTab[] = $elt->tab_name;
+				if(!empty($elt->table_join)) {
+			        $lastTab[] = $elt->table_join;
+					$group_by .= ', '.$elt->table_join.'___'.$elt->element_name;
+                } else {
+					$lastTab[] = $elt->tab_name;
+					$group_by .= ', '.$elt->tab_name.'___'.$elt->element_name;
+				}
 			}
 		}
-		if (count($this->_elements_default)>0) {
+		if (count($this->_elements_default) > 0) {
 			$query .= ', '.implode(',', $this->_elements_default);
 		}
 		$query .= ', jos_emundus_final_grade.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
@@ -1205,14 +1268,14 @@ class EmundusModelDecision extends JModelList
 					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum = c.fnum
 					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=c.fnum  ';
 
-		if (in_array('overall', $em_blocks_names))
+		if (in_array('overall', $em_other_columns)) {
 			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = c.fnum ';
+		}
 
 
 		$q = $this->_buildWhere($lastTab);
 
-		if (!empty($leftJoin))
-		{
+		if (!empty($leftJoin)) {
 			$query .= $leftJoin;
 		}
 		$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = jos_emundus_final_grade.user ';
@@ -1224,8 +1287,7 @@ class EmundusModelDecision extends JModelList
 		}
 
 		$query .= ' GROUP BY c.fnum';
-		$query .=  $this->_buildContentOrderBy();
-
+		$query .= $this->_buildContentOrderBy();
 		$dbo->setQuery($query);
 
 		try {

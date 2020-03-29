@@ -41,13 +41,11 @@ JLog::addLogger(
 // Get params set in eMundus component configuration
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $can_edit_until_deadline    = $eMConfig->get('can_edit_until_deadline', 0);
-$application_fee            = $eMConfig->get('application_fee', 0);
 $application_form_order     = $eMConfig->get('application_form_order', null);
 $attachment_order           = $eMConfig->get('attachment_order', null);
 $application_form_name      = $eMConfig->get('application_form_name', "application_form_pdf");
 $export_pdf                 = $eMConfig->get('export_application_pdf', 0);
 $export_path                = $eMConfig->get('export_path', null);
-$scholarship_document       = $eMConfig->get('scholarship_document_id', NULL);
 $id_applicants              = explode(',',$eMConfig->get('id_applicants', '0'));
 
 $m_application  = new EmundusModelApplication;
@@ -128,8 +126,9 @@ if ($export_pdf == 1) {
         if (!empty($application_form_order)) {
             $application_form_order = explode(',',$application_form_order);
             $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1, null, null, $application_form_order);
-        } else
+        } else {
             $files_list[] = EmundusHelperExport::buildFormPDF($fnumInfo, $fnumInfo['applicant_id'], $fnum, 1);
+        }
 
         // Check if pdf attachements are in custom order
         if (!empty($attachment_order)) {
@@ -175,8 +174,9 @@ if ($export_pdf == 1) {
         $application_form_name = strtolower($application_form_name);
 
         // If a file exists with that name, delete it
-        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $application_form_name))
+        if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $application_form_name)){
             unlink(JPATH_BASE . DS . 'tmp' . DS . $application_form_name);
+        }
 
         // Ouput pdf with desired file name
         $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $application_form_name.".pdf", 'F');
@@ -206,11 +206,10 @@ if ($export_pdf == 1) {
             }
             copy(JPATH_BASE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_BASE.DS.$export_path.$application_form_name.".pdf");
         }
-        if (file_exists(JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf"))
+        if (file_exists(JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf")){
             unlink(JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
+        }
         copy(JPATH_BASE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
     }
 }
-
-
 ?>
