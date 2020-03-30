@@ -67,6 +67,8 @@
           :funnelCategorie="funnelCategories[langue][menuHighlight]"
           :profileId="profileId"
           :langue="langue"
+          :formulaireEmundus="formulaireEmundus"
+          :menuHighlight="menuHighlight"
         ></addDocuments>
 
         <addGestionnaires
@@ -191,7 +193,7 @@ export default {
         "Attribution",
         "Settings",
         "Invitation",
-        "Camapign settings"
+        "Campaign settings"
       ]
     ],
 
@@ -320,7 +322,8 @@ export default {
 </script>
 
 <style>
-.span12 {
-  width: 900px;
+.w-col-9{
+  width:75% !important;
+  padding-top:0 !important;
 }
 </style>
