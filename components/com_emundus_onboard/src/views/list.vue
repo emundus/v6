@@ -11,6 +11,7 @@
       :chercheGo="chercheGo"
       :validateFilters="validateFilters"
       :nbresults="nbresults"
+      :isEmpty="isEmpty"
     ></actions>
     <h2 v-show="total > 0">{{ Total }} : {{ total }}</h2>
 
