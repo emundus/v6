@@ -215,7 +215,6 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         $data = $jinput->getRaw('body');
         $m_camp = $this->model;
 
-
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));

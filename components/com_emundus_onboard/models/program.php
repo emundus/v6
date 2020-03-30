@@ -69,8 +69,22 @@ class EmundusonboardModelprogram extends JModelList {
             $fullRecherche = $rechercheLbl.' OR '.$rechercheNotes.' OR '.$rechercheCategory;
         }
 
-        $query->select('*')
+        $query->select(['p.*', 'COUNT(cc.id) AS nb_files'])
             ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
+            ->leftJoin(
+                $db->quoteName('#__emundus_setup_campaigns', 'sc') .
+                ' ON ' .
+                $db->quoteName('sc.training') .
+                ' LIKE ' .
+                $db->quoteName('p.code')
+            )
+            ->leftJoin(
+                $db->quoteName('#__emundus_campaign_candidature', 'cc') .
+                ' ON ' .
+                $db->quoteName('cc.campaign_id') .
+                ' = ' .
+                $db->quoteName('sc.id')
+            )
             ->where($filterDate)
             ->where($fullRecherche)
             ->group($sortDb)
@@ -179,6 +193,9 @@ class EmundusonboardModelprogram extends JModelList {
         }
 
         if (count($data) > 0) {
+            foreach ($data as $key => $val) {
+                $data[$key] = htmlentities($data[$key]);
+              }
 
         	$query
                 ->insert($db->quoteName('#__emundus_setup_programmes'))
@@ -189,7 +206,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
 
@@ -214,7 +231,7 @@ class EmundusonboardModelprogram extends JModelList {
             $fields = [];
 
             foreach ($data as $key => $val) {
-                $insert = $db->quoteName($key) . ' = ' . $db->quote($val);
+                $insert = $db->quoteName(htmlentities($key)) . ' = ' . $db->quote(htmlentities($val));
                 $fields[] = $insert;
             }
 
@@ -227,7 +244,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
 
@@ -275,7 +292,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
 
@@ -296,6 +313,10 @@ class EmundusonboardModelprogram extends JModelList {
         $query = $db->getQuery(true);
 
         if (count($data) > 0) {
+            foreach ($data as $key => $val) {
+                $data[$key] = htmlentities($data[$key]);
+              }
+
             try {
                 $fields = array(
                     $db->quoteName('published') . ' = 0'
@@ -312,7 +333,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
 
@@ -333,6 +354,10 @@ class EmundusonboardModelprogram extends JModelList {
         $query = $db->getQuery(true);
 
         if (count($data) > 0) {
+            foreach ($data as $key => $val) {
+                $data[$key] = htmlentities($data[$key]);
+              }
+
             try {
                 $fields = array(
                     $db->quoteName('published') . ' = 1'
@@ -349,7 +374,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
 

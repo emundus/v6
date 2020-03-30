@@ -166,7 +166,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
 
@@ -187,6 +187,10 @@ class EmundusonboardModelemail extends JModelList {
         $query = $db->getQuery(true);
 
         if (count($data) > 0) {
+            foreach ($data as $key => $val) {
+                $data[$key] = htmlentities($data[$key]);
+              }
+
             try {
                 $fields = array(
                     $db->quoteName('published') . ' = 0'
@@ -203,7 +207,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
 
@@ -224,6 +228,10 @@ class EmundusonboardModelemail extends JModelList {
         $query = $db->getQuery(true);
 
         if (count($data) > 0) {
+            foreach ($data as $key => $val) {
+                $data[$key] = htmlentities($data[$key]);
+              }
+
             try {
                 $fields = array(
                     $db->quoteName('published') . ' = 1'
@@ -240,7 +248,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
 
@@ -262,6 +270,10 @@ class EmundusonboardModelemail extends JModelList {
         $query = $db->getQuery(true);
 
         if (count($data) > 0) {
+            foreach ($data as $key => $val) {
+                $data[$key] = htmlentities($data[$key]);
+              }
+
             try {
                 $columns = array_keys($db->getTableColumns('#__emundus_setup_emails'));
 
@@ -293,7 +305,7 @@ class EmundusonboardModelemail extends JModelList {
                 return $db->execute();
 
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
 
@@ -346,6 +358,10 @@ class EmundusonboardModelemail extends JModelList {
 
         if (count($data) > 0) {
 
+            foreach ($data as $key => $val) {
+                $data[$key] = htmlentities($data[$key]);
+              }
+
         	$query
                 ->insert($db->quoteName('#__emundus_setup_emails'))
                 ->columns($db->quoteName(array_keys($data)))
@@ -355,7 +371,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
 
@@ -381,7 +397,7 @@ class EmundusonboardModelemail extends JModelList {
             $fields = [];
 
             foreach ($data as $key => $val) {
-                $insert = $db->quoteName($key) . ' = ' . $db->quote($val);
+                $insert = $db->quoteName(htmlentities($key)) . ' = ' . $db->quote(htmlentities($val));
                 $fields[] = $insert;
             }
 
@@ -394,7 +410,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
 

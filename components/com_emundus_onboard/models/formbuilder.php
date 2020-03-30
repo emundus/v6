@@ -22,7 +22,6 @@ class EmundusonboardModelformbuilder extends JModelList {
             $user = JFactory::getUser()->id;
         }
 
-
         $date = new Date();
         
             for($i = 0; $i < count($elements); $i++){
@@ -30,15 +29,15 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $db = $this->getDbo();
                 $query = $db->getQuery(true);
                 $fields = array(
-                    $db->quoteName('ordering'). ' = '.  $db->quote($elements[$i]['order']),
+                    $db->quoteName('ordering'). ' = '.  $db->quote(htmlentities($elements[$i]['order'])),
                     $db->quoteName('modified_by'). ' = '. $db->quote($user),
                    $db->quoteName('modified'). ' = '. $db->quote($date),
                 );
 
                 $query->update($db->quoteName('#__fabrik_elements'))
                     ->set($fields)
-                    ->where($db->quoteName('id'). '  ='. $db->quote($elements[$i]['id']))
-                    ->where($db->quoteName('group_id'). '  = ' . $db->quote($group_id));
+                    ->where($db->quoteName('id'). '  ='. $db->quote(htmlentities($elements[$i]['id'])))
+                    ->where($db->quoteName('group_id'). '  = ' . $db->quote(htmlentities($group_id)));
                 try {
                     $db->setQuery($query);
                     $db->execute();
@@ -71,6 +70,11 @@ class EmundusonboardModelformbuilder extends JModelList {
         
        $db = $this->getDbo();
         $query = $db->getQuery(true);
+
+        foreach ($element['params'] as $key => $value) {
+            $element['params'][$key] = htmlentities($element['params'][$key]);
+        }
+
         $fields = array(
             $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
             $db->quoteName('modified_by'). ' = '. $db->quote($user),
@@ -124,7 +128,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $db = $this->getDbo();
                 $query = $db->getQuery(true);
                 $fields = array(
-                    $db->quoteName('label'). ' = '.  $db->quote($labelToAdd),
+                    $db->quoteName('label'). ' = '.  $db->quote(htmlentities($labelToAdd)),
                     $db->quoteName('modified_by'). ' = '. $db->quote($user),
                     $db->quoteName('modified'). ' = '. $db->quote($date),
                 );
@@ -168,6 +172,11 @@ class EmundusonboardModelformbuilder extends JModelList {
         $element['params']['filter_class'] = $element['params']['bootstrap_class'];        
        $db = $this->getDbo();
         $query = $db->getQuery(true);
+
+        foreach ($element['params'] as $key => $value) {
+            $element['params'][$key] = htmlentities($element['params'][$key]);
+        }
+
         $fields = array(
             $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
             $db->quoteName('modified_by'). ' = '. $db->quote($user),
@@ -203,6 +212,11 @@ class EmundusonboardModelformbuilder extends JModelList {
             }
             $db = $this->getDbo();
             $query = $db->getQuery(true);
+
+            foreach ($element['params'] as $key => $value) {
+                $element['params'][$key] = htmlentities($element['params'][$key]);
+            }
+
             $fields = array(
                 $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
             );
@@ -249,6 +263,11 @@ class EmundusonboardModelformbuilder extends JModelList {
 
                     $db = $this->getDbo();
                     $query = $db->getQuery(true);
+
+                    foreach ($element['params'] as $key => $value) {
+                        $element['params'][$key] = htmlentities($element['params'][$key]);
+                    }
+                    
                     $fields = array(
                         $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
                     );
