@@ -11,6 +11,7 @@
             @mouseleave="actionHover = false"
           >
             <div
+              v-show="isEmpty"
               class="dropdown-toggle-2 w-dropdown-toggle"
               style="margin-left: 1%; margin-right: -0.5;"
             >
@@ -257,7 +258,8 @@ export default {
     cherche: Function,
     chercheGo: Function,
     validateFilters: Function,
-    nbresults: Function
+    nbresults: Function,
+    isEmpty: Boolean
   },
 
   computed: {
