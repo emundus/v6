@@ -232,6 +232,8 @@ button#back:hover, button#back:active, button#back:focus,
 
 #g-sidebar ul {
     margin: 0 !important;
+    list-style: none;
+    padding-left: 0;
 }
 
 #g-sidebar .moduletable li:last-of-type .em_form {
