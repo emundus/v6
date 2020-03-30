@@ -445,7 +445,7 @@ function processSelectedFiles(fileInput) {
     }
 }
 
-<?php if ($this->notify_complete_file == 1 && !$block_upload && $this->attachments >= 100 && $this->forms >= 100) :?>
+<?php if ($this->notify_complete_file == 1 && !$block_upload && $this->attachments_prog >= 100 && $this->forms_prog >= 100) :?>
     $(document).ready(() => {
         Swal.fire({
             position: 'top',
