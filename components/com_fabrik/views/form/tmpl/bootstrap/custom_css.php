@@ -474,10 +474,7 @@ form#member-profile .form-horizontal .control-label {
     width: 210px;
 }
 
-/* ---- ALLOW * TO BE AT THE END OF TEXT ----- */
-.applicant-form form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
-    display: inline;
-}
+
 /* Inscription */
 .view-registration table, .view-registration td {
     border: none;
