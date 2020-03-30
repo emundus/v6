@@ -291,7 +291,7 @@ class EmundusModelFiles extends JModelLegacy
     public function _buildContentOrderBy() {
         $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
-        $menu_params = $menu->getParams($current_menu->id);
+        $menu_params = $menu->getParams(@$current_menu->id);
         $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 
         $session = JFactory::getSession();
@@ -299,10 +299,16 @@ class EmundusModelFiles extends JModelLegacy
         $filter_order_Dir = $session->get('filter_order_Dir');
 
         $can_be_ordering = array();
-        if (count($this->_elements) > 0) {
+        if (!empty($this->_elements)) {
             foreach ($this->_elements as $element) {
-                $can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
-                $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
+                if(!empty($element->table_join)) {
+                    $can_be_ordering[] = $element->table_join.'___'.$element->element_name;
+                    $can_be_ordering[] = $element->table_join.'.'.$element->element_name;
+                }
+                else {
+                    $can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
+                    $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
+                }
             }
         }
 
@@ -1131,7 +1137,7 @@ class EmundusModelFiles extends JModelLegacy
         	$lastTab[] = ['#__emundus_evaluations', 'jos_emundus_evaluations'];
         }
 
-        if (count($this->_elements) > 0) {
+        if (!empty($this->_elements)) {
             $leftJoin = '';
             
             foreach ($this->_elements as $elt) {
@@ -1145,10 +1151,9 @@ class EmundusModelFiles extends JModelLegacy
             }
             
         }
-        if (count($this->_elements_default) > 0) {
+        if (!empty($this->_elements_default)) {
             $query .= ', '.implode(',', $this->_elements_default);
         }
-
 
         $query .= ' FROM #__emundus_campaign_candidature
                     LEFT JOIN #__emundus_setup_status as ss on ss.step = jos_emundus_campaign_candidature.status

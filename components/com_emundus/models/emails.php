@@ -119,7 +119,7 @@ class EmundusModelEmails extends JModelList {
             foreach ($emails_tmpl as $key => $codes) {
                 $trigger_id = $key;
 
-                foreach ($codes as $tmpl) {
+                foreach ($codes as $key => $tmpl) {
                     $code = $key;
                     $recipients = array();
                     $as_where = false;
@@ -918,7 +918,7 @@ class EmundusModelEmails extends JModelList {
 		$jinput = $app->input;
 		$mail_subject = $jinput->post->getString('mail_subject');
 		$mail_from_name = $jinput->post->getString('mail_from_name');
-		$mail_from = $jinput->post->getString('mail_from');
+		$mail_from = $jinput->post->getRaw('mail_from');
 
 		// We are using the first fnum for things like setting tags and getting campaign info.
 		// This means that we should NOT PUT TAGS RELATING TO PERSONAL INFO IN THE EMAIL.
@@ -933,7 +933,7 @@ class EmundusModelEmails extends JModelList {
 		$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 		$mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 
-		$mail_to = explode(',', $jinput->post->getString('mail_to'));
+		$mail_to = explode(',', $jinput->post->getRaw('mail_to'));
 
 		$mail_body = $this->setBody($example_user, $jinput->post->getRaw('mail_body'));
 
@@ -1003,8 +1003,8 @@ class EmundusModelEmails extends JModelList {
 			}
 
 			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-			$link_accept = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->accepted.'&keyid='.$key1.'&email='.$m_to.'&cid='.$campaign_id;
-			$link_refuse = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->refused.'&keyid='.$key1.'&email='.$m_to.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
+			$link_accept = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->accepted.'&keyid='.$key1.'&cid='.$campaign_id;
+			$link_refuse = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->refused.'&keyid='.$key1.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
 
 			$post = [
 				'EXPERT_ACCEPT_LINK' => JURI::base().$link_accept,

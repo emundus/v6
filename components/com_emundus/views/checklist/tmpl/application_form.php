@@ -16,7 +16,7 @@ $itemid = JRequest::getVar('Itemid', null, 'GET', 'none', 0);
 $h_menu = new EmundusHelperMenu();
 $forms = $h_menu->getUserApplicationMenu($user->profile);
 ?>
-</ul>
+<ul>
 <?php 
 foreach ($forms as $form) {
 	$query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$user->id. ' AND fnum like '.$_db->Quote($user->fnum);

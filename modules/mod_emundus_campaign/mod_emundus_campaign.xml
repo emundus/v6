@@ -58,6 +58,7 @@
 						<option value="default">LIST_DEFAULT</option>
 						<option value="default_g5">LIST_DEFAULT_G5</option>
 						<option value="institut_fr">Institut Français</option>
+						<option value="nantes">Nantes</option>
 						<option value="old">LIST_OLD</option>
 					</field>
 					<field type="list" name="mod_em_campaign_class" label="MOD_EM_CAMPAIGN_CLASS" description="MOD_EM_CAMPAIGN_CLASS_DESC">

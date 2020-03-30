@@ -21,12 +21,16 @@ if ($jinput->get('view') == 'form') {
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
 	$user = JFactory::getSession()->get('emundusUser');
 
 	$params 					= JComponentHelper::getParams('com_emundus');
+    $scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
 	$application_fee 			= $params->get('application_fee', 0);
-	$scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
+
+    $m_profile = new EmundusModelProfile;
+    $application_fee  		= (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 
 	$m_application 	= new EmundusModelApplication;
 	$attachments 	= $m_application->getAttachmentsProgress($user->profile, $user->fnum);
@@ -65,7 +69,7 @@ if ($jinput->get('view') == 'form') {
 
 	}
 
-	if ($application_fee == 1) {
+	if ($application_fee) {
 
 		$m_files = new EmundusModelFiles;
 		$fnumInfos = $m_files->getFnumInfos($user->fnum);

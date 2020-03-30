@@ -32,8 +32,7 @@ try {
 }
 
 $is_dead_line_passed = !empty($this->is_admission) ? strtotime(date($now)) > strtotime(@$user->fnums[$user->fnum]->admission_end_date) : strtotime(date($now)) > strtotime(@$user->end_date);
-
-$is_app_sent         = !in_array($user->status, $status_for_send);
+$is_app_sent = !in_array($user->status, $status_for_send);
 
 $block_upload = true;
 if ($can_edit_after_deadline || (!$is_app_sent && !$is_dead_line_passed) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)) {
@@ -59,13 +58,13 @@ function return_bytes($val) {
 
 
 if (!empty($this->custom_title)) :?>
-    <h1 class="em-checklist-title"><?php echo $this->custom_title; ?></h1>
+    <h1 class="em-checklist-title"><?= $this->custom_title; ?></h1>
 <?php endif; ?>
 <?php if ($this->show_info_panel) :?>
     <fieldset>
-        <legend><?php echo $this->need<2?JText::_('CHECKLIST'):JText::_('RESULTS'); ?></legend>
-        <div class = "<?php echo $this->need?'checklist'.$this->need:'checklist'.'0'; ?>" id="info_checklist">
-            <h3><?php echo $this->title; ?></h3>
+        <legend><?= $this->need<2?JText::_('CHECKLIST'):JText::_('RESULTS'); ?></legend>
+        <div class = "<?= $this->need?'checklist'.$this->need:'checklist'.'0'; ?>" id="info_checklist">
+            <h3><?= $this->title; ?></h3>
             <?php
                 if ($this->sent && count($this->result) == 0) {
 	                echo '<h3>' . JText::_('APPLICATION_SENT') . '</h3>';
@@ -74,7 +73,7 @@ if (!empty($this->custom_title)) :?>
                 }
 
             if (!$this->need) { ?>
-                    <h3><a href="<?php echo $this->sent?'index.php?option=com_emundus&task=pdf':$this->confirm_form_url; ?>" class="<?php echo $this->sent?'appsent':'sent'; ?>" target="<?php echo $this->sent?'_blank':''; ?>"><?php echo $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a></h3>
+                    <h3><a href="<?= $this->sent?'index.php?option=com_emundus&task=pdf':$this->confirm_form_url; ?>" class="<?= $this->sent?'appsent':'sent'; ?>" target="<?= $this->sent?'_blank':''; ?>"><?= $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a></h3>
             <?php } ?>
         </div>
     </fieldset>
@@ -83,8 +82,8 @@ if (!empty($this->custom_title)) :?>
     if (!$this->sent) :?>
     <p class="em-instructions">
         <div id="instructions">
-            <h3><?php echo $this->instructions->title; ?></h3>
-            <?php echo $this->instructions->text; ?>
+            <h3><?= $this->instructions->title; ?></h3>
+            <?= $this->instructions->text; ?>
         </div>
     </p>
     <?php endif; ?>
@@ -93,12 +92,12 @@ if (!empty($this->custom_title)) :?>
 <?php if (count($this->attachments) > 0) :?>
 
     <div id="attachment_list" class="em-attachmentList">
-        <p><?php echo JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('BYTES'); ?> </p>
+        <p><?= JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('BYTES'); ?> </p>
     <?php if ($this->show_info_legend) :?>
         <div id="legend" class="em-attachmentList-legend">
-            <div class="need_missing"><?php echo JText::_('MISSING_DOC'); ?></div>,
-            <div class="need_ok"><?php echo JText::_('SENT_DOC'); ?></div>,
-            <div class="need_missing_fac"><?php echo JText::_('MISSING_DOC_FAC'); ?></div>
+            <div class="need_missing"><?= JText::_('MISSING_DOC'); ?></div>,
+            <div class="need_ok"><?= JText::_('SENT_DOC'); ?></div>,
+            <div class="need_missing_fac"><?= JText::_('MISSING_DOC_FAC'); ?></div>
         </div>
     <?php endif; ?>
     <?php
@@ -123,13 +122,13 @@ if (!empty($this->custom_title)) :?>
                 foreach ($attachment->liste as $item) {
                     $div .= '<tr class="em-added-files">
                     <td>';
-                    if ($item->can_be_viewed==1) {
+                    if ($item->can_be_viewed == 1) {
                         $div .= '<a class="btn btn-success btn-xs" href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
                     } else {
-                        $div .= JText::_('CANT_VIEW') ;
+                        $div .= JText::_('CANT_VIEW');
                     }
                     $div .= '&nbsp;-&nbsp;' ;
-                    if ($item->can_be_deleted==1 && !$block_upload) {
+                    if ($item->can_be_deleted == 1 && !$block_upload) {
                         $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> '.JText::_('DELETE').'</a>';
                     } else {
                         $div .= JText::_('CANT_DELETE');
@@ -143,10 +142,11 @@ if (!empty($this->custom_title)) :?>
                     $div .= '</td></tr>';
                 }
             }
+
             // Disable upload UI if
             if (!$block_upload) {
                 
-                if ($attachment->nb<$attachment->nbmax || $user->profile<=4) {
+                if ($attachment->nb < $attachment->nbmax || $user->profile <= 4) {
                     $div .= '
                 <tr>
                     <td>';
@@ -154,9 +154,10 @@ if (!empty($this->custom_title)) :?>
                     $div .= '<input type="hidden" name="attachment" value="'.$attachment->id.'"/>
                     <input type="hidden" name="duplicate" value="'.$attachment->duplicate.'"/>
                     <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
+                    <input type="hidden" name="required_desc" value="'.$this->required_desc.'"/>
                     <div class="input-group em-fieldset-attachment-table-upload">';
                     if ($this->show_shortdesc_input) {
-                        $div .= '<div class="row"><div class="col-sm-12 em-description"><label><span >'.JText::_('SHORT_DESC').'</span></label><input type="text" class="form-control" name="description" placeholder="" /></div></div>';
+                        $div .= '<div class="row"><div class="col-sm-12 em-description"><label><span>'.JText::_('SHORT_DESC').'</span></label><input type="text" class="form-control" name="description" placeholder="'.(($this->required_desc != 0)?JText::_('EMUNDUS_REQUIRED_FIELD'):'').'" /></div></div>';
                     }
                     if ($this->show_browse_button) {
                         $div .= '<div class="row" id="upload-files-'.$file_upload.'"><div class="col-sm-12"><label for="file" class="custom-file-upload"><input class="em-send-attachment" id="em-send-attachment-'.$file_upload.'" type="file" name="file" multiple onchange="processSelectedFiles(this)"/><span style="display: none;" >'.JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE").'</span></label>';
@@ -183,13 +184,12 @@ if (!empty($this->custom_title)) :?>
 
             if (sFileExtension == "php") {
               done("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
-            }
-            else {
+            } else {
                 var allowedExtension = "'.$attachment->allowed_types.'";
                 var n = allowedExtension.indexOf(sFileExtension);
-                if (n >= 0)
+                if (n >= 0) {
                     done();
-                else {
+                } else {
                     alert("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
                     done("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
                     this.removeFile(file);
@@ -299,7 +299,7 @@ if (!empty($this->custom_title)) :?>
 
 
     <div class="row">
-      <div class="col-md-<?php echo (int)(12/$this->show_nb_column); ?>">
+      <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_mand != '') {
            echo '<div id="attachment_list_mand" class="em-container-attachments"><h1>'.JText::_('MANDATORY_DOCUMENTS').'</h1>'.$attachment_list_mand.'</div>';
@@ -311,7 +311,7 @@ if (!empty($this->custom_title)) :?>
         echo '<div class="ui vertical divider"></div>';
       }
     ?>
-      <div class="col-md-<?php echo (int)(12/$this->show_nb_column); ?>">
+      <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_opt != '') {
            echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt"><h1>'.JText::_('OPTIONAL_DOCUMENTS').'</h1>'.$attachment_list_opt.'</div>';
@@ -330,13 +330,13 @@ $(document).on('change', '.btn-file :file', function() {
   input.trigger('fileselect', [numFiles, label]);
 });
 
-$(document).ready( function() {
+$(document).ready(function() {
     $('.em_send_uploaded_file').attr("disabled", "disabled");
 
     $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
 
         var input = $(this).parents('.input-group').find(':text'),
-            log = numFiles > 1 ? numFiles + ' <?php echo JText::_("FILES_SELECTED"); ?>' : label;
+            log = numFiles > 1 ? numFiles + ' <?= JText::_("FILES_SELECTED"); ?>' : label;
 
         if( input.length ) {
             input.val(log);
@@ -352,37 +352,32 @@ $(document).on('click', '.em_form .document', function(f) {
     $("#a"+id).addClass( "hover" );
 });
 
-function toggleVisu(baliseId)
-  {
-  if (document.getElementById && document.getElementById(baliseId) != null)
-    {
-    if (document.getElementById(baliseId).style.visibility=='visible')
-        {
-        document.getElementById(baliseId).style.visibility='hidden';
-        document.getElementById(baliseId).style.display='none';
-        }
-    else
-        {
-        document.getElementById(baliseId).style.visibility='visible';
-        document.getElementById(baliseId).style.display='block';
+function toggleVisu(baliseId) {
+    if (document.getElementById && document.getElementById(baliseId) != null) {
+        if (document.getElementById(baliseId).style.visibility=='visible') {
+            document.getElementById(baliseId).style.visibility='hidden';
+            document.getElementById(baliseId).style.display='none';
+        } else {
+            document.getElementById(baliseId).style.visibility='visible';
+            document.getElementById(baliseId).style.display='block';
         }
     }
-  }
+}
 /*
 <?php foreach($this->attachments as $attachment) { ?>
-  document.getElementById('<?php echo $attachment->id; ?>').style.visibility='<?php echo ($attachment->mandatory && $attachment->nb==0)?'visible':'hidden'; ?>';
-  document.getElementById('<?php echo $attachment->id; ?>').style.display='<?php echo ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
+  document.getElementById('<?= $attachment->id; ?>').style.visibility='<?= ($attachment->mandatory && $attachment->nb==0)?'visible':'hidden'; ?>';
+  document.getElementById('<?= $attachment->id; ?>').style.display='<?= ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
 <?php } ?>
 
 function OnSubmitForm() {
     var btn = document.getElementsByName(document.pressed);
     for(i=0 ; i<btn.length ; i++) {
         btn[i].disabled="disabled";
-        btn[i].value="<?php echo JText::_('SENDING_ATTACHMENT'); ?>";
+        btn[i].value="<?= JText::_('SENDING_ATTACHMENT'); ?>";
     }
     switch(document.pressed) {
         case 'sendAttachment':
-            document.checklistForm.action ="index.php?option=com_emundus&task=upload&Itemid=<?php echo $itemid; ?>";
+            document.checklistForm.action ="index.php?option=com_emundus&task=upload&Itemid=<?= $itemid; ?>";
         break;
         default: return false;
     }
@@ -395,12 +390,12 @@ function OnSubmitForm() {
 
     for(i=0 ; i<btn.length ; i++) {
         btn[i].disabled="disabled";
-        btn[i].value="<?php echo JText::_('SENDING_ATTACHMENT'); ?>";
+        btn[i].value="<?= JText::_('SENDING_ATTACHMENT'); ?>";
     }
 
     switch(document.pressed) {
         case 'sendAttachment':
-            document.checklistForm.action ="<?php echo JURI::base();?>index.php?option=com_emundus&task=upload&Itemid=<?php echo $itemid; ?>";
+            document.checklistForm.action ="<?= JURI::base();?>index.php?option=com_emundus&task=upload&Itemid=<?= $itemid; ?>";
             break;
         default: return false;
     }
@@ -411,43 +406,61 @@ function OnSubmitForm() {
 
 var hash = window.location.hash;
 if (hash != '') {
-    $( hash ).addClass( "ui warning message" );
+    $(hash).addClass("ui warning message");
 }
 
 function processSelectedFiles(fileInput) {
     var files = fileInput.files;
-    var max_post_size = <?php echo return_bytes(ini_get('post_max_size'));?>;
+    var max_post_size = <?= return_bytes(ini_get('post_max_size'));?>;
 
     var row = fileInput.parentNode.parentNode.parentNode.id;
     var rowId = document.getElementById(row);
     if (files[0].size < max_post_size) {
-        if($(rowId).find('.em-added-file').length > 0) {
-            if (files.length > 0)
+        if ($(rowId).find('.em-added-file').length > 0) {
+            if (files.length > 0) {
                 $(rowId).find('.em-added-file')[0].innerHTML = files[0].name;
-            else
+            } else {
                 $(rowId).find('.em-added-file')[0].innerHTML = "";
+            }
         } else {
             var fileParagraphe = document.createElement("p");
             fileParagraphe.className = "em-added-file";
-            if (files.length > 0)
+            if (files.length > 0) {
                 fileParagraphe.innerHTML = files[0].name;
-            else
+            } else {
                 fileParagraphe.innerHTML = "";
+            }
             rowId.append(fileParagraphe);
         }
         $(rowId).find( ".em_send_uploaded_file" ).removeAttr("disabled");
-    }
-    else {
-        if($(rowId).find('.em-added-file').length > 0) {
-            $(rowId).find('.em-added-file')[0].innerHTML = "<?php echo JText::_('FILE_TOO_BIG')?>";
+    } else {
+        if ($(rowId).find('.em-added-file').length > 0) {
+            $(rowId).find('.em-added-file')[0].innerHTML = "<?= JText::_('FILE_TOO_BIG')?>";
         } else {
             var fileParagraphe = document.createElement("p");
             fileParagraphe.className = "em-added-file em-added-file-error";
-            fileParagraphe.innerHTML = "<?php echo JText::_('FILE_TOO_BIG')?>";
+            fileParagraphe.innerHTML = "<?= JText::_('FILE_TOO_BIG')?>";
             rowId.append(fileParagraphe);
         }
         $(rowId).find( ".em_send_uploaded_file" ).attr("disabled","disabled");
     }
-
 }
+
+<?php if ($this->notify_complete_file == 1 && !$block_upload && $this->attachments >= 100 && $this->forms >= 100) :?>
+    $(document).ready(() => {
+        Swal.fire({
+            position: 'top',
+            type: 'success',
+            title: '<?= JText::_('COM_EMUNDUS_CHECKLIST_FILE_COMPLETE'); ?>',
+            confirmButtonText: '<?= JText::_('COM_EMUNDUS_CHECKLIST_SEND_FILE'); ?>',
+            showCancelButton: false
+        })
+        .then(confirm => {
+            if (confirm.value) {
+                window.location.href = '<?= $this->confirm_form_url; ?>';
+            }
+        })
+    });
+<?php endif; ?>
+
 </script>

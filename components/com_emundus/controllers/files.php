@@ -1225,17 +1225,17 @@ class EmundusControllerFiles extends JControllerLegacy
         $ids = $jinput->getVar('ids', null);
         $ids = (array) json_decode(stripslashes($ids));
 
-
         $m_files = $this->getModel('Files');
 
-        if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
-            $fnums = $m_files->getAllFnums();
+        if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all") {
+	        $fnums = $m_files->getAllFnums();
+        }
 
-        //var_dump($fnums);die;
         $validFnums = array();
         foreach ($fnums as $fnum) {
-            if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
-                $validFnums[] = $fnum;
+            if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
+	            $validFnums[] = $fnum;
+            }
         }
         $totalfile = count($validFnums);
 
@@ -1302,6 +1302,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
+	    $anonymize_data = false;
 
         if (count($fnums) == 0) {
             $fnums = array($session->get('application_fnum'));
@@ -1362,8 +1363,8 @@ class EmundusControllerFiles extends JControllerLegacy
 			                if (count($photos) > 0) {
 				                $pictures = array();
 				                foreach ($photos as $photo) {
-					                $folder                   = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-					                $link                     = '=HYPERLINK("'.$folder.'/tn_'.$photo['filename'].'","'.$photo['filename'].'")';
+					                $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
+					                $link = '=HYPERLINK("'.$folder.'/tn_'.$photo['filename'].'","'.$photo['filename'].'")';
 					                $pictures[$photo['fnum']] = $link;
 				                }
 				                $colOpt['PHOTO'] = $pictures;
@@ -1410,6 +1411,17 @@ class EmundusControllerFiles extends JControllerLegacy
 	            	break;
 	            case 'user-assoc':
 	            	$colOpt['user-asoc'] = $m_files->getAssocByFnums($fnums, false, true);
+	            	break;
+	            case 'overall':
+		            require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+		            $m_evaluations = new EmundusModelEvaluation();
+		            $colOpt['overall'] = $m_evaluations->getEvaluationAverageByFnum($fnums);
+		            // Because the result can be empty and thus the fnum not set in the $colOpt array :
+	                foreach ($fnums as $fnum) {
+	                	if (!isset($colOpt['overall'][$fnum])) {
+			                $colOpt['overall'][$fnum] = '';
+		                }
+	                }
 	            	break;
             }
         }
@@ -2115,6 +2127,11 @@ class EmundusControllerFiles extends JControllerLegacy
 	            case 'user-assoc':
 		            $colOpt['user-asoc'] = $m_files->getAssocByFnums($fnums, false, true);
 		            break;
+	            case 'overall':
+	            	require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+	            	$m_evaluations = new EmundusModelEvaluation();
+	            	$colOpt['overall'] = $m_evaluations->getEvaluationAverageByFnum($fnums);
+	            	break;
             }
         }
 
@@ -2266,6 +2283,9 @@ class EmundusControllerFiles extends JControllerLegacy
 		                break;
 	                case 'user-assoc':
 		                $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_ASSOCIATED_USERS'));
+		                break;
+	                case 'overall':
+		                $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('EVALUATION_OVERALL'));
 		                break;
                 }
                 $col++;
@@ -2803,7 +2823,12 @@ class EmundusControllerFiles extends JControllerLegacy
 						    mkdir(EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'], 0775);
 						}
 
-						$name = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".pdf";
+                        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+                        if (!$anonymize_data) {
+                            $name = $this->sanitize_filename($fnumsInfos[$fnum]['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".pdf";
+                        } else {
+                            $name = $this->sanitize_filename($fnumsInfos[$fnum]).$attachInfos['lbl']."-".md5($rand.time()).".pdf";
+                        }
 
                         $path = EMUNDUS_PATH_ABS . $fnumsInfos[$fnum]['applicant_id'] . DS . $name;
                         $url = JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/';
@@ -3376,6 +3401,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $eval = $m_eval->getGroupsEvalByProgramme($code);
         $dec = $m_eval->getGroupsDecisionByProgramme($code);
         $adm = $m_adm->getGroupsAdmissionByProgramme($code);
+        $adm .= $m_adm->getGroupsApplicantAdmissionByProgramme($code);
 
         $hasAccessAtt  = EmundusHelperAccess::asAccessAction(4,  'r', $user_id);
         $hasAccessEval = EmundusHelperAccess::asAccessAction(5,  'r', $user_id);
@@ -3389,16 +3415,21 @@ class EmundusControllerFiles extends JControllerLegacy
         $showadm  = 0;
         $showtag  =0;
 
-        if ($hasAccessAtt)
+        if ($hasAccessAtt) {
             $showatt = 1;
-        if (!empty($eval) && $hasAccessEval)
+        }
+        if (!empty($eval) && $hasAccessEval) {
             $showeval = 1;
-        if (!empty($dec) && $hasAccessDec)
+        }
+        if (!empty($dec) && $hasAccessDec) {
             $showdec = 1;
-        if (!empty($adm) && $hasAccessAdm)
+        }
+        if (!empty($adm) && $hasAccessAdm) {
             $showadm = 1;
-        if ($hasAccessTags)
+        }
+        if ($hasAccessTags) {
             $showtag = 1;
+        }
 
         echo json_encode((object)(array('status' => true,'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm, 'tag' => $showtag)));
         exit;

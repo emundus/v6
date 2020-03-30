@@ -459,8 +459,14 @@ class EmundusModelAdmission extends JModelList
         $can_be_ordering = array();
         if (count($this->_elements) > 0) {
             foreach ($this->_elements as $element) {
-                $can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
-                $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
+                if(!empty($element->table_join)) {
+	                $can_be_ordering[] = $element->table_join.'___'.$element->element_name;
+	                $can_be_ordering[] = $element->table_join.'.'.$element->element_name;
+                }
+                else {
+                	$can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
+	                $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
+                }
             }
         }
 
@@ -1288,7 +1294,13 @@ class EmundusModelAdmission extends JModelList
 					$lastTab = array();
 				if (!in_array($elt->tab_name, $lastTab))
 					$leftJoin .= 'left join ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = c.fnum ';
-				$lastTab[] = $elt->tab_name;
+				if(!empty($elt->table_join)) {
+			        $lastTab[] = $elt->table_join;
+					$group_by .= ', '.$elt->table_join.'___'.$elt->element_name;
+                } else {
+					$lastTab[] = $elt->tab_name;
+					$group_by .= ', '.$elt->tab_name.'___'.$elt->element_name;
+				}
 
 			}
 		}
@@ -1464,8 +1476,9 @@ if (JFactory::getUser()->id == 63)
             if (!empty($code)) {
                 $db->setQuery($query);
                 return $db->loadResult();
-            } else return null;
-
+            } else {
+                return null;
+            }
 		} catch(Exception $e) {
             throw $e;
         }
@@ -1481,10 +1494,13 @@ if (JFactory::getUser()->id == 63)
             if (!empty($code)) {
                 $db->setQuery($query);
                 return $db->loadResult();
-            } else return null;
+            } else {
+                return null;
+            }
 
 		} catch(Exception $e) {
-            throw $e;
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return null;
         }
     }
 
@@ -1711,17 +1727,23 @@ if (JFactory::getUser()->id == 63)
         $admissionInfo = $db->loadObject();
 
         if (empty($admissionInfo)) {
+        	$mainframe = JFactory::getApplication();
+        	$offset = $mainframe->get('offset', 'UTC');
+			$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+			$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+			$now = $dateTime->format('Y-m-d H:i:s');
+		
             $query = $db->getQuery(true);
             $query->select($db->quoteName('fnum'))
 	            ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
 	            ->leftJoin($db->quoteName('#__emundus_setup_status', 'ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
-	            ->leftJoin($db->quoteName('#__emundus_setup_campaigns','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cc.campaign_id'))
-	            ->where($db->quoteName('cc.applicant_id').' = '.$sid.' AND '.$db->quoteName('ss.profile').' = 8 AND '.$db->quoteName('cc.admission_start_date').' < NOW() AND '.$db->quoteName('cc.admission_start_date').' > NOW()')
+	            ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
+	            ->where($db->quoteName('cc.applicant_id').' = '.$sid.' AND '.$db->quoteName('ss.profile').' = 8 AND '.$db->quoteName('sc.admission_start_date').' <= '.$db->Quote($now).' AND '.$db->quoteName('sc.admission_end_date').' >= '.$db->Quote($now))
                 ->order($db->quoteName('cc.date_time').' DESC');
 
             try {
 	            $db->setQuery($query);
-	            $admissionInfo->fnum = $db->loadResult();
+	            $admissionInfo = $db->loadObject();
             } catch (Exception $e) {
 	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             }

@@ -14,6 +14,11 @@
 				<option value="1">JYES</option>
 			</field>
 
+			<field name="notify_complete_file" type="list" default="0" description="PLG_FABRIK_FORM_EMUNDUSREDIRECT_NOTIFY_DESC" label="PLG_FABRIK_FORM_EMUNDUSREDIRECT_NOTIFY_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
 		</fieldset>
 	</fields>
 </form>

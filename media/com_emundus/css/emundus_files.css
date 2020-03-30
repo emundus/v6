@@ -560,6 +560,9 @@ div#em-modal-actions h4#em-modal-actions-title {
     padding: 10px 20px;
     border-bottom: 1px solid #eee;
     min-height:90px;
+	position: sticky;
+	top: 0;
+	z-index: 1000;
 }
 
 .modal {

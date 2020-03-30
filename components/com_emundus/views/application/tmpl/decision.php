@@ -61,6 +61,14 @@ JFactory::getSession()->set('application_layout', 'decision');
         $(".holds-iframe").remove();
     }).show();
 
+    $('#iframe').mouseleave(function() {
+        resizeIframe(document.getElementById('iframe'));
+    });
+
+    $('#iframe').mouseover(function() {
+        resizeIframe(document.getElementById('iframe'));
+    });
+
     function resizeIframe(obj) {
         obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
     }
