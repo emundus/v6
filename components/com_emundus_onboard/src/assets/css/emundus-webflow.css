@@ -930,6 +930,7 @@ h3 {
   font-size: 28px;
   line-height: 35px;
   font-weight: 400;
+  width: 75%;
 }
 
 .nom-campagne-block.white {
@@ -1579,11 +1580,22 @@ div.buttonSelectDeselect {
 .w-retour {
   margin-right: 5%;
   background: none !important;
+  border: 1px solid #af2929;
+  color: #af2929;
+}
+
+.w-retour:hover {
+  color: #af2929 !important;
+}
+
+.w-quitter {
+  margin-right: 5%;
+  background: none !important;
   border: 1px solid #1b1f3c;
   color: #1b1f3c;
 }
 
-.w-retour:hover {
+.w-quitter:hover {
   color: #1b1f3c !important;
 }
 
@@ -1999,12 +2011,12 @@ span.draggable {
 
 .documentObligatoire {
   color: white;
-  background-color: #1b1f3c !important;
+  background-color: #af2929 !important;
 }
 
 .documentFacultatif {
   color: white;
-  background-color: #af2929 !important;
+  background-color: #118f11 !important;
 }
 
 .buttonDeleteDoc {
@@ -2388,6 +2400,17 @@ select.inputSelect {
 }
 
 .toggle {
+  vertical-align: middle;
+  position: relative;
+  width: 45px;
+  height: 22px;
+  border-radius: 100px;
+  background-color: #ddd;
+  overflow: hidden;
+  box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.05);
+}
+
+.toggleMenu {
   margin-top: 0.65%;
   margin-left: 38%;
   vertical-align: middle;

@@ -31,20 +31,35 @@
               <em class="fas fa-arrows-alt-v handle"></em>
               <div style="display: inline;">
                 <span
-                  @click="changeState(indexDoc, document.id)"
-                  class="draggable changeStateDoc"
+                  class="draggable"
                   >{{ document.value }}</span
                 >
                 <button type="button" @click="deleteDoc(indexDoc)" class="buttonDeleteDoc">
                   <em class="fas fa-times"></em>
                 </button>
-                <div
+                <div style="float: right">
+                  {{ inners[langue][2] }}
+                </div>
+                <div class="toggle"
                   @click="changeState(indexDoc, document.id)"
                   :id="'spanDoc' + document.id"
-                  style="float: right"
-                  class="changeStateDoc"
+                  style="float: right; margin: 0 12px"
+                  class="toggle changeStateDoc"
                 >
-                  {{ inners[langue][parseInt(document.need) + 1] }}
+                  <input
+                    type="checkbox"
+                    true-value="1"
+                    false-value="0"
+                    class="check"
+                    id="published"
+                    name="published"
+                    v-model="document.need"
+                  />
+                  <strong class="b switch"></strong>
+                  <strong class="b track"></strong>
+                </div>
+                <div style="float: right">
+                  {{ inners[langue][1] }}
                 </div>
               </div>
             </li>
@@ -96,7 +111,7 @@
           <a @click="reorderDocuments()" class="bouton-sauvergarder-et-continuer-3">{{
             Continuer
           }}</a>
-          <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previous()">
+          <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previousMenu()">
             {{ Retour }}
           </a>
         </div>
@@ -123,7 +138,9 @@ export default {
     funnelCategorie: String,
     obligatoireDoc: Number,
     profileId: Number,
-    langue: Number
+    langue: Number,
+    formulaireEmundus: Number,
+    menuHighlight: Number
   },
 
   data() {
@@ -165,7 +182,7 @@ export default {
         data: qs.stringify({ body: this.documents, prid: this.profileId })
       })
         .then(() => {
-          this.next();
+          this.$parent.next();
         })
         .catch(error => {
           console.log(error);
@@ -194,7 +211,7 @@ export default {
       var oldUndoc = this.undocuments[index];
       this.undocuments.splice(index, 1);
       this.documents.push(oldUndoc);
-    }
+    },
   },
 
   computed: {
@@ -213,6 +230,10 @@ export default {
       return {
         disabled: true
       };
+    },
+
+    previousMenu() {
+      this.$parent.previous();
     }
   },
 
@@ -228,7 +249,6 @@ export default {
         for (let i = 0; i < response.data.data.length; i++) {
           this.unid.push(response.data.data[i].id);
           this.documents.push(response.data.data[i]);
-          console.log(this.documents);
         }
       })
       .then(response => {
