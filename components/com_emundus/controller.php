@@ -699,7 +699,7 @@ class EmundusController extends JControllerLegacy {
         $attachments = $post['attachment'];
         $descriptions = $post['description'];
 
-	    if (isset($post['required_desc']) && $post['required_desc'] == 1 && empty($descriptions)) {
+	    if (isset($post['required_desc']) && $post['required_desc'] == 1 && empty(trim($descriptions))) {
 		    JLog::add(JUri::getInstance().' :: USER ID : '.$user->id.' -> empty description', JLog::ERROR, 'com_emundus');
 		    $errorInfo = JText::_("COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED");
 

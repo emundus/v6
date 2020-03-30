@@ -709,13 +709,12 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         jimport('joomla.user.helper');
 
-        $current_user = JFactory::getUser();
+	    if (!EmundusHelperAccess::asAccessAction(12, 'u') && !EmundusHelperAccess::asAccessAction(20, 'u')) {
+		    echo json_encode((object)array('status' => false));
+		    exit;
+	    }
 
-        if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) {
-            echo json_encode((object)array('status' => false));
-            exit;
-        }
-        $id 		= JFactory::getApplication()->input->getInt('user', null); //get id from the ajax request
+        $id = JFactory::getApplication()->input->getInt('user', null); //get id from the ajax request
         $user = new EmundusModelUsers(); // Instanciation of object from user model
         $users = $user->getUsersById($id); // get user from uid
         foreach ($users as $selectUser) {
