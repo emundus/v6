@@ -84,8 +84,11 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 	public function onLoad() {
 
 		$app = JFactory::getApplication();
+		$jinput = $app->input;
+		$view = $jinput->get('view');
+		$itemid = $jinput->get('Itemid');
 
-		if (!$app->isAdmin()) {
+		if (!$app->isAdmin() && $view == 'form') {
 			require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
 			jimport('joomla.log.log');
@@ -96,7 +99,6 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 				$user = JFactory::getUser();
 			}
 
-			$jinput = $app->input;
 			$fnum = $jinput->get->get('jos_emundus_evaluations___fnum');
 			$rowid = $jinput->get->getInt('rowid');
 
@@ -121,7 +123,9 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 				}
 
 				if (!empty($confirm)) {
-					echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>';
+					$app->enqueueMessage(JText::_('COM_EMUNDUS_EVALUATION_ALREADY_CONFIRMED'), 'info');
+					$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum);
+					/*echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>';
 					die("<script>
 						Swal.fire({
 							position: 'top',
@@ -133,7 +137,7 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 							allowEscapeKey: false,
 							allowEnterKey: false
 						})
-					</script>");
+					</script>");*/
 				}
 			}
 		}
