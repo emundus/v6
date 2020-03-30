@@ -26,6 +26,7 @@ class EmundusViewChecklist extends JViewLegacy {
     function __construct($config = array()) {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'checklist.php');
 
         $this->_user = JFactory::getSession()->get('emundusUser');
         $this->_db = JFactory::getDBO();
@@ -39,6 +40,8 @@ class EmundusViewChecklist extends JViewLegacy {
 
     function display($tpl = null) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
+        $m_checklist = new EmundusModelChecklist;
+
         $app = JFactory::getApplication();
         $layout = $app->input->getString('layout', null);
 
@@ -48,29 +51,10 @@ class EmundusViewChecklist extends JViewLegacy {
         $this->assignRef('sent', $sent);
         $this->assignRef('confirm_form_url', $confirm_form_url);
 
-        $end_date = new JDate($this->_user->fnums[$this->_user->fnum]->end_date);
-
-        $offset = $app->get('offset', 'UTC');
-        $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-        $now = $dateTime->setTimezone(new DateTimeZone($offset));
-
-        if ($end_date < $now) {
-            include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
-            $m_checklist = new EmundusModelChecklist;
-            $m_checklist->setDelete(0, $this->_user);
-        } elseif (!empty($eMConfig->get('can_edit_until_deadline', 0))) {
-            include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
-            $m_checklist = new EmundusModelChecklist;
-            $m_checklist->setDelete(1, $this->_user);
-        }
-
         switch ($layout) {
-
             // layout displayed when paid
             case 'paid':
                 include_once(JPATH_BASE.'/components/com_emundus/models/application.php');
-                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
-                $m_checklist = new EmundusModelChecklist;
 
                 // 1. if application form not sent yet, send it // 2. trigger emails // 3. display reminder list
                 $m_application 	= new EmundusModelApplication;
@@ -156,6 +140,22 @@ class EmundusViewChecklist extends JViewLegacy {
                     $text = JText::_('APPLICATION_INCOMPLETED_TEXT');
                 }
 
+                $end_date = !empty($is_admission) ? $this->_user->fnums[$this->_user->fnum]->admission_end_date : $this->_user->fnums[$this->_user->fnum]->end_date;
+
+                $offset = $app->get('offset', 'UTC');
+                $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+                $now = $dateTime->setTimezone(new DateTimeZone($offset))->format("Y-m-d");
+
+                $is_dead_line_passed = $end_date < $now;
+
+                if ($is_dead_line_passed) {
+                    $m_checklist->setDelete(0, $this->_user);
+                } elseif (!empty($eMConfig->get('can_edit_until_deadline', 0))) {
+                    $m_checklist->setDelete(1, $this->_user);
+                }
+
+                $this->assignRef('is_dead_line_passed', $is_dead_line_passed);
+                $this->assignRef('user', $this->_user);
                 $this->assignRef('title', $title);
                 $this->assignRef('text', $text);
                 $this->assignRef('need', $need);

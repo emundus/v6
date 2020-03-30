@@ -8,10 +8,8 @@ $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/css/emundus_checklist.css" );
 $mainframe = JFactory::getApplication();
 
-$user = JFactory::getSession()->get('emundusUser');
 $chemin = EMUNDUS_PATH_REL;
-$jinput = JFactory::getApplication()->input;
-$itemid = $jinput->get('Itemid', null);
+$itemid = $mainframe->input->get('Itemid', null);
 
 // check if it is possible to upload file
 $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -31,11 +29,12 @@ try {
     echo $e->getMessage() . '<br />';
 }
 
-$is_dead_line_passed = !empty($this->is_admission) ? strtotime(date($now)) > strtotime(@$user->fnums[$user->fnum]->admission_end_date) : strtotime(date($now)) > strtotime(@$user->end_date);
-$is_app_sent = !in_array($user->status, $status_for_send);
+$this->is_dead_line_passed = !empty($this->is_admission) ? strtotime(date($now)) > strtotime(@$this->user->fnums[$this->user->fnum]->admission_end_date) : strtotime(date($now)) > strtotime(@$this->user->end_date);
+
+$is_app_sent = !in_array($this->user->status, $status_for_send);
 
 $block_upload = true;
-if ($can_edit_after_deadline || (!$is_app_sent && !$is_dead_line_passed) || in_array($user->id, $applicants) || ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)) {
+if ($can_edit_after_deadline || (!$is_app_sent && !$this->is_dead_line_passed) || in_array($this->user->id, $applicants) || ($is_app_sent && !$this->is_dead_line_passed && $can_edit_until_deadline)) {
     $block_upload = false;
 }
 
@@ -123,7 +122,7 @@ if (!empty($this->custom_title)) :?>
                     $div .= '<tr class="em-added-files">
                     <td>';
                     if ($item->can_be_viewed == 1) {
-                        $div .= '<a class="btn btn-success btn-xs" href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
+                        $div .= '<a class="btn btn-success btn-xs" href="'.$chemin.$this->user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
                     } else {
                         $div .= JText::_('CANT_VIEW');
                     }
@@ -146,7 +145,7 @@ if (!empty($this->custom_title)) :?>
             // Disable upload UI if
             if (!$block_upload) {
                 
-                if ($attachment->nb < $attachment->nbmax || $user->profile <= 4) {
+                if ($attachment->nb < $attachment->nbmax || $this->user->profile <= 4) {
                     $div .= '
                 <tr>
                     <td>';
@@ -284,7 +283,7 @@ if (!empty($this->custom_title)) :?>
                 $div .= '</tbody>';
                 }
             } else {
-                $div .= JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) )));
+                $div .= JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($this->user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($this->user->end_date) )));
             }
             $div .= '</table></div></fieldset>';
             if ($attachment->mandatory) {

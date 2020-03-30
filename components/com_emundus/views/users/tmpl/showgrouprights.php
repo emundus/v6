@@ -53,7 +53,7 @@ span:hover {
 						<?php if ($action['is_c'] == 1) :?>
 							<td action="c" class="action">
 								<?php if ($action['c'] == 1) :?>
-									<span class="glyphicon glyphicon-ok" style="color: #00c500"</span>
+									<span class="glyphicon glyphicon-ok" style="color: #00c500"></span>
 								<?php else :?>
 									<span class="glyphicon glyphicon-ban-circle" style="color: #ff0000"></span>
 								<?php endif; ?>
