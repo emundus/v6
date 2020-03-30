@@ -140,6 +140,16 @@ class EmundusViewChecklist extends JViewLegacy {
                     $text = JText::_('APPLICATION_INCOMPLETED_TEXT');
                 }
 
+                if ($notify_complete_file) {
+	                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	                $m_application = new EmundusModelApplication;
+	                $attachments_prog = $m_application->getAttachmentsProgress($this->_user->profile, $this->_user->fnum);
+	                $forms_prog = $m_application->getFormsProgress($this->_user->profile, $this->_user->fnum);
+	                $this->assignRef('attachments_prog', $attachments_prog);
+	                $this->assignRef('forms_prog', $forms_prog);
+                }
+
+
                 $end_date = !empty($is_admission) ? $this->_user->fnums[$this->_user->fnum]->admission_end_date : $this->_user->fnums[$this->_user->fnum]->end_date;
 
                 $offset = $app->get('offset', 'UTC');
