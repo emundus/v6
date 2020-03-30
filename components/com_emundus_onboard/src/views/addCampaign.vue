@@ -237,8 +237,19 @@
         <div class="section-sauvegarder-et-continuer">
           <div class="w-container">
             <div class="container-evaluation w-clearfix">
-              <button type="submit" class="bouton-sauvergarder-et-continuer w-button">
+              <button
+                type="button"
+                class="bouton-sauvergarder-et-continuer w-button"
+                @click="quit = 1; submit()"
+              >
                 {{ Continuer }}
+              </button>
+              <button
+                type="button"
+                class="bouton-sauvergarder-et-continuer w-quitter w-button"
+                @click="quit = 0; submit()"
+              >
+                {{ Quitter }}
               </button>
               <button
                 type="button"
@@ -273,6 +284,8 @@ export default {
     Editor,
     Autocomplete
   },
+
+  quit: 1,
 
   props: {
     campaign: Number,
@@ -346,6 +359,7 @@ export default {
     PickYear: Joomla.JText._("COM_EMUNDUSONBOARD_ADDCAMP_PICKYEAR"),
     ChooseProfile: Joomla.JText._("COM_EMUNDUSONBOARD_ADDCAMP_CHOOSEPROFILE"),
     Retour: Joomla.JText._("COM_EMUNDUSONBOARD_ADD_RETOUR"),
+    Quitter: Joomla.JText._("COM_EMUNDUSONBOARD_ADD_QUITTER"),
     Continuer: Joomla.JText._("COM_EMUNDUSONBOARD_ADD_CONTINUER"),
     Publish: Joomla.JText._("COM_EMUNDUSONBOARD_FILTER_PUBLISH"),
     DepotDeDossier: Joomla.JText._("COM_EMUNDUSONBOARD_DEPOTDEDOSSIER"),
@@ -523,9 +537,7 @@ export default {
               data: qs.stringify({ body: this.form, cid: this.campaign })
             })
               .then(response => {
-                window.location.replace(
-                  "index.php?option=com_emundus_onboard&view=form&layout=add&fid=" + this.campaign
-                );
+                this.quitFunnelOrContinue(this.quit);
               })
               .catch(error => {
                 console.log(error);
@@ -545,10 +557,8 @@ export default {
                     "index.php?option=com_emundus_onboard&controller=campaign&task=getcreatedcampaign"
                   )
                   .then(response => {
-                    window.location.replace(
-                      "index.php?option=com_emundus_onboard&view=form&layout=add&fid=" +
-                        response.data.data.id
-                    );
+                    this.campaign = response.data.data.id;
+                    this.quitFunnelOrContinue(this.quit);
                   })
                   .catch(e => {
                     console.log(e);
@@ -574,6 +584,19 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+
+    quitFunnelOrContinue(quit) {
+      if (quit == 0) {
+        window.location.replace(
+          "campaigns"
+        );
+      }
+      else if (quit == 1) {
+        window.location.replace(
+          "index.php?option=com_emundus_onboard&view=form&layout=add&fid=" + this.campaign
+        );
+      }
     },
 
     changeDate(dbDate) {
@@ -785,6 +808,13 @@ h2 {
 }
 
 .w-retour {
+  margin-right: 5%;
+  background: none !important;
+  border: 1px solid #af2929;
+  color: #af2929;
+}
+
+.w-quitter {
   margin-right: 5%;
   background: none !important;
   border: 1px solid #1b1f3c;
