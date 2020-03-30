@@ -59,7 +59,7 @@
                 v-bind:value="item"
                 :key="index"
                 :selected="form.type"
-                >{{ item }}</option
+                >{{ emailtype[langue][item - 1] }}</option
               >
             </select>
           </div>
@@ -131,10 +131,13 @@ export default {
   },
 
   props: {
-    email: Number
+    email: Number,
+    actualLanguage: String
   },
 
   data: () => ({
+    langue: 0,
+
     dynamicComponent: false,
     isHiddenCategory: false,
 
@@ -152,7 +155,11 @@ export default {
 
     types: [],
     categories: [],
-    typessss: ["Système", "Modèle", "Campagne de mailing"],
+    
+    emailtype: [
+      ['Système', 'Modèle'],
+      ['System', 'Model']
+    ],
 
     form: {
       lbl: "",
@@ -261,6 +268,12 @@ export default {
       .catch(e => {
         console.log(e);
       });
+  },
+
+  mounted() {
+    if (this.actualLanguage == "en") {
+      this.langue = 1;
+    }
   }
 };
 </script>
