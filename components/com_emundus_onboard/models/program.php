@@ -194,7 +194,7 @@ class EmundusonboardModelprogram extends JModelList {
 
         if (count($data) > 0) {
             foreach ($data as $key => $val) {
-                $data[$key] = htmlentities($data[$key]);
+                $data[$key] = htmlspecialchars($data[$key]);
               }
 
         	$query
@@ -231,7 +231,7 @@ class EmundusonboardModelprogram extends JModelList {
             $fields = [];
 
             foreach ($data as $key => $val) {
-                $insert = $db->quoteName(htmlentities($key)) . ' = ' . $db->quote(htmlentities($val));
+                $insert = $db->quoteName(htmlspecialchars($key)) . ' = ' . $db->quote(htmlspecialchars($val));
                 $fields[] = $insert;
             }
 
@@ -314,7 +314,7 @@ class EmundusonboardModelprogram extends JModelList {
 
         if (count($data) > 0) {
             foreach ($data as $key => $val) {
-                $data[$key] = htmlentities($data[$key]);
+                $data[$key] = htmlspecialchars($data[$key]);
               }
 
             try {
@@ -355,7 +355,7 @@ class EmundusonboardModelprogram extends JModelList {
 
         if (count($data) > 0) {
             foreach ($data as $key => $val) {
-                $data[$key] = htmlentities($data[$key]);
+                $data[$key] = htmlspecialchars($data[$key]);
               }
 
             try {

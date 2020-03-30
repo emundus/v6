@@ -321,7 +321,7 @@ class EmundusonboardModelcampaign extends JModelList
     if (count($data) > 0) {
 
       foreach ($data as $key => $val) {
-        $data[$key] = htmlentities($data[$key]);
+        $data[$key] = htmlspecialchars($data[$key]);
       }
 
       try {
@@ -362,7 +362,7 @@ class EmundusonboardModelcampaign extends JModelList
 
     if (count($data) > 0) {
       foreach ($data as $key => $val) {
-        $data[$key] = htmlentities($data[$key]);
+        $data[$key] = htmlspecialchars($data[$key]);
       }
       
       try {
@@ -519,7 +519,7 @@ class EmundusonboardModelcampaign extends JModelList
     
     if (count($data) > 0) {
       foreach ($data as $key => $val) {
-        $data[$key] = htmlentities($data[$key]);
+        $data[$key] = htmlspecialchars($data[$key]);
 
         if ($key == 'profileLabel') {
           array_splice($data, $i, 1);
@@ -561,7 +561,7 @@ class EmundusonboardModelcampaign extends JModelList
       
       foreach ($data as $key => $val) {
         if ($key !== 'profileLabel') {
-          $insert = $db->quoteName(htmlentities($key)) . ' = ' . $db->quote(htmlentities($val));
+          $insert = $db->quoteName(htmlspecialchars($key)) . ' = ' . $db->quote(htmlspecialchars($val));
           $fields[] = $insert;
         }
       }
@@ -597,7 +597,7 @@ class EmundusonboardModelcampaign extends JModelList
     if (count($data) > 0) {
 
       foreach ($data as $key => $val) {
-        $data[$key] = htmlentities($data[$key]);
+        $data[$key] = htmlspecialchars($data[$key]);
       }
 
       $query
@@ -706,8 +706,8 @@ class EmundusonboardModelcampaign extends JModelList
       'acl_aro_groups',
       'is_evaluator'
     ];
-    $id = htmlentities($lastProfileId) + 1;
-    $label = htmlentities($profile);
+    $id = htmlspecialchars($lastProfileId) + 1;
+    $label = htmlspecialchars($profile);
     $description =
       "Potential student who has started to fill in the online application form.";
     $published = 1;
