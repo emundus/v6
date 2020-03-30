@@ -12,27 +12,19 @@
       <div class="block-dash" :class="isPublished ? '' : 'unpublishedBlock'">
         <div class="column-blocks w-row">
           <div class="column-inner-block w-col w-col-8">
-            <h1 class="nom-campagne-block white">{{ data.lbl }}</h1>
+            <h1 class="nom-campagne-block white">{{ data.subject }}</h1>
             <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
               {{ isPublished ? publishedTag : unpublishedTag }}
             </div>
             <p class="description-block white"><span v-html="data.message"></span></p>
           </div>
-          <div class="column-inner-block-2 w-clearfix w-col w-col-4">
-            <a href="#" class="button-programme">{{ data.subject }}</a>
-            <div class="nb-dossier">
-              <div>50</div>
-            </div>
+          <div class="column-inner-block-2 w-clearfix w-col w-col-4" style="min-height: 150px !important">
+            <a href="#" class="button-programme">{{ type[langue][data.type - 1] }}</a>
             <div class="container-gerer-modifier-visualiser">
               <a
                 :href="'index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id"
                 class="cta-block"
                 >{{ Modify }}</a
-              >
-              <a
-                :href="'index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id"
-                class="cta-block"
-                >{{ Visualize }}</a
               >
             </div>
           </div>
@@ -49,18 +41,27 @@ export default {
   name: "emailItem",
   props: {
     data: Object,
-    selectItem: Function
+    selectItem: Function,
+    actualLanguage: String
   },
   data() {
     return {
+      langue: 0,
+
       selectedData: [],
       publishedTag: Joomla.JText._("COM_EMUNDUSONBOARD_FILTER_PUBLISH"),
       unpublishedTag: Joomla.JText._("COM_EMUNDUSONBOARD_FILTER_UNPUBLISH"),
       passeeTag: Joomla.JText._("COM_EMUNDUSONBOARD_FILTER_CLOSE"),
       Modify: Joomla.JText._("COM_EMUNDUSONBOARD_MODIFY"),
-      Visualize: Joomla.JText._("COM_EMUNDUSONBOARD_VISUALIZE")
+      Visualize: Joomla.JText._("COM_EMUNDUSONBOARD_VISUALIZE"),
+
+      type: [
+        ['Système', 'Modèle'],
+        ['System', 'Model']
+      ]
     };
   },
+
   computed: {
     isPublished() {
       return this.data.published == 1;
@@ -69,9 +70,16 @@ export default {
     isActive() {
       return list.getters.isSelected(this.data.id);
     }
+  },
+
+  mounted() {
+    if (this.actualLanguage == "en") {
+      this.langue = 1;
+    }
   }
 };
 </script>
+
 <style scoped>
 .publishedTag,
 .unpublishedTag {
