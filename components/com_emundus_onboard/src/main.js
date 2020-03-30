@@ -65,7 +65,8 @@ if (document.getElementById("em-addEmail-vue")) {
     render(h) {
       return h(AddEmail, {
         props: {
-          email: this.$el.attributes.email.value
+          email: this.$el.attributes.email.value,
+          actualLanguage: this.$el.attributes.actualLanguage.value
         }
       });
     }

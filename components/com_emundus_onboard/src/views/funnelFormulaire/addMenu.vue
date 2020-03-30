@@ -26,7 +26,7 @@
       <div class="toggleH2">
         <h2 class="menuH3 gestionDesItems">Gestion des items</h2>
         <h4 style="margin-top: 0.65%" class="secondtH4">Publié</h4>
-        <div class="toggle rightItem">
+        <div class="toggleMenu rightItem">
           <input type="checkbox" class="check" v-model="itemPublished" />
           <strong class="b switch"></strong>
           <strong class="b track"></strong>
