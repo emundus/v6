@@ -33,7 +33,7 @@
                 >{{ Modify }}</a
               ><a
                 :href="
-                  'index.php?option=com_emundus_onboard&view=program&layout=add&pid=' + data.id
+                  '/files&pid=' + data.id
                 "
                 class="cta-block"
                 >{{ Visualize }}</a
