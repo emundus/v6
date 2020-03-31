@@ -688,7 +688,7 @@ div.moduletable-b ul li {
 div.moduletable-b ul li a {
   color: white;
   text-decoration: none;
-  padding: 0 10px;
+  padding: 10px;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -747,4 +747,21 @@ li.g-menu-item ul.g-dropdown ul.g-sublevel {
 
 li.g-menu-item:hover ul.g-dropdown {
   display: block;
+}
+
+.g-dropdown.g-dropdown-right.g-fade.g-inactive {
+  background: #1b1f3c !important;
+  border: none !important;
+}
+
+.g-dropdown.g-dropdown-right.g-fade.g-inactive span {
+  color: white;
+}
+
+.g-level-1.g-go-back {
+  display: none;
+}
+
+.g-dropdown.g-dropdown-right.g-fade.g-inactive span:hover {
+  text-decoration: underline;
 }

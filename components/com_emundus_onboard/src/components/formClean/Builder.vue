@@ -17,7 +17,7 @@
 
         <form method="post" class="shadow-box">
           <div v-for="group in object_json.Groups" v-bind:key="group.group_id">
-            <legend v-if="group.group_showLegend" class="legend">
+            <legend v-if="group.group_showLegend" class="legend2">
               {{group.group_showLegend}}
               <span
                 class="mr-right dinherit bkcolor"
@@ -363,4 +363,8 @@ export default {
 .bkcolor {
   background-color: inherit;
 }
+.intro {
+  margin-bottom: 25px;
+}
+
 </style>

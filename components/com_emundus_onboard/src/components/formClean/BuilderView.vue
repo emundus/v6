@@ -122,7 +122,7 @@ export default {
         "Wait changes load",
         "Load changes"
       );
-      axios.get(this.object.link + "&format=vue_jsonClean").then(r => {
+      axios.get(this.object.link + "&format=vue_jsonclean").then(r => {
         this.object_json = r.data;
         this.$emit("UpdateUxf");
         this.$emit(

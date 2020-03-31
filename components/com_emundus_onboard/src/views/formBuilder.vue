@@ -65,7 +65,7 @@ import axios from "axios";
 const qs = require("qs");
 
 export default {
-  name: "FormCarrousel",
+  name: "FormBuilder",
   props: {
     prid: String,
     index: Number
@@ -116,7 +116,7 @@ export default {
       this.indexHighlight = this.index;
       this.formList.forEach(element => {
         axios
-          .get(element.link + "&format=vue_jsonClean")
+          .get(element.link + "&format=vue_jsonclean")
           .then(response => {
             this.formNameArray.push({
               value: response.data.show_title.value,
@@ -200,6 +200,7 @@ export default {
   position: relative;
   margin-left: -50vw !important;
   left: 50%;
+  margin-top:-4.2%;
 }
 .container {
   margin-bottom: 5%;

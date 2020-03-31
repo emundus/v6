@@ -519,8 +519,6 @@ class EmundusonboardModelcampaign extends JModelList
     
     if (count($data) > 0) {
       foreach ($data as $key => $val) {
-        $data[$key] = htmlspecialchars($data[$key]);
-
         if ($key == 'profileLabel') {
           array_splice($data, $i, 1);
         }

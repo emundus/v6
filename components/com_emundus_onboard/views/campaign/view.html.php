@@ -30,7 +30,9 @@ class EmundusonboardViewCampaign extends JViewLegacy {
         $layout = $jinput->getString('layout', null);
         if ($layout == 'add') {
             $this->id = $jinput->get->get('cid', null);
-        }
+		}
+		
+
 		// Display the template
 		parent::display($tpl);
 	}

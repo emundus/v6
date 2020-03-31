@@ -1,5 +1,5 @@
 <template>
-  <div class="container-evaluation">
+  <div class="container-evaluation formulairedepresentation">
     <h2 class="heading">{{ funnelCategorie }}</h2>
     <p class="paragraphe-sous-titre">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros
@@ -61,7 +61,7 @@ export default {
     },
     formbuilder() {
       window.location.replace(
-        "index.php?option=com_emundus_onboard&view=form&layout=formBuilder&prid=" +
+        "index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=" +
           this.profileId +
           "&index=" +
           this.EmitIndex
@@ -97,3 +97,4 @@ export default {
   }
 };
 </script>
+

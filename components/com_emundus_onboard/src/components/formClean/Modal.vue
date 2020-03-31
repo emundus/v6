@@ -39,9 +39,9 @@
       </div>
       <fieldF v-if="tempEl.plugin === 'field'" :element="tempEl"></fieldF>
       <birthdayF v-if="tempEl.plugin==='birthday'" :element="tempEl"></birthdayF>
-      <checkboxF v-if="tempEl.plugin==='checkbox'" :element="tempEl"></checkboxF>
+      <checkboxF v-if="tempEl.plugin==='checkbox'" :element="tempEl"  @subOptions="subOptions"></checkboxF>
       <dropdownF v-if="tempEl.plugin==='dropdown'" :element="tempEl" @subOptions="subOptions"></dropdownF>
-      <radiobtnF v-if="tempEl.plugin=== 'radiobutton'" :element="tempEl"></radiobtnF>
+      <radiobtnF v-if="tempEl.plugin=== 'radiobutton'" :element="tempEl"  @subOptions="subOptions"></radiobtnF>
       <textareaF v-if="tempEl.plugin==='textarea'" :element="tempEl"></textareaF>
       <div class="container-evaluation w-clearfix">
         <a

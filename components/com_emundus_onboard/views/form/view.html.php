@@ -27,13 +27,15 @@ class EmundusonboardViewForm extends JViewLegacy {
         $jinput = JFactory::getApplication()->input;
 
         // Display the template
-        $layout = $jinput->getString('layout', null);
+		$layout = $jinput->getString('layout', null);
+		
         if ($layout == 'add') {
-            $this->id = $jinput->get->get('fid', null);
+			$this->id = $jinput->get->get('fid', null);
 		}
-		if ($layout == 'formBuilder'){
+		if ($layout == 'formbuilder'){
             $this->prid = $jinput->get->get('prid', null);
-            $this->index = $jinput->get->get('index', 0);
+			$this->index = $jinput->get->get('index', 0);
+			$this->layout = $layout;
 		}
 		// Display the template
 		parent::display($tpl);

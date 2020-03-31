@@ -29,15 +29,22 @@
   margin: 15px 0 5px;
 }
 .legend {
-  padding: 50px 20px 10px;
+  padding: 50px 20px 10px !important;
+  margin: -4% 0 0 !important;
+}
+.legend2 {
+  padding: 15px 20px 10px !important;
+  margin: -4% 0 0 !important;
+  display: flex;
+
 }
 
 .ViewerLegend {
   margin-bottom: -25px;
 }
-.introP {
+/* .introP {
   margin-bottom: -27px;
-}
+} */
 .input-append {
   display: inline-flex;
 }
@@ -151,4 +158,30 @@
   border-width: 5px;
   border-style: solid;
   border-color: #000 transparent transparent transparent;
+}
+fieldset {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  margin: 0% 2% 1.5% !important;
+  padding: 2.5% !important;
+}
+.formulairedepresentation {
+  width: 150%;
+}
+.coldmd2left {
+  margin-left: -2.2%;
+}
+
+.page_header {
+  margin-top: 0;
+}
+.dpflex {
+  display: flex;
+  margin: 20px 0;
+}
+.toright {
+  position: relative;
+  left: 76.7%;
+}
+.suboptions {
+  margin: 1.2% 0;
 }

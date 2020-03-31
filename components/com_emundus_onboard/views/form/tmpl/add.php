@@ -33,6 +33,8 @@ JText::script('DELETE');
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0, 2);
+
+
 ?>
 
 <div id="em-addForm-vue" form="<?= $this->id ?>" actualLanguage="<?= $actualLanguage ?>"></div>
