@@ -12,8 +12,13 @@ defined('_JEXEC') or die('Restricted Access');
 $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_onboard/chunk-vendors.js');
 $document->addStyleSheet('media/com_emundus_onboard/app.css');
+/* 
+if($this->layout === 'formBuilder'):
 ?>
-
+<div id="em-formBuilder-vue" prid="<?= $this->prid ;?>" index="<?= $this->index ;?>"></div>
+<?php
+else:  */?>
 <list type="formEmundus"/>
-
+<?php/*  
+endif  */?>
 <script src="media/com_emundus_onboard/app.js"></script>

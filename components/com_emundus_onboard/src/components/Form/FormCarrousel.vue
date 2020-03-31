@@ -1,7 +1,7 @@
 <template>
-  <div class="fluid container">
+  <div class="container-fluid">
     <div class="row card">
-      <div class="col-md-2">
+      <div class="col-md-2 coldmd2left">
         <ul>
           <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
             <a
@@ -12,7 +12,7 @@
           </li>
         </ul>
       </div>
-      <div class="col-md-8 card-body">
+      <div class="col-md-10 card-body">
         <FormViewer :link="formLinkArray[indexHighlight]" v-if="formLinkArray[indexHighlight]" />
       </div>
     </div>
@@ -25,6 +25,7 @@ import _ from "lodash";
 import FormViewer from "../Form/FormViewer";
 import axios from "axios";
 const qs = require("qs");
+import "../../assets/css/formbuilder.css";
 
 export default {
   name: "FormCarrousel",
@@ -74,8 +75,8 @@ export default {
 };
 </script>
 
-<style>
-.container {
+<style scoped>
+.container-fluid {
   margin-bottom: 5%;
 }
 .MenuForm {

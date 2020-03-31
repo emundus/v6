@@ -553,7 +553,7 @@ class EmundusController extends JControllerLegacy {
     }
 
     // *****************switch profile controller************
-    function switchprofile() {
+    function switchprofile() { 
         include_once (JPATH_SITE.'/components/com_emundus/models/profile.php');
         include_once (JPATH_SITE.'/components/com_emundus/models/users.php');
 

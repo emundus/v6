@@ -6,38 +6,16 @@
       Hover help:
       <input type="text" class="inputF" v-model="element.params.rollover" />
     </div>
-    <div>
+    <div class="suboptions">
       Sub options :
-      <div v-for="(sub_values, i) in arraySubValues" :key="i">
-        <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" />
-        <button @click.prevent="leave(i)">-</button>
+      <span>
+        <button @click.prevent="add" class="plusmoins toright">+</button>
+      </span>
+      <div v-for="(sub_values, i) in arraySubValues" :key="i" class="dpflex">
+        <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="inputF" />
+        <button @click.prevent="leave(i)" class="plusmoins">-</button>
       </div>
-      <button @click.prevent="add">+</button>
     </div>
-    <!-- <div class="row rowmodal">
-      <div class="col-sm-3 flex">
-        type de champ :
-        <select v-model="element.params.password">
-
-          <option value="0">Texte</option>
-          <option value="2">Phone</option>
-          <option value="3">Email</option>
-          <option value="6">Nombre</option>
-        </select>
-      </div>
-      <div class="col-sm-3 flex">
-        placeholder :
-        <input type="text" class="inputF" v-model="element.params.placeholder" />
-      </div>
-      <div class="col-sm-3 flex">
-        Size:
-        <span>a définir</span>
-      </div>
-      <div class="col-sm-3 flex">
-        Hover help:
-        <input type="text" class="inputF" v-model="element.params.rollover" />
-      </div>
-    </div>-->
   </div>
 </template>
 
@@ -98,5 +76,28 @@ export default {
 }
 .rowmodal {
   margin-bottom: 45px;
+}
+
+.plusmoins {
+  border-radius: 12px 0 12px 0;
+  background: #1b1f3c;
+  border: none;
+  color: #fff;
+  font: bold 12px Verdana;
+  padding: 6px 12px 6px 12px;
+  margin-right: 15px;
+  cursor: pointer;
+  text-transform: capitalize;
+  transition-duration: 0.4s;
+}
+
+.plusmoins:hover {
+  background-color: white;
+  color: black;
+  border: 1px solid #1b1f3c;
+}
+.inputF {
+  width: 80% !important ;
+  margin: 0 2%;
 }
 </style>

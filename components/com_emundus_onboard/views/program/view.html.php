@@ -31,7 +31,7 @@ class EmundusonboardViewProgram extends JViewLegacy {
 
         if ($layout == 'add') {
             $this->id = $jinput->get->get('pid', null);
-        }
+		}
 		parent::display($tpl);
 	}
 }

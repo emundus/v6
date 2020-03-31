@@ -116,177 +116,430 @@ if (!empty($this->custom_title)) :?>
                     <a class="'.$class.'">'.$attachment->value .'</a>
                 </legend>
                 <p class="description em-fieldset-attachment-description">'.$attachment->description .'</p>
-                <div class="table-responsive em-fieldset-attachment-table-responsive">
-                <table id="'.$attachment->id .'" class="table em-fieldset-attachment-table">';
+                <div class="table-responsive em-fieldset-attachment-table-responsive">';
 
-            if ($attachment->nb > 0) {
-                foreach ($attachment->liste as $item) {
-                    $div .= '<tr class="em-added-files">
-                    <td>';
-                    if ($item->can_be_viewed==1) {
-                        $div .= '<a class="btn btn-success btn-xs" href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
-                    } else {
-                        $div .= JText::_('CANT_VIEW') ;
-                    }
-                    $div .= '&nbsp;-&nbsp;' ;
-                    if ($item->can_be_deleted==1 && !$block_upload) {
-                        $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> '.JText::_('DELETE').'</a>';
-                    } else {
-                        $div .= JText::_('CANT_DELETE');
-                    }
-                    $div .= ' | ';
-                    $div .= JString::ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2"));
-                    $div .= ' | ';
-                    if ($this->show_shortdesc_input) {
-                        $div .= empty($item->description)?JText::_('NO_DESC'):$item->description;
-                    }
-                    $div .= '</td></tr>';
-                }
-            }
-            // Disable upload UI if
-            if (!$block_upload) {
-                
-                if ($attachment->nb<$attachment->nbmax || $user->profile<=4) {
-                    $div .= '
-                <tr>
-                    <td>';
-                    $div .= '<form id="form-a'.$attachment->id.'" name="checklistForm" class="dropzone" action="'.JRoute::_('index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid).'" method="post" enctype="multipart/form-data">';
-                    $div .= '<input type="hidden" name="attachment" value="'.$attachment->id.'"/>
-                    <input type="hidden" name="duplicate" value="'.$attachment->duplicate.'"/>
-                    <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
-                    <div class="input-group em-fieldset-attachment-table-upload">';
-                    if ($this->show_shortdesc_input) {
-                        $div .= '<div class="row"><div class="col-sm-12 em-description"><label><span >'.JText::_('SHORT_DESC').'</span></label><input type="text" class="form-control" name="description" placeholder="" /></div></div>';
-                    }
-                    if ($this->show_browse_button) {
-                        $div .= '<div class="row" id="upload-files-'.$file_upload.'"><div class="col-sm-12"><label for="file" class="custom-file-upload"><input class="em-send-attachment" id="em-send-attachment-'.$file_upload.'" type="file" name="file" multiple onchange="processSelectedFiles(this)"/><span style="display: none;" >'.JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE").'</span></label>';
-                    }
-                        $div .= '<input type="hidden" class="form-control" readonly="">';
-                    if ($this->show_browse_button) {
-                        $div .= '<input class="btn btn-success em_send_uploaded_file" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/></div></div>';
-                    }
-                    $div .= '</div>';
+            if ($attachment->allowed_types == 'video') {
+                $document->addStyleSheet("//cdn.addpipe.com/2.0/pipe.css" );
+                $document->addScript("//cdn.addpipe.com/2.0/pipe.js" );
+                //$document->addScript("media/com_emundus/js/addpipe.js" );
 
-                    $div .= '<script>
-    var maxFilesize = "'.ini_get("upload_max_filesize").'";
+                //$div .= '<piperecorder id="custom-id" pipe-width="640" pipe-height="510" pipe-qualityurl="avq/480p.xml" pipe-accounthash="50373a7376bb083ff7236effddd82431" pipe-eid="hlALYe" pipe-mrt="60" pipe-dup="1"></piperecorder>';
+                $div .= '<div id="recorder-'.$attachment->id.'"></div>
+    <div id="controls" class="controls">
+        <button id="recordbtn" disabled>Record</button>
+        <button id="stopbtn" disabled>Stop</button>
+        <button id="playbtn" disabled>Play</button>
+        <button id="pausebtn" disabled>Pause</button>
+        <button id="savebtn" disabled>Save</button>
+        <button id="removebtn">Remove First Recorder</button>
+    </div>';
+                $div .= '<pre id="log"></pre>';
+                $div .= '<script type="text/javascript">
+var pipeParams = {
+    size: {width:640,height:360},
+    qualityurl: "avq/480p.xml", 
+    accountHash:"50373a7376bb083ff7236effddd82431", 
+    payload:\'{"userId":"'.$user->id.'","fnum":"'.$user->fnum.'","aid":"'.$attachment->id.'","jobId":"'.$user->fnum.'|'.$attachment->id.'|'.date("Y-m-d_H:i:s").'"}\', 
+    eid:"hlALYe", 
+    showMenu:0, 
+    mrt:60,
+    sis:0,
+    asv:0, 
+    mv:1, 
+    st:1, 
+    ssb:1,
+    dup:1,
+    srec:0
+};
 
-    Dropzone.options.formA'.$attachment->id.' =  {
-        maxFiles: '.$attachment->nbmax .',
-        maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
-        dictDefaultMessage: "'.JText::_('COM_EMUNDUS_UPLOAD_DROP_FILE_OR_CLICK').'",
-        dictInvalidFileType: "'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'",
-        url: "index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid.'&format=raw",
+PipeSDK.insert("recorder-'.$attachment->id.'", pipeParams, function(recorderInserted){
+    
+    //getting the reference to the custom buttons
+    recbtn = document.getElementById("recordbtn");
+    stopbtn = document.getElementById("stopbtn");
+    playbtn = document.getElementById("playbtn");
+    //pausebtn = document.getElementById("pausebtn");
+    savebtn = document.getElementById("savebtn");
+    //removebtn = document.getElementById("removebtn");
+    
+    //Calling Control API methods when the desktop event function onReadyToRecord() is triggered
+    recorderInserted.onReadyToRecord = function(id, type){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onReadyToRecord("+args.join(\', \')+")");
+        
+        //enabling the record button
+        recbtn.disabled = false;        
+        
+        //adding onclick events to the buttons
+        recbtn.onclick = function (){
+            //calling the control API method
+            recorderInserted.record();
+            
+            //enabling the stop button, disabling the record button
+            recbtn.disabled = true;
+            stopbtn.disabled = false;
+        }
+        
+        stopbtn.onclick = function (){
+            //calling the control API method
+            recorderInserted.stopVideo();
+            
+            //enabling the stop button, disabling the record button
+            stopbtn.disabled = true;
+        }
+        
+        playbtn.onclick = function (){
+            //calling the control API method
+            recorderInserted.playVideo();
+            
+            //enabling pause, disabling play, stop, record and save buttons
+            playbtn.disabled = true;
+            stopbtn.disabled = true;
+            recbtn.disabled = true;
+            savebtn.disabled = true;
+            pausebtn.disabled = false;
+            
+        }
+        
+        pausebtn.onclick = function (){
+            //calling the control API method
+            recorderInserted.pause();
+            
+            //enabling record, play and save buttons, disabling pause and stop buttons
+            pausebtn.disabled = true;
+            stopbtn.disabled = true;
+            recbtn.disabled = false;
+            playbtn.disabled = false;
+            savebtn.disabled = false;
+        }
+        
+        savebtn.onclick = function (){
+            //calling the control API method
+            recorderInserted.save();
+            
+            //disabling the save button
+            savebtn.disabled = true;
+        }
+        
+    }
+    
+    removebtn.onclick = function (){
+        //calling the control API method
+        recorderInserted.remove();
+        
+        //disabling all the buttons
+        removebtn.disabled = true;
+        pausebtn.disabled = true;
+        stopbtn.disabled = true;
+        recbtn.disabled = true;
+        playbtn.disabled = true;
+        savebtn.disabled = true;
+    }
+    
+    
+    //DESKTOP EVENTS API
+    recorderInserted.userHasCamMic = function(id,camNr, micNr){
+        var args = Array.prototype.slice.call(arguments);
+        __log("userHasCamMic("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.btRecordPressed = function(id){
+        var args = Array.prototype.slice.call(arguments);
+        __log("btRecordPressed("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.btStopRecordingPressed = function(id){
+        var args = Array.prototype.slice.call(arguments);
+        __log("btStopRecordingPressed("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.btPlayPressed = function(id){
+        var args = Array.prototype.slice.call(arguments);
+        __log("btPlayPressed("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.btPausePressed = function(id){
+        var args = Array.prototype.slice.call(arguments);
+        __log("btPausePressed("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.onUploadDone = function(recorderId, streamName, streamDuration, audioCodec, videoCodec, fileType, audioOnly, location){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onUploadDone("+args.join(\', \')+")");
+        
+        //enabling record, play and save buttons
+        recbtn.disabled = false;
+        playbtn.disabled = false;
+        savebtn.disabled = false;
+        
+    }
+    
+    recorderInserted.onCamAccess = function(id, allowed){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onCamAccess("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.onPlaybackComplete = function(id){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onPlaybackComplete("+args.join(\', \')+")");
+        
+        //enabling play button, disabling pause button
+        playbtn.disabled = false;
+        pausebtn.disabled = true;
+        
+    }
+    
+    recorderInserted.onRecordingStarted = function(id){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onRecordingStarted("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.onConnectionClosed = function(id){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onConnectionClosed("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.onConnectionStatus = function(id, status){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onConnectionStatus("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.onMicActivityLevel = function(id, level){
+        var args = Array.prototype.slice.call(arguments);
+        //__log("onMicActivityLevel("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.onFPSChange = function(id, fps){
+        var args = Array.prototype.slice.call(arguments);
+        //__log("onFPSChange("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.onSaveOk = function(recorderId, streamName, streamDuration, cameraName, micName, audioCodec, videoCodec, filetype, videoId, audioOnly, location){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onSaveOk("+args.join(\', \')+")");
+    }
+    
+    //DESKTOP UPLOAD EVENTS API
+    recorderInserted.onFlashReady = function(id){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onFlashReady("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.onDesktopVideoUploadStarted = function(recorderId, filename, filetype, audioOnly){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onDesktopVideoUploadStarted("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.onDesktopVideoUploadSuccess = function(recorderId, filename, filetype, videoId, audioOnly, location){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onDesktopVideoUploadSuccess("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.onDesktopVideoUploadFailed = function(id, error){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onDesktopVideoUploadFailed("+args.join(\', \')+")");
+    }
+    
+    //MOBILE EVENTS API
+    recorderInserted.onVideoUploadStarted = function(recorderId, filename, filetype, audioOnly){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onVideoUploadStarted("+args.join(\', \')+")");
+    }
 
-        accept: function(file, done) {
-            var sFileName = file.name;
-            var sFileExtension = sFileName.split(".")[sFileName.split(".").length - 1].toLowerCase();
-
-            if (sFileExtension == "php") {
-              done("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
+    recorderInserted.onVideoUploadSuccess = function(recorderId, filename, filetype, videoId, audioOnly, location){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onVideoUploadSuccess("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.onVideoUploadProgress = function(recorderId, percent){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onVideoUploadProgress("+args.join(\', \')+")");
+    }
+    
+    recorderInserted.onVideoUploadFailed = function(id, error){
+        var args = Array.prototype.slice.call(arguments);
+        __log("onVideoUploadFailed("+args.join(\', \')+")");
+    }
+    
+});
+function __log(e, data) {
+    log.innerHTML += "\n" + e + " " + (data || "");
+}
+                </script>';
             }
             else {
-                var allowedExtension = "'.$attachment->allowed_types.'";
-                var n = allowedExtension.indexOf(sFileExtension);
-                if (n >= 0)
-                    done();
+                $div .= '<table id="'.$attachment->id .'" class="table em-fieldset-attachment-table">';
+
+                if ($attachment->nb > 0) {
+                    foreach ($attachment->liste as $item) {
+                        $div .= '<tr class="em-added-files">
+                        <td>';
+                        if ($item->can_be_viewed==1) {
+                            $div .= '<a class="btn btn-success btn-xs" href="'.$chemin.$user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
+                        } else {
+                            $div .= JText::_('CANT_VIEW') ;
+                        }
+                        $div .= '&nbsp;-&nbsp;' ;
+                        if ($item->can_be_deleted==1 && !$block_upload) {
+                            $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> '.JText::_('DELETE').'</a>';
+                        } else {
+                            $div .= JText::_('CANT_DELETE');
+                        }
+                        $div .= ' | ';
+                        $div .= JString::ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2"));
+                        $div .= ' | ';
+                        if ($this->show_shortdesc_input) {
+                            $div .= empty($item->description)?JText::_('NO_DESC'):$item->description;
+                        }
+                        $div .= '</td></tr>';
+                    }
+                }
+                // Disable upload UI if
+                if (!$block_upload) {
+                    
+                    if ($attachment->nb<$attachment->nbmax || $user->profile<=4) {
+                        $div .= '
+                    <tr>
+                        <td>';
+                        $div .= '<form id="form-a'.$attachment->id.'" name="checklistForm" class="dropzone" action="'.JRoute::_('index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid).'" method="post" enctype="multipart/form-data">';
+                        $div .= '<input type="hidden" name="attachment" value="'.$attachment->id.'"/>
+                        <input type="hidden" name="duplicate" value="'.$attachment->duplicate.'"/>
+                        <input type="hidden" name="label" value="'.$attachment->lbl.'"/>
+                        <div class="input-group em-fieldset-attachment-table-upload">';
+                        if ($this->show_shortdesc_input) {
+                            $div .= '<div class="row"><div class="col-sm-12 em-description"><label><span >'.JText::_('SHORT_DESC').'</span></label><input type="text" class="form-control" name="description" placeholder="" /></div></div>';
+                        }
+                        if ($this->show_browse_button) {
+                            $div .= '<div class="row" id="upload-files-'.$file_upload.'"><div class="col-sm-12"><label for="file" class="custom-file-upload"><input class="em-send-attachment" id="em-send-attachment-'.$file_upload.'" type="file" name="file" multiple onchange="processSelectedFiles(this)"/><span style="display: none;" >'.JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE").'</span></label>';
+                        }
+                            $div .= '<input type="hidden" class="form-control" readonly="">';
+                        if ($this->show_browse_button) {
+                            $div .= '<input class="btn btn-success em_send_uploaded_file" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/></div></div>';
+                        }
+                        $div .= '</div>';
+
+                        $div .= '<script>
+        var maxFilesize = "'.ini_get("upload_max_filesize").'";
+
+        Dropzone.options.formA'.$attachment->id.' =  {
+            maxFiles: '.$attachment->nbmax .',
+            maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
+            dictDefaultMessage: "'.JText::_('COM_EMUNDUS_UPLOAD_DROP_FILE_OR_CLICK').'",
+            dictInvalidFileType: "'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'",
+            url: "index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid.'&format=raw",
+
+            accept: function(file, done) {
+                var sFileName = file.name;
+                var sFileExtension = sFileName.split(".")[sFileName.split(".").length - 1].toLowerCase();
+
+                if (sFileExtension == "php") {
+                  done("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
+                }
                 else {
-                    alert("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
-                    done("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
+                    var allowedExtension = "'.$attachment->allowed_types.'";
+                    var n = allowedExtension.indexOf(sFileExtension);
+                    if (n >= 0)
+                        done();
+                    else {
+                        alert("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
+                        done("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
+                        this.removeFile(file);
+                    }
+                }
+            },
+
+            init: function() {
+
+              this.on("maxfilesexceeded", function(file) {
+                this.removeFile(file);
+                alert("'. JText::_('NO_MORE').' : '.$attachment->value .'. '.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'");
+              });
+
+              this.on("success", function(file, responseText) {
+                document.location.reload(true);
+
+                // Handle the responseText here. For example, add the text to the preview element:
+                var response = JSON.parse(responseText);
+                var id = response["id"];
+                file.previewTemplate.appendChild(document.createTextNode(response["message"]+" "));
+
+                if (!response["status"]) {
+                    // Remove the file preview.
                     this.removeFile(file);
                 }
-            }
-        },
 
-        init: function() {
+                // Change icon on fieldset
+                document.getElementById("l'.$attachment->id.'").className = "need_ok";
+                document.getElementById("'.$attachment->id.'").className = "need_ok";
 
-          this.on("maxfilesexceeded", function(file) {
-            this.removeFile(file);
-            alert("'. JText::_('NO_MORE').' : '.$attachment->value .'. '.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'");
-          });
+                // Create the remove button
+                var removeButton = Dropzone.createElement("<button>X</button>");
 
-          this.on("success", function(file, responseText) {
-            document.location.reload(true);
+                // Capture the Dropzone instance as closure.
+                var _this = this;
 
-            // Handle the responseText here. For example, add the text to the preview element:
-            var response = JSON.parse(responseText);
-            var id = response["id"];
-            file.previewTemplate.appendChild(document.createTextNode(response["message"]+" "));
+                // Listen to the click event
+                removeButton.addEventListener("click", function(e) {
+                  // Make sure the button click does not submit the form:
+                  e.preventDefault();
+                  e.stopPropagation();
 
-            if (!response["status"]) {
-                // Remove the file preview.
-                this.removeFile(file);
-            }
+                  // Remove the file preview.
+                  _this.removeFile(file);
+                  // If you want to the delete the file on the server as well,
+                  // you can do the AJAX request here.
+                  $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "index.php?option=com_emundus&task=delete&uid="+id+"&aid='.$attachment->id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'&format=raw",
+                    data: ({
+                        format: "raw"
+                    }),
+                    success: function(result) {
+                        if (result.status) { 
+                            // Change icon on fieldset
+                            document.getElementById("l'.$attachment->id.'").className = "";
+                            document.getElementById("'.$attachment->id.'").className = "";
+                            alert("'. JText::_('ATTACHMENT_DELETED').'");
+                        }
 
-            // Change icon on fieldset
-            document.getElementById("l'.$attachment->id.'").className = "need_ok";
-            document.getElementById("'.$attachment->id.'").className = "need_ok";
-
-            // Create the remove button
-            var removeButton = Dropzone.createElement("<button>X</button>");
-
-            // Capture the Dropzone instance as closure.
-            var _this = this;
-
-            // Listen to the click event
-            removeButton.addEventListener("click", function(e) {
-              // Make sure the button click does not submit the form:
-              e.preventDefault();
-              e.stopPropagation();
-
-              // Remove the file preview.
-              _this.removeFile(file);
-              // If you want to the delete the file on the server as well,
-              // you can do the AJAX request here.
-              $.ajax({
-                type: "GET",
-                dataType: "json",
-                url: "index.php?option=com_emundus&task=delete&uid="+id+"&aid='.$attachment->id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'&format=raw",
-                data: ({
-                    format: "raw"
-                }),
-                success: function(result) {
-                    if (result.status) { 
-                        // Change icon on fieldset
-                        document.getElementById("l'.$attachment->id.'").className = "";
-                        document.getElementById("'.$attachment->id.'").className = "";
-                        alert("'. JText::_('ATTACHMENT_DELETED').'");
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR.responseText);
                     }
-
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.log(jqXHR.responseText);
-                }
+                  });
+                });
+                // Add the button to the file preview element.
+                file.previewElement.appendChild(removeButton);
               });
-            });
-            // Add the button to the file preview element.
-            file.previewElement.appendChild(removeButton);
-          });
 
-        }
-    }
-    </script>';
-                    $div .= '</form>';
-                    $div .= '</td>
-                </tr>
-                <tr class="em-allowed-files">
-                    <td>
-                    <p><em>'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p><p><em>'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>
-                    </td>
-                </tr>';
-                } else {
-                    $div .= '
-                <tr class="em-no-more-files">
-                    <td>
-                    <p>'. JText::_('NO_MORE').' '.$attachment->value .'<br />'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</p>
-                    </td>
-                </tr>';
-
-                $div .= '</tbody>';
-                }
-            } else {
-                $div .= JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) )));
             }
-            $div .= '</table></div></fieldset>';
+        }
+        </script>';
+                        $div .= '</form>';
+                        $div .= '</td>
+                    </tr>
+                    <tr class="em-allowed-files">
+                        <td>
+                        <p><em>'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p><p><em>'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>
+                        </td>
+                    </tr>';
+                    } else {
+                        $div .= '
+                    <tr class="em-no-more-files">
+                        <td>
+                        <p>'. JText::_('NO_MORE').' '.$attachment->value .'<br />'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</p>
+                        </td>
+                    </tr>';
+
+                    $div .= '</tbody>';
+                    }
+                } else {
+                    $div .= JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) )));
+                }
+                $div .= '</table>';
+            }
+            $div .= '</div></fieldset>';
             if ($attachment->mandatory) {
 	            $attachment_list_mand .= $div;
             } else {

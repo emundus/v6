@@ -22,8 +22,11 @@ JText::script('COM_EMUNDUSONBOARD_ADDCAMP_INFORMATION');
 JText::script('COM_EMUNDUSONBOARD_CHOOSECATEGORY');
 JText::script('COM_EMUNDUSONBOARD_ADD_RETOUR');
 JText::script('COM_EMUNDUSONBOARD_ADD_CONTINUER');
+
+$lang = JFactory::getLanguage();
+$actualLanguage = substr($lang->getTag(), 0, 2);
 ?>
 
-<div id="em-addEmail-vue" email="<?= $this->id ;?>"></div>
+<div id="em-addEmail-vue" email="<?= $this->id ;?>" actualLanguage="<?= $actualLanguage ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>

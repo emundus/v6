@@ -13,6 +13,7 @@ $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_onboard/chunk-vendors.js');
 $document->addStyleSheet('media/com_emundus_onboard/app.css');
 
+
 ?>
 
 <div id="em-formBuilder-vue" prid="<?= $this->prid ;?>" index="<?= $this->index ;?>"></div>

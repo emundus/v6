@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="COM_EMUNDUS_WEBHOOK" option="View">
+        <message>
+                        <![CDATA[COM_EMUNDUS_WEBHOOK_DESC]]>
+        </message>
+    </layout>
+
+</metadata>

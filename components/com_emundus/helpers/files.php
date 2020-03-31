@@ -1042,6 +1042,9 @@ class EmundusHelperFiles
                                 }
                             },
                             onDelete: function() {
+                                //search();
+                                //refreshFilter();
+                                setTimeout(search, 100);
                                 return true;
                             }
                         });
