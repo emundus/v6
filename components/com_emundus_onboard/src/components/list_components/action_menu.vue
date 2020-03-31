@@ -391,6 +391,7 @@ export default {
                     .then(response => {
                       this.total = response.data.data;
                       this.updateTotal(this.total);
+                      this.$parent.validateFilters();
                     });
                 })
                 .catch(error => {
@@ -431,6 +432,7 @@ export default {
                     .then(response => {
                       this.total = response.data.data;
                       this.updateTotal(this.total);
+                      this.$parent.validateFilters();
                     });
                 })
                 .catch(error => {
@@ -467,6 +469,7 @@ export default {
                     showConfirmButton: false,
                     timer: 2000
                   });
+                  this.$parent.validateFilters();
                 })
                 .catch(error => {
                   console.log(error);
@@ -489,6 +492,7 @@ export default {
                 showConfirmButton: false,
                 timer: 2000
               });
+              this.$parent.validateFilters();
             })
             .catch(error => {
               console.log(error);
@@ -509,6 +513,7 @@ export default {
                 showConfirmButton: false,
                 timer: 2000
               });
+              this.$parent.validateFilters();
             })
             .catch(error => {
               console.log(error);
@@ -540,6 +545,7 @@ export default {
                     showConfirmButton: false,
                     timer: 2000
                   });
+                  this.$parent.validateFilters();
                 })
                 .catch(error => {
                   console.log(error);
@@ -562,6 +568,7 @@ export default {
                 showConfirmButton: false,
                 timer: 2000
               });
+              this.$parent.validateFilters();
             })
             .catch(error => {
               console.log(error);
@@ -582,6 +589,7 @@ export default {
                 showConfirmButton: false,
                 timer: 2000
               });
+              this.$parent.validateFilters();
             })
             .catch(error => {
               console.log(error);
@@ -615,6 +623,7 @@ export default {
                 .then(response => {
                   this.total = response.data.data;
                   this.updateTotal(this.total);
+                  this.$parent.validateFilters();
                 });
             })
             .catch(error => {

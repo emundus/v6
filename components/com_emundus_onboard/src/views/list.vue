@@ -287,12 +287,6 @@ export default {
               filtersCount
           )
           .then(response => {
-            console.log("index.php?option=com_emundus_onboard&controller=" +
-              this.type +
-              "&task=get" +
-              this.type +
-              "count" +
-              filtersCount);
             this.total = response.data.data;
           })
           .then(() => {
