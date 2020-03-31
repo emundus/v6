@@ -171,6 +171,7 @@ export default {
       type: "",
       add_url: ""
     },
+    
     Select: Joomla.JText._("COM_EMUNDUSONBOARD_SELECT"),
     Deselect: Joomla.JText._("COM_EMUNDUSONBOARD_DESELECT"),
     Total: Joomla.JText._("COM_EMUNDUSONBOARD_TOTAL"),
