@@ -184,13 +184,13 @@ export default {
     isActiveAll: false,
     filtersCount: "",
     filters: "",
-    filtersCountFilter: "",
-    filtersCountSearch: "",
-    filtersFilter: "",
-    filtersSort: "",
-    filtersSearch: "",
-    filtersLim: "",
-    filtersPage: "",
+    filtersCountFilter: "&filterCount=",
+    filtersCountSearch: "&rechercheCount=",
+    filtersFilter: "&filter=",
+    filtersSort: "&sort=",
+    filtersSearch: "&recherche=",
+    filtersLim: "&lim=",
+    filtersPage: "&page=",
     filtre: "",
     tri: "",
     search: "",
@@ -219,7 +219,7 @@ export default {
       this.actions.add_url =
         "index.php?option=com_emundus_onboard&view=" + this.typeForAdd + "&layout=add";
     }
-    this.allFilters(this.filtersCount, this.filters);
+    this.validateFilters();
   },
 
   methods: {
@@ -286,6 +286,12 @@ export default {
               filtersCount
           )
           .then(response => {
+            console.log("index.php?option=com_emundus_onboard&controller=" +
+              this.type +
+              "&task=get" +
+              this.type +
+              "count" +
+              filtersCount);
             this.total = response.data.data;
           })
           .then(() => {

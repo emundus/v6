@@ -33,6 +33,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
     public function getcampaigncount() {
         $user = JFactory::getUser();
         $m_camp = $this->model;
+
         $filterCount = $_GET['filterCount'];
         $rechercheCount = $_GET['rechercheCount'];
 
