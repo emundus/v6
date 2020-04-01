@@ -150,6 +150,167 @@ if (!empty($this->custom_title)) :?>
                     $div .= '
                 <tr>
                     <td>';
+                ///Video
+                if ($attachment->allowed_types == 'video') {
+                    $document->addStyleSheet("//cdn.addpipe.com/2.0/pipe.css" );
+                    $document->addScript("//cdn.addpipe.com/2.0/pipe.js" );
+                    
+                    $div .= '<div id="recorder-'.$attachment->id.'-'.$attachment->nb.'"></div>';
+                    $div .= '<pre id="log"></pre>';
+                    
+                    $div .= '<script type="text/javascript">
+    var pipeParams = {
+        size: {width:640,height:510},
+        qualityurl: "avq/480p.xml", 
+        accountHash:"50373a7376bb083ff7236effddd82431", 
+        payload:"{\"userId\":\"'.$user->id.'\",\"fnum\":\"'.$user->fnum.'\",\"aid\":\"'.$attachment->id.'\",\"lbl\":\"'.$attachment->lbl.'\",\"jobId\":\"'.$user->fnum.'|'.$attachment->id.'|'.date("Y-m-d_H:i:s").'\"}", 
+        eid:"hlALYe", 
+        showMenu:1, 
+        mrt:60,
+        sis:0,
+        asv:1, 
+        mv:1, 
+        st:1, 
+        ssb:1,
+        dup:1,
+        srec:0
+    };
+
+    PipeSDK.insert("recorder-'.$attachment->id.'-'.$attachment->nb.'", pipeParams, function(recorderInserted){
+     
+        //DESKTOP EVENTS API
+        recorderInserted.userHasCamMic = function(id,camNr, micNr){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_CAM_ACCESS').'");
+        }
+        
+        recorderInserted.btRecordPressed = function(id){
+            //var args = Array.prototype.slice.call(arguments);
+            //__log("btRecordPressed("+args.join(\', \')+")");
+        }
+        
+        recorderInserted.btStopRecordingPressed = function(id){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_STOP_RECORDING').'");
+        }
+        
+        recorderInserted.btPlayPressed = function(id){
+            //var args = Array.prototype.slice.call(arguments);
+            //__log("btPlayPressed("+args.join(\', \')+")");
+        }
+        
+        recorderInserted.btPausePressed = function(id){
+            //var args = Array.prototype.slice.call(arguments);
+            //__log("btPausePressed("+args.join(\', \')+")");
+        }
+        
+        recorderInserted.onUploadDone = function(recorderId, streamName, streamDuration, audioCodec, videoCodec, fileType, audioOnly, location){
+            //var args = Array.prototype.slice.call(arguments);
+            //__log("onUploadDone("+args.join(\', \')+")");
+            recorderInserted.save();
+        }
+        
+        recorderInserted.onCamAccess = function(id, allowed){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_CAM_ACCESS_READY').'");
+        }
+        
+        recorderInserted.onPlaybackComplete = function(id){
+            //var args = Array.prototype.slice.call(arguments);
+            //__log("onPlaybackComplete("+args.join(\', \')+")");       
+        }
+        
+        recorderInserted.onRecordingStarted = function(id){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_RECORDING').'");
+        }
+        
+        recorderInserted.onConnectionClosed = function(id){
+            //var args = Array.prototype.slice.call(arguments);
+            //__log("onConnectionClosed("+args.join(\', \')+")");
+        }
+        
+        recorderInserted.onConnectionStatus = function(id, status){
+            //var args = Array.prototype.slice.call(arguments);
+            //__log("onConnectionStatus("+args.join(\', \')+")");
+        }
+        
+        recorderInserted.onMicActivityLevel = function(id, level){
+            //var args = Array.prototype.slice.call(arguments);
+            //__log("onMicActivityLevel("+args.join(\', \')+")");
+        }
+        
+        recorderInserted.onFPSChange = function(id, fps){
+            //var args = Array.prototype.slice.call(arguments);
+            //__log("onFPSChange("+args.join(\', \')+")");
+        }
+        
+        recorderInserted.onSaveOk = function(recorderId, streamName, streamDuration, cameraName, micName, audioCodec, videoCodec, filetype, videoId, audioOnly, location){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_RECORD_SAVED').'");
+
+            //reload page
+            recorderInserted.remove();
+            //setTimeout(window.location.reload(true), 1000); 
+        }
+        
+        //DESKTOP UPLOAD EVENTS API
+        recorderInserted.onFlashReady = function(id){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_CLICK_TO_RECORD').'");
+        }
+        
+        recorderInserted.onDesktopVideoUploadStarted = function(recorderId, filename, filetype, audioOnly){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_UPLOADING').'");
+        }
+        
+        recorderInserted.onDesktopVideoUploadSuccess = function(recorderId, filename, filetype, videoId, audioOnly, location){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_RECORD_SAVED').'");
+
+            //reload page
+            recorderInserted.remove();
+            //setTimeout(window.location.reload(true), 1000); 
+        }
+        
+        recorderInserted.onDesktopVideoUploadFailed = function(id, error){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_RECORD_FAILED').'");
+        }
+        
+        //MOBILE EVENTS API
+        recorderInserted.onVideoUploadStarted = function(recorderId, filename, filetype, audioOnly){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_RECORD_SAVED').'");
+        }
+
+        recorderInserted.onVideoUploadSuccess = function(recorderId, filename, filetype, videoId, audioOnly, location){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_RECORD_SAVED').'");
+
+            //reload page
+            recorderInserted.remove();
+            setTimeout(window.location.reload(true), 1000);
+        }
+        
+        recorderInserted.onVideoUploadProgress = function(recorderId, percent){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_UPLOADING').'");
+        }
+        
+        recorderInserted.onVideoUploadFailed = function(id, error){
+            //var args = Array.prototype.slice.call(arguments);
+            __log("'.JText::_('VIDEO_INSTR_RECORD_FAILED').'");
+        }
+        
+    });
+    function __log(e, data) {
+        log.innerHTML += "\n" + e + " " + (data || "");
+    }
+</script>';
+            }
+            else {
                     $div .= '<form id="form-a'.$attachment->id.'" name="checklistForm" class="dropzone" action="'.JRoute::_('index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid).'" method="post" enctype="multipart/form-data">';
                     $div .= '<input type="hidden" name="attachment" value="'.$attachment->id.'"/>
                     <input type="hidden" name="duplicate" value="'.$attachment->duplicate.'"/>
@@ -286,6 +447,7 @@ if (!empty($this->custom_title)) :?>
     }
     </script>';
                     $div .= '</form>';
+                }
                     $div .= '</td>
                 </tr>
                 <tr class="em-allowed-files">
