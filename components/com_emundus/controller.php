@@ -708,6 +708,7 @@ class EmundusController extends JControllerLegacy {
 		    } else {
 			    JFactory::getApplication()->enqueueMessage($errorInfo."\n", 'error');
 		    }
+            $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid);
 		    return false;
 	    }
 

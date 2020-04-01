@@ -6,6 +6,7 @@ JHTML::_('behavior.modal');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/css/emundus_checklist.css" );
+$document->addScript("https://cdn.jsdelivr.net/npm/sweetalert2@8");
 $mainframe = JFactory::getApplication();
 
 $chemin = EMUNDUS_PATH_REL;
@@ -186,10 +187,30 @@ if (!empty($this->custom_title)) :?>
             } else {
                 var allowedExtension = "'.$attachment->allowed_types.'";
                 var n = allowedExtension.indexOf(sFileExtension);
+                var desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'description\']").value;
+                var required_desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'required_desc\']").value;
                 if (n >= 0) {
-                    done();
+                    if (required_desc == 1 && desc.trim() === "") {
+                        Swal.fire({
+                            position: "top",
+                            type: "warning",
+                            title: "'. JText::_("COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED").'",
+                            confirmButtonText: "'. JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
+                            showCancelButton: false
+                        });
+                        done("'. JText::_('COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED').'");
+                        this.removeFile(file);
+                    } else {
+                        done();
+                    }
                 } else {
-                    alert("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
+                    Swal.fire({
+                            position: "top",
+                            type: "warning",
+                            title: "'. JText::_("PLEASE_ONLY").' '.$attachment->allowed_types.'",
+                            confirmButtonText: "'. JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
+                            showCancelButton: false
+                        });
                     done("'. JText::_('PLEASE_ONLY').' '.$attachment->allowed_types.'");
                     this.removeFile(file);
                 }
@@ -452,7 +473,8 @@ function processSelectedFiles(fileInput) {
             type: 'success',
             title: '<?= JText::_('COM_EMUNDUS_CHECKLIST_FILE_COMPLETE'); ?>',
             confirmButtonText: '<?= JText::_('COM_EMUNDUS_CHECKLIST_SEND_FILE'); ?>',
-            showCancelButton: false
+            showCancelButton: true,
+            cancelButtonText: '<?= JText::_('EM_CONTINUE'); ?>'
         })
         .then(confirm => {
             if (confirm.value) {
