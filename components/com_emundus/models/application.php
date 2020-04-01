@@ -623,13 +623,14 @@ class EmundusModelApplication extends JModelList {
                                     $date_params = json_decode($element->params);
                                     $elt = date($date_params->date_form_format, strtotime($element->content));
 
-                                } elseif ($element->plugin == 'birthday' && $element->content > 0) {
-                                    $format = 'Y-n-j';
+                                } elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content > 0) {
+                                    $format = json_decode($element->params)->list_date_format;
+
                                     $d = DateTime::createFromFormat($format, $element->content);
                                     if ($d && $d->format($format) == $element->content) {
                                         $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
                                     } else {
-                                        $elt = $element->content;
+                                        $elt = JHtml::_('date', $element->content, $format);
                                     }
 
                                 } elseif ($element->plugin == 'databasejoin') {
@@ -727,13 +728,14 @@ class EmundusModelApplication extends JModelList {
                                             $date_params = json_decode($elements[$j]->params);
                                             $elt = date($date_params->date_form_format, strtotime($r_elt));
 
-                                        } elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
-                                            $format = 'Y-n-j';
+                                        } elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt > 0) {
+
+                                            $format = json_decode($elements[$j]->params)->list_date_format;
                                             $d = DateTime::createFromFormat($format, $r_elt);
                                             if ($d && $d->format($format) == $r_elt) {
                                                 $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
                                             } else {
-                                                $elt = $r_elt;
+                                                $elt = JHtml::_('date', $r_elt, $format);
                                             }
 
                                         } elseif ($elements[$j]->plugin == 'databasejoin') {
@@ -806,13 +808,14 @@ class EmundusModelApplication extends JModelList {
                                     $date_params = json_decode($element->params);
                                     $elt = date($date_params->date_form_format, strtotime($element->content));
 
-                                } elseif ($element->plugin == 'birthday' && $element->content > 0) {
-                                    $format = 'Y-n-j';
+                                } elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content > 0) {
+                                    $format = json_decode($element->params)->list_date_format;
+
                                     $d = DateTime::createFromFormat($format, $element->content);
                                     if ($d && $d->format($format) == $element->content) {
                                         $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
                                     } else {
-                                        $elt = $element->content;
+                                        $elt = JHtml::_('date', $element->content, $format);
                                     }
 
                                 }
@@ -1052,13 +1055,14 @@ class EmundusModelApplication extends JModelList {
 	                                                $elt = date($params->date_form_format, strtotime($r_elt));
 	                                            }
 
-	                                            elseif ($elements[$j]->plugin == 'birthday' && $r_elt>0) {
-	                                                $format = 'Y-n-j';
+	                                            elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt>0) {
+	                                                $format = $params->list_date_format;
+
 	                                                $d = DateTime::createFromFormat($format, $r_elt);
 	                                                if ($d && $d->format($format) == $r_elt) {
 		                                                $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
 	                                                } else {
-		                                                $elt = $r_elt;
+                                                        $elt = JHtml::_('date', $r_elt, $format);
 	                                                }
 	                                            }
 
@@ -1173,13 +1177,14 @@ class EmundusModelApplication extends JModelList {
 	                                        $date_params = json_decode($element->params);
 	                                        $elt = date($date_params->date_form_format, strtotime($element->content));
 	                                    }
-	                                    elseif ($element->plugin=='birthday' && $element->content>0) {
-	                                        $format = 'Y-n-j';
-	                                        $d = DateTime::createFromFormat($format, $element->content);
+	                                    elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content>0) {
+                                            $format = json_decode($element->params)->list_date_format;
+
+                                            $d = DateTime::createFromFormat($format, $element->content);
 	                                        if ($d && $d->format($format) == $element->content) {
 		                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
 	                                        } else {
-		                                        $elt = $element->content;
+                                                $elt = JHtml::_('date', $element->content, $format);
 	                                        }
 	                                    }
 	                                    elseif ($element->plugin=='databasejoin') {
@@ -1462,13 +1467,13 @@ class EmundusModelApplication extends JModelList {
 	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
 	                                            $elt = $dt->format($params->date_form_format);
                                             }
-                                            elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
-                                                $format = 'Y-n-j';
+                                            elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt > 0) {
+                                                $format = $params->list_date_format;
                                                 $d = DateTime::createFromFormat($format, $r_elt);
                                                 if ($d && $d->format($format) == $r_elt) {
 	                                                $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
                                                 } else {
-	                                                $elt = $r_elt;
+                                                    $elt = JHtml::_('date', $r_elt, $format);
                                                 }
                                             }
                                             elseif ($elements[$j]->plugin == 'databasejoin') {
@@ -1600,13 +1605,13 @@ class EmundusModelApplication extends JModelList {
 	                                            $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
 	                                            $elt = $dt->format($date_params->date_form_format);
                                             }
-                                            elseif ($elements[$j]->plugin == 'birthday' && $r_elt > 0) {
-                                                $format = 'Y-n-j';
+                                            elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt > 0) {
+                                                $format = json_decode($elements[$j]->params)->list_date_format;
                                                 $d = DateTime::createFromFormat($format, $r_elt);
                                                 if ($d && $d->format($format) == $r_elt) {
                                                     $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
                                                 } else {
-                                                    $elt = $r_elt;
+                                                    $elt = JHtml::_('date', $r_elt, $format);
                                                 }
                                             }
                                             elseif ($elements[$j]->plugin == 'databasejoin') {
@@ -1717,13 +1722,13 @@ class EmundusModelApplication extends JModelList {
 	                                        $elt = $dt->format($params->date_form_format);
                                         }
 
-                                        elseif ($element->plugin == 'birthday' && $element->content > 0) {
-                                            $format = 'Y-n-j';
+                                        elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content > 0) {
+                                            $format = $params->list_date_format;
                                             $d = DateTime::createFromFormat($format, $element->content);
                                             if ($d && $d->format($format) == $element->content) {
                                                 $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
                                             } else {
-                                                $elt = $element->content;
+                                                $elt = JHtml::_('date', $element->content, $format);
                                             }
                                         }
 
@@ -1921,13 +1926,16 @@ class EmundusModelApplication extends JModelList {
                                             $date_params = json_decode($elements[$j]->params);
                                             $elt = date($date_params->date_form_format, strtotime($r_elt));
                                         }
-                                        elseif ($elements[$j]->plugin=='birthday' && $r_elt>0) {
-                                            $format = 'Y-n-j';
+                                        elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt>0) {
+                                            $format = json_decode($elements[$j]->params)->list_date_format;
+
                                             $d = DateTime::createFromFormat($format, $r_elt);
-                                            if($d && $d->format($format) == $r_elt)
+                                            if($d && $d->format($format) == $r_elt) {
                                                 $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
-                                            else
-                                                $elt = $r_elt;
+                                            }
+                                            else {
+                                                $elt = JHtml::_('date', $r_elt, $format);
+                                            }
                                         }
                                         elseif($elements[$j]->plugin=='databasejoin') {
                                             $params = json_decode($elements[$j]->params);
@@ -1976,13 +1984,16 @@ class EmundusModelApplication extends JModelList {
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
 
                                     }
-                                    elseif ($element->plugin=='birthday' && $element->content>0) {
-                                        $format = 'Y-n-j';
+                                    elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content>0) {
+                                        $format = json_decode($element->params)->list_date_format;
+
                                         $d = DateTime::createFromFormat($format, $element->content);
-                                        if($d && $d->format($format) == $element->content)
+                                        if($d && $d->format($format) == $element->content) {
                                             $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-                                        else
-                                            $elt = $element->content;
+                                        }
+                                        else {
+                                            $elt = JHtml::_('date', $element->content, $format);
+                                        }
                                     }
                                     elseif($element->plugin=='databasejoin') {
                                         $params = json_decode($element->params);
