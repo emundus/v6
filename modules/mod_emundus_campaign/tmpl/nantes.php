@@ -175,7 +175,7 @@ $site_offset = $config->get('offset');
                         $infos = $helper->getNantesInfos($result->id);
                         if (!empty($infos)) :?>
                             <?= !empty($infos->public) ? '<p><b>' . JText::_('MOD_EM_CAMPAIGN_PUBLIC') . ': </b>' . $infos->public . '</p>' : '';?>
-                            <?= !empty($infos->formation_length) ? '<p><b>' . JText::_('MOD_EM_CAMPAIGN_FOMATION_LENGTH') . ': </b>' . $infos->formation_length . '</p>' : '';?>
+                            <?= !empty($infos->formation_length) ? '<p><b>' . JText::_('MOD_EM_CAMPAIGN_FOMATION_LENGTH') . ': </b>' . $infos->formation_length . ' ' . ((int)$infos->formation_length > 1 ? JText::_('DAYS') : JText::_('DAY')) . '</p>' : '';?>
                             <?= !empty($infos->date_start) ? '<p><b>' . JText::_('MOD_EM_FORMATION_START') . ': </b>' . JFactory::getDate(new JDate($infos->date_start, $site_offset))->format($mod_em_campaign_date_format) . '</p>' : '';?>
                         <?php endif; ?>
                         <p>
@@ -309,7 +309,7 @@ $site_offset = $config->get('offset');
         $infos = $helper->getNantesInfos($result->id);
         if (!empty($infos)) :?>
             <?= !empty($infos->public) ? '<p><b>' . JText::_('MOD_EM_CAMPAIGN_PUBLIC') . ': </b>' . $infos->public . '</p>' : '';?>
-            <?= !empty($infos->formation_length) ? '<p><b>' . JText::_('MOD_EM_CAMPAIGN_FOMATION_LENGTH') . ': </b>' . $infos->formation_length . '</p>' : '';?>
+            <?= !empty($infos->formation_length) ? '<p><b>' . JText::_('MOD_EM_CAMPAIGN_FOMATION_LENGTH') . ': </b>' . $infos->formation_length . ' ' . ((int)$infos->formation_length > 1 ? JText::_('DAYS') : JText::_('DAY')) . '</p>' : '';?>
             <?= !empty($infos->date_start) ? '<p><b>' . JText::_('MOD_EM_FORMATION_START') . ': </b>' . JFactory::getDate(new JDate($infos->date_start, $site_offset))->format($mod_em_campaign_date_format) . '</p>' : '';?>
         <?php endif; ?>
 
@@ -428,7 +428,7 @@ $oldmonth = $month;
         $infos = $helper->getNantesInfos($result->id);
         if (!empty($infos)) :?>
             <?= !empty($infos->public) ? '<p><b>' . JText::_('MOD_EM_CAMPAIGN_PUBLIC') . ': </b>' . $infos->public . '</p>' : '';?>
-            <?= !empty($infos->formation_length) ? '<p><b>' . JText::_('MOD_EM_CAMPAIGN_FOMATION_LENGTH') . ': </b>' . $infos->formation_length . '</p>' : '';?>
+            <?= !empty($infos->formation_length) ? '<p><b>' . JText::_('MOD_EM_CAMPAIGN_FOMATION_LENGTH') . ': </b>' . $infos->formation_length . ' ' . ((int)$infos->formation_length > 1 ? JText::_('DAYS') : JText::_('DAY')) . '</p>' : '';?>
             <?= !empty($infos->date_start) ? '<p><b>' . JText::_('MOD_EM_FORMATION_START') . ': </b>' . JFactory::getDate(new JDate($infos->date_start, $site_offset))->format($mod_em_campaign_date_format) . '</p>' : '';?>
         <?php endif; ?>
 
