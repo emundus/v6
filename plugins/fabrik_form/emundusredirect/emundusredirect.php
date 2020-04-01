@@ -496,10 +496,9 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 
 			}
 
-		} else {
-			header('Location: '.$link);
-			exit();
 		}
+        header('Location: '.$link);
+        exit();
 	}
 
 	/**
