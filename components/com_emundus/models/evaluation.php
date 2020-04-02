@@ -83,7 +83,7 @@ class EmundusModelEvaluation extends JModelList {
 		$col_other = $this->getState('elements_other');
 
 		$this->elements_id = $menu_params->get('em_elements_id');
-		$this->elements_id = rtrim($this->elements_id, ',') . ',';
+		$this->elements_id = rtrim($this->elements_id, ',');
 
 		// get evaluation element
 		$show_in_list_summary = 1;
@@ -95,7 +95,7 @@ class EmundusModelEvaluation extends JModelList {
 
 		if ($session->has('adv_cols')) {
 			$adv = $session->get('adv_cols');
-			if (!empty($adv)) {
+			if (!empty($adv) && !is_null($adv)) {
 				$this->elements_id .= ','.implode(',', $adv);
 			}
 
@@ -103,7 +103,10 @@ class EmundusModelEvaluation extends JModelList {
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
 
 		$this->_elements_default = array();
-		$this->_elements = @EmundusHelperFiles::getElementsName($this->elements_id);
+		
+		if(!is_null($this->elements_id)) {
+			$this->_elements = @EmundusHelperFiles::getElementsName($this->elements_id);
+		}
 
 		if (!empty($this->_elements)) {
 			foreach ($this->_elements as $def_elmt) {
