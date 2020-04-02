@@ -20,6 +20,9 @@ $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', 0);
 $status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
 $id_applicants = $eMConfig->get('id_applicants', '0');
 $applicants = explode(',',$id_applicants);
+//ADDPIPE
+$addpipe_account_hash = $eMConfig->get('addpipe_account_hash', null);
+$addpipe_eid = $eMConfig->get('addpipe_eid', null);
 
 $offset = $mainframe->get('offset', 'UTC');
 try {
@@ -159,12 +162,15 @@ if (!empty($this->custom_title)) :?>
                     $div .= '<pre id="log"></pre>';
                     
                     $div .= '<script type="text/javascript">
+    
+
+
     var pipeParams = {
         size: {width:640,height:510},
         qualityurl: "avq/480p.xml", 
-        accountHash:"50373a7376bb083ff7236effddd82431", 
-        payload:"{\"userId\":\"'.$user->id.'\",\"fnum\":\"'.$user->fnum.'\",\"aid\":\"'.$attachment->id.'\",\"lbl\":\"'.$attachment->lbl.'\",\"jobId\":\"'.$user->fnum.'|'.$attachment->id.'|'.date("Y-m-d_H:i:s").'\"}", 
-        eid:"hlALYe", 
+        accountHash:"'.$addpipe_account_hash.'", 
+        payload:"{\"userId\":\"'.$this->user->id.'\",\"fnum\":\"'.$this->user->fnum.'\",\"aid\":\"'.$attachment->id.'\",\"lbl\":\"'.$attachment->lbl.'\",\"jobId\":\"'.$this->user->fnum.'|'.$attachment->id.'|'.date("Y-m-d_H:i:s").'\"}", 
+        eid:"'.$addpipe_eid.'", 
         showMenu:1, 
         mrt:60,
         sis:0,
@@ -251,7 +257,7 @@ if (!empty($this->custom_title)) :?>
 
             //reload page
             recorderInserted.remove();
-            //setTimeout(window.location.reload(true), 1000); 
+            is_file_uploaded("'.$this->user->fnum.'","'.$attachment->id.'","'.$this->user->id.'");
         }
         
         //DESKTOP UPLOAD EVENTS API
@@ -271,7 +277,7 @@ if (!empty($this->custom_title)) :?>
 
             //reload page
             recorderInserted.remove();
-            //setTimeout(window.location.reload(true), 1000); 
+            is_file_uploaded('.$this->user->fnum.','.$attachment->id.','.$this->user->id.');
         }
         
         recorderInserted.onDesktopVideoUploadFailed = function(id, error){
@@ -291,7 +297,7 @@ if (!empty($this->custom_title)) :?>
 
             //reload page
             recorderInserted.remove();
-            setTimeout(window.location.reload(true), 1000);
+            is_file_uploaded("'.$this->user->fnum.'","'.$attachment->id.'","'.$this->user->id.'");
         }
         
         recorderInserted.onVideoUploadProgress = function(recorderId, percent){
@@ -645,5 +651,33 @@ function processSelectedFiles(fileInput) {
         })
     });
 <?php endif; ?>
+
+//ADDPIPE check if video is uploaded. If yes, reaload page
+function is_file_uploaded(fnum, aid, applicant_id) {
+    setInterval(function(){ 
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'index.php?option=com_emundus&view=webhook&controller=webhook&task=is_file_uploaded&format=raw',
+            data: ({
+                fnum: fnum,
+                aid: aid,
+                applicant_id: applicant_id
+            }),
+            success: function(result) {
+                //console.log(result.status + " :: " + result.fnum + " :: " + result.aid + " :: " + result.applicant_id + " :: " + result.user_id + " :: " + result.user_fnum + " :: " + result.query);
+                if (result.status) {
+                    clearInterval();
+                    window.location.reload(true);
+                }
+            },
+            error: function(jqXHR) {
+                console.log("ERROR: "+jqXHR.responseText);
+            }
+        });
+    }, 500);
+
+}
 
 </script>

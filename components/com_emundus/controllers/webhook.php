@@ -69,6 +69,13 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	        //you can get the webhook type by accessing the event element in the array
 	        $type = $webhookData["event"];
 
+	        if (empty($webhookDataApplication["userId"])) {
+	        	$error = JUri::getInstance().' APPLICANT_ID is NULL';
+                JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
+
+                return false;
+	        }
+
 			//move video from ftp to applicant documents
 			if (!file_exists(EMUNDUS_PATH_ABS.$webhookDataApplication["userId"])) {
 	            // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
@@ -78,7 +85,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 	            if (!mkdir(EMUNDUS_PATH_ABS.$webhookDataApplication["userId"]) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.'index.html')){
 	                $error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> Unable to create user file';
-	                JLog::add('Unable to insert uploaded document: '.$error, JLog::ERROR, 'com_emundus.webhook');
+	                JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
 
 	                return false;
 	            }
@@ -87,7 +94,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 	        if (!file_exists($ftp_path.DS.$vidName)) {
 	        	$error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> File not found: '.$ftp_path.DS.$vidName;
-                JLog::add('Uploaded file not found: '.$error, JLog::ERROR, 'com_emundus.webhook');
+                JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
 
                 return false;
 	        }
@@ -95,24 +102,24 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	        if (!copy( $ftp_path.DS.$vidName, EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.$vidName)) {
 
                 $error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> Cannot move file: '.$ftp_path.DS.$vidName.' to '.EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.$vidName;
-                JLog::add('Unable to copy document: '.$error, JLog::ERROR, 'com_emundus.webhook');
+                JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
 
                 return false;
             }
-
 
 			//add document to emundus_attachments table
 			$fnumInfos = $this->m_files->getFnumInfos($webhookDataApplication["fnum"]);
 			$description = $this->FileSizeConvert(filesize($ftp_path.DS.$vidName));
 
-			$query = 'INSERT INTO jos_emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$webhookDataApplication["userId"].', '.$webhookDataApplication["aid"].', '.$db->Quote($vidName).', '.$db->Quote($description).', 1, 1, '.$fnumInfos['id'].', '.$db->Quote($webhookDataApplication["fnum"]).')';
+			$query = 'INSERT INTO jos_emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) 
+						VALUES ('.$webhookDataApplication["userId"].', '.$webhookDataApplication["aid"].', '.$db->Quote($vidName).', '.$db->Quote($description).', 1, 1, '.$fnumInfos['id'].', '.$db->Quote($webhookDataApplication["fnum"]).')';
 
             try {
                 $db->setQuery( $query );
                 $db->execute();
             }
             catch (Exception $e) {
-                $error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> '.$e->getMessage();
+                $error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> '.$e->getMessage().' :: '.$query;
                 JLog::add('Unable to insert uploaded document: '.$error, JLog::ERROR, 'com_emundus.webhook');
             }
 
@@ -173,5 +180,51 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	        }
 	    }
 	    return $result;
+	}
+
+	/**
+	* Check if video upladed by addpipe has been moved to applicant files.
+	* @return boolean 
+	*/
+	public function is_file_uploaded()
+	{
+	   	$db 		= JFactory::getDBO();
+
+	   	$user 		= JFactory::getSession()->get('emundusUser');
+
+		//$secret 	= JFactory::getConfig()->get('secret');
+		//$token 		= JFactory::getApplication()->input->get('token', '', 'ALNUM');
+		//$fnum 		= JFactory::getApplication()->input->get('fnum', '', 'STRING'); 
+		$aid 		= JFactory::getApplication()->input->get('aid', '', 'ALNUM');
+		$applicant_id 		= JFactory::getApplication()->input->get('applicant_id', '', 'ALNUM');
+
+		if ($user->id != $applicant_id) {
+			JLog::add('Curent user and fnum does not match.', JLog::ERROR, 'com_emundus.webhook');
+			echo json_encode((object)(array('status' => false)));
+			exit();
+		}
+
+		//@TODO manage a specific filename. Will issue if we have more than one video by filetype
+		$query = 'SELECT count(id) 
+					FROM #__emundus_uploads 
+					WHERE attachment_id='.$aid.' AND user_id='.$user->id.' AND fnum LIKE '.$db->Quote($user->fnum);
+		try {
+            $db->setQuery( $query );
+            $cpt = $db->loadResult();
+
+            $result = ($cpt > 0) ? true : false;
+            echo json_encode((object)(array('status' => $result)));
+            exit();
+        }
+        catch (Exception $e) {
+            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage().' :: '.$query;
+            JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
+	
+		    echo json_encode((object)(array('status' => false)));
+			exit();
+        }
+
+	    echo json_encode((object)(array('status' => false)));
+		exit();
 	}
 }
