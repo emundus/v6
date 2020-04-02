@@ -4983,6 +4983,7 @@ $(document).ready(function() {
                         return false;
                 });
 
+                let notifyEval = document.querySelector('#evaluator-email').checked;
                 actionsCheck = JSON.stringify(actionsCheck);
                 $('.modal-body').empty();
                 $('.modal-body').append('<div>' +
@@ -5000,7 +5001,7 @@ $(document).ready(function() {
                         actions: actionsCheck,
                         groups: groupeEval,
                         evals: evaluators,
-                        notify: document.querySelector('#evaluator-email').checked
+                        notify: notifyEval
                     }),
                     success: function(result) {
 
