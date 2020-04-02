@@ -43,14 +43,14 @@ $site_offset = $config->get('offset');
 						<a href="index.php?order_date=<?php echo $order ;?>&order_time=asc">
                             <i class="icon-chevron-down" aria-hidden="true"></i>
                             <b>
-                                <?php echo JText::_("CAMPAIGN_START_DATE");?>
+                                <?php echo JText::_("CAMPAIGN_START_DATE_ORDER");?>
                             </b>
                         </a>
 					<?php else :?>
 							<a href="index.php?order_date=<?php echo $order ;?>&order_time=desc">
                                 <i class="icon-chevron-up" aria-hidden="true"></i>
                                 <b>
-                                    <?php echo JText::_("CAMPAIGN_START_DATE");?>
+                                    <?php echo JText::_("CAMPAIGN_START_DATE_ORDER");?>
                                 </b>
                             </a>
 					<?php endif; ?>
@@ -60,7 +60,7 @@ $site_offset = $config->get('offset');
                     </a>
 				<?php else :?>
 					<a href="index.php?order_date=<?php echo $mod_em_campaign_order ;?>&order_time=<?php echo $ordertime ?>">
-                        <?php echo JText::_("CAMPAIGN_START_DATE");?>
+                        <?php echo JText::_("CAMPAIGN_START_DATE_ORDER");?>
                     </a>  |
                     <?php if ($ordertime=="desc") :?>
                             <a href="index.php?order_date=end_date&order_time=asc">
@@ -100,7 +100,7 @@ $site_offset = $config->get('offset');
 	<div class="tab-content">
 		<div id="current" class="tab-pane fade in active">
 			<div class="campaigns-list">
-				<?php echo $paginationCurrent->getResultsCounter(); ?>
+				<p class="campaigns-list-result"><?php echo $paginationCurrent->getResultsCounter(); ?></p>
 				<?php if (empty($currentCampaign)) {?>
 					<div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
 				<?php } else {
@@ -173,13 +173,13 @@ $site_offset = $config->get('offset');
 							<b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br class="campaingapplycontent-breaker"/>
 
 							<?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
-                                <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
+                                <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?></strong>
                                 <span class="em-camp-start"><?php echo JFactory::getDate(new JDate($result->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br>
                             <?php endif; ?>
 
                             <?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') :?>
-							    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
+							    <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?></strong>
                                 <span class="em-camp-end"><?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br>
                             <?php endif; ?>
@@ -252,7 +252,7 @@ $site_offset = $config->get('offset');
 
 	<div id="futur" class="tab-pane fade in active">
 		<div class="campaigns-list">
-			<?php echo $paginationFutur->getResultsCounter(); ?>
+            <p class="campaigns-list-result"><?php echo $paginationFutur->getResultsCounter(); ?></p>
 			<?php if (empty($futurCampaign)) { ?>
 				<div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
 			<?php } else {
@@ -301,13 +301,13 @@ $site_offset = $config->get('offset');
 							<b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
 
 							<?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
-                                <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
+                                <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?></strong>
                                 <span class="em-camp-start"><?php echo JFactory::getDate(new JDate($result->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br>
 							<?php endif; ?>
 
 							<?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') :?>
-                                <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
+                                <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?></strong>
                                 <span class="em-camp-end"><?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br>
 							<?php endif; ?>
@@ -362,7 +362,7 @@ $site_offset = $config->get('offset');
 
 	<div id="past" class="tab-pane fade in active">
 		<div class="campaigns-list">
-			<?php echo $paginationPast->getResultsCounter(); ?>
+            <p class="campaigns-list-result"><?php echo $paginationPast->getResultsCounter(); ?></p>
 			<?php if (empty($pastCampaign)) { ?>
 				<div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
 			<?php } else {
@@ -411,13 +411,13 @@ $site_offset = $config->get('offset');
 						<b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
 
 						<?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
-                            <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>:</strong>
+                            <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?></strong>
                             <span class="em-camp-start"><?php echo JFactory::getDate(new JDate($result->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                             <br>
 						<?php endif; ?>
 
 						<?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') :?>
-                            <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>:</strong>
+                            <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?></strong>
                             <span class="em-camp-end"><?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                             <br>
 						<?php endif; ?>
