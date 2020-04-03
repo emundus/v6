@@ -210,15 +210,18 @@ class EmundusModelEvaluation extends JModelList {
 				}
 			}
 		}
-		if (in_array('overall', $em_other_columns)) {
-            		$this->_elements_default[] = ' AVG(ee.overall) as overall ';
+		if (isset($em_other_columns) && in_array('overall', $em_other_columns)) {
+			$this->_elements_default[] = ' AVG(ee.overall) as overall ';
 		}
-		if (empty($col_elt))
+		if (empty($col_elt)) {
 			$col_elt = array();
-		if (empty($col_other))
+		}
+		if (empty($col_other)) {
 			$col_other = array();
-		if (empty(@$this->_elements_default_name))
+		}
+		if (empty(@$this->_elements_default_name)) {
 			$this->_elements_default_name = array();
+		}
 
 		$this->col = array_merge($col_elt, $col_other, $this->_elements_default_name);
 
