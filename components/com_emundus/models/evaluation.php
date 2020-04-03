@@ -205,8 +205,9 @@ class EmundusModelEvaluation extends JModelList {
 														FROM '.$def_elmt->table_join.'
 														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
 													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
-					} else
+					} else {
 						$this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
+					}
 				}
 			}
 		}
@@ -230,6 +231,7 @@ class EmundusModelEvaluation extends JModelList {
             $elements_names = '"'.implode('", "', $this->col).'"';
 
             $h_list = new EmundusHelperList;
+            $h_files = new EmundusHelperFiles();
 
             $result = $h_list->getElementsDetails($elements_names);
             $result = $h_files->insertValuesInQueryResult($result, array("sub_values", "sub_labels"));
