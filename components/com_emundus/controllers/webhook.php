@@ -23,6 +23,8 @@ jimport('joomla.application.component.controller');
 
 class EmundusControllerWebhook extends JControllerLegacy {
 
+	private $m_files;
+
 	public function __construct(array $config = array()) {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
@@ -35,6 +37,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	 * Gets video info from addpipe webhook
 	 *
 	 * @return bool|string
+	 * @throws Exception
 	 */
 	public function addpipe() {
 
@@ -48,13 +51,11 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		if ($token != $secret) {
 			JLog::add('Bad token sent.', JLog::ERROR, 'com_emundus.webhook');
 			return false;
-			exit();
 		}
 
 		if (is_null($ftp_path)) {
 			JLog::add('FTP path is null.', JLog::ERROR, 'com_emundus.webhook');
 			return false;
-			exit();
 		}
 
 		try {
@@ -67,7 +68,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	        $vidName = $webhookData["data"]["videoName"].'.'.$webhookData["data"]["type"];
 
 	        //you can get the webhook type by accessing the event element in the array
-	        $type = $webhookData["event"];
+	        //$type = $webhookData["event"];
 
 	        if (empty($webhookDataApplication["userId"])) {
 	        	$error = JUri::getInstance().' APPLICANT_ID is NULL';
@@ -99,7 +100,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
                 return false;
 	        }
 
-	        if (!copy( $ftp_path.DS.$vidName, EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.$vidName)) {
+	        if (!copy($ftp_path.DS.$vidName, EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.$vidName)) {
 
                 $error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> Cannot move file: '.$ftp_path.DS.$vidName.' to '.EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.$vidName;
                 JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
@@ -115,10 +116,9 @@ class EmundusControllerWebhook extends JControllerLegacy {
 						VALUES ('.$webhookDataApplication["userId"].', '.$webhookDataApplication["aid"].', '.$db->Quote($vidName).', '.$db->Quote($description).', 1, 1, '.$fnumInfos['id'].', '.$db->Quote($webhookDataApplication["fnum"]).')';
 
             try {
-                $db->setQuery( $query );
+                $db->setQuery($query);
                 $db->execute();
-            }
-            catch (Exception $e) {
+            } catch (Exception $e) {
                 $error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> '.$e->getMessage().' :: '.$query;
                 JLog::add('Unable to insert uploaded document: '.$error, JLog::ERROR, 'com_emundus.webhook');
             }
@@ -126,14 +126,11 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		} catch (Exception $e) {
 			JLog::add('Unable to handle addpipe webhook: '.$payload, JLog::ERROR, 'com_emundus.webhook');
 			return false;
-			exit;
 		}
 		
 		//log webhook
 		JLog::add('Webhook START: '.$webhookDataApplication["aid"].' :: '.$webhookDataApplication["userId"].' :: '.$webhookDataApplication["fnum"].' :: '.$webhookDataApplication["jobId"].' :: '.$vidName.' :: '.$payload, JLog::WARNING, 'com_emundus.webhook');
-
 		return true;
-
 	}
 	
 
@@ -144,8 +141,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	* @return string human readable file size (2,87 Мб)
 	* @author Mogilev Arseny
 	*/
-	function FileSizeConvert($bytes)
-	{
+	function FileSizeConvert($bytes) {
 	    $bytes = floatval($bytes);
 	        $arBytes = array(
 	            0 => array(
@@ -170,10 +166,8 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	            ),
 	        );
 
-	    foreach($arBytes as $arItem)
-	    {
-	        if($bytes >= $arItem["VALUE"])
-	        {
+	    foreach ($arBytes as $arItem) {
+	        if ($bytes >= $arItem["VALUE"]) {
 	            $result = $bytes / $arItem["VALUE"];
 	            $result = str_replace(".", "," , strval(round($result, 2)))." ".$arItem["UNIT"];
 	            break;
@@ -183,20 +177,20 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	}
 
 	/**
-	* Check if video upladed by addpipe has been moved to applicant files.
-	* @return boolean 
-	*/
-	public function is_file_uploaded()
-	{
-	   	$db 		= JFactory::getDBO();
+	 * Check if video upladed by addpipe has been moved to applicant files.
+	 * @return boolean
+	 * @throws Exception
+	 */
+	public function is_file_uploaded() {
 
+	   	$db 		= JFactory::getDBO();
 	   	$user 		= JFactory::getSession()->get('emundusUser');
 
 		//$secret 	= JFactory::getConfig()->get('secret');
 		//$token 		= JFactory::getApplication()->input->get('token', '', 'ALNUM');
 		//$fnum 		= JFactory::getApplication()->input->get('fnum', '', 'STRING'); 
-		$aid 		= JFactory::getApplication()->input->get('aid', '', 'ALNUM');
-		$applicant_id 		= JFactory::getApplication()->input->get('applicant_id', '', 'ALNUM');
+		$aid = JFactory::getApplication()->input->get('aid', '', 'ALNUM');
+		$applicant_id = JFactory::getApplication()->input->get('applicant_id', '', 'ALNUM');
 
 		if ($user->id != $applicant_id) {
 			JLog::add('Curent user and fnum does not match.', JLog::ERROR, 'com_emundus.webhook');
@@ -209,22 +203,17 @@ class EmundusControllerWebhook extends JControllerLegacy {
 					FROM #__emundus_uploads 
 					WHERE attachment_id='.$aid.' AND user_id='.$user->id.' AND fnum LIKE '.$db->Quote($user->fnum);
 		try {
-            $db->setQuery( $query );
-            $cpt = $db->loadResult();
+            $db->setQuery($query);
+            $result = ($db->loadResult() > 0);
 
-            $result = ($cpt > 0) ? true : false;
             echo json_encode((object)(array('status' => $result)));
             exit();
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage().' :: '.$query;
             JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
 	
 		    echo json_encode((object)(array('status' => false)));
 			exit();
         }
-
-	    echo json_encode((object)(array('status' => false)));
-		exit();
 	}
 }
