@@ -128,20 +128,11 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 
 				if (!empty($confirm)) {
 					$app->enqueueMessage(JText::_('COM_EMUNDUS_EVALUATION_ALREADY_CONFIRMED'), 'info');
-					$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum);
-					/*echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>';
-					die("<script>
-						Swal.fire({
-							position: 'top',
-							type: 'info',
-							title: '".JText::_('COM_EMUNDUS_EVALUATION_ALREADY_CONFIRMED')."',
-							text: '".JText::_('COM_EMUNDUS_EVALUATION_ALREADY_CONFIRMED_DESC')."',
-							showConfirmButton: false,
-							allowOutsideClick: false,
-							allowEscapeKey: false,
-							allowEnterKey: false
-						})
-					</script>");*/
+					if (!empty($rowid)) {
+						$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&rowid=".$rowid);
+					} else {
+						$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum[0]);
+					}
 				}
 			}
 		}

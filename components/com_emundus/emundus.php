@@ -33,6 +33,13 @@ JLog::addLogger(
     JLog::ALL,
     array('com_emundus.email')
 );
+JLog::addLogger(
+    array(
+        'text_file' => 'com_emundus.webhook.php'
+    ),
+    JLog::ALL,
+    array('com_emundus.webhook')
+);
 // translation for javacript
 JText::script('COM_EMUNDUS_EX');
 JText::script('JTAG');

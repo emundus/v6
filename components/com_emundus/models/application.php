@@ -3027,36 +3027,54 @@ class EmundusModelApplication extends JModelList {
 
 
 
-	/** Gets the URL of the final form in the application in order to submit.
-	 * @param $fnums
-	 *
-	 * @return Mixed
-	 */
-    function getConfirmUrl($fnums)
-    {
+    /** Gets the URL of the final form in the application in order to submit.
+     * @param $fnums
+     *
+     * @return Mixed
+     */
+    function getConfirmUrl($fnums = null) {
 
-        if (empty($fnums)) {
-            return false;
-        }
-
+        $user = JFactory::getSession()->get('emundusUser');
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $db->quoteName('cc.fnum')])
-            ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
-            ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
-            ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $db->quoteName('esp.id') . ' = ' . $db->quoteName('esc.profile_id'))
-            ->leftJoin($db->quoteName('#__menu', 'm') . ' ON ' . $db->quoteName('m.menutype') . ' = ' . $db->quoteName('esp.menutype') . ' AND ' . $db->quoteName('m.published') . '>=0 AND ' . $db->quoteName('m.level') . '=1 AND ' . $db->quoteName('m.link') . ' <> "" AND ' . $db->quoteName('m.link') . ' <> "#"')
-            ->where($db->quoteName('cc.fnum') . ' IN(' . implode(',', $fnums) . ')')
-            ->order($db->quoteName('m.lft') . ' ASC');
+        if (!empty($fnums)) {
+            $query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $db->quoteName('cc.fnum')])
+                ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $db->quoteName('esp.id') . ' = ' . $db->quoteName('esc.profile_id'))
+                ->leftJoin($db->quoteName('#__menu', 'm') . ' ON ' . $db->quoteName('m.menutype') . ' = ' . $db->quoteName('esp.menutype') . ' AND ' . $db->quoteName('m.published') . '>=0 AND ' . $db->quoteName('m.level') . '=1 AND ' . $db->quoteName('m.link') . ' <> "" AND ' . $db->quoteName('m.link') . ' <> "#"')
+                ->where($db->quoteName('cc.fnum') . ' IN(' . implode(',', $fnums) . ')')
+                ->order($db->quoteName('m.lft') . ' ASC');
 
-        $db->setQuery($query);
-        try {
-            return $db->loadAssocList('fnum');
-        } catch (Exception $e) {
-            JLog::add('Error getting confirm URLs in model/application at query -> ' . $query->__toString(), JLog::ERROR, 'com_emundus');
-            return false;
+            $db->setQuery($query);
+            try {
+                return $db->loadAssocList('fnum');
+            } catch (Exception $e) {
+                JLog::add('Error getting confirm URLs in model/application at query -> ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+                return false;
+            }
+        } else {
+
+            if (empty($user->menutype)) {
+                return false;
+            }
+
+            $query->select(['id','link'])
+                ->from($db->quoteName('#__menu'))
+                ->where($db->quoteName('published').'=1 AND '.$db->quoteName('menutype').' LIKE '.$db->quote($user->menutype).' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
+                ->order($db->quoteName('lft') . ' DESC');
+            try {
+                $db->setQuery($query);
+
+                $res = $db->loadObject();
+                return $res->link.'&Itemid='.$res->id;
+            } catch (Exception $e) {
+                JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+                return false;
+            }
         }
+
     }
 
 

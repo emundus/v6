@@ -501,17 +501,17 @@ class EmundusController extends JControllerLegacy {
     function openfile() {
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+        require_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
 
         $app = JFactory::getApplication();
         $jinput = $app->input;
         $fnum = $jinput->get->get('fnum', null);
+        $confirm = $jinput->get->get('confirm', null);
 
         // Redirection URL used to bring the user back to the right spot.
         $redirect = $jinput->get->getBase64('redirect', null);
 
-        if (empty($redirect)) {
-            $redirect = JURI::base().'index.php';
-        } else {
+        if (!empty($redirect)) {
             $redirect = base64_decode($redirect);
         }
 
@@ -534,8 +534,8 @@ class EmundusController extends JControllerLegacy {
 
         // Get profil depending on application status
         $profile = $m_profile->getProfileByStatus($application['status']);
-        
-        if (count($profile) == 0) {
+
+        if (empty($profile['profile_id'])) {
             // Get profil depending on campaign
             $profile = $m_profile->getProfileByCampaign($infos['campaign_id']);
         }
@@ -558,6 +558,14 @@ class EmundusController extends JControllerLegacy {
 
         $session->set('emundusUser', $aid);
 
+        if (empty($redirect)) {
+            $m_application 	= new EmundusModelApplication;
+            if (empty($confirm)) {
+                $redirect = $m_application->getFirstPage();
+            } else {
+                $redirect = $m_application->getConfirmUrl();
+            }
+        }
         $app->redirect($redirect);
     }
 
