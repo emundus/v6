@@ -9,7 +9,8 @@
 defined('_JEXEC') or die;
 
 echo $description;
-
+$confirm_form_url = $m_application->getConfirmUrl($fnums);
+$first_page = $m_application->getFirstPage('index.php', $fnums);
 ?>
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew && !isset($admission_fnum)) : ?>
   <a class="btn btn-success" href="index.php?option=com_fabrik&view=form&formid=102"><span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span></a>

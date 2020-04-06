@@ -18,20 +18,14 @@ echo $description;
 <?php if (!empty($applications)) : ?>
     <div class="<?= $moduleclass_sfx ?>">
     <?php foreach ($applications as $application) : ?>
-        <?php 
-            $is_admission = in_array($application->status, $admission_status);
 
-            if ($is_admission) {
-                $first_page_url = 'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($profile_first_page);
-            }
-            else {
-                $first_page_url = 'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link']);
-            }
 
-            $state = $states[$application->fnum]['published']; 
-        ?>
-
-        <?php if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
+        <?php
+        $is_admission = in_array($application->status, $admission_status);
+        $state = $states[$application->fnum]['published'];
+        $confirm_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . 'confirm=1';
+        $first_page_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
+        if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
             <?php 
             if ($file_tags != '') {
 
@@ -51,11 +45,6 @@ echo $description;
                 $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
                }
 
-            if(!empty($m_profile->getProfileByFnum($application->fnum))) {
-                $confirm_url = $m_checklist->getConfirmUrl($m_profile->getProfileByFnum($application->fnum)).'&usekey=fnum&rowid='.$user->fnum;
-            } else {
-                $confirm_url = $confirm_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url[$application->fnum]['link']);
-            }
             ?>
             <div class="row" id="row<?= $application->fnum; ?>">
                 <div class="col-md-12 main-page-application-title">
