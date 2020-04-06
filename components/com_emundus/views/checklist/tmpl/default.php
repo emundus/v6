@@ -354,8 +354,12 @@ if (!empty($this->custom_title)) :?>
             } else {
                 var allowedExtension = "'.$attachment->allowed_types.'";
                 var n = allowedExtension.indexOf(sFileExtension);
-                var desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'description\']").value;
+                
                 var required_desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'required_desc\']").value;
+                if(document.querySelector("#form-a'.$attachment->id.' input[name=\'description\']") && required_desc == 1){
+                    var desc =  document.querySelector("#form-a'.$attachment->id.' input[name=\'description\']").value;
+                }
+                
                 if (n >= 0) {
                     if (required_desc == 1 && desc.trim() === "") {
                         Swal.fire({
