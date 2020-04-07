@@ -105,8 +105,8 @@ $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 	
 	$fnums = array_keys($applications);
-	$attachments = $m_application->getAttachmentsProgress($user->profile, $fnums);
-	$forms = $m_application->getFormsProgress($user->profile, $fnums);
+	$attachments = $m_application->getAttachmentsProgress($fnums);
+	$forms = $m_application->getFormsProgress($fnums);
 
 	// Check to see if the applicant meets the criteria to renew a file.
 	switch ($applicant_can_renew) {

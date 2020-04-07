@@ -132,8 +132,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	}
 
 	if (isset($user->fnum) && !empty($user->fnum)) {
-		$attachments = $m_application->getAttachmentsProgress($user->profile, $user->fnum);
-		$forms = $m_application->getFormsProgress($user->profile, $user->fnum);
+		$attachments = $m_application->getAttachmentsProgress($user->fnum);
+		$forms = $m_application->getFormsProgress($user->fnum);
 
 		$current_application = $m_application->getApplication($user->fnum);
 		$sent = $m_checklist->getSent();

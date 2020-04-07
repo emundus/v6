@@ -107,8 +107,8 @@ class PlgFabrik_FormEmunduscompletefilestatuschange extends plgFabrik_Form {
 
 		$fnumInfos = $m_files->getFnumInfos($fnum);
 
-		$attachments = $m_application->getAttachmentsProgress($fnumInfos['profile_id'], $fnum);
-		$forms = $m_application->getFormsProgress($fnumInfos['profile_id'], $fnum);
+		$attachments = $m_application->getAttachmentsProgress($fnum);
+		$forms = $m_application->getFormsProgress($fnum);
 
 		// We need the current status of the fnum.
 		$db = JFactory::getDbo();

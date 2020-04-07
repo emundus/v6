@@ -74,13 +74,13 @@ class EmundusViewApplication extends JViewLegacy{
 		$this->assignRef('profile', $profile->emundus_profile);
 
 		$application = $this->getModel('application');
-
 		$details_id = "82, 87, 89"; // list of Fabrik elements ID
 		$userDetails = $application->getApplicantDetails($aid, $details_id);
 		$this->assignRef('userDetails', $userDetails);
 
 		$infos = array('#__emundus_uploads.filename', '#__users.email', '#__emundus_setup_profiles.label as profile', '#__emundus_personal_detail.gender', '#__emundus_personal_detail.birth_date as birthdate', '#__emundus_users.profile as pid');
 		$userInformations = $application->getApplicantInfos($aid, $infos);
+
 		$this->assignRef('userInformations', $userInformations);
 
 		$userCampaigns = $application->getUserCampaigns($aid);
@@ -92,10 +92,10 @@ class EmundusViewApplication extends JViewLegacy{
 		$userComments = $application->getUsersComments($aid);
 		$this->assignRef('userComments', $userComments);
 
-		$formsProgress = $application->getFormsProgress($userInformations['pid']);
+		$formsProgress = $application->getFormsProgress();
 		$this->assignRef('formsProgress', $formsProgress);
 
-		$attachmentsProgress = $application->getAttachmentsProgress($userInformations['pid']);
+		$attachmentsProgress = $application->getAttachmentsProgress();
 		$this->assignRef('attachmentsProgress', $attachmentsProgress);
 
 		$logged = $application->getlogged($aid);
@@ -108,10 +108,12 @@ class EmundusViewApplication extends JViewLegacy{
 		$this->assignRef('email', $email);
 
 		//Evaluation
-		if ($this->_user->profile==16)
-			$options = array('view');
-		else
-			$options = array('add', 'edit', 'delete');
+		if ($this->_user->profile==16) {
+		    $options = array('view');
+		}
+		else {
+		    $options = array('add', 'edit', 'delete');
+		}
 
 		$user[0] = array (
 	      'user_id' => $student->id,

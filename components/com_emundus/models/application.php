@@ -30,6 +30,7 @@ class EmundusModelApplication extends JModelList {
         global $option;
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 
         $this->_mainframe = JFactory::getApplication();
 
@@ -398,11 +399,23 @@ class EmundusModelApplication extends JModelList {
         return $this->_db->loadAssoc();
     }
 
-    public function getFormsProgress($pid = 9, $fnum = "0") {
+    public function getFormsProgress($fnum = "0") {
+
+        if (empty($fnum)) {
+            return false;
+        }
+
         if (!is_array($fnum)) {
-            $forms = @EmundusHelperMenu::buildMenuQuery($pid);
+            $query = 'SELECT esc.profile_id
+                    FROM #__emundus_setup_campaigns AS esc
+                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                    WHERE ecc.fnum like '.$this->_db->Quote($fnum);
+            $this->_db->setQuery($query);
+
+            $forms = @EmundusHelperMenu::buildMenuQuery($this->_db->loadResult());
             $nb = 0;
             $formLst = array();
+
             foreach ($forms as $form) {
                 $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum);
                 $this->_db->setQuery($query);
@@ -413,23 +426,20 @@ class EmundusModelApplication extends JModelList {
                     $formLst[] = $form->label;
                 }
             }
+
             return  @floor(100*$nb/count($forms));
+
         } else {
+
             $result = array();
             foreach ($fnum as $f) {
-                $query = 'SELECT esc.*
-                    FROM #__emundus_campaign_candidature AS esc
-                    WHERE esc.fnum like '.$this->_db->Quote($f);
-                $this->_db->setQuery( $query );
-                $fInfo = $this->_db->loadAssoc();
-                $query = 'SELECT esp.*, esc.*
-                    FROM  #__emundus_setup_profiles AS esp
-                    LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = esp.id
-                    WHERE esc.id='.$fInfo['campaign_id'];
-                $this->_db->setQuery( $query );
-                $pid = $this->_db->loadAssoc();
+                $query = 'SELECT esc.profile_id
+                    FROM #__emundus_setup_campaigns AS esc
+                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                    WHERE ecc.fnum like '.$this->_db->Quote($f);
+                $this->_db->setQuery($query);
 
-                $forms = @EmundusHelperMenu::buildMenuQuery($pid['profile_id']);
+                $forms = @EmundusHelperMenu::buildMenuQuery($this->_db->loadResult());
                 $nb = 0;
                 $formLst = array();
                 foreach ($forms as $form) {
@@ -448,36 +458,40 @@ class EmundusModelApplication extends JModelList {
         }
     }
 
-    public function getAttachmentsProgress($pid = 9, $fnum = "0") {
+    public function getAttachmentsProgress($fnum = null) {
+        if (empty($fnum)) {
+            return false;
+        }
         if (!is_array($fnum)) {
+
+            $query = 'SELECT esc.profile_id
+                    FROM #__emundus_setup_campaigns AS esc
+                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                    WHERE ecc.fnum like '.$this->_db->Quote($fnum);
+            $this->_db->setQuery($query);
 
             $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
-                WHERE profiles.profile_id = '.$pid.' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+                WHERE profiles.profile_id = ' .$this->_db->loadResult(). ' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
             $this->_db->setQuery($query);
+
             return floor($this->_db->loadResult());
 
         } else {
 
             $result = array();
             foreach ($fnum as $f) {
-                $query = 'SELECT esc.*
-                    FROM #__emundus_campaign_candidature AS esc
-                    WHERE esc.fnum like '.$this->_db->Quote($f);
-                $this->_db->setQuery( $query );
-                $fInfo = $this->_db->loadAssoc();
-                $query = 'SELECT esp.*, esc.*
-                    FROM  #__emundus_setup_profiles AS esp
-                    LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = esp.id
-                    WHERE esc.id='.$fInfo['campaign_id'];
-                $this->_db->setQuery( $query );
-                $pid = $this->_db->loadAssoc();
+                $query = 'SELECT esc.profile_id
+                    FROM #__emundus_setup_campaigns AS esc
+                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                    WHERE ecc.fnum like '.$this->_db->Quote($f);
+                $this->_db->setQuery($query);
 
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($f).'
-                WHERE profiles.profile_id = '.$pid['profile_id'].' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+                WHERE profiles.profile_id = ' .$this->_db->loadResult(). ' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
                 $this->_db->setQuery($query);
                 $result[$f] = floor($this->_db->loadResult());
             }

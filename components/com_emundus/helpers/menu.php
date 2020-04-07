@@ -17,6 +17,9 @@ defined('_JEXEC') or die('Restricted access');
 class EmundusHelperMenu {
 
 	function buildMenuQuery($profile, $formids=null) {
+	    if (empty($profile)) {
+	        return false;
+        }
 		$user   = JFactory::getUser();
 		$levels = JAccess::getAuthorisedViewLevels($user->id);
 
@@ -32,7 +35,7 @@ class EmundusHelperMenu {
 		$query .= ' ORDER BY menu.lft';
 
 		try {
-	        $_db->setQuery( $query );
+            $_db->setQuery( $query );
 	        return $_db->loadObjectList();
 	    } catch(Exception $e) {
 	        throw new $e->getMessage();

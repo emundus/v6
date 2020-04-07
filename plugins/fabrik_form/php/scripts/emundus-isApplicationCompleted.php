@@ -33,8 +33,8 @@ if ($jinput->get('view') == 'form') {
     $application_fee  		= (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 
 	$m_application 	= new EmundusModelApplication;
-	$attachments 	= $m_application->getAttachmentsProgress($user->profile, $user->fnum);
-	$forms 			= $m_application->getFormsProgress($user->profile, $user->fnum);
+	$attachments 	= $m_application->getAttachmentsProgress($user->fnum);
+	$forms 			= $m_application->getFormsProgress($user->fnum);
 
 	// If students with a scholarship have a different fee.
 	// The form ID will be appended to the URL, taking him to a different checkout page.
