@@ -1364,8 +1364,9 @@ class EmundusModelUsers extends JModelList {
     public function getUserACL($uid = null, $fnum = null) {
         try {
             $user = JFactory::getSession()->get('emundusUser');
-            if (is_null($uid))
-                $uid = $user->id;
+            if (is_null($uid)) {
+            	$uid = $user->id;
+            }
             $acl = array();
             if ($fnum === null) {
                 $query = "SELECT esc.training as course, eua.action_id, eua.c, eua.r, eua.u, eua.d, g.group_id
@@ -1379,7 +1380,7 @@ class EmundusModelUsers extends JModelList {
                 $userACL =  $db->loadAssocList();
 
                 if (count($userACL) > 0) {
-                    foreach ($userACL as $key => $value) {
+                    foreach ($userACL as $value) {
                         if (isset($acl[$value['action_id']])) {
                             $acl[$value['action_id']]['c'] = max($acl[$value['action_id']]['c'],$value['c']);
                             $acl[$value['action_id']]['r'] = max($acl[$value['action_id']]['r'],$value['r']);
@@ -1402,7 +1403,7 @@ class EmundusModelUsers extends JModelList {
                     $db->setQuery($query);
                     $userACL =  $db->loadAssocList();
                     if (count($userACL) > 0) {
-                        foreach ($userACL as $key => $value) {
+                        foreach ($userACL as $value) {
                             if (isset($acl[$value['action_id']])) {
                                 $acl[$value['action_id']]['c'] = max($acl[$value['action_id']]['c'],$value['c']);
                                 $acl[$value['action_id']]['r'] = max($acl[$value['action_id']]['r'],$value['r']);
@@ -1425,12 +1426,10 @@ class EmundusModelUsers extends JModelList {
                         FROM #__emundus_users_assoc AS eua
                         WHERE fnum like ".$db->quote($fnum)."  and  eua.user_id = " .$uid;
                 $db->setQuery($query);
-                $acl =  $db->loadAssocList();
-
-                return $acl;
+                return $db->loadAssocList();
             }
 
-        } catch(Exeption $e) {
+        } catch(Exception $e) {
             return false;
         }
     }
@@ -1716,7 +1715,13 @@ class EmundusModelUsers extends JModelList {
         return true;
     }
 
-
+	/**
+	 * @param $gid
+	 *
+	 * @return bool|mixed
+	 *
+	 * @since version
+	 */
     public function getGroupProgs($gid) {
         try {
             $query = "select prg.id, prg.label, esg.label as group_label
@@ -1734,32 +1739,76 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
+	/**
+	 * @param $gid
+	 *
+	 * @return array|bool|mixed
+	 *
+	 * @since version
+	 */
     public function getGroupsAcl($gid) {
-      if (!empty($gid)) {
-        try {
-            if (is_array($gid)) {
-                $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
-                      from #__emundus_acl as ea
-                      left join #__emundus_setup_actions as esa on esa.id = ea.action_id
-                      where ea.group_id in (" .implode(',', $gid).")";
-            } else {
-                $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
-                      from #__emundus_acl as ea
-                      left join #__emundus_setup_actions as esa on esa.id = ea.action_id
-                      where ea.group_id = " .$gid ." order by esa.ordering asc";
-            }
-            $db = $this->getDbo();
-            $db->setQuery($query);
-            return $db->loadAssocList();
-        } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            return false;
-        }
-      } else {
-          return array();
-      }
+    	if (!empty($gid)) {
+    		try {
+    			if (is_array($gid)) {
+	                $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
+	                      from #__emundus_acl as ea
+	                      left join #__emundus_setup_actions as esa on esa.id = ea.action_id
+	                      where ea.group_id in (" .implode(',', $gid).")";
+                } else {
+	                $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
+	                      from #__emundus_acl as ea
+	                      left join #__emundus_setup_actions as esa on esa.id = ea.action_id
+	                      where ea.group_id = " .$gid ." order by esa.ordering asc";
+                }
+	            $db = $this->getDbo();
+	            $db->setQuery($query);
+	            return $db->loadAssocList();
+	        } catch(Exception $e) {
+	            error_log($e->getMessage(), 0);
+	            return false;
+	        }
+    	} else {
+    		return array();
+    	}
     }
 
+	/** This function returns the groups which are linked to the fnum's program OR NO PROGRAM AT ALL.
+	 * @param $group_ids array
+	 * @param $fnum string
+	 *
+	 * @return bool|mixed
+	 *
+	 * @since version
+	 */
+	public function getEffectiveGroupsForFnum($group_ids, $fnum) {
+
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('sg.id'))
+			->from($db->quoteName('#__emundus_setup_groups', 'sg'))
+			->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'grc').' ON '.$db->quoteName('grc.parent_id').' = '.$db->quoteName('sg.id'))
+			->leftJoin($db->quoteName('#__emundus_setup_programmes', 'sp').' ON '.$db->quoteName('sp.code').' = '.$db->quoteName('grc.course'))
+			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc').' ON '.$db->quoteName('sp.code').' = '.$db->quoteName('sc.training'))
+			->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$db->quoteName('cc.campaign_id').' = '.$db->quoteName('sc.id'))
+			->where($db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum).' OR '.$db->quoteName('sp.code').' IS NULL)');
+
+		$db->setQuery($query);
+		try {
+			return $db->loadResult();
+		} catch(Exception $e) {
+			error_log($e->getMessage(), 0);
+			return false;
+		}
+	}
+
+	/**
+	 * @param $gid
+	 *
+	 * @return bool|mixed
+	 *
+	 * @since version
+	 */
     public function getGroupUsers($gid) {
         try {
             $query = "select eu.*
@@ -1783,20 +1832,38 @@ class EmundusModelUsers extends JModelList {
         return EmundusHelperFiles::getMenuActions();
     }
 
+	/**
+	 * @param $aid
+	 * @param $fnum
+	 * @param $uid
+	 * @param $crud
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
     public function getUserActionByFnum($aid, $fnum, $uid, $crud) {
         $dbo = $this->getDbo();
         $query = "select ".$crud." from #__emundus_users_assoc where action_id = ".$aid." and user_id = ".$uid." and fnum like ".$dbo->quote($fnum);
         $dbo->setQuery($query);
-        $res = $dbo->loadResult();
-        return $res;
+        return $dbo->loadResult();
     }
 
+	/**
+	 * @param $gids
+	 * @param $fnum
+	 * @param $aid
+	 * @param $crud
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
     public function getGroupActions($gids, $fnum, $aid, $crud) {
         $dbo = $this->getDbo();
         $query = "select ".$crud." from #__emundus_group_assoc where action_id = ".$aid." and group_id in (".implode(',', $gids).") and fnum like ".$dbo->quote($fnum);
         $dbo->setQuery($query);
-        $res = $dbo->loadAssocList();
-        return $res;
+        return $dbo->loadAssocList();
     }
 
     /**
