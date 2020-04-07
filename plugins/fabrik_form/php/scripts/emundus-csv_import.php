@@ -13,7 +13,16 @@ defined( '_JEXEC' ) or die();
 
 // Attach logger.
 jimport('joomla.log.log');
-JLog::addLogger(array('text_file' => 'com_emundus.csvimport.php'), JLog::ALL, array('com_emundus'));
+JLog::addLogger(array('text_file' => 'com_emundus.csvimport.php'), JLog::ALL, array('com_emundus.csvimport'));
+
+
+//setlocale(LC_ALL, "en_GB.ISO-8859-1");
+
+//Force conversion for file comming from Excel
+function convert( $str ) {
+    return iconv( "Windows-1252", "UTF-8", $str );
+}
+
 
 $app = JFactory::getApplication();
 
@@ -21,13 +30,13 @@ $csv = $formModel->data['jos_emundus_setup_csv_import___csv_file_raw'];
 
 // Check if the file is a file on the server and in the right format.
 if (!is_file(JPATH_ROOT.$csv)) {
-	JLog::add('ERROR: Tried to upload something that was not a file.', JLog::ERROR, 'com_emundus');
+	JLog::add('ERROR: Tried to upload something that was not a file.', JLog::ERROR, 'com_emundus.csvimport');
 	$app->enqueueMessage('ERROR: Tried to upload something that was not a file.', 'error');
 	return false;
 }
 
 if (pathinfo($csv, PATHINFO_EXTENSION) !== 'csv') {
-	JLog::add('ERROR: Tried to upload something that was not a csv file.', JLog::ERROR, 'com_emundus');
+	JLog::add('ERROR: Tried to upload something that was not a csv file.', JLog::ERROR, 'com_emundus.csvimport');
 	$app->enqueueMessage('ERROR: Tried to upload something that was not a csv file.', 'error');
 	return false;
 }
@@ -38,7 +47,7 @@ ini_set('auto_detect_line_endings', TRUE);
 
 $handle = fopen(JPATH_ROOT.$csv, 'r');
 if (!$handle) {
-	JLog::add('ERROR: Could not open import file.', JLog::ERROR, 'com_emundus');
+	JLog::add('ERROR: Could not open import file.', JLog::ERROR, 'com_emundus.csvimport');
 	$app->enqueueMessage('ERROR: Could not open import file.', 'error');
 	return false;
 }
@@ -59,6 +68,9 @@ $row = 0;
 if (($data = fgetcsv($handle, 0, ';')) !== false) {
 
 	foreach ($data as $column_number => $column) {
+
+		//try to convert char
+		$data = array_map( "convert", $data );
 
 		// If the file name is not in the following format : table___element; mark column as bad.
 		$column = explode("___", trim(preg_replace('/[^\PC\s]/u', '', $column)));
@@ -186,13 +198,16 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 	}
 
 } else {
-	JLog::add('ERROR: Empty file was uploaded.', JLog::ERROR, 'com_emundus');
+	JLog::add('ERROR: Empty file was uploaded.', JLog::ERROR, 'com_emundus.csvimport');
 	$app->enqueueMessage('ERROR: Empty file was uploaded.', 'error');
 	return false;
 }
 
 $parsed_data = [];
 while (($data = fgetcsv($handle, 0, ';')) !== false) {
+
+	//try to convert char
+	$data = array_map( "convert", $data );
 
 	foreach ($data as $column_number => $column) {
 
@@ -215,7 +230,7 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 				try {
 					$profile_row[$row] = $db->loadResult();
 				} catch (Exception $e) {
-					JLog::add('ERROR: Could not get profile using campaign in row.', JLog::ERROR, 'com_emundus');
+					JLog::add('ERROR: Could not get profile using campaign in row.', JLog::ERROR, 'com_emundus.csvimport');
 					continue;
 				}
 
@@ -251,14 +266,14 @@ fclose($handle);
 
 // If we never incremented row then there are not files being imported.
 if ($row === 0) {
-	JLog::add('ERROR: No data sent in file.', JLog::ERROR, 'com_emundus');
+	JLog::add('ERROR: No data sent in file.', JLog::ERROR, 'com_emundus.csvimport');
 	$app->enqueueMessage('ERROR: No data sent in file.', 'error');
 	return false;
 }
 
 // If have no parsed data, something went wrong.
 if (empty($parsed_data)) {
-	JLog::add('ERROR: Something went wrong, please check that your CSV is separated by semi-colons (;).', JLog::ERROR, 'com_emundus');
+	JLog::add('ERROR: Something went wrong, please check that your CSV is separated by semi-colons (;).', JLog::ERROR, 'com_emundus.csvimport');
 	$app->enqueueMessage('ERROR: Something went wrong, please check that your CSV is separated by semi-colons (;).', 'error');
 	return false;
 }
@@ -288,6 +303,13 @@ $totals = [
 	'fnum' => 0,
 	'write' => 0
 ];
+
+
+if (!JFactory::getUser()->authorise('core.admin') && !EmundusHelperAccess::asAccessAction(12, 'c')) {
+	$can_create_user = false;
+} else {
+	$can_create_user = true;
+}
 
 // Handle parsed data insertion
 foreach ($parsed_data as $row_id => $insert_row) {
@@ -324,7 +346,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		try {
 			$profile_row[$row] = $db->loadResult();
 		} catch (Exception $e) {
-			JLog::add('ERROR: Could not get profile using campaign in row.', JLog::ERROR, 'com_emundus');
+			JLog::add('ERROR: Could not get profile using campaign in row.', JLog::ERROR, 'com_emundus.csvimport');
 			continue;
 		}
 	}
@@ -340,11 +362,13 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	} elseif (!empty($insert_row['jos_emundus_users']['username']) || !empty($insert_row['jos_emundus_users']['email'])) {
 
+		$username = (!empty($insert_row['jos_emundus_users']['username'])) ? $insert_row['jos_emundus_users']['username'] : $insert_row['jos_emundus_users']['email'];
+
 		// If we have an email present then we need to check if a user already exists.
 		$query->clear()
 			->select($db->quoteName('id'))
 			->from($db->quoteName('#__users'))
-			->where($db->quoteName('username').' LIKE '.$db->quote($insert_row['jos_emundus_users']['username']).' OR '.$db->quoteName('email').' LIKE '.$db->quote($insert_row['jos_emundus_users']['email']));
+			->where($db->quoteName('username').' LIKE '.$db->quote($username));
 		$db->setQuery($query);
 
 		try {
@@ -363,16 +387,14 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	if (empty($user)) {
 
-		if (!JFactory::getUser()->authorise('core.admin') && !EmundusHelperAccess::asAccessAction(12, 'c')) {
-			JLog::add('ERROR: You do not have the rights to create a user.', JLog::ERROR, 'com_emundus');
+		if (!$can_create_user) {
+			JLog::add('ERROR: You do not have the rights to create a user.', JLog::ERROR, 'com_emundus.csvimport');
 			$app->enqueueMessage('ERROR: '.JFactory::getUser()->name.' does not have the rights to create a user.', 'error');
+
 			return false;
 		}
 
-		$username = $insert_row['jos_emundus_users']['username'];
-		if (empty($username)) {
-			$username = $insert_row['jos_emundus_users']['email'];
-		}
+		$username = (!empty($insert_row['jos_emundus_users']['username'])) ? $insert_row['jos_emundus_users']['username'] : $insert_row['jos_emundus_users']['email'];
 		$email = $insert_row['jos_emundus_users']['email'];
 		$firstname = $insert_row['jos_emundus_personal_detail']['first_name'];
 		$lastname = $insert_row['jos_emundus_personal_detail']['last_name'];
@@ -405,7 +427,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 			// Check if any data is missing.
 			if (empty($username) || empty($email) || empty($firstname) || empty($lastname)) {
-				JLog::add('ERROR: Missing some user details, cannot create user.', JLog::ERROR, 'com_emundus');
+				JLog::add('ERROR: Missing some user details, cannot create user.', JLog::ERROR, 'com_emundus.csvimport');
 				continue;
 			}
 		}
@@ -419,18 +441,20 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 			// Check if any data is missing.
 			if (empty($username) || empty($email) || empty($firstname) || empty($lastname)) {
-				JLog::add('ERROR: Missing some user details, cannot create user.', JLog::ERROR, 'com_emundus');
+				JLog::add('ERROR: Missing some user details, cannot create user.', JLog::ERROR, 'com_emundus.csvimport');
 				continue;
 			}
 		}
 
+		JLog::add('--- '.$row_id.' Username: '.$username, JLog::INFO, 'com_emundus.csvimport');
+ 
 		$user = clone(JFactory::getUser(0));
 		if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $username) !== 1) {
-			JLog::add('ERROR: Username format not OK.', JLog::ERROR, 'com_emundus');
+			JLog::add('ERROR: Username format not OK: '.$username, JLog::ERROR, 'com_emundus.csvimport');
 			continue;
 		}
 		if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $email) !== 1) {
-			JLog::add('ERROR: Email format not OK.', JLog::ERROR, 'com_emundus');
+			JLog::add('ERROR: Email format not OK: '.$email, JLog::ERROR, 'com_emundus.csvimport');
 			continue;
 		}
 
@@ -461,9 +485,10 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$user->groups = $acl_aro_groups;
 		$user->usertype = $m_users->found_usertype($acl_aro_groups[0]);
 		$uid = $m_users->adduser($user, $other_param);
+		$user->id = $uid;
 
 		if (is_array($uid)) {
-			JLog::add('ERROR: Inserting the user ('.$user->email.') failed.', JLog::ERROR, 'com_emundus');
+			JLog::add('ERROR: Inserting the user ('.$user->email.') failed.', JLog::ERROR, 'com_emundus.csvimport');
 			continue;
 		}
 
@@ -472,7 +497,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		}
 
 		if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
-			JLog::add('ERROR: Creating the user file on the server ('.EMUNDUS_PATH_ABS.$uid.') failed.', JLog::ERROR, 'com_emundus');
+			JLog::add('ERROR: Creating the user file on the server ('.EMUNDUS_PATH_ABS.$uid.') failed.', JLog::ERROR, 'com_emundus.csvimport');
 			continue;
 		}
 
@@ -487,7 +512,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			try {
 				$db->execute();
 			} catch (Exception $e) {
-				JLog::add('ERROR: Could not add user to list of CAS users for extLogin plugin.', JLog::ERROR, 'com_emundus');
+				JLog::add('ERROR: Could not add user to list of CAS users for extLogin plugin.', JLog::ERROR, 'com_emundus.csvimport');
 				continue;
 			}
 		}
@@ -498,10 +523,10 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 		// Check if the user has not been activated.
 		$table = JTable::getInstance('user', 'JTable');
-		$table->load($userId);
+		$table->load($user);
 		$table->block = 0;
 		$table->store();
-
+		$user = JFactory::getUser($user);
 	}
 
 	// If the user has no fnum, get the one made by the user creation code.
@@ -516,7 +541,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		try {
 			$fnum = $db->loadResult();
 		} catch (Exception $e) {
-			JLog::add('ERROR: Could not get fnum for user : '.$user->id, JLog::ERROR, 'com_emundus');
+			JLog::add('ERROR: Could not get fnum for user : '.$user->id.$query->__toString(), JLog::ERROR, 'com_emundus.csvimport');
 		}
 	}
 
@@ -534,10 +559,134 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			$db->execute();
 			$totals['fnum']++;
 			$totals['write']++;
-			JLog::add(' --- INSERTED CC :'.$fnum.' FOR USER : '.$user->id, JLog::INFO, 'com_emundus');
+			JLog::add(' --- INSERTED CC :'.$fnum.' FOR USER : '.$user->id, JLog::INFO, 'com_emundus.csvimport');
 		} catch (Exception $e) {
-			JLog::add('ERROR: Could not build fnum for user at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('ERROR: Could not build fnum for user at query : '.$query->__toString(), JLog::ERROR, 'com_emundus.csvimport');
 			continue;
+		}
+	}
+
+
+	if (!empty($group)) {
+		$query->clear()
+			->insert($db->quoteName('#__emundus_groups'))
+			->columns($db->quoteName(['user_id', 'group_id']))
+			->values($user->id.', '.$group);
+		$db->setQuery($query);
+		try {
+			$db->execute();
+			$totals['write']++;
+			JLog::add(' --- INSERTED GROUP :'.$group.' FOR USER : '.$user->id, JLog::INFO, 'com_emundus.csvimport');
+		} catch (Exception $e) {
+			JLog::add('ERROR: Could not insert user into group at query : '.$query->__toString(), JLog::ERROR, 'com_emundus.csvimport');
+			// No continue, just a silent error with logging.
+		}
+	}
+
+	foreach ($insert_row as $table_name => $element) {
+
+		$parent_ids = [];
+		$executed_parent_tables = [];
+
+		if ($table_name === 'jos_emundus_campaign_candidature') {
+			continue;
+		}
+
+		if (empty($element)) {
+			JLog::add('ERROR: Empty element : '.$table_name.'___'.array_keys($element)[0], JLog::ERROR, 'com_emundus.csvimport');
+			continue;
+		}
+
+		$columns = ['fnum','user'];
+		$values = [$db->quote($fnum), $user->id];
+		$fields = [];
+
+		foreach ($element as $element_name => $element_value) {
+
+			if (!is_integer($element_value)) {
+				$element_value = $db->quote($element_value);
+			}
+
+			if ($table_name === 'jos_emundus_users') {
+
+				$fields[] = $db->quoteName($element_name).' = '.$element_value;
+
+			} else {
+				$columns[] = $element_name;
+				$values[]  = $element_value;
+			}
+
+		}
+
+		if ($table_name === 'jos_emundus_users') {
+			$query->clear()
+				->update($db->quoteName($table_name))
+				->set($fields)
+				->where($db->quoteName('user_id').' = '.$user->id);
+		} else {
+			
+			if (empty($fnum)) {
+				continue;
+			}
+
+			$query->clear()
+				->insert($db->quoteName($table_name))
+				->columns($db->quoteName($columns))
+				->values(implode(',', $values));
+			$db->setQuery($query);
+		}
+
+		try {
+			$db->execute();
+			$totals['write']++;
+
+			if ($db->insertid() == 0) {
+				JLog::add(' --- UPDATE: '.$table_name, JLog::INFO, 'com_emundus.csvimport');
+			} else {
+				JLog::add(' --- INSERTED ROW: '.$db->insertid().' AT TABLE : '.$table_name, JLog::INFO, 'com_emundus.csvimport');
+			}
+		} catch (Exception $e) {
+			JLog::add('ERROR inserting data in query : '.$query->__toString(), JLog::ERROR, 'com_emundus.csvimport');
+		}
+
+		// Insert into child repeat tables.
+		if (isset($parsed_repeat) && !in_array($table_name, $executed_parent_tables) && in_array($table_name, array_keys($parsed_repeat[$row_id]))) {
+			$parent_id = $db->insertid();
+			foreach ($parsed_repeat[$row_id] as $parent_table => $repeat_table) {
+				foreach ($repeat_table as $repeat_table_name => $repeat_columns) {
+
+					$repeat_columns = array_merge(...array_map(function ($r_column, $k_key) {
+						return [$k_key => explode('|',trim($r_column))];
+					}, $repeat_columns, array_keys($repeat_columns)));
+
+					$query->clear()
+						->insert($db->quoteName($repeat_table_name))
+						->columns($db->quoteName(array_merge(['parent_id'],array_keys($repeat_columns))));
+
+					$i = 0;
+					foreach ($repeat_columns as $r_column) {
+						$insert_row = [];
+						if ($i == sizeof($r_column)) {
+							break;
+						}
+						foreach (array_keys($repeat_columns) as $r_key) {
+							$insert_row[] = is_numeric($repeat_columns[$r_key][$i])?$repeat_columns[$r_key][$i]:$db->quote($repeat_columns[$r_key][$i]);
+						}
+						$query->values($parent_id.', '.implode(',', $insert_row));
+						$i++;
+					}
+
+					$db->setQuery($query);
+					try {
+						$db->execute();
+						$executed_parent_tables[] = $table_name;
+						$totals['write']++;
+						JLog::add(' --- INSERTED REPEAT ROW :'.$db->insertid().' AT TABLE : '.$repeat_table_name, JLog::INFO, 'com_emundus.csvimport');
+					} catch (Exception $e) {
+						JLog::add('ERROR inserting data in query : '.$query->__toString().' error text -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.csvimport');
+					}
+				}
+			}
 		}
 	}
 
@@ -596,8 +745,11 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			$send = $mailer->Send();
 
 			if ($send === false) {
-				JLog::add('No email configuration!', JLog::ERROR, 'com_emundus');
+				JLog::add('No email configuration!', JLog::ERROR, 'com_emundus.csvimport');
 			} else {
+
+				JLog::add('Email account sent: '.$user->email, JLog::ERROR, 'com_emundus.csvimport');
+
 				if (JComponentHelper::getParams('com_emundus')->get('logUserEmail', '0') == '1') {
 					$message = array(
 						'user_id_to' => $uid,
@@ -609,129 +761,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			}
 
 		} catch (Exception $e) {
-			JLog::add('ERROR: Could not send email to user : '.$user->id, JLog::ERROR, 'com_emundus');
-		}
-	}
-
-	if (!empty($user->id)) {
-		$user = $user->id;
-	}
-
-	if (!empty($group)) {
-		$query->clear()
-			->insert($db->quoteName('#__emundus_groups'))
-			->columns($db->quoteName(['user_id', 'group_id']))
-			->values($user.', '.$group);
-		$db->setQuery($query);
-		try {
-			$db->execute();
-			$totals['write']++;
-			JLog::add(' --- INSERTED GROUP :'.$group.' FOR USER : '.$user, JLog::INFO, 'com_emundus');
-		} catch (Exception $e) {
-			JLog::add('ERROR: Could not insert user into group at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
-			// No continue, just a silent error with logging.
-		}
-	}
-
-	foreach ($insert_row as $table_name => $element) {
-
-		$parent_ids = [];
-		$executed_parent_tables = [];
-
-		if ($table_name === 'jos_emundus_campaign_candidature') {
-			continue;
-		}
-
-		if (empty($element)) {
-			JLog::add('ERROR: Empty element : '.$table_name.'___'.array_keys($element)[0], JLog::ERROR, 'com_emundus');
-			continue;
-		}
-
-		$columns = ['fnum','user'];
-		$values = [$db->quote($fnum), $user];
-		$fields = [];
-
-		foreach ($element as $element_name => $element_value) {
-
-			if (!is_integer($element_value)) {
-				$element_value = $db->quote($element_value);
-			}
-
-			if ($table_name === 'jos_emundus_users') {
-
-				$fields[] = $db->quoteName($element_name).' = '.$element_value;
-
-			} else {
-				$columns[] = $element_name;
-				$values[]  = trim($element_value);
-			}
-
-		}
-
-		if ($table_name === 'jos_emundus_users') {
-			$query->clear()
-				->update($db->quoteName($table_name))
-				->set($fields)
-				->where($db->quoteName('user_id').' = '.$user);
-		} else {
-			
-			if (empty($fnum)) {
-				continue;
-			}
-
-			$query->clear()
-				->insert($db->quoteName($table_name))
-				->columns($db->quoteName($columns))
-				->values(implode(',', $values));
-			$db->setQuery($query);
-		}
-
-		try {
-			$db->execute();
-			$totals['write']++;
-			JLog::add(' --- INSERTED ROW :'.$db->insertid().' AT TABLE : '.$table_name, JLog::INFO, 'com_emundus');
-		} catch (Exception $e) {
-			JLog::add('ERROR inserting data in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
-		}
-
-		// Insert into child repeat tables.
-		if (isset($parsed_repeat) && !in_array($table_name, $executed_parent_tables) && in_array($table_name, array_keys($parsed_repeat[$row_id]))) {
-			$parent_id = $db->insertid();
-			foreach ($parsed_repeat[$row_id] as $parent_table => $repeat_table) {
-				foreach ($repeat_table as $repeat_table_name => $repeat_columns) {
-
-					$repeat_columns = array_merge(...array_map(function ($r_column, $k_key) {
-						return [$k_key => explode('|',trim($r_column))];
-					}, $repeat_columns, array_keys($repeat_columns)));
-
-					$query->clear()
-						->insert($db->quoteName($repeat_table_name))
-						->columns($db->quoteName(array_merge(['parent_id'],array_keys($repeat_columns))));
-
-					$i = 0;
-					foreach ($repeat_columns as $r_column) {
-						$insert_row = [];
-						if ($i == sizeof($r_column)) {
-							break;
-						}
-						foreach (array_keys($repeat_columns) as $r_key) {
-							$insert_row[] = is_numeric($repeat_columns[$r_key][$i])?$repeat_columns[$r_key][$i]:$db->quote($repeat_columns[$r_key][$i]);
-						}
-						$query->values($parent_id.', '.implode(',', $insert_row));
-						$i++;
-					}
-
-					$db->setQuery($query);
-					try {
-						$db->execute();
-						$executed_parent_tables[] = $table_name;
-						$totals['write']++;
-						JLog::add(' --- INSERTED REPEAT ROW :'.$db->insertid().' AT TABLE : '.$repeat_table_name, JLog::INFO, 'com_emundus');
-					} catch (Exception $e) {
-						JLog::add('ERROR inserting data in query : '.$query->__toString().' error text -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-					}
-				}
-			}
+			JLog::add('ERROR: Could not send email to user : '.$user->id, JLog::ERROR, 'com_emundus.csvimport');
 		}
 	}
 }

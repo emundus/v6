@@ -20,6 +20,10 @@ $db = JFactory::getDBO();
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $alert_new_attachment = $eMConfig->get('alert_new_attachment');
 $mailer = JFactory::getMailer();
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
+$m_files = new EmundusModelFiles();
+$m_checklist = new EmundusModelChecklist;
 
 $files = JRequest::get('FILES');
 $key_id = $jinput->get->get('keyid');
@@ -83,11 +87,14 @@ try {
 		die(JText::_("ERROR_FILE_NOT_FOUND"));
 	}
 
-	$nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
+	//$nom = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($student->name,ENT_NOQUOTES,'UTF-8'))));
+	$fnumInfos = $m_files->getFnumInfos($fnum);
+	$nom = $m_checklist->setAttachmentName($upload->filename, $attachment_params->lbl, $fnumInfos);
+
 	if (!isset($attachement_params->displayed) || $attachement_params->displayed === '0') {
 		$nom .= "_locked";
 	}
-	$nom .= $attachement_params->lbl.rand().'.'.end(explode('.', $upload->filename));
+	//$nom .= $attachement_params->lbl.rand().'.'.end(explode('.', $upload->filename));
 
 	if (!file_exists(EMUNDUS_PATH_ABS.$user_id) && (!mkdir(EMUNDUS_PATH_ABS.$user_id, 0777, true) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user_id.DS.'index.html'))) {
 		JLog::add("PLUGIN emundus-attachment_public [".$key_id."]: ".JText::_("ERROR_CANNOT_CREATE_USER_FILE"), JLog::ERROR, 'com_emundus');

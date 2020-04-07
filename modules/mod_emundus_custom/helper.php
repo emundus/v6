@@ -94,7 +94,7 @@ class modEmundusCustomHelper {
 		$jinput = JFactory::getApplication()->input;
 		$fnum = $jinput->post->get('fnum');
 		$decision = (int)$jinput->post->getInt('decision');
-		$wait_rank = $jinput->post->get('waitlistRank', 0);
+		$wait_rank = (int)$jinput->post->getInt('waitlistRank', 0);
 		$comment = $jinput->post->get('comment', '');
 
 		if (empty($fnum) || empty($decision)) {
@@ -158,7 +158,7 @@ class modEmundusCustomHelper {
 			];
 
 			if ($decision === 8) {
-				$fields[] = $db->quoteName('waiting_list_rank').' = '.$db->quoteName($wait_rank);
+				$fields[] = $db->quoteName('waiting_list_rank').' = '.$db->quote($wait_rank);
 			}
 
 			$query->set($fields)

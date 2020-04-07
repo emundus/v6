@@ -19,9 +19,12 @@ echo $description;
     <div class="<?= $moduleclass_sfx ?>">
     <?php foreach ($applications as $application) : ?>
 
-        <?php $state=$states[$application->fnum]['published']; ?>
-
-        <?php if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
+        <?php
+        $is_admission = in_array($application->status, $admission_status);
+        $state = $states[$application->fnum]['published'];
+        $confirm_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . 'confirm=1';
+        $first_page_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
+        if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
             <?php 
             if ($file_tags != '') {
 
@@ -40,26 +43,20 @@ echo $description;
                 $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
                 $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
                }
-
-            if(!empty($m_profile->getProfileByFnum($application->fnum))) {
-                $confirm_url = $m_checklist->getConfirmUrl($m_profile->getProfileByFnum($application->fnum)).'&usekey=fnum&rowid='.$user->fnum;
-            } else {
-                $confirm_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&redirect=' . base64_encode($confirm_form_url[$application->fnum]['link']);
-            }
             ?>
             <div class="row" id="row<?= $application->fnum; ?>">
                 <div class="col-md-12 main-page-application-title">
 
-                    <a href="<?= JRoute::_('index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>">
-                        <?= (in_array($application->status, $admission_status) &&  $add_admission_prefix)?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?>
+                    <a href="<?php echo JRoute::_($first_page_url); ?>">
+                        <?= ($is_admission &&  $add_admission_prefix)?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?>
                     </a>
 
                 </div>
 
                 <div class="col-xs-12 col-md-6 main-page-file-info">
                     <p class="em-tags-display"><?= $file_tags_display; ?></i></p>
-                    <a class="btn btn-warning" href="<?php echo JRoute::_('index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>" role="button">
-                        <i class="folder open outline icon"></i> <?= (in_array($application->status, $admission_status))?JText::_('OPEN_ADMISSION'):JText::_('OPEN_APPLICATION'); ?>
+                    <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
+                        <i class="folder open outline icon"></i> <?= ($is_admission)?JText::_('OPEN_ADMISSION'):JText::_('OPEN_APPLICATION'); ?>
                     </a>
 
                     <?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
@@ -68,7 +65,7 @@ echo $description;
 
                     <?php endif; ?>
 
-                    <a id='print' class="btn btn-info btn-xs" href="<?= (in_array($application->status, $admission_status)) ? JRoute::_('index.php?option=com_emundus&controller=admission&task=pdf_admission&user='.$user->id.'&fnum=' .$application->fnum) : JRoute::_('index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
+                    <a id='print' class="btn btn-info btn-xs" href="<?= ($is_admission) ? JRoute::_('index.php?option=com_emundus&controller=admission&task=pdf_admission&user='.$user->id.'&fnum=' .$application->fnum) : JRoute::_('index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
                     <?php if (in_array($application->status, $status_for_send)) : ?>
                         <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?= $application->fnum; ?>');" href="#row<?php !empty($attachments) ? $attachments[$application->fnum] : ''; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
                     <?php endif; ?>

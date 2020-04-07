@@ -107,9 +107,6 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 	$fnums = array_keys($applications);
 	$attachments = $m_application->getAttachmentsProgress($user->profile, $fnums);
 	$forms = $m_application->getFormsProgress($user->profile, $fnums);
-	$confirm_form_url = $m_application->getConfirmUrl($fnums);
-	$first_page = $m_application->getFirstPage('index.php', $fnums);
-	$profile_first_page = $m_application->getFirstPage('index.php');
 
 	// Check to see if the applicant meets the criteria to renew a file.
 	switch ($applicant_can_renew) {

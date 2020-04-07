@@ -12,6 +12,9 @@ defined('_JEXEC') or die;
 
 echo $description;
 $uri = JUri::getInstance();
+
+$confirm_form_url = $m_application->getConfirmUrl($fnums);
+$first_page = $m_application->getFirstPage('index.php', $fnums);
 ?>
 
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>

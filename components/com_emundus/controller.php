@@ -501,17 +501,17 @@ class EmundusController extends JControllerLegacy {
     function openfile() {
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+        require_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
 
         $app = JFactory::getApplication();
         $jinput = $app->input;
         $fnum = $jinput->get->get('fnum', null);
+        $confirm = $jinput->get->get('confirm', null);
 
         // Redirection URL used to bring the user back to the right spot.
         $redirect = $jinput->get->getBase64('redirect', null);
 
-        if (empty($redirect)) {
-            $redirect = JURI::base().'index.php';
-        } else {
+        if (!empty($redirect)) {
             $redirect = base64_decode($redirect);
         }
 
@@ -534,8 +534,8 @@ class EmundusController extends JControllerLegacy {
 
         // Get profil depending on application status
         $profile = $m_profile->getProfileByStatus($application['status']);
-        
-        if (count($profile) == 0) {
+
+        if (empty($profile['profile_id'])) {
             // Get profil depending on campaign
             $profile = $m_profile->getProfileByCampaign($infos['campaign_id']);
         }
@@ -558,6 +558,14 @@ class EmundusController extends JControllerLegacy {
 
         $session->set('emundusUser', $aid);
 
+        if (empty($redirect)) {
+            $m_application 	= new EmundusModelApplication;
+            if (empty($confirm)) {
+                $redirect = $m_application->getFirstPage();
+            } else {
+                $redirect = $m_application->getConfirmUrl();
+            }
+        }
         $app->redirect($redirect);
     }
 
@@ -660,7 +668,9 @@ class EmundusController extends JControllerLegacy {
         $copy_application_form = $eMConfig->get('copy_application_form', 0);
         $can_submit_encrypted = $eMConfig->get('can_submit_encrypted', 1);
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'checklist.php');
         $m_profile = new EmundusModelProfile;
+        $m_checklist = new EmundusModelChecklist;
 
         $db = JFactory::getDBO();
         $jinput = JFactory::getApplication()->input;
@@ -708,6 +718,7 @@ class EmundusController extends JControllerLegacy {
 		    } else {
 			    JFactory::getApplication()->enqueueMessage($errorInfo."\n", 'error');
 		    }
+            $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid);
 		    return false;
 	    }
 
@@ -933,14 +944,15 @@ class EmundusController extends JControllerLegacy {
                     return false;
 
                 } elseif (isset($file['name']) && $file['error'] == UPLOAD_ERR_OK) {
-                    $paths = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($user->lastname.'_'.$user->firstname,ENT_NOQUOTES,'UTF-8'))));
-                    $file_array = explode(".", $file['name']);
-                    $paths .= $labels.'-'.rand().'.'.end($file_array);
+                    $fnumInfos = $m_files->getFnumInfos($fnum);
+                    //$paths = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($user->lastname.'_'.$user->firstname,ENT_NOQUOTES,'UTF-8'))));
+                    //$file_array = explode(".", $file['name']);
+                    //$paths .= $labels.'-'.rand().'.'.end($file_array);
+                    $paths = $m_checklist->setAttachmentName($file['name'], $labels, $fnumInfos);
+                    
                     if (copy( $file['tmp_name'], $chemin.$user->id.DS.$paths)) {
                         $can_be_deleted = @$post['can_be_deleted_'.$attachments]!=''?$post['can_be_deleted_'.$attachments]:JRequest::getVar('can_be_deleted', 1, 'POST', 'none',0);
                         $can_be_viewed = @$post['can_be_viewed_'.$attachments]!=''?$post['can_be_viewed_'.$attachments]:JRequest::getVar('can_be_viewed', 1, 'POST', 'none',0);
-
-                        $fnumInfos = $m_files->getFnumInfos($fnum);
 
                         $query .= '('.$user->id.', '.$attachments.', \''.$paths.'\', '.$db->Quote($descriptions).', '.$can_be_deleted.', '.$can_be_viewed.', '.$fnumInfos['id'].', '.$db->Quote($fnum).'),';
                         $nb++;

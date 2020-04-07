@@ -83,7 +83,7 @@ class EmundusModelEvaluation extends JModelList {
 		$col_other = $this->getState('elements_other');
 
 		$this->elements_id = $menu_params->get('em_elements_id');
-		$this->elements_id = rtrim($this->elements_id, ',') . ',';
+		$this->elements_id = rtrim($this->elements_id, ',');
 
 		// get evaluation element
 		$show_in_list_summary = 1;
@@ -95,21 +95,25 @@ class EmundusModelEvaluation extends JModelList {
 
 		if ($session->has('adv_cols')) {
 			$adv = $session->get('adv_cols');
-			if (!empty($adv)) {
+			if (!empty($adv) && !is_null($adv)) {
 				$this->elements_id .= ','.implode(',', $adv);
 			}
+
 		}
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
 
 		$this->_elements_default = array();
-		$this->_elements = @EmundusHelperFiles::getElementsName($this->elements_id);
+		
+		if(!is_null($this->elements_id)) {
+			$this->_elements = @EmundusHelperFiles::getElementsName($this->elements_id);
+		}
 
 		if (!empty($this->_elements)) {
 			foreach ($this->_elements as $def_elmt) {
 				$group_params = json_decode($def_elmt->group_attribs);
 
 				if ($def_elmt->element_plugin == 'date') {
-					if (!empty($group_params->repeat_group_button)) {
+					if ($group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
 														SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
 														FROM '.$def_elmt->table_join.'
@@ -127,7 +131,7 @@ class EmundusModelEvaluation extends JModelList {
                     $db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
                     $publish_query = ($db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
 
-					if (!empty($group_params->repeat_group_button)) {
+					if ($group_params->repeat_group_button == 1) {
 						$query = '(
 									select GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
 									from '.$attribs->join_db_name.'
@@ -161,52 +165,87 @@ class EmundusModelEvaluation extends JModelList {
 
 					$this->_elements_default[] = $query;
 				}
+				elseif ($def_elmt->element_plugin == 'cascadingdropdown') {
+		                    $attribs = json_decode($def_elmt->element_attribs);
+		                    $cascadingdropdown_id = $attribs->cascadingdropdown_id;
+		                    $r1 = explode('___', $cascadingdropdown_id);
+		                    $cascadingdropdown_label = $attribs->cascadingdropdown_label;
+		                    $r2 = explode('___', $cascadingdropdown_label);
+		                    $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
+		                    $from = $r2[0]; 
+		                    $where = $r1[1].'='.$def_elmt->tab_name.'.'.$def_elmt->element_name;
+		                    $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
+		                    $query = preg_replace('#{thistable}#', $from, $query);
+		                    $query = preg_replace('#{my->id}#', $current_user->id, $query);
+			                $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
+		                    $this->_elements_default[] = $query;
+		        }
 				elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
-					$element_attribs = json_decode($def_elmt->element_attribs);
-					$select = '`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`';
-					$if = array();
-					$endif = '';
-					foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-						$if[] = 'IF('.$select.'="'.$value.'","'.$element_attribs->sub_options->sub_labels[$key].'"';
-						$endif .= ')';
-					}
-					$this->_elements_default[] = implode(',', $if).','.$select.$endif.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
+
+					if (@$group_params->repeat_group_button == 1) {
+                        $this->_elements_default[] = '(
+                                    SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")
+                                    FROM '.$def_elmt->table_join.'
+                                    WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+                    } else {
+                        $element_attribs = json_decode($def_elmt->element_attribs);
+                        $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                            $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
+                                $element_attribs->sub_options->sub_labels[$key] . '")';
+                        }
+                        $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
+                    }
 				}
 				else {
-					if (!empty(@$group_params->repeat_group_button)) {
+					if (@$group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
 														SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
 														FROM '.$def_elmt->table_join.'
 														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
 													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
-					} else
+					} else {
 						$this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
+					}
 				}
 			}
 		}
-
-		if (empty($col_elt))
+		if (isset($em_other_columns) && in_array('overall', $em_other_columns)) {
+			$this->_elements_default[] = ' AVG(ee.overall) as overall ';
+		}
+		if (empty($col_elt)) {
 			$col_elt = array();
-		if (empty($col_other))
+		}
+		if (empty($col_other)) {
 			$col_other = array();
-		if (empty(@$this->_elements_default_name))
+		}
+		if (empty(@$this->_elements_default_name)) {
 			$this->_elements_default_name = array();
+		}
 
 		$this->col = array_merge($col_elt, $col_other, $this->_elements_default_name);
 
-		$elements_names = '"' . implode('", "', $this->col) . '"';
-		$result = @EmundusHelperList::getElementsDetails($elements_names);
-		$result = @EmundusHelperFiles::insertValuesInQueryResult($result, array("sub_values", "sub_labels"));
+		if (count($this->col) > 0) {
 
-		$this->details = new stdClass();
-		foreach ($result as $res) {
-			$this->details->{$res->tab_name . '__' . $res->element_name} = array('element_id' => $res->element_id,
-			                                                                     'plugin' => $res->element_plugin,
-			                                                                     'attribs' => $res->params,
-			                                                                     'sub_values' => $res->sub_values,
-			                                                                     'sub_labels' => $res->sub_labels,
-			                                                                     'group_by' => $res->tab_group_by);
-		}
+            $elements_names = '"'.implode('", "', $this->col).'"';
+
+            $h_list = new EmundusHelperList;
+            $h_files = new EmundusHelperFiles();
+
+            $result = $h_list->getElementsDetails($elements_names);
+            $result = $h_files->insertValuesInQueryResult($result, array("sub_values", "sub_labels"));
+
+            $this->details = new stdClass();
+            foreach ($result as $res) {
+                $this->details->{$res->tab_name . '___' . $res->element_name} = array('element_id' => $res->element_id,
+                                                                                      'plugin' => $res->element_plugin,
+                                                                                      'attribs' => $res->params,
+                                                                                      'sub_values' => $res->sub_values,
+                                                                                      'sub_labels' => $res->sub_labels,
+                                                                                      'group_by' => $res->tab_group_by);
+            }
+        }
 	}
 
 	public function getElementsVar() {
@@ -426,13 +465,13 @@ class EmundusModelEvaluation extends JModelList {
         $can_be_ordering = array();
         if (count($this->_elements) > 0) {
             foreach ($this->_elements as $element) {
-                if(!empty($element->table_join)) {
-                    $can_be_ordering[] = $element->table_join.'___'.$element->element_name;
-                    $can_be_ordering[] = $element->table_join.'.'.$element->element_name;
+            	if(!empty($element->table_join)) {
+	                $can_be_ordering[] = $element->table_join.'___'.$element->element_name;
+	                $can_be_ordering[] = $element->table_join.'.'.$element->element_name;
                 }
                 else {
-                    $can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
-                    $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
+                	$can_be_ordering[] = $element->tab_name.'___'.$element->element_name;
+	                $can_be_ordering[] = $element->tab_name.'.'.$element->element_name;
                 }
             }
         }
@@ -1312,7 +1351,7 @@ class EmundusModelEvaluation extends JModelList {
 				if(!empty($elt->table_join)) {
 			        $lastTab[] = $elt->table_join;
 					$group_by .= ', '.$elt->table_join.'___'.$elt->element_name;
-                } else {
+				} else {
 					$lastTab[] = $elt->tab_name;
 					$group_by .= ', '.$elt->tab_name.'___'.$elt->element_name;
 				}
@@ -1338,7 +1377,9 @@ class EmundusModelEvaluation extends JModelList {
 					) eta ON c.fnum = eta.fnum ' ;
 		$q = $this->_buildWhere($lastTab);
 
-		if (EmundusHelperAccess::isCoordinator($current_user->id) || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1) || EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id)){
+		if (EmundusHelperAccess::isCoordinator($current_user->id) 
+			|| (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1) 
+			|| EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id)) {
 			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum ';
 		} else {
 			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
@@ -1400,7 +1441,6 @@ if (JFactory::getUser()->id == 63)
 		return @EmundusHelperFilters::getAllElementsByGroups($groups);
 	}
 
-
 	public function getActionsACL() {
 		return $this->_files->getActionsACL();
 	}
@@ -1436,7 +1476,6 @@ if (JFactory::getUser()->id == 63)
 	public function getApplicantsByProfile($profile) {
 		return $this->_files->getApplicantsByProfile($profile);
 	}
-
 
 	public function getAuthorUsers() {
 		return $this->_files->getAuthorUsers();
@@ -1617,7 +1656,6 @@ if (JFactory::getUser()->id == 63)
 	* 	Get list of documents generated for email attachment
 	*	@param fnum 		Application File number
 	*	@param campaign_id 	Campaign ID
-	*	@param result 		status ID for eligibility
 	* 	@return array
 	*/
 	function getEvaluationDocuments($fnum, $campaign_id) {
@@ -1922,6 +1960,7 @@ if (JFactory::getUser()->id == 63)
 	/**
      * @param $fnums
      * @return mixed
+     * @throws Exception
      */
 	public function getEvaluationAverageByFnum($fnums) {
 		$dbo = $this->getDbo();

@@ -127,7 +127,7 @@ class EmundusModelFiles extends JModelLegacy
         $this->elements_id = $menu_params->get('em_elements_id');
         if ($session->has('adv_cols')) {
             $adv = $session->get('adv_cols');
-            if (!empty($adv)) {
+            if (!empty($adv) && !is_null($adv)) {
                 $this->elements_id .= ','.implode(',', $adv);
             }
 
@@ -2064,8 +2064,9 @@ if (JFactory::getUser()->id == 63)
             $db = JFactory::getDBO();
             $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, c.*
                         from #__emundus_campaign_candidature as cc
-                        left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id left join
-                        #__users as u on u.id = cc.applicant_id where cc.fnum like '.$db->Quote($fnum);
+                        left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id 
+                        left join #__users as u on u.id = cc.applicant_id 
+                        where cc.fnum like '.$db->Quote($fnum);
             $db->setQuery($query);
             $fnumInfos = $db->loadAssoc();
 
