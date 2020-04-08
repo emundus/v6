@@ -30,7 +30,7 @@ class EmundusModelApplication extends JModelList {
         global $option;
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
         $this->_mainframe = JFactory::getApplication();
 
