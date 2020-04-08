@@ -22,7 +22,7 @@ echo $description;
         <?php
         $is_admission = in_array($application->status, $admission_status);
         $state = $states[$application->fnum]['published'];
-        $confirm_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . 'confirm=1';
+        $confirm_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
         $first_page_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
         if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
             <?php 
