@@ -463,8 +463,8 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			$m_application = new EmundusModelApplication;
 			$m_checklist = new EmundusModelChecklist();
 
-			$attachments = $m_application->getAttachmentsProgress($user->profile, $user->fnum);
-			$forms = $m_application->getFormsProgress($user->profile, $user->fnum);
+			$attachments = $m_application->getAttachmentsProgress($user->fnum);
+			$forms = $m_application->getFormsProgress($user->fnum);
 			$send_file_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
 
 			if ($attachments >= 100 && $forms >= 100) {

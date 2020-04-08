@@ -981,10 +981,10 @@ class EmundusControllerDecision extends JControllerLegacy
 	                }
                     break;
                 case "forms":
-                    $colOpt['forms'] = $m_application->getFormsProgress(null, $fnums);
+                    $colOpt['forms'] = $m_application->getFormsProgress($fnums);
                     break;
                 case "attachment":
-                    $colOpt['attachment'] = $m_application->getAttachmentsProgress(null, $fnums);
+                    $colOpt['attachment'] = $m_application->getAttachmentsProgress($fnums);
                     break;
                 case "assessment":
                     $colOpt['assessment'] = @EmundusHelperFiles::getEvaluation('text', $fnums);
@@ -1283,10 +1283,10 @@ class EmundusControllerDecision extends JControllerLegacy
                     $colOpt['PHOTO'] = @EmundusHelperFiles::getPhotos();
                     break;
                 case "forms":
-                    $colOpt['forms'] = $modelApp->getFormsProgress(null, $fnums);
+                    $colOpt['forms'] = $modelApp->getFormsProgress($fnums);
                     break;
                 case "attachment":
-                    $colOpt['attachment'] = $modelApp->getAttachmentsProgress(null, $fnums);
+                    $colOpt['attachment'] = $modelApp->getAttachmentsProgress($fnums);
                     break;
                 case "assessment":
                     $colOpt['assessment'] = @EmundusHelperFiles::getEvaluation('text', $fnums);

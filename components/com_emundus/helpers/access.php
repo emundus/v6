@@ -142,15 +142,14 @@ class EmundusHelperAccess {
 	static function asAccessAction($action_id, $crud, $user_id = null, $fnum = null) {
 
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-		$userModel = new EmundusModelUsers();
+		$m_users = new EmundusModelUsers();
 
 		if (!is_null($fnum) && !empty($fnum)) {
-			$canAccess = $userModel->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
+			$canAccess = $m_users->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
 			if ($canAccess > 0) {
 				return true;
 			} elseif ($canAccess == 0 || $canAccess === null) {
 				$groups = JFactory::getSession()->get('emundusUser')->emGroups;
-
 				if (!empty($groups) && count($groups) > 0) {
 					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
 				} else {
@@ -164,13 +163,24 @@ class EmundusHelperAccess {
 		}
 	}
 
+
+	/**
+	 * @param         $gids
+	 * @param         $action_id
+	 * @param         $crud
+	 * @param   null  $fnum
+	 *
+	 * @return bool
+	 *
+	 * @since version
+	 */
 	static function canAccessGroup($gids, $action_id, $crud, $fnum = null) {
 
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-		$userModel = new EmundusModelUsers();
+		$m_users = new EmundusModelUsers();
 
 		if (!is_null($fnum) && !empty($fnum)) {
-			$accessList = $userModel->getGroupActions($gids, $fnum, $action_id, $crud);
+			$accessList = $m_users->getGroupActions($gids, $fnum, $action_id, $crud);
 			$canAccess = (!empty($accessList))?-1:null;
             if (count($accessList)>0) {
                 foreach ($accessList as $access) {
@@ -182,12 +192,14 @@ class EmundusHelperAccess {
 			if ($canAccess > 0) {
 				return true;
 			} elseif ($canAccess == 0 || $canAccess === null) {
+				// We filter the list of groups to take into account only the groups attached to the fnum's programme OR who are attached to no programme.
+				$gids = $m_users->getEffectiveGroupsForFnum($gids, $fnum);
 				return EmundusHelperAccess::canAccessGroup($gids, $action_id, $crud);
 			} else {
 				return false;
 			}
 		} else {
-			$groupsActions = $userModel->getGroupsAcl($gids);
+			$groupsActions = $m_users->getGroupsAcl($gids);
             if (count($groupsActions) > 0) {
                 foreach ($groupsActions as $action) {
                     if ($action['action_id'] == $action_id && $action[$crud] == 1) {

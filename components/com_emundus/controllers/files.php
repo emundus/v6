@@ -1380,9 +1380,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     break;
                 case "forms":
                     foreach ($fnums as $fnum) {
-                        $fnumInfos = $m_profile->getFnumDetails($fnum);
-                        $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
-                        $formsProgress[$fnum] = $m_application->getFormsProgress($pid, $fnum);
+                        $formsProgress[$fnum] = $m_application->getFormsProgress($fnum);
                     }
                     if (!empty($formsProgress)) {
 	                    $colOpt['forms'] = $formsProgress;
@@ -1390,9 +1388,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     break;
                 case "attachment":
                     foreach ($fnums as $fnum) {
-                        $fnumInfos = $m_profile->getFnumDetails($fnum);
-                        $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
-                        $attachmentProgress[$fnum] = $m_application->getAttachmentsProgress($pid, $fnum);
+                        $attachmentProgress[$fnum] = $m_application->getAttachmentsProgress($fnum);
                     }
                     if (!empty($attachmentProgress)) {
 	                    $colOpt['attachment'] = $attachmentProgress;
@@ -2111,10 +2107,10 @@ class EmundusControllerFiles extends JControllerLegacy
                     $colOpt['PHOTO'] = $h_files->getPhotos();
                     break;
                 case "forms":
-                    $colOpt['forms'] = $m_application->getFormsProgress(null, $fnums);
+                    $colOpt['forms'] = $m_application->getFormsProgress($fnums);
                     break;
                 case "attachment":
-                    $colOpt['attachment'] = $m_application->getAttachmentsProgress(null, $fnums);
+                    $colOpt['attachment'] = $m_application->getAttachmentsProgress($fnums);
                     break;
                 case "assessment":
                     $colOpt['assessment'] = $h_files->getEvaluation('text', $fnums);
