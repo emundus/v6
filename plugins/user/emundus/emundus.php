@@ -194,7 +194,7 @@ class plgUserEmundus extends JPlugin
 	        }
         }
 
-	    if (count($details) > 0) {
+	    if (is_array($details) && count($details) > 0) {
             $campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
             $lastname = @isset($details['emundus_profile']['lastname'])?$details['emundus_profile']['lastname']:@$details['name'];
             $firstname = @isset($details['emundus_profile']['firstname'])?$details['emundus_profile']['firstname']:@$details['firstname'];

@@ -59,11 +59,9 @@ class EmundusViewChecklist extends JViewLegacy {
                 // 1. if application form not sent yet, send it // 2. trigger emails // 3. display reminder list
                 $m_application 	= new EmundusModelApplication;
                 $m_files = new EmundusModelFiles;
-                $applications = $m_application->getApplications($this->_user->id);
-                $attachments = $m_application->getAttachmentsProgress($this->_user->profile, array_keys($applications));
-                $forms = $m_application->getFormsProgress($this->_user->profile, array_keys($applications));
-
-                if ((int)($attachments[$this->_user->fnum])>=100 && (int)($forms[$this->_user->fnum])>=100) {
+                $attachments = $m_application->getAttachmentsProgress($this->_user->fnum);
+                $forms = $m_application->getFormsProgress($this->_user->fnum);
+                if ((int)($attachments)>=100 && (int)($forms)>=100) {
                     $accept_created_payments = $eMConfig->get('accept_created_payments', 0);
                     $fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
 
@@ -143,8 +141,8 @@ class EmundusViewChecklist extends JViewLegacy {
                 if ($notify_complete_file) {
 	                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	                $m_application = new EmundusModelApplication;
-	                $attachments_prog = $m_application->getAttachmentsProgress($this->_user->profile, $this->_user->fnum);
-	                $forms_prog = $m_application->getFormsProgress($this->_user->profile, $this->_user->fnum);
+	                $attachments_prog = $m_application->getAttachmentsProgress($this->_user->fnum);
+	                $forms_prog = $m_application->getFormsProgress($this->_user->fnum);
 	                $this->assignRef('attachments_prog', $attachments_prog);
 	                $this->assignRef('forms_prog', $forms_prog);
                 }

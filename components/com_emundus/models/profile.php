@@ -134,10 +134,18 @@ class EmundusModelProfile extends JModelList
                   LEFT JOIN jos_emundus_campaign_candidature cc ON cc.status = ss.step
 						WHERE cc.fnum LIKE "'.$fnum.'"';
 
-        try
-        {
+        try {
             $this->_db->setQuery( $query );
-            return $this->_db->loadResult();
+            $res = $this->_db->loadResult();
+            if (!empty($res)) {
+                return $res;
+            } else {
+                $query = 'SELECT esc.profile_id from jos_emundus_setup_campaigns esc
+                  LEFT JOIN jos_emundus_campaign_candidature cc ON cc.campaign_id = esc.id
+						WHERE cc.fnum LIKE "'.$fnum.'"';
+                $this->_db->setQuery( $query );
+                return $this->_db->loadResult();
+            }
         }
         catch(Exception $e)
         {

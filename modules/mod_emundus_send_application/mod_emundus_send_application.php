@@ -31,8 +31,8 @@ if (!empty($user->fnum)) {
 	$m_application = new EmundusModelApplication;
 	$m_checklist = new EmundusModelChecklist;
 
-	$attachments = $m_application->getAttachmentsProgress($user->profile, $user->fnum);
-	$forms 	= $m_application->getFormsProgress($user->profile, $user->fnum);
+	$attachments = $m_application->getAttachmentsProgress($user->fnum);
+	$forms 	= $m_application->getFormsProgress($user->fnum);
 
 	// We redirect to the "send application" form, this form will redirect to payment if required.
 	$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
