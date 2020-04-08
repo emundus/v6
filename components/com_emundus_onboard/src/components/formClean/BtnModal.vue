@@ -2,9 +2,14 @@
   <!-- modalBTN 
   -->
   <span id="BtnModal">
-    <span class="BtnModal" @click="$modal.show('modalC' + ID)">
+    <span
+      class="BtnModal"
+      @click="$modal.show('modalC' + ID)"
+      data-toggle="tooltip"
+      data-placement="top"
+      :title="elementhover"
+    >
       <em class="fas fa-cog"></em>
-      <span class="tooltiptext">I'm hovered</span>
     </span>
     <modalC
       :ID="ID"
@@ -30,7 +35,11 @@ export default {
   },
   components: { modalC },
   data() {
-    return { showModal: false, ID: this.IDs };
+    return { 
+      showModal: false,
+      elementhover: Joomla.JText._("COM_EMUNDUS_ONBOARD_ELEMENTTOOLTIPS"),
+      ID: this.IDs 
+    };
   },
   methods: {
     show(group, type, text, title) {

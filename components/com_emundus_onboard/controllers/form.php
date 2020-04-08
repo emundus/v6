@@ -526,12 +526,14 @@ class EmundusonboardControllerform extends JControllerLegacy {
         $user = JFactory::getUser();
         $jinput = JFactory::getApplication()->input;
         $profile_id = $jinput->getRaw('profile_id');
+
         $m_form = $this->model;
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $form = $m_form->getFormsByProfileId($profile_id);
+
             if (!empty($form)) {
                 $tab = array('status' => 1, 'msg' => 'worked', 'data' => $form);
             } else {
@@ -545,6 +547,7 @@ class EmundusonboardControllerform extends JControllerLegacy {
         $user = JFactory::getUser();
         $jinput = JFactory::getApplication()->input;
         $profile_id = $jinput->getRaw('profile_id');
+
         $m_form = $this->model;
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;

@@ -1,6 +1,5 @@
 <template>
   <div id="birthdayF">
-    <p>Je suis le birthday {{element.id}}</p>
     <div class="rowmodal">
       <div class="flex">
         Hover help:

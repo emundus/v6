@@ -162,8 +162,8 @@ export default {
       unattachments: [],
       unid: [],
 
-      Retour: Joomla.JText._("COM_EMUNDUSONBOARD_ADD_RETOUR"),
-      Continuer: Joomla.JText._("COM_EMUNDUSONBOARD_ADD_CONTINUER")
+      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER")
     };
   },
 

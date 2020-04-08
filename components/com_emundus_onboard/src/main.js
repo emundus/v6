@@ -94,7 +94,8 @@ if (document.getElementById("em-formBuilder-vue")) {
       return h(formBuilder, {
         props: {
           prid: this.$el.attributes.prid.value,
-          index: this.$el.attributes.index.value
+          index: this.$el.attributes.index.value,
+          fid: this.$el.attributes.fid.value,
         }
       });
     }

@@ -117,6 +117,41 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
      }
 
+     public function formsTrad(){
+        $user = JFactory::getUser();
+        $m_form = $this->model;
+        $jinput = JFactory::getApplication()->input;
+        $labelTofind = $jinput->getRaw('labelTofind');
+        $newLabel = $jinput->getRaw('NewSubLabel');
+        $lang = JFactory::getLanguage();
+        $locallang = $lang->getTag();        
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        $result = 0;
+        $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else { 
+            $changeresponse = $m_form->formsTrad($labelTofind,  $locallang, $newLabel);
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+     }
+
+      public function getJTEXTA(){
+        $user = JFactory::getUser();
+        $m_form = $this->model;
+        $jinput = JFactory::getApplication()->input;
+        $toJTEXT = $jinput->getRaw('toJTEXT');
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        $result = 0;
+        $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else { 
+             $getJtext = $m_form->getJTEXTA($toJTEXT);             
+        }
+        echo json_encode((object)$getJtext);
+        exit;
+     }
+
+
      public function getJTEXT(){
         $user = JFactory::getUser();
         $m_form = $this->model;
@@ -129,7 +164,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         } else { 
              $getJtext = $m_form->getJTEXT($toJTEXT);             
         }
-        echo json_encode((object)$getJtext);
+        echo json_encode((string)$getJtext);
         exit;
      }
 }

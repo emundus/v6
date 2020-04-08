@@ -13,9 +13,9 @@ $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_onboard/chunk-vendors.js');
 $document->addStyleSheet('media/com_emundus_onboard/app.css');
 
-JText::script('COM_EMUNDUSONBOARD_FROM');
-JText::script('COM_EMUNDUSONBOARD_TO');
-JText::script('COM_EMUNDUSONBOARD_SINCE');
+JText::script('COM_EMUNDUS_ONBOARD_FROM');
+JText::script('COM_EMUNDUS_ONBOARD_TO');
+JText::script('COM_EMUNDUS_ONBOARD_SINCE');
 ?>
 
 <div id="em-addForm-vue" form="<?= $this->id ;?>"></div>

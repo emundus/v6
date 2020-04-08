@@ -59,11 +59,11 @@ export default {
   data() {
     return {
       selectedData: [],
-      publishedTag: Joomla.JText._("COM_EMUNDUSONBOARD_FILTER_PUBLISH"),
-      unpublishedTag: Joomla.JText._("COM_EMUNDUSONBOARD_FILTER_UNPUBLISH"),
-      passeeTag: Joomla.JText._("COM_EMUNDUSONBOARD_FILTER_CLOSE"),
-      Modify: Joomla.JText._("COM_EMUNDUSONBOARD_MODIFY"),
-      Visualize: Joomla.JText._("COM_EMUNDUSONBOARD_VISUALIZE")
+      publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
+      unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
+      passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
+      Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
+      Visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE")
     };
   },
 

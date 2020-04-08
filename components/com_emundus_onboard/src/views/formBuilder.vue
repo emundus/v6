@@ -6,45 +6,58 @@
       animation-type="velocity"
       :speed="500"
     />
+    <ModalSide
+      v-for="(value, index) in formNameArray"
+      :key="index"
+      v-show="formObjectArray[indexHighlight]"
+      :ID="formObjectArray[index].rgt"
+      :element="formObjectArray[index].object"
+      :index="index"
+      @show="show"
+      @UpdateUx="UpdateUXT"
+      @UpdateName="UpdateName"
+    />
     <div class="row">
       <div class="col-md-2">
         <div class="sidebar" data-spy="affix">
           <h1>{{profileLabel}}</h1>
-          <legend class="legendSide">
+          <!-- <legend class="legendSide">
             <span class="mr-rightS dinherit">
               <em class="fas fa-plus-circle btnPM"></em>
             </span>
-          </legend>
+          </legend>-->
           <ul class="fa-ul">
             <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
-              <span class="fa-li">
+              <!-- <span class="fa-li">
                 <em class="fas fa-arrows-alt-v"></em>
-              </span>
+              </span>-->
               <a
                 @click="indexHighlight = index"
                 class="MenuFormItem"
                 :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
-              >{{value.value}}</a>
-              <span class="BtnModal">
-                <em class="fas fa-cog"></em>
-              </span>
-              <span class="tooltiptextSide">I'm hovered</span>
+              >{{formObjectArray[index].object.show_title.value}}</a>
+              <BtnModalSide
+                v-if="formObjectArray[indexHighlight]"
+                :IDs="formObjectArray[index].rgt"
+              />
             </li>
           </ul>
+          <button class="btnreturn" @click="prevent()">{{Retour}}</button>
         </div>
       </div>
       <div class="col-md-10">
         <div class="container-fluid row BuilderExplain">
           <div class="col-md-3 Topbar separator">
-            <h2>Building Menu</h2>
+            <h2 class="buildmenu">{{buildmenu}}</h2>
           </div>
           <div class="col-md-9 Topbar">
-            <h2>Preview</h2>
+            <h2>{{preview}}</h2>
           </div>
         </div>
         <Builder
           :object="formObjectArray[indexHighlight]"
           v-if="formObjectArray[indexHighlight]"
+          :UpdateUx="UpdateUx"
           @show="show"
         />
       </div>
@@ -55,26 +68,35 @@
 
 <script>
 import _ from "lodash";
+import axios from "axios";
 
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
 
 import "../assets/css/formbuilder.css";
+
 import Builder from "../components/formClean/Builder";
-import axios from "axios";
+import ModalSide from "../components/formClean/ModalSide";
+import BtnModalSide from "../components/formClean/BtnModalSide";
+
 const qs = require("qs");
 
 export default {
   name: "FormBuilder",
   props: {
     prid: String,
-    index: Number
+    index: Number,
+    fid: Number
   },
   components: {
-    Builder
+    Builder,
+    BtnModalSide,
+    ModalSide
   },
   data() {
     return {
+      UpdateUx: false,
+      showModal: false,
       indexHighlight: "0",
       formNameArray: [],
       formObjectArray: [],
@@ -93,10 +115,19 @@ export default {
           opacity: 0,
           height: 0
         }
-      }
+      },
+      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      buildmenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDMENU"),
+      preview: Joomla.JText._("COM_EMUNDUS_ONBOARD_PREVIEW")
     };
   },
   methods: {
+    UpdateName(index, label) {
+      this.formObjectArray[index].object.show_title.value = label;
+    },
+    UpdateUXT() {
+      this.UpdateUx = true;
+    },
     /**
      * ** Methods for notify
      */
@@ -182,6 +213,12 @@ export default {
         .catch(e => {
           console.log(e);
         });
+    },
+    prevent() {
+      window.location.replace(
+        "index.php?option=com_emundus_onboard&view=form&layout=add&fid=" +
+          this.fid
+      );
     }
   },
   created() {
@@ -200,7 +237,7 @@ export default {
   position: relative;
   margin-left: -50vw !important;
   left: 50%;
-  margin-top:-4.2%;
+  margin-top: -4.2%;
 }
 .container {
   margin-bottom: 5%;
@@ -222,6 +259,7 @@ export default {
 }
 .MenuFormItem {
   color: black;
+  cursor: pointer;
 }
 .MenuFormItem:hover {
   color: grey;
@@ -253,5 +291,25 @@ body {
 .separator {
   border-right: 1px solid hsla(0, 0%, 81%, 0.5);
   border-left: 1px solid hsla(0, 0%, 81%, 0.5);
+}
+
+.btnreturn {
+  position: relative;
+  left: 37%;
+  top: 5%;
+  background-color: #1b1f3c;
+  border-radius: 28px;
+  border: 1px solid #1b1f3c;
+  display: inline-block;
+  cursor: pointer;
+  color: #ffffff;
+  font-family: Arial;
+  font-size: 17px;
+  padding: 12px 27px;
+  text-decoration: none;
+}
+.btnreturn:hover {
+  background-color: #ef6d3b;
+  border: 1px solid #ef6d3b;
 }
 </style>

@@ -32,17 +32,18 @@ class FabrikViewForm extends FabrikViewFormBase
 	 */
 	public function display($tpl = null)
     {
+		error_reporting(E_ALL ^ E_NOTICE);
         
         /** 
         *   *Instanciation des variables du form
         */
-
-		$model  		= $this->getModel();   		
-		$form			= $this->getForm();	
+		$model        = $this->getModel();
+		$form         = $model->getForm();
+// $model  		= $this->getModel();   		
+// $form			= $this->getForm();
 		$getParams		= $model->getParams();
 		$getGroup		= $model->getGroups();
 		
-
 		
 		
 		 $returnObject = new stdClass();

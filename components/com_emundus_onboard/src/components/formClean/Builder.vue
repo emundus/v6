@@ -2,7 +2,7 @@
   <div id="FormBuilder" class="container-fluid">
     <div class="row">
       <div class="container col-md-3">
-        <div
+        <!-- <div
           v-if="object_json.show_page_heading"
           :class="object_json.show_page_heading.class"
           v-html="object_json.show_page_heading.page_heading"
@@ -14,18 +14,18 @@
         />
 
         <p class="intro" v-if="object_json.intro" v-html="object_json.intro" />
-
+ -->
         <form method="post" class="shadow-box">
           <div v-for="group in object_json.Groups" v-bind:key="group.group_id">
             <legend v-if="group.group_showLegend" class="legend2">
               {{group.group_showLegend}}
-              <span
+             <!--  <span
                 class="mr-right dinherit bkcolor"
                 type="button"
                 @click="addElement(group.group_id, )"
-              >
+              > 
                 <em class="fas fa-plus-circle btnPM"></em>
-              </span>
+              </span>-->
             </legend>
             <ul class="fa-ul">
               <draggable
@@ -101,7 +101,7 @@ const qs = require("qs");
 
 export default {
   name: "FormBuilder",
-  props: { object: Object },
+  props: { object: Object, UpdateUx: Boolean  },
   components: {
     draggable,
     BuilderViewer,
@@ -109,7 +109,6 @@ export default {
   },
   data() {
     return {
-      UpdateUx: false,
       newlabel: [],
       dblckickLabel: [],
       testastos: [],
@@ -249,6 +248,11 @@ export default {
     update: function() {
       if (this.update === true) {
         this.getDataObject();
+      }
+    },
+    UpdateUx: function() {
+      if (this.UpdateUx === true) {
+        this.UpdateUXT();
       }
     }
   }

@@ -174,5 +174,22 @@ class EmundusModelChecklist extends JModelList
 			JLog::add('Error in model/checklist at query : '.$query, JLog::ERROR, 'com_emundus');
 		}
 	}
+
+	/**
+	 * Set filename for uploaded attachment send by applicant
+     * @param string $file filename received
+     * @param string $lbl system name defined in emundus_setup_attachments
+     * @param array $fnumInfos infos from fnum
+     * @return string
+     */
+	function setAttachmentName($file, $lbl, $fnumInfos) {
+
+		//$filename = strtolower(preg_replace(array('([\40])','([^a-zA-Z0-9-])','(-{2,})'),array('_','','_'),preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/','$1',htmlentities($user->lastname.'_'.$user->firstname,ENT_NOQUOTES,'UTF-8'))));
+
+        $file_array = explode(".", $file);
+        $filename = $fnumInfos['applicant_id'].'-'.$fnumInfos['id'].'-'.trim($lbl, ' _').'-'.rand().'.'.end($file_array);
+
+        return $filename;
+	}
 }
 ?>

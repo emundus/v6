@@ -32,6 +32,8 @@ class FabrikViewForm extends FabrikViewFormBase
 	 */
 	public function display($tpl = null)
     {
+
+		error_reporting(E_ALL ^ E_NOTICE);
         
         /** 
         *   *Instanciation des variables du form
@@ -59,13 +61,15 @@ class FabrikViewForm extends FabrikViewFormBase
 			$show_title = new stdClass();
 			$show_title-> class ="page-header";
 			$title = explode('-', $form->label);
-			$show_title-> value= !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
+			$show_title->titleraw = $form->label;
+			$show_title->value = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
 			$returnObject->show_title = $show_title;
 		endif;
 
 		if ($form->intro) :
 			$initIntro = str_replace('<p>','',$form->intro);
 			$initIntro = str_replace('</p>','',$initIntro);
+			$returnObject->introraw =  $initIntro;
 			$intro = explode('-', $initIntro);
 			$returnObject->intro = !empty($intro[1])?JText::_(trim($intro[1])):JText::_(trim($intro[0]));
 		endif;

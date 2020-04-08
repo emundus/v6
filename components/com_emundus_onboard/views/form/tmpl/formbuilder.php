@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla
  * @subpackage  com_emundus_onboard
@@ -13,9 +14,17 @@ $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_onboard/chunk-vendors.js');
 $document->addStyleSheet('media/com_emundus_onboard/app.css');
 
+JText::script('COM_EMUNDUS_ONBOARD_SIDEMENUHELP');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDMENU');
+JText::script('COM_EMUNDUS_ONBOARD_PREVIEW');
+JText::script('COM_EMUNDUS_ONBOARD_ELEMENTTOOLTIPS');
+JText::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
+JText::script('COM_EMUNDUS_ONBOARD_ADD_CONTINUER');
+
+
 
 ?>
 
-<div id="em-formBuilder-vue" prid="<?= $this->prid ;?>" index="<?= $this->index ;?>"></div>
+<div id="em-formBuilder-vue" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" fid="<?= $this->fid; ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>

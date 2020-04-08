@@ -19,8 +19,7 @@
               this.formulaireEmundus
           "
           class="modifier-la-campagne"
-          >{{ Modify }}</a
-        >
+        >{{ Modify }}</a>
         <div class="divider-menu"></div>
         <div v-for="(formCat, index) in formCategories[langue]" :key="index">
           <a
@@ -28,29 +27,25 @@
             @click="menuHighlight = index"
             class="menu-item"
             :class="menuHighlight == index ? 'w--current' : ''"
-            >{{ formCat }}</a
-          >
+          >{{ formCat }}</a>
           <a
             v-if="index == 4"
             @click="menuHighlight = index"
             class="menu-item eval"
             :class="menuHighlight == index ? 'w--current' : ''"
-            >{{ formCat }}</a
-          >
+          >{{ formCat }}</a>
           <a
             v-if="index > 4 && index < 10"
             @click="menuHighlight = index"
             class="link-2"
             :class="menuHighlight == index ? 'w--current' : ''"
-            >{{ formCat }}</a
-          >
+          >{{ formCat }}</a>
           <a
             v-if="index == 10"
             @click="menuHighlight = index"
             class="menu-item parametres"
             :class="menuHighlight == index ? 'w--current' : ''"
-            >{{ formCat }}</a
-          >
+          >{{ formCat }}</a>
         </div>
       </div>
     </div>
@@ -60,6 +55,7 @@
           v-if="menuHighlight == 0"
           :funnelCategorie="funnelCategories[langue][menuHighlight]"
           :profileId="profileId"
+          :formulaireEmundus="formulaireEmundus"
         ></addFormulaire>
 
         <addDocuments
@@ -109,9 +105,11 @@
       <div class="w-container">
         <div class="container-evaluation w-clearfix">
           <a @click="next()" class="bouton-sauvergarder-et-continuer-3">{{ Continuer }}</a>
-          <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previous()">{{
+          <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previous()">
+            {{
             Retour
-          }}</a>
+            }}
+          </a>
         </div>
       </div>
     </div>
@@ -232,14 +230,16 @@ export default {
       end_date: ""
     },
 
-    From: Joomla.JText._("COM_EMUNDUSONBOARD_FROM"),
-    To: Joomla.JText._("COM_EMUNDUSONBOARD_TO"),
-    Since: Joomla.JText._("COM_EMUNDUSONBOARD_SINCE"),
-    Modify: Joomla.JText._("COM_EMUNDUSONBOARD_MODIFY"),
-    CAMPAIGN: Joomla.JText._("COM_EMUNDUSONBOARD_CAMPAIGN"),
-    ChooseEvaluatorGroup: Joomla.JText._("COM_EMUNDUSONBOARD_CHOOSE_EVALUATOR_GROUP"),
-    Retour: Joomla.JText._("COM_EMUNDUSONBOARD_ADD_RETOUR"),
-    Continuer: Joomla.JText._("COM_EMUNDUSONBOARD_ADD_CONTINUER")
+    From: Joomla.JText._("COM_EMUNDUS_ONBOARD_FROM"),
+    To: Joomla.JText._("COM_EMUNDUS_ONBOARD_TO"),
+    Since: Joomla.JText._("COM_EMUNDUS_ONBOARD_SINCE"),
+    Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
+    CAMPAIGN: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN"),
+    ChooseEvaluatorGroup: Joomla.JText._(
+      "COM_EMUNDUS_ONBOARD_CHOOSE_EVALUATOR_GROUP"
+    ),
+    Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+    Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER")
   }),
 
   methods: {
@@ -284,7 +284,9 @@ export default {
         this.form.label = response.data.data.label;
         this.form.start_date = response.data.data.start_date;
         this.form.end_date = response.data.data.end_date;
-        this.form.start_date = moment(this.form.start_date).format("DD/MM/YYYY");
+        this.form.start_date = moment(this.form.start_date).format(
+          "DD/MM/YYYY"
+        );
         if (this.form.end_date == "0000-00-00 00:00:00") {
           this.form.end_date = null;
         } else {
@@ -307,12 +309,15 @@ export default {
         window.history.pushState(
           "forward",
           null,
-          "index.php?option=com_emundus_onboard&view=form&layout=add&fid=" + fid + "#forward"
+          "index.php?option=com_emundus_onboard&view=form&layout=add&fid=" +
+            fid +
+            "#forward"
         );
 
         $(window).on("popstate", function() {
           window.location.replace(
-            "index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=" + formulaireEmundus
+            "index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=" +
+              formulaireEmundus
           );
         });
       }
@@ -322,8 +327,8 @@ export default {
 </script>
 
 <style>
-.w-col-9{
-  width:75% !important;
-  padding-top:0 !important;
+.w-col-9 {
+  width: 75% !important;
+  padding-top: 0 !important;
 }
 </style>

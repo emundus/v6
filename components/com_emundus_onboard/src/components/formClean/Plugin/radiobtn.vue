@@ -1,11 +1,10 @@
 <template>
   <div id="radiobtnF">
-    <p>Je suis le radiobtn {{element.id}}</p>
     <div class="flex">
       Hover help:
       <input type="text" class="inputF" v-model="element.params.rollover" />
     </div>
-  <div class="suboptions">
+    <div class="suboptions">
       Sub options :
       <span>
         <button @click.prevent="add" class="plusmoins toright">+</button>
@@ -45,7 +44,7 @@ export default {
       Axios({
         method: "post",
         url:
-          "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXT",
+          "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXTA",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },

@@ -15,21 +15,17 @@
         <fieldset :class="group.group_class" :id="'group'+group.group_id" :style="group.group_css">
           <legend v-if="group.group_showLegend" class="legend">{{group.group_showLegend}}</legend>
           <div v-if="group.group_intro" class="groupintro">{{group.group_intro}}</div>
-          <!-- /**
-          * ! /!\
-          * ! /!\
-          * TODOS: il faudra faire le if pour repeat group et group_table
-          * '!?' TODOS : il faudra faire le if pour repeat group et group_table
-          * ! /!\
-          * ! /!\
-          */-->
+         
           <div
             v-for="element in group.elements"
             v-bind:key="element.index"
             v-show="element.hidden === false"
           >
             <span v-if="element.label" v-html="element.label" v-show="element.labelsAbove != 2"></span>
-            <div v-if="element.labelsAbove == 0" class="controls">
+            <div v-if="element.params.date_table_format">
+              <date-picker v-model="date" :config="options"></date-picker>
+            </div>
+            <div v-else-if="element.labelsAbove == 0" class="controls">
               <div v-if="element.error" class="fabrikElement" v-html="element.error"></div>
               <div v-if="element.element" :class="element.errorClass" v-html="element.element"></div>
               <span v-if="element.tipSide" v-html="element.tipSide"></span>
@@ -52,21 +48,30 @@
 
 <script>
 import _ from "lodash";
+import datePicker from "vue-bootstrap-datetimepicker";
 import axios from "axios";
 export default {
   name: "FormViewer",
   props: {
     link: String
   },
+  components: {
+    datePicker
+  },
   data() {
     return {
-      object_json: ""
+      object_json: "",
+      date: new Date(),
+      options: {
+        format: "DD/MM/YYYY",
+        useCurrent: false
+      }
     };
   },
   methods: {
     getDataObject: _.debounce(function() {
       axios
-        .get(this.link.link + "&format=vue_json")
+        .get(this.link.link + "&format=vue_jsonclean")
         .then(response => {
           this.object_json = response.data;
         })
@@ -84,6 +89,9 @@ export default {
 </script>
 
 <style scoped>
+.dropdown-menu {
+  width: 0 !important;
+}
 .hidden {
   display: none;
 }

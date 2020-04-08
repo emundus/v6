@@ -33,6 +33,13 @@ JLog::addLogger(
     JLog::ALL,
     array('com_emundus.email')
 );
+JLog::addLogger(
+    array(
+        'text_file' => 'com_emundus.webhook.php'
+    ),
+    JLog::ALL,
+    array('com_emundus.webhook')
+);
 // translation for javacript
 JText::script('COM_EMUNDUS_EX');
 JText::script('JTAG');
@@ -369,9 +376,13 @@ $classname    = 'EmundusController'.$controller;
 $controller   = new $classname();
 
 $user = JFactory::getUser();
-$name = $app->input->get('view', '', 'WORD');
-$task = $app->input->get('task', '', 'WORD');
-$format = $app->input->get('format', '', 'WORD');
+$secret = JFactory::getConfig()->get('secret');
+
+$name = $app->input->get('view', '', 'CMD');
+$task = $app->input->get('task', '', 'CMD');
+$format = $app->input->get('format', '', 'CMD');
+$token = $app->input->get('token', '', 'ALNUM');
+
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf') {
@@ -380,7 +391,7 @@ if ($task == 'getproductpdf') {
 
 if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis')) {
     $controller->execute($task);
-} elseif($user->guest && ($name == 'webhook' && $format='raw')) { 
+} elseif($user->guest && ($name == 'webhook' && $format='raw') && $secret == $token) { 
     $controller->execute($task);
 } elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $format != 'json') && $task != 'passrequest') {
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');

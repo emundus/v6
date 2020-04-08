@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla
  * @subpackage  com_emunudus_onboard
@@ -15,7 +16,8 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @since  0.0.1
  */
-class EmundusonboardViewForm extends JViewLegacy {
+class EmundusonboardViewForm extends JViewLegacy
+{
 	/**
 	 * Display the Form view
 	 *
@@ -23,18 +25,21 @@ class EmundusonboardViewForm extends JViewLegacy {
 	 *
 	 * @return  void
 	 */
-	function display($tpl = null) {
-        $jinput = JFactory::getApplication()->input;
+	function display($tpl = null)
+	{
+		$jinput = JFactory::getApplication()->input;
 
-        // Display the template
+		// Display the template
 		$layout = $jinput->getString('layout', null);
-		
-        if ($layout == 'add') {
+
+		if ($layout == 'add') {
 			$this->id = $jinput->get->get('fid', null);
 		}
-		if ($layout == 'formbuilder'){
-            $this->prid = $jinput->get->get('prid', null);
+		if ($layout == 'formbuilder') {
+			$this->prid = $jinput->get->get('prid', null);
 			$this->index = $jinput->get->get('index', 0);
+			$this->fid = $jinput->get->get('fid', null);
+
 			$this->layout = $layout;
 		}
 		// Display the template

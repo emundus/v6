@@ -45,7 +45,7 @@ export default {
 
   data() {
     return {
-      ChooseEmailTrigger: Joomla.JText._("COM_EMUNDUSONBOARD_CHOOSE_EMAIL_TRIGGER")
+      ChooseEmailTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_EMAIL_TRIGGER")
     };
   }
 };

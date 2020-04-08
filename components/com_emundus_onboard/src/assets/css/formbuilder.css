@@ -34,9 +34,8 @@
 }
 .legend2 {
   padding: 15px 20px 10px !important;
-  margin: -4% 0 0 !important;
+  /* margin: -4% 0 0 !important; */
   display: flex;
-
 }
 
 .ViewerLegend {
@@ -90,16 +89,7 @@
   color: black;
   border: 1px solid #1b1f3c;
 }
-.BtnModal:hover .tooltiptext {
-  visibility: visible;
 
-  opacity: 1;
-}
-.BtnModal:hover + .tooltiptextSide {
-  visibility: visible;
-
-  opacity: 1;
-}
 .inputF {
   display: block;
   width: inherit;
@@ -108,57 +98,6 @@
   margin: 0 0 0 5px;
 }
 
-.tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-  position: absolute;
-  z-index: 999;
-  top: 17px;
-  left: 97%;
-  opacity: 0;
-  transition: opacity 1s;
-}
-
-.tooltiptext::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: 100%;
-  margin-top: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: transparent black transparent transparent;
-}
-.tooltiptextSide {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-  position: absolute;
-  z-index: 999;
-  top: 5px;
-  left: 57%;
-  opacity: 0;
-  transition: opacity 1s;
-}
-
-.tooltiptextSide::after {
-  content: "";
-  position: absolute;
-  left: 72%;
-  top: 100%;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #000 transparent transparent transparent;
-}
 fieldset {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   margin: 0% 2% 1.5% !important;
@@ -184,4 +123,7 @@ fieldset {
 }
 .suboptions {
   margin: 1.2% 0;
+}
+.bootstrap-datetimepicker-widget {
+  width: 19% !important;
 }

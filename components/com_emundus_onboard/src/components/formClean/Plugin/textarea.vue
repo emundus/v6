@@ -1,6 +1,5 @@
 <template>
   <div id="textareaF">
-    <p>Je suis le textarea {{element.id}}</p>
     <div class="row rowmodal">
       <div class="col-sm-2 flex">
         width :

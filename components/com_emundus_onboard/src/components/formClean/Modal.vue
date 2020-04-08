@@ -47,11 +47,11 @@
         <a
           class="bouton-sauvergarder-et-continuer-3"
           @click.prevent="$modal.hide('modalC' + ID) & UpdateParams(tempEl, tempLabel)"
-        >Save & Continue</a>
+        >{{ Continuer }}</a>
         <a
           class="bouton-sauvergarder-et-continuer-3 w-retour"
           @click.prevent="$modal.hide('modalC' + ID)"
-        >Discard Changes</a>
+        >{{Retour}}</a>
       </div>
     </modal>
   </span>
@@ -86,7 +86,9 @@ export default {
       changes: false,
       tempEl: [],
       tempLabel: "",
-      sublabel: ""
+      sublabel: "",
+      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER")
     };
   },
   methods: {

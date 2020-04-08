@@ -1,6 +1,5 @@
 <template>
   <div id="fieldF">
-    <p>Je suis le field {{element.id}}</p>
     <div class="row rowmodal">
       <div class="col-sm-3 flex">
         type de champ :

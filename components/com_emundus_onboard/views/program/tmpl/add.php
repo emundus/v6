@@ -13,17 +13,17 @@ $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_onboard/chunk-vendors.js');
 $document->addStyleSheet('media/com_emundus_onboard/app.css');
 
-JText::script('COM_EMUNDUSONBOARD_ADDCAMP_PROGRAM');
-JText::script('COM_EMUNDUSONBOARD_ADDCAMP_CHOOSEPROG');
-JText::script('COM_EMUNDUSONBOARD_ADDPROGRAM');
-JText::script('COM_EMUNDUSONBOARD_ADD_RETOUR');
-JText::script('COM_EMUNDUSONBOARD_ADD_CONTINUER');
-JText::script('COM_EMUNDUSONBOARD_FILTER_PUBLISH');
-JText::script('COM_EMUNDUSONBOARD_DEPOTDEDOSSIER');
-JText::script('COM_EMUNDUSONBOARD_PROGNAME');
-JText::script('COM_EMUNDUSONBOARD_PROGCODE');
-JText::script('COM_EMUNDUSONBOARD_CHOOSECATEGORY');
-JText::script('COM_EMUNDUSONBOARD_NAMECATEGORY');
+JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
+JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG');
+JText::script('COM_EMUNDUS_ONBOARD_ADDPROGRAM');
+JText::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
+JText::script('COM_EMUNDUS_ONBOARD_ADD_CONTINUER');
+JText::script('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH');
+JText::script('COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER');
+JText::script('COM_EMUNDUS_ONBOARD_PROGNAME');
+JText::script('COM_EMUNDUS_ONBOARD_PROGCODE');
+JText::script('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY');
+JText::script('COM_EMUNDUS_ONBOARD_NAMECATEGORY');
 ?>
 
 <div id="em-addProgram-vue" prog="<?= $this->id ;?>"></div>

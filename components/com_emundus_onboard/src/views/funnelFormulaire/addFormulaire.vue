@@ -1,14 +1,11 @@
 <template>
   <div class="container-evaluation formulairedepresentation">
     <h2 class="heading">{{ funnelCategorie }}</h2>
-    <p class="paragraphe-sous-titre">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros
-      elementum tristique.
-    </p>
+    <p class="paragraphe-sous-titre">{{formdescription}}</p>
     <div class="w-form">
       <form id="email-form" name="email-form" data-name="Email Form">
         <div class="container-flexbox-choisir-ou-plus w-clearfix">
-          <select id="Formulaire" name="Formulaire" data-name="Formulaire" class="dropdown-toggle">
+          <!--   <select id="Formulaire" name="Formulaire" data-name="Formulaire" class="dropdown-toggle">
             <option value>{{ ChooseForm }}</option>
             <option value="Formulaire 1">Formulaire 1</option>
             <option value="Formulairee 2">Formulaire 2</option>
@@ -17,8 +14,8 @@
             <option value="Preset-2">Preset-2</option>
           </select>
 
-          <button href="/formulaire" class="plus w-inline-block">+</button>
-          <button @click.prevent="formbuilder()" class="plus w-inline-block">
+          <button href="/formulaire" class="plus w-inline-block">+</button>-->
+          <button v-if="this.formList" @click.prevent="formbuilder()" class="plus w-inline-block">
             <em class="fas fa-pencil-alt"></em>
           </button>
         </div>
@@ -42,7 +39,8 @@ export default {
 
   props: {
     funnelCategorie: String,
-    profileId: String
+    profileId: String,
+    formulaireEmundus: Number
   },
   components: {
     FormCarrousel
@@ -50,9 +48,11 @@ export default {
 
   data() {
     return {
-      ChooseForm: Joomla.JText._("COM_EMUNDUSONBOARD_CHOOSE_FORM"),
+      ChooseForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
       EmitIndex: "0",
-      formList: ""
+      formList: "",
+
+      formdescription: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION")
     };
   },
   methods: {
@@ -64,7 +64,9 @@ export default {
         "index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=" +
           this.profileId +
           "&index=" +
-          this.EmitIndex
+          this.EmitIndex +
+          "&fid=" +
+          this.formulaireEmundus
       );
     },
     getForms(profile_id) {

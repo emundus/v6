@@ -1,6 +1,5 @@
 <template>
   <div id="checkboxF">
-    <p>Je suis le checkbox {{element.id}}</p>
     <div class="flex">
       Hover help:
       <input type="text" class="inputF" v-model="element.params.rollover" />
@@ -45,7 +44,7 @@ export default {
       Axios({
         method: "post",
         url:
-          "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXT",
+          "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXTA",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },

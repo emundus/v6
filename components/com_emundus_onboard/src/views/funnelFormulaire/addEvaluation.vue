@@ -81,9 +81,9 @@ export default {
 
   data() {
     return {
-      ChooseEvalutationGrid: Joomla.JText._("COM_EMUNDUSONBOARD_CHOOSE_EVALUATION_GRID"),
-      StartDate: Joomla.JText._("COM_EMUNDUSONBOARD_ADDCAMP_STARTDATE"),
-      EndDate: Joomla.JText._("COM_EMUNDUSONBOARD_ADDCAMP_ENDDATE")
+      ChooseEvalutationGrid: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_EVALUATION_GRID"),
+      StartDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE"),
+      EndDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE")
     };
   },
 

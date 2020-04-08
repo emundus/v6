@@ -82,6 +82,7 @@ export default {
 .MenuForm {
   list-style: none;
   text-decoration: none;
+  margin: 12px 0 0;
 }
 
 .MenuForm:hover {
@@ -91,11 +92,14 @@ export default {
 .MenuFormItem {
   text-decoration: none;
   color: black;
+  cursor: pointer;
 }
 .MenuFormItem:hover {
   color: grey;
 }
 .MenuFormItem_current {
-  color: blueviolet;
+  color: #de633d;
+  padding: 0 5px;
+  cursor: pointer;
 }
 </style>
