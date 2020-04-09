@@ -2312,7 +2312,23 @@ if (JFactory::getUser()->id == 63)
                         }
 
                         $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
-                    } else {
+                    }
+                    elseif ($elt->element_plugin == 'cascadingdropdown') {
+
+                        $element_attribs = json_decode($elt->element_attribs);
+                        $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
+                        $where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$elt->table_join.'.'.$elt->element_name;
+                        $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
+
+                        $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
+                            FROM '.$tableAlias[$elt->tab_name].'
+                            LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
+                            LEFT JOIN '.$from.' as t ON t.'.$where.'
+                            WHERE '.$tableAlias[$elt->tab_name].'.fnum=c.fnum)';
+
+                        $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
+                    }
+                    else {
 
 	                    if ($methode == 2) {
 		                    $query .= ', ( SELECT GROUP_CONCAT('.$elt->table_join.'.'.$elt->element_name.' SEPARATOR ", ") ';
