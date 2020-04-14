@@ -362,7 +362,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
 	} elseif (!empty($insert_row['jos_emundus_users']['username']) || !empty($insert_row['jos_emundus_users']['email'])) {
 
-		$username = (!empty($insert_row['jos_emundus_users']['username'])) ? $insert_row['jos_emundus_users']['username'] : $insert_row['jos_emundus_users']['email'];
+		$username = (!empty($insert_row['jos_emundus_users']['username'])) ? $insert_row['jos_emundus_users']['username'] : strtolower($insert_row['jos_emundus_users']['email']);
 
 		// If we have an email present then we need to check if a user already exists.
 		$query->clear()
@@ -394,7 +394,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			return false;
 		}
 
-		$username = (!empty($insert_row['jos_emundus_users']['username'])) ? $insert_row['jos_emundus_users']['username'] : $insert_row['jos_emundus_users']['email'];
+		$username = (!empty($insert_row['jos_emundus_users']['username'])) ? $insert_row['jos_emundus_users']['username'] : strtolower($insert_row['jos_emundus_users']['email']);
 		$email = $insert_row['jos_emundus_users']['email'];
 		$firstname = $insert_row['jos_emundus_personal_detail']['first_name'];
 		$lastname = $insert_row['jos_emundus_personal_detail']['last_name'];
@@ -458,7 +458,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			continue;
 		}
 
-		$user->name = strtolower($firstname).' '.strtoupper($lastname);
+		$user->name = ucfirst($firstname).' '.strtoupper($lastname);
 		$user->username = $username;
 		$user->email = $email;
 
