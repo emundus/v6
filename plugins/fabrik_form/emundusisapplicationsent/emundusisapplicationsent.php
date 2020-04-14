@@ -126,7 +126,9 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             }
 			else {
                 $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->end_date)) ? true : false;
+                $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->start_date)) ? true : false;
             }
+            
 			$is_app_sent = !in_array(@$user->status, explode(',', $this->getParam('applicationsent_status', 0)));
 			$can_edit = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
 			$can_read = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
@@ -176,7 +178,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
 				} else {
 
-					if ($is_dead_line_passed) {
+					if ($is_dead_line_passed || !$is_campaign_started) {
 						if ($reload_url) {
 							JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($user->end_date) )));
 							$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);

@@ -146,7 +146,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         foreach ($files as $file) {
 
-            $fileName = $this->getFileName($user, $attachId, $label, $file['name']);
+            $fileName = $this->getFileName($user, $attachId, $label, $file['name'], $fnum);
 
 
 
@@ -476,13 +476,21 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      *
      * @return mixed
      */
-    public function getFileName($user, $attachId, $label, $file) {
+    public function getFileName($user, $attachId, $label, $file, $fnum) {
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-        $m_profile = new EmundusModelProfile();
-        $profile = $m_profile->getProfileByApplicant($user);
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
-        $fileName = strtolower(preg_replace(array('([\40])', '([^a-zA-Z0-9-])', '(-{2,})'), array('_', '', '_'), preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/', '$1', htmlentities(strtoupper($profile['lastname']) . '_' . ucfirst($profile['firstname']), ENT_NOQUOTES, 'UTF-8'))));
-        $fileName .= $label . '-' . rand() . '.' . pathinfo($file, PATHINFO_EXTENSION);
+        $m_profile = new EmundusModelProfile();
+        $m_cheklist = new EmundusModelChecklist();
+        $m_files = new EmundusModelFiles();
+
+        $profile = $m_profile->getProfileByApplicant($user);
+        $fnumInfos = $m_files->getFnumInfos($fnum);
+        $fileName = $m_cheklist->setAttachmentName($file, $label, $fnumInfos);
+
+        /*$fileName = strtolower(preg_replace(array('([\40])', '([^a-zA-Z0-9-])', '(-{2,})'), array('_', '', '_'), preg_replace('/&([A-Za-z]{1,2})(grave|acute|circ|cedil|uml|lig);/', '$1', htmlentities(strtoupper($profile['lastname']) . '_' . ucfirst($profile['firstname']), ENT_NOQUOTES, 'UTF-8'))));
+        $fileName .= $label . '-' . rand() . '.' . pathinfo($file, PATHINFO_EXTENSION);*/
         return JFile::makeSafe($fileName);
     }
 

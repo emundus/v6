@@ -1,0 +1,1 @@
+UPDATE `jos_menu` SET `note` = '5|c' WHERE `jos_menu`.`id` = 1317;

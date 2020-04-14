@@ -94,7 +94,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
 
 		$fnum = $formModel->data['jos_emundus_evaluations___fnum'];
 
-		if (empty($rowid) || !EmundusHelperAccess::asAccessAction(5, 'r', $user->id, $fnum)) {
+		if (empty($rowid) || !EmundusHelperAccess::asAccessAction(5, 'c', $user->id, $fnum)) {
 
 			$query->select($db->quoteName('id'))
 				->from($db->quoteName('jos_emundus_evaluations'))
