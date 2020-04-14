@@ -3141,7 +3141,15 @@ class EmundusModelApplication extends JModelList {
         return $db->execute();
     }
 
-
+	/**
+	 * @param $elements
+	 * @param $table
+	 * @param $parent_table
+	 * @param $fnum
+	 *
+	 * @return bool
+	 *
+	 */
     public function checkEmptyRepeatGroups($elements, $table, $parent_table, $fnum) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -3169,7 +3177,7 @@ class EmundusModelApplication extends JModelList {
                 $elements = array_map(function($arr) {
                     if (is_numeric($arr)) {
                         return (empty(floatval($arr)));
-                    } else{
+                    } else {
                         if ($arr == "0000-00-00 00:00:00") {
                             return true;
                         }
@@ -3184,8 +3192,8 @@ class EmundusModelApplication extends JModelList {
             return false;
 
         } catch (Exception $e ) {
-            echo "<pre>";var_dump($elements); echo "</pre>"; die();
-
+	        JLog::add('Error checking if repeat group is empty at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        return false;
         }
     }
 
