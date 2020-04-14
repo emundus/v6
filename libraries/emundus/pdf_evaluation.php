@@ -93,142 +93,144 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $pdf->SetFont('helvetica', '', 10);
     $pdf->AddPage();
     
-/*** Applicant ***/   
-$htmldata .= 
-'<style>
-.card  { background-color: #cecece; border: none; display:block; line-height:80%;}
-.name  { display: block; font-size: 12pt; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
-.maidename  { display: block; font-size: 20pt; margin: 0 0 0 20px; padding:0; }
-.nationality { display: block; margin: 0 0 0 20px;  padding:0;}
-.sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
-.birthday { display: block; margin: 0 0 0 20px; padding:0;}
+    /*** Applicant ***/
+    $htmldata .=
+    '<style>
+    .card  { background-color: #cecece; border: none; display:block; line-height:80%;}
+    .name  { display: block; font-size: 12pt; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
+    .maidename  { display: block; font-size: 20pt; margin: 0 0 0 20px; padding:0; }
+    .nationality { display: block; margin: 0 0 0 20px;  padding:0;}
+    .sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
+    .birthday { display: block; margin: 0 0 0 20px; padding:0;}
+    
+    .label		   {white-space:nowrap; color:black; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
+    .label-default {background-color:#999999;}
+    .label-primary {background-color:#337ab7;}
+    .label-success {background-color:#5cb85c;}
+    .label-info    {background-color:#033c73;}
+    .label-warning {background-color:#dd5600;}
+    .label-danger  {background-color:#c71c22;}
+    .label-lightpurple { background-color: #DCC6E0 }
+    .label-purple { background-color: #947CB0 }
+    .label-darkpurple {background-color: #663399 }
+    .label-lightblue { background-color: #6bb9F0 }
+    .label-blue { background-color: #19B5FE }
+    .label-darkblue { background-color: #013243 }
+    .label-lightgreen { background-color: #00E640 }
+    .label-green { background-color: #3FC380 }
+    .label-darkgreen { background-color: #1E824C }
+    .label-lightyellow { background-color: #FFFD7E }
+    .label-yellow { background-color: #FFFD54 }
+    .label-darkyellow { background-color: #F7CA18 }
+    .label-lightorange { background-color: #FABE58 }
+    .label-orange { background-color: #E87E04 }
+    .label-darkorange {background-color: #D35400 }
+    .label-lightred { background-color: #EC644B }
+    .label-red { background-color: #CF000F }
+    .label-darkred { background-color: #96281B }
+    .label-lightpink { background-color: #e08283; }
+    .label-pink { background-color: #d2527f; }
+    .label-darkpink { background-color: #db0a5b; }
+    </style>';
 
-.label		   {white-space:nowrap; color:black; border-radius: 2px; padding:2px 2px 2px 2px; font-size: 90%; font-weight:bold; }
-.label-default {background-color:#999999;}
-.label-primary {background-color:#337ab7;}
-.label-success {background-color:#5cb85c;}
-.label-info    {background-color:#033c73;}
-.label-warning {background-color:#dd5600;}
-.label-danger  {background-color:#c71c22;}
-.label-lightpurple { background-color: #DCC6E0 }
-.label-purple { background-color: #947CB0 }
-.label-darkpurple {background-color: #663399 }
-.label-lightblue { background-color: #6bb9F0 }
-.label-blue { background-color: #19B5FE }
-.label-darkblue { background-color: #013243 }
-.label-lightgreen { background-color: #00E640 }
-.label-green { background-color: #3FC380 }
-.label-darkgreen { background-color: #1E824C }
-.label-lightyellow { background-color: #FFFD7E }
-.label-yellow { background-color: #FFFD54 }
-.label-darkyellow { background-color: #F7CA18 }
-.label-lightorange { background-color: #FABE58 }
-.label-orange { background-color: #E87E04 }
-.label-darkorange {background-color: #D35400 }
-.label-lightred { background-color: #EC644B }
-.label-red { background-color: #CF000F }
-.label-darkred { background-color: #96281B }
-.label-lightpink { background-color: #e08283; }
-.label-pink { background-color: #d2527f; }
-.label-darkpink { background-color: #db0a5b; }
-</style>';
-
-if (!function_exists('exif_imagetype')) {
-    function exif_imagetype($filename) {
-        if (( list($width, $height, $type, $attr) = getimagesize( $filename )) !== false) {
-            return $type;
+    if (!function_exists('exif_imagetype')) {
+        function exif_imagetype($filename) {
+            if (( list($width, $height, $type, $attr) = getimagesize( $filename )) !== false) {
+                return $type;
+            }
+        return false;
         }
-    return false;
     }
-}
 
-if (!empty($options) && $options[0] != "" && $options[0] != "0") {
     $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
-    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
 
-        $htmldata .= '<div class="card">
+    if (!empty($options) && $options[0] != "" && $options[0] != "0") {
+
+        $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+        if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
+
+            $htmldata .= '<div class="card">
+                            <table width="100%"><tr>';
+            if (file_exists(EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar)) {
+                $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar . '" width="100" align="left" /></td>';
+            } elseif (file_exists(EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar)) {
+                $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar . '" width="100" align="left" /></td>';
+            }
+
+            $htmldata .= '
+                <td>
+                <div class="name"><strong>' . $item->firstname . ' ' . strtoupper($item->lastname) . '</strong>, ' . $item->label . ' (' . $item->cb_schoolyear . ')</div>';
+            if (isset($item->maiden_name)) {
+                $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
+            }
+        }
+
+
+        $date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
+
+        if (in_array("aid", $options)) {
+            $htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>';
+        }
+        if (in_array("afnum", $options)) {
+            $htmldata .= '<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>';
+        }
+        if (!$anonymize_data && in_array("aemail", $options)) {
+            $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>';
+        }
+        if (in_array("aapp-sent", $options)) {
+            $htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
+        }
+        if (in_array("adoc-print", $options)) {
+            $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>';
+        }
+        if (in_array("tags", $options)) {
+            $tags = $m_files->getTagsByFnum(explode(',', $fnum));
+            $htmldata .='<br/><table><tr><td style="display: inline;"> ';
+            foreach ($tags as $tag) {
+                $htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
+            }
+            $htmldata .='</td></tr></table>';
+        }
+        $htmldata .= '</td></tr></table></div>';
+
+    } elseif ($options[0] == "0") {
+        $htmldata .= '';
+    } else {
+        $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+        if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
+            $htmldata .= '<div class="card">
                         <table width="100%"><tr>';
-        if (file_exists(EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar)) {
-            $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar . '" width="100" align="left" /></td>';
-        } elseif (file_exists(EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar)) {
-            $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar . '" width="100" align="left" /></td>';
+            if (file_exists(EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar) && !empty($item->avatar)) {
+                $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar . '" width="100" align="left" /></td>';
+            } elseif (file_exists(EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar) && !empty($item->avatar)) {
+                $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar . '" width="100" align="left" /></td>';
+            }
+            $htmldata .= '
+            <td width="80%">
+        
+            <div class="name"><strong>' . $item->firstname . ' ' . strtoupper(@$item->lastname) . '</strong>, ' . $item->label . ' (' . $item->cb_schoolyear . ')</div>';
+
+            if (isset($item->maiden_name)) {
+                $htmldata .= '<div class="maidename">' . JText::_('MAIDEN_NAME') . ' : ' . $item->maiden_name . '</div>';
+            }
         }
 
+        $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
+
+        $applicant_email = (!$anonymize_data) ? '<div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>' : '';
         $htmldata .= '
-            <td>
-            <div class="name"><strong>' . $item->firstname . ' ' . strtoupper($item->lastname) . '</strong>, ' . $item->label . ' (' . $item->cb_schoolyear . ')</div>';
-        if (isset($item->maiden_name)) {
-            $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
-        }
+        <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
+        <div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
+        '. $applicant_email .'
+        <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
+        <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>
+        </td>
+        </tr>
+        </table>
+        </div>';
     }
 
-
-	$date_submitted = !empty($item->date_submitted)?strftime("%d/%m/%Y %H:%M", strtotime($item->date_submitted)):JText::_('NOT_SENT');
-
-    if (in_array("aid", $options)) {
-        $htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>';
-    }
-    if (in_array("afnum", $options)) {
-        $htmldata .= '<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>';
-    }
-    if (!$anonymize_data && in_array("aemail", $options)) {
-        $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>';
-    }
-    if (in_array("aapp-sent", $options)) {
-        $htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
-    }
-    if (in_array("adoc-print", $options)) {
-        $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>';
-    }
-    if (in_array("tags", $options)) {
-        $tags = $m_files->getTagsByFnum(explode(',', $fnum));
-        $htmldata .='<br/><table><tr><td style="display: inline;"> ';
-        foreach ($tags as $tag) {
-            $htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
-        }
-        $htmldata .='</td></tr></table>';
-    }
-    $htmldata .= '</td></tr></table></div>';
-    
-} elseif ($options[0] == "0") {
-    $htmldata .= '';
-} else {
-    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
-    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
-        $htmldata .= '<div class="card">
-                    <table width="100%"><tr>';
-        if (file_exists(EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar) && !empty($item->avatar)) {
-            $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . $item->user_id . '/tn_' . $item->avatar . '" width="100" align="left" /></td>';
-        } elseif (file_exists(EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar) && !empty($item->avatar)) {
-            $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . $item->user_id . '/' . $item->avatar . '" width="100" align="left" /></td>';
-        }
-        $htmldata .= '
-        <td width="80%">
-    
-        <div class="name"><strong>' . $item->firstname . ' ' . strtoupper(@$item->lastname) . '</strong>, ' . $item->label . ' (' . $item->cb_schoolyear . ')</div>';
-
-        if (isset($item->maiden_name)) {
-            $htmldata .= '<div class="maidename">' . JText::_('MAIDEN_NAME') . ' : ' . $item->maiden_name . '</div>';
-        }
-    }
-
-    $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
-
-    $applicant_email = (!$anonymize_data) ? '<div class="birthday">'.JText::_('EMAIL').' : '.$item->email.'</div>' : '';
-    $htmldata .= '
-    <div class="nationality">'.JText::_('ID_CANDIDAT').' : '.$item->user_id.'</div>
-    <div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>
-    '. $applicant_email .'
-    <div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>
-    <div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.strftime("%d/%m/%Y  %H:%M", time()).'</div>
-    </td>
-    </tr>
-    </table>
-    </div>';
-}
-/**  END APPLICANT   ****/
+    /**  END APPLICANT   ****/
 
     // get evaluation
     $evaluation = new EmundusHelperFiles();
@@ -247,7 +249,9 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
         $pdf->startTransaction();
         $start_y = $pdf->GetY();
         $start_page = $pdf->getPage();
-        $pdf->Bookmark($item->lastname.' '.$item->firstname, 0);
+        if (!$anonymize_data) {
+            $pdf->Bookmark($item->lastname.' '.$item->firstname, 0);
+        }
         $pdf->writeHTMLCell(0,'','',$start_y, $htmldata,'B', 1);
     }
 
