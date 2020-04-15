@@ -2241,6 +2241,8 @@ if (JFactory::getUser()->id == 63)
 
     	$db = $this->getDbo();
 
+        $locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
+
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 	    if ($anonymize_data) {
 		    $query = 'select c.fnum, esc.label, sp.code, esc.id as campaign_id';
@@ -2280,45 +2282,61 @@ if (JFactory::getUser()->id == 63)
             if ($params_group->repeat_group_button == 1) {
                 if ($methode == 1) {
                     if ($elt->element_plugin == 'databasejoin') {
-
                         $element_attribs = json_decode($elt->element_attribs);
+                        $select = !empty($element_attribs->join_val_column_concat)?"CONCAT(".$element_attribs->join_val_column_concat.")":$element_attribs->join_val_column;
+                        
+                        $from   = $element_attribs->join_db_name;
+                        $where  = $element_attribs->join_key_column.'='.$elt->table_join.'.'.$elt->element_name;
+                        $sub_query = 'SELECT '.$select.' FROM '.$from.' WHERE '.$where;
+                        $sub_query = preg_replace('#{thistable}#', $from, $sub_query);
+                        //$sub_query = preg_replace('#{my->id}#', $aid, $sub_query);
+                        $sub_query = preg_replace('#{shortlang}#', $locales, $sub_query);
 
-                        if ($element_attribs->database_join_display_type == "checkbox") {
-                            $t = $tableAlias[$elt->tab_name].'_repeat_'.$elt->element_name;
-                            $select = '(
-                                SELECT GROUP_CONCAT('.$t.'.'.$elt->element_name.' SEPARATOR ", ")
-                                FROM '.$t.'
-                                WHERE '.$t.'.parent_id='.$tableAlias[$elt->tab_name].'.id
-                              )';
+                        $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
+                        
+                    } 
+                    elseif ($elt->element_plugin == 'cascadingdropdown') {
+                        $element_attribs = json_decode($elt->element_attribs);
+                        $cascadingdropdown_id = $element_attribs->cascadingdropdown_id;
+                        $r1 = explode('___', $cascadingdropdown_id);
+                        $cascadingdropdown_label = $element_attribs->cascadingdropdown_label;
+                        $r2 = explode('___', $cascadingdropdown_label);
+                        $select = !empty($element_attribs->cascadingdropdown_label_concat)?"CONCAT(".$element_attribs->cascadingdropdown_label_concat.")":$r2[1];
+                        $from = $r2[0];
+
+                        // Checkboxes behave like repeat groups and therefore need to be handled a second level of depth.
+                        if ($element_attribs->cdd_display_type == 'checkbox') {
+                            $select = !empty($element_attribs->cascadingdropdown_label_concat)?" CONCAT(".$element_attribs->cascadingdropdown_label_concat.")":'GROUP_CONCAT('.$r2[1].')';
+
+                            // Load the Fabrik join for the element to it's respective repeat_repeat table.
+                            $q = $db->getQuery(true);
+                            $q->select([$db->quoteName('join_from_table'), $db->quoteName('table_key'), $db->quoteName('table_join'), $db->quoteName('table_join_key')])
+                                ->from($db->quoteName('#__fabrik_joins'))
+                                ->where($db->quoteName('element_id').' = '.$elt->table_join.'.'.$elt->element_name);
+                            $db->setQuery($q);
+                            $f_join = $db->loadObject();
+
+                            $where = $r1[1].' IN (
+                            SELECT '.$db->quoteName($f_join->table_join.'.'.$f_join->table_key).'
+                            FROM '.$db->quoteName($f_join->table_join).' 
+                            WHERE '.$db->quoteName($f_join->table_join.'.'.$f_join->table_join_key).' = '.$r_element->id.')';
                         } else {
-                            $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
-
-                            $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
-                                FROM '.$element_attribs->join_db_name.' as t
-                                WHERE t.'.$element_attribs->join_key_column.'='.$tableAlias[$elt->tab_name].'.'.$elt->element_name.')';
+                            $where = $r1[1].'='.$elt->table_join.'.'.$elt->element_name;
                         }
+                        
+                        $sub_query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+                        $sub_query = preg_replace('#{thistable}#', $from, $sub_query);
+                        //$sub_query = preg_replace('#{my->id}#', $aid, $sub_query);
+                        $sub_query  = preg_replace('#{shortlang}#', $locales, $sub_query);
 
-                    } elseif ($elt->element_plugin == 'cascadingdropdown') {
-
-                        $element_attribs = json_decode($elt->element_attribs);
-                        $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
-                        $where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$elt->table_join.'.'.$elt->element_name;
-                        $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
-
-                        $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
-                            FROM '.$tableAlias[$elt->tab_name].'
-                            LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
-                            LEFT JOIN '.$from.' as t ON t.'.$where.'
-                            WHERE '.$tableAlias[$elt->tab_name].'.fnum=c.fnum)';
-
-                        $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
-                       
+                        $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
                     }
-                    else{
+                    else {
                         $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
                     }
+
                     if (!in_array($elt->table_join, $lastTab)) {
-                        $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+	                    $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
                     }
                     $lastTab[] = $elt->table_join;
                 } else {
