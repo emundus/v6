@@ -140,15 +140,26 @@
     display: inline-block;
 }
 .campaingapplycontent strong::before{
-     content: "•";
- }
+    content: "•";
+}
 .campaingapplycontent .icon-time{
     display:none;
 }
+
+#search_program #navfilter {
+
+    margin-bottom: 10px;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+
+}
+
 @media all and (max-width: 1227px) {
     .campaign-content .below-content a{
         width: 17.3%;
     }
+
 }
 @media all and (max-width: 1034px) {
     .campaign-content .below-content a{
@@ -159,7 +170,12 @@
     .campaign-content .below-content a{
         width: 19.3%;
     }
+    .campaingapplycontent strong {
+        width: 150px;
+    }
 }
+
+
 @media all and (max-width: 767px) {
     .rotate-me p {
         transform: rotate(0deg);
