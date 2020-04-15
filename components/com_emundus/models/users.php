@@ -1795,7 +1795,7 @@ class EmundusModelUsers extends JModelList {
 
 		$db->setQuery($query);
 		try {
-			return $db->loadResult();
+			return $db->loadColumn();
 		} catch(Exception $e) {
 			error_log($e->getMessage(), 0);
 			return false;
