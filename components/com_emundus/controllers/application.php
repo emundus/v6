@@ -261,7 +261,35 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $comment = $m_application->getComment($comment_id);
 
-        if (!EmundusHelperAccess::asAccessAction(10, 'u', $user->id, $comment['fnum'])) {
+        $uid = $comment['user_id'];
+
+        if($uid == $user->id && EmundusHelperAccess::asAccessAction(10, 'c', $user->id, $comment['fnum'])){
+            $result = $m_application->editComment($comment_id, $comment_title, $comment_text);
+
+            if ($result)
+                $msg = JText::_('COMMENT_EDITED');
+            else
+                $msg = JTEXT::_('COMMENT_EDIT_ERROR');
+
+            $tab = array('status' => $result, 'msg' => $msg);
+        }
+        else{
+            if (EmundusHelperAccess::asAccessAction(10, 'u', $user->id, $comment['fnum'])) {
+                $result = $m_application->editComment($comment_id, $comment_title, $comment_text);
+
+                if ($result)
+                    $msg = JText::_('COMMENT_EDITED');
+                else
+                    $msg = JTEXT::_('COMMENT_EDIT_ERROR');
+
+                $tab = array('status' => $result, 'msg' => $msg);
+            }
+            else{
+                $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
+            }
+        }
+
+        /*if (!EmundusHelperAccess::asAccessAction(10, 'u', $user->id, $comment['fnum'])) {
 
             echo json_encode((object) array('status' => false, 'msg' => JText::_("ACCESS_DENIED")));
             exit;
@@ -278,8 +306,10 @@ class EmundusControllerApplication extends JControllerLegacy
             echo json_encode((object) array('status' => $result, 'msg' => $msg));
             exit;
 
-        }
+        }*/
 
+        echo json_encode((object)$tab);
+        exit;
     }
 
 
@@ -295,19 +325,19 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $uid = $comment['user_id'];
 
-        if($uid == $user->id){
+        if($uid == $user->id && EmundusHelperAccess::asAccessAction(10, 'c', $user->id, $comment['fnum'])){
             $result = $m_application->deleteComment($comment_id, $comment['fnum']);
             $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETED'));
+
         }else{
             if(EmundusHelperAccess::asAccessAction(10, 'd', $user->id, $comment['fnum'])){
                 $result = $m_application->deleteComment($comment_id, $comment['fnum']);
                 $tab = array('status' => $result, 'msg' => JText::_('COMMENT_DELETED'));
+
             }else{
-                $result = 0;
-                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+                $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
+
             }
-
-
         }
 
         echo json_encode((object)$tab);

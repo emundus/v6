@@ -220,6 +220,17 @@ class EmundusModelApplication extends JModelList {
         $this->_db->setQuery($query);
         return $this->_db->loadObjectList();
     }
+    public function getFileOwnComments($fnum,$user_id) {
+
+        $query = 'SELECT ec.id, ec.comment_body as comment, ec.reason, ec.fnum, ec.user_id, ec.date, u.name
+                FROM #__emundus_comments ec
+                LEFT JOIN #__users u ON u.id = ec.user_id
+                WHERE ec.fnum like '.$this->_db->Quote($fnum).'
+                AND ec.user_id = '.$user_id.'
+                ORDER BY ec.date ASC ';
+        $this->_db->setQuery($query);
+        return $this->_db->loadObjectList();
+    }
 
     public function editComment($id, $title, $text) {
 

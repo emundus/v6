@@ -312,8 +312,25 @@ class EmundusViewApplication extends JViewLegacy {
 						$this->assignRef('fnum', $fnum);
 
 					} else {
-						echo JText::_("RESTRICTED_ACCESS");
-						exit();
+                        if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum)) {
+                            EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 10, 'r', 'COM_EMUNDUS_LOGS_COMMENTS_BACKOFFICE');
+
+                            $userComments = $m_application->getFileOwnComments($fnum,$this->_user->id);
+
+                            $offset = $app->get('offset', 'UTC');
+                            foreach ($userComments as $key => $comment) {
+                                $dateTime = new DateTime($comment->date, new DateTimeZone($offset));
+                                $userComments[$key]->date = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
+                            }
+
+                            $this->assignRef('userComments', $userComments);
+                            $this->assignRef('fnum', $fnum);
+                        }
+                        else{
+                            echo JText::_("RESTRICTED_ACCESS");
+                            exit();
+                        }
+
 					}
 					break;
 

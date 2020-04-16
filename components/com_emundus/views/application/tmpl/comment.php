@@ -139,7 +139,7 @@ $(document).on('click', '.comments .delete-comment', function(e) {
 		                $('.panel-default.widget .panel-heading .label.label-info').html(nbCom);
 
 	                } else {
-	                    $('#form').append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
+                        $('.comments li#'+id).append('<p class="text-danger"><strong>'+result.msg+'</strong></p>');
 	                }
 	            },
 	            error: function (jqXHR) {
