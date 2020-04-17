@@ -1179,7 +1179,7 @@ class EmundusModelFiles extends JModelLegacy
         	$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jos_emundus_campaign_candidature.fnum ';
         }
         
-        $q = $this->_buildWhere($lastTab);
+        $q = $this->_buildWhere($lastTab); 
         if (!empty($leftJoin)) {
         	$query .= $leftJoin;
         }
