@@ -340,6 +340,8 @@ JText::script('COM_EMUNDUS_ERROR_MISSING_FORM_DATA');
 
 JText::script('CONFIRM_PASSWORD');
 
+JText::script('JGLOBAL_SELECT_AN_OPTION');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');
 //JHtml::script('media/com_emundus/lib/jquery-ui-1.8.18.min.js');
