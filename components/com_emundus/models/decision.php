@@ -171,13 +171,54 @@ class EmundusModelDecision extends JModelList
                     }
 
 					$this->_elements_default[] = $query;
-				} elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
-					$element_attribs = json_decode($def_elmt->element_attribs);
-					$select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
-					foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-						$select = 'REPLACE('.$select.', "'.$value.'", "'.$element_attribs->sub_options->sub_labels[$key].'")';
-					}
-					$this->_elements_default[] = $select.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
+				
+				} elseif ($def_elmt->element_plugin == 'cascadingdropdown') {
+					$attribs = json_decode($def_elmt->element_attribs);
+                    $cascadingdropdown_id = $attribs->cascadingdropdown_id;
+                    $r1 = explode('___', $cascadingdropdown_id);
+                    $cascadingdropdown_label = $attribs->cascadingdropdown_label;
+                    $r2 = explode('___', $cascadingdropdown_label);
+                    $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
+                    $from = $r2[0]; 
+                    $where = $r1[1];
+
+                   if (@$group_params->repeat_group_button == 1) {
+                        $query = '(
+                                    select GROUP_CONCAT('.$select.' SEPARATOR ", ")
+                                    from '.$from.'
+                                    where '.$where.' IN
+                                        ( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
+                                          from '.$def_elmt->table_join.'
+                                          where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
+                                        )
+                                  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+                    } else {
+                        $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
+                    }
+                    
+                    $query = preg_replace('#{thistable}#', $from, $query);
+                    $query = preg_replace('#{my->id}#', $current_user->id, $query);
+                    $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
+                    $this->_elements_default[] = $query;
+		        
+		        }elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
+
+		        	if (@$group_params->repeat_group_button == 1) {
+                        $this->_elements_default[] = '(
+                                    SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")
+                                    FROM '.$def_elmt->table_join.'
+                                    WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+                    } else {
+                        $element_attribs = json_decode($def_elmt->element_attribs);
+                        $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                            $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
+                                $element_attribs->sub_options->sub_labels[$key] . '")';
+                        }
+                        $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
+                    }
+
 				} else {
 					if (@$group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
