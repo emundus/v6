@@ -3200,7 +3200,7 @@ class EmundusModelApplication extends JModelList {
                 return !empty($elements);
             }
 
-            return false;
+            return true;
 
         } catch (Exception $e ) {
 	        JLog::add('Error checking if repeat group is empty at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
