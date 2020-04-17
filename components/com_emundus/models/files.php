@@ -3020,7 +3020,7 @@ if (JFactory::getUser()->id == 63)
             $query = 'select  jesp.code, jesp.label  from #__emundus_campaign_candidature as jecc
                         left join #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
                         left join #__emundus_setup_programmes as jesp on jesp.code like jesc.training
-                        left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.training like jesp.code
+                        left join #__emundus_setup_letters_repeat_training as jeslrt on jeslrt.training like jesp.code
                         where jecc.fnum in ("'.implode('","', $fnums).'") and jeslrt.parent_id IS NOT NULL  group by jesp.code order by jesp.code';
             $dbo->setQuery($query);
             return $dbo->loadAssocList('code', 'label');
@@ -3036,9 +3036,10 @@ if (JFactory::getUser()->id == 63)
     public function getDocsByProg($code) {
         $dbo = $this->getDbo();
         try {
-            $query = 'select jesl.title, jesl.template_type, jesl.id as file_id from jos_emundus_setup_letters as jesl
-                        left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.parent_id = jesl.id
-                        where jeslrt.training = '.$dbo->quote($code);
+            $query = 'select jesl.title, jesl.template_type, jesl.id as file_id 
+                        from #__emundus_setup_letters as jesl
+                        left join #__emundus_setup_letters_repeat_training as jeslrt on jeslrt.parent_id = jesl.id
+                        where jeslrt.training = '.$dbo->quote($code).' ORDER BY jesl.title';
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
         } catch(Exception $e) {
