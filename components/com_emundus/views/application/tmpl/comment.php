@@ -56,14 +56,14 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                                 </div>
                                 <div class="comment-text em-list-status-comment"><?php echo str_replace(["\r\n", "\r", "\n"], "<br/>", htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8')); ?></div>
                                 <textarea style="display: none;" class="ctext"><?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?></textarea>
-								<?php if ($this->_user->id == $comment->user_id || EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum)) :?>
+								<?php if (($this->_user->id == $comment->user_id && EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum))|| EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum)) :?>
                                 <div class="action em-list-status-action">
                                     <div class="edit-comment-container">
                                         <button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('EDIT');?>" >
                                             <span class="glyphicon glyphicon-edit"></span>
                                             <div class="hidden cid"><?php echo $comment->id; ?></div>
                                         </button>
-                                        <?php if ($this->_user->id == $comment->user_id || EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum)) :?>
+                                        <?php if (($this->_user->id == $comment->user_id && EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum)) || EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum)) :?>
                                             <div class="action">
                                                 <button type="button" class="btn btn-danger btn-xs delete-comment" title="<?php echo JText::_('DELETE');?>">
                                                     <span class="glyphicon glyphicon-trash"></span>
