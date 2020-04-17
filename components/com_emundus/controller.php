@@ -1325,8 +1325,16 @@ class EmundusController extends JControllerLegacy {
 
             ob_clean();
             flush();
-            readfile($file);
-            exit;
+
+            if (EmundusHelperAccess::isDataAnonymized($current_user->id)) {
+	            $content = file_get_contents($file);
+	            $updatedContent = preg_replace('/\/Title \(.*\)/', '/Title ()', $content);
+	            echo $updatedContent;
+	            exit;
+            } else {
+	            readfile($file);
+	            exit;
+            }
         } else {
             JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$file);
         }
