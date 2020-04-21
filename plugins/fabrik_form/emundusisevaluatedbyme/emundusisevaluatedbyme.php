@@ -103,10 +103,38 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form {
 			try {
 				$db->setQuery($query);
 				$id = $db->loadResult();
-			}
-			catch (Exception $e) {
+			} catch (Exception $e) {
 				JLog::add('Error getting user evaluation : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 			}
+
+			// check if eval_end_date is passed
+            $query = "SELECT esc.eval_end_date FROM jos_emundus_setup_campaigns esc LEFT JOIN jos_emundus_campaign_candidature ecc ON ecc.campaign_id = esc.id WHERE ecc.fnum LIKE ".$db->quote($fnum);
+
+            try {
+                $db->setQuery($query);
+
+                $eval_end_date = $db->loadResult();
+
+                if (!empty($eval_end_date) || $eval_end_date != '0000-00-00') {
+                    $offset = $app->get('offset', 'UTC');
+                    $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+                    $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+                    $now = $dateTime->format('Y-m-d H:i:s');
+                    $passed = strtotime($now) > strtotime($eval_end_date);
+
+                    if($passed && $r!=1) {
+                        if ($id > 0) {
+                            $app->redirect('index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid='.$id.'&r=1');
+                        } else {
+                            $app->redirect('index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&r=1');
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                JLog::add('Error getting evaluation end date : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+
+
 
 			if (!empty($id) && $r != 1) {
 				$app->redirect('index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid='.$id.'&r=1');
