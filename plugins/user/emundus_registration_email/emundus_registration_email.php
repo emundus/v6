@@ -145,17 +145,29 @@ class plgUserEmundus_registration_email extends JPlugin {
 			$table->params = $params->toString();
 
 			// Block the user (until he activates).
-			$table->block = 1;
+			$table->block = 0;
 
 			// Save user data
+            $app = JFactory::getApplication();
 			if (!$table->store()) {
 				throw new RuntimeException($table->getError());
 			}
+            $jinput = JFactory::getApplication()->input;
+
+            $credentials = array();
+            $credentials['username'] = $user->username;
+            $credentials['password'] = $jinput->post->get('jos_emundus_users___password');
+
+            $login_site =& JFactory::getApplication('site');
+            $login_site->login($credentials,array('action' => 'core.login.admin'));
+            //$this->onUserLogin($credentials,$options=array());
+
 
 			// Send activation email
 			if ($this->sendActivationEmail($user->getProperties(), $activation)) {
 
-				$app = JFactory::getApplication();
+
+
 				$app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_SENT'));
 
 				// Force user logout
@@ -166,6 +178,49 @@ class plgUserEmundus_registration_email extends JPlugin {
 			}
 		}
 	}
+    /**
+    * This method should handle any login logic and report back to the subject
+    *
+    * @param	array	$user		Holds the user data.
+    * @param	array	$options	Extra options.
+    *
+    * @return	boolean	True on success
+    * @since	1.5
+    */
+    public function onUserAfterLogin($options)
+    {
+        // Initialise variables.
+        $success        = false;
+        $session        = JFactory::getSession();
+        $current_user   = $session->get('emundusUser');
+        $app            = JFactory::getApplication();
+
+
+        $db = JFactory::getDbo();
+
+
+        $query = $db->getQuery(true);
+
+
+        $query->select($db->quoteName(array('id','block', 'params')));
+        $query->from($db->quoteName('#__users'));
+        $query->where($db->quoteName('username') . ' LIKE ' . $db->quote($options['user']->username));
+
+        $db->setQuery($query);
+
+        $result = $db->loadObject();
+
+        $token = json_decode($result->params);
+        $token = $token->emailactivation_token;
+
+        if($result->block == 0 && $token != null){
+            //header('Location: '.JRoute::_('index.php?option=com_emundus&view=users&layout=activation'));
+            $app->redirect('index.php?option=com_emundus&view=user&layout=activation');
+        }
+
+
+        return $success;
+    }
 
 	/**
 	 * Send activation email to user in order to proof it

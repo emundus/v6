@@ -1,0 +1,101 @@
+.em-activation{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+.info{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 25vh;
+    box-shadow: 0px 0px 11px -1px rgba(0, 0, 0, 0.13);
+    position: relative;
+    padding: 20px;
+}
+.email{
+    margin-top: 60px;
+    margin-bottom: 30px;
+}
+.email h3{
+    font-size:1.5rem;
+}
+.iconEmail{
+    border-radius:50%;
+    background: #de6339;
+    position: absolute;
+    top: -65px;
+}
+.em-activation i{
+    font-size: 5rem;
+    margin: 10px;
+    padding: 10px;
+    color: white;
+}
+.instructions{
+    background: #1b1f3c;
+    color:white;
+    height: 7vh;
+    width: auto;
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.instructions p{
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+}
+.instructions span {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    text-decoration: underline;
+}
+.resend{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 50%;
+    height: 20vh;
+    margin-top: 50px;
+}
+.resend h3{
+    font-size:1.3rem;
+    color: #de6339;
+    align-self: baseline;
+}
+.resend .mail{
+    width: 100%;
+    height: 41px;
+    border: 2px solid #de6339;
+    border-radius: 0;
+}
+.resend .btn-resend{
+    width: 100%;
+    height: 41px;
+}
+@media screen and (max-width: 1280px){
+    .email h3{
+        font-size:1rem;
+    }
+    .instructions p{
+        font-size: 1rem;
+    }
+}
+@media screen and (max-width: 980px) {
+    .info{
+        width: 100%;
+    }
+    .resend{
+        width: 100%;
+    }
+}
