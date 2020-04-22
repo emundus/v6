@@ -16,16 +16,16 @@ button.btn-primary:hover{
     text-align: center;
     justify-content: center;
 }
-
+​
 .form-horizontal .control-group {
     display: flex;
     justify-content: space-around;
 }
-
+​
 #user-registration > .control-group {
     margin-bottom: 0 !important;
 }
-
+​
 .form-horizontal .controls {
     margin: 0;
     width: 70%;
@@ -33,11 +33,11 @@ button.btn-primary:hover{
     align-items: center;
 }
 /* Connexion */
-
+​
 .nav-stacked > li {
     display: inline-block;
 }
-
+​
 .login form {
     background: #fcfcfc;
     border: none;
@@ -45,27 +45,27 @@ button.btn-primary:hover{
     border-radius: 0;
     padding: 20px !important;
 }
-
+​
 .invalid {
     color: red !important;
     font-weight: 600;
 }
-
+​
 .login .well label {
     color: #000;
 }
-
+​
 ul.nav.nav-tabs.nav-stacked {
     background: #fcfcfc;
     border-radius: 0;
     display: flex;
     justify-content: space-evenly;
 }
-
+​
 ul.nav.nav-tabs.nav-stacked a {
     color: #e5283b;
 }
-
+​
 ul.nav.nav-tabs.nav-stacked a:hover,
 ul.nav.nav-tabs.nav-stacked a:focus,
 ul.nav.nav-tabs.nav-stacked a:focus-within,
@@ -73,13 +73,13 @@ ul.nav.nav-tabs.nav-stacked a:active {
     color: #e5283b;
     text-decoration: underline;
 }
-
+​
 ul.nav.nav-tabs.nav-stacked a::before {
     content: "\f101";
     font-family: FontAwesome;
     margin-right: 3px;
 }
-
+​
 .login form > fieldset .control-group:nth-child(3) .controls {
     justify-content: center;
     margin-top: 20px;
@@ -90,17 +90,17 @@ ul.nav.nav-tabs.nav-stacked a::before {
     display: inline-flex;
     align-items: center;
 }
-
+​
 .view-login  .form-horizontal .control-label {
     width: 100%;
     text-align: left;
 }
-
+​
 .view-login .form-horizontal .control-group {
     display: flex;
     justify-content: center;
 }
-
+​
 footer div{
     line-height:1.5em;
 }
@@ -118,4 +118,34 @@ body.view-reset label#jform_username-lbl::after,
     padding-left: 5px;
     top: -5px;
     position: relative;
+}
+​
+​
+.control-group:nth-child(3) .controls button.btn.btn-primary {
+    text-transform: capitalize;
+    width: 100%;
+}
+​
+form.form-validate.form-horizontal.well .control-group .controls input {
+    border-radius :0px;
+}
+​
+h1::after {
+    content: '';
+    position: absolute;
+    margin-top: 45px;
+    width: 2.7rem;
+    height: 0.2rem;
+    background: #de6339;
+    left: 0;
+}
+​
+.header-right a.btn.btn-danger.connexion , a.btn.btn-danger.inscription  {
+    font-weight: 300;
+    line-height: inherit;
+    letter-spacing: inherit;
+}
+​
+.view-login.login #g-page-surround {
+    width: 100%;
 }

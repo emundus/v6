@@ -31,6 +31,13 @@ input[type="text"],
     color: #000;
 }
 
+h1, h2, h3{
+    color: $base-primary-color !important;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    font-weight: 400;
+}
+
 .view-form .attached p, .view-details .attached p {
     color: white;
 }
@@ -1142,7 +1149,6 @@ ul.nav.nav-tabs.nav-stacked {
             input {
                 border-left: 1px solid #e0e0e5;
                 max-width: 100%;
-                border-radius: 6px;
             }
         }
 
@@ -3393,4 +3399,78 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
         background-size: 10px;
         padding: 0 30px 0 10px;
     }
+}
+
+/****** Couleur btn module campagne ****/
+
+.below-content a.btn.btn-primary.btn-plein.btn-blue {
+    background-color: $base-secondary-color !important;
+    border-color: $base-secondary-color!important;
+}
+
+.below-content a.btn.btn-primary.btn-plein.btn-blue:hover {
+    background-color: #ffffff !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
+}
+
+    /****** Couleur btns module login ****/
+.header-right a.btn.btn-danger.inscription {
+    background-color: $base-primary-color !important;
+    border-color: $base-primary-color!important;
+}
+
+.header-right a.btn.btn-danger.inscription:hover {
+    background-color: #ffffff !important;
+    color: $base-primary-color !important;
+    border-color: $base-primary-color !important;
+}
+
+    /****** Longueur btns module login ****/
+
+.header-right a.btn.btn-danger.connexion {
+    width: 165px;
+    height: 34px;
+    padding: 6px 12px !important;
+    margin-bottom: 5px;
+}
+
+.header-right a.btn.btn-danger.inscription {
+    width: 165px;
+    height: 34px;
+    padding: 6px 12px !important;
+    margin-bottom: 5px;
+}
+
+/****** Mot de passe oublié  ****/
+
+.header-right a.em-resetPassword:hover {
+    text-decoration: underline;
+}
+
+/****** Couleur btns +d'info  ****/
+
+.view-programme.em_period .btn.save-btn {
+    background-color: $base-secondary-color !important;
+    border-color: $base-secondary-color!important;
+}
+
+.view-programme.em_period .btn.save-btn:hover {
+    background-color: #ffffff !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
+}
+/****** Couleur btn inscription ****/
+
+.view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form #fabrikSubmit_307{
+    background-color:$base-secondary-color !important;
+    color: #ffffff !important;
+    border-color: $base-secondary-color !important;
+
+}
+
+.view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register:hover,  .view-form #fabrikSubmit_307:hover{
+    background-color: #ffffff !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
 }

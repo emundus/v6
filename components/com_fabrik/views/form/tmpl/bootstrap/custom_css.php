@@ -939,6 +939,93 @@ footer#g-footer {
     margin-left: 0px !important;
 }
 
+.header-right a.btn.btn-danger.connexion, .header-right a.btn.btn-danger.inscription  {
+    line-height: inherit;
+    letter-spacing: inherit;
+    font-weight: 300;
+}
+​
+h1::after {
+    content: '';
+    position: absolute;
+    margin-top: 45px;
+    width: 2.7rem;
+    height: 0.2rem;
+    background: #de6339;
+    left: 0;
+}
+​
+ol {
+    width: 50%;
+    text-align: justify;
+    margin-left: 0px;
+}
+​
+ol li {
+   margin-bottom :10px;
+}
+​
+#form_307 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
+    height: 34px;
+    text-transform: capitalize;
+}
+​
+#form_307 form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input {
+   border-radius : 0px; 
+}
+​
+#form_307 form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid:nth-child(4) .controls label.radio {
+  padding-left: 0px;
+}
+​
+#form_307 form.fabrikForm .control-group.fabrikElementContainer.plg-databasejoin.fb_el_jos_emundus_users___campaign_id.mode-dropdown.span12 select {
+    border-radius : 0px; 
+    height: 41px !important;
+}
+​
+#form_307 .fabrikActions.form-actions{
+    padding: 0 !important;
+}
+#form_307 .span4{
+    width:100% !important;
+}
+#form_307 .btn-group{
+    width:100%;
+}
+#form_307 #fabrikSubmit_307{
+    width:100% !important;
+}
+​
+@media all and (max-width: 1239px) {
+    #form_307.fabrikForm {
+        width:60%;
+    }
+​
+    ol {
+        width: 60%;
+        text-align: justify;
+        margin-left: 0px !important;
+    }
+}
+​
+@media all and (max-width: 767px) {
+    ol {
+        width: 100%;
+        text-align: justify;
+        margin-left: 0px !important;
+    }
+​
+    #form_307.fabrikForm {
+        width:100%;
+    }
+}
+​
+@media all and (min-width: 768px) and (max-width: 1023px) {
+    #form_307 .control-group.fabrikElementContainer.plg-radiobutton.fb_el_jos_emundus_users___civility.fabrikDataEmpty.span12 div.fabrikgrid_radio.span2 {
+        width:35%;
+    }
+}
+
 /* END - Your CSS styling ends here */
 
 EOT;

@@ -139,12 +139,6 @@
     width: 170px;
     display: inline-block;
 }
-.campaingapplycontent strong::before{
-    content: "•";
-}
-.campaingapplycontent .icon-time{
-    display:none;
-}
 
 #search_program #navfilter {
 
@@ -153,6 +147,18 @@
     justify-content: space-between !important;
     align-items: center !important;
 
+}
+
+.below-content a.btn.btn-primary.btn-plein.btn-blue {
+    background-color: #de6339 !important;
+    border-color: #de6339 !important;
+}
+
+
+.below-content a.btn.btn-primary.btn-plein.btn-blue:hover {
+    background-color: #ffffff !important;
+    color:  #de6339 !important;
+    border-color: #de6339 !important;
 }
 
 @media all and (max-width: 1227px) {
