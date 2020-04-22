@@ -19,49 +19,45 @@ class UserList extends ListResource {
      * Construct the UserList
      * 
      * @param Version $version Version that contains the resource
-     * @param string $serviceSid The service_sid
+     * @param string $serviceSid The unique id of the Service this user belongs to.
      * @return \Twilio\Rest\IpMessaging\V1\Service\UserList 
      */
     public function __construct(Version $version, $serviceSid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'serviceSid' => $serviceSid,
-        );
-        
+        $this->solution = array('serviceSid' => $serviceSid, );
+
         $this->uri = '/Services/' . rawurlencode($serviceSid) . '/Users';
     }
 
     /**
      * Create a new UserInstance
      * 
-     * @param string $identity The identity
+     * @param string $identity A unique string that identifies the user within this
+     *                         service - often a username or email address.
      * @param array|Options $options Optional Arguments
      * @return UserInstance Newly created UserInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function create($identity, $options = array()) {
         $options = new Values($options);
-        
+
         $data = Values::of(array(
             'Identity' => $identity,
             'RoleSid' => $options['roleSid'],
             'Attributes' => $options['attributes'],
             'FriendlyName' => $options['friendlyName'],
         ));
-        
+
         $payload = $this->version->create(
             'POST',
             $this->uri,
             array(),
             $data
         );
-        
-        return new UserInstance(
-            $this->version,
-            $payload,
-            $this->solution['serviceSid']
-        );
+
+        return new UserInstance($this->version, $payload, $this->solution['serviceSid']);
     }
 
     /**
@@ -84,9 +80,9 @@ class UserList extends ListResource {
      */
     public function stream($limit = null, $pageSize = null) {
         $limits = $this->version->readLimits($limit, $pageSize);
-        
+
         $page = $this->page($limits['pageSize']);
-        
+
         return $this->version->stream($page, $limits['limit'], $limits['pageLimit']);
     }
 
@@ -105,7 +101,7 @@ class UserList extends ListResource {
      *                        efficient page size, i.e. min(limit, 1000)
      * @return UserInstance[] Array of results
      */
-    public function read($limit = null, $pageSize = Values::NONE) {
+    public function read($limit = null, $pageSize = null) {
         return iterator_to_array($this->stream($limit, $pageSize), false);
     }
 
@@ -124,13 +120,29 @@ class UserList extends ListResource {
             'Page' => $pageNumber,
             'PageSize' => $pageSize,
         ));
-        
+
         $response = $this->version->page(
             'GET',
             $this->uri,
             $params
         );
-        
+
+        return new UserPage($this->version, $response, $this->solution);
+    }
+
+    /**
+     * Retrieve a specific page of UserInstance records from the API.
+     * Request is executed immediately
+     * 
+     * @param string $targetUrl API-generated URL for the requested results page
+     * @return \Twilio\Page Page of UserInstance
+     */
+    public function getPage($targetUrl) {
+        $response = $this->version->getDomain()->getClient()->request(
+            'GET',
+            $targetUrl
+        );
+
         return new UserPage($this->version, $response, $this->solution);
     }
 
@@ -141,11 +153,7 @@ class UserList extends ListResource {
      * @return \Twilio\Rest\IpMessaging\V1\Service\UserContext 
      */
     public function getContext($sid) {
-        return new UserContext(
-            $this->version,
-            $this->solution['serviceSid'],
-            $sid
-        );
+        return new UserContext($this->version, $this->solution['serviceSid'], $sid);
     }
 
     /**

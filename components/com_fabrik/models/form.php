@@ -487,7 +487,7 @@ class FabrikFEModelForm extends FabModelForm
 		$data = $this->getData();
 		$ret = 0;
 
-		if ($listModel->canViewDetails(ArrayHelper::toObject($data)))
+		if ($listModel->canViewDetails(FArrayHelper::toObject($data)))
 		{
 			$ret = 1;
 		}
@@ -1555,14 +1555,14 @@ class FabrikFEModelForm extends FabModelForm
 		{
 			$value = $data[$fullName];
 		}
-		/* Maybe we are being called from onAfterProcess hook, or somewhere else
-		 * running after store, when non-joined data names have been reduced to short
-		 * names in formData, so peek in fullFormData
-		 */
-		elseif (isset($this->fullFormData) && array_key_exists($fullName, $this->fullFormData))
-		{
-			$value = $this->fullFormData[$fullName];
-		}
+        /* Maybe we are being called from onAfterProcess hook, or somewhere else
+         * running after store, when non-joined data names have been reduced to short
+         * names in formData, so peek in formDataWithTableName
+         */
+        elseif (isset($this->formDataWithTableName) && array_key_exists($fullName, $this->formDataWithTableName))
+        {
+            $value = $this->formDataWithTableName[$fullName];
+        }
 
 		if (isset($value) && isset($repeatCount) && is_array($value))
 		{

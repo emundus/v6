@@ -13,6 +13,7 @@ use Twilio\Deserialize;
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceResource;
 use Twilio\Options;
+use Twilio\Values;
 use Twilio\Version;
 
 /**
@@ -20,6 +21,7 @@ use Twilio\Version;
  * @property string accountSid
  * @property string friendlyName
  * @property string ipAddress
+ * @property integer cidrPrefixLength
  * @property string ipAccessControlListSid
  * @property \DateTime dateCreated
  * @property \DateTime dateUpdated
@@ -31,26 +33,30 @@ class IpAddressInstance extends InstanceResource {
      * 
      * @param \Twilio\Version $version Version that contains the resource
      * @param mixed[] $payload The response payload
-     * @param string $accountSid The account_sid
-     * @param string $ipAccessControlListSid The ip_access_control_list_sid
-     * @param string $sid The sid
+     * @param string $accountSid The unique id of the Account that is responsible
+     *                           for this resource.
+     * @param string $ipAccessControlListSid The unique id of the
+     *                                       IpAccessControlList resource that
+     *                                       includes this resource.
+     * @param string $sid A string that identifies the IpAddress resource to fetch
      * @return \Twilio\Rest\Api\V2010\Account\Sip\IpAccessControlList\IpAddressInstance 
      */
     public function __construct(Version $version, array $payload, $accountSid, $ipAccessControlListSid, $sid = null) {
         parent::__construct($version);
-        
+
         // Marshaled Properties
         $this->properties = array(
-            'sid' => $payload['sid'],
-            'accountSid' => $payload['account_sid'],
-            'friendlyName' => $payload['friendly_name'],
-            'ipAddress' => $payload['ip_address'],
-            'ipAccessControlListSid' => $payload['ip_access_control_list_sid'],
-            'dateCreated' => Deserialize::iso8601DateTime($payload['date_created']),
-            'dateUpdated' => Deserialize::iso8601DateTime($payload['date_updated']),
-            'uri' => $payload['uri'],
+            'sid' => Values::array_get($payload, 'sid'),
+            'accountSid' => Values::array_get($payload, 'account_sid'),
+            'friendlyName' => Values::array_get($payload, 'friendly_name'),
+            'ipAddress' => Values::array_get($payload, 'ip_address'),
+            'cidrPrefixLength' => Values::array_get($payload, 'cidr_prefix_length'),
+            'ipAccessControlListSid' => Values::array_get($payload, 'ip_access_control_list_sid'),
+            'dateCreated' => Deserialize::dateTime(Values::array_get($payload, 'date_created')),
+            'dateUpdated' => Deserialize::dateTime(Values::array_get($payload, 'date_updated')),
+            'uri' => Values::array_get($payload, 'uri'),
         );
-        
+
         $this->solution = array(
             'accountSid' => $accountSid,
             'ipAccessControlListSid' => $ipAccessControlListSid,
@@ -74,7 +80,7 @@ class IpAddressInstance extends InstanceResource {
                 $this->solution['sid']
             );
         }
-        
+
         return $this->context;
     }
 
@@ -82,6 +88,7 @@ class IpAddressInstance extends InstanceResource {
      * Fetch a IpAddressInstance
      * 
      * @return IpAddressInstance Fetched IpAddressInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         return $this->proxy()->fetch();
@@ -92,17 +99,17 @@ class IpAddressInstance extends InstanceResource {
      * 
      * @param array|Options $options Optional Arguments
      * @return IpAddressInstance Updated IpAddressInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function update($options = array()) {
-        return $this->proxy()->update(
-            $options
-        );
+        return $this->proxy()->update($options);
     }
 
     /**
      * Deletes the IpAddressInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->proxy()->delete();
@@ -119,12 +126,12 @@ class IpAddressInstance extends InstanceResource {
         if (array_key_exists($name, $this->properties)) {
             return $this->properties[$name];
         }
-        
+
         if (property_exists($this, '_' . $name)) {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown property: ' . $name);
     }
 

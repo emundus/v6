@@ -25,14 +25,10 @@ class MediaContext extends InstanceContext {
      */
     public function __construct(Version $version, $accountSid, $messageSid, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'accountSid' => $accountSid,
-            'messageSid' => $messageSid,
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('accountSid' => $accountSid, 'messageSid' => $messageSid, 'sid' => $sid, );
+
         $this->uri = '/Accounts/' . rawurlencode($accountSid) . '/Messages/' . rawurlencode($messageSid) . '/Media/' . rawurlencode($sid) . '.json';
     }
 
@@ -40,6 +36,7 @@ class MediaContext extends InstanceContext {
      * Deletes the MediaInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->version->delete('delete', $this->uri);
@@ -49,16 +46,17 @@ class MediaContext extends InstanceContext {
      * Fetch a MediaInstance
      * 
      * @return MediaInstance Fetched MediaInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new MediaInstance(
             $this->version,
             $payload,

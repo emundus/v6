@@ -25,14 +25,14 @@ class MemberContext extends InstanceContext {
      */
     public function __construct(Version $version, $accountSid, $queueSid, $callSid) {
         parent::__construct($version);
-        
+
         // Path Solution
         $this->solution = array(
             'accountSid' => $accountSid,
             'queueSid' => $queueSid,
             'callSid' => $callSid,
         );
-        
+
         $this->uri = '/Accounts/' . rawurlencode($accountSid) . '/Queues/' . rawurlencode($queueSid) . '/Members/' . rawurlencode($callSid) . '.json';
     }
 
@@ -40,16 +40,17 @@ class MemberContext extends InstanceContext {
      * Fetch a MemberInstance
      * 
      * @return MemberInstance Fetched MemberInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new MemberInstance(
             $this->version,
             $payload,
@@ -65,20 +66,18 @@ class MemberContext extends InstanceContext {
      * @param string $url The url
      * @param string $method The method
      * @return MemberInstance Updated MemberInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function update($url, $method) {
-        $data = Values::of(array(
-            'Url' => $url,
-            'Method' => $method,
-        ));
-        
+        $data = Values::of(array('Url' => $url, 'Method' => $method, ));
+
         $payload = $this->version->update(
             'POST',
             $this->uri,
             array(),
             $data
         );
-        
+
         return new MemberInstance(
             $this->version,
             $payload,

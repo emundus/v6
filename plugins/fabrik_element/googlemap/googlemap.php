@@ -311,9 +311,10 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		$opts->control = $params->get('fb_gm_mapcontrol');
 		$opts->scalecontrol = (bool) $params->get('fb_gm_scalecontrol');
 		$opts->maptypecontrol = (bool) $params->get('fb_gm_maptypecontrol');
+		$opts->maptypeids = $params->get('fb_gm_maptypecontroloptions');
 		$opts->overviewcontrol = (bool) $params->get('fb_gm_overviewcontrol');
 		$opts->traffic = (bool) $params->get('fb_gm_trafficlayer', '0');
-		$opts->drag = (bool) $formModel->isEditable();
+		$opts->drag = (bool) $formModel->isEditable() && (bool) $params->get('fb_gm_draggable', '1');
 		$opts->staticmap = $this->_useStaticMap() ? true : false;
 		$opts->maptype = $params->get('fb_gm_maptype');
 		$opts->scrollwheel = (bool) $params->get('fb_gm_scroll_wheel');
@@ -333,7 +334,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 					|| ($geocode_on_load == 2 && !$formModel->isNewRecord())
 					|| $geocode_on_load == 3
 				);
-		$opts->auto_center = (bool) $params->get('fb_gm_auto_center', false);
+		$opts->auto_center = (bool) $params->get('fb_gm_auto_center', false) && (bool) $params->get('fb_gm_draggable', '1');
 		$opts->styles = Googlemap::styleJs($params);
 
 		if ($opts->geocode == '2')
@@ -357,13 +358,14 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		if ($opts->reverse_geocode)
 		{
 			foreach (array(
-				         'route' => 'addr1',
-				         'neighborhood' => 'addr2',
-				         'locality' => 'city',
+				         'street_number'               => 'street_number',
+				         'route'                       => 'addr1',
+				         'neighborhood'                => 'addr2',
+				         'locality'                    => 'city',
 				         'administrative_area_level_1' => 'state',
-				         'postal_code' => 'zip',
-				         'country' => 'country',
-				         'formatted_address' => 'formatted_address'
+				         'postal_code'                 => 'zip',
+				         'country'                     => 'country',
+				         'formatted_address'           => 'formatted_address'
 			         ) as $google_field => $which_field)
 			{
 				$field_id = '';

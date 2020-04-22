@@ -13,6 +13,7 @@ use Twilio\Deserialize;
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceResource;
 use Twilio\Options;
+use Twilio\Values;
 use Twilio\Version;
 
 /**
@@ -28,6 +29,8 @@ use Twilio\Version;
  * @property string sid
  * @property string street
  * @property string uri
+ * @property boolean emergencyEnabled
+ * @property boolean validated
  */
 class AddressInstance extends InstanceResource {
     protected $_dependentPhoneNumbers = null;
@@ -37,33 +40,33 @@ class AddressInstance extends InstanceResource {
      * 
      * @param \Twilio\Version $version Version that contains the resource
      * @param mixed[] $payload The response payload
-     * @param string $accountSid The account_sid
+     * @param string $accountSid The unique id of the Account responsible for this
+     *                           address.
      * @param string $sid The sid
      * @return \Twilio\Rest\Api\V2010\Account\AddressInstance 
      */
     public function __construct(Version $version, array $payload, $accountSid, $sid = null) {
         parent::__construct($version);
-        
+
         // Marshaled Properties
         $this->properties = array(
-            'accountSid' => $payload['account_sid'],
-            'city' => $payload['city'],
-            'customerName' => $payload['customer_name'],
-            'dateCreated' => Deserialize::iso8601DateTime($payload['date_created']),
-            'dateUpdated' => Deserialize::iso8601DateTime($payload['date_updated']),
-            'friendlyName' => $payload['friendly_name'],
-            'isoCountry' => $payload['iso_country'],
-            'postalCode' => $payload['postal_code'],
-            'region' => $payload['region'],
-            'sid' => $payload['sid'],
-            'street' => $payload['street'],
-            'uri' => $payload['uri'],
+            'accountSid' => Values::array_get($payload, 'account_sid'),
+            'city' => Values::array_get($payload, 'city'),
+            'customerName' => Values::array_get($payload, 'customer_name'),
+            'dateCreated' => Deserialize::dateTime(Values::array_get($payload, 'date_created')),
+            'dateUpdated' => Deserialize::dateTime(Values::array_get($payload, 'date_updated')),
+            'friendlyName' => Values::array_get($payload, 'friendly_name'),
+            'isoCountry' => Values::array_get($payload, 'iso_country'),
+            'postalCode' => Values::array_get($payload, 'postal_code'),
+            'region' => Values::array_get($payload, 'region'),
+            'sid' => Values::array_get($payload, 'sid'),
+            'street' => Values::array_get($payload, 'street'),
+            'uri' => Values::array_get($payload, 'uri'),
+            'emergencyEnabled' => Values::array_get($payload, 'emergency_enabled'),
+            'validated' => Values::array_get($payload, 'validated'),
         );
-        
-        $this->solution = array(
-            'accountSid' => $accountSid,
-            'sid' => $sid ?: $this->properties['sid'],
-        );
+
+        $this->solution = array('accountSid' => $accountSid, 'sid' => $sid ?: $this->properties['sid'], );
     }
 
     /**
@@ -81,7 +84,7 @@ class AddressInstance extends InstanceResource {
                 $this->solution['sid']
             );
         }
-        
+
         return $this->context;
     }
 
@@ -89,6 +92,7 @@ class AddressInstance extends InstanceResource {
      * Deletes the AddressInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->proxy()->delete();
@@ -98,6 +102,7 @@ class AddressInstance extends InstanceResource {
      * Fetch a AddressInstance
      * 
      * @return AddressInstance Fetched AddressInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         return $this->proxy()->fetch();
@@ -108,11 +113,10 @@ class AddressInstance extends InstanceResource {
      * 
      * @param array|Options $options Optional Arguments
      * @return AddressInstance Updated AddressInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function update($options = array()) {
-        return $this->proxy()->update(
-            $options
-        );
+        return $this->proxy()->update($options);
     }
 
     /**
@@ -135,12 +139,12 @@ class AddressInstance extends InstanceResource {
         if (array_key_exists($name, $this->properties)) {
             return $this->properties[$name];
         }
-        
+
         if (property_exists($this, '_' . $name)) {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown property: ' . $name);
     }
 

@@ -25,13 +25,10 @@ class SigningKeyContext extends InstanceContext {
      */
     public function __construct(Version $version, $accountSid, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'accountSid' => $accountSid,
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('accountSid' => $accountSid, 'sid' => $sid, );
+
         $this->uri = '/Accounts/' . rawurlencode($accountSid) . '/SigningKeys/' . rawurlencode($sid) . '.json';
     }
 
@@ -39,16 +36,17 @@ class SigningKeyContext extends InstanceContext {
      * Fetch a SigningKeyInstance
      * 
      * @return SigningKeyInstance Fetched SigningKeyInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new SigningKeyInstance(
             $this->version,
             $payload,
@@ -62,21 +60,20 @@ class SigningKeyContext extends InstanceContext {
      * 
      * @param array|Options $options Optional Arguments
      * @return SigningKeyInstance Updated SigningKeyInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function update($options = array()) {
         $options = new Values($options);
-        
-        $data = Values::of(array(
-            'FriendlyName' => $options['friendlyName'],
-        ));
-        
+
+        $data = Values::of(array('FriendlyName' => $options['friendlyName'], ));
+
         $payload = $this->version->update(
             'POST',
             $this->uri,
             array(),
             $data
         );
-        
+
         return new SigningKeyInstance(
             $this->version,
             $payload,
@@ -89,6 +86,7 @@ class SigningKeyContext extends InstanceContext {
      * Deletes the SigningKeyInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->version->delete('delete', $this->uri);

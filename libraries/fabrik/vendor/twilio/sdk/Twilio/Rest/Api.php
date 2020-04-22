@@ -21,6 +21,7 @@ use Twilio\Rest\Api\V2010;
  * @property \Twilio\Rest\Api\V2010\Account\ApplicationList applications
  * @property \Twilio\Rest\Api\V2010\Account\AuthorizedConnectAppList authorizedConnectApps
  * @property \Twilio\Rest\Api\V2010\Account\AvailablePhoneNumberCountryList availablePhoneNumbers
+ * @property \Twilio\Rest\Api\V2010\Account\BalanceList balance
  * @property \Twilio\Rest\Api\V2010\Account\CallList calls
  * @property \Twilio\Rest\Api\V2010\Account\ConferenceList conferences
  * @property \Twilio\Rest\Api\V2010\Account\ConnectAppList connectApps
@@ -33,7 +34,6 @@ use Twilio\Rest\Api\V2010;
  * @property \Twilio\Rest\Api\V2010\Account\OutgoingCallerIdList outgoingCallerIds
  * @property \Twilio\Rest\Api\V2010\Account\QueueList queues
  * @property \Twilio\Rest\Api\V2010\Account\RecordingList recordings
- * @property \Twilio\Rest\Api\V2010\Account\SandboxList sandbox
  * @property \Twilio\Rest\Api\V2010\Account\SigningKeyList signingKeys
  * @property \Twilio\Rest\Api\V2010\Account\SipList sip
  * @property \Twilio\Rest\Api\V2010\Account\ShortCodeList shortCodes
@@ -55,7 +55,6 @@ use Twilio\Rest\Api\V2010;
  * @method \Twilio\Rest\Api\V2010\Account\OutgoingCallerIdContext outgoingCallerIds(string $sid)
  * @method \Twilio\Rest\Api\V2010\Account\QueueContext queues(string $sid)
  * @method \Twilio\Rest\Api\V2010\Account\RecordingContext recordings(string $sid)
- * @method \Twilio\Rest\Api\V2010\Account\SandboxContext sandbox()
  * @method \Twilio\Rest\Api\V2010\Account\SigningKeyContext signingKeys(string $sid)
  * @method \Twilio\Rest\Api\V2010\Account\ShortCodeContext shortCodes(string $sid)
  * @method \Twilio\Rest\Api\V2010\Account\TranscriptionContext transcriptions(string $sid)
@@ -73,7 +72,7 @@ class Api extends Domain {
      */
     public function __construct(Client $client) {
         parent::__construct($client);
-        
+
         $this->baseUrl = 'https://api.twilio.com';
     }
 
@@ -99,7 +98,7 @@ class Api extends Domain {
         if (method_exists($this, $method)) {
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown version ' . $name);
     }
 
@@ -116,7 +115,7 @@ class Api extends Domain {
         if (method_exists($this, $method)) {
             return call_user_func_array(array($this, $method), $arguments);
         }
-        
+
         throw new TwilioException('Unknown context ' . $name);
     }
 
@@ -201,6 +200,13 @@ class Api extends Domain {
      */
     protected function contextAvailablePhoneNumbers($countryCode) {
         return $this->v2010->account->availablePhoneNumbers($countryCode);
+    }
+
+    /**
+     * @return \Twilio\Rest\Api\V2010\Account\BalanceList 
+     */
+    protected function getBalance() {
+        return $this->v2010->account->balance;
     }
 
     /**
@@ -360,25 +366,11 @@ class Api extends Domain {
     }
 
     /**
-     * @param string $sid Fetch by unique recording Sid
+     * @param string $sid Fetch by unique recording SID
      * @return \Twilio\Rest\Api\V2010\Account\RecordingContext 
      */
     protected function contextRecordings($sid) {
         return $this->v2010->account->recordings($sid);
-    }
-
-    /**
-     * @return \Twilio\Rest\Api\V2010\Account\SandboxList 
-     */
-    protected function getSandbox() {
-        return $this->v2010->account->sandbox;
-    }
-
-    /**
-     * @return \Twilio\Rest\Api\V2010\Account\SandboxContext 
-     */
-    protected function contextSandbox() {
-        return $this->v2010->account->sandbox();
     }
 
     /**
@@ -433,7 +425,7 @@ class Api extends Domain {
     }
 
     /**
-     * @param string $sid Fetch by unique transcription Sid
+     * @param string $sid Fetch by unique transcription SID
      * @return \Twilio\Rest\Api\V2010\Account\TranscriptionContext 
      */
     protected function contextTranscriptions($sid) {

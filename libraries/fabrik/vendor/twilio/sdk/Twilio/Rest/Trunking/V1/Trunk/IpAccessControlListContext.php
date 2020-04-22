@@ -24,13 +24,10 @@ class IpAccessControlListContext extends InstanceContext {
      */
     public function __construct(Version $version, $trunkSid, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'trunkSid' => $trunkSid,
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('trunkSid' => $trunkSid, 'sid' => $sid, );
+
         $this->uri = '/Trunks/' . rawurlencode($trunkSid) . '/IpAccessControlLists/' . rawurlencode($sid) . '';
     }
 
@@ -38,16 +35,17 @@ class IpAccessControlListContext extends InstanceContext {
      * Fetch a IpAccessControlListInstance
      * 
      * @return IpAccessControlListInstance Fetched IpAccessControlListInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new IpAccessControlListInstance(
             $this->version,
             $payload,
@@ -60,6 +58,7 @@ class IpAccessControlListContext extends InstanceContext {
      * Deletes the IpAccessControlListInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->version->delete('delete', $this->uri);

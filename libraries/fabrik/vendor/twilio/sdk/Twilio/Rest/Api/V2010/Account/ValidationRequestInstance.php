@@ -11,13 +11,14 @@ namespace Twilio\Rest\Api\V2010\Account;
 
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceResource;
+use Twilio\Values;
 use Twilio\Version;
 
 /**
  * @property string accountSid
  * @property string phoneNumber
  * @property string friendlyName
- * @property string validationCode
+ * @property integer validationCode
  * @property string callSid
  */
 class ValidationRequestInstance extends InstanceResource {
@@ -26,24 +27,23 @@ class ValidationRequestInstance extends InstanceResource {
      * 
      * @param \Twilio\Version $version Version that contains the resource
      * @param mixed[] $payload The response payload
-     * @param string $accountSid The account_sid
+     * @param string $accountSid The unique ID of the Account responsible for this
+     *                           Caller Id.
      * @return \Twilio\Rest\Api\V2010\Account\ValidationRequestInstance 
      */
     public function __construct(Version $version, array $payload, $accountSid) {
         parent::__construct($version);
-        
+
         // Marshaled Properties
         $this->properties = array(
-            'accountSid' => $payload['account_sid'],
-            'phoneNumber' => $payload['phone_number'],
-            'friendlyName' => $payload['friendly_name'],
-            'validationCode' => $payload['validation_code'],
-            'callSid' => $payload['call_sid'],
+            'accountSid' => Values::array_get($payload, 'account_sid'),
+            'phoneNumber' => Values::array_get($payload, 'phone_number'),
+            'friendlyName' => Values::array_get($payload, 'friendly_name'),
+            'validationCode' => Values::array_get($payload, 'validation_code'),
+            'callSid' => Values::array_get($payload, 'call_sid'),
         );
-        
-        $this->solution = array(
-            'accountSid' => $accountSid,
-        );
+
+        $this->solution = array('accountSid' => $accountSid, );
     }
 
     /**
@@ -57,12 +57,12 @@ class ValidationRequestInstance extends InstanceResource {
         if (array_key_exists($name, $this->properties)) {
             return $this->properties[$name];
         }
-        
+
         if (property_exists($this, '_' . $name)) {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown property: ' . $name);
     }
 

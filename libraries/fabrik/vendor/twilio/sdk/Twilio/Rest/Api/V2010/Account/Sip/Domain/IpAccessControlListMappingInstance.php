@@ -12,6 +12,7 @@ namespace Twilio\Rest\Api\V2010\Account\Sip\Domain;
 use Twilio\Deserialize;
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceResource;
+use Twilio\Values;
 use Twilio\Version;
 
 /**
@@ -21,6 +22,7 @@ use Twilio\Version;
  * @property string friendlyName
  * @property string sid
  * @property string uri
+ * @property array subresourceUris
  */
 class IpAccessControlListMappingInstance extends InstanceResource {
     /**
@@ -28,24 +30,27 @@ class IpAccessControlListMappingInstance extends InstanceResource {
      * 
      * @param \Twilio\Version $version Version that contains the resource
      * @param mixed[] $payload The response payload
-     * @param string $accountSid The account_sid
+     * @param string $accountSid The unique id of the Account that is responsible
+     *                           for this resource.
      * @param string $domainSid A string that uniquely identifies the SIP Domain
-     * @param string $sid The sid
+     * @param string $sid A 34 character string that uniquely identifies the
+     *                    resource to fetch.
      * @return \Twilio\Rest\Api\V2010\Account\Sip\Domain\IpAccessControlListMappingInstance 
      */
     public function __construct(Version $version, array $payload, $accountSid, $domainSid, $sid = null) {
         parent::__construct($version);
-        
+
         // Marshaled Properties
         $this->properties = array(
-            'accountSid' => $payload['account_sid'],
-            'dateCreated' => Deserialize::iso8601DateTime($payload['date_created']),
-            'dateUpdated' => Deserialize::iso8601DateTime($payload['date_updated']),
-            'friendlyName' => $payload['friendly_name'],
-            'sid' => $payload['sid'],
-            'uri' => $payload['uri'],
+            'accountSid' => Values::array_get($payload, 'account_sid'),
+            'dateCreated' => Deserialize::dateTime(Values::array_get($payload, 'date_created')),
+            'dateUpdated' => Deserialize::dateTime(Values::array_get($payload, 'date_updated')),
+            'friendlyName' => Values::array_get($payload, 'friendly_name'),
+            'sid' => Values::array_get($payload, 'sid'),
+            'uri' => Values::array_get($payload, 'uri'),
+            'subresourceUris' => Values::array_get($payload, 'subresource_uris'),
         );
-        
+
         $this->solution = array(
             'accountSid' => $accountSid,
             'domainSid' => $domainSid,
@@ -69,7 +74,7 @@ class IpAccessControlListMappingInstance extends InstanceResource {
                 $this->solution['sid']
             );
         }
-        
+
         return $this->context;
     }
 
@@ -78,6 +83,7 @@ class IpAccessControlListMappingInstance extends InstanceResource {
      * 
      * @return IpAccessControlListMappingInstance Fetched
      *                                            IpAccessControlListMappingInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         return $this->proxy()->fetch();
@@ -87,6 +93,7 @@ class IpAccessControlListMappingInstance extends InstanceResource {
      * Deletes the IpAccessControlListMappingInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->proxy()->delete();
@@ -103,12 +110,12 @@ class IpAccessControlListMappingInstance extends InstanceResource {
         if (array_key_exists($name, $this->properties)) {
             return $this->properties[$name];
         }
-        
+
         if (property_exists($this, '_' . $name)) {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown property: ' . $name);
     }
 

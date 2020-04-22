@@ -137,12 +137,12 @@ define(['jquery'], function (jQuery) {
         fireEvents: function (evnts) {
             if (this.hasSubElements()) {
                 this._getSubElements().each(function (el) {
-                    Array.from(evnts).each(function (e) {
+                    Array.mfrom(evnts).each(function (e) {
                         el.fireEvent(e);
                     }.bind(this));
                 }.bind(this));
             } else {
-                Array.from(evnts).each(function (e) {
+                Array.mfrom(evnts).each(function (e) {
                     if (this.element) {
                         this.element.fireEvent(e);
                     }
@@ -429,6 +429,14 @@ define(['jquery'], function (jQuery) {
         },
 
         /**
+         * Called before an AJAX validation is triggered, in case an element wants to abort it,
+         * for example date element with time picker
+         */
+        shouldAjaxValidate: function () {
+            return true;
+        },
+
+        /**
          * Run when the element is cloned in a repeat group
          */
         cloned: function (c) {
@@ -454,6 +462,7 @@ define(['jquery'], function (jQuery) {
          * Run when the element is de-cloned from the form as part of a deleted repeat group
          */
         decloned: function (groupid) {
+            this.form.removeMustValidate(this);
         },
 
         /**
@@ -809,7 +818,7 @@ define(['jquery'], function (jQuery) {
                     suffixFound = true;
                 }
             }
-            var bits = Array.from(n.split('_'));
+            var bits = Array.mfrom(n.split('_'));
             var i = bits.getLast();
             if (typeOf(i.toInt()) === 'null') {
                 return bits.join('_');
@@ -895,6 +904,8 @@ define(['jquery'], function (jQuery) {
             var c = this.getContainer();
             if (c) {
                 jQuery(c).hide();
+                jQuery(c).addClass('fabrikHide');
+
             }
         },
 
@@ -902,6 +913,7 @@ define(['jquery'], function (jQuery) {
             var c = this.getContainer();
             if (c) {
                 jQuery(c).show();
+                jQuery(c).removeClass('fabrikHide');
             }
         },
 

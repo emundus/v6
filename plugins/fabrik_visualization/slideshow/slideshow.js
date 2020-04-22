@@ -13,32 +13,34 @@ var FbSlideshowViz = new Class({
 	
 	initialize: function (element, options) {
 		this.setOptions(options);
-		var opts = {
-			controller: true,
-			delay: parseInt(this.options.slideshow_delay, 10),
-			duration: parseInt(this.options.slideshow_duration, 10),
-			height: parseInt(this.options.slideshow_height, 10),
-			width: parseInt(this.options.slideshow_width, 10),
-			//hu: Fabrik.liveSite,
-			hu: this.options.liveSite,
-			thumbnails: this.options.slideshow_thumbnails,
-			captions: this.options.slideshow_captions
+
+		var slickOptions = {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            autoplay: this.options.slideshow_delay === 0 ? false : true,
+            autoplaySpeed: this.options.slideshow_delay,
+            //variableWidth: true,
+            arrows: true,
+            dots: false,
+            cssEase: 'linear',
+            infinite: true,
+            speed: this.options.slideshow_duration
 		};
+
+		var slickJSON = JSON.parse(this.options.slideshow_options);
+		jQuery.extend(slickOptions, slickJSON);
+
+        var $slider = jQuery('.slider');
 
 		if (this.options.slideshow_thumbnails)
 		{
-            jQuery('.slider').slick({
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                //variableWidth: true,
-                arrows: false,
-                dots: false,
-                fade: true,
-                cssEase: 'linear',
-                infinite: true,
-                speed: 500,
-				asNavFor: '.slider-nav'
-            });
+		    var thumbOptions = {
+		        asNavFor: '.slider-nav'
+            };
+
+		    jQuery.extend(slickOptions, thumbOptions);
+
+            $slider.slick(slickOptions);
 
             jQuery('.slider-nav').slick({
                 slidesToShow: 3,
@@ -53,20 +55,33 @@ var FbSlideshowViz = new Class({
 
 		}
 		else {
-            jQuery('.slider').slick({
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                //variableWidth: true,
-                arrows: true,
-                dots: true,
-                fade: true,
-                cssEase: 'linear',
-                infinite: true,
-                speed: 500
-            });
+            var noThumbOptions = {
+            };
+
+            jQuery.extend(slickOptions, noThumbOptions);
+
+            $slider.slick(slickOptions);
         }
 
-		this.mediaScan();
+        $slider.on('wheel', function(e) {
+            e.preventDefault();
+
+            if (e.originalEvent.deltaY < 0) {
+                jQuery(this).slick('slickNext');
+            } else {
+                jQuery(this).slick('slickPrev');
+            }
+        });
+
+        /**
+         * Hide the loading div, and fire a setPosition to have Slick recalculate sizing (it can't get image sizes
+         * when inside a hidden element.  Could probably do this by positioning slider offscreen rather than
+         * display none.
+         */
+        jQuery('.slider_loading').hide();
+        $slider.slick('setPosition');
+
+        this.mediaScan();
 	},
 
 	mediaScan: function () {

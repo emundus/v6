@@ -11,6 +11,7 @@ namespace Twilio\Rest\Api\V2010\Account;
 
 use Twilio\ListResource;
 use Twilio\Options;
+use Twilio\Serialize;
 use Twilio\Values;
 use Twilio\Version;
 
@@ -19,35 +20,40 @@ class AddressList extends ListResource {
      * Construct the AddressList
      * 
      * @param Version $version Version that contains the resource
-     * @param string $accountSid The account_sid
+     * @param string $accountSid The unique id of the Account responsible for this
+     *                           address.
      * @return \Twilio\Rest\Api\V2010\Account\AddressList 
      */
     public function __construct(Version $version, $accountSid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'accountSid' => $accountSid,
-        );
-        
+        $this->solution = array('accountSid' => $accountSid, );
+
         $this->uri = '/Accounts/' . rawurlencode($accountSid) . '/Addresses.json';
     }
 
     /**
      * Create a new AddressInstance
      * 
-     * @param string $customerName The customer_name
-     * @param string $street The street
-     * @param string $city The city
-     * @param string $region The region
-     * @param string $postalCode The postal_code
-     * @param string $isoCountry The iso_country
+     * @param string $customerName Your name or business name, or that of your
+     *                             customer.
+     * @param string $street The number and street address where you or your
+     *                       customer is located.
+     * @param string $city The city in which you or your customer is located.
+     * @param string $region The state or region in which you or your customer is
+     *                       located.
+     * @param string $postalCode The postal code in which you or your customer is
+     *                           located.
+     * @param string $isoCountry The ISO country code of your or your customer's
+     *                           address.
      * @param array|Options $options Optional Arguments
      * @return AddressInstance Newly created AddressInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function create($customerName, $street, $city, $region, $postalCode, $isoCountry, $options = array()) {
         $options = new Values($options);
-        
+
         $data = Values::of(array(
             'CustomerName' => $customerName,
             'Street' => $street,
@@ -56,20 +62,18 @@ class AddressList extends ListResource {
             'PostalCode' => $postalCode,
             'IsoCountry' => $isoCountry,
             'FriendlyName' => $options['friendlyName'],
+            'EmergencyEnabled' => Serialize::booleanToString($options['emergencyEnabled']),
+            'AutoCorrectAddress' => Serialize::booleanToString($options['autoCorrectAddress']),
         ));
-        
+
         $payload = $this->version->create(
             'POST',
             $this->uri,
             array(),
             $data
         );
-        
-        return new AddressInstance(
-            $this->version,
-            $payload,
-            $this->solution['accountSid']
-        );
+
+        return new AddressInstance($this->version, $payload, $this->solution['accountSid']);
     }
 
     /**
@@ -93,9 +97,9 @@ class AddressList extends ListResource {
      */
     public function stream($options = array(), $limit = null, $pageSize = null) {
         $limits = $this->version->readLimits($limit, $pageSize);
-        
+
         $page = $this->page($options, $limits['pageSize']);
-        
+
         return $this->version->stream($page, $limits['limit'], $limits['pageLimit']);
     }
 
@@ -115,7 +119,7 @@ class AddressList extends ListResource {
      *                        efficient page size, i.e. min(limit, 1000)
      * @return AddressInstance[] Array of results
      */
-    public function read($options = array(), $limit = null, $pageSize = Values::NONE) {
+    public function read($options = array(), $limit = null, $pageSize = null) {
         return iterator_to_array($this->stream($options, $limit, $pageSize), false);
     }
 
@@ -139,13 +143,29 @@ class AddressList extends ListResource {
             'Page' => $pageNumber,
             'PageSize' => $pageSize,
         ));
-        
+
         $response = $this->version->page(
             'GET',
             $this->uri,
             $params
         );
-        
+
+        return new AddressPage($this->version, $response, $this->solution);
+    }
+
+    /**
+     * Retrieve a specific page of AddressInstance records from the API.
+     * Request is executed immediately
+     * 
+     * @param string $targetUrl API-generated URL for the requested results page
+     * @return \Twilio\Page Page of AddressInstance
+     */
+    public function getPage($targetUrl) {
+        $response = $this->version->getDomain()->getClient()->request(
+            'GET',
+            $targetUrl
+        );
+
         return new AddressPage($this->version, $response, $this->solution);
     }
 
@@ -156,11 +176,7 @@ class AddressList extends ListResource {
      * @return \Twilio\Rest\Api\V2010\Account\AddressContext 
      */
     public function getContext($sid) {
-        return new AddressContext(
-            $this->version,
-            $this->solution['accountSid'],
-            $sid
-        );
+        return new AddressContext($this->version, $this->solution['accountSid'], $sid);
     }
 
     /**

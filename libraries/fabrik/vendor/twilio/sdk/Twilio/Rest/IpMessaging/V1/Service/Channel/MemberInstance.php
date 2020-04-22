@@ -12,6 +12,8 @@ namespace Twilio\Rest\IpMessaging\V1\Service\Channel;
 use Twilio\Deserialize;
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceResource;
+use Twilio\Options;
+use Twilio\Values;
 use Twilio\Version;
 
 /**
@@ -23,6 +25,8 @@ use Twilio\Version;
  * @property \DateTime dateCreated
  * @property \DateTime dateUpdated
  * @property string roleSid
+ * @property integer lastConsumedMessageIndex
+ * @property \DateTime lastConsumptionTimestamp
  * @property string url
  */
 class MemberInstance extends InstanceResource {
@@ -31,27 +35,30 @@ class MemberInstance extends InstanceResource {
      * 
      * @param \Twilio\Version $version Version that contains the resource
      * @param mixed[] $payload The response payload
-     * @param string $serviceSid The service_sid
-     * @param string $channelSid The channel_sid
+     * @param string $serviceSid The unique id of the Service this member belongs
+     *                           to.
+     * @param string $channelSid The unique id of the Channel for this member.
      * @param string $sid The sid
      * @return \Twilio\Rest\IpMessaging\V1\Service\Channel\MemberInstance 
      */
     public function __construct(Version $version, array $payload, $serviceSid, $channelSid, $sid = null) {
         parent::__construct($version);
-        
+
         // Marshaled Properties
         $this->properties = array(
-            'sid' => $payload['sid'],
-            'accountSid' => $payload['account_sid'],
-            'channelSid' => $payload['channel_sid'],
-            'serviceSid' => $payload['service_sid'],
-            'identity' => $payload['identity'],
-            'dateCreated' => Deserialize::iso8601DateTime($payload['date_created']),
-            'dateUpdated' => Deserialize::iso8601DateTime($payload['date_updated']),
-            'roleSid' => $payload['role_sid'],
-            'url' => $payload['url'],
+            'sid' => Values::array_get($payload, 'sid'),
+            'accountSid' => Values::array_get($payload, 'account_sid'),
+            'channelSid' => Values::array_get($payload, 'channel_sid'),
+            'serviceSid' => Values::array_get($payload, 'service_sid'),
+            'identity' => Values::array_get($payload, 'identity'),
+            'dateCreated' => Deserialize::dateTime(Values::array_get($payload, 'date_created')),
+            'dateUpdated' => Deserialize::dateTime(Values::array_get($payload, 'date_updated')),
+            'roleSid' => Values::array_get($payload, 'role_sid'),
+            'lastConsumedMessageIndex' => Values::array_get($payload, 'last_consumed_message_index'),
+            'lastConsumptionTimestamp' => Deserialize::dateTime(Values::array_get($payload, 'last_consumption_timestamp')),
+            'url' => Values::array_get($payload, 'url'),
         );
-        
+
         $this->solution = array(
             'serviceSid' => $serviceSid,
             'channelSid' => $channelSid,
@@ -76,7 +83,7 @@ class MemberInstance extends InstanceResource {
                 $this->solution['sid']
             );
         }
-        
+
         return $this->context;
     }
 
@@ -84,6 +91,7 @@ class MemberInstance extends InstanceResource {
      * Fetch a MemberInstance
      * 
      * @return MemberInstance Fetched MemberInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         return $this->proxy()->fetch();
@@ -93,9 +101,21 @@ class MemberInstance extends InstanceResource {
      * Deletes the MemberInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->proxy()->delete();
+    }
+
+    /**
+     * Update the MemberInstance
+     * 
+     * @param array|Options $options Optional Arguments
+     * @return MemberInstance Updated MemberInstance
+     * @throws TwilioException When an HTTP error occurs.
+     */
+    public function update($options = array()) {
+        return $this->proxy()->update($options);
     }
 
     /**
@@ -109,12 +129,12 @@ class MemberInstance extends InstanceResource {
         if (array_key_exists($name, $this->properties)) {
             return $this->properties[$name];
         }
-        
+
         if (property_exists($this, '_' . $name)) {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown property: ' . $name);
     }
 

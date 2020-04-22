@@ -11,6 +11,7 @@ namespace Twilio\Rest\Taskrouter\V1\Workspace;
 
 use Twilio\InstanceContext;
 use Twilio\Options;
+use Twilio\Serialize;
 use Twilio\Values;
 use Twilio\Version;
 
@@ -24,12 +25,10 @@ class WorkspaceStatisticsContext extends InstanceContext {
      */
     public function __construct(Version $version, $workspaceSid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'workspaceSid' => $workspaceSid,
-        );
-        
+        $this->solution = array('workspaceSid' => $workspaceSid, );
+
         $this->uri = '/Workspaces/' . rawurlencode($workspaceSid) . '/Statistics';
     }
 
@@ -38,27 +37,26 @@ class WorkspaceStatisticsContext extends InstanceContext {
      * 
      * @param array|Options $options Optional Arguments
      * @return WorkspaceStatisticsInstance Fetched WorkspaceStatisticsInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch($options = array()) {
         $options = new Values($options);
-        
+
         $params = Values::of(array(
             'Minutes' => $options['minutes'],
-            'StartDate' => $options['startDate'],
-            'EndDate' => $options['endDate'],
+            'StartDate' => Serialize::iso8601DateTime($options['startDate']),
+            'EndDate' => Serialize::iso8601DateTime($options['endDate']),
+            'TaskChannel' => $options['taskChannel'],
+            'SplitByWaitTime' => $options['splitByWaitTime'],
         ));
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
-        return new WorkspaceStatisticsInstance(
-            $this->version,
-            $payload,
-            $this->solution['workspaceSid']
-        );
+
+        return new WorkspaceStatisticsInstance($this->version, $payload, $this->solution['workspaceSid']);
     }
 
     /**

@@ -26,19 +26,17 @@ class CredentialListContext extends InstanceContext {
      * Initialize the CredentialListContext
      * 
      * @param \Twilio\Version $version Version that contains the resource
-     * @param string $accountSid The account_sid
-     * @param string $sid Fetch by unique credential Sid
+     * @param string $accountSid The unique id of the Account that is responsible
+     *                           for this resource.
+     * @param string $sid Fetch by unique credential list Sid
      * @return \Twilio\Rest\Api\V2010\Account\Sip\CredentialListContext 
      */
     public function __construct(Version $version, $accountSid, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'accountSid' => $accountSid,
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('accountSid' => $accountSid, 'sid' => $sid, );
+
         $this->uri = '/Accounts/' . rawurlencode($accountSid) . '/SIP/CredentialLists/' . rawurlencode($sid) . '.json';
     }
 
@@ -46,16 +44,17 @@ class CredentialListContext extends InstanceContext {
      * Fetch a CredentialListInstance
      * 
      * @return CredentialListInstance Fetched CredentialListInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new CredentialListInstance(
             $this->version,
             $payload,
@@ -67,21 +66,20 @@ class CredentialListContext extends InstanceContext {
     /**
      * Update the CredentialListInstance
      * 
-     * @param string $friendlyName The friendly_name
+     * @param string $friendlyName Human readable descriptive text
      * @return CredentialListInstance Updated CredentialListInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function update($friendlyName) {
-        $data = Values::of(array(
-            'FriendlyName' => $friendlyName,
-        ));
-        
+        $data = Values::of(array('FriendlyName' => $friendlyName, ));
+
         $payload = $this->version->update(
             'POST',
             $this->uri,
             array(),
             $data
         );
-        
+
         return new CredentialListInstance(
             $this->version,
             $payload,
@@ -94,6 +92,7 @@ class CredentialListContext extends InstanceContext {
      * Deletes the CredentialListInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->version->delete('delete', $this->uri);
@@ -112,7 +111,7 @@ class CredentialListContext extends InstanceContext {
                 $this->solution['sid']
             );
         }
-        
+
         return $this->_credentials;
     }
 
@@ -128,7 +127,7 @@ class CredentialListContext extends InstanceContext {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown subresource ' . $name);
     }
 
@@ -145,7 +144,7 @@ class CredentialListContext extends InstanceContext {
         if (method_exists($property, 'getContext')) {
             return call_user_func_array(array($property, 'getContext'), $arguments);
         }
-        
+
         throw new TwilioException('Resource does not have a context');
     }
 

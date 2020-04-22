@@ -14,7 +14,7 @@ use Twilio\Values;
 
 abstract class NotificationOptions {
     /**
-     * @param string $log Filter by log level
+     * @param integer $log Filter by log level
      * @param string $messageDateBefore Filter by date
      * @param string $messageDate Filter by date
      * @param string $messageDateAfter Filter by date
@@ -27,7 +27,7 @@ abstract class NotificationOptions {
 
 class ReadNotificationOptions extends Options {
     /**
-     * @param string $log Filter by log level
+     * @param integer $log Filter by log level
      * @param string $messageDateBefore Filter by date
      * @param string $messageDate Filter by date
      * @param string $messageDateAfter Filter by date
@@ -40,9 +40,9 @@ class ReadNotificationOptions extends Options {
     }
 
     /**
-     * Only show notifications for this log level
+     * Only show notifications for this log, using the integer log values shown above.
      * 
-     * @param string $log Filter by log level
+     * @param integer $log Filter by log level
      * @return $this Fluent Builder
      */
     public function setLog($log) {
@@ -51,7 +51,7 @@ class ReadNotificationOptions extends Options {
     }
 
     /**
-     * Only show notifications for this date. Should be formatted as YYYY-MM-DD. You can also specify inequalities.
+     * Only show notifications for this date. Should be formatted as `YYYY-MM-DD`. You can also specify inequality, such as `MessageDate<=YYYY-MM-DD` for messages logged at or before midnight on a date, and `MessageDate>=YYYY-MM-DD` for messages logged at or after midnight on a date.
      * 
      * @param string $messageDateBefore Filter by date
      * @return $this Fluent Builder
@@ -62,7 +62,7 @@ class ReadNotificationOptions extends Options {
     }
 
     /**
-     * Only show notifications for this date. Should be formatted as YYYY-MM-DD. You can also specify inequalities.
+     * Only show notifications for this date. Should be formatted as `YYYY-MM-DD`. You can also specify inequality, such as `MessageDate<=YYYY-MM-DD` for messages logged at or before midnight on a date, and `MessageDate>=YYYY-MM-DD` for messages logged at or after midnight on a date.
      * 
      * @param string $messageDate Filter by date
      * @return $this Fluent Builder
@@ -73,7 +73,7 @@ class ReadNotificationOptions extends Options {
     }
 
     /**
-     * Only show notifications for this date. Should be formatted as YYYY-MM-DD. You can also specify inequalities.
+     * Only show notifications for this date. Should be formatted as `YYYY-MM-DD`. You can also specify inequality, such as `MessageDate<=YYYY-MM-DD` for messages logged at or before midnight on a date, and `MessageDate>=YYYY-MM-DD` for messages logged at or after midnight on a date.
      * 
      * @param string $messageDateAfter Filter by date
      * @return $this Fluent Builder

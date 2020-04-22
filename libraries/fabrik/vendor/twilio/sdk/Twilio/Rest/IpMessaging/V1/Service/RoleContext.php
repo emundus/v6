@@ -10,6 +10,7 @@
 namespace Twilio\Rest\IpMessaging\V1\Service;
 
 use Twilio\InstanceContext;
+use Twilio\Serialize;
 use Twilio\Values;
 use Twilio\Version;
 
@@ -24,13 +25,10 @@ class RoleContext extends InstanceContext {
      */
     public function __construct(Version $version, $serviceSid, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'serviceSid' => $serviceSid,
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('serviceSid' => $serviceSid, 'sid' => $sid, );
+
         $this->uri = '/Services/' . rawurlencode($serviceSid) . '/Roles/' . rawurlencode($sid) . '';
     }
 
@@ -38,16 +36,17 @@ class RoleContext extends InstanceContext {
      * Fetch a RoleInstance
      * 
      * @return RoleInstance Fetched RoleInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new RoleInstance(
             $this->version,
             $payload,
@@ -60,6 +59,7 @@ class RoleContext extends InstanceContext {
      * Deletes the RoleInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->version->delete('delete', $this->uri);
@@ -68,21 +68,20 @@ class RoleContext extends InstanceContext {
     /**
      * Update the RoleInstance
      * 
-     * @param string $permission The permission
+     * @param string $permission A permission this role should have.
      * @return RoleInstance Updated RoleInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function update($permission) {
-        $data = Values::of(array(
-            'Permission' => $permission,
-        ));
-        
+        $data = Values::of(array('Permission' => Serialize::map($permission, function($e) { return $e; }), ));
+
         $payload = $this->version->update(
             'POST',
             $this->uri,
             array(),
             $data
         );
-        
+
         return new RoleInstance(
             $this->version,
             $payload,

@@ -314,6 +314,11 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 	 */
 	public function validate($data, $repeatCounter = 0)
 	{
+	    if ($this->app->input->get('task', '') === 'form.ajax_validate')
+        {
+            return true;
+        }
+
 		$params = $this->getParams();
 		$input  = $this->app->input;
 
@@ -355,7 +360,20 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 			if ($input->get('g-recaptcha-response'))
 			{
 				$privateKey = $params->get('recaptcha_privatekey');
-				$noCaptcha  = new ReCaptcha($privateKey, new \ReCaptcha\RequestMethod\CurlPost());
+
+				/*
+				 * Some Windows boxes with CA cert bundle issues may fail using CurlPost, because the ReCaptcha lib
+				 * asserts verify_peer, so check to see if our global setting is turned off, if so try using socket instead
+				 */
+				if ($this->config->get('verify_peer', '1') === '0')
+				{
+					$noCaptcha = new ReCaptcha($privateKey, new \ReCaptcha\RequestMethod\SocketPost());
+				}
+				else
+				{
+					$noCaptcha = new ReCaptcha($privateKey, new \ReCaptcha\RequestMethod\CurlPost());
+				}
+
 				$response   = $input->get('g-recaptcha-response');
 				$server     = $input->server->get('REMOTE_ADDR');
 				$resp       = $noCaptcha->verify($response, $server);
