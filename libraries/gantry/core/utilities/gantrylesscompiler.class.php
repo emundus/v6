@@ -2,7 +2,7 @@
 /**
  * @version   $Id: gantrylesscompiler.class.php 30069 2016-03-08 17:45:33Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2019 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2020 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('GANTRY_VERSION') or die();
@@ -611,7 +611,7 @@ class GantryLessCompiler {
 
 		// check for a rest
 		$last = end($args);
-		if ($last[0] == "rest") {
+		if (is_array($last) && $last[0] == "rest") {
 			$rest = array_slice($values, count($args) - 1);
 			$this->set($last[1], $this->reduce(array("list", " ", $rest)));
 		}
@@ -671,7 +671,7 @@ class GantryLessCompiler {
 					if ($suffix !== null &&
 						$subProp[0] == "assign" &&
 						is_string($subProp[1]) &&
-						$subProp[1]{0} != $this->vPrefix)
+						$subProp[1][0] != $this->vPrefix)
 					{
 						$subProp[2] = array(
 							'list', ' ',
@@ -1638,7 +1638,7 @@ class GantryLessCompiler {
 		$this->pushEnv();
 		$parser = new GantryLessCompiler_Parser($this, __METHOD__);
 		foreach ($args as $name => $strValue) {
-			if ($name{0} != '@') $name = '@'.$name;
+			if ($name[0] != '@') $name = '@'.$name;
 			$parser->count = 0;
 			$parser->buffer = (string)$strValue;
 			if (!$parser->propertyValue($value)) {
@@ -2305,7 +2305,7 @@ class GantryLessCompiler_Parser {
 				$hidden = true;
 				if (!isset($block->args)) {
 					foreach ($block->tags as $tag) {
-						if (!is_string($tag) || $tag{0} != $this->lessc->mPrefix) {
+						if (!is_string($tag) || $tag[0] != $this->lessc->mPrefix) {
 							$hidden = false;
 							break;
 						}
@@ -2359,7 +2359,7 @@ class GantryLessCompiler_Parser {
 	protected function fixTags($tags) {
 		// move @ tags out of variable namespace
 		foreach ($tags as &$tag) {
-			if ($tag{0} == $this->lessc->vPrefix)
+			if ($tag[0] == $this->lessc->vPrefix)
 				$tag[0] = $this->lessc->mPrefix;
 		}
 		return $tags;
@@ -3089,7 +3089,7 @@ class GantryLessCompiler_Parser {
 	protected function end() {
 		if ($this->literal(';')) {
 			return true;
-		} elseif ($this->count == strlen($this->buffer) || $this->buffer{$this->count} == '}') {
+		} elseif ($this->count == strlen($this->buffer) || $this->buffer[$this->count] == '}') {
 			// if there is end of file or a closing block next then we don't need a ;
 			return true;
 		}

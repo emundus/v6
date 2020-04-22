@@ -149,13 +149,16 @@ class plgSystemFalangquickjump extends JPlugin
         // create array
         if ($row == 0) {
             $table = new stdClass;
-            if ($component[0] != 'com_k2') {
-                $table->tableselector = ".table";
-            } else {
-                $table->tableselector = ".adminlist";
-            }
-            if (false) {
-            }
+	        switch ($component[0]){
+		        case 'com_k2':
+			        $table->tableselector = ".adminlist";
+			        break;
+		        case 'com_dpcalendar':
+			        $table->tableselector = ".dp-table";
+			        break;
+		        default:
+			        $table->tableselector = ".table";
+	        }
             $first = 'var jFalangTable = '.json_encode($table).', falang = {}; ';
         } else {
             $first = '';

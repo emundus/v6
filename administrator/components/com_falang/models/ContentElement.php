@@ -198,7 +198,7 @@ class ContentElement {
 
 	/** Array of the field elements in the table
 	*/
-	function & getTable() {
+	function &getTable() {
 		if( !isset($this->referenceInformation["table"]) && isset($this->_xmlFile) ) {
 			$xpath = new DOMXPath($this->_xmlFile);
 			$tableElement = $xpath->query('//reference/table')->item(0);
@@ -241,7 +241,10 @@ class ContentElement {
 					if( strtolower($tableField->Name) != "title" ) {
 						$sqlFields[] = 'c.' .$tableField->Name. ' as title';
 					}
-					$join[] = "jfc.reference_field='" .$tableField->Name. "'";
+					//specific case if titletext is set to not to be translatable.
+					if(!empty($tableField->Translate)){
+						$join[] = "jfc.reference_field='" .$tableField->Name. "'";
+					}
 					$order[] = 'c.' .$tableField->Name;
 					break;
 				case "modified_date":

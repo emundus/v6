@@ -19,4 +19,8 @@
  * If LICENSE file missing, see <http://www.gnu.org/licenses/>. 
  */
 
+define('_JEXEC', 1);
+
+defined('_JEXEC') or die('Restricted access');
+
 include dirname(dirname(__FILE__)) . '/assets/jscss.php';

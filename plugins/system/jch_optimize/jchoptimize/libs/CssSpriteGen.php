@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * This is a modified version of the original class from the online css sprite generator found at
  * http://spritegen.website-performance.org/
@@ -30,6 +29,8 @@
  */
 
 namespace JchOptimize\LIBS;
+
+defined('_JEXEC') or die('Restricted access');
 
 use Imagick;
 use ImagickPixel;

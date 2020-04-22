@@ -1,7 +1,11 @@
-/**
- * @package    AkeebaFEF
- * @copyright Copyright (c)2017-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license    GNU General Public License version 3, or later
+/*
+ * Akeeba Frontend Framework (FEF)
+ *
+ * @package   fef
+ * @copyright (c) 2017-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ *
+ * Created by Crystal Dionysopoulou for Akeeba Ltd, https://www.akeeba.com
  */
 
 if (typeof akeeba === 'undefined')

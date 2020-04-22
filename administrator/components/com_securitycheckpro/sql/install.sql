@@ -170,7 +170,6 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_portfoliogallery','component','1.0.6','==','3.0.0','>=','Huge IT Portfolio Gallery Component','SQL Injection vulnerabilities','Oct 01 2016','1.0.6','none','No details'),
 ('mod_dvfoldercontent','module','1.0.2','==','3.0.0','>=','DVFolderContent Module','Local File Disclosure vulnerabilities','Oct 01 2016','1.0.2','none','No details'),
 ('com_googlemaps','component','1.0.9','==','3.0.0','>=','Huge IT Googlemaps Component','SQL Injection vulnerabilities','Oct 01 2016','1.0.9','none','No details'),
-('com_slider','component','1.1.0','==','3.0.0','>=','Huge IT Slider Component','SQL Injection vulnerabilities','Oct 01 2016','1.1.0','none','No details'),
 ('Joomla!','core','3.6.3','<=','3.0.0','>=','Joomla! Account Creation','Inadequate checks','Oct 25 2016','Joomla! versions 3.4.4 through 3.6.3','update','3.6.4'),
 ('Joomla!','core','3.6.3','<=','3.0.0','>=','Joomla! Elevated Privileges','Incorrect use of unfiltered data','Oct 25 2016','Joomla! versions 3.4.4 through 3.6.3','update','3.6.4'),
 ('Joomla!','core','3.6.3','<=','3.0.0','>=','Joomla! Account Modifications','Incorrect use of unfiltered data','Oct 26 2016','Joomla! versions 3.4.4 through 3.6.3','update','3.6.4'),
@@ -491,7 +490,30 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_bookpro','component','2.3','==','3.0.0','>=','JB Bus Component','SQL Injection vulnerability','Apr 12 2019','Version 2.3','update','2.4'),
 ('com_kunena','component','5.1.12','<','3.0.0','>=','Kunena Component','XSS vulnerability','Apr 23 2019','Version 5.1.3 through 5.1.12','update','5.1.12.1'),
 ('com_phocagallery','component','4.3.17','<','3.0.0','>=','Phoca Gallery Component','XSS vulnerability','Apr 26 2019','Version 4.3.15 prior','update','4.3.17'),
-('Joomla!','core','3.9.5','<=','3.0.0','>=','Joomla! core','Xss vulnerability','May 072019','Joomla 1.7.0 through 3.9.5','update','3.9.6');
+('Joomla!','core','3.9.5','<=','3.0.0','>=','Joomla! core','Xss vulnerability','May 07 2019','Joomla 1.7.0 through 3.9.5','update','3.9.6'),
+('com_rsform','component','2.2.0','==','3.0.0','>=','RSForm! Pro Component','Csv injection vulnerability','May 13 2019','Version 2.2.0','update','2.2.1'),
+('com_rsmembership','component','2.2.0','<=','3.0.0','>=','RSMembership! Component','Csv injection vulnerability','May 13 2019','Version 1.22.10 and lower','update','1.22.11'),
+('com_rsevents','component','2.2.0','<=','3.0.0','>=','RSEvents! Pro Component','Csv injection vulnerability','May 13 2019','Version 2.2.0 and lower','update','2.2.1'),
+('com_oziogallery','component','5.0.1','==','3.0.0','>=','Oziogallery Component','Xss vulnerability','May 14 2019','Version 5.0.1','update','5.0.2'),
+('com_loginguard','component','3.1.1','<=','3.0.0','>=','Akeeba LoginGuard Component','Information disclosure vulnerability','May 18 2019','Version 3.1.1 and lower','update','3.2.0'),
+('com_extplorer','component','2.1.12','<=','3.0.0','>=','Extplorer Component','Several vulnerabilities','May 20 2019','Version 2.1.12 and maybe lower','update','2.1.13'),
+('com_comprofiler','component','2.4.1','<=','3.0.0','>=','Community Builder Component','jQuery vulnerability','May 22 2019','Version 2.4.1 and lower','update','2.4.2'),
+('com_akeeba','component','6.4.2.1','<=','3.0.0','>=','Akeeba Backup Component','Xss vulnerability','Jun 03 2019','versions 5.3.0.b1 to 6.4.2.1 inclusive','update','6.5.1'),
+('Joomla!','core','3.9.6','<=','3.0.0','>=','Joomla! core','Several vulnerabilities','Jun 11 2019','Joomla 3.6.0 through 3.9.6','update','3.9.7'),
+('Joomla!','core','3.9.8','<=','3.0.0','>=','Joomla! core','Remote code execution Vulnerability','Jul 09 2019','Joomla 3.9.7 through 3.9.8','update','3.9.9'),
+('com_easydiscuss','component','4.1.9','==','3.0.0','>=','Easy discuss Component','Sql injection vulnerability','Aug 09 2019','version 4.1.9','update','4.1.10'),
+('Joomla!','core','3.9.10','<=','3.0.0','>=','Joomla! core','Hardening com_contact contact form','Aug 13 2019','Joomla 1.6.2 through 3.9.10','update','3.9.11'),
+('com_jssupportticket','component','1.1.5','==','3.0.0','>=','JS support ticket Component','Directory Traversal vulnerability','Aug 13 2019','version 1.1.5','update','1.1.7'),
+('com_jssupportticket','component','1.1.6','==','3.0.0','>=','JS support ticket Component','Sql injection vulnerability','Aug 13 2019','version 1.1.6','update','1.1.7'),
+('com_kunena','component','5.1.14','<','3.0.0','>=','Kunena Component','XSS vulnerability','Aug 15 2019','Version 5.0.x through 5.1.14','update','5.1.4'),
+('com_jdownloads','component','3.2.64','<=','3.0.0','>=','JDownloads Component','Sql injection Vulnerability','Aug 26 2018','Version 3.2.64 and previous','update','3.2.65'),
+('com_payplans','component','4.0','==','3.0.0','>=','Payplans Component','Information disclosure Vulnerability','Sep 13 2018','Version 4.0','update','4.0.13'),
+('Joomla!','core','3.9.11','<=','3.0.0','>=','Joomla! core','XSS in core logo','Sep 25 2019','Joomla 3.0.0 through 3.9.11','update','3.9.12'),
+('com_jsjobs','component','1.2.6','<=','3.0.0','>=','Js Jobs Component','Other Vulnerabilities','Oct 14 2019','Version 1.1.5, 1.1.6, 1.2.5 and 1.2.6','update','1.2.7'),
+('Joomla!','core','3.9.12','<=','3.0.0','>=','Joomla! core','Two vulnerabilities','Nov 05 2019','Joomla 3.2.0 through 3.9.12','update','3.9.13'),
+('com_j2store','component','3.3.9','<=','3.0.0','>=','J2Store Component','Xss vulnerability','Nov 14 2019','Version 3.3.9 and previous','none','No details'),
+('Joomla!','core','3.9.13','<=','3.0.0','>=','Joomla! core','Two vulnerabilities','Dec 18 2019','Joomla 2.5.0 through 3.9.13','update','3.9.14'),
+('Joomla!','core','3.9.14','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Jan 28 2020','Joomla 3.0.0 through 3.9.14','update','3.9.15');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -613,7 +635,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.43');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.70');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (

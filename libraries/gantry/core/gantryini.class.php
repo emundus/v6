@@ -2,7 +2,7 @@
 /**
  * @version   $Id: gantryini.class.php 30069 2016-03-08 17:45:33Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2019 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2020 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -171,7 +171,7 @@ class GantryINI
 
 		foreach ($lines as $line) {
 			// ignore comments
-			if ($line && $line{0} == ';') {
+			if ($line && $line[0] == ';') {
 				continue;
 			}
 
@@ -182,7 +182,7 @@ class GantryINI
 			}
 
 			$lineLen = strlen($line);
-			if ($line && $line{0} == '[' && $line{$lineLen - 1} == ']') {
+			if ($line && $line[0] == '[' && $line[$lineLen - 1] == ']') {
 				$sec_name = substr($line, 1, $lineLen - 2);
 				if ($process_sections) {
 					$obj->{$sec_name} = new stdClass();
@@ -192,9 +192,9 @@ class GantryINI
 					$property = trim(substr($line, 0, $pos));
 
 					// property is assumed to be ascii
-					if ($property && $property{0} == '"') {
+					if ($property && $property[0] == '"') {
 						$propLen = strlen($property);
-						if ($property{$propLen - 1} == '"') {
+						if ($property[$propLen - 1] == '"') {
 							$property = stripcslashes(substr($property, 1, $propLen - 2));
 						}
 					}
@@ -218,9 +218,9 @@ class GantryINI
 									$value = false;
 								} else if ($value == 'true') {
 									$value = true;
-								} else if ($value && $value{0} == '"') {
+								} else if ($value && $value[0] == '"') {
 									$valueLen = strlen($value);
-									if ($value{$valueLen - 1} == '"') {
+									if ($value[$valueLen - 1] == '"') {
 										$value = stripcslashes(substr($value, 1, $valueLen - 2));
 									}
 								}
@@ -250,9 +250,9 @@ class GantryINI
 							$value = false;
 						} else if ($value == 'true') {
 							$value = true;
-						} else if ($value && $value{0} == '"') {
+						} else if ($value && $value[0] == '"') {
 							$valueLen = strlen($value);
-							if ($value{$valueLen - 1} == '"') {
+							if ($value[$valueLen - 1] == '"') {
 								$value = stripcslashes(substr($value, 1, $valueLen - 2));
 							}
 						}
@@ -269,7 +269,7 @@ class GantryINI
 						}
 					}
 				} else {
-					if ($line && $line{0} == ';') {
+					if ($line && $line[0] == ';') {
 						continue;
 					}
 					if ($process_sections) {

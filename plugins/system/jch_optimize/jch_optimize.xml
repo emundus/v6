@@ -2,12 +2,12 @@
 <extension version="3.3.0" type="plugin" group="system" method="upgrade">
         <name>PLG_SYSTEM_JCH_OPTIMIZE</name>
         <author>Samuel Marshall</author>
-        <creationDate>February 2020</creationDate>
+        <creationDate>March 2020</creationDate>
         <copyright>Copyright (C) 2017 Samuel Marshall. All rights reserved.</copyright>
         <license>GNU/GPLv3 http://www.gnu.org/copyleft/gpl.html</license>
         <authorEmail>sdmarshall73@gmail.com</authorEmail>
         <authorUrl>http://www.jch-optimize.net</authorUrl>
-        <version>6.0.0</version>
+        <version>6.0.1</version>
         <variant>FREE</variant>
         <description>JCH_OPTIMIZE_DESCRIPTION</description>
         <files>
@@ -19,6 +19,7 @@
                 <folder>platform</folder>
                 <folder>jchoptimize</folder>
         </files>
+        <scriptfile>script.php</scriptfile>
         <languages folder="language">
                 <language tag="en-GB">en-GB/en-GB.plg_system_jch_optimize.ini</language>
                 <language tag="en-GB">en-GB/en-GB.plg_system_jch_optimize.sys.ini</language>

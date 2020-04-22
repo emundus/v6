@@ -111,7 +111,8 @@ class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 				$new->setHost($base->getHost());
 				$new->setPort($base->getPort());
 				$new->setScheme($base->getScheme());
-				$new->setPath($base->getPath() . $newURL);
+				$new->setPath($base->getPath() . $new->getPath());
+				$new->setFragment($new->getFragment());
 			}
 
 			// Keep URL Params == 1 (override all)

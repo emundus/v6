@@ -21,6 +21,8 @@
 
 namespace JchOptimize\Platform;
 
+defined('_JEXEC') or die('Restricted access');
+
 use JchOptimize\Interfaces\HttpInterface;
 
 class Http implements HttpInterface

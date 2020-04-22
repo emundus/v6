@@ -22,7 +22,7 @@
 
 namespace JchOptimize\Interfaces;
 
-defined('_JCH_EXEC') or die('Restricted access');
+defined('_JEXEC') or die('Restricted access');
 
 interface SettingsInterface
 {

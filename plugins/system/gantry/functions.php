@@ -2,7 +2,7 @@
 /**
  * @version   $Id: functions.php 5317 2012-11-20 23:03:43Z btowles $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2019 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2020 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 
@@ -38,11 +38,11 @@ function gantry_versionfilter($version)
 // get current extensions and view
 function gantry_parsePathComponents($path, $endSlash = true, $base = false)
 {
-	for ($path = trim($path), $slash = strstr(PHP_OS, 'WIN') ? '\/' : '/', $retArray = array(), $str = $temp = "", $x = 0; $char = @$path{$x}; $x++) {
+	for ($path = trim($path), $slash = strstr(PHP_OS, 'WIN') ? '\/' : '/', $retArray = array(), $str = $temp = "", $x = 0; $char = @$path[$x]; $x++) {
 		if (!strstr($slash, $char)) $temp .= $char; elseif ($temp) {
 			$str .= $temp;
-			$retArray[$temp] = $str . ($endSlash ? $slash{0} : '');
-			$str .= $slash{0};
+			$retArray[$temp] = $str . ($endSlash ? $slash[0] : '');
+			$str .= $slash[0];
 			$temp = "";
 		}
 	}

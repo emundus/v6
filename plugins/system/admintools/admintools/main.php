@@ -296,29 +296,30 @@ class plgSystemAdmintools extends JPlugin
 			return;
 		}
 
-		$workaroundOption  = $this->componentParams->getValue('ipworkarounds', -1);
-
-		// Upgrade from older versions (default: enable IP workarounds)
-		if ($workaroundOption == -1)
-		{
-			$workaroundOption = 1;
-			$this->componentParams->setValue('ipworkarounds', 1, true);
-		}
-
 		if (!class_exists('FOF30\\Utils\\Ip'))
 		{
 			return;
 		}
 
-		$enableWordarounds = (bool) $workaroundOption;
+		$workaroundOption = $this->componentParams->getValue('ipworkarounds', -1);
 
-		// Auto mode, let's detect what's the user IP and set the IP workarounds for him if required
-		if ($workaroundOption == 2)
+		switch ($workaroundOption)
 		{
-			$enableWordarounds = $this->detectWorkaroundIP();
+			case 0:
+				$enableWorkarounds = false;
+				break;
+
+			case 1:
+				$enableWorkarounds = true;
+				break;
+
+			case 2:
+			default:
+				$enableWorkarounds = $this->detectWorkaroundIP();
+				break;
 		}
 
-		Ip::setAllowIpOverrides($enableWordarounds);
+		Ip::setAllowIpOverrides($enableWorkarounds);
 		Ip::workaroundIPIssues();
 	}
 
@@ -335,10 +336,17 @@ class plgSystemAdmintools extends JPlugin
 		$ip = Ip::getIp();
 
 		$checklist = [
+			// Localhost IPs
+			'127.0.0.0/8',
+			'::1',
 			// Private Network IPs
 			'10.0.0.0-10.255.255.255',
 			'172.16.0.0-172.31.255.255',
 			'192.168.0.0-192.168.255.255',
+			'169.254.1.0-169.254.254.255',
+			'fc00::/7',
+			'fd00::/8',
+			'fe80::/10',
 			// CloudFlare IPs - IPv4
 			'173.245.48.0/20',
 			'103.21.244.0/22',

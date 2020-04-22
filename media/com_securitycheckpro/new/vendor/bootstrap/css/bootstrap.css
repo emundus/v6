@@ -4459,3 +4459,18 @@ color: black;
   text-decoration: none;
   background-color: #1d2124;
 }
+
+.btn-sm {
+    padding: .25rem .5rem;
+    font-size: .875rem;
+    line-height: 1.5;
+    border-radius: .2rem;
+}
+
+.color_rojo {
+color: #E31E1E;
+}
+
+.color_verde {
+color: #0B7C08;
+}

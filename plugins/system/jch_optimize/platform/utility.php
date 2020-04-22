@@ -279,7 +279,6 @@ class Utility implements UtilityInterface
 	 */
 	public static function sendHeaders($headers)
 	{
-		//	print_r($headers); exit();
 		if (!empty($headers))
 		{
 			$app = Factory::getApplication();
