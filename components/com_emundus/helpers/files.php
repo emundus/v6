@@ -1528,10 +1528,30 @@ class EmundusHelperFiles
 
 	        $tagList = $m_files->getAllTags();
             foreach ($tagList as $p) {
-                $tag .= '<option value="'.$p['id'].'"';
-                if (!empty($current_tag) && in_array($p['id'], (array)$current_tag)) {
-	                $tag .= ' selected="true"';
-                }
+
+            	if (!empty($current_tag)) {
+		            // This allows hiding of files by tag.
+		            $not_in = array_filter($current_tag, function($e) {
+			            return strpos($e, '!') === 0;
+		            });
+
+		            if (!empty($not_in)) {
+			            $current_tag = array_diff($current_tag, $not_in);
+			            $not_in = array_map(function($v) {
+				            return ltrim($v, '!');
+			            }, $not_in);
+		            }
+	            }
+
+            	if (!empty($not_in) && in_array($p['id'], $not_in)) {
+		            $tag .= '<option value="!'.$p['id'].'" selected="true" class="hidden"';
+	            } else {
+		            $tag .= '<option value="'.$p['id'].'"';
+
+		            if (!empty($current_tag) && in_array($p['id'], (array)$current_tag)) {
+			            $tag .= ' selected="true"';
+		            }
+	            }
                 $tag .= '>'.$p['label'].'</option>';
             }
             $tag .= '</select>';
@@ -1878,12 +1898,57 @@ class EmundusHelperFiles
                             $(".search_test").SumoSelect({search: true, searchText: "'.JText::_('ENTER_HERE').'"});
                             $(".testSelAll").SumoSelect({selectAll:true,search:true, searchText: "'.JText::_('ENTER_HERE').'"});
 
-                            if ($("#select_multiple_programmes").val() != null || $("#select_multiple_campaigns").val() != null)
+                            if ($("#select_multiple_programmes").val() != null || $("#select_multiple_campaigns").val() != null) {
                                 $("#em_adv_filters").show();
-                            else
+                            } else {
                                 $("#em_adv_filters").hide();
+                            }
                             
-                            $("#select_filter").chosen({width:"95%"});
+                            var hiddenTagsSelected = document.querySelectorAll("#select_multiple_tags .hidden");
+	                            
+                            if (typeof hiddenTagsSelected !== "undefined") {
+	                            function hideHiddenChosenElements() {
+	                                /* This is the only way of removing the fields that are selected but hidden from the chosenJS selected elements display. */
+		                            var hiddenTagsSelected = document.querySelectorAll("#select_multiple_tags .hidden");
+		                            
+		                            if (typeof hiddenTagsSelected !== "undefined") {
+		                                var tagsInSelect = document.querySelectorAll(".sumo_tag .SelectBox span div");
+		                                var selectList = document.querySelectorAll(".sumo_tag .optWrapper .options .selected");
+		                                
+		                                if (typeof tagsInSelect !== "undefined") {
+				                            hiddenTagsSelected.forEach(h => {
+				                                tagsInSelect.forEach(t => {
+				                                    if (h.innerText === t.innerText) {
+				                                        if (tagsInSelect.length > 1) {
+				                                            t.style.display = "none";
+				                                            t.style.visibility = "visible"
+				                                        } else {
+				                                            t.style.display = "block";
+				                                            t.style.visibility = "hidden";
+				                                        }
+				                                    }
+				                                })
+				                                
+				                                if (typeof selectList !== "undefined") {
+				                                    selectList.forEach(s => {
+					                                    if (h.innerText === s.getElementsByTagName("label")[0].innerText) {
+					                                        s.style.display = "none";
+					                                    }
+					                                })
+				                                }
+				                            });
+			                            }
+		                            }
+	                            }
+	                            /* Continue hiding tags put back in by SumoSelect/Chosen */
+	                            $("#select_multiple_tags").on("change", function() {
+	                                setTimeout(hideHiddenChosenElements, 1000);
+	                            });
+	                            
+	                            hideHiddenChosenElements();
+	                        }
+                            
+	                        $("#select_filter").chosen({width:"95%"}).change();
             
                         });
                     </script>';
