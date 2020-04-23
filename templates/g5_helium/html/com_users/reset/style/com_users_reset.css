@@ -19,12 +19,22 @@ form#user-registration.form-validate.form-horizontal.well,
     margin-right: auto !important;
 }
 
+
+form#user-registration.form-validate.form-horizontal.well label,
+.reset-confirm .form-validate.form-horizontal.well label,
+.reset-complete .form-validate.form-horizontal.well  label
+{
+    font-size: 14px;
+}
+
+
+
 form#user-registration.form-validate.form-horizontal.well .control-group .controls button,
 .reset-confirm .form-validate.form-horizontal.well .control-group .controls button,
 .reset-complete .form-validate.form-horizontal.well .control-group .controls button
 {
     width: 100%;
-    height: 34px;
+    height: 41px;
     text-transform: capitalize;
     margin-right:0;
 }
@@ -48,8 +58,8 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     margin-left: auto !important;
     text-align: center;
 }
-
-
+​
+​
 h1::after {
     left: 146px !important;
 }*/
@@ -57,7 +67,20 @@ h1::after {
 .reset-confirm .required .star,
 .reset-complete .required .star
 {
+    display:none;
+}
+
+#user-registration .required::after,
+.reset-confirm .required::after,
+.reset-complete .required::after
+{
+    content: "\f005";
     color: #c30505;
+    padding-left: 2px;
+    top: -10px;
+    position: relative;
+    font-family: FontAwesome;
+    font-size: 5px;
 }
 @media all and (max-width: 980px) {
     form#user-registration.form-validate.form-horizontal.well,
@@ -71,17 +94,14 @@ h1::after {
     /*h1 {
         width: 100%;
     }*/
-
     h1::after{
         width:2.7rem!important;
     }
-
     form#user-registration.form-validate.form-horizontal.well,
     .reset-confirm .form-validate.form-horizontal.well,
     .reset-complete .form-validate.form-horizontal.well
     {
         width: 100%;
     }
-
+    ​
 }
-

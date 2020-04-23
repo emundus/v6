@@ -2,6 +2,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 if (!empty($tab)) :?>
+    <p><?= JText::_('SELECT_PROGRAMME');?></p>
     <div class="emundus_home_page" id="em-panel">
         <?php if (isset($user->profile) && $user->profile > 0) {
 

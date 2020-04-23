@@ -50,7 +50,7 @@ $rowid = isset($_REQUEST['rowid']) ? $_REQUEST['rowid'] : '';
 $form = $view . '_' . $c;
 if ($rowid !== '')
 {
-	$form .= '_' . $rowid;
+    $form .= '_' . $rowid;
 }
 echo <<<EOT
 
@@ -342,8 +342,7 @@ form legend a, form legend a:hover, form legend a:focus {
 }
 
 .applicant-form .sauvegarder,
-.view-checkout .sauvegarder,
-#fabrikSubmit_307, #fabrikSubmit_321 {
+.view-checkout .sauvegarder, #fabrikSubmit_321 {
     margin-left: 20px !important;
 }
 /* ------ Rapport d'erreur -------- */
@@ -474,7 +473,10 @@ form#member-profile .form-horizontal .control-label {
     width: 210px;
 }
 
-
+/* ---- ALLOW * TO BE AT THE END OF TEXT ----- */
+.applicant-form form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
+    display: inline;
+}
 /* Inscription */
 .view-registration table, .view-registration td {
     border: none;
@@ -594,8 +596,7 @@ form#member-profile .form-horizontal .control-label {
 #fabrikSubmit_305,
 #fabrikSubmit_293,
 form#member-profile .controls button,
-#fabrikSubmit_306,
-#fabrikSubmit_307 {
+#fabrikSubmit_306 {
     margin-left: 20px !important;
 }
 
@@ -699,7 +700,7 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
 
 
 .applicant-form .fabrikGroupRepeater .btn-success {
-    margin-right: 0px !important;
+    margin-right: 10px !important;
 }
 
 .applicant-form .fabrikGroupRepeater .addGroup.btn-success {
@@ -928,11 +929,10 @@ footer#g-footer {
 
 .fabrikForm .fabrikSubGroup{
     position: relative;
-    border-bottom: 1px solid #c4c4c4;
 }
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
     position: absolute;
-    right: 0px;
+    right: 10px;
 }
 
 .radio input[type="radio"], .checkbox input[type="checkbox"] {
@@ -944,7 +944,7 @@ footer#g-footer {
     letter-spacing: inherit;
     font-weight: 300;
 }
-​
+
 h1::after {
     content: '';
     position: absolute;
@@ -954,35 +954,38 @@ h1::after {
     background: #de6339;
     left: 0;
 }
-​
+
 ol {
     width: 50%;
     text-align: justify;
-    margin-left: 0px;
+    margin-left: 0px !important;
 }
-​
+
 ol li {
-   margin-bottom :10px;
+   margin-bottom: 10px;
 }
-​
+
 #form_307 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
     height: 34px;
     text-transform: capitalize;
 }
-​
+
 #form_307 form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input {
    border-radius : 0px; 
 }
-​
+
 #form_307 form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid:nth-child(4) .controls label.radio {
   padding-left: 0px;
 }
-​
-#form_307 form.fabrikForm .control-group.fabrikElementContainer.plg-databasejoin.fb_el_jos_emundus_users___campaign_id.mode-dropdown.span12 select {
+
+#form_307.fabrikForm .controls select {
     border-radius : 0px; 
     height: 41px !important;
 }
-​
+
+#form_307.fabrikForm {
+    width:50%;
+}
 #form_307 .fabrikActions.form-actions{
     padding: 0 !important;
 }
@@ -994,32 +997,48 @@ ol li {
 }
 #form_307 #fabrikSubmit_307{
     width:100% !important;
+    font-weight: 300; 
 }
-​
+
+#form_307 .row-fluid .controls input {
+    border-radius : 0px;
+}
+
+body.em-formRegistrationCenter  {
+    overflow-x: hidden;
+}
+
+.applicant-form input[type='text'], .applicant-form input[type='tel'], .applicant-form input[type='number'], .applicant-form textarea , .applicant-form input[type='email'], .applicant-form select {
+        border-radius: 0px;
+}
+.applicant-form .fabrikElement select {
+    height: 41px !important;
+}
+
 @media all and (max-width: 1239px) {
     #form_307.fabrikForm {
         width:60%;
     }
-​
+
     ol {
         width: 60%;
         text-align: justify;
         margin-left: 0px !important;
     }
 }
-​
+
 @media all and (max-width: 767px) {
     ol {
         width: 100%;
         text-align: justify;
         margin-left: 0px !important;
     }
-​
+
     #form_307.fabrikForm {
         width:100%;
     }
 }
-​
+
 @media all and (min-width: 768px) and (max-width: 1023px) {
     #form_307 .control-group.fabrikElementContainer.plg-radiobutton.fb_el_jos_emundus_users___civility.fabrikDataEmpty.span12 div.fabrikgrid_radio.span2 {
         width:35%;
@@ -1029,3 +1048,5 @@ ol li {
 /* END - Your CSS styling ends here */
 
 EOT;
+
+
