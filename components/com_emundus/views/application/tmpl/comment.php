@@ -177,7 +177,7 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
 			type:'POST',
 			url: 'index.php?option=com_emundus&controller=files&task=addcomment',
 			dataType:'json',
-			data:({id:1, fnums:'{"i":"'+$('#application_fnum').val()+'"}', title: title, comment:comment}),
+            data:({id:1, fnums:'{"i":"<?=$this->fnum?>"}', title: title, comment:comment}),
 
 			success: function(result) {
 
