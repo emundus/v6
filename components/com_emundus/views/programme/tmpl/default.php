@@ -2,6 +2,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 JHTML::stylesheet('media/com_emundus/css/emundus.css' );
+JHTML::stylesheet('media/com_emundus/css/emundus_programme.css' );
 $config = JFactory::getConfig();
 $site_offset = $config->get('offset');
 ?>
@@ -25,11 +26,11 @@ $site_offset = $config->get('offset');
 
             <fieldset class="apply-now-small">
                 <legend><?php echo JText::_('CAMPAIGN_PERIOD'); ?></legend>
-                <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?></strong>
+                <strong><i class="icon-clock"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?></strong>
 
                 <?php echo JFactory::getDate(new JDate(strtotime($this->campaign['start_date']),$site_offset))->format(JText::_('DATE_FORMAT_LC2'));
                 //date(JText::_('DATE_FORMAT_LC2'), strtotime($this->campaign['start_date'])); ?><br>
-                <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?></strong>
+                <strong><i class="icon-clock"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?></strong>
                 <?php echo JFactory::getDate(new JDate(strtotime($this->campaign['end_date']),$site_offset))->format(JText::_('DATE_FORMAT_LC2'));
                 //date(JText::_('DATE_FORMAT_LC2'), strtotime($this->campaign['end_date'])); ?>
             </fieldset>
