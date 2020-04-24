@@ -1008,12 +1008,25 @@ body.em-formRegistrationCenter  {
     overflow-x: hidden;
 }
 
+
 .applicant-form input[type='text'], .applicant-form input[type='tel'], .applicant-form input[type='number'], .applicant-form textarea , .applicant-form input[type='email'], .applicant-form select {
         border-radius: 0px;
 }
+
 .applicant-form .fabrikElement select {
     height: 41px !important;
 }
+
+/* AJOUT APRES MAJ */
+.applicant-form input[type='radio']  { 
+    border: 1px solid #e0e0e5 !important;
+}
+
+.applicant-form input[type='radio']:checked  { 
+    background: #de6339;
+}
+
+
 
 @media all and (max-width: 1239px) {
     #form_307.fabrikForm {
@@ -1037,6 +1050,24 @@ body.em-formRegistrationCenter  {
     #form_307.fabrikForm {
         width:100%;
     }
+    
+    /* APRES MAJ */
+    .applicant-form .fabrikForm fieldset > .row-fluid {
+        padding: 0px !important;
+    }
+
+    .plg-birthday .fabrikSubElementContainer {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .applicant-form .fabrikForm fieldset > .row-fluid, .applicant-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
+        padding: 0px !important;
+    }
+
+    .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
+        top: 0px!important;
+    }
 }
 
 @media all and (min-width: 768px) and (max-width: 1023px) {
@@ -1048,5 +1079,3 @@ body.em-formRegistrationCenter  {
 /* END - Your CSS styling ends here */
 
 EOT;
-
-

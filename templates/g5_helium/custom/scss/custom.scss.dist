@@ -272,6 +272,7 @@ button.close {
 }
 
 button.save-btn,
+.em-added-files .btn-success,
 .btn-success,
 button.save,
 button.save_continue,
@@ -301,6 +302,7 @@ a#em-doc-zip,
 }
 
 button.save-btn:hover,
+.em-added-files .btn-success:hover,
 button.save-btn:active,
 button.save-btn:focus,
 .btn-success:hover,
@@ -3548,3 +3550,7 @@ footer#g-footer {
   }
 }
 
+/* AJOUT APRES MAJ */
+.applicant-form input[type='radio']:checked  {
+    background: $base-secondary-color;
+}
