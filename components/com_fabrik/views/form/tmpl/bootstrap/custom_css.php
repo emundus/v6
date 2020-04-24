@@ -1026,7 +1026,26 @@ body.em-formRegistrationCenter  {
     background: #de6339;
 }
 
+.applicant-form .fabrikActions.form-actions .row-fluid button {
+    font-weight: 300; 
+    height: 41px;
+}
+​
+.applicant-form .sidebar-a a#print {
+    height: 41px;
+}
 
+.applicant-form p em strong i.icon-star.small.obligatoire  {
+    margin-top: -2px;
+}
+
+.fabrikMainError.alert.alert-error.fabrikError {
+    border-color: #b94a48;
+    color: #b94a48;
+}
+.fabrikMainError.alert.alert-error.fabrikError .close{
+    color: #b94a48 !important;
+}
 
 @media all and (max-width: 1239px) {
     #form_307.fabrikForm {
