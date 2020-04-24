@@ -5,9 +5,7 @@ if (!empty($tab)) :?>
 
 
     <div class="emundus_home_page" id="em-panel">
-        <?php if (isset($user->profile) && $user->profile > 0) { ?>
-            <p><?= JText::_('SELECT_PROGRAMME');?></p>
-        <?php
+        <?php if (isset($user->profile) && $user->profile > 0) {
             if (!empty($module_title)&& !$lean_mode) {
                 $title = "<h2 class='title'>".@$module_title."</h2>";
             } else {
@@ -34,6 +32,7 @@ if (!empty($tab)) :?>
             }
 
             if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (($lean_mode && !$only_applicant) || !$lean_mode)) {
+                echo '<p>'.JText::_('SELECT_PROGRAMME').'</p>';
                 echo '<br/><div class="select">';
                 echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
                 foreach ($user->emProfiles as $profile) {
