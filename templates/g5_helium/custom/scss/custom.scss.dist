@@ -3493,7 +3493,13 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
     border-color: $base-secondary-color !important;
 }
 /****** Footer ****/
+.g-back-office-emundus-tableau.view-article.indicateurs-page #g-footer {
+    position: relative;
+}
 
+.g-back-office-emundus-tableau.view-article.indicateurs-page > .g-container {
+    width: 100rem;
+}
 footer#g-footer {
     background-color: #eee;
     border-top: none;

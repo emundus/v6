@@ -134,12 +134,10 @@
     color:  #de6339 !important;
     border-color: #de6339 !important;
 }
-​
 @media all and (max-width: 1227px) {
     .campaign-content .below-content a{
         width: 17.3%;
     }
-    ​
 }
 @media all and (max-width: 1034px) {
     .campaign-content .below-content a{
@@ -154,11 +152,9 @@
         width: 150px;
     }
 }
-​
 @media all and (max-width: 767px) {
     .rotate-me p {
         transform: rotate(0deg);
         right: 0;
     }
-    ​
 }
