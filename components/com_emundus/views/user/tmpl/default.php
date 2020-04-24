@@ -1,8 +1,8 @@
 <?php
 
-$email = $this->user['email'];
+$email = $this->user;
 ?>
-<form action="index.php?option=com_emundus&controller=users&task=activation">
+
     <section class="em-activation">
 
         <section class="info">
@@ -17,4 +17,4 @@ $email = $this->user['email'];
             <button class="btn btn-primary btn-resend">Renvoyer l'email d'activation</button>
         </section>
     </section>
-</form>
+

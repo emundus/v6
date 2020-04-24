@@ -47,7 +47,7 @@ class EmundusControllerUsers extends JControllerLegacy
     {
         // Set a default view if none exists
         if (!JRequest::getCmd('view')) {
-            $default = 'users';
+            $default = 'user';
             JRequest::setVar('view', $default);
         }
 

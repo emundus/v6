@@ -215,12 +215,16 @@ class plgUserEmundus_registration_email extends JPlugin {
 
         if($result->block == 0 && $token != null){
             //header('Location: '.JRoute::_('index.php?option=com_emundus&view=users&layout=activation'));
-            $app->redirect('index.php?option=com_emundus&view=user&layout=activation');
+            $url_redirect = 'index.php?option=com_emundus&view=user&layout=default';
+            $url_redirect = urlencode(base64_encode($redirectUrl));
+            $app->redirect('index.php?option=com_users&view=login&return='.$redirectUrl);
         }
 
 
         return $success;
     }
+
+
 
 	/**
 	 * Send activation email to user in order to proof it

@@ -21,35 +21,21 @@ class EmundusViewUser extends JViewLegacy
 
     function display($tpl = null)
     {
-        var_dump($tpl).die();
+
         $document = &JFactory::getDocument();
         $document->addStyleSheet(JURI::base(true) . '/media/com_emundus/css/emundus_activation.css');
 
         $user = JFactory::getUser();
 
-        if($user->guest != 0){
+        //if($user->guest == 0){
+        parent::display($tpl);
+        //}
+        /*else{
             $app = JFactory::getApplication();
             $message = JText::_('ACCESS_DENIED');
             $app->redirect(JRoute::_('index.php', false), $message, 'warning');
-        }
-        $layout = JFactory::getApplication()->input->getString('layout', null);
-        switch ($layout) {
+        }*/
 
-            default :
-                $query = $db->getQuery(true);
-
-                $query->select($db->quoteName('email'));
-                $query->from($db->quoteName('#__users'));
-                $query->where($db->quoteName('id') . ' LIKE ' . $db->quote($user->id));
-
-                $db->setQuery($query);
-
-                $email = $db->loadResult();
-                $this->assignRef('user', $email);
-                break;
-
-        }
-            parent::display($tpl);
 
     }
 }
