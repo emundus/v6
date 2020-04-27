@@ -1514,27 +1514,44 @@ class EmundusHelperFiles
         }
 
         if (@$params['tag'] !== NULL) {
-            $hidden = $types['tag'] == 'hidden';
-            $tag = '';
+	        $hidden = $types['tag'] == 'hidden';
+	        $tag    = '';
 
-            if (!$hidden) {
-                $tag .= '<div id="tag" class="em-filter">
+	        if (!$hidden) {
+		        $tag .= '<div id="tag" class="em-filter">
                     		<div class="em_label">
                     			<label class="control-label em-filter-label">'.JText::_('TAG').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_tags\')"><span class="glyphicon glyphicon-ban-circle" title="'.JText::_('CLEAR').'"></span></a></label>
                             </div>
                     		<div class="em_filtersElement">';
-            }
-            $tag .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_tags" name="tag" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
+	        }
+	        $tag .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_tags" name="tag" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
 
 	        $tagList = $m_files->getAllTags();
-            foreach ($tagList as $p) {
-                $tag .= '<option value="'.$p['id'].'"';
-                if (!empty($current_tag) && in_array($p['id'], (array)$current_tag)) {
-	                $tag .= ' selected="true"';
-                }
-                $tag .= '>'.$p['label'].'</option>';
-            }
-            $tag .= '</select>';
+
+	        if (!empty($current_tag)) {
+		        // This allows hiding of files by tag.
+		        $not_in = array_filter($current_tag, function($e) {
+			        return strpos($e, '!') === 0;
+		        });
+
+		        if (!empty($not_in)) {
+			        $current_tag = array_diff($current_tag, $not_in);
+			        $not_in = array_map(function($v) {
+				        return ltrim($v, '!');
+			        }, $not_in);
+		        }
+	        }
+
+	        foreach ($tagList as $p) {
+	            if (empty($not_in) || !in_array($p['id'], $not_in)) {
+			        $tag .= '<option value="'.$p['id'].'"';
+			        if (!empty($current_tag) && in_array($p['id'], (array) $current_tag)) {
+				        $tag .= ' selected="true"';
+			        }
+			        $tag .= '>'.$p['label'].'</option>';
+		        }
+	        }
+	        $tag .= '</select>';
             if (!$hidden) {
                 $tag .= '</div></div>';
             }
@@ -1878,12 +1895,13 @@ class EmundusHelperFiles
                             $(".search_test").SumoSelect({search: true, searchText: "'.JText::_('ENTER_HERE').'"});
                             $(".testSelAll").SumoSelect({selectAll:true,search:true, searchText: "'.JText::_('ENTER_HERE').'"});
 
-                            if ($("#select_multiple_programmes").val() != null || $("#select_multiple_campaigns").val() != null)
+                            if ($("#select_multiple_programmes").val() != null || $("#select_multiple_campaigns").val() != null) {
                                 $("#em_adv_filters").show();
-                            else
+                            } else {
                                 $("#em_adv_filters").hide();
+                            }
                             
-                            $("#select_filter").chosen({width:"95%"});
+	                        $("#select_filter").chosen({width:"95%"});
             
                         });
                     </script>';
