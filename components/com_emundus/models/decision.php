@@ -981,7 +981,34 @@ class EmundusModelDecision extends JModelList
                             if ($value[0] == "%" || !isset($value[0]) || $value[0] === '') {
 	                            $query['q'] .= ' ';
                             } else {
-                                $query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
+
+	                            if (isset($filt_menu['tag'][0]) && $filt_menu['tag'][0] != '' && $filt_menu['tag'] != "%") {
+		                            // This allows hiding of files by tag.
+		                            $filt_menu_not = array_filter($filt_menu['tag'], function($e) {
+			                            return strpos($e, '!') === 0;
+		                            });
+	                            }
+
+	                            // This allows hiding of files by tag.
+	                            $not_in = array_filter($value, function($e) {
+		                            return strpos($e, '!') === 0;
+	                            });
+
+	                            if (!empty($not_in) && !empty($filt_menu_not)) {
+		                            $not_in = array_unique(array_merge($not_in, $filt_menu_not));
+	                            }
+
+	                            if (!empty($not_in)) {
+		                            $value = array_diff($value, $not_in);
+		                            $not_in = array_map(function($v) {
+			                            return ltrim($v, '!');
+		                            }, $not_in);
+		                            $query['q'] .= ' and c.fnum NOT IN (SELECT cc.fnum FROM jos_emundus_campaign_candidature AS cc LEFT JOIN jos_emundus_tag_assoc as ta ON ta.fnum = cc.fnum WHERE ta.id_tag IN (' . implode(',', $not_in) . ')) ';
+	                            }
+
+	                            if (!empty($value)) {
+		                            $query['q'] .= ' and eta.id_tag IN ('.implode(',', $value).') ';
+	                            }
                             }
                         }
                         break;
