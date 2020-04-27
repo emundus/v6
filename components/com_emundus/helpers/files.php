@@ -1901,7 +1901,7 @@ class EmundusHelperFiles
                                 $("#em_adv_filters").hide();
                             }
                             
-	                        $("#select_filter").chosen({width:"95%"}).change();
+	                        $("#select_filter").chosen({width:"95%"});
             
                         });
                     </script>';
