@@ -1064,10 +1064,22 @@ class EmundusModelAdmission extends JModelList
 							if ($value[0] == "%" || !isset($value[0]) || $value[0] === '') {
 								$query['q'] .= ' ';
 							} else {
+
+								if (isset($filt_menu['tag'][0]) && $filt_menu['tag'][0] != '' && $filt_menu['tag'] != "%") {
+									// This allows hiding of files by tag.
+									$filt_menu_not = array_filter($filt_menu['tag'], function($e) {
+										return strpos($e, '!') === 0;
+									});
+								}
+
 								// This allows hiding of files by tag.
 								$not_in = array_filter($value, function($e) {
 									return strpos($e, '!') === 0;
 								});
+
+								if (!empty($not_in) && !empty($filt_menu_not)) {
+									$not_in = array_unique(array_merge($not_in, $filt_menu_not));
+								}
 
 								if (!empty($not_in)) {
 									$value = array_diff($value, $not_in);
