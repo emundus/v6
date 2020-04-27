@@ -91,7 +91,10 @@ class EmundusControllerEmail extends JControllerLegacy {
 
 	function sendmail_expert() {
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+		$user = JFactory::getUser();
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && !EmundusHelperAccess::asAccessAction(18, 'c', $user->id)) {
+			echo json_encode(['status' => false, 'sent' => null, 'failed' => true, 'message' => JText::_( 'ACCESS_DENIED')]);
 	        die(JText::_( 'ACCESS_DENIED'));
         }
 

@@ -14,10 +14,11 @@ use Twilio\Values;
 
 abstract class ChannelOptions {
     /**
-     * @param string $friendlyName The friendly_name
-     * @param string $uniqueName The unique_name
-     * @param string $attributes The attributes
-     * @param string $type The type
+     * @param string $friendlyName A human-readable name for the Channel.
+     * @param string $uniqueName A unique, addressable name for the Channel.
+     * @param string $attributes An optional metadata field you can use to store
+     *                           any data you wish.
+     * @param string $type The visibility of the channel - public or private.
      * @return CreateChannelOptions Options builder
      */
     public static function create($friendlyName = Values::NONE, $uniqueName = Values::NONE, $attributes = Values::NONE, $type = Values::NONE) {
@@ -25,23 +26,32 @@ abstract class ChannelOptions {
     }
 
     /**
-     * @param string $friendlyName The friendly_name
-     * @param string $uniqueName The unique_name
-     * @param string $attributes The attributes
      * @param string $type The type
+     * @return ReadChannelOptions Options builder
+     */
+    public static function read($type = Values::NONE) {
+        return new ReadChannelOptions($type);
+    }
+
+    /**
+     * @param string $friendlyName A human-readable name for the Channel.
+     * @param string $uniqueName A unique, addressable name for the Channel.
+     * @param string $attributes An optional metadata field you can use to store
+     *                           any data you wish.
      * @return UpdateChannelOptions Options builder
      */
-    public static function update($friendlyName = Values::NONE, $uniqueName = Values::NONE, $attributes = Values::NONE, $type = Values::NONE) {
-        return new UpdateChannelOptions($friendlyName, $uniqueName, $attributes, $type);
+    public static function update($friendlyName = Values::NONE, $uniqueName = Values::NONE, $attributes = Values::NONE) {
+        return new UpdateChannelOptions($friendlyName, $uniqueName, $attributes);
     }
 }
 
 class CreateChannelOptions extends Options {
     /**
-     * @param string $friendlyName The friendly_name
-     * @param string $uniqueName The unique_name
-     * @param string $attributes The attributes
-     * @param string $type The type
+     * @param string $friendlyName A human-readable name for the Channel.
+     * @param string $uniqueName A unique, addressable name for the Channel.
+     * @param string $attributes An optional metadata field you can use to store
+     *                           any data you wish.
+     * @param string $type The visibility of the channel - public or private.
      */
     public function __construct($friendlyName = Values::NONE, $uniqueName = Values::NONE, $attributes = Values::NONE, $type = Values::NONE) {
         $this->options['friendlyName'] = $friendlyName;
@@ -51,9 +61,9 @@ class CreateChannelOptions extends Options {
     }
 
     /**
-     * The friendly_name
+     * A human-readable name for the Channel. Optional.
      * 
-     * @param string $friendlyName The friendly_name
+     * @param string $friendlyName A human-readable name for the Channel.
      * @return $this Fluent Builder
      */
     public function setFriendlyName($friendlyName) {
@@ -62,9 +72,9 @@ class CreateChannelOptions extends Options {
     }
 
     /**
-     * The unique_name
+     * A unique, addressable name for the Channel.  Optional.
      * 
-     * @param string $uniqueName The unique_name
+     * @param string $uniqueName A unique, addressable name for the Channel.
      * @return $this Fluent Builder
      */
     public function setUniqueName($uniqueName) {
@@ -73,14 +83,50 @@ class CreateChannelOptions extends Options {
     }
 
     /**
-     * The attributes
+     * An optional metadata field you can use to store any data you wish. No processing or validation is done on this field.
      * 
-     * @param string $attributes The attributes
+     * @param string $attributes An optional metadata field you can use to store
+     *                           any data you wish.
      * @return $this Fluent Builder
      */
     public function setAttributes($attributes) {
         $this->options['attributes'] = $attributes;
         return $this;
+    }
+
+    /**
+     * The visibility of the channel - `public` or `private`. Defaults to `public`.
+     * 
+     * @param string $type The visibility of the channel - public or private.
+     * @return $this Fluent Builder
+     */
+    public function setType($type) {
+        $this->options['type'] = $type;
+        return $this;
+    }
+
+    /**
+     * Provide a friendly representation
+     * 
+     * @return string Machine friendly representation
+     */
+    public function __toString() {
+        $options = array();
+        foreach ($this->options as $key => $value) {
+            if ($value != Values::NONE) {
+                $options[] = "$key=$value";
+            }
+        }
+        return '[Twilio.IpMessaging.V1.CreateChannelOptions ' . implode(' ', $options) . ']';
+    }
+}
+
+class ReadChannelOptions extends Options {
+    /**
+     * @param string $type The type
+     */
+    public function __construct($type = Values::NONE) {
+        $this->options['type'] = $type;
     }
 
     /**
@@ -106,28 +152,27 @@ class CreateChannelOptions extends Options {
                 $options[] = "$key=$value";
             }
         }
-        return '[Twilio.IpMessaging.V1.CreateChannelOptions ' . implode(' ', $options) . ']';
+        return '[Twilio.IpMessaging.V1.ReadChannelOptions ' . implode(' ', $options) . ']';
     }
 }
 
 class UpdateChannelOptions extends Options {
     /**
-     * @param string $friendlyName The friendly_name
-     * @param string $uniqueName The unique_name
-     * @param string $attributes The attributes
-     * @param string $type The type
+     * @param string $friendlyName A human-readable name for the Channel.
+     * @param string $uniqueName A unique, addressable name for the Channel.
+     * @param string $attributes An optional metadata field you can use to store
+     *                           any data you wish.
      */
-    public function __construct($friendlyName = Values::NONE, $uniqueName = Values::NONE, $attributes = Values::NONE, $type = Values::NONE) {
+    public function __construct($friendlyName = Values::NONE, $uniqueName = Values::NONE, $attributes = Values::NONE) {
         $this->options['friendlyName'] = $friendlyName;
         $this->options['uniqueName'] = $uniqueName;
         $this->options['attributes'] = $attributes;
-        $this->options['type'] = $type;
     }
 
     /**
-     * The friendly_name
+     * A human-readable name for the Channel. Optional.
      * 
-     * @param string $friendlyName The friendly_name
+     * @param string $friendlyName A human-readable name for the Channel.
      * @return $this Fluent Builder
      */
     public function setFriendlyName($friendlyName) {
@@ -136,9 +181,9 @@ class UpdateChannelOptions extends Options {
     }
 
     /**
-     * The unique_name
+     * A unique, addressable name for the Channel.  Optional.
      * 
-     * @param string $uniqueName The unique_name
+     * @param string $uniqueName A unique, addressable name for the Channel.
      * @return $this Fluent Builder
      */
     public function setUniqueName($uniqueName) {
@@ -147,24 +192,14 @@ class UpdateChannelOptions extends Options {
     }
 
     /**
-     * The attributes
+     * An optional metadata field you can use to store any data you wish. No processing or validation is done on this field.
      * 
-     * @param string $attributes The attributes
+     * @param string $attributes An optional metadata field you can use to store
+     *                           any data you wish.
      * @return $this Fluent Builder
      */
     public function setAttributes($attributes) {
         $this->options['attributes'] = $attributes;
-        return $this;
-    }
-
-    /**
-     * The type
-     * 
-     * @param string $type The type
-     * @return $this Fluent Builder
-     */
-    public function setType($type) {
-        $this->options['type'] = $type;
         return $this;
     }
 

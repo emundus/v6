@@ -11,7 +11,9 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
         Extends   : FbFileElement,
         options : {
             folderSelect: false,
-            ajax_upload: false
+            ajax_upload: false,
+            ajax_show_widget: true,
+            isCarousel: false
         },
         initialize: function (element, options) {
             var self = this;
@@ -53,6 +55,32 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
             this.doDeleteEvent = null;
             this.watchDeleteButton();
             this.watchTab();
+
+            if (this.options.isCarousel)
+            {
+                jQuery('.slickCarousel').slick();
+                jQuery('.slickCarouselImage').css('opacity', '1');
+            }
+
+            if (this.options.isZoom) {
+                jQuery('.slick-active').find('img').ezPlus({
+                    zoomType: 'lens',
+                    lensShape: 'round',
+                    lensSize: 200
+                });
+
+                jQuery('.slickCarousel').on('beforeChange', function(event, slick, currentSlide, nextSlide){
+                    jQuery('.zoomWindowContainer,.zoomContainer').remove();
+                });
+
+                jQuery('.slickCarousel').on('afterChange', function(event, slick, currentSlide){
+                    jQuery('.slick-active').find('img').ezPlus({
+                        zoomType: 'lens',
+                        lensShape: 'round',
+                        lensSize: 200
+                    });
+                });
+            }
         },
 
         /**
@@ -61,7 +89,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
          */
         redraw: function () {
             var el = jQuery(this.element);
-            if (this.options.ajax_upload) {
+            if (this.options.editable && this.options.ajax_upload) {
                 var browseButton = jQuery('#' + el.prop('id') + '_browseButton'),
                     c = jQuery('#' + this.options.element + '_container'),
                     diff = browseButton.position().left - c.position().left;
@@ -75,6 +103,11 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     });
                     fileContainer.css('top', diff);
                 }
+            }
+
+            if (this.options.isCarousel)
+            {
+                jQuery('.slickCarousel').slick('resize');
             }
         },
 
@@ -234,10 +267,11 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
         },
 
         decloned: function (groupid) {
-            var i = jQuery('#form_' + this.form.id).find('input[name=fabrik_deletedimages[' + groupid + ']]');
+            var i = jQuery('#form_' + this.form.id).find('input[name="fabrik_deletedimages[' + groupid + ']"]');
             if (i.length > 0) {
                 this.makeDeletedImageField(groupid, this.options.value).inject(this.form.form);
             }
+            this.parent(groupid);
         },
 
         decreaseName: function (delIndex) {
@@ -333,7 +367,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
             var c = el.closest('.fabrikSubElementContainer');
             this.container = c;
 
-            if (this.options.canvasSupport !== false) {
+            if (this.options.ajax_show_widget && this.options.canvasSupport !== false) {
                 this.widget = new ImageWidget(this.options.modalId, {
 
                     'imagedim': {
@@ -431,7 +465,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                                 a = jQuery(document.createElement('span'));
                                 title = jQuery(document.createElement('a')).attr({
                                     'href': file.url,
-			      'target': '_blank'
+                                    'target': '_blank'
                                 }).text(file.name);
                             }
 
@@ -912,8 +946,8 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                             if (ctx === undefined) {
                                 ctx = this.CANVAS.ctx;
                             }
-                            this.withinCrop = true;
-                            if (this.withinCrop) {
+                            //this.withinCrop = true;
+                            if (this.overlay.withinCrop) {
                                 var top = {
                                     x: 0,
                                     y: 0
@@ -1286,7 +1320,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
             });
 
             ctx.drawImage(canvas[0], x, y, w, h, 0, 0, w, h);
-            f.val(target[0].toDataURL({quality: this.windowopts.quality}));
+            f.val(target[0].toDataURL('image/jpeg', this.windowopts.quality));
             target.remove();
         },
 

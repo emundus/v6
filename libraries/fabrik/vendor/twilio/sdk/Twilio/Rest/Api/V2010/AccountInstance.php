@@ -13,6 +13,7 @@ use Twilio\Deserialize;
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceResource;
 use Twilio\Options;
+use Twilio\Values;
 use Twilio\Version;
 
 /**
@@ -23,7 +24,7 @@ use Twilio\Version;
  * @property string ownerAccountSid
  * @property string sid
  * @property string status
- * @property string subresourceUris
+ * @property array subresourceUris
  * @property string type
  * @property string uri
  */
@@ -32,6 +33,7 @@ class AccountInstance extends InstanceResource {
     protected $_applications = null;
     protected $_authorizedConnectApps = null;
     protected $_availablePhoneNumbers = null;
+    protected $_balance = null;
     protected $_calls = null;
     protected $_conferences = null;
     protected $_connectApps = null;
@@ -44,7 +46,6 @@ class AccountInstance extends InstanceResource {
     protected $_outgoingCallerIds = null;
     protected $_queues = null;
     protected $_recordings = null;
-    protected $_sandbox = null;
     protected $_signingKeys = null;
     protected $_sip = null;
     protected $_shortCodes = null;
@@ -63,24 +64,22 @@ class AccountInstance extends InstanceResource {
      */
     public function __construct(Version $version, array $payload, $sid = null) {
         parent::__construct($version);
-        
+
         // Marshaled Properties
         $this->properties = array(
-            'authToken' => $payload['auth_token'],
-            'dateCreated' => Deserialize::iso8601DateTime($payload['date_created']),
-            'dateUpdated' => Deserialize::iso8601DateTime($payload['date_updated']),
-            'friendlyName' => $payload['friendly_name'],
-            'ownerAccountSid' => $payload['owner_account_sid'],
-            'sid' => $payload['sid'],
-            'status' => $payload['status'],
-            'subresourceUris' => $payload['subresource_uris'],
-            'type' => $payload['type'],
-            'uri' => $payload['uri'],
+            'authToken' => Values::array_get($payload, 'auth_token'),
+            'dateCreated' => Deserialize::dateTime(Values::array_get($payload, 'date_created')),
+            'dateUpdated' => Deserialize::dateTime(Values::array_get($payload, 'date_updated')),
+            'friendlyName' => Values::array_get($payload, 'friendly_name'),
+            'ownerAccountSid' => Values::array_get($payload, 'owner_account_sid'),
+            'sid' => Values::array_get($payload, 'sid'),
+            'status' => Values::array_get($payload, 'status'),
+            'subresourceUris' => Values::array_get($payload, 'subresource_uris'),
+            'type' => Values::array_get($payload, 'type'),
+            'uri' => Values::array_get($payload, 'uri'),
         );
-        
-        $this->solution = array(
-            'sid' => $sid ?: $this->properties['sid'],
-        );
+
+        $this->solution = array('sid' => $sid ?: $this->properties['sid'], );
     }
 
     /**
@@ -92,12 +91,9 @@ class AccountInstance extends InstanceResource {
      */
     protected function proxy() {
         if (!$this->context) {
-            $this->context = new AccountContext(
-                $this->version,
-                $this->solution['sid']
-            );
+            $this->context = new AccountContext($this->version, $this->solution['sid']);
         }
-        
+
         return $this->context;
     }
 
@@ -105,6 +101,7 @@ class AccountInstance extends InstanceResource {
      * Fetch a AccountInstance
      * 
      * @return AccountInstance Fetched AccountInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         return $this->proxy()->fetch();
@@ -115,11 +112,10 @@ class AccountInstance extends InstanceResource {
      * 
      * @param array|Options $options Optional Arguments
      * @return AccountInstance Updated AccountInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function update($options = array()) {
-        return $this->proxy()->update(
-            $options
-        );
+        return $this->proxy()->update($options);
     }
 
     /**
@@ -156,6 +152,15 @@ class AccountInstance extends InstanceResource {
      */
     protected function getAvailablePhoneNumbers() {
         return $this->proxy()->availablePhoneNumbers;
+    }
+
+    /**
+     * Access the balance
+     * 
+     * @return \Twilio\Rest\Api\V2010\Account\BalanceList 
+     */
+    protected function getBalance() {
+        return $this->proxy()->balance;
     }
 
     /**
@@ -267,15 +272,6 @@ class AccountInstance extends InstanceResource {
     }
 
     /**
-     * Access the sandbox
-     * 
-     * @return \Twilio\Rest\Api\V2010\Account\SandboxList 
-     */
-    protected function getSandbox() {
-        return $this->proxy()->sandbox;
-    }
-
-    /**
      * Access the signingKeys
      * 
      * @return \Twilio\Rest\Api\V2010\Account\SigningKeyList 
@@ -349,12 +345,12 @@ class AccountInstance extends InstanceResource {
         if (array_key_exists($name, $this->properties)) {
             return $this->properties[$name];
         }
-        
+
         if (property_exists($this, '_' . $name)) {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown property: ' . $name);
     }
 

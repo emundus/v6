@@ -460,6 +460,20 @@ VALUES ('com_users', '', '', 'user[groups]', 'P', '', '', 1);
 			]]></query>
 		</action>
 
+		<!-- WAF Blacklist rule: SQL injection probe into Feed display -->
+		<action table="#__admintools_wafblacklists" canfail="1">
+			<condition type="equals" operator="not" value="1"><![CDATA[
+SELECT COUNT(*) FROM `#__admintools_wafblacklists` WHERE `option` = 'com_content' AND `view`='category' AND `task`=''
+AND `query`='type' AND `query_type`='R' AND `query_content`='!#^[a-z][a-z\\-_0-9]{2,}$#i' AND
+`verb`='';
+			]]></condition>
+			<query><![CDATA[
+INSERT IGNORE INTO `#__admintools_wafblacklists`
+(`option`, `view`, `task`, `query`, `query_type`, `query_content`, `verb`, `application`, `enabled`)
+VALUES ('com_content', 'category', '', 'type', 'R', '!#^[a-z][a-z\\-_0-9]{2,}$#i', '', 'site', 1);
+			]]></query>
+		</action>
+
 		<!-- WAF Email Template for Configuration Monitor -->
 		<action table="#__admintools_waftemplates" canfail="1">
 			<condition type="equals" value="0"><![CDATA[

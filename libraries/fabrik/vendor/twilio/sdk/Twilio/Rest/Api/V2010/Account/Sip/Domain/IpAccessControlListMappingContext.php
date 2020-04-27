@@ -18,21 +18,19 @@ class IpAccessControlListMappingContext extends InstanceContext {
      * Initialize the IpAccessControlListMappingContext
      * 
      * @param \Twilio\Version $version Version that contains the resource
-     * @param string $accountSid The account_sid
-     * @param string $domainSid The domain_sid
-     * @param string $sid The sid
+     * @param string $accountSid The unique id of the Account that is responsible
+     *                           for this resource.
+     * @param string $domainSid A string that uniquely identifies the SIP Domain
+     * @param string $sid A 34 character string that uniquely identifies the
+     *                    resource to fetch.
      * @return \Twilio\Rest\Api\V2010\Account\Sip\Domain\IpAccessControlListMappingContext 
      */
     public function __construct(Version $version, $accountSid, $domainSid, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'accountSid' => $accountSid,
-            'domainSid' => $domainSid,
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('accountSid' => $accountSid, 'domainSid' => $domainSid, 'sid' => $sid, );
+
         $this->uri = '/Accounts/' . rawurlencode($accountSid) . '/SIP/Domains/' . rawurlencode($domainSid) . '/IpAccessControlListMappings/' . rawurlencode($sid) . '.json';
     }
 
@@ -41,16 +39,17 @@ class IpAccessControlListMappingContext extends InstanceContext {
      * 
      * @return IpAccessControlListMappingInstance Fetched
      *                                            IpAccessControlListMappingInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new IpAccessControlListMappingInstance(
             $this->version,
             $payload,
@@ -64,6 +63,7 @@ class IpAccessControlListMappingContext extends InstanceContext {
      * Deletes the IpAccessControlListMappingInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->version->delete('delete', $this->uri);

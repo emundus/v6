@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
+  ~ @package   FOF
+  ~ @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~ @license   GNU General Public License version 2, or later
+  -->
+
+<!--
 A legitimate question among developers reading this file may be why we are using a "files" extension type instead of the
 "library" type which, on the face of it, seems more appropriate.
 
@@ -34,13 +40,13 @@ fail gracefully instead of causing your site to crash and burn.
 		<b>WARNING</b>: This is NOT a duplicate of the FOF library already installed with Joomla!. It is a different version used by other extensions on your site. Do NOT uninstall either FOF package. If you do you will break your site.
 		]]>
 	</description>
-	<creationDate>2019-12-16</creationDate>
+	<creationDate>2020-03-20</creationDate>
 	<author>Nicholas K. Dionysopoulos / Akeeba Ltd</author>
 	<authorEmail>nicholas@akeebabackup.com</authorEmail>
 	<authorUrl>https://www.akeebabackup.com</authorUrl>
 	<copyright>(c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd</copyright>
 	<license>GNU GPLv2 or later</license>
-	<version>3.5.1</version>
+	<version>3.5.2</version>
 	<packager>Akeeba Ltd</packager>
 	<packagerurl>https://www.akeebabackup.com/download.html</packagerurl>
 

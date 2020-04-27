@@ -200,4 +200,31 @@ class modEmundusCustomHelper {
 			}
 		}
 	}
+
+
+
+    /**
+     * Ajax function confirm all evaluations for an evaluator
+     *
+     * @since version
+     */
+    static function confirmAllEvaluationsAjax() {
+
+        $user = JFactory::getUser();
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->update($db->quoteName('#__emundus_evaluations'))
+            ->set($db->quoteName('confirm') . ' = 1')
+            ->where($db->quoteName('user') . ' = '. $user->id);
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+            die(json_encode((object)['status' => true, 'msg' => JText::_('MOD_EVAL_CONFIRM')]));
+        } catch (Exception $e) {
+            die(json_encode((object)['status' => false, 'msg' => JText::_('MOD_EVAL_CONFIRM_ERROR')]));
+        }
+    }
 }

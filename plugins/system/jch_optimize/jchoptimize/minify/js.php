@@ -39,12 +39,13 @@
  * 
  * @author Samuel Marshall <sdmarshall73@gmail.com>
  * @copyright (c) 2002, Douglas Crockford <douglas@crockford.com> (jsmin.c)
- * @copyright (c) 2014, Samuel Marshall <sdmarshall73@gmail.com> (js.php)
- * @license http://opensource.org/licenses/mit-license.php MIT License
- * 
+ * @copyright Copyright (c) 2020 Samuel Marshall
+ * @license   GNU/GPLv3, See LICENSE file
  */
 
 namespace JchOptimize\Minify;
+
+defined('_JEXEC') or die('Restricted access');
 
 class Js extends Base
 {

@@ -22,7 +22,7 @@
 
 namespace JchOptimize\Core;
 
-defined('_JCH_EXEC') or die('Restricted access');
+defined('_JEXEC') or die('Restricted access');
 
 use JchOptimize\Platform\Settings;
 use JchOptimize\Platform\Cache;
@@ -34,10 +34,12 @@ use JchOptimize\LIBS\ImageOptimizer;
 class Ajax
 {
 
-	/**
-	 *
-	 * @param   Settings  $params
-	 */
+        /**
+         *
+         * @param   Settings  $params
+         *
+         * @throws Exception
+         */
 	public static function garbageCron(Settings $params)
 	{
 		Cache::gc();

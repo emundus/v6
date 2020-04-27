@@ -18,17 +18,16 @@ class TaskChannelList extends ListResource {
      * Construct the TaskChannelList
      * 
      * @param Version $version Version that contains the resource
-     * @param string $workspaceSid The workspace_sid
+     * @param string $workspaceSid The unique ID of the Workspace that this
+     *                             TaskChannel belongs to.
      * @return \Twilio\Rest\Taskrouter\V1\Workspace\TaskChannelList 
      */
     public function __construct(Version $version, $workspaceSid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'workspaceSid' => $workspaceSid,
-        );
-        
+        $this->solution = array('workspaceSid' => $workspaceSid, );
+
         $this->uri = '/Workspaces/' . rawurlencode($workspaceSid) . '/TaskChannels';
     }
 
@@ -52,9 +51,9 @@ class TaskChannelList extends ListResource {
      */
     public function stream($limit = null, $pageSize = null) {
         $limits = $this->version->readLimits($limit, $pageSize);
-        
+
         $page = $this->page($limits['pageSize']);
-        
+
         return $this->version->stream($page, $limits['limit'], $limits['pageLimit']);
     }
 
@@ -73,7 +72,7 @@ class TaskChannelList extends ListResource {
      *                        efficient page size, i.e. min(limit, 1000)
      * @return TaskChannelInstance[] Array of results
      */
-    public function read($limit = null, $pageSize = Values::NONE) {
+    public function read($limit = null, $pageSize = null) {
         return iterator_to_array($this->stream($limit, $pageSize), false);
     }
 
@@ -92,14 +91,52 @@ class TaskChannelList extends ListResource {
             'Page' => $pageNumber,
             'PageSize' => $pageSize,
         ));
-        
+
         $response = $this->version->page(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new TaskChannelPage($this->version, $response, $this->solution);
+    }
+
+    /**
+     * Retrieve a specific page of TaskChannelInstance records from the API.
+     * Request is executed immediately
+     * 
+     * @param string $targetUrl API-generated URL for the requested results page
+     * @return \Twilio\Page Page of TaskChannelInstance
+     */
+    public function getPage($targetUrl) {
+        $response = $this->version->getDomain()->getClient()->request(
+            'GET',
+            $targetUrl
+        );
+
+        return new TaskChannelPage($this->version, $response, $this->solution);
+    }
+
+    /**
+     * Create a new TaskChannelInstance
+     * 
+     * @param string $friendlyName String representing user-friendly name for the
+     *                             TaskChannel
+     * @param string $uniqueName String representing unique name for the TaskChannel
+     * @return TaskChannelInstance Newly created TaskChannelInstance
+     * @throws TwilioException When an HTTP error occurs.
+     */
+    public function create($friendlyName, $uniqueName) {
+        $data = Values::of(array('FriendlyName' => $friendlyName, 'UniqueName' => $uniqueName, ));
+
+        $payload = $this->version->create(
+            'POST',
+            $this->uri,
+            array(),
+            $data
+        );
+
+        return new TaskChannelInstance($this->version, $payload, $this->solution['workspaceSid']);
     }
 
     /**
@@ -109,11 +146,7 @@ class TaskChannelList extends ListResource {
      * @return \Twilio\Rest\Taskrouter\V1\Workspace\TaskChannelContext 
      */
     public function getContext($sid) {
-        return new TaskChannelContext(
-            $this->version,
-            $this->solution['workspaceSid'],
-            $sid
-        );
+        return new TaskChannelContext($this->version, $this->solution['workspaceSid'], $sid);
     }
 
     /**

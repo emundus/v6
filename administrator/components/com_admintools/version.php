@@ -8,6 +8,6 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die;
 
-define('ADMINTOOLS_VERSION', '5.5.0');
-define('ADMINTOOLS_DATE', '2020-01-03');
+define('ADMINTOOLS_VERSION', '5.6.0');
+define('ADMINTOOLS_DATE', '2020-03-20');
 define('ADMINTOOLS_PRO','0');

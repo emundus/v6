@@ -22,7 +22,7 @@
 
 namespace JchOptimize\Core;
 
-defined('_JCH_EXEC') or die('Restricted access');
+defined('_JEXEC') or die('Restricted access');
 
 use JchOptimize\Platform\Uri;
 use JchOptimize\Platform\Cache;
@@ -30,34 +30,11 @@ use JchOptimize\Platform\Profiler;
 use JchOptimize\Platform\Utility;
 use JchOptimize\Platform\Paths;
 
-class LinkBuilderBase
-{
-
-	/**
-	 *
-	 * @return string
-	 */
-	protected function getAsyncAttribute()
-	{
-		return '';
-	}
-
-	/**
-	 *
-	 * @param   string  $sUrl
-	 */
-	protected function loadCssAsync($sUrl)
-	{
-
-	}
-
-}
-
 /**
  *
  *
  */
-class LinkBuilder extends LinkBuilderBase
+class LinkBuilder
 {
 
 	/** @var Parser Object       Parser object */
@@ -106,13 +83,11 @@ class LinkBuilder extends LinkBuilderBase
 				$this->runCronTasks();
 			}
 
-			$replace_css_links = false;
-
 			if ($bCombineCss && !empty($aLinks['css']))
 			{
 				foreach ($aLinks['css'] as $aCssLinks)
 				{
-					$sCssCacheId = $this->getCacheId($aCssLinks);
+					$sCssCacheId = $this->getCacheId($aCssLinks, 'css');
 					//Optimize and cache css files
 					$aCssCache = $this->getCombinedFiles($aCssLinks, $sCssCacheId, 'css');
 
@@ -131,7 +106,7 @@ class LinkBuilder extends LinkBuilderBase
 				if ($css_delivery_enabled || $this->params->get('pro_http2_push_enable', '0'))
 				{
 					$sCriticalCss = $aCssCache['critical_css'];
-					//Http2 push 
+					//Http2 push
 					$oCssParser = new CssParser($this->params, false);
 					$oCssParser->correctUrl($sCriticalCss, array(), false, true);
 
@@ -162,19 +137,16 @@ class LinkBuilder extends LinkBuilderBase
 				$aExcludedJs = $this->oParser->getExcludedJsFiles();
 
 				//Add excluded javascript files to the bottom of the HTML section
-				if (!empty($aExcludedJs))
-				{
-					$sExcludedJs  = implode($this->sLnEnd, $aExcludedJs);
-					$sSearchArea1 = preg_replace('#' . self::{'getEnd' . ucFirst($sSection) . 'Tag'}() . '#i', $this->sTab . $sExcludedJs . $this->sLnEnd . '</' . $sSection . '>', $this->oParser->getFullHtml(), 1);
-					$this->oParser->setFullHtml($sSearchArea1);
-				}
+				$sExcludedJs  = implode($this->sLnEnd, $aExcludedJs['ieo']) . implode($this->sLnEnd, $aExcludedJs['peo']);
+				$sSearchArea1 = preg_replace('#' . self::{'getEnd' . ucFirst($sSection) . 'Tag'}() . '#i', $this->sTab . $sExcludedJs . $this->sLnEnd . '</' . $sSection . '>', $this->oParser->getFullHtml(), 1);
+				$this->oParser->setFullHtml($sSearchArea1);
 
 				if (!empty ($aLinks['js']))
 				{
 
 					foreach ($aLinks['js'] as $aJsLinksKey => $aJsLinks)
 					{
-						$sJsCacheId = $this->getCacheId($aJsLinks);
+						$sJsCacheId = $this->getCacheId($aJsLinks, 'js');
 						//Optimize and cache javascript files
 						$this->getCombinedFiles($aJsLinks, $sJsCacheId, 'js');
 
@@ -184,7 +156,7 @@ class LinkBuilder extends LinkBuilderBase
 					}
 				}
 
-				//We also now append any deferred javascript files below the 
+				//We also now append any deferred javascript files below the
 				//last combined javascript file
 				$aDefers = $this->oParser->getDeferredFiles();
 
@@ -364,21 +336,36 @@ class LinkBuilder extends LinkBuilderBase
 					continue;
 				}
 
-				//It's best to use the same delimiter for the width/height attributes that the urls used
-				$sReplace = ' ' . str_replace('"', $sD, $aSize[3]);
+				$u = \JchOptimize\Minify\Base::ATTRIBUTE_VALUE;
 
-				//Remove any existing width or height attributes
-				$sImg = preg_replace('#(?:width|height)\s*+=(?:\s*+"[^">]*+"|\s*+\'[^\'>]*+\'|[^\s>]++)#i', '',
-					$aImgs[0][$i]);
+				//Checks for any existing width attribute
+				if (preg_match("#width\s*+=\s*+['\"]?($u)#i", $aImgs[0][$i], $aMatches))
+				{
+					//Calculate height based on aspect ratio
+					$height          = round(($aSize[1] / $aSize[0]) * $aMatches[1], 2);
+					$heightAttribute = 'height=' . $sD . $height . $sD;
+					//Add height attribute to the img element and save in array
+					$aImgAttributes[] = preg_replace('#\s*+/?>#', ' ' . $heightAttribute . ' />', $aImgs[0][$i]);
 
-				/*				if ($this->params->get('lazyload_enable', '0') && $this->params->get('lazyload_autosize', '0'))
-								{
-									$sD = $sD == '' ? '"' : $sD;
-									$fAspectRatio = number_format($aSize[0]/$aSize[1], 2);
-									$sReplace .= " data-aspectratio={$sD}{$fAspectRatio}{$sD} style={$sD}width: {$aSize[0]}px; height: {$aSize[1]}px; object-fit: contain;{$sD}";
-								}*/
-				//Add the width and height attributes from the getimagesize function
-				$aImgAttributes[] = preg_replace('#\s*+/?>#', $sReplace . ' />', $sImg);
+				}
+				//Check for any existing height attribute
+				elseif (preg_match("#height\s*+=\s*=['\"]?($u)#i", $aImgs[0][$i], $aMatches))
+				{
+					//Calculate width based on aspect ratio
+					$width          = round(($aSize[0] / $aSize[1]) * $aMatches[1], 2);
+					$widthAttribute = 'width=' . $sD . $width . $sD;
+					//Add width attribute to the img element and save in array
+					$aImgAttributes[] = preg_replace('#\s*+/?>#', ' ' . $widthAttribute . ' />', $aImgs[0][$i]);
+				}
+				else
+					//No existing attributes, just go ahead and add attributes from getimagesize
+				{
+					//It's best to use the same delimiter for the width/height attributes that the urls used
+					$sReplace = ' ' . str_replace('"', $sD, $aSize[3]);
+					//Add the width and height attributes from the getimagesize function
+					$aImgAttributes[] = preg_replace('#\s*+/?>#', $sReplace . ' />', $aImgs[0][$i]);
+				}
+
 			}
 			else
 			{
@@ -418,13 +405,22 @@ class LinkBuilder extends LinkBuilderBase
 	/**
 	 * Calculates the id of combined files from array of urls
 	 *
-	 * @param   array  $aUrlArrays
+	 * @param   array   $aUrlArrays
+	 * @param   string  $sType
 	 *
 	 * @return   string   ID of combined file
 	 */
-	private function getCacheId($aUrlArrays)
+	private function getCacheId($aUrlArrays, $sType)
 	{
-		return md5(serialize($aUrlArrays));
+		if ($sType == 'css' && $this->params->get('optimizeCssDelivery_enable', '0')
+		&& $this->params->get('pro_remove_unused_css', '0'))
+		{
+			return md5 (serialize($aUrlArrays) . Uri::getInstance()->toString());
+		}
+		else
+		{
+			return md5(serialize($aUrlArrays));
+		}
 	}
 
 	/**
@@ -557,7 +553,7 @@ class LinkBuilder extends LinkBuilderBase
 
 		//If the last javascript file on the HTML page was not excluded while preserving
 		//execution order, we may need to place it at the bottom and add the async
-		//or defer attribute 
+		//or defer attribute
 		if ($sType == 'js' && $bLastJsFile && !$this->oParser->bExclude_js)
 		{
 			//If last combined file is being inserted at the bottom of the page then
@@ -795,18 +791,13 @@ CSSASYNC;
 	{
 		if ($this->params->get('loadAsynchronous', '0'))
 		{
-			//if there are no deferred javascript files and no files were excluded,
-			//then it's safe to use async, otherwise we use defer
-			$aDefers     = $this->oParser->getDeferredFiles();
-			$aJsExcludes = $this->oParser->getExcludedJsFiles();
-
-			$attr = (empty($aJsExcludes) && empty($aDefers)) ? 'async' : 'defer';
+			$attr = $this->oParser->bLoadAsync ? 'async' : 'defer';
 
 			return Helper::isXhtml($this->oParser->sHtml) ? ' ' . $attr . '="' . $attr . '" ' : ' ' . $attr . ' ';
 		}
 		else
 		{
-			return parent::getAsyncAttribute();
+			return '';
 		}
 	}
 

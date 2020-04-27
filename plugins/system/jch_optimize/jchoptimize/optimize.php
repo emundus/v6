@@ -23,7 +23,7 @@
 namespace JchOptimize\Core;
 
 // No direct access
-defined('_JCH_EXEC') or die('Restricted access');
+defined('_JEXEC') or die('Restricted access');
 
 use JchOptimize\Platform\Settings;
 use JchOptimize\Platform\Profiler;

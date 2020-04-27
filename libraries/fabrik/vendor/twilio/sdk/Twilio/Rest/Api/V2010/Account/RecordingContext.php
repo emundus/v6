@@ -11,34 +11,35 @@ namespace Twilio\Rest\Api\V2010\Account;
 
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceContext;
+use Twilio\Rest\Api\V2010\Account\Recording\AddOnResultList;
 use Twilio\Rest\Api\V2010\Account\Recording\TranscriptionList;
 use Twilio\Values;
 use Twilio\Version;
 
 /**
  * @property \Twilio\Rest\Api\V2010\Account\Recording\TranscriptionList transcriptions
+ * @property \Twilio\Rest\Api\V2010\Account\Recording\AddOnResultList addOnResults
  * @method \Twilio\Rest\Api\V2010\Account\Recording\TranscriptionContext transcriptions(string $sid)
+ * @method \Twilio\Rest\Api\V2010\Account\Recording\AddOnResultContext addOnResults(string $sid)
  */
 class RecordingContext extends InstanceContext {
     protected $_transcriptions = null;
+    protected $_addOnResults = null;
 
     /**
      * Initialize the RecordingContext
      * 
      * @param \Twilio\Version $version Version that contains the resource
-     * @param string $accountSid The account_sid
-     * @param string $sid Fetch by unique recording Sid
+     * @param string $accountSid The unique sid that identifies this account
+     * @param string $sid Fetch by unique recording SID
      * @return \Twilio\Rest\Api\V2010\Account\RecordingContext 
      */
     public function __construct(Version $version, $accountSid, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'accountSid' => $accountSid,
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('accountSid' => $accountSid, 'sid' => $sid, );
+
         $this->uri = '/Accounts/' . rawurlencode($accountSid) . '/Recordings/' . rawurlencode($sid) . '.json';
     }
 
@@ -46,16 +47,17 @@ class RecordingContext extends InstanceContext {
      * Fetch a RecordingInstance
      * 
      * @return RecordingInstance Fetched RecordingInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new RecordingInstance(
             $this->version,
             $payload,
@@ -68,6 +70,7 @@ class RecordingContext extends InstanceContext {
      * Deletes the RecordingInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->version->delete('delete', $this->uri);
@@ -86,8 +89,25 @@ class RecordingContext extends InstanceContext {
                 $this->solution['sid']
             );
         }
-        
+
         return $this->_transcriptions;
+    }
+
+    /**
+     * Access the addOnResults
+     * 
+     * @return \Twilio\Rest\Api\V2010\Account\Recording\AddOnResultList 
+     */
+    protected function getAddOnResults() {
+        if (!$this->_addOnResults) {
+            $this->_addOnResults = new AddOnResultList(
+                $this->version,
+                $this->solution['accountSid'],
+                $this->solution['sid']
+            );
+        }
+
+        return $this->_addOnResults;
     }
 
     /**
@@ -102,7 +122,7 @@ class RecordingContext extends InstanceContext {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown subresource ' . $name);
     }
 
@@ -119,7 +139,7 @@ class RecordingContext extends InstanceContext {
         if (method_exists($property, 'getContext')) {
             return call_user_func_array(array($property, 'getContext'), $arguments);
         }
-        
+
         throw new TwilioException('Resource does not have a context');
     }
 

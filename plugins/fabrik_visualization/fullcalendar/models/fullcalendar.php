@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\Utilities\ArrayHelper;
+use Fabrik\Helpers\StringHelper;
 
 jimport('joomla.application.component.model');
 
@@ -201,6 +202,7 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 			$table_label     = (array) $params->get('fullcalendar_label_element');
 			$table_startdate = (array) $params->get('fullcalendar_startdate_element');
 			$table_enddate   = (array) $params->get('fullcalendar_enddate_element');
+			$wheres          = (array) $params->get('fullcalendar_where');
 			$customUrls      = (array) $params->get('custom_url');
 			$colour          = (array) $params->get('colour');
 			$legend          = (array) $params->get('legendtext');
@@ -273,7 +275,8 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 						'customUrl'     => $customUrl,
 						'status'        => $status,
 						'allday'        => $allday,
-						'popupTemplate' => $popupTemplate
+						'popupTemplate' => $popupTemplate,
+						'where'         => ArrayHelper::getValue($wheres, $i, '')
 					);
 				}
 			}
@@ -404,6 +407,7 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 
 	public function getEvents($listid = '', $eventListKey = '')
 	{
+		$params = $this->getParams();
 		$app      = JFactory::getApplication();
 		$package  = $app->getUserState('com_fabrik.package', 'fabrik');
 		$Itemid   = FabrikWorker::itemId();
@@ -416,7 +420,7 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 		$aLegend  = "$this->calName.addLegend([";
 		$jsevents = array();
 		$input    = $app->input;
-		$where    = $input->get('where', array(), 'array');
+		//$where    = $input->get('where', array(), 'array');
 		$calStart = $input->get('startDate', '');
 		$calEnd   = $input->get('endDate', '');
 
@@ -427,8 +431,8 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 				continue;
 			}
 
-			$this_where = FArrayHelper::getValue($where, $this_listid, '');
-			$this_where = html_entity_decode($this_where, ENT_QUOTES);
+			//$this_where = FArrayHelper::getValue($where, $this_listid, '');
+			//$this_where = html_entity_decode($this_where, ENT_QUOTES);
 			$listModel  = JModelLegacy::getInstance('list', 'FabrikFEModel');
 			$listModel->setId($this_listid);
 
@@ -464,8 +468,20 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 				$endElement   = trim($data['enddate']) !== '' ? $formModel->getElement($data['enddate']) : $startElement;
 				$endField     = $endElement->getFullName(false, false);
 
-				$startLocal = $store_as_local = (bool) $startElement->getParams()->get('date_store_as_local', false);
-				$endLocal   = $store_as_local = (bool) $endElement->getParams()->get('date_store_as_local', false);
+				$startLocal = $store_as_local = (bool) $startElement->getParams()->get(
+					'date_store_as_local',
+					(bool) $startElement->getParams()->get(
+						'jdate_store_as_local',
+						false
+					)
+				);
+				$endLocal   = $store_as_local = (bool) $endElement->getParams()->get(
+					'date_store_as_local',
+					(bool) $endElement->getParams()->get(
+						'jdate_store_as_local',
+						false
+					)
+				);
 
 				$label     = trim($data['label']) !== '' ? FabrikString::safeColName($data['label']) : "''";
 				$customUrl = $data['customUrl'];
@@ -499,8 +515,16 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 					->order($startdate . ' ASC');
 				$query = $listModel->buildQueryJoin($query);
 				//$this_where = trim(str_replace('WHERE', '', $this_where));
-				$this_where = FabrikString::ltrimiword($this_where, 'WHERE');
-				$query      = $this_where === '' ? $listModel->buildQueryWhere(true, $query) : $query->where($this_where);
+				//$this_where = FabrikString::ltrimiword($this_where, 'WHERE');
+				//$query      = $this_where === '' ? $listModel->buildQueryWhere(true, $query) : $query->where($this_where);
+
+				if (!empty($data['where']))
+				{
+					$customWhere = $w->parseMessageForPlaceHolder($data['where']);
+					$listModel->setPluginQueryWhere('fullcalendar', $customWhere);
+				}
+
+				$query      = $listModel->buildQueryWhere(true, $query);
 
 				$query->where(FabrikString::safeColName($endField) . ' >= ' . $db->quote($calStart));
 				$query->where(FabrikString::safeColName($startField) . ' <= ' . $db->quote($calEnd));
@@ -520,14 +544,23 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 								$row->enddate = $row->startdate;
 							}
 
-							$defaultURL    = 'index.php?option=com_' . $package . '&Itemid=' . $Itemid . '&view=form&formid='
-								. $table->form_id . '&rowid=' . $row->id . '&tmpl=component';
+							//$defaultURL    = 'index.php?option=com_' . $package . '&Itemid=' . $Itemid . '&view=form&formid='
+							//	. $table->form_id . '&rowid=' . $row->id . '&tmpl=component';
+							$defaultURL = $listModel->editLink($row);
+							$defaultURL .= StringHelper::qsSepChar($defaultURL) . 'tmpl=component';
+							$defaultURL .= '&Itemid=' . $app->input->get('Itemid', '');
+
+							$viewURL = $listModel->viewDetailsLink($row);
+							$viewURL .= StringHelper::qsSepChar($viewURL) . 'tmpl=component';
+							$viewURL .= '&Itemid=' . $app->input->get('Itemid', '');
 							$thisCustomUrl = $w->parseMessageForPlaceHolder($customUrl, $row);
 							//$row->link = $thisCustomUrl !== '' ? $thisCustomUrl : $defaultURL;
+
 							$row->link       = $defaultURL;
 							$row->customLink = $thisCustomUrl;
-							$row->details    = 'index.php?option=com_' . $package . '&Itemid=' . $Itemid . '&view=details&formid='
-								. $table->form_id . '&rowid=' . $row->id . '&tmpl=component';
+							$row->details    = $viewURL;
+							//$row->details    = 'index.php?option=com_' . $package . '&Itemid=' . $Itemid . '&view=details&formid='
+							//	. $table->form_id . '&rowid=' . $row->id . '&tmpl=component'
 							$row->custom     = $customUrl != '';
 							$row->_listid    = $table->id;
 							$row->_formid    = $table->form_id;

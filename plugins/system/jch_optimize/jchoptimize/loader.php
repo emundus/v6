@@ -20,12 +20,12 @@
  */
 
 
-if (!defined('_JCH_EXEC'))
+if (!defined('_JEXEC'))
 {
-        define('_JCH_EXEC', '1');
+        define('_JEXEC', '1');
 }
 
-defined('_JCH_EXEC') or die('Restricted access');
+defined('_JEXEC') or die('Restricted access');
 
 
 function jchoptimize_class_autoload($class)

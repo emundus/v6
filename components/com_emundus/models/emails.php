@@ -361,14 +361,34 @@ class EmundusModelEmails extends JModelList {
         //get logo
         $template   = $app->getTemplate(true);
         $params     = $template->params;
-        $logo       = $params->get('logo');
+        //$logo       = $params->get('logo');
         $sitename   = $config->get('sitename');
 
-        if (!empty($logo)) {
+        /*if (!empty($logo)) {
             $logo   = json_decode(str_replace("'", "\"", $logo->custom->image), true);
         }
 
-        $logo       = !empty($logo['path']) ? $logo['path'] : "";
+        $logo       = !empty($logo['path']) ? $logo['path'] : "";*/
+
+
+        if (!empty($params->get('logo')->custom->image)) {
+            $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+            $logo = !empty($logo['path']) ? JURI::base().$logo['path'] : "";
+
+        } else {
+            $logo_module = JModuleHelper::getModuleById('90');
+            preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+            $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+            if ((bool) preg_match($pattern, $tab[1])) {
+                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+            }
+
+            $logo = JURI::base().$tab[1];
+        }
 
         $patterns = array(
             '/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[SENDER_MAIL\]/', '/\[USERNAME\]/', '/\[USER_ID\]/', '/\[USER_NAME\]/', '/\[USER_EMAIL\]/', '/\n/', '/\[USER_USERNAME\]/', '/\[PASSWORD\]/',
@@ -387,7 +407,7 @@ class EmundusModelEmails extends JModelList {
                 $replacements[] = $value;
             }
         }
-
+        
         $constants = array('patterns' => $patterns , 'replacements' => $replacements);
 
         return $constants;

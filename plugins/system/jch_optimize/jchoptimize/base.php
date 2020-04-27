@@ -22,7 +22,7 @@
 
 namespace JchOptimize\Core;
 
-defined('_JCH_EXEC') or die('Restricted access');
+defined('_JEXEC') or die('Restricted access');
 
 /**
  * Some basic utility functions required by the plugin and shared by class

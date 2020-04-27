@@ -24,13 +24,10 @@ class PhoneNumberContext extends InstanceContext {
      */
     public function __construct(Version $version, $trunkSid, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'trunkSid' => $trunkSid,
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('trunkSid' => $trunkSid, 'sid' => $sid, );
+
         $this->uri = '/Trunks/' . rawurlencode($trunkSid) . '/PhoneNumbers/' . rawurlencode($sid) . '';
     }
 
@@ -38,16 +35,17 @@ class PhoneNumberContext extends InstanceContext {
      * Fetch a PhoneNumberInstance
      * 
      * @return PhoneNumberInstance Fetched PhoneNumberInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new PhoneNumberInstance(
             $this->version,
             $payload,
@@ -60,6 +58,7 @@ class PhoneNumberContext extends InstanceContext {
      * Deletes the PhoneNumberInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->version->delete('delete', $this->uri);

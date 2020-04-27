@@ -2,9 +2,9 @@
 <extension type="package" version="3.3.0" method="upgrade">
 	<name>JCH Optimize Package</name>
 	<author>Samuel Marshall</author>
-	<creationDate>February 2020</creationDate>
+	<creationDate>March 2020</creationDate>
 	<packagename>jch_optimize</packagename>
-	<version>6.0.0</version>
+	<version>6.0.1</version>
 	<packager>JCH Optimize</packager>
 	<packageurl>https://www.jch-optimize.net</packageurl>
 	<copyright>Copyright (c) 2017 Samuel Marshall</copyright> 
@@ -15,5 +15,8 @@
 		<file type="component" client="administrator" id="com_jch_optimize" >com_jch_optimize.zip</file>
 		<file type="plugin" group="system" id="jch_optimize">plg_jch_optimize.zip</file>
 	</files>
-	<scriptfile>script.php</scriptfile>
+	<updateservers>
+		<server type="extension" priority="1"
+			name="JCH Optimize Updates"><![CDATA[https://www.jch-optimize.net/index.php?option=com_ars&view=update&task=stream&format=xml&id=4&file=extension.xml]]></server>
+	</updateservers>
 </extension>

@@ -22,7 +22,7 @@
 
 namespace JchOptimize\Core;
 
-defined('_JCH_EXEC') or die('Restricted access');
+defined('_JEXEC') or die('Restricted access');
 
 use JchOptimize\LIBS\CssSpriteGen;
 use JchOptimize\Platform\Profiler;

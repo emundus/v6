@@ -157,7 +157,6 @@ class EmundusModelFiles extends JModelLegacy
                     $join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat);
 	                $join_val_column_concat = str_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $join_val_column_concat);
                     $column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
-                    //$column = (!empty($attribs->join_val_column_concat) && $attribs->join_val_column_concat!='')?'CONCAT('.$attribs->join_val_column_concat.')':$attribs->join_val_column;
 
                     // Check if the db table has a published column. So we don't get the unpublished value
                     $db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
@@ -193,7 +192,6 @@ class EmundusModelFiles extends JModelLegacy
                                 ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                         }
                     }
-
                     $this->_elements_default[] = $query;
                 } elseif ($def_elmt->element_plugin == 'cascadingdropdown') {
                     $attribs = json_decode($def_elmt->element_attribs);
@@ -203,11 +201,25 @@ class EmundusModelFiles extends JModelLegacy
                     $r2 = explode('___', $cascadingdropdown_label);
                     $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
                     $from = $r2[0]; 
-                    $where = $r1[1].'='.$def_elmt->tab_name.'.'.$def_elmt->element_name;
-                    $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
+                    $where = $r1[1];
+
+                   if (@$group_params->repeat_group_button == 1) {
+                        $query = '(
+                                    select GROUP_CONCAT('.$select.' SEPARATOR ", ")
+                                    from '.$from.'
+                                    where '.$where.' IN
+                                        ( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
+                                          from '.$def_elmt->table_join.'
+                                          where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
+                                        )
+                                  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+                    } else {
+                        $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
+                    }
+                    
                     $query = preg_replace('#{thistable}#', $from, $query);
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
-	                $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
+                    $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
                 }
                 elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
@@ -771,7 +783,34 @@ class EmundusModelFiles extends JModelLegacy
                             if ($value[0] == "%" || !isset($value[0]) || $value[0] === '') {
 	                            $query['q'] .= ' ';
                             } else {
-	                            $query['q'] .= ' and eta.id_tag IN (' . implode(',', $value) . ') ';
+
+                            	if (isset($filt_menu['tag'][0]) && $filt_menu['tag'][0] != '' && $filt_menu['tag'] != "%") {
+		                            // This allows hiding of files by tag.
+		                            $filt_menu_not = array_filter($filt_menu['tag'], function($e) {
+			                            return strpos($e, '!') === 0;
+		                            });
+	                            }
+
+	                            // This allows hiding of files by tag.
+	                            $not_in = array_filter($value, function($e) {
+		                            return strpos($e, '!') === 0;
+	                            });
+
+                            	if (!empty($not_in) && !empty($filt_menu_not)) {
+		                            $not_in = array_unique(array_merge($not_in, $filt_menu_not));
+	                            }
+
+	                            if (!empty($not_in)) {
+	                            	$value = array_diff($value, $not_in);
+	                            	$not_in = array_map(function($v) {
+			                            return ltrim($v, '!');
+		                            }, $not_in);
+	                            	$query['q'] .= ' and jos_emundus_campaign_candidature.fnum NOT IN (SELECT cc.fnum FROM jos_emundus_campaign_candidature AS cc LEFT JOIN jos_emundus_tag_assoc as ta ON ta.fnum = cc.fnum WHERE ta.id_tag IN (' . implode(',', $not_in) . ')) ';
+	                            }
+
+	                            if (!empty($value)) {
+		                            $query['q'] .= ' and eta.id_tag IN ('.implode(',', $value).') ';
+	                            }
                             }
                         }
                         break;
@@ -1167,7 +1206,7 @@ class EmundusModelFiles extends JModelLegacy
         	$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jos_emundus_campaign_candidature.fnum ';
         }
         
-        $q = $this->_buildWhere($lastTab);
+        $q = $this->_buildWhere($lastTab); 
         if (!empty($leftJoin)) {
         	$query .= $leftJoin;
         }
@@ -2241,6 +2280,8 @@ if (JFactory::getUser()->id == 63)
 
     	$db = $this->getDbo();
 
+        $locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
+
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 	    if ($anonymize_data) {
 		    $query = 'select c.fnum, esc.label, sp.code, esc.id as campaign_id';
@@ -2279,7 +2320,60 @@ if (JFactory::getUser()->id == 63)
 
             if ($params_group->repeat_group_button == 1) {
                 if ($methode == 1) {
-                    $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
+                    if ($elt->element_plugin == 'databasejoin') {
+                        $element_attribs = json_decode($elt->element_attribs);
+                        $select = !empty($element_attribs->join_val_column_concat)?"CONCAT(".$element_attribs->join_val_column_concat.")":$element_attribs->join_val_column;
+                        
+                        $from   = $element_attribs->join_db_name;
+                        $where  = $element_attribs->join_key_column.'='.$elt->table_join.'.'.$elt->element_name;
+                        $sub_query = 'SELECT '.$select.' FROM '.$from.' WHERE '.$where;
+                        $sub_query = preg_replace('#{thistable}#', $from, $sub_query);
+                        //$sub_query = preg_replace('#{my->id}#', $aid, $sub_query);
+                        $sub_query = preg_replace('#{shortlang}#', $locales, $sub_query);
+
+                        $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
+                        
+                    } 
+                    elseif ($elt->element_plugin == 'cascadingdropdown') {
+                        $element_attribs = json_decode($elt->element_attribs);
+                        $cascadingdropdown_id = $element_attribs->cascadingdropdown_id;
+                        $r1 = explode('___', $cascadingdropdown_id);
+                        $cascadingdropdown_label = $element_attribs->cascadingdropdown_label;
+                        $r2 = explode('___', $cascadingdropdown_label);
+                        $select = !empty($element_attribs->cascadingdropdown_label_concat)?"CONCAT(".$element_attribs->cascadingdropdown_label_concat.")":$r2[1];
+                        $from = $r2[0];
+
+                        // Checkboxes behave like repeat groups and therefore need to be handled a second level of depth.
+                        if ($element_attribs->cdd_display_type == 'checkbox') {
+                            $select = !empty($element_attribs->cascadingdropdown_label_concat)?" CONCAT(".$element_attribs->cascadingdropdown_label_concat.")":'GROUP_CONCAT('.$r2[1].')';
+
+                            // Load the Fabrik join for the element to it's respective repeat_repeat table.
+                            $q = $db->getQuery(true);
+                            $q->select([$db->quoteName('join_from_table'), $db->quoteName('table_key'), $db->quoteName('table_join'), $db->quoteName('table_join_key')])
+                                ->from($db->quoteName('#__fabrik_joins'))
+                                ->where($db->quoteName('element_id').' = '.$elt->table_join.'.'.$elt->element_name);
+                            $db->setQuery($q);
+                            $f_join = $db->loadObject();
+
+                            $where = $r1[1].' IN (
+                            SELECT '.$db->quoteName($f_join->table_join.'.'.$f_join->table_key).'
+                            FROM '.$db->quoteName($f_join->table_join).' 
+                            WHERE '.$db->quoteName($f_join->table_join.'.'.$f_join->table_join_key).' = '.$r_element->id.')';
+                        } else {
+                            $where = $r1[1].'='.$elt->table_join.'.'.$elt->element_name;
+                        }
+                        
+                        $sub_query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
+                        $sub_query = preg_replace('#{thistable}#', $from, $sub_query);
+                        //$sub_query = preg_replace('#{my->id}#', $aid, $sub_query);
+                        $sub_query  = preg_replace('#{shortlang}#', $locales, $sub_query);
+
+                        $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
+                    }
+                    else {
+                        $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
+                    }
+
                     if (!in_array($elt->table_join, $lastTab)) {
 	                    $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
                     }
@@ -2965,7 +3059,7 @@ if (JFactory::getUser()->id == 63)
             $query = 'select  jesp.code, jesp.label  from #__emundus_campaign_candidature as jecc
                         left join #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
                         left join #__emundus_setup_programmes as jesp on jesp.code like jesc.training
-                        left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.training like jesp.code
+                        left join #__emundus_setup_letters_repeat_training as jeslrt on jeslrt.training like jesp.code
                         where jecc.fnum in ("'.implode('","', $fnums).'") and jeslrt.parent_id IS NOT NULL  group by jesp.code order by jesp.code';
             $dbo->setQuery($query);
             return $dbo->loadAssocList('code', 'label');
@@ -2981,9 +3075,10 @@ if (JFactory::getUser()->id == 63)
     public function getDocsByProg($code) {
         $dbo = $this->getDbo();
         try {
-            $query = 'select jesl.title, jesl.template_type, jesl.id as file_id from jos_emundus_setup_letters as jesl
-                        left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.parent_id = jesl.id
-                        where jeslrt.training = '.$dbo->quote($code);
+            $query = 'select jesl.title, jesl.template_type, jesl.id as file_id 
+                        from #__emundus_setup_letters as jesl
+                        left join #__emundus_setup_letters_repeat_training as jeslrt on jeslrt.parent_id = jesl.id
+                        where jeslrt.training = '.$dbo->quote($code).' ORDER BY jesl.title';
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
         } catch(Exception $e) {

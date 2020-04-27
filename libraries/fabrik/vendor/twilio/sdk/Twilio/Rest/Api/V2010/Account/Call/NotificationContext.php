@@ -25,14 +25,10 @@ class NotificationContext extends InstanceContext {
      */
     public function __construct(Version $version, $accountSid, $callSid, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'accountSid' => $accountSid,
-            'callSid' => $callSid,
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('accountSid' => $accountSid, 'callSid' => $callSid, 'sid' => $sid, );
+
         $this->uri = '/Accounts/' . rawurlencode($accountSid) . '/Calls/' . rawurlencode($callSid) . '/Notifications/' . rawurlencode($sid) . '.json';
     }
 
@@ -40,16 +36,17 @@ class NotificationContext extends InstanceContext {
      * Fetch a NotificationInstance
      * 
      * @return NotificationInstance Fetched NotificationInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new NotificationInstance(
             $this->version,
             $payload,
@@ -63,6 +60,7 @@ class NotificationContext extends InstanceContext {
      * Deletes the NotificationInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->version->delete('delete', $this->uri);

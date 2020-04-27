@@ -18,20 +18,34 @@ use Twilio\VersionInfo;
 /**
  * A client for accessing the Twilio API.
  * 
+ * @property \Twilio\Rest\Accounts accounts
  * @property \Twilio\Rest\Api api
+ * @property \Twilio\Rest\Authy authy
+ * @property \Twilio\Rest\Autopilot autopilot
  * @property \Twilio\Rest\Chat chat
+ * @property \Twilio\Rest\Fax fax
  * @property \Twilio\Rest\IpMessaging ipMessaging
  * @property \Twilio\Rest\Lookups lookups
  * @property \Twilio\Rest\Monitor monitor
+ * @property \Twilio\Rest\Notify notify
+ * @property \Twilio\Rest\Preview preview
  * @property \Twilio\Rest\Pricing pricing
+ * @property \Twilio\Rest\Proxy proxy
  * @property \Twilio\Rest\Taskrouter taskrouter
  * @property \Twilio\Rest\Trunking trunking
+ * @property \Twilio\Rest\Video video
+ * @property \Twilio\Rest\Messaging messaging
+ * @property \Twilio\Rest\Wireless wireless
+ * @property \Twilio\Rest\Sync sync
+ * @property \Twilio\Rest\Studio studio
+ * @property \Twilio\Rest\Verify verify
+ * @property \Twilio\Rest\Voice voice
  * @property \Twilio\Rest\Api\V2010\AccountInstance account
- * @property \Twilio\Rest\Api\V2010\AccountList accounts
  * @property \Twilio\Rest\Api\V2010\Account\AddressList addresses
  * @property \Twilio\Rest\Api\V2010\Account\ApplicationList applications
  * @property \Twilio\Rest\Api\V2010\Account\AuthorizedConnectAppList authorizedConnectApps
  * @property \Twilio\Rest\Api\V2010\Account\AvailablePhoneNumberCountryList availablePhoneNumbers
+ * @property \Twilio\Rest\Api\V2010\Account\BalanceList balance
  * @property \Twilio\Rest\Api\V2010\Account\CallList calls
  * @property \Twilio\Rest\Api\V2010\Account\ConferenceList conferences
  * @property \Twilio\Rest\Api\V2010\Account\ConnectAppList connectApps
@@ -44,7 +58,6 @@ use Twilio\VersionInfo;
  * @property \Twilio\Rest\Api\V2010\Account\OutgoingCallerIdList outgoingCallerIds
  * @property \Twilio\Rest\Api\V2010\Account\QueueList queues
  * @property \Twilio\Rest\Api\V2010\Account\RecordingList recordings
- * @property \Twilio\Rest\Api\V2010\Account\SandboxList sandbox
  * @property \Twilio\Rest\Api\V2010\Account\SigningKeyList signingKeys
  * @property \Twilio\Rest\Api\V2010\Account\SipList sip
  * @property \Twilio\Rest\Api\V2010\Account\ShortCodeList shortCodes
@@ -67,7 +80,6 @@ use Twilio\VersionInfo;
  * @method \Twilio\Rest\Api\V2010\Account\OutgoingCallerIdContext outgoingCallerIds(string $sid)
  * @method \Twilio\Rest\Api\V2010\Account\QueueContext queues(string $sid)
  * @method \Twilio\Rest\Api\V2010\Account\RecordingContext recordings(string $sid)
- * @method \Twilio\Rest\Api\V2010\Account\SandboxContext sandbox()
  * @method \Twilio\Rest\Api\V2010\Account\SigningKeyContext signingKeys(string $sid)
  * @method \Twilio\Rest\Api\V2010\Account\ShortCodeContext shortCodes(string $sid)
  * @method \Twilio\Rest\Api\V2010\Account\TranscriptionContext transcriptions(string $sid)
@@ -82,15 +94,28 @@ class Client {
     protected $region;
     protected $httpClient;
     protected $_account;
+    protected $_accounts = null;
     protected $_api = null;
+    protected $_authy = null;
+    protected $_autopilot = null;
     protected $_chat = null;
+    protected $_fax = null;
     protected $_ipMessaging = null;
     protected $_lookups = null;
     protected $_monitor = null;
+    protected $_notify = null;
+    protected $_preview = null;
     protected $_pricing = null;
+    protected $_proxy = null;
     protected $_taskrouter = null;
     protected $_trunking = null;
-    protected $_accounts = null;
+    protected $_video = null;
+    protected $_messaging = null;
+    protected $_wireless = null;
+    protected $_sync = null;
+    protected $_studio = null;
+    protected $_verify = null;
+    protected $_voice = null;
 
     /**
      * Initializes the Twilio Client
@@ -111,7 +136,7 @@ class Client {
         if (is_null($environment)) {
             $environment = $_ENV;
         }
-        
+
         if ($username) {
             $this->username = $username;
         } else {
@@ -119,7 +144,7 @@ class Client {
                 $this->username = $environment[self::ENV_ACCOUNT_SID];
             }
         }
-        
+
         if ($password) {
             $this->password = $password;
         } else {
@@ -127,14 +152,14 @@ class Client {
                 $this->password = $environment[self::ENV_AUTH_TOKEN];
             }
         }
-        
+
         if (!$this->username || !$this->password) {
             throw new ConfigurationException("Credentials are required to create a Client");
         }
-        
+
         $this->accountSid = $accountSid ?: $this->username;
         $this->region = $region;
-        
+
         if ($httpClient) {
             $this->httpClient = $httpClient;
         } else {
@@ -159,24 +184,27 @@ class Client {
     public function request($method, $uri, $params = array(), $data = array(), $headers = array(), $username = null, $password = null, $timeout = null) {
         $username = $username ? $username : $this->username;
         $password = $password ? $password : $this->password;
-        
+
         $headers['User-Agent'] = 'twilio-php/' . VersionInfo::string() .
                                  ' (PHP ' . phpversion() . ')';
         $headers['Accept-Charset'] = 'utf-8';
-        
+
         if ($method == 'POST' && !array_key_exists('Content-Type', $headers)) {
             $headers['Content-Type'] = 'application/x-www-form-urlencoded';
         }
-        
+
         if (!array_key_exists('Accept', $headers)) {
             $headers['Accept'] = 'application/json';
         }
-        
+
         if ($this->region) {
             list($head, $tail) = explode('.', $uri, 2);
-            $uri = implode('.', array($head, $this->region, $tail));
+
+            if (strpos($tail, $this->region) !== 0) {
+                $uri = implode('.', array($head, $this->region, $tail));
+            }
         }
-        
+
         return $this->getHttpClient()->request(
             $method,
             $uri,
@@ -244,6 +272,18 @@ class Client {
     }
 
     /**
+     * Access the Accounts Twilio Domain
+     * 
+     * @return \Twilio\Rest\Accounts Accounts Twilio Domain
+     */
+    protected function getAccounts() {
+        if (!$this->_accounts) {
+            $this->_accounts = new Accounts($this);
+        }
+        return $this->_accounts;
+    }
+
+    /**
      * Access the Api Twilio Domain
      * 
      * @return \Twilio\Rest\Api Api Twilio Domain
@@ -261,21 +301,6 @@ class Client {
      */
     public function getAccount() {
         return $this->api->v2010->account;
-    }
-
-    /**
-     * @return \Twilio\Rest\Api\V2010\AccountList 
-     */
-    public function getAccounts() {
-        return $this->api->v2010->accounts;
-    }
-
-    /**
-     * @param string $sid Fetch by unique Account Sid
-     * @return \Twilio\Rest\Api\V2010\AccountContext 
-     */
-    protected function contextAccounts($sid) {
-        return $this->api->v2010->accounts($sid);
     }
 
     /**
@@ -336,6 +361,13 @@ class Client {
      */
     protected function contextAvailablePhoneNumbers($countryCode) {
         return $this->api->v2010->account->availablePhoneNumbers($countryCode);
+    }
+
+    /**
+     * @return \Twilio\Rest\Api\V2010\Account\BalanceList 
+     */
+    protected function getBalance() {
+        return $this->api->v2010->account->balance;
     }
 
     /**
@@ -495,25 +527,11 @@ class Client {
     }
 
     /**
-     * @param string $sid Fetch by unique recording Sid
+     * @param string $sid Fetch by unique recording SID
      * @return \Twilio\Rest\Api\V2010\Account\RecordingContext 
      */
     protected function contextRecordings($sid) {
         return $this->api->v2010->account->recordings($sid);
-    }
-
-    /**
-     * @return \Twilio\Rest\Api\V2010\Account\SandboxList 
-     */
-    protected function getSandbox() {
-        return $this->api->v2010->account->sandbox;
-    }
-
-    /**
-     * @return \Twilio\Rest\Api\V2010\Account\SandboxContext 
-     */
-    protected function contextSandbox() {
-        return $this->api->v2010->account->sandbox();
     }
 
     /**
@@ -568,7 +586,7 @@ class Client {
     }
 
     /**
-     * @param string $sid Fetch by unique transcription Sid
+     * @param string $sid Fetch by unique transcription SID
      * @return \Twilio\Rest\Api\V2010\Account\TranscriptionContext 
      */
     protected function contextTranscriptions($sid) {
@@ -590,6 +608,30 @@ class Client {
     }
 
     /**
+     * Access the Authy Twilio Domain
+     * 
+     * @return \Twilio\Rest\Authy Authy Twilio Domain
+     */
+    protected function getAuthy() {
+        if (!$this->_authy) {
+            $this->_authy = new Authy($this);
+        }
+        return $this->_authy;
+    }
+
+    /**
+     * Access the Autopilot Twilio Domain
+     * 
+     * @return \Twilio\Rest\Autopilot Autopilot Twilio Domain
+     */
+    protected function getAutopilot() {
+        if (!$this->_autopilot) {
+            $this->_autopilot = new Autopilot($this);
+        }
+        return $this->_autopilot;
+    }
+
+    /**
      * Access the Chat Twilio Domain
      * 
      * @return \Twilio\Rest\Chat Chat Twilio Domain
@@ -599,6 +641,18 @@ class Client {
             $this->_chat = new Chat($this);
         }
         return $this->_chat;
+    }
+
+    /**
+     * Access the Fax Twilio Domain
+     * 
+     * @return \Twilio\Rest\Fax Fax Twilio Domain
+     */
+    protected function getFax() {
+        if (!$this->_fax) {
+            $this->_fax = new Fax($this);
+        }
+        return $this->_fax;
     }
 
     /**
@@ -638,6 +692,30 @@ class Client {
     }
 
     /**
+     * Access the Notify Twilio Domain
+     * 
+     * @return \Twilio\Rest\Notify Notify Twilio Domain
+     */
+    protected function getNotify() {
+        if (!$this->_notify) {
+            $this->_notify = new Notify($this);
+        }
+        return $this->_notify;
+    }
+
+    /**
+     * Access the Preview Twilio Domain
+     * 
+     * @return \Twilio\Rest\Preview Preview Twilio Domain
+     */
+    protected function getPreview() {
+        if (!$this->_preview) {
+            $this->_preview = new Preview($this);
+        }
+        return $this->_preview;
+    }
+
+    /**
      * Access the Pricing Twilio Domain
      * 
      * @return \Twilio\Rest\Pricing Pricing Twilio Domain
@@ -647,6 +725,18 @@ class Client {
             $this->_pricing = new Pricing($this);
         }
         return $this->_pricing;
+    }
+
+    /**
+     * Access the Proxy Twilio Domain
+     * 
+     * @return \Twilio\Rest\Proxy Proxy Twilio Domain
+     */
+    protected function getProxy() {
+        if (!$this->_proxy) {
+            $this->_proxy = new Proxy($this);
+        }
+        return $this->_proxy;
     }
 
     /**
@@ -674,6 +764,90 @@ class Client {
     }
 
     /**
+     * Access the Video Twilio Domain
+     * 
+     * @return \Twilio\Rest\Video Video Twilio Domain
+     */
+    protected function getVideo() {
+        if (!$this->_video) {
+            $this->_video = new Video($this);
+        }
+        return $this->_video;
+    }
+
+    /**
+     * Access the Messaging Twilio Domain
+     * 
+     * @return \Twilio\Rest\Messaging Messaging Twilio Domain
+     */
+    protected function getMessaging() {
+        if (!$this->_messaging) {
+            $this->_messaging = new Messaging($this);
+        }
+        return $this->_messaging;
+    }
+
+    /**
+     * Access the Wireless Twilio Domain
+     * 
+     * @return \Twilio\Rest\Wireless Wireless Twilio Domain
+     */
+    protected function getWireless() {
+        if (!$this->_wireless) {
+            $this->_wireless = new Wireless($this);
+        }
+        return $this->_wireless;
+    }
+
+    /**
+     * Access the Sync Twilio Domain
+     * 
+     * @return \Twilio\Rest\Sync Sync Twilio Domain
+     */
+    protected function getSync() {
+        if (!$this->_sync) {
+            $this->_sync = new Sync($this);
+        }
+        return $this->_sync;
+    }
+
+    /**
+     * Access the Studio Twilio Domain
+     * 
+     * @return \Twilio\Rest\Studio Studio Twilio Domain
+     */
+    protected function getStudio() {
+        if (!$this->_studio) {
+            $this->_studio = new Studio($this);
+        }
+        return $this->_studio;
+    }
+
+    /**
+     * Access the Verify Twilio Domain
+     * 
+     * @return \Twilio\Rest\Verify Verify Twilio Domain
+     */
+    protected function getVerify() {
+        if (!$this->_verify) {
+            $this->_verify = new Verify($this);
+        }
+        return $this->_verify;
+    }
+
+    /**
+     * Access the Voice Twilio Domain
+     * 
+     * @return \Twilio\Rest\Voice Voice Twilio Domain
+     */
+    protected function getVoice() {
+        if (!$this->_voice) {
+            $this->_voice = new Voice($this);
+        }
+        return $this->_voice;
+    }
+
+    /**
      * Magic getter to lazy load domains
      * 
      * @param string $name Domain to return
@@ -685,7 +859,7 @@ class Client {
         if (method_exists($this, $method)) {
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown domain ' . $name);
     }
 
@@ -702,7 +876,7 @@ class Client {
         if (method_exists($this, $method)) {
             return call_user_func_array(array($this, $method), $arguments);
         }
-        
+
         throw new TwilioException('Unknown context ' . $name);
     }
 
@@ -713,5 +887,19 @@ class Client {
      */
     public function __toString() {
         return '[Client ' . $this->getAccountSid() . ']';
+    }
+
+    /**
+     * Validates connection to new SSL certificate endpoint
+     * 
+     * @param CurlClient $client 
+     * @throws TwilioException if request fails
+     */
+    public function validateSslCertificate($client) {
+        $response = $client->request('GET', 'https://api.twilio.com:8443');
+
+        if ($response->getStatusCode() < 200 || $response->getStatusCode() > 300) {
+            throw new TwilioException("Failed to validate SSL certificate");
+        }
     }
 }

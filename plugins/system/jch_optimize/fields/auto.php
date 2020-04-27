@@ -22,8 +22,10 @@ defined('_JEXEC') or die;
 
 use JchOptimize\Core\Admin;
 
-require_once dirname(__FILE__) . '/compat.php';
-include_once dirname(dirname(__FILE__)) . '/jchoptimize/loader.php';
+if (!function_exists('jchoptimize_class_autoload'))
+{
+	include_once dirname(dirname(__FILE__)) . '/jchoptimize/loader.php';
+}
 
 abstract class JFormFieldAuto extends JFormField {
 

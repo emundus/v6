@@ -13,6 +13,8 @@ namespace Fabrik\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use PHPLicengine\Api\Api;
+use PHPLicengine\Service\Bitlink;
 use stdClass;
 
 /**
@@ -283,7 +285,7 @@ class StringHelper extends \Joomla\String\StringHelper
 
 		for ($i = 0; $i < StringHelper::strlen($str); $i++)
 		{
-			$ch = ord($str{$i});
+			$ch = ord($str[$i]);
 
 			switch ($ch)
 			{
@@ -1055,6 +1057,12 @@ class StringHelper extends \Joomla\String\StringHelper
 
 	public static function getRowClass($value, $prefix)
 	{
+	    // when called in form context, could be a single value array
+	    if (is_array($value))
+        {
+            $value = empty($value) ? '' : reset($value);
+        }
+
 		$value = preg_replace('/[^A-Z|a-z|0-9]/', '-', $value);
 		$value = self::ltrim($value, '-');
 		$value = self::rtrim($value, '-');
@@ -1096,7 +1104,7 @@ class StringHelper extends \Joomla\String\StringHelper
 	 * Bitlify a link
 	 *
 	 * @param  string  $link  the link to shorten
-	 * @param  string  $username  Bitly username
+	 * @param  string  $username  Bitly username - NOT USED
 	 * @param  string  $apikey  Bitly API key
 	 * @param  string  $encode  urlencode
 	 */
@@ -1104,15 +1112,32 @@ class StringHelper extends \Joomla\String\StringHelper
 	{
 		if (!strstr($link, 'bit.ly/') && $link !== '')
 		{
-			require_once JPATH_SITE . '/components/com_fabrik/libs/bitly/bitly.php';
-			$bitly = new \bitly($login, $apikey);
+			$api = new Api($apikey);
+			$bitlink = new Bitlink($api);
+			$result = $bitlink->createBitlink(['long_url' => $link]);
 
-			if ($encode)
+			if ($api->isCurlError())
 			{
-				$link = self::encodeurl($link);
+				Worker::log('fabrik.helpers.bitlify.error',$api->getCurlErrno().': '.$api->getCurlError());
 			}
-
-			$link = (string) $bitly->shorten($link);
+			else
+			{
+				if ($result->isError())
+				{
+					Worker::log('fabrik.helpers.bitlify.error', print($result->getResponse()));
+				}
+				else
+				{
+					if ($result->isSuccess())
+					{
+						$link = $result->getResponseObject()->link;
+					}
+					else
+					{
+						Worker::log('fabrik.helpers.bitlify.error', print($result->getResponse()));
+					}
+				}
+			}
 		}
 
 		return $link;

@@ -203,7 +203,7 @@ class plgUserEmundus extends JPlugin
             if ($isnew) {
 
                 // Update name and firstname from #__users
-                $db->setQuery(' UPDATE #__users SET name="'.strtoupper($lastname).' '.ucfirst($firstname).'",
+                $db->setQuery(' UPDATE #__users SET name="'.ucfirst($firstname).' '.strtoupper($lastname).'",
                                 usertype = (SELECT u.title FROM #__usergroups AS u
                                                 LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
                                                 WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) 
@@ -272,7 +272,7 @@ class plgUserEmundus extends JPlugin
 
             } elseif (!empty($lastname) && !empty($firstname)) {
                 // Update name and firstname from #__users
-                $db->setQuery('UPDATE #__users SET name="'.strtoupper($lastname).' '.ucfirst($firstname).'" WHERE id='.$user['id']);
+                $db->setQuery('UPDATE #__users SET name="'.ucfirst($firstname).' '.strtoupper($lastname).'" WHERE id='.$user['id']);
                 $db->Query();
 
                 $db->setQuery('UPDATE #__emundus_users SET lastname="'.strtoupper($lastname).'", firstname="'.ucfirst($firstname).'" WHERE user_id='.$user['id']);
@@ -283,9 +283,9 @@ class plgUserEmundus extends JPlugin
 
                 $this->onUserLogin($user);
 
-                if (!$app->isAdmin()) {
+               /* if (!$app->isAdmin()) {
                     $app->redirect('index.php?option=com_users&view=profile&user_id='.$user['id']);
-                }
+                }*/
             }
         }
     }
@@ -410,11 +410,7 @@ class plgUserEmundus extends JPlugin
 
         $campaign = $m_profile->getCurrentCampaignInfoByApplicant($user['id']);
 
-        if ($campaign["training"] == "pepite") {
-	        $url = "https://ideepepite.sorbonne-universites.fr/";
-        } else {
-	        $url = 'index.php';
-        }
+        $url = 'index.php';
 
         // Make sure we're a valid user first
         if ($user['id'] == 0 && !$my->get('tmp_user')) {

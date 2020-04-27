@@ -14,53 +14,43 @@ use Twilio\Values;
 
 abstract class EventOptions {
     /**
-     * @param string $actorSid The actor_sid
-     * @param string $endDateBefore The end_date
-     * @param string $endDate The end_date
-     * @param string $endDateAfter The end_date
-     * @param string $eventType The event_type
-     * @param string $resourceSid The resource_sid
-     * @param string $sourceIpAddress The source_ip_address
-     * @param string $startDateBefore The start_date
-     * @param string $startDate The start_date
-     * @param string $startDateAfter The start_date
+     * @param string $actorSid Only include Events initiated by this Actor
+     * @param string $eventType Only include Events of this EventType
+     * @param string $resourceSid Only include Events referring to this resource
+     * @param string $sourceIpAddress Only include Events that originated from this
+     *                                IP address
+     * @param \DateTime $startDate Only show events on or after this date
+     * @param \DateTime $endDate Only show events on or before this date
      * @return ReadEventOptions Options builder
      */
-    public static function read($actorSid = Values::NONE, $endDateBefore = Values::NONE, $endDate = Values::NONE, $endDateAfter = Values::NONE, $eventType = Values::NONE, $resourceSid = Values::NONE, $sourceIpAddress = Values::NONE, $startDateBefore = Values::NONE, $startDate = Values::NONE, $startDateAfter = Values::NONE) {
-        return new ReadEventOptions($actorSid, $endDateBefore, $endDate, $endDateAfter, $eventType, $resourceSid, $sourceIpAddress, $startDateBefore, $startDate, $startDateAfter);
+    public static function read($actorSid = Values::NONE, $eventType = Values::NONE, $resourceSid = Values::NONE, $sourceIpAddress = Values::NONE, $startDate = Values::NONE, $endDate = Values::NONE) {
+        return new ReadEventOptions($actorSid, $eventType, $resourceSid, $sourceIpAddress, $startDate, $endDate);
     }
 }
 
 class ReadEventOptions extends Options {
     /**
-     * @param string $actorSid The actor_sid
-     * @param string $endDateBefore The end_date
-     * @param string $endDate The end_date
-     * @param string $endDateAfter The end_date
-     * @param string $eventType The event_type
-     * @param string $resourceSid The resource_sid
-     * @param string $sourceIpAddress The source_ip_address
-     * @param string $startDateBefore The start_date
-     * @param string $startDate The start_date
-     * @param string $startDateAfter The start_date
+     * @param string $actorSid Only include Events initiated by this Actor
+     * @param string $eventType Only include Events of this EventType
+     * @param string $resourceSid Only include Events referring to this resource
+     * @param string $sourceIpAddress Only include Events that originated from this
+     *                                IP address
+     * @param \DateTime $startDate Only show events on or after this date
+     * @param \DateTime $endDate Only show events on or before this date
      */
-    public function __construct($actorSid = Values::NONE, $endDateBefore = Values::NONE, $endDate = Values::NONE, $endDateAfter = Values::NONE, $eventType = Values::NONE, $resourceSid = Values::NONE, $sourceIpAddress = Values::NONE, $startDateBefore = Values::NONE, $startDate = Values::NONE, $startDateAfter = Values::NONE) {
+    public function __construct($actorSid = Values::NONE, $eventType = Values::NONE, $resourceSid = Values::NONE, $sourceIpAddress = Values::NONE, $startDate = Values::NONE, $endDate = Values::NONE) {
         $this->options['actorSid'] = $actorSid;
-        $this->options['endDateBefore'] = $endDateBefore;
-        $this->options['endDate'] = $endDate;
-        $this->options['endDateAfter'] = $endDateAfter;
         $this->options['eventType'] = $eventType;
         $this->options['resourceSid'] = $resourceSid;
         $this->options['sourceIpAddress'] = $sourceIpAddress;
-        $this->options['startDateBefore'] = $startDateBefore;
         $this->options['startDate'] = $startDate;
-        $this->options['startDateAfter'] = $startDateAfter;
+        $this->options['endDate'] = $endDate;
     }
 
     /**
-     * The actor_sid
+     * Only include Events initiated by this Actor. Useful for auditing actions taken by specific users or API credentials.
      * 
-     * @param string $actorSid The actor_sid
+     * @param string $actorSid Only include Events initiated by this Actor
      * @return $this Fluent Builder
      */
     public function setActorSid($actorSid) {
@@ -69,42 +59,9 @@ class ReadEventOptions extends Options {
     }
 
     /**
-     * The end_date
+     * Only include Events of this EventType.
      * 
-     * @param string $endDateBefore The end_date
-     * @return $this Fluent Builder
-     */
-    public function setEndDateBefore($endDateBefore) {
-        $this->options['endDateBefore'] = $endDateBefore;
-        return $this;
-    }
-
-    /**
-     * The end_date
-     * 
-     * @param string $endDate The end_date
-     * @return $this Fluent Builder
-     */
-    public function setEndDate($endDate) {
-        $this->options['endDate'] = $endDate;
-        return $this;
-    }
-
-    /**
-     * The end_date
-     * 
-     * @param string $endDateAfter The end_date
-     * @return $this Fluent Builder
-     */
-    public function setEndDateAfter($endDateAfter) {
-        $this->options['endDateAfter'] = $endDateAfter;
-        return $this;
-    }
-
-    /**
-     * The event_type
-     * 
-     * @param string $eventType The event_type
+     * @param string $eventType Only include Events of this EventType
      * @return $this Fluent Builder
      */
     public function setEventType($eventType) {
@@ -113,9 +70,9 @@ class ReadEventOptions extends Options {
     }
 
     /**
-     * The resource_sid
+     * Only include Events referring to this resource. Useful for discovering the history of a specific resource.
      * 
-     * @param string $resourceSid The resource_sid
+     * @param string $resourceSid Only include Events referring to this resource
      * @return $this Fluent Builder
      */
     public function setResourceSid($resourceSid) {
@@ -124,9 +81,10 @@ class ReadEventOptions extends Options {
     }
 
     /**
-     * The source_ip_address
+     * Only include Events that originated from this IP address. Useful for tracking suspicious activity originating from the API or the Twilio Console.
      * 
-     * @param string $sourceIpAddress The source_ip_address
+     * @param string $sourceIpAddress Only include Events that originated from this
+     *                                IP address
      * @return $this Fluent Builder
      */
     public function setSourceIpAddress($sourceIpAddress) {
@@ -135,20 +93,9 @@ class ReadEventOptions extends Options {
     }
 
     /**
-     * The start_date
+     * Only show events on or after this date. Useful in combination with `EndDate` to define a date-range of events. Input is a [UTC ISO 8601 Timestamp](http://en.wikipedia.org/wiki/ISO_8601#UTC), but time of day is ignored by the filter.
      * 
-     * @param string $startDateBefore The start_date
-     * @return $this Fluent Builder
-     */
-    public function setStartDateBefore($startDateBefore) {
-        $this->options['startDateBefore'] = $startDateBefore;
-        return $this;
-    }
-
-    /**
-     * The start_date
-     * 
-     * @param string $startDate The start_date
+     * @param \DateTime $startDate Only show events on or after this date
      * @return $this Fluent Builder
      */
     public function setStartDate($startDate) {
@@ -157,13 +104,13 @@ class ReadEventOptions extends Options {
     }
 
     /**
-     * The start_date
+     * Only show events on or before this date. Useful in combination with `StartDate` to define a date-range of events. Input is a [UTC ISO 8601 Timestamp](http://en.wikipedia.org/wiki/ISO_8601#UTC), but time of day is ignored by the filter.
      * 
-     * @param string $startDateAfter The start_date
+     * @param \DateTime $endDate Only show events on or before this date
      * @return $this Fluent Builder
      */
-    public function setStartDateAfter($startDateAfter) {
-        $this->options['startDateAfter'] = $startDateAfter;
+    public function setEndDate($endDate) {
+        $this->options['endDate'] = $endDate;
         return $this;
     }
 

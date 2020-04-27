@@ -191,6 +191,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
+		$layoutData->scanQR = $params->get('scan_qrcode', '0') === '1';
 		$layoutData->attributes = $bits;
 		$layoutData->sizeClass = $params->get('bootstrap_class', '');
 
@@ -357,6 +358,8 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			FabrikHelperHTML::autoComplete($id, $this->getElement()->id, $this->getFormModel()->getId(), 'field', $autoOpts);
 		}
 
+		$opts->scanQR = $params->get('scan_qrcode', '0') === '1';
+
 		return array('FbField', $id, $opts);
 	}
 
@@ -376,6 +379,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		$params = $this->getParams();
 		$inputMask = trim($params->get('text_input_mask', ''));
 		$geoComplete = $params->get('autocomplete', '0') === '3';
+		$scanQR = $params->get('scan_qrcode', '0') === '1';
 
 		$s = new stdClass;
 
@@ -395,6 +399,12 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		{
 			$folder = 'components/com_fabrik/libs/googlemaps/geocomplete/';
 			$s->deps[] = $folder . 'jquery.geocomplete';
+		}
+
+		if ($scanQR)
+		{
+			$folder = 'components/com_fabrik/libs/jsqrcode/';
+			$s->deps[] = $folder . 'qr_packed';
 		}
 		
 		if (array_key_exists($key, $shim))
@@ -560,7 +570,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		$url = 'index.php';
 		$this->lang->load('com_fabrik.plg.element.field', JPATH_ADMINISTRATOR);
 
-		if (!$this->getListModel()->canView() || !$this->canView())
+		if (!$this->getListModel()->canViewDetails() || !$this->canView())
 		{
 			$this->app->enqueueMessage(FText::_('JERROR_ALERTNOAUTHOR'));
 			$this->app->redirect($url);
@@ -683,9 +693,14 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		 */
 
 		$elementId = $this->getId();
-		$src = COM_FABRIK_LIVESITE
-		. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode&amp;'
-				. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
+
+		// set format to 'pdf' if rendering pdf, so onAjax_renderQRCode() will automagically use "allow_pdf_local"
+		$format = $this->app->input->get('format', 'html') === 'pdf' ? 'pdf' : 'raw';
+		$src = COM_FABRIK_LIVESITE .
+			'index.php?option=com_' . $this->package .
+			'&amp;task=plugin.pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode' .
+			'&amp;format=' . $format . '&amp;element_id=' . $elementId . '&amp;formid=' . $formId .
+			'&amp;rowid=' . $rowId . '&amp;repeatcount=0';
 
 		$layout = $this->getLayout('qr');
 		$displayData = new stdClass;

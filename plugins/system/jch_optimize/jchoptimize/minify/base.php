@@ -1,7 +1,7 @@
 <?php
 
 /**
- * JCH Optimize - Aggregate and minify external resources for optmized downloads
+ * JCH Optimize - Aggregate and minify external resources for optimized downloads
  *
  * @author    Samuel Marshall <sdmarshall73@gmail.com>
  * @copyright Copyright (c) 2010 Samuel Marshall
@@ -21,6 +21,8 @@
  */
 
 namespace JchOptimize\Minify;
+
+defined('_JEXEC') or die('Restricted access');
 
 abstract class Base
 {

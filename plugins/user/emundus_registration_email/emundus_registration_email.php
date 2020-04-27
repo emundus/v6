@@ -63,7 +63,7 @@ class plgUserEmundus_registration_email extends JPlugin {
 
 					// save user data
 					if ($table->store()) {
-						$app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'));
+						$app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'),'success');
 					} else {
 						throw new RuntimeException($table->getError());
 					}
@@ -156,7 +156,7 @@ class plgUserEmundus_registration_email extends JPlugin {
 			if ($this->sendActivationEmail($user->getProperties(), $activation)) {
 
 				$app = JFactory::getApplication();
-				$app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_SENT'));
+				$app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_SENT'),'success');
 
 				// Force user logout
 				if ($this->params->get('logout', null) && $userId === (int) JFactory::getUser()->id) {

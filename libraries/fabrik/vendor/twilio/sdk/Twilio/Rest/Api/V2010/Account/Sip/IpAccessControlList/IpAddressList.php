@@ -10,6 +10,7 @@
 namespace Twilio\Rest\Api\V2010\Account\Sip\IpAccessControlList;
 
 use Twilio\ListResource;
+use Twilio\Options;
 use Twilio\Values;
 use Twilio\Version;
 
@@ -18,19 +19,22 @@ class IpAddressList extends ListResource {
      * Construct the IpAddressList
      * 
      * @param Version $version Version that contains the resource
-     * @param string $accountSid The account_sid
-     * @param string $ipAccessControlListSid The ip_access_control_list_sid
+     * @param string $accountSid The unique id of the Account that is responsible
+     *                           for this resource.
+     * @param string $ipAccessControlListSid The unique id of the
+     *                                       IpAccessControlList resource that
+     *                                       includes this resource.
      * @return \Twilio\Rest\Api\V2010\Account\Sip\IpAccessControlList\IpAddressList 
      */
     public function __construct(Version $version, $accountSid, $ipAccessControlListSid) {
         parent::__construct($version);
-        
+
         // Path Solution
         $this->solution = array(
             'accountSid' => $accountSid,
             'ipAccessControlListSid' => $ipAccessControlListSid,
         );
-        
+
         $this->uri = '/Accounts/' . rawurlencode($accountSid) . '/SIP/IpAccessControlLists/' . rawurlencode($ipAccessControlListSid) . '/IpAddresses.json';
     }
 
@@ -54,9 +58,9 @@ class IpAddressList extends ListResource {
      */
     public function stream($limit = null, $pageSize = null) {
         $limits = $this->version->readLimits($limit, $pageSize);
-        
+
         $page = $this->page($limits['pageSize']);
-        
+
         return $this->version->stream($page, $limits['limit'], $limits['pageLimit']);
     }
 
@@ -75,7 +79,7 @@ class IpAddressList extends ListResource {
      *                        efficient page size, i.e. min(limit, 1000)
      * @return IpAddressInstance[] Array of results
      */
-    public function read($limit = null, $pageSize = Values::NONE) {
+    public function read($limit = null, $pageSize = null) {
         return iterator_to_array($this->stream($limit, $pageSize), false);
     }
 
@@ -94,36 +98,61 @@ class IpAddressList extends ListResource {
             'Page' => $pageNumber,
             'PageSize' => $pageSize,
         ));
-        
+
         $response = $this->version->page(
             'GET',
             $this->uri,
             $params
         );
-        
+
+        return new IpAddressPage($this->version, $response, $this->solution);
+    }
+
+    /**
+     * Retrieve a specific page of IpAddressInstance records from the API.
+     * Request is executed immediately
+     * 
+     * @param string $targetUrl API-generated URL for the requested results page
+     * @return \Twilio\Page Page of IpAddressInstance
+     */
+    public function getPage($targetUrl) {
+        $response = $this->version->getDomain()->getClient()->request(
+            'GET',
+            $targetUrl
+        );
+
         return new IpAddressPage($this->version, $response, $this->solution);
     }
 
     /**
      * Create a new IpAddressInstance
      * 
-     * @param string $friendlyName The friendly_name
-     * @param string $ipAddress The ip_address
+     * @param string $friendlyName A human readable descriptive text for this
+     *                             resource, up to 64 characters long.
+     * @param string $ipAddress An IP address in dotted decimal notation from which
+     *                          you want to accept traffic. Any SIP requests from
+     *                          this IP address will be allowed by Twilio. IPv4
+     *                          only supported today.
+     * @param array|Options $options Optional Arguments
      * @return IpAddressInstance Newly created IpAddressInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
-    public function create($friendlyName, $ipAddress) {
+    public function create($friendlyName, $ipAddress, $options = array()) {
+        $options = new Values($options);
+
         $data = Values::of(array(
             'FriendlyName' => $friendlyName,
             'IpAddress' => $ipAddress,
+            'CidrPrefixLength' => $options['cidrPrefixLength'],
         ));
-        
+
         $payload = $this->version->create(
             'POST',
             $this->uri,
             array(),
             $data
         );
-        
+
         return new IpAddressInstance(
             $this->version,
             $payload,
@@ -135,7 +164,7 @@ class IpAddressList extends ListResource {
     /**
      * Constructs a IpAddressContext
      * 
-     * @param string $sid The sid
+     * @param string $sid A string that identifies the IpAddress resource to fetch
      * @return \Twilio\Rest\Api\V2010\Account\Sip\IpAccessControlList\IpAddressContext 
      */
     public function getContext($sid) {

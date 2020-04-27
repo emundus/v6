@@ -220,6 +220,17 @@ class EmundusModelApplication extends JModelList {
         $this->_db->setQuery($query);
         return $this->_db->loadObjectList();
     }
+    public function getFileOwnComments($fnum,$user_id) {
+
+        $query = 'SELECT ec.id, ec.comment_body as comment, ec.reason, ec.fnum, ec.user_id, ec.date, u.name
+                FROM #__emundus_comments ec
+                LEFT JOIN #__users u ON u.id = ec.user_id
+                WHERE ec.fnum like '.$this->_db->Quote($fnum).'
+                AND ec.user_id = '.$user_id.'
+                ORDER BY ec.date ASC ';
+        $this->_db->setQuery($query);
+        return $this->_db->loadObjectList();
+    }
 
     public function editComment($id, $title, $text) {
 
@@ -3141,7 +3152,15 @@ class EmundusModelApplication extends JModelList {
         return $db->execute();
     }
 
-
+	/**
+	 * @param $elements
+	 * @param $table
+	 * @param $parent_table
+	 * @param $fnum
+	 *
+	 * @return bool
+	 *
+	 */
     public function checkEmptyRepeatGroups($elements, $table, $parent_table, $fnum) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -3169,7 +3188,7 @@ class EmundusModelApplication extends JModelList {
                 $elements = array_map(function($arr) {
                     if (is_numeric($arr)) {
                         return (empty(floatval($arr)));
-                    } else{
+                    } else {
                         if ($arr == "0000-00-00 00:00:00") {
                             return true;
                         }
@@ -3181,11 +3200,11 @@ class EmundusModelApplication extends JModelList {
                 return !empty($elements);
             }
 
-            return false;
+            return true;
 
         } catch (Exception $e ) {
-            echo "<pre>";var_dump($elements); echo "</pre>"; die();
-
+	        JLog::add('Error checking if repeat group is empty at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        return false;
         }
     }
 

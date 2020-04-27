@@ -22,6 +22,8 @@
 
 namespace JchOptimize\Interfaces;
 
+defined('_JEXEC') or die('Restricted access');
+
 /**
  * Interface HttpInterface
  * @package JchOptimize\Interfaces

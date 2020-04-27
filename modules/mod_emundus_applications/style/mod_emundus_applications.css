@@ -57,13 +57,13 @@ button#back:hover, button#back:active, button#back:focus,
     outline: none;
 }
 
-/* Accueil Dossiers */
+    /* Accueil Dossiers */
 .main-page-application-title {
     font-size: 20px;
     width:55%;
 }
 
-/*******************Mes dossiers de candidature*****************/
+    /*******************Mes dossiers de candidature*****************/
 
 .main-page-file-info p {
     padding-bottom: 10px;
@@ -123,8 +123,8 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 .homepage .candidacy-files-list .icon-plus-sign {
-     width: auto !important;
- }
+    width: auto !important;
+}
 
 .homepage .candidacy-files-list .btn i {
     display: inline !important;
@@ -133,3 +133,8 @@ button#back:hover, button#back:active, button#back:focus,
 .candidacy-files-list .col-xs-6:nth-child(2) a {
     margin: 5px 0 !important;
 }
+
+.list-group.candidacy-files-list i.icon-print, .list-group.candidacy-files-list i.icon-trash {
+    padding-left: 3px !important;
+}
+​

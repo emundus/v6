@@ -38,7 +38,7 @@ class JFormFieldAjax extends JFormField
 
 		if (!defined('JCH_VERSION'))
 		{
-			define('JCH_VERSION', '6.0.0');
+			define('JCH_VERSION', '6.0.1');
 		}
 
 		$params = Plugin::getPluginParams();

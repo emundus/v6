@@ -8,7 +8,7 @@
 
 // Protect from unauthorized access
 defined('_JEXEC') or die('Restricted access');
-JSession::checkToken( 'get' ) or die( 'Invalid Token' );
+JSession::checkToken('get') or die('Invalid Token');
 
 // Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
@@ -36,47 +36,47 @@ JHTML::stylesheet($chosen);
 
 <?php 
 // Cargamos el contenido común...
-include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 
 // ... y el contenido específico
-include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/upload.php';
+require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/upload.php';
 ?>
 
 <form enctype="multipart/form-data" method="post" class="margin-top-minus18" name="adminForm" id="adminForm">
 
-			<?php 
-			// Cargamos la navegación
-			include JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/navigation.php';
-			?>
-						
-			<!-- Breadcrumb-->
-			<ol class="breadcrumb">
-				<li class="breadcrumb-item">
-					<a href="<?php echo JRoute::_( 'index.php?option=com_securitycheckpro' );?>"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_DASHBOARD'); ?></a>
-				</li>				
-				<li class="breadcrumb-item active"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_IMPORT_CONFIG'); ?></li>
-			</ol>
-			
-			<div class="card mb-6">
-				<div class="card-body">
-					<div class="alert alert-warning">
-						<?php echo JText::_('COM_SECURITYCHECKPRO_IMPORT_SETTINGS_ALERT'); ?>
-					</div>
-					
-					<fieldset class="uploadform form-inline">
-						<legend><?php echo JText::_('COM_SECURITYCHECKPRO_IMPORT_SETTINGS'); ?></legend>
-						
-						<label class="custom-file">
-						  <input type="file" id="file_to_import" name="file_to_import" class="custom-file-input" onchange="$(this).next().after().text($(this).val().split('\\').slice(-1)[0])">
-						  <span class="custom-file-control"></span>
-						</label>
-						
-						<input class="btn btn-primary" class="margin-left-20" type="button" id="read_file_button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" />
-						
-					</fieldset>
-				</div>
-			</div>
-		</div>
+    <?php 
+    // Cargamos la navegación
+    require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/navigation.php';
+    ?>
+                        
+            <!-- Breadcrumb-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="<?php echo JRoute::_('index.php?option=com_securitycheckpro');?>"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_DASHBOARD'); ?></a>
+                </li>                
+                <li class="breadcrumb-item active"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_IMPORT_CONFIG'); ?></li>
+            </ol>
+            
+            <div class="card mb-6">
+                <div class="card-body">
+                    <div class="alert alert-warning">
+        <?php echo JText::_('COM_SECURITYCHECKPRO_IMPORT_SETTINGS_ALERT'); ?>
+                    </div>
+                    
+                    <fieldset class="uploadform form-inline">
+                        <legend><?php echo JText::_('COM_SECURITYCHECKPRO_IMPORT_SETTINGS'); ?></legend>
+                        
+                        <label class="custom-file">
+                          <input type="file" id="file_to_import" name="file_to_import" class="custom-file-input" onchange="$(this).next().after().text($(this).val().split('\\').slice(-1)[0])">
+                          <span class="custom-file-control"></span>
+                        </label>
+                        
+                        <input class="btn btn-primary" class="margin-left-20" type="button" id="read_file_button" value="<?php echo JText::_('COM_SECURITYCHECKPRO_UPLOAD_AND_IMPORT'); ?>" />
+                        
+                    </fieldset>
+                </div>
+            </div>
+        </div>
 </div>
 
 <input type="hidden" name="option" value="com_securitycheckpro" />

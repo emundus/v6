@@ -44,7 +44,7 @@ if (!defined('JCH_PLUGIN_DIR'))
 
 if (!defined('JCH_VERSION'))
 {
-	define('JCH_VERSION', '6.0.0');
+	define('JCH_VERSION', '6.0.1');
 }
 
 include_once(dirname(__FILE__) . '/jchoptimize/loader.php');

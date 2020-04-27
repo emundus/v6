@@ -225,6 +225,28 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 		return $this->doEvaluate($params->get('list_phpevents_ongetpluginrowheadings'), $args);
 	}
 
+	public function onShowInList(&$args)
+	{
+		$params = $this->getParams();
+
+		return $this->doEvaluate($params->get('list_phpevents_onshowinlist'), $args);
+	}
+
+	public function onElementCanViewList(&$args)
+	{
+		$params = $this->getParams();
+
+		return $this->doEvaluate($params->get('list_phpevents_onelementcanviewlist'), $args);
+	}
+
+	public function onRelatedDataURL(&$args)
+	{
+		$params = $this->getParams();
+
+		return $this->doEvaluate($params->get('list_phpevents_onrelateddataurl'), $args);
+	}
+
+
 
 	/**
 	 * Evaluate supplied PHP

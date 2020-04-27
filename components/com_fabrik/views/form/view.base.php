@@ -379,6 +379,7 @@ class FabrikViewFormBase extends FabrikView
 				$menuParams = is_a($menu->params, 'Registry') || is_a($menu->params, 'JRegistry') ? $menu->params : new Registry($menu->params);
 				$params->set('page_heading', FText::_($menuParams->get('page_heading', '')));
 				$params->set('show_page_heading', $menuParams->get('show_page_heading', 0));
+				$params->set('pageclass_sfx', $menuParams->get('pageclass_sfx'));
 				$browserTitle = $model->getPageTitle(FText::_($menuParams->get('page_title')));
 				$this->doc->setTitle($w->parseMessageForPlaceHolder($browserTitle, $_REQUEST));
 			}
@@ -613,6 +614,7 @@ class FabrikViewFormBase extends FabrikView
 		if (!FabrikHelperHTML::inAjaxLoadedPage())
 		{
 			JText::script('COM_FABRIK_VALIDATING');
+            JText::script('COM_FABRIK_MUST_VALIDATE');
 			JText::script('COM_FABRIK_SUCCESS');
 			JText::script('COM_FABRIK_NO_REPEAT_GROUP_DATA');
 			JText::script('COM_FABRIK_VALIDATION_ERROR');
@@ -688,7 +690,21 @@ class FabrikViewFormBase extends FabrikView
 			$groupedJs->$groupId = $elementJs;
 		}
 
-		$script[] = json_encode($groupedJs);
+		$json = json_encode($groupedJs);
+
+		/*
+		 * Ran across an issue where encrypted fields that don't decrypt properly, for example if you do an
+		 * Akeeba clone with Kickstart that changes the secret, will cause a JSON_ERROR_UTF8 because the data
+		 * is binary blob.  Should really handle the error better, but for now just make sure there's an error message
+		 * so we (support staff) at least know what's going on.
+		 */
+		if ($json === false)
+		{
+			$this->app->enqueueMessage('JSON encode error! ' . json_last_error_msg());
+			return false;
+		}
+
+		$script[] = $json;
 		$script[] = "\t);";
 		$script[] = $actions;
 		$script[] = $vstr;
@@ -717,7 +733,16 @@ class FabrikViewFormBase extends FabrikView
 
 		// 3.1 call form js plugin code within main require method
 		$srcs = array_merge($srcs, $model->formPluginShim);
-		$str .= implode("\n", (array) $model->formPluginJS);
+		$str .= "\n$bKey.addPlugins({";
+		$plugins = array();
+
+		foreach ($model->formPluginJS as $pluginName => $pluginStr)
+		{
+			$plugins[] = "'$pluginName': $pluginStr";
+		}
+
+		$str .= implode(',', $plugins) . "});\n";
+
 		FabrikHelperHTML::script($srcs, $str);
 	}
 

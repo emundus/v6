@@ -22,7 +22,7 @@
 
 namespace JchOptimize\Core;
 
-defined('_JCH_EXEC') or die('Restricted access');
+defined('_JEXEC') or die('Restricted access');
 
 use JchOptimize\Platform\Settings;
 use JchOptimize\Platform\Utility;
@@ -50,7 +50,10 @@ class Parser extends Base
 	protected $aDefers = array();
 
 	/** @var array    Array of javascript files/scripts that were excluded */
-	protected $aExcludedJs = array();
+	protected $aExcludedJs = array(
+		'ieo' => array(),
+		'peo' => array()
+	);
 
 	protected $aUrls = array();
 	protected $oFileRetriever;
@@ -65,6 +68,8 @@ class Parser extends Base
 	public $iIndex_css = 0;
 	public $bExclude_js = false;
 	public $bExclude_css = false;
+	/** @var bool   Determines if the last js file should be loaded asynchronously or deferred */
+	public $bLoadAsync = true;
 
 
 	/**
@@ -100,7 +105,7 @@ class Parser extends Base
 			$this->containsgf = $containsgf;
 		}
 
-		$this->bAmpPage = (bool) preg_match('#<html [^>]*?(?:&\#26A1;|amp)(?: |>)#', $sHtml);
+		$this->bAmpPage = (bool) preg_match('#<html [^>]*?(?:&\#26A1;|amp)[ >]#', $sHtml);
 
 		$this->parseHtml();
 	}
@@ -322,7 +327,8 @@ class Parser extends Base
 			$u = self::ATTRIBUTE_VALUE;
 
 			$rx = "#(?><?[^<]*+)*?\K(?:<img\s++"
-				. "(?=(?>$a\s++)*?src\s*+=([\"']?)($u))[^>]*+>|$)#i";
+				. "(?!(?=(?>$a\s*+)*?width\s*=)(?=(?>$a\s*+)*?height\s*=))"
+				. "(?=(?>$a\s*+)*?src\s*+=([\"']?)($u))[^>]*+>|$)#i";
 
 			//find all images and populate the $m array
 			// $m[0] - complete <img/> tag
@@ -419,21 +425,27 @@ class Parser extends Base
 					Helper::addHttp2Push($sUrl, $sType, $deferred);
 				}
 
+				//If file or declaration was not selected in 'DontMove' then add to array of excluded files
+				//to be moved to the bottom of section
 				if ($sType == 'js' && (!(!empty($sUrl) && !empty($aDontMoves['js']) && Helper::findExcludes($aDontMoves['js'], $sUrl)) && !($sDeclaration != '' && Helper::findExcludes($aDontMoves['scripts'], $sDeclaration, 'js'))))
 				{
-					$this->aExcludedJs[] = $aMatches[0];
+					//All these files were excluded while ignoring execution order
+					$this->aExcludedJs['ieo'][] = $aMatches[0];
 
 					return '';
 				}
 
+				//This file was selected as 'DontMove'
 				return $aMatches[0];
 
-			//Remove deferred javascript files (without async attributes) and add them to the $aDefers array	
+			//Remove deferred javascript files (without async attributes) and add them to the $aDefers array
 			case ($sUrl != '' && $sType == 'js' && $this->isFileDeferred($aMatches[0], true)):
 
 				Helper::addHttp2Push($sUrl, $sType, true);
 
 				$this->aDefers[] = $aMatches[0];
+				//We now have to defer the last js file
+				$this->bLoadAsync = false;
 
 				return '';
 
@@ -445,6 +457,8 @@ class Parser extends Base
 			case ($sDeclaration != '' && Helper::findExcludes($aExcludes[$sType . '_script'], $sDeclaration, $sType)):
 			case (($sUrl != '') && $this->excludeExternalExtensions($sUrl)):
 
+				//Last js file should be deferred
+				$this->bLoadAsync = false;
 				//We want to put the combined js files as low as possible, if files were removed before,
 				//we place them just above the excluded files
 				if ($sType == 'js' && !$this->bExclude_js && !empty($this->aLinks['js']))
@@ -464,20 +478,27 @@ class Parser extends Base
 
 				if ($sType == 'js' && (!(!empty($sUrl) && !empty($aDontMoves['js']) && Helper::findExcludes($aDontMoves['js'], $sUrl)) && !($sDeclaration != '' && Helper::findExcludes($aDontMoves['scripts'], $sDeclaration, 'js'))))
 				{
-					$this->aExcludedJs[] = $aMatches[0];
+					//These files were excluded while preserving execution order
+					$this->aExcludedJs['peo'][] = $aMatches[0];
 
 					return '';
 				}
 
+				//If we get to this point then this file/script was marked as 'DontMove'
+				// so now we have to put all the excluded files while peo above it
+				$aMatches[0] = implode($this->sLnEnd, $this->aExcludedJs['peo']) . $this->sLnEnd . $aMatches[0];
+				//reinitialize array of excludes (peo)
+				$this->aExcludedJs['peo'] = array();
+
 				return $aMatches[0];
 
-			//Remove duplicated files from the HTML. We don't need duplicates in the combined files	
+			//Remove duplicated files from the HTML. We don't need duplicates in the combined files
 			//Placed below the exclusions so it's possible to exclude them
 			case (($sUrl != '') && $this->isDuplicated($sUrl)):
 
 				return '';
 
-			//These files will be combined	
+			//These files will be combined
 			default:
 				$return = '';
 
@@ -556,7 +577,7 @@ class Parser extends Base
 		{
 			$id .= $aMatches['url'];
 
-			//If file is a, or imports Google fonts, add browser hash to id 
+			//If file is a, or imports Google fonts, add browser hash to id
 			if (strpos($aMatches['url'], 'fonts.googleapis.com') !== false
 				|| in_array($aMatches['url'], $this->containsgf))
 			{
@@ -655,7 +676,8 @@ class Parser extends Base
 	}
 
 	/**
-	 * Gets array of javascript files that were excluded from the plugin. These files will be placed just before the </head>|</body> element
+	 * Gets array of javascript files that were excluded from the plugin. These files will be placed just before
+	 * the </head>|</body> element
 	 *
 	 * @return array
 	 */
@@ -684,7 +706,7 @@ class Parser extends Base
 	}
 
 	/**
-	 * Retruns regex for content enclosed in conditional IE HTML comments
+	 * Returns regex for content enclosed in conditional IE HTML comments
 	 *
 	 * @return string        Conditional comments regex
 	 */
@@ -703,11 +725,10 @@ class Parser extends Base
 	{
 		$sAttrs = implode('|', $aAttrs);
 
-		return <<<URLREGEX
+		return <<<REGEXP
                 (?>  [^\s>]*+\s  )+?  (?>$sAttrs)\s*+=\s*+["']?
                 ( (?<!["']) [^\s>]*+  | (?<!') [^"]*+ | [^']*+ )
-                                                                        
-URLREGEX;
+REGEXP;
 	}
 
 	/**
@@ -731,6 +752,7 @@ URLREGEX;
 		$a = self::HTML_ATTRIBUTE;
 		$u = self::ATTRIBUTE_VALUE;
 
+		//language=RegExp
 		$aRegex[0] = "(?:<script\b(?!(?>\s*+$a)*?\s*+type\s*+=\s*+(?![\"']?(?:text|application)/javascript[\"' ]))";
 		$aRegex[1] = "(?>\s*+(?!src)$a)*\s*+(?:src\s*+=\s*+[\"']?($u))?[^<>]*+>((?><?[^<]*+)*?)</\s*+script\s*+>)";
 
@@ -1045,10 +1067,20 @@ URLREGEX;
 							return $aMatches[0];
 						}
 
-						//Add the section before the src attribute and the modified src and data-src attributes 
+						//Add the section before the src attribute and the modified src and data-src attributes
 						$return .= $aMatches[6] . 'src="';
-						$return .= $aMatches[2] == 'iframe' ? 'about:blank' : 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-						$return .= '" data-src="' . $aMatches[8] . '"';
+
+						//If no srcset attribute was found, modify the src attribute and add a data-src attribute
+						if (empty($aMatches[5]))
+						{
+							$return .= $aMatches[2] == 'iframe' ? 'about:blank' : 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+							$return .= '" data-src="' . $aMatches[8] . '"';
+						}
+						//else just return the existing src attribute
+						else
+						{
+							$return .= $aMatches[8] . '"';
+						}
 
 
 					}
@@ -1062,26 +1094,19 @@ URLREGEX;
 					//Add the rest of the opening tag
 					$return .= $aMatches[9];
 
-					//If the srcset attribute was found on a SOURCE element, convert to data-srcset
-					//and add placeholder srcset attribute to pass W3C Markup validation
+					//If the srcset attribute was found add placeholder srcset attribute to pass W3C Markup validation
+					//We also need to specify the width of the image (1w) in this case
+					//Modern browsers will lazy-load without loading the src attribute
 					if (!empty($aMatches[5]))
 					{
-						$replacement = '';
-
-						//Add srcet attribute on SOURCE elements for HTML validation
-						if ($aMatches[2] == 'source')
-						{
-							$replacement .= 'srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" ';
-						}
-
-						$replacement .= 'data-' . $aMatches[5];
+						$replacement = 'srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7 1w" data-' . $aMatches[5];
 
 						$return = str_replace($aMatches[5], $replacement, $return);
 					}
 
+					//If class already on element add the lazyload class
 					if ($aMatches[2] != 'picture' && $aMatches[2] != 'source' && !empty($aMatches[3]))
 					{
-						//If class already on element add the lazyload class
 						$return = str_replace($aMatches[3], $aMatches[3] . ' jch-lazyload', $return);
 					}
 
@@ -1186,7 +1211,7 @@ URLREGEX;
 
 		$sRegex .= '|\K$)';
 
-		//Skip first 80 elements before starting to modify images for lazy load to avoid problems 
+		//Skip first 80 elements before starting to modify images for lazy load to avoid problems
 		//with css render blocking
 		$s80 = '(?:(?><?(?:[a-z0-9]++)(?:[^>]*+)>(?><?[^<]*+)*?(?=<[a-z0-9])){80}|$)';
 

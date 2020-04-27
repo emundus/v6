@@ -14,9 +14,12 @@ use Twilio\Values;
 
 abstract class FeedbackSummaryOptions {
     /**
-     * @param string $includeSubaccounts The include_subaccounts
-     * @param string $statusCallback The status_callback
-     * @param string $statusCallbackMethod The status_callback_method
+     * @param boolean $includeSubaccounts `true` includes feedback from the
+     *                                    specified account and its subaccounts
+     * @param string $statusCallback The URL that we will request when the feedback
+     *                               summary is complete
+     * @param string $statusCallbackMethod The HTTP method we use to make requests
+     *                                     to the StatusCallback URL
      * @return CreateFeedbackSummaryOptions Options builder
      */
     public static function create($includeSubaccounts = Values::NONE, $statusCallback = Values::NONE, $statusCallbackMethod = Values::NONE) {
@@ -26,9 +29,12 @@ abstract class FeedbackSummaryOptions {
 
 class CreateFeedbackSummaryOptions extends Options {
     /**
-     * @param string $includeSubaccounts The include_subaccounts
-     * @param string $statusCallback The status_callback
-     * @param string $statusCallbackMethod The status_callback_method
+     * @param boolean $includeSubaccounts `true` includes feedback from the
+     *                                    specified account and its subaccounts
+     * @param string $statusCallback The URL that we will request when the feedback
+     *                               summary is complete
+     * @param string $statusCallbackMethod The HTTP method we use to make requests
+     *                                     to the StatusCallback URL
      */
     public function __construct($includeSubaccounts = Values::NONE, $statusCallback = Values::NONE, $statusCallbackMethod = Values::NONE) {
         $this->options['includeSubaccounts'] = $includeSubaccounts;
@@ -37,9 +43,10 @@ class CreateFeedbackSummaryOptions extends Options {
     }
 
     /**
-     * The include_subaccounts
+     * Whether to also include Feedback resources from all subaccounts. `true` includes feedback from all subaccounts and `false`, the default, includes feedback from only the specified account.
      * 
-     * @param string $includeSubaccounts The include_subaccounts
+     * @param boolean $includeSubaccounts `true` includes feedback from the
+     *                                    specified account and its subaccounts
      * @return $this Fluent Builder
      */
     public function setIncludeSubaccounts($includeSubaccounts) {
@@ -48,9 +55,10 @@ class CreateFeedbackSummaryOptions extends Options {
     }
 
     /**
-     * The status_callback
+     * The URL that we will request when the feedback summary is complete.
      * 
-     * @param string $statusCallback The status_callback
+     * @param string $statusCallback The URL that we will request when the feedback
+     *                               summary is complete
      * @return $this Fluent Builder
      */
     public function setStatusCallback($statusCallback) {
@@ -59,9 +67,10 @@ class CreateFeedbackSummaryOptions extends Options {
     }
 
     /**
-     * The status_callback_method
+     * The HTTP method (`GET` or `POST`) we use to make the request to the `StatusCallback` URL.
      * 
-     * @param string $statusCallbackMethod The status_callback_method
+     * @param string $statusCallbackMethod The HTTP method we use to make requests
+     *                                     to the StatusCallback URL
      * @return $this Fluent Builder
      */
     public function setStatusCallbackMethod($statusCallbackMethod) {

@@ -19,30 +19,18 @@ class JFormFieldFtables extends JFormFieldList
         $options = array();
 
         $options = array();
-        // Add our options to the array
-        // value=> [table name] , text => [Name to Display] //name to display content element name ?
-        $options[] = array("value" => 'content', "text" => "Articles");
-        $options[] = array("value" => "menu", "text" => "Menu");
-	    $options[] = array("value" => "modules", "text" => "Modules");
+	    $ie_list = JComponentHelper::getParams('com_falang')->get('ie_list', '');
+	    $values = explode("\r\n",$ie_list);
+	    foreach( $values as  $l ){
+	    	$tables = explode(",",$l);
+		    if (isset($tables[0]) && isset($tables[1])){
+			    $options[] = array("value" => $tables[0], "text" => $tables[1] );
+		    }
+	    }
 
-        return $options;
-//        $items = array('article'=>'Article','menu'=>'Menu');
-//
-//        // Build the field options.
-//        if (!empty($items))
-//        {
-//            foreach ($items as $key =>$item)
-//            {
-//                $options[] = JHtml::_('select.option', $key, $item);
-//            }
-//        }
-//
 //        // Merge any additional options in the XML definition.
 //        $options = array_merge(parent::getOptions(), $options);
-//
-//        return $options;
-
-
+        return $options;
     }
 
 }

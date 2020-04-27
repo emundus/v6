@@ -897,6 +897,8 @@ div.modal {
   -ms-flex: 1 1 auto;
       flex: 1 1 auto;
   padding: 1.25rem;
+  background: none !important;
+  box-shadow: none !important;
 }
 
 .card-title {
@@ -4276,9 +4278,9 @@ button.list-group-item-dark.active {
 }
 
 .alert-warning {
-  color: #856404;
-  background-color: #fff3cd;
-  border-color: #ffeeba;
+  color: #856404 !important;
+  background-color: #fff3cd !important;
+  border-color: #ffeeba !important;
 }
 
 .alert-warning hr {
@@ -4348,7 +4350,7 @@ color: black;
 .badge {
   display: inline-block;
   padding: 0.25em 0.4em;
-  font-size: 75%;
+  /*font-size: 75%;*/
   font-weight: bold;
   line-height: 1;
   color: #fff;
@@ -4481,4 +4483,32 @@ color: black;
 
 .blockquote-footer {
 	margin-left: 10px;
+}
+
+.chosen-container-single {
+    width: 220px !important;
+}
+
+.pull-right{
+	float: right !important;
+}
+
+.btn-toolbar{
+	display: inline;
+}
+
+.form-control {
+    max-width: inherit !important;   
+}
+
+.color_rojo {
+color: #E31E1E;
+}
+
+.color_verde {
+color: #0B7C08;
+}
+
+.badge-important {
+    background-color: #b94a48;
 }

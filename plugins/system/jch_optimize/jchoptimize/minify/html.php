@@ -10,9 +10,13 @@
  * written by Stephen Clay <steve@mrclay.org>
  *
  * @author Samuel Marshall<sdmarshall73@gmail.com>
+ * @copyright Copyright (c) 2010 Samuel Marshall
+ * @license   GNU/GPLv3, See LICENSE file
  */
 
 namespace JchOptimize\Minify;
+
+defined('_JEXEC') or die('Restricted access');
 
 class Html extends Base
 {

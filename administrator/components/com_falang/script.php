@@ -46,12 +46,13 @@ class com_falangInstallerScript
                            'show_tpl_lang' =>0,
                            'show_list'  => 1,
                            'show_form' => 1,
-                           'component_list' => 'com_menus#menu#id#items,item#10#13com_content#content#id#default,articles,article,featured#10#13com_categories#categories#id#default,categories,category#10#13com_modules#modules#id#default,modules,module#10#13com_newsfeeds#newsfeeds#id#default,newsfeeds,newsfeed',
+                           'component_list' => 'com_menus#menu#id#items,item#10#13com_content#content#id#default,articles,article,featured#10#13com_categories#categories#id#default,categories,category#10#13com_modules#modules#id#default,modules,module#10#13com_newsfeeds#newsfeeds#id#default,newsfeeds,newsfeed#10#13com_fields#fields#id#default,fields,field#10#13com_fields#fields_groups#id#default,groups,group',
 	                       'copy_images_and_urls' => 0,
 	                       'advanced_menu_show' => 0,
                            'advanced_router' => 0,
 	                       'update_caching' => 1,
-                           'copy_custom_fields' => 0
+                           'copy_custom_fields' => 0,
+	                       'ie_list' => 'content,Articles#10#13menu,Menu#10#13modules,Modules'
                    )
            )
         );

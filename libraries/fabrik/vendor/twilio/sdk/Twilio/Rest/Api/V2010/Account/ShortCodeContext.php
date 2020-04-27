@@ -25,13 +25,10 @@ class ShortCodeContext extends InstanceContext {
      */
     public function __construct(Version $version, $accountSid, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'accountSid' => $accountSid,
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('accountSid' => $accountSid, 'sid' => $sid, );
+
         $this->uri = '/Accounts/' . rawurlencode($accountSid) . '/SMS/ShortCodes/' . rawurlencode($sid) . '.json';
     }
 
@@ -39,16 +36,17 @@ class ShortCodeContext extends InstanceContext {
      * Fetch a ShortCodeInstance
      * 
      * @return ShortCodeInstance Fetched ShortCodeInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new ShortCodeInstance(
             $this->version,
             $payload,
@@ -62,10 +60,11 @@ class ShortCodeContext extends InstanceContext {
      * 
      * @param array|Options $options Optional Arguments
      * @return ShortCodeInstance Updated ShortCodeInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function update($options = array()) {
         $options = new Values($options);
-        
+
         $data = Values::of(array(
             'FriendlyName' => $options['friendlyName'],
             'ApiVersion' => $options['apiVersion'],
@@ -74,14 +73,14 @@ class ShortCodeContext extends InstanceContext {
             'SmsFallbackUrl' => $options['smsFallbackUrl'],
             'SmsFallbackMethod' => $options['smsFallbackMethod'],
         ));
-        
+
         $payload = $this->version->update(
             'POST',
             $this->uri,
             array(),
             $data
         );
-        
+
         return new ShortCodeInstance(
             $this->version,
             $payload,

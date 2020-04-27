@@ -166,19 +166,33 @@ class EmundusModelEvaluation extends JModelList {
 					$this->_elements_default[] = $query;
 				}
 				elseif ($def_elmt->element_plugin == 'cascadingdropdown') {
-		                    $attribs = json_decode($def_elmt->element_attribs);
-		                    $cascadingdropdown_id = $attribs->cascadingdropdown_id;
-		                    $r1 = explode('___', $cascadingdropdown_id);
-		                    $cascadingdropdown_label = $attribs->cascadingdropdown_label;
-		                    $r2 = explode('___', $cascadingdropdown_label);
-		                    $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
-		                    $from = $r2[0]; 
-		                    $where = $r1[1].'='.$def_elmt->tab_name.'.'.$def_elmt->element_name;
-		                    $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
-		                    $query = preg_replace('#{thistable}#', $from, $query);
-		                    $query = preg_replace('#{my->id}#', $current_user->id, $query);
-			                $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
-		                    $this->_elements_default[] = $query;
+					$attribs = json_decode($def_elmt->element_attribs);
+                    $cascadingdropdown_id = $attribs->cascadingdropdown_id;
+                    $r1 = explode('___', $cascadingdropdown_id);
+                    $cascadingdropdown_label = $attribs->cascadingdropdown_label;
+                    $r2 = explode('___', $cascadingdropdown_label);
+                    $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
+                    $from = $r2[0]; 
+                    $where = $r1[1];
+
+                   if (@$group_params->repeat_group_button == 1) {
+                        $query = '(
+                                    select GROUP_CONCAT('.$select.' SEPARATOR ", ")
+                                    from '.$from.'
+                                    where '.$where.' IN
+                                        ( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
+                                          from '.$def_elmt->table_join.'
+                                          where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
+                                        )
+                                  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+                    } else {
+                        $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
+                    }
+                    
+                    $query = preg_replace('#{thistable}#', $from, $query);
+                    $query = preg_replace('#{my->id}#', $current_user->id, $query);
+                    $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
+                    $this->_elements_default[] = $query;
 		        }
 				elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
 
@@ -1069,7 +1083,7 @@ class EmundusModelEvaluation extends JModelList {
 					case 'status':
 						if ($value) {
 
-                            $filt_menu_defined = ( isset($filt_menu['status'][0]) && $filt_menu['status'][0] != '' && $filt_menu['status'] != "%" ) ? true : false;
+                            $filt_menu_defined = (isset($filt_menu['status'][0]) && $filt_menu['status'][0] != '' && $filt_menu['status'] != "%");
 
                             // session filter is empty
                             if ($value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
@@ -1102,8 +1116,35 @@ class EmundusModelEvaluation extends JModelList {
 
                             if ($value[0] == "%" || !isset($value[0]) || $value[0] === '') {
                             	$query['q'] .= ' ';
-                            } else{
-                            	$query['q'] .= ' and (eta.id_tag like "%' . implode('%" OR eta.id_tag like "%', $value) . '%") ';
+                            } else {
+
+                            	if (isset($filt_menu['tag'][0]) && $filt_menu['tag'][0] != '' && $filt_menu['tag'] != "%") {
+		                            // This allows hiding of files by tag.
+		                            $filt_menu_not = array_filter($filt_menu['tag'], function($e) {
+			                            return strpos($e, '!') === 0;
+		                            });
+	                            }
+
+	                            // This allows hiding of files by tag.
+	                            $not_in = array_filter($value, function($e) {
+		                            return strpos($e, '!') === 0;
+	                            });
+
+	                            if (!empty($not_in) && !empty($filt_menu_not)) {
+		                            $not_in = array_unique(array_merge($not_in, $filt_menu_not));
+	                            }
+
+	                            if (!empty($not_in)) {
+		                            $value = array_diff($value, $not_in);
+		                            $not_in = array_map(function($v) {
+			                            return ltrim($v, '!');
+		                            }, $not_in);
+		                            $query['q'] .= ' and c.fnum NOT IN (SELECT cc.fnum FROM jos_emundus_campaign_candidature AS cc LEFT JOIN jos_emundus_tag_assoc as ta ON ta.fnum = cc.fnum WHERE ta.id_tag IN (' . implode(',', $not_in) . ')) ';
+	                            }
+
+	                            if (!empty($value)) {
+		                            $query['q'] .= ' and (eta.id_tag like "%' . implode('%" OR eta.id_tag like "%', $value) . '%") ';
+	                            }
                             }
                         }
                         break;

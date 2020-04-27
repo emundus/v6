@@ -284,6 +284,7 @@ class JFormFieldAutoorder extends JFormFieldAuto
 			'ykhoonhtmlprotector',
 			'jat3',
 			'cache',
+			'plg_gkcache',
 			'pagecacheextended',
 			'homepagecache',
 			'jSGCache',

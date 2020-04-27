@@ -1,13 +1,14 @@
 <?php
 /**
- * @package     FOF
- * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license     GNU GPL version 2 or later
+ * @package   FOF
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 2, or later
  */
 
 namespace FOF30\Autoloader;
 
 // Do not put the JEXEC or die check on this file (necessary omission for testing)
+use InvalidArgumentException;
 
 /**
  * A PSR-4 class autoloader. This is a modified version of Composer's ClassLoader class
@@ -16,17 +17,14 @@ namespace FOF30\Autoloader;
  */
 class Autoloader
 {
-	/** @var   array  Lengths of PSR-4 prefixes */
-	private $prefixLengths = array();
-
-	/** @var   array  Prefix to directory map */
-	private $prefixDirs = array();
-
-	/** @var   array  Fall-back directories */
-	private $fallbackDirs = array();
-
 	/** @var   Autoloader  The static instance of this autoloader */
 	private static $instance;
+	/** @var   array  Lengths of PSR-4 prefixes */
+	private $prefixLengths = [];
+	/** @var   array  Prefix to directory map */
+	private $prefixDirs = [];
+	/** @var   array  Fall-back directories */
+	private $fallbackDirs = [];
 
 	/**
 	 * @return Autoloader
@@ -45,6 +43,8 @@ class Autoloader
 	 * Returns the prefix to directory map
 	 *
 	 * @return  array
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function getPrefixes()
 	{
@@ -55,6 +55,8 @@ class Autoloader
 	 * Returns the list of fall=back directories
 	 *
 	 * @return  array
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function getFallbackDirs()
 	{
@@ -71,7 +73,7 @@ class Autoloader
 	 *
 	 * @return  $this for chaining
 	 *
-	 * @throws  \InvalidArgumentException  When the prefix is invalid
+	 * @throws  InvalidArgumentException  When the prefix is invalid
 	 */
 	public function addMap($prefix, $paths, $prepend = false)
 	{
@@ -86,7 +88,7 @@ class Autoloader
 			if ($prepend)
 			{
 				$this->fallbackDirs = array_merge(
-					(array)$paths,
+					(array) $paths,
 					$this->fallbackDirs
 				);
 
@@ -96,7 +98,7 @@ class Autoloader
 			{
 				$this->fallbackDirs = array_merge(
 					$this->fallbackDirs,
-					(array)$paths
+					(array) $paths
 				);
 
 				$this->fallbackDirs = array_unique($this->fallbackDirs);
@@ -108,16 +110,16 @@ class Autoloader
 			$length = strlen($prefix);
 			if ('\\' !== $prefix[$length - 1])
 			{
-				throw new \InvalidArgumentException("A non-empty PSR-4 prefix must end with a namespace separator.");
+				throw new InvalidArgumentException("A non-empty PSR-4 prefix must end with a namespace separator.");
 			}
 			$this->prefixLengths[$prefix[0]][$prefix] = $length;
-			$this->prefixDirs[$prefix] = (array)$paths;
+			$this->prefixDirs[$prefix]                = (array) $paths;
 		}
 		elseif ($prepend)
 		{
 			// Prepend directories for an already registered namespace.
 			$this->prefixDirs[$prefix] = array_merge(
-				(array)$paths,
+				(array) $paths,
 				$this->prefixDirs[$prefix]
 			);
 
@@ -128,7 +130,7 @@ class Autoloader
 			// Append directories for an already registered namespace.
 			$this->prefixDirs[$prefix] = array_merge(
 				$this->prefixDirs[$prefix],
-				(array)$paths
+				(array) $paths
 			);
 
 			$this->prefixDirs[$prefix] = array_unique($this->prefixDirs[$prefix]);
@@ -158,7 +160,9 @@ class Autoloader
 	 *
 	 * @return  void
 	 *
-	 * @throws  \InvalidArgumentException  When the prefix is invalid
+	 * @throws  InvalidArgumentException  When the prefix is invalid
+	 *
+	 * @noinspection PhpUnused
 	 */
 	public function setMap($prefix, $paths)
 	{
@@ -169,17 +173,17 @@ class Autoloader
 
 		if (!$prefix)
 		{
-			$this->fallbackDirs = (array)$paths;
+			$this->fallbackDirs = (array) $paths;
 		}
 		else
 		{
 			$length = strlen($prefix);
 			if ('\\' !== $prefix[$length - 1])
 			{
-				throw new \InvalidArgumentException("A non-empty PSR-4 prefix must end with a namespace separator.");
+				throw new InvalidArgumentException("A non-empty PSR-4 prefix must end with a namespace separator.");
 			}
 			$this->prefixLengths[$prefix[0]][$prefix] = $length;
-			$this->prefixDirs[$prefix] = (array)$paths;
+			$this->prefixDirs[$prefix]                = (array) $paths;
 		}
 	}
 
@@ -192,7 +196,7 @@ class Autoloader
 	 */
 	public function register($prepend = false)
 	{
-		spl_autoload_register(array($this, 'loadClass'), true, $prepend);
+		spl_autoload_register([$this, 'loadClass'], true, $prepend);
 	}
 
 	/**
@@ -202,7 +206,7 @@ class Autoloader
 	 */
 	public function unregister()
 	{
-		spl_autoload_unregister(array($this, 'loadClass'));
+		spl_autoload_unregister([$this, 'loadClass']);
 	}
 
 	/**
@@ -210,16 +214,19 @@ class Autoloader
 	 *
 	 * @param   string  $class  The name of the class
 	 *
-	 * @return  boolean|null True if loaded, null otherwise
+	 * @return  bool True if loaded, null otherwise
 	 */
 	public function loadClass($class)
 	{
 		if ($file = $this->findFile($class))
 		{
+			/** @noinspection PhpIncludeInspection */
 			include $file;
 
 			return true;
 		}
+
+		return false;
 	}
 
 	/**
@@ -235,6 +242,16 @@ class Autoloader
 		if ('\\' == $class[0])
 		{
 			$class = substr($class, 1);
+		}
+
+		// FEFHelper lookup
+		if (substr($class, 0, 9) == 'FEFHelper')
+		{
+
+			if (file_exists($file = realpath(__DIR__ . '/..') . '/Utils/FEFHelper/' . strtolower(substr($class, 9)) . '.php'))
+			{
+				return $file;
+			}
 		}
 
 		// PSR-4 lookup
@@ -267,9 +284,11 @@ class Autoloader
 				return $file;
 			}
 		}
+
+		return false;
 	}
 }
 
 // Register the current namespace with the autoloader
-Autoloader::getInstance()->addMap('FOF30\\', array(realpath(__DIR__ . '/..')));
+Autoloader::getInstance()->addMap('FOF30\\', [realpath(__DIR__ . '/..')]);
 Autoloader::getInstance()->register();

@@ -382,21 +382,18 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 
 				if ($ft == "H:i:s")
 				{
-					list($hour, $min, $sec) = explode(':', $d);
-					$timedisp = $hour . $sep . $min . $sep . $sec;
+					$timedisp = $hms;
 				}
 				else
 				{
 					if ($ft == "H:i")
 					{
-						list($hour, $min) = explode(':', $d);
-						$timedisp = $hour . $sep . $min;
+						$timedisp = $hm;
 					}
 
 					if ($ft == "i:s")
 					{
-						list($min, $sec) = explode(':', $d);
-						$timedisp = $min . $sep . $sec;
+						$timedisp = $ms;
 					}
 				}
 
@@ -433,5 +430,19 @@ class PlgFabrik_ElementTime extends PlgFabrik_Element
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Used to format the data when shown in the form's email
+	 *
+	 * @param   mixed $value         element's data
+	 * @param   array $data          form records data
+	 * @param   int   $repeatCounter repeat group counter
+	 *
+	 * @return  string    formatted value
+	 */
+	public function getEmailValue($value, $data = array(), $repeatCounter = 0)
+	{
+		return $this->getIndEmailValue($value, $data, $repeatCounter);
 	}
 }
