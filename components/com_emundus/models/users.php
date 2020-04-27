@@ -2041,7 +2041,7 @@ class EmundusModelUsers extends JModelList {
 
 		// Build the translated email.
 		$subject = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $data['sitename']);
-		$body = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_BODY', $data['sitename'], $data['link_html'], $data['token']);
+		$body = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_BODY', $data['sitename'], $data['token'], $data['link_html']);
 
 		// Get and apply the template.
 		$query->clear()
