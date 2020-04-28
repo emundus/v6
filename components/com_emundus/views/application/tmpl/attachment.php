@@ -42,9 +42,9 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
         </div>
 
         <?php $i = 1;
-        $new_cat_id = ($this->userAttachments[0]->category == null) ?  0 : $this->userAttachments[0]->category;
-        $cat_id = $this->userAttachments[0]->category;
-        $nameCategory = $this->nameCategory[$cat_id]; ?>
+        $new_cat_id = (empty($this->userAttachments[0]->category)) ?  0 : $this->userAttachments[0]->category;
+        $cat_id = (empty($this->userAttachments[0]->category)) ?  null : $this->userAttachments[0]->category;
+        $nameCategory = (empty($this->nameCategory[$cat_id])) ?  null : $this->nameCategory[$cat_id]; ?>
 
         <div class="em-collapse-container">
             <div class="em-utilitize">
