@@ -1143,7 +1143,7 @@ class EmundusModelEvaluation extends JModelList {
 	                            }
 
 	                            if (!empty($value)) {
-		                            $query['q'] .= ' and (eta.id_tag like "%' . implode('%" OR eta.id_tag like "%', $value) . '%") ';
+		                            $query['q'] .= ' and eta.id_tag IN ('.implode(',', $value).') ';
 	                            }
                             }
                         }
