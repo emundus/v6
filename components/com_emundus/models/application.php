@@ -1210,14 +1210,13 @@ class EmundusModelApplication extends JModelList {
                                         $forms .= '</tbody>';
                                     }
                                     $forms .= '</table>';
-
                                 }
-
-
 
 	                            // AFFICHAGE EN LIGNE
 	                        } else {
-	                            $forms .='<table class="em-personalDetail-table-inline">';
+
+	                        	$forms .='<table class="em-personalDetail-table-inline"><legend class="legend">'.JText::_($itemg->label).'</legend>';
+
 	                            $modulo = 0;
 	                            foreach ($elements as &$element) {
 
