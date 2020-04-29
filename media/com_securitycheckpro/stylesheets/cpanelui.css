@@ -1148,3 +1148,7 @@ text-align: center !important;
 .width-35 {
 	width: 35%;
 }
+
+.margin-left-auto {
+    margin-left: auto;
+}

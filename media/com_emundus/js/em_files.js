@@ -1869,7 +1869,7 @@ $(document).ready(function() {
                                                                     dataType:'json',
                                                                     success: function(result) {
                                                                         var item='';
-                                                                        item+='<option value="0" selected>Select an option</option>';
+                                                                        item+='<option value="0" selected>'+Joomla.JText._('JGLOBAL_SELECT_AN_OPTION')+'</option>';
                                                                         for (var d in result.elts) {
 
                                                                             if (isNaN(parseInt(d)))
@@ -2114,7 +2114,7 @@ $(document).ready(function() {
                                                                             //console.log(result);
                                                                             var item='';
 
-                                                                            item += '<option value="0" selected>Select an option</option>';
+                                                                            item += '<option value="0" selected>'+Joomla.JText._('JGLOBAL_SELECT_AN_OPTION')+'</option>';
 
                                                                             for (var d in result.elts) {
 
@@ -2697,7 +2697,7 @@ $(document).ready(function() {
                                                                         url: 'index.php?option=com_emundus&controller=files&task=getformelem&code='+code+'&camp='+camp+'&Itemid='+itemId,
                                                                         dataType:'json',
                                                                         success: function(result) {
-                                                                            var item='<option value="0" selected>Select an option</option>';
+                                                                            var item='<option value="0" selected>'+Joomla.JText._('JGLOBAL_SELECT_AN_OPTION')+'</option>';
 
                                                                             for (var d in result.elts) {
 
@@ -2871,7 +2871,7 @@ $(document).ready(function() {
                             $('#list-element-export').css({'float': "left",'height':"150px", 'width':"70%",'position':"absolute"});
                             $('#oelts').css({'float': "left", 'width':"30.7%", 'margin-left':"70%", 'position':"absolute"});
 
-                            $('#methode').css({width: "95%",'margin': "auto", 'padding-bottom': "90px", 'position':"relative"});
+                            $('#methode').css({width: "95%",'margin': "auto", 'padding-bottom': "90px", 'position':"relative", 'min-height': "200px"});
                             $('#exp').css({'float': "left", 'width':"50%", 'position':"absolute"});
                             $('#forms').css({'width':"49%", 'margin-left':"51%", 'position':"absolute"});
                             $('#exp1').css({'background-color':"#f5f4f4", 'border-color':"#dddddd", 'border-style': "solid",'border-width': "0.5px", 'border-radius':"3px"});

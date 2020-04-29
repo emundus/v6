@@ -33,13 +33,10 @@ class TaskContext extends InstanceContext {
      */
     public function __construct(Version $version, $workspaceSid, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'workspaceSid' => $workspaceSid,
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('workspaceSid' => $workspaceSid, 'sid' => $sid, );
+
         $this->uri = '/Workspaces/' . rawurlencode($workspaceSid) . '/Tasks/' . rawurlencode($sid) . '';
     }
 
@@ -47,16 +44,17 @@ class TaskContext extends InstanceContext {
      * Fetch a TaskInstance
      * 
      * @return TaskInstance Fetched TaskInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new TaskInstance(
             $this->version,
             $payload,
@@ -70,10 +68,11 @@ class TaskContext extends InstanceContext {
      * 
      * @param array|Options $options Optional Arguments
      * @return TaskInstance Updated TaskInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function update($options = array()) {
         $options = new Values($options);
-        
+
         $data = Values::of(array(
             'Attributes' => $options['attributes'],
             'AssignmentStatus' => $options['assignmentStatus'],
@@ -81,14 +80,14 @@ class TaskContext extends InstanceContext {
             'Priority' => $options['priority'],
             'TaskChannel' => $options['taskChannel'],
         ));
-        
+
         $payload = $this->version->update(
             'POST',
             $this->uri,
             array(),
             $data
         );
-        
+
         return new TaskInstance(
             $this->version,
             $payload,
@@ -101,6 +100,7 @@ class TaskContext extends InstanceContext {
      * Deletes the TaskInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->version->delete('delete', $this->uri);
@@ -119,7 +119,7 @@ class TaskContext extends InstanceContext {
                 $this->solution['sid']
             );
         }
-        
+
         return $this->_reservations;
     }
 
@@ -135,7 +135,7 @@ class TaskContext extends InstanceContext {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown subresource ' . $name);
     }
 
@@ -152,7 +152,7 @@ class TaskContext extends InstanceContext {
         if (method_exists($property, 'getContext')) {
             return call_user_func_array(array($property, 'getContext'), $arguments);
         }
-        
+
         throw new TwilioException('Resource does not have a context');
     }
 

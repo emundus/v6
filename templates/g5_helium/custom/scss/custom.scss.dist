@@ -21,6 +21,15 @@
     margin: 0 !important;
 }
 
+p, a,
+legend,
+select,
+textarea,
+label,
+input[type="text"],
+.ui.warning.message {
+    font-family: "Open Sans" !important;
+}
 p,
 legend,
 select,
@@ -29,6 +38,18 @@ label,
 input[type="text"],
 .ui.warning.message {
     color: #000;
+}
+
+body {
+    font-family: "Open Sans" !important;
+}
+
+h1, h2, h3{
+    color: $base-primary-color !important;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    font-weight: 400;
+    font-family: "Open Sans" !important;
 }
 
 .view-form .attached p, .view-details .attached p {
@@ -219,7 +240,7 @@ h1::after,
     margin-top: 45px;
     width: 2.7rem;
     height: .2rem;
-    background: $base-primary-color !important;
+    background: $base-secondary-color !important;
     left: 0;
 }
 
@@ -673,6 +694,7 @@ p.readmore .btn,
 /* HEADER */
 #g-navigation {
     border-bottom: 1px solid #eeeeee;
+    width: 100vw;
 
     .g-container {
         padding: 10px !important;
@@ -1142,7 +1164,6 @@ ul.nav.nav-tabs.nav-stacked {
             input {
                 border-left: 1px solid #e0e0e5;
                 max-width: 100%;
-                border-radius: 6px;
             }
         }
 
@@ -1546,7 +1567,6 @@ body.error-page p {
 footer#g-footer {
     padding: 20px !important;
     background: transparent;
-    border-top: 1px solid #bbb;
     margin: 0 !important;
 
     a {
@@ -2071,8 +2091,18 @@ div:not(.header-right) > .btn-danger {
     font-weight: 700;
 }
 
+.applicant-form .fabrikForm fieldset {
+    position: relative;
+}
+
 .applicant-form .fabrikForm fieldset > .row-fluid, .applicant-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
     padding: 0 100px;
+}
+
+.fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
+    position: absolute;
+    top: 17px;
+    right: 10px;
 }
 
 .form-actions .row-fluid {
@@ -2153,9 +2183,6 @@ div:not(.header-right) > .btn-danger {
     content: "";
 }
 
-#form_307 {
-    width: 50%;
-}
 
 #form_307 .row-fluid .span3 {
     margin-right: 30px;
@@ -2237,13 +2264,6 @@ div:not(.header-right) > .btn-danger {
 }
 
 
-/**** VALIDATION STARS ****/
-.em-formRegistrationCenter {
-    .icon-star.small {
-        display: none;
-    }
-}
-
 
 form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm label.radio {
     display: flex !important;
@@ -2254,18 +2274,9 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
     padding-left: 5px;
 }
 
-/*** ALLOW * TO BE AT THE END OF TEXT ****/
-.em-formRegistrationCenter {
-    form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
-        display: inline !important;
-    }
-}
+
 
 /*** REGISTRATION FORM ***/
-#form_307 .fb_el_jos_emundus_users___password > label[for="jos_emundus_users___password"] > i.icon-star.small {
-    color: transparent;
-}
-
 .fb_el_jos_emundus_users___terms_and_conditions > label:after {
     content: '';
 }
@@ -2287,11 +2298,6 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
 
 .view-login,
 .view-registration {
-
-    h1:after {
-        display: none;
-    }
-
     .form-horizontal .controls {
         width: 100%;
     }
@@ -2333,7 +2339,9 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
 }
 
 @media all and (max-width: 1239px) {
-
+    .em-containerAdresseLogo{
+        width:60%!important;
+    }
     .view-login #g-page-surround {
         width: 100%;
     }
@@ -2801,6 +2809,24 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
 }
 
 @media all and (max-width: 767px) {
+    .bas-footer{
+        flex-direction:column!important;
+
+        .em-containerAdresseLogo{
+            flex-direction: column-reverse!important;
+            justify-content: center!important;
+        }
+        .adresse{
+            align-items: center!important;
+            align-self: center!important;
+            width: 100%;
+            margin:10px 0;
+        }
+        img.logo{
+            min-height: 25px !important;
+            height: 25px !important
+        }
+    }
 
     .applicant-form .fabrikActions.form-actions .span4 {
         width: 39%;
@@ -3364,10 +3390,6 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
 /****** Add border style to applicant forms ****/
 .applicant-form {
 
-    input[type='text'], input[type='tel'], textarea, input[type='number'] {
-        border: 2px solid $base-secondary-color;
-    }
-
     input[type='radio'] {
         margin-top: 0;
         -webkit-appearance: none;
@@ -3388,9 +3410,149 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
         background-position-x: 98%;
         background-position-y: 58%;
         -webkit-appearance: none;
-        border: 2px solid $base-secondary-color;
-        background: transparent url(https://www.cfjparis.emundus.fr/images/custom/arrow-down.png) no-repeat 98% 52%;
+        background: transparent url(images/custom/arrow-down.png) no-repeat 98% 52%;
         background-size: 10px;
         padding: 0 30px 0 10px;
     }
+}
+
+/****** Couleur btn module campagne ****/
+
+.below-content a.btn.btn-primary.btn-plein.btn-blue {
+    background-color: $base-secondary-color !important;
+    border-color: $base-secondary-color!important;
+}
+
+
+.below-content a.btn.btn-primary.btn-plein.btn-blue:hover {
+    background-color: #ffffff !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
+}
+
+/****** Couleur btns module login ****/
+.header-right a.btn.btn-danger.inscription {
+    background-color: $base-primary-color !important;
+    border-color: $base-primary-color!important;
+}
+
+.header-right a.btn.btn-danger.inscription:hover {
+    background-color: #ffffff !important;
+    color: $base-primary-color !important;
+    border-color: $base-primary-color !important;
+}
+
+/****** Longueur btns module login ****/
+
+.header-right a.btn.btn-danger.connexion {
+    width: 165px;
+    height: 34px;
+    padding: 6px 12px !important;
+    margin-bottom: 5px;
+}
+
+.header-right a.btn.btn-danger.inscription {
+    width: 165px;
+    height: 34px;
+    padding: 6px 12px !important;
+    margin-bottom: 5px;
+}
+
+/****** Mot de passe oublié  ****/
+
+.header-right a.em-resetPassword:hover {
+    text-decoration: underline;
+}
+
+/****** Couleur btns +d'info  ****/
+
+.view-programme .em_period .btn.save-btn {
+    background-color: $base-secondary-color !important;
+    border-color: $base-secondary-color!important;
+}
+
+
+.view-programme .em_period .btn.save-btn:hover {
+    background-color: #ffffff !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
+}
+
+/****** Couleur btn inscription ****/
+
+.view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form #fabrikSubmit_307{
+    background-color:$base-secondary-color !important;
+    color: #ffffff !important;
+    border-color: $base-secondary-color !important;
+
+}
+
+.view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register:hover,  .view-form #fabrikSubmit_307:hover{
+    background-color: #ffffff !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
+}
+/****** Footer ****/
+
+footer#g-footer {
+    background-color: #eee;
+    border-top: none;
+    position: absolute;
+    bottom: 0;
+    width: 100vw;
+}
+
+#g-page-surround {
+    min-height:100vh;
+}
+
+#g-page-surround >  .g-container:not(.g-flushed) {
+    width: 100vw !important;
+    margin-top: 100px;
+    height: 180px;
+}
+
+#g-footer .g-grid{
+    height: 140px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.bas-footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+
+    .em-containerAdresseLogo{
+        width: 50%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+    }
+    .adresse{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        align-self: baseline;
+        p{
+            color:$base-primary-color;
+        }
+        .street{
+            text-align:left;
+        }
+    }
+    .credits-emundus{
+        p,a{
+            color:$base-primary-color;
+            text-decoration:none!important;
+        }
+    }
+}
+
+/* AJOUT APRES MAJ */
+.applicant-form input[type='radio']:checked  {
+    background: $base-secondary-color;
 }

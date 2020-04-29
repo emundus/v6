@@ -13,6 +13,7 @@ use Twilio\Deserialize;
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceResource;
 use Twilio\Options;
+use Twilio\Values;
 use Twilio\Version;
 
 /**
@@ -20,7 +21,7 @@ use Twilio\Version;
  * @property \DateTime dateCreated
  * @property \DateTime dateUpdated
  * @property string issues
- * @property string qualityScore
+ * @property integer qualityScore
  * @property string sid
  */
 class FeedbackInstance extends InstanceResource {
@@ -29,28 +30,25 @@ class FeedbackInstance extends InstanceResource {
      * 
      * @param \Twilio\Version $version Version that contains the resource
      * @param mixed[] $payload The response payload
-     * @param string $accountSid The account_sid
-     * @param string $callSid A 34 character string that uniquely identifies this
-     *                        resource.
+     * @param string $accountSid The unique sid that identifies this account
+     * @param string $callSid A 34-character string that uniquely identifies the
+     *                        Call resource.
      * @return \Twilio\Rest\Api\V2010\Account\Call\FeedbackInstance 
      */
     public function __construct(Version $version, array $payload, $accountSid, $callSid) {
         parent::__construct($version);
-        
+
         // Marshaled Properties
         $this->properties = array(
-            'accountSid' => $payload['account_sid'],
-            'dateCreated' => Deserialize::iso8601DateTime($payload['date_created']),
-            'dateUpdated' => Deserialize::iso8601DateTime($payload['date_updated']),
-            'issues' => $payload['issues'],
-            'qualityScore' => $payload['quality_score'],
-            'sid' => $payload['sid'],
+            'accountSid' => Values::array_get($payload, 'account_sid'),
+            'dateCreated' => Deserialize::dateTime(Values::array_get($payload, 'date_created')),
+            'dateUpdated' => Deserialize::dateTime(Values::array_get($payload, 'date_updated')),
+            'issues' => Values::array_get($payload, 'issues'),
+            'qualityScore' => Values::array_get($payload, 'quality_score'),
+            'sid' => Values::array_get($payload, 'sid'),
         );
-        
-        $this->solution = array(
-            'accountSid' => $accountSid,
-            'callSid' => $callSid,
-        );
+
+        $this->solution = array('accountSid' => $accountSid, 'callSid' => $callSid, );
     }
 
     /**
@@ -68,28 +66,28 @@ class FeedbackInstance extends InstanceResource {
                 $this->solution['callSid']
             );
         }
-        
+
         return $this->context;
     }
 
     /**
      * Create a new FeedbackInstance
      * 
-     * @param string $qualityScore The quality_score
+     * @param integer $qualityScore The call quality expressed as an integer from 1
+     *                              to 5
      * @param array|Options $options Optional Arguments
      * @return FeedbackInstance Newly created FeedbackInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function create($qualityScore, $options = array()) {
-        return $this->proxy()->create(
-            $qualityScore,
-            $options
-        );
+        return $this->proxy()->create($qualityScore, $options);
     }
 
     /**
      * Fetch a FeedbackInstance
      * 
      * @return FeedbackInstance Fetched FeedbackInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         return $this->proxy()->fetch();
@@ -98,15 +96,14 @@ class FeedbackInstance extends InstanceResource {
     /**
      * Update the FeedbackInstance
      * 
-     * @param string $qualityScore An integer from 1 to 5
+     * @param integer $qualityScore The call quality expressed as an integer from 1
+     *                              to 5
      * @param array|Options $options Optional Arguments
      * @return FeedbackInstance Updated FeedbackInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function update($qualityScore, $options = array()) {
-        return $this->proxy()->update(
-            $qualityScore,
-            $options
-        );
+        return $this->proxy()->update($qualityScore, $options);
     }
 
     /**
@@ -120,12 +117,12 @@ class FeedbackInstance extends InstanceResource {
         if (array_key_exists($name, $this->properties)) {
             return $this->properties[$name];
         }
-        
+
         if (property_exists($this, '_' . $name)) {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown property: ' . $name);
     }
 

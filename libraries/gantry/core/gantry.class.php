@@ -2,7 +2,7 @@
 /**
  * @version   $Id: gantry.class.php 30566 2017-04-28 10:24:41Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2019 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2020 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * Gantry uses the Joomla Framework (http://www.joomla.org), a GNU/GPLv2 content management system
@@ -1041,7 +1041,7 @@ class Gantry
 		// get an md5 sum of any passed in options
 		$tmp_options = $options;
 		array_walk($tmp_options, function (&$val, $key) { $val = ' * @' . $key . ' = ' . $val; });
-		$options_string = implode($tmp_options, "\n");
+		$options_string = implode("\n", $tmp_options);
 		$options_md5    = md5($options_string . (string)$this->get('less-compression', true));
 
 

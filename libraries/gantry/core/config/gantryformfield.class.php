@@ -2,7 +2,7 @@
 /**
  * @version        $Id: gantryformfield.class.php 6491 2013-01-15 02:25:56Z btowles $
  * @author         RocketTheme http://www.rockettheme.com
- * @copyright      Copyright (C) 2007 - 2019 RocketTheme, LLC
+ * @copyright      Copyright (C) 2007 - 2020 RocketTheme, LLC
  * @license        http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * derived from Joomla with original copyright and license
@@ -96,7 +96,7 @@ abstract class GantryFormField extends GantryFormItem
 	{
 		if (null == $xmlelement) $xmlelement =& $this->element;
 		$value = $default;
-		if ($xmlelement[$attribute]) {
+		if (isset($xmlelement[$attribute])) {
 			if (strtolower(trim((string)$xmlelement[$attribute])) == 'true') $value = true;
 			if (strtolower(trim((string)$xmlelement[$attribute])) == 'false') $value = false;
 		}

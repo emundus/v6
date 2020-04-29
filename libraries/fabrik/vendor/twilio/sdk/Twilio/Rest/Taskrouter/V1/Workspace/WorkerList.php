@@ -27,17 +27,16 @@ class WorkerList extends ListResource {
      * Construct the WorkerList
      * 
      * @param Version $version Version that contains the resource
-     * @param string $workspaceSid The workspace_sid
+     * @param string $workspaceSid The ID of the Workflow this worker is associated
+     *                             with
      * @return \Twilio\Rest\Taskrouter\V1\Workspace\WorkerList 
      */
     public function __construct(Version $version, $workspaceSid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'workspaceSid' => $workspaceSid,
-        );
-        
+        $this->solution = array('workspaceSid' => $workspaceSid, );
+
         $this->uri = '/Workspaces/' . rawurlencode($workspaceSid) . '/Workers';
     }
 
@@ -62,9 +61,9 @@ class WorkerList extends ListResource {
      */
     public function stream($options = array(), $limit = null, $pageSize = null) {
         $limits = $this->version->readLimits($limit, $pageSize);
-        
+
         $page = $this->page($options, $limits['pageSize']);
-        
+
         return $this->version->stream($page, $limits['limit'], $limits['pageLimit']);
     }
 
@@ -84,7 +83,7 @@ class WorkerList extends ListResource {
      *                        efficient page size, i.e. min(limit, 1000)
      * @return WorkerInstance[] Array of results
      */
-    public function read($options = array(), $limit = null, $pageSize = Values::NONE) {
+    public function read($options = array(), $limit = null, $pageSize = null) {
         return iterator_to_array($this->stream($options, $limit, $pageSize), false);
     }
 
@@ -112,44 +111,58 @@ class WorkerList extends ListResource {
             'Page' => $pageNumber,
             'PageSize' => $pageSize,
         ));
-        
+
         $response = $this->version->page(
             'GET',
             $this->uri,
             $params
         );
-        
+
+        return new WorkerPage($this->version, $response, $this->solution);
+    }
+
+    /**
+     * Retrieve a specific page of WorkerInstance records from the API.
+     * Request is executed immediately
+     * 
+     * @param string $targetUrl API-generated URL for the requested results page
+     * @return \Twilio\Page Page of WorkerInstance
+     */
+    public function getPage($targetUrl) {
+        $response = $this->version->getDomain()->getClient()->request(
+            'GET',
+            $targetUrl
+        );
+
         return new WorkerPage($this->version, $response, $this->solution);
     }
 
     /**
      * Create a new WorkerInstance
      * 
-     * @param string $friendlyName The friendly_name
+     * @param string $friendlyName String representing user-friendly name for the
+     *                             Worker.
      * @param array|Options $options Optional Arguments
      * @return WorkerInstance Newly created WorkerInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function create($friendlyName, $options = array()) {
         $options = new Values($options);
-        
+
         $data = Values::of(array(
             'FriendlyName' => $friendlyName,
             'ActivitySid' => $options['activitySid'],
             'Attributes' => $options['attributes'],
         ));
-        
+
         $payload = $this->version->create(
             'POST',
             $this->uri,
             array(),
             $data
         );
-        
-        return new WorkerInstance(
-            $this->version,
-            $payload,
-            $this->solution['workspaceSid']
-        );
+
+        return new WorkerInstance($this->version, $payload, $this->solution['workspaceSid']);
     }
 
     /**
@@ -157,12 +170,9 @@ class WorkerList extends ListResource {
      */
     protected function getStatistics() {
         if (!$this->_statistics) {
-            $this->_statistics = new WorkersStatisticsList(
-                $this->version,
-                $this->solution['workspaceSid']
-            );
+            $this->_statistics = new WorkersStatisticsList($this->version, $this->solution['workspaceSid']);
         }
-        
+
         return $this->_statistics;
     }
 
@@ -173,11 +183,7 @@ class WorkerList extends ListResource {
      * @return \Twilio\Rest\Taskrouter\V1\Workspace\WorkerContext 
      */
     public function getContext($sid) {
-        return new WorkerContext(
-            $this->version,
-            $this->solution['workspaceSid'],
-            $sid
-        );
+        return new WorkerContext($this->version, $this->solution['workspaceSid'], $sid);
     }
 
     /**
@@ -192,7 +198,7 @@ class WorkerList extends ListResource {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown subresource ' . $name);
     }
 
@@ -209,7 +215,7 @@ class WorkerList extends ListResource {
         if (method_exists($property, 'getContext')) {
             return call_user_func_array(array($property, 'getContext'), $arguments);
         }
-        
+
         throw new TwilioException('Resource does not have a context');
     }
 

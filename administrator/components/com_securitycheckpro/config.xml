@@ -25,11 +25,7 @@
 		<field name="remove_meta_tag" type="radio" default="1" label="COM_SECURITYCHECKPRO_CONFIG_FILE_REMOVE_META_TAG_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_REMOVE_META_TAG_DESCRIPTION">
 			<option value="1">COM_SECURITYCHECKPRO_YES</option>
 			<option value="0">COM_SECURITYCHECKPRO_NO</option>
-		</field>
-		<field name="geoip_automatic_updates" type="radio" default="0" label="COM_SECURITYCHECKPRO_GEOBLOCK_AUTOMATIC_UPDATES_LABEL" description="COM_SECURITYCHECKPRO_GEOBLOCK_AUTOMATIC_UPDATES_DESCRIPTION">
-			<option value="1">COM_SECURITYCHECKPRO_YES</option>
-			<option value="0">COM_SECURITYCHECKPRO_NO</option>
-		</field>
+		</field>		
 		<field name="check_acl_security" type="radio" default="1" label="COM_SECURITYCHECKPRO_CHECK_ACL_SECURITY_LABEL" description="COM_SECURITYCHECKPRO_CHECK_ACL_SECURITY_DESCRIPTION">
 			<option value="1">COM_SECURITYCHECKPRO_YES</option>
 			<option value="0">COM_SECURITYCHECKPRO_NO</option>
@@ -39,7 +35,7 @@
 			<option value="0">COM_SECURITYCHECKPRO_NO</option>
 		</field>
 		
-		<field name="avoid_proxies" type="radio" default="1" label="COM_SECURITYCHECKPRO_AVOID_PROXIES_LABEL" description="COM_SECURITYCHECKPRO_AVOID_PROXIES_DESCRIPTION">
+		<field name="avoid_proxies" type="radio" default="0" label="COM_SECURITYCHECKPRO_AVOID_PROXIES_LABEL" description="COM_SECURITYCHECKPRO_AVOID_PROXIES_DESCRIPTION">
 			<option value="1">COM_SECURITYCHECKPRO_YES</option>
 			<option value="0">COM_SECURITYCHECKPRO_NO</option>
 		</field>

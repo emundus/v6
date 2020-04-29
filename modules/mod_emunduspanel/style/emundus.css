@@ -1,10 +1,10 @@
-.emundus_home_page{ 
-width:90%;
-margin-left:5%;
-text-align:center;
+.emundus_home_page{
+    width:90%;
+    margin-left:5%;
+    text-align:center;
 }
 .emundus_home_page a {
-    opacity: 0.7;
+    opacity: 1;
 }
 .emundus_home_page a:hover {
     opacity: 1;
@@ -71,3 +71,13 @@ div#em-panel .ui.grid {
     right: 20px;
 }
 
+.emundus_home_page select#profile.form-control.form-control-sm {
+    border: none;
+    border-radius: 0px !important;
+}
+#em-panel.emundus_home_page p {
+    text-align: left;
+    width: 90%;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}

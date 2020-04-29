@@ -1079,8 +1079,6 @@ END;
 		fwrite($fp, 'URL        : ' . $tokens['[URL]'] . "\n");
 		fwrite($fp, 'User       : ' . $tokens['[USER]'] . "\n");
 		fwrite($fp, 'IP         : ' . $tokens['[IP]'] . "\n");
-		fwrite($fp, 'Country    : ' . $tokens['[COUNTRY]'] . "\n");
-		fwrite($fp, 'Continent  : ' . $tokens['[CONTINENT]'] . "\n");
 		fwrite($fp, 'UA         : ' . $tokens['[UA]'] . "\n");
 
 		if (!empty($extraLogInformation))

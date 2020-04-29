@@ -12,38 +12,39 @@ namespace Twilio\Rest\Api\V2010\Account\Sip;
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceContext;
 use Twilio\Options;
+use Twilio\Rest\Api\V2010\Account\Sip\Domain\AuthTypesList;
 use Twilio\Rest\Api\V2010\Account\Sip\Domain\CredentialListMappingList;
 use Twilio\Rest\Api\V2010\Account\Sip\Domain\IpAccessControlListMappingList;
+use Twilio\Serialize;
 use Twilio\Values;
 use Twilio\Version;
 
 /**
  * @property \Twilio\Rest\Api\V2010\Account\Sip\Domain\IpAccessControlListMappingList ipAccessControlListMappings
  * @property \Twilio\Rest\Api\V2010\Account\Sip\Domain\CredentialListMappingList credentialListMappings
+ * @property \Twilio\Rest\Api\V2010\Account\Sip\Domain\AuthTypesList auth
  * @method \Twilio\Rest\Api\V2010\Account\Sip\Domain\IpAccessControlListMappingContext ipAccessControlListMappings(string $sid)
  * @method \Twilio\Rest\Api\V2010\Account\Sip\Domain\CredentialListMappingContext credentialListMappings(string $sid)
  */
 class DomainContext extends InstanceContext {
     protected $_ipAccessControlListMappings = null;
     protected $_credentialListMappings = null;
+    protected $_auth = null;
 
     /**
      * Initialize the DomainContext
      * 
      * @param \Twilio\Version $version Version that contains the resource
-     * @param string $accountSid The account_sid
+     * @param string $accountSid The unique sid that identifies this account
      * @param string $sid Fetch by unique Domain Sid
      * @return \Twilio\Rest\Api\V2010\Account\Sip\DomainContext 
      */
     public function __construct(Version $version, $accountSid, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'accountSid' => $accountSid,
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('accountSid' => $accountSid, 'sid' => $sid, );
+
         $this->uri = '/Accounts/' . rawurlencode($accountSid) . '/SIP/Domains/' . rawurlencode($sid) . '.json';
     }
 
@@ -51,16 +52,17 @@ class DomainContext extends InstanceContext {
      * Fetch a DomainInstance
      * 
      * @return DomainInstance Fetched DomainInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
+
         return new DomainInstance(
             $this->version,
             $payload,
@@ -74,12 +76,12 @@ class DomainContext extends InstanceContext {
      * 
      * @param array|Options $options Optional Arguments
      * @return DomainInstance Updated DomainInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function update($options = array()) {
         $options = new Values($options);
-        
+
         $data = Values::of(array(
-            'AuthType' => $options['authType'],
             'FriendlyName' => $options['friendlyName'],
             'VoiceFallbackMethod' => $options['voiceFallbackMethod'],
             'VoiceFallbackUrl' => $options['voiceFallbackUrl'],
@@ -87,15 +89,17 @@ class DomainContext extends InstanceContext {
             'VoiceStatusCallbackMethod' => $options['voiceStatusCallbackMethod'],
             'VoiceStatusCallbackUrl' => $options['voiceStatusCallbackUrl'],
             'VoiceUrl' => $options['voiceUrl'],
+            'SipRegistration' => Serialize::booleanToString($options['sipRegistration']),
+            'DomainName' => $options['domainName'],
         ));
-        
+
         $payload = $this->version->update(
             'POST',
             $this->uri,
             array(),
             $data
         );
-        
+
         return new DomainInstance(
             $this->version,
             $payload,
@@ -108,6 +112,7 @@ class DomainContext extends InstanceContext {
      * Deletes the DomainInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->version->delete('delete', $this->uri);
@@ -126,7 +131,7 @@ class DomainContext extends InstanceContext {
                 $this->solution['sid']
             );
         }
-        
+
         return $this->_ipAccessControlListMappings;
     }
 
@@ -143,8 +148,25 @@ class DomainContext extends InstanceContext {
                 $this->solution['sid']
             );
         }
-        
+
         return $this->_credentialListMappings;
+    }
+
+    /**
+     * Access the auth
+     * 
+     * @return \Twilio\Rest\Api\V2010\Account\Sip\Domain\AuthTypesList 
+     */
+    protected function getAuth() {
+        if (!$this->_auth) {
+            $this->_auth = new AuthTypesList(
+                $this->version,
+                $this->solution['accountSid'],
+                $this->solution['sid']
+            );
+        }
+
+        return $this->_auth;
     }
 
     /**
@@ -159,7 +181,7 @@ class DomainContext extends InstanceContext {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown subresource ' . $name);
     }
 
@@ -176,7 +198,7 @@ class DomainContext extends InstanceContext {
         if (method_exists($property, 'getContext')) {
             return call_user_func_array(array($property, 'getContext'), $arguments);
         }
-        
+
         throw new TwilioException('Resource does not have a context');
     }
 

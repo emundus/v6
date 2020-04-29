@@ -2,7 +2,7 @@
 /**
  * @version        $Id: gantryregistry.class.php 30074 2016-03-15 08:01:58Z matias $
  * @author         RocketTheme http://www.rockettheme.com
- * @copyright      Copyright (C) 2007 - 2019 RocketTheme, LLC
+ * @copyright      Copyright (C) 2007 - 2020 RocketTheme, LLC
  * @license        http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  *
  * derived from Joomla with original copyright and license

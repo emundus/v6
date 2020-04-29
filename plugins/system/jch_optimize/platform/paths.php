@@ -127,7 +127,7 @@ class Paths implements PathsInterface
 	 */
 	public static function path2Url($sPath)
 	{
-		$oUri     = clone \JUri::getInstance();
+		$oUri = clone \JUri::getInstance();
 
 		return $oUri->toString(array('scheme', 'user', 'pass', 'host', 'port')) . Helper::getBaseFolder() .
 			Helper::strReplace(self::rootPath() . DIRECTORY_SEPARATOR, '', $sPath);
@@ -144,17 +144,7 @@ class Paths implements PathsInterface
 	{
 		$url = \JUri::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port'));
 		$url .= Helper::getBaseFolder();
-
-		if (version_compare(JVERSION, '3.0', '<'))
-		{
-
-			$url .= 'plugins/system/jch_optimize/ajax.php?action=' . $function;
-
-		}
-		else
-		{
-			$url .= 'index.php?option=com_ajax&plugin=' . $function . '&format=raw';
-		}
+		$url .= 'index.php?option=com_ajax&plugin=' . $function . '&format=raw';
 
 		return $url;
 	}

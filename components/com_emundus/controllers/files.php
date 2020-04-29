@@ -427,7 +427,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
     /**
      * Add a comment on a file.
-     * @throws Exception
      * @since 6.0
      */
     public function addcomment() {
@@ -439,25 +438,32 @@ class EmundusControllerFiles extends JControllerLegacy
         $comment = $jinput->getString('comment', null);
 
         $fnums = (array) json_decode(stripslashes($fnums));
+        $fnumErrorList = [];
         $m_application = $this->getModel('Application');
 
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
                 $aid = intval(substr($fnum, 21, 7));
                 $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
-                if ($res == 0) {
-                    echo json_encode((object)(array('status' => false, 'msg' => JText::_('ERROR'). $res)));
-                    exit;
+                if (empty($res)) {
+                    $fnumErrorList[] = $fnum;
                 }
+            } else {
+                $fnumErrorList[] = $fnum;
             }
         }
 
-        echo json_encode((object)(array('status' => true, 'msg' => JText::_('COMMENT_SUCCESS'), 'id' => $res)));
+        if(empty($fnumErrorList)) {
+            echo json_encode((object)(array('status' => true, 'msg' => JText::_('COMMENT_SUCCESS'), 'id' => $res)));
+        } else {
+            echo json_encode((object)(array('status' => false, 'msg' => JText::_('ERROR'). implode(', ', $fnumErrorList))));
+        }
         exit;
     }
 
-    /**
-     *
+    /*
+     * Gets all tags.
+     * @since 6.0
      */
     public function gettags() {
         $m_files = $this->getModel('Files');

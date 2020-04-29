@@ -19,19 +19,17 @@ class ReservationList extends ListResource {
      * Construct the ReservationList
      * 
      * @param Version $version Version that contains the resource
-     * @param string $workspaceSid The workspace_sid
-     * @param string $taskSid The task_sid
+     * @param string $workspaceSid The ID of the Workspace that this task is
+     *                             contained within.
+     * @param string $taskSid The ID of the reserved Task
      * @return \Twilio\Rest\Taskrouter\V1\Workspace\Task\ReservationList 
      */
     public function __construct(Version $version, $workspaceSid, $taskSid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'workspaceSid' => $workspaceSid,
-            'taskSid' => $taskSid,
-        );
-        
+        $this->solution = array('workspaceSid' => $workspaceSid, 'taskSid' => $taskSid, );
+
         $this->uri = '/Workspaces/' . rawurlencode($workspaceSid) . '/Tasks/' . rawurlencode($taskSid) . '/Reservations';
     }
 
@@ -56,9 +54,9 @@ class ReservationList extends ListResource {
      */
     public function stream($options = array(), $limit = null, $pageSize = null) {
         $limits = $this->version->readLimits($limit, $pageSize);
-        
+
         $page = $this->page($options, $limits['pageSize']);
-        
+
         return $this->version->stream($page, $limits['limit'], $limits['pageLimit']);
     }
 
@@ -78,7 +76,7 @@ class ReservationList extends ListResource {
      *                        efficient page size, i.e. min(limit, 1000)
      * @return ReservationInstance[] Array of results
      */
-    public function read($options = array(), $limit = null, $pageSize = Values::NONE) {
+    public function read($options = array(), $limit = null, $pageSize = null) {
         return iterator_to_array($this->stream($options, $limit, $pageSize), false);
     }
 
@@ -100,13 +98,29 @@ class ReservationList extends ListResource {
             'Page' => $pageNumber,
             'PageSize' => $pageSize,
         ));
-        
+
         $response = $this->version->page(
             'GET',
             $this->uri,
             $params
         );
-        
+
+        return new ReservationPage($this->version, $response, $this->solution);
+    }
+
+    /**
+     * Retrieve a specific page of ReservationInstance records from the API.
+     * Request is executed immediately
+     * 
+     * @param string $targetUrl API-generated URL for the requested results page
+     * @return \Twilio\Page Page of ReservationInstance
+     */
+    public function getPage($targetUrl) {
+        $response = $this->version->getDomain()->getClient()->request(
+            'GET',
+            $targetUrl
+        );
+
         return new ReservationPage($this->version, $response, $this->solution);
     }
 

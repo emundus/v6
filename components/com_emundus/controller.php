@@ -1314,19 +1314,31 @@ class EmundusController extends JControllerLegacy {
         $file = JPATH_BASE.DS.$url;
         if (file_exists($file)) {
             $mime_type = $this->get_mime_type($file);
-            header('Content-type: '.$mime_type);
-            header('Content-Disposition: inline; filename='.basename($file));
-            header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
-            header('Cache-Control: no-store, no-cache, must-revalidate');
-            header('Cache-Control: pre-check=0, post-check=0, max-age=0');
-            header('Pragma: anytextexeptno-cache', true);
-            header('Cache-control: private');
-            header('Expires: 0');
 
-            ob_clean();
-            flush();
-            readfile($file);
-            exit;
+            if (EmundusHelperAccess::isDataAnonymized($current_user->id) && $mime_type === 'application/pdf') {
+
+	            require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
+	            $pdf = new ConcatPdf();
+	            $pdf->setFiles([$file]);
+	            $pdf->concat();
+	            $pdf->Output();
+	            exit;
+	            
+            } else {
+	            header('Content-type: '.$mime_type);
+	            header('Content-Disposition: inline; filename='.basename($file));
+	            header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+	            header('Cache-Control: no-store, no-cache, must-revalidate');
+	            header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+	            header('Pragma: anytextexeptno-cache', true);
+	            header('Cache-control: private');
+	            header('Expires: 0');
+
+	            ob_clean();
+	            flush();
+	            readfile($file);
+	            exit;
+            }
         } else {
             JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$file);
         }

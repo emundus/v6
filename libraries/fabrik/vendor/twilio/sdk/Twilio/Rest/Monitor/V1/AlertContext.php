@@ -23,12 +23,10 @@ class AlertContext extends InstanceContext {
      */
     public function __construct(Version $version, $sid) {
         parent::__construct($version);
-        
+
         // Path Solution
-        $this->solution = array(
-            'sid' => $sid,
-        );
-        
+        $this->solution = array('sid' => $sid, );
+
         $this->uri = '/Alerts/' . rawurlencode($sid) . '';
     }
 
@@ -36,27 +34,25 @@ class AlertContext extends InstanceContext {
      * Fetch a AlertInstance
      * 
      * @return AlertInstance Fetched AlertInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch() {
         $params = Values::of(array());
-        
+
         $payload = $this->version->fetch(
             'GET',
             $this->uri,
             $params
         );
-        
-        return new AlertInstance(
-            $this->version,
-            $payload,
-            $this->solution['sid']
-        );
+
+        return new AlertInstance($this->version, $payload, $this->solution['sid']);
     }
 
     /**
      * Deletes the AlertInstance
      * 
      * @return boolean True if delete succeeds, false otherwise
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function delete() {
         return $this->version->delete('delete', $this->uri);

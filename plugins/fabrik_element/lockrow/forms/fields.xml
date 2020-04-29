@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields>
+        <fieldset label="COM_FABRIK_DEFAULT" addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-lockrow">
+
+            <field type="helplink"
+                   url="PLG_ELEMENT_LOCKROW_HELP_SERVER" />
+
+            <field name="default"
+                   type="textarea"
+                   cols="45"
+                   label="PLG_ELEMENT_LOCKROW_DEFAULT_LABEL"
+                   rows="6" />
+
+        </fieldset>
+    </fields>
+
+    <fields name="params">
+
+        <fieldset label="COM_FABRIK_OPTIONS" addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-lockrow-extra">
+
+            <field name="lockrow_note"
+                   type="note"
+                   class="alert alert-info"
+                   close="true"
+                   description="PLG_ELEMENT_LOCKROW_NOTE" />
+
+            <field name="lockrow_ttl"
+                   type="text"
+                   size="5"
+                   default="60"
+                   label="PLG_ELEMENT_LOCKROW_TTL_LABEL"
+                   description="PLG_ELEMENT_LOCKROW_TTL_DESC"/>
+
+            <field name="lockrow_allow_user_unlock"
+                   type="radio"
+                   default="1"
+                   label="PLG_ELEMENT_LOCKROW_ALLOW_USER_UNLOCK_LABEL"
+                   description="PLG_ELEMENT_LOCKROW_ALLOW_USER_UNLOCK_DESC">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+            <field name="lockrow_allow_user_reedit"
+                   type="radio"
+                   default="1"
+                   label="PLG_ELEMENT_LOCKROW_ALLOW_USER_REEDIT_LABEL"
+                   description="PLG_ELEMENT_LOCKROW_ALLOW_USER_REEDIT_DESC">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+                <option value="2">PLG_ELEMENT_LOCKROW_ALLOW_USER_REEDIT_EXCLUSIVE</option>
+            </field>
+
+            <field name="lockrow_lock_access"
+                   type="accesslevel"
+                   default="1"
+                   description="PLG_ELEMENT_LOCKROW_LOCK_ACCESS_DESC"
+                   label="PLG_ELEMENT_LOCKROW_LOCK_ACCESS_LABEL"/>
+
+            <field name="lockrow_show_icon_read_only"
+                   type="radio"
+                   default="1"
+                   label="PLG_ELEMENT_LOCKROW_SHOW_ICON_READ_ONLY_LABEL"
+                   description="PLG_ELEMENT_LOCKROW_SHOW_ICON_READ_ONLY_DESC">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+
+            <field name="lockrow_locked_icon"
+                   type="text"
+                   size="20"
+                   default=""
+                   label="PLG_ELEMENT_LOCKROW_LOCKED_ICON_LABEL"
+                   description="PLG_ELEMENT_LOCKROW_LOCKED_ICON_DESC"/>
+
+            <field name="lockrow_unlocked_icon"
+                   type="text"
+                   size="20"
+                   default=""
+                   label="PLG_ELEMENT_LOCKROW_UNLOCKED_ICON_LABEL"
+                   description="PLG_ELEMENT_LOCKROW_UNLOCKED_ICON_DESC"/>
+
+        </fieldset>
+
+    </fields>
+</form>

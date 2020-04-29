@@ -50,7 +50,7 @@ $rowid = isset($_REQUEST['rowid']) ? $_REQUEST['rowid'] : '';
 $form = $view . '_' . $c;
 if ($rowid !== '')
 {
-	$form .= '_' . $rowid;
+    $form .= '_' . $rowid;
 }
 echo <<<EOT
 
@@ -342,8 +342,7 @@ form legend a, form legend a:hover, form legend a:focus {
 }
 
 .applicant-form .sauvegarder,
-.view-checkout .sauvegarder,
-#fabrikSubmit_307, #fabrikSubmit_321 {
+.view-checkout .sauvegarder, #fabrikSubmit_321 {
     margin-left: 20px !important;
 }
 /* ------ Rapport d'erreur -------- */
@@ -474,7 +473,10 @@ form#member-profile .form-horizontal .control-label {
     width: 210px;
 }
 
-
+/* ---- ALLOW * TO BE AT THE END OF TEXT ----- */
+.applicant-form form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
+    display: inline;
+}
 /* Inscription */
 .view-registration table, .view-registration td {
     border: none;
@@ -594,8 +596,7 @@ form#member-profile .form-horizontal .control-label {
 #fabrikSubmit_305,
 #fabrikSubmit_293,
 form#member-profile .controls button,
-#fabrikSubmit_306,
-#fabrikSubmit_307 {
+#fabrikSubmit_306 {
     margin-left: 20px !important;
 }
 
@@ -699,7 +700,7 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
 
 
 .applicant-form .fabrikGroupRepeater .btn-success {
-    margin-right: 0px !important;
+    margin-right: 10px !important;
 }
 
 .applicant-form .fabrikGroupRepeater .addGroup.btn-success {
@@ -928,15 +929,170 @@ footer#g-footer {
 
 .fabrikForm .fabrikSubGroup{
     position: relative;
-    border-bottom: 1px solid #c4c4c4;
 }
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
     position: absolute;
-    right: 0px;
+    right: 10px;
 }
 
 .radio input[type="radio"], .checkbox input[type="checkbox"] {
     margin-left: 0px !important;
+}
+
+.header-right a.btn.btn-danger.connexion, .header-right a.btn.btn-danger.inscription  {
+    line-height: inherit;
+    letter-spacing: inherit;
+    font-weight: 300;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    margin-top: 45px;
+    width: 2.7rem;
+    height: 0.2rem;
+    background: #de6339;
+    left: 0;
+}
+
+ol {
+    width: 50%;
+    text-align: justify;
+    margin-left: 0px !important;
+}
+
+ol li {
+   margin-bottom: 10px;
+}
+
+#form_307 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
+    height: 34px;
+    text-transform: capitalize;
+}
+
+#form_307 form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input {
+   border-radius : 0px; 
+}
+
+#form_307 form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid:nth-child(4) .controls label.radio {
+  padding-left: 0px;
+}
+
+#form_307.fabrikForm .controls select {
+    border-radius : 0px; 
+    height: 41px !important;
+}
+
+#form_307.fabrikForm {
+    width:50%;
+}
+#form_307 .fabrikActions.form-actions{
+    padding: 0 !important;
+}
+#form_307 .span4{
+    width:100% !important;
+}
+#form_307 .btn-group{
+    width:100%;
+}
+#form_307 #fabrikSubmit_307{
+    width:100% !important;
+    font-weight: 300; 
+}
+
+#form_307 .row-fluid .controls input {
+    border-radius : 0px;
+}
+
+body.em-formRegistrationCenter  {
+    overflow-x: hidden;
+}
+
+
+.applicant-form input[type='text'], .applicant-form input[type='tel'], .applicant-form input[type='number'], .applicant-form textarea , .applicant-form input[type='email'], .applicant-form select {
+        border-radius: 0px;
+}
+
+.applicant-form .fabrikElement select {
+    height: 41px !important;
+}
+
+/* AJOUT APRES MAJ */
+.applicant-form input[type='radio']  { 
+    border: 1px solid #e0e0e5 !important;
+}
+
+.applicant-form input[type='radio']:checked  { 
+    background: #de6339;
+}
+
+.applicant-form .fabrikActions.form-actions .row-fluid button {
+    font-weight: 300; 
+    height: 41px;
+}
+​
+.applicant-form .sidebar-a a#print {
+    height: 41px;
+}
+
+.applicant-form p em strong i.icon-star.small.obligatoire  {
+    margin-top: -2px;
+}
+
+.fabrikMainError.alert.alert-error.fabrikError {
+    border-color: #b94a48;
+    color: #b94a48;
+}
+.fabrikMainError.alert.alert-error.fabrikError .close{
+    color: #b94a48 !important;
+}
+
+@media all and (max-width: 1239px) {
+    #form_307.fabrikForm {
+        width:60%;
+    }
+
+    ol {
+        width: 60%;
+        text-align: justify;
+        margin-left: 0px !important;
+    }
+}
+
+@media all and (max-width: 767px) {
+    ol {
+        width: 100%;
+        text-align: justify;
+        margin-left: 0px !important;
+    }
+
+    #form_307.fabrikForm {
+        width:100%;
+    }
+    
+    /* APRES MAJ */
+    .applicant-form .fabrikForm fieldset > .row-fluid {
+        padding: 0px !important;
+    }
+
+    .plg-birthday .fabrikSubElementContainer {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .applicant-form .fabrikForm fieldset > .row-fluid, .applicant-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
+        padding: 0px !important;
+    }
+
+    .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
+        top: 0px!important;
+    }
+}
+
+@media all and (min-width: 768px) and (max-width: 1023px) {
+    #form_307 .control-group.fabrikElementContainer.plg-radiobutton.fb_el_jos_emundus_users___civility.fabrikDataEmpty.span12 div.fabrikgrid_radio.span2 {
+        width:35%;
+    }
 }
 
 /* END - Your CSS styling ends here */

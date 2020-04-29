@@ -1,0 +1,37 @@
+h1.title.em-program-title {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+#g-navigation {
+    height: 80.6px;
+}
+.em_period .btn.save-btn {
+    height: 34px;
+    width: 165px;
+    padding: 6px 12px !important;
+}
+.em_period .btn.goback-btn{
+    height: 34px;
+    width: 165px;
+    padding: 6px 12px !important;
+}
+#g-navigation .g-container {
+    height: 80.6px;
+}
+#g-navigation .g-container img.logo {
+    padding-top : 14px;
+}
+div.content-bottom-a fieldset.em_period {
+    margin-top: 20px;
+}
+.apply-now-small {
+    line-height: 22px;
+}
+.apply-now-small b{
+    color:#000000;
+}
+.apply-now-small strong {
+    font-weight: normal;
+    width: 170px;
+    display: inline-block;
+}

@@ -168,11 +168,13 @@ class Uri implements UriInterface
 
 	/**
 	 *
+	 * @param   bool  $toArray
+	 *
 	 * @return array|string
 	 */
-	public function getQuery()
+	public function getQuery($toArray=false)
 	{
-		return $this->oUri->getQuery();
+		return $this->oUri->getQuery($toArray);
 	}
 
 	/**

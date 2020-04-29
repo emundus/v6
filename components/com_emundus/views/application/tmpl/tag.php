@@ -14,15 +14,17 @@ JFactory::getSession()->set('application_layout', 'tag');
                     <?php echo JText::_('TAGS'); ?> 
                     <span class="label label-info" style="float:unset"><?php echo count($this->tags); ?></span>
                 </h3>&ensp;&ensp;
-                <select class="chzn-select" multiple id="mytags">
-                    <?php  foreach($this->alltags as $alltag){ ?>
-                        <option value="<?php echo $alltag['id']; ?>"><?php echo $alltag['label']; ?></option>
-                    <?php } ?>
-                </select>&ensp;&ensp;
-                <button class="btn btn-success btn-xs" id="add-tags">
-                    <?php echo JText::_('ADD'); ?> 
-                </button>
-               
+
+	            <?php if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $this->fnum)) :?>
+                    <select class="chzn-select" multiple id="mytags">
+                        <?php foreach($this->alltags as $alltag) :?>
+                            <option value="<?php echo $alltag['id']; ?>"><?php echo $alltag['label']; ?></option>
+                        <?php endforeach; ?>
+                    </select>&ensp;&ensp;
+                    <button class="btn btn-success btn-xs" id="add-tags">
+                        <?php echo JText::_('ADD'); ?>
+                    </button>
+	            <?php endif;?>
             </div>
             <div class="panel-body em-container-tags-body">
                 <ul class="list-group">

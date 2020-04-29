@@ -853,7 +853,7 @@ class EmundusHelperFiles
 
             $join_val = $params->join_val_column;
             if (!empty($params->join_val_column_concat)) {
-                $join_val = '( SELECT '.str_replace('{thistable}', $params->join_db_name, preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0 , 2), $params->join_val_column_concat)).')';
+                $join_val = '( SELECT CONCAT('.str_replace('{thistable}', $params->join_db_name, preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0 , 2), $params->join_val_column_concat)).'))';
             }
 
             if ($element_name == 'result_for') {

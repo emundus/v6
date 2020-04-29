@@ -220,6 +220,17 @@ class EmundusModelApplication extends JModelList {
         $this->_db->setQuery($query);
         return $this->_db->loadObjectList();
     }
+    public function getFileOwnComments($fnum,$user_id) {
+
+        $query = 'SELECT ec.id, ec.comment_body as comment, ec.reason, ec.fnum, ec.user_id, ec.date, u.name
+                FROM #__emundus_comments ec
+                LEFT JOIN #__users u ON u.id = ec.user_id
+                WHERE ec.fnum like '.$this->_db->Quote($fnum).'
+                AND ec.user_id = '.$user_id.'
+                ORDER BY ec.date ASC ';
+        $this->_db->setQuery($query);
+        return $this->_db->loadObjectList();
+    }
 
     public function editComment($id, $title, $text) {
 
@@ -399,9 +410,16 @@ class EmundusModelApplication extends JModelList {
         return $this->_db->loadAssoc();
     }
 
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return array|bool|false|float
+	 *
+	 * @since version
+	 */
     public function getFormsProgress($fnum = "0") {
 
-        if (empty($fnum)) {
+        if (empty($fnum) || !is_numeric($fnum)) {
             return false;
         }
 
@@ -458,10 +476,19 @@ class EmundusModelApplication extends JModelList {
         }
     }
 
+	/**
+	 * @param   null  $fnum
+	 *
+	 * @return array|bool|false|float
+	 *
+	 * @since version
+	 */
     public function getAttachmentsProgress($fnum = null) {
-        if (empty($fnum)) {
+
+        if (empty($fnum) || !is_numeric($fnum)) {
             return false;
         }
+
         if (!is_array($fnum)) {
 
             $query = 'SELECT esc.profile_id
@@ -2713,9 +2740,9 @@ class EmundusModelApplication extends JModelList {
 
     /**
      * Move an application file from one programme to another
-     * @param $fnum_from    the fnum of the source
-     * @param $fnum_to      the fnum of the moved application
-     * @param $campaign     the programme id to move the file to
+     * @param $fnum_from String the fnum of the source
+     * @param $fnum_to String the fnum of the moved application
+     * @param $campaign String the programme id to move the file to
      * @return bool
      */
     public function moveApplication($fnum_from, $fnum_to, $campaign) {
@@ -2733,7 +2760,9 @@ class EmundusModelApplication extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
 
-            } else return false;
+            } else {
+            	return false;
+            }
 
         } catch (Exception $e) {
 
@@ -2748,17 +2777,15 @@ class EmundusModelApplication extends JModelList {
 
     /**
      * Duplicate an application file (form data)
-     * @param $fnum_from      the fnum of the source
-     * @param $fnum_to      the fnum of the duplicated application
-     * @param $pid          the profile_id to get list of forms
+     * @param $fnum_from String the fnum of the source
+     * @param $fnum_to String the fnum of the duplicated application
+     * @param $pid Int the profile_id to get list of forms
      * @return bool
      */
-    public function copyApplication($fnum_from, $fnum_to, $pid = null)
-    {
+    public function copyApplication($fnum_from, $fnum_to, $pid = null) {
         $db = JFactory::getDbo();
 
-        try
-        {
+        try {
             if (empty($pid)) {
                 $m_profiles = new EmundusModelProfile();
 
@@ -2768,18 +2795,21 @@ class EmundusModelApplication extends JModelList {
 
             $forms = @EmundusHelperMenu::buildMenuQuery($pid);
 
-            foreach ($forms as $key => $form) {
+            foreach ($forms as $form) {
+
                 $query = 'SELECT * FROM '.$form->db_table_name.' WHERE fnum like '.$db->Quote($fnum_from);
-                $db->setQuery( $query );
+                $db->setQuery($query);
                 $stored = $db->loadAssoc();
+
                 if (count($stored) > 0) {
                     // update form data
                     $parent_id = $stored['id'];
                     unset($stored['id']);
                     $stored['fnum'] = $fnum_to;
                     $q=1;
+
                     $query = 'INSERT INTO '.$form->db_table_name.' (`'.implode('`,`', array_keys($stored)).'`) VALUES('.implode(',', $db->Quote($stored)).')';
-                    $db->setQuery( $query );
+                    $db->setQuery($query);
                     $db->execute();
                     $id = $db->insertid();
 
@@ -2793,56 +2823,52 @@ class EmundusModelApplication extends JModelList {
                                 WHERE ff.form_id = "'.$form->form_id.'"
                                 ORDER BY ff.ordering';
                     $q=2;
-                    $db->setQuery( $query );
+                    $db->setQuery($query);
                     $groups = $db->loadObjectList();
 
                     // get data and update current form
-                    $data   = array();
+                    $data = array();
                     if (count($groups) > 0) {
-                        foreach ($groups as $key => $group) {
+                        foreach ($groups as $group) {
                             $group_params = json_decode($group->gparams);
                             if (@$group_params->repeat_group_button == 1) {
                                 $data[$group->group_id]['repeat_group'] = $group_params->repeat_group_button;
                                 $data[$group->group_id]['group_id'] = $group->group_id;
                                 $data[$group->group_id]['element_name'][] = $group->name;
                                 $data[$group->group_id]['table'] = $group->table;
-                                //$data[$group->group_id]['table'] = $form->db_table_name.'_'.$group->group_id.'_repeat';
                             }
                         }
+
                         if (count($data) > 0) {
-                            foreach ($data as $key => $d) {
+                            foreach ($data as $d) {
                                 $q=3;
                                 $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
-                                $db->setQuery( $query );
+                                $db->setQuery($query);
                                 $stored = $db->loadAssocList();
 
                                 if (count($stored) > 0) {
                                     $arrayValue = [];
 
-                                    foreach($stored as $rowvalues){
+                                    foreach($stored as $rowvalues) {
                                         unset($rowvalues['id']);
                                         $rowvalues['parent_id'] = $id;
                                         $arrayValue[] = '('.implode(',', $db->quote($rowvalues)).')';
                                         $keyValue[] = $rowvalues;
-
                                     }
                                     unset($stored[0]['id']);
                                     $q=4;
+
                                     // update form data
                                     $query = 'INSERT INTO '.$d['table'].' (`'.implode('`,`', array_keys($stored[0])).'`)'.' VALUES '.implode(',', $arrayValue);
-                                    $db->setQuery( $query );
+                                    $db->setQuery($query);
                                     $db->execute();
                                 }
                             }
                         }
                     }
-
                 }
             }
-
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$q.' :: '.$query, JLog::ERROR, 'com_emundus');
             return false;
@@ -2853,17 +2879,15 @@ class EmundusModelApplication extends JModelList {
 
     /**
      * Duplicate all documents (files)
-     * @param $fnum_from      the fnum of the source
-     * @param $fnum_to      the fnum of the duplicated application
-     * @param $pid          the profile_id to get list of forms
+     * @param $fnum_from String the fnum of the source
+     * @param $fnum_to String the fnum of the duplicated application
+     * @param $pid Int the profile_id to get list of forms
      * @return bool
      */
-    public function copyDocuments($fnum_from, $fnum_to, $pid = null, $duplicated = null)
-    {
+    public function copyDocuments($fnum_from, $fnum_to, $pid = null, $duplicated = null) {
         $db = JFactory::getDbo();
 
-        try
-        {
+        try {
             if (empty($pid)) {
                 $m_profiles = new EmundusModelProfile();
 
@@ -2877,48 +2901,44 @@ class EmundusModelApplication extends JModelList {
                         LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id='.$pid.'
                         WHERE eu.fnum like '.$db->Quote($fnum_from);
 
-            if (empty($pid))
-                $query .= ' AND esap.duplicate=1';
+            if (empty($pid)) {
+            	$query .= ' AND esap.duplicate=1';
+            }
 
-            $db->setQuery( $query );
+            $db->setQuery($query);
             $stored = $db->loadAssocList();
 
             if (count($stored) > 0) {
                 // 2. copy DB définition and duplicate files in applicant directory
-                foreach ($stored as $key => $row) {
+                foreach ($stored as $row) {
                     $src = $row['filename'];
                     $ext = explode('.', $src);
-                    $ext = $ext[count($ext)-1];;
+                    $ext = $ext[count($ext)-1];
                     $cpt = 0-(int)(strlen($ext)+1);
                     $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
                     $row['filename'] = $dest;
                     unset($row['id']);
                     unset($row['fnum']);
-                    try
-                    {
+
+                    try {
                         $query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($fnum_to).', '.implode(',', $db->Quote($row)).')';
-                        $db->setQuery( $query );
+                        $db->setQuery($query);
                         $db->execute();
                         $id = $db->insertid();
                         $path = EMUNDUS_PATH_ABS.$row['user_id'].DS;
 
                         if (!copy($path.$src, $path.$dest)) {
                             $query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
-                            $db->setQuery( $query );
+                            $db->setQuery($query);
                             $db->execute();
                         }
-                    }
-                    catch(Exception $e)
-                    {
+                    } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$row['user_id'].' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
                     }
                 }
             }
-
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
@@ -3141,7 +3161,15 @@ class EmundusModelApplication extends JModelList {
         return $db->execute();
     }
 
-
+	/**
+	 * @param $elements
+	 * @param $table
+	 * @param $parent_table
+	 * @param $fnum
+	 *
+	 * @return bool
+	 *
+	 */
     public function checkEmptyRepeatGroups($elements, $table, $parent_table, $fnum) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -3169,7 +3197,7 @@ class EmundusModelApplication extends JModelList {
                 $elements = array_map(function($arr) {
                     if (is_numeric($arr)) {
                         return (empty(floatval($arr)));
-                    } else{
+                    } else {
                         if ($arr == "0000-00-00 00:00:00") {
                             return true;
                         }
@@ -3181,11 +3209,11 @@ class EmundusModelApplication extends JModelList {
                 return !empty($elements);
             }
 
-            return false;
+            return true;
 
         } catch (Exception $e ) {
-            echo "<pre>";var_dump($elements); echo "</pre>"; die();
-
+	        JLog::add('Error checking if repeat group is empty at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	        return false;
         }
     }
 

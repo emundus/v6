@@ -1,8 +1,8 @@
 <?php
 /**
- * @package     FOF
- * @copyright   Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license     GNU GPL version 2 or later
+ * @package   FOF
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 2, or later
  */
 
 // Do not put the JEXEC or die check on this file (necessary omission for testing)
@@ -17,7 +17,7 @@ if (!class_exists('FOF30\\Autoloader\\Autoloader'))
 
 if (!defined('FOF30_INCLUDED'))
 {
-	define('FOF30_INCLUDED', '3.5.1');
+	define('FOF30_INCLUDED', '3.5.2');
 
 	JFactory::getLanguage()->load('lib_fof30', JPATH_SITE, 'en-GB', true);
 	JFactory::getLanguage()->load('lib_fof30', JPATH_SITE, null, true);
@@ -27,7 +27,4 @@ if (!defined('FOF30_INCLUDED'))
 	{
 		\JLog::addLogger(array('text_file' => 'fof.log.php'), \JLog::ALL, array('fof'));
 	}
-
-	// Register the JHtml helpers path for the Akeeba Frontend Framework
-	JHtml::addIncludePath(__DIR__ . '/Utils/FEFHelper');
 }

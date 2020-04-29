@@ -2,7 +2,7 @@
 /**
  * @version   $Id: positions.php 30069 2016-03-08 17:45:33Z matias $
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2019 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2020 RocketTheme, LLC
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
  */
 defined('GANTRY_VERSION') or die();
@@ -118,7 +118,7 @@ class GantryFormFieldPositions extends GantryFormField
 		}
 
 		// if the same type of combinations are requested, use the cached ones, otherwise get the new set
-		if ($this->type != "custom" && ($this->words != $this->settings["words"] || $this->schemas != $this->settings["schemas"] || $this->maxGrid != $this->settings["maxGrid"])) {
+		if ($this->type != "custom" && (null === $this->settings || $this->words != $this->settings["words"] || $this->schemas != $this->settings["schemas"] || $this->maxGrid != $this->settings["maxGrid"])) {
 			$this->combinations = $this->getCombinations();
 		}
 
@@ -183,13 +183,13 @@ class GantryFormFieldPositions extends GantryFormField
 	function permutations($letters, $num, $filter = 12)
 	{
 		// hardcoded cases for speed optimization
-		$letter0 = base_convert($letters{0}, 24, 10);
+		$letter0 = base_convert($letters[0], 24, 10);
 		$letter1 = base_convert($this->lastchar($letters), 24, 10);
 		if ($letter0 + $letter1 > $filter) return array();
 		if ($filter == 12 && $num == 6) return array("222222");
 		if ($num == 1) return $this->oneCharConversion(array($filter));
 
-		$last   = str_repeat($letters{0}, $num);
+		$last   = str_repeat($letters[0], $num);
 		$result = array();
 
 		while ($last != str_repeat($this->lastchar($letters), $num)) {
@@ -209,25 +209,25 @@ class GantryFormFieldPositions extends GantryFormField
 
 	function char_add($digits, $string, $char)
 	{
-		if ($string{$char} <> $this->lastchar($digits)) {
-			$string{$char} = $digits{strpos($digits, $string{$char}) + 1};
+		if ($string[$char] <> $this->lastchar($digits)) {
+			$string[$char] = $digits[strpos($digits, $string[$char]) + 1];
 			return $string;
 		} else {
-			$string = $this->changeall($string, $digits{0}, $char);
+			$string = $this->changeall($string, $digits[0], $char);
 			return $this->char_add($digits, $string, $char - 1);
 		}
 	}
 
 	function lastchar($string)
 	{
-		return $string{strlen($string) - 1};
+		return $string[strlen($string) - 1];
 	}
 
 	function changeall($string, $char, $start = 0, $end = 0)
 	{
 		if ($end == 0) $end = strlen($string) - 1;
 		for ($i = $start; $i <= $end; $i++) {
-			$string{$i} = $char;
+			$string[$i] = $char;
 		}
 
 		return $string;

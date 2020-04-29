@@ -22,6 +22,8 @@
 
 namespace JchOptimize\Core;
 
+defined('_JEXEC') or die('Restricted access');
+
 abstract class Regextokenizer
 {
         //regex for double quoted strings

@@ -98,13 +98,12 @@ class EmundusModelEvaluation extends JModelList {
 			if (!empty($adv) && !is_null($adv)) {
 				$this->elements_id .= ','.implode(',', $adv);
 			}
-
 		}
 		$this->elements_values = explode(',', $menu_params->get('em_elements_values'));
 
 		$this->_elements_default = array();
 		
-		if(!is_null($this->elements_id)) {
+		if (!is_null($this->elements_id)) {
 			$this->_elements = @EmundusHelperFiles::getElementsName($this->elements_id);
 		}
 
@@ -113,14 +112,15 @@ class EmundusModelEvaluation extends JModelList {
 				$group_params = json_decode($def_elmt->group_attribs);
 
 				if ($def_elmt->element_plugin == 'date') {
-					if ($group_params->repeat_group_button == 1) {
+					if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
 														SELECT  GROUP_CONCAT(DATE_FORMAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
 														FROM '.$def_elmt->table_join.'
 														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
 													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
-					} else
-						$this->_elements_default[] = $def_elmt->tab_name . '.' . $def_elmt->element_name.' AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+					} else {
+						$this->_elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name.' AS `'.$def_elmt->tab_name.'___'.$def_elmt->element_name.'`';
+					}
 				} elseif ($def_elmt->element_plugin == 'databasejoin') {
 					$attribs = json_decode($def_elmt->element_attribs);
 					$join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat);
@@ -131,7 +131,7 @@ class EmundusModelEvaluation extends JModelList {
                     $db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
                     $publish_query = ($db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
 
-					if ($group_params->repeat_group_button == 1) {
+					if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
 						$query = '(
 									select GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
 									from '.$attribs->join_db_name.'
@@ -142,8 +142,7 @@ class EmundusModelEvaluation extends JModelList {
 										)
                                     '.$publish_query.'
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
-					}
-					else {
+					} else {
                         if ($attribs->database_join_display_type == "checkbox") {
 
                             $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
@@ -164,25 +163,37 @@ class EmundusModelEvaluation extends JModelList {
                     }
 
 					$this->_elements_default[] = $query;
-				}
-				elseif ($def_elmt->element_plugin == 'cascadingdropdown') {
-		                    $attribs = json_decode($def_elmt->element_attribs);
-		                    $cascadingdropdown_id = $attribs->cascadingdropdown_id;
-		                    $r1 = explode('___', $cascadingdropdown_id);
-		                    $cascadingdropdown_label = $attribs->cascadingdropdown_label;
-		                    $r2 = explode('___', $cascadingdropdown_label);
-		                    $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
-		                    $from = $r2[0]; 
-		                    $where = $r1[1].'='.$def_elmt->tab_name.'.'.$def_elmt->element_name;
-		                    $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
-		                    $query = preg_replace('#{thistable}#', $from, $query);
-		                    $query = preg_replace('#{my->id}#', $current_user->id, $query);
-			                $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
-		                    $this->_elements_default[] = $query;
-		        }
-				elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
+				} elseif ($def_elmt->element_plugin == 'cascadingdropdown') {
+					$attribs = json_decode($def_elmt->element_attribs);
+                    $cascadingdropdown_id = $attribs->cascadingdropdown_id;
+                    $r1 = explode('___', $cascadingdropdown_id);
+                    $cascadingdropdown_label = $attribs->cascadingdropdown_label;
+                    $r2 = explode('___', $cascadingdropdown_label);
+                    $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
+                    $from = $r2[0]; 
+                    $where = $r1[1];
 
-					if (@$group_params->repeat_group_button == 1) {
+                   if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
+                        $query = '(
+                                    select GROUP_CONCAT('.$select.' SEPARATOR ", ")
+                                    from '.$from.'
+                                    where '.$where.' IN
+                                        ( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
+                                          from '.$def_elmt->table_join.'
+                                          where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
+                                        )
+                                  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
+                    } else {
+                        $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
+                    }
+                    
+                    $query = preg_replace('#{thistable}#', $from, $query);
+                    $query = preg_replace('#{my->id}#', $current_user->id, $query);
+                    $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
+                    $this->_elements_default[] = $query;
+		        } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
+
+					if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
                                     SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")
                                     FROM '.$def_elmt->table_join.'
@@ -197,9 +208,8 @@ class EmundusModelEvaluation extends JModelList {
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
-				}
-				else {
-					if (@$group_params->repeat_group_button == 1) {
+				} else {
+					if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
 														SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
 														FROM '.$def_elmt->table_join.'
@@ -1116,7 +1126,7 @@ class EmundusModelEvaluation extends JModelList {
 		                            return strpos($e, '!') === 0;
 	                            });
 
-	                            if (!empty($not_in) && !empty($filt_menu_not)) {
+	                            if (is_array($not_in) && !empty($filt_menu_not)) {
 		                            $not_in = array_unique(array_merge($not_in, $filt_menu_not));
 	                            }
 
@@ -1129,7 +1139,7 @@ class EmundusModelEvaluation extends JModelList {
 	                            }
 
 	                            if (!empty($value)) {
-		                            $query['q'] .= ' and (eta.id_tag like "%' . implode('%" OR eta.id_tag like "%', $value) . '%") ';
+		                            $query['q'] .= ' and eta.id_tag IN ('.implode(',', $value).') ';
 	                            }
                             }
                         }

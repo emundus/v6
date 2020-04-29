@@ -12,13 +12,15 @@ namespace Twilio\Rest\Taskrouter\V1\Workspace\Worker;
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceResource;
 use Twilio\Options;
+use Twilio\Values;
 use Twilio\Version;
 
 /**
+ * @property array realtime
+ * @property array cumulative
  * @property string accountSid
- * @property string cumulative
- * @property string realtime
  * @property string workspaceSid
+ * @property string url
  */
 class WorkersStatisticsInstance extends InstanceResource {
     /**
@@ -26,23 +28,23 @@ class WorkersStatisticsInstance extends InstanceResource {
      * 
      * @param \Twilio\Version $version Version that contains the resource
      * @param mixed[] $payload The response payload
-     * @param string $workspaceSid The workspace_sid
+     * @param string $workspaceSid The ID of the Workflow this worker is associated
+     *                             with
      * @return \Twilio\Rest\Taskrouter\V1\Workspace\Worker\WorkersStatisticsInstance 
      */
     public function __construct(Version $version, array $payload, $workspaceSid) {
         parent::__construct($version);
-        
+
         // Marshaled Properties
         $this->properties = array(
-            'accountSid' => $payload['account_sid'],
-            'cumulative' => $payload['cumulative'],
-            'realtime' => $payload['realtime'],
-            'workspaceSid' => $payload['workspace_sid'],
+            'realtime' => Values::array_get($payload, 'realtime'),
+            'cumulative' => Values::array_get($payload, 'cumulative'),
+            'accountSid' => Values::array_get($payload, 'account_sid'),
+            'workspaceSid' => Values::array_get($payload, 'workspace_sid'),
+            'url' => Values::array_get($payload, 'url'),
         );
-        
-        $this->solution = array(
-            'workspaceSid' => $workspaceSid,
-        );
+
+        $this->solution = array('workspaceSid' => $workspaceSid, );
     }
 
     /**
@@ -53,12 +55,9 @@ class WorkersStatisticsInstance extends InstanceResource {
      */
     protected function proxy() {
         if (!$this->context) {
-            $this->context = new WorkersStatisticsContext(
-                $this->version,
-                $this->solution['workspaceSid']
-            );
+            $this->context = new WorkersStatisticsContext($this->version, $this->solution['workspaceSid']);
         }
-        
+
         return $this->context;
     }
 
@@ -67,11 +66,10 @@ class WorkersStatisticsInstance extends InstanceResource {
      * 
      * @param array|Options $options Optional Arguments
      * @return WorkersStatisticsInstance Fetched WorkersStatisticsInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function fetch($options = array()) {
-        return $this->proxy()->fetch(
-            $options
-        );
+        return $this->proxy()->fetch($options);
     }
 
     /**
@@ -85,12 +83,12 @@ class WorkersStatisticsInstance extends InstanceResource {
         if (array_key_exists($name, $this->properties)) {
             return $this->properties[$name];
         }
-        
+
         if (property_exists($this, '_' . $name)) {
             $method = 'get' . ucfirst($name);
             return $this->$method();
         }
-        
+
         throw new TwilioException('Unknown property: ' . $name);
     }
 

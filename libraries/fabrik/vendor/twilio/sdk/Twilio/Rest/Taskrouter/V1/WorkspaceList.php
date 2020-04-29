@@ -11,6 +11,7 @@ namespace Twilio\Rest\Taskrouter\V1;
 
 use Twilio\ListResource;
 use Twilio\Options;
+use Twilio\Serialize;
 use Twilio\Values;
 use Twilio\Version;
 
@@ -23,10 +24,10 @@ class WorkspaceList extends ListResource {
      */
     public function __construct(Version $version) {
         parent::__construct($version);
-        
+
         // Path Solution
         $this->solution = array();
-        
+
         $this->uri = '/Workspaces';
     }
 
@@ -51,9 +52,9 @@ class WorkspaceList extends ListResource {
      */
     public function stream($options = array(), $limit = null, $pageSize = null) {
         $limits = $this->version->readLimits($limit, $pageSize);
-        
+
         $page = $this->page($options, $limits['pageSize']);
-        
+
         return $this->version->stream($page, $limits['limit'], $limits['pageLimit']);
     }
 
@@ -73,7 +74,7 @@ class WorkspaceList extends ListResource {
      *                        efficient page size, i.e. min(limit, 1000)
      * @return WorkspaceInstance[] Array of results
      */
-    public function read($options = array(), $limit = null, $pageSize = Values::NONE) {
+    public function read($options = array(), $limit = null, $pageSize = null) {
         return iterator_to_array($this->stream($options, $limit, $pageSize), false);
     }
 
@@ -95,45 +96,60 @@ class WorkspaceList extends ListResource {
             'Page' => $pageNumber,
             'PageSize' => $pageSize,
         ));
-        
+
         $response = $this->version->page(
             'GET',
             $this->uri,
             $params
         );
-        
+
+        return new WorkspacePage($this->version, $response, $this->solution);
+    }
+
+    /**
+     * Retrieve a specific page of WorkspaceInstance records from the API.
+     * Request is executed immediately
+     * 
+     * @param string $targetUrl API-generated URL for the requested results page
+     * @return \Twilio\Page Page of WorkspaceInstance
+     */
+    public function getPage($targetUrl) {
+        $response = $this->version->getDomain()->getClient()->request(
+            'GET',
+            $targetUrl
+        );
+
         return new WorkspacePage($this->version, $response, $this->solution);
     }
 
     /**
      * Create a new WorkspaceInstance
      * 
-     * @param string $friendlyName The friendly_name
+     * @param string $friendlyName Human readable description of this workspace
      * @param array|Options $options Optional Arguments
      * @return WorkspaceInstance Newly created WorkspaceInstance
+     * @throws TwilioException When an HTTP error occurs.
      */
     public function create($friendlyName, $options = array()) {
         $options = new Values($options);
-        
+
         $data = Values::of(array(
             'FriendlyName' => $friendlyName,
             'EventCallbackUrl' => $options['eventCallbackUrl'],
             'EventsFilter' => $options['eventsFilter'],
-            'MultiTaskEnabled' => $options['multiTaskEnabled'],
+            'MultiTaskEnabled' => Serialize::booleanToString($options['multiTaskEnabled']),
             'Template' => $options['template'],
+            'PrioritizeQueueOrder' => $options['prioritizeQueueOrder'],
         ));
-        
+
         $payload = $this->version->create(
             'POST',
             $this->uri,
             array(),
             $data
         );
-        
-        return new WorkspaceInstance(
-            $this->version,
-            $payload
-        );
+
+        return new WorkspaceInstance($this->version, $payload);
     }
 
     /**
@@ -143,10 +159,7 @@ class WorkspaceList extends ListResource {
      * @return \Twilio\Rest\Taskrouter\V1\WorkspaceContext 
      */
     public function getContext($sid) {
-        return new WorkspaceContext(
-            $this->version,
-            $sid
-        );
+        return new WorkspaceContext($this->version, $sid);
     }
 
     /**

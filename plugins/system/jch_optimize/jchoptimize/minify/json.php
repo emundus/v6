@@ -22,6 +22,8 @@
 
 namespace JchOptimize\Minify;
 
+defined('_JEXEC') or die('Restricted access');
+
 class Json extends Base
 {
         public $json;

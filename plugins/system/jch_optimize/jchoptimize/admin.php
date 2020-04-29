@@ -22,7 +22,7 @@
 
 namespace JchOptimize\Core;
 
-defined('_JCH_EXEC') or die('Restricted access');
+defined('_JEXEC') or die('Restricted access');
 
 use JchOptimize\Platform\Settings;
 use JchOptimize\Platform\Uri;
@@ -99,7 +99,7 @@ class Admin
 		$params->set('html_minify', '0');
 		$params->set('defer_js', '0');
 		$params->set('debug', '0');
-		$params->set('bottom_js', '2');
+		$params->set('bottom_js', '1');
 		$params->set('includeAllExtensions', '1');
 		// $params->set('excludeCss', array());
 		// $params->set('excludeJs', array());
@@ -108,13 +108,12 @@ class Admin
 		$params->set('csg_exclude_images', array());
 		$params->set('csg_include_images', array());
 
-		$params->set('searchBody', '1');
 		$params->set('phpAndExternal', '1');
 		$params->set('inlineScripts', '1');
 		$params->set('replaceImports', '0');
 		$params->set('loadAsynchronous', '0');
 		$params->set('cookielessdomain_enable', '0');
-		$params->set('lazyload', '0');
+		$params->set('lazyload_enable', '0');
 		$params->set('optimizeCssDelivery_enable', '0');
 		//$params->set('pro_excludeLazyLoad', array());
 		//$params->set('pro_excludeLazyLoadFolders', array());

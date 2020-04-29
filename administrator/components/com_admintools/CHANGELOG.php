@@ -1,4 +1,17 @@
 <?php die() ?>
+Admin Tools 5.6.0
+================================================================================
++ Prevent www and non-www redirs when Joomla site settings are wrong
++ Added feature to import configuration settings from a remote URL on a schedule
++ Add cartupdate to the list of allowed tmpl keywords to cater for VirtueMart's not following Joomla best practices
++ The .htaccess Set a Long Expiration Time now also applies a no-cache setting for administrator URLs to prevent browsers from caching redirects and / or error messages in admin pages
++ Add WebP to Set a Long Expiration Time in .htaccess and NginX Conf Maker
+~ Better IP Workarounds auto-detection
+# [LOW] Control Panel graphs are affected when you apply filters in the Security Exceptions Log page.
+# [LOW] URL Redirection: URL fragment included twice after redirecting to a URL that includes a fragment
+# [LOW] Monitor Critical Files: PHP warning sometimes issued from leftover code
+# [LOW] PHP Scanner: fixed scanning when PHP reports installation path being /
+
 Admin Tools 5.5.0
 ================================================================================
 - Removed GeoGraphic IP blocking due to changes in MaxMind's policy (see our site's News section)
