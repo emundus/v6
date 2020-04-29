@@ -419,7 +419,7 @@ class EmundusModelApplication extends JModelList {
 	 */
     public function getFormsProgress($fnum = "0") {
 
-        if (empty($fnum) || !is_numeric($fnum)) {
+        if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
             return false;
         }
 
@@ -485,7 +485,7 @@ class EmundusModelApplication extends JModelList {
 	 */
     public function getAttachmentsProgress($fnum = null) {
 
-        if (empty($fnum) || !is_numeric($fnum)) {
+        if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
             return false;
         }
 
@@ -2917,16 +2917,15 @@ class EmundusModelApplication extends JModelList {
                     $cpt = 0-(int)(strlen($ext)+1);
                     $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
                     $row['filename'] = $dest;
+                    $row['fnum'] = $fnum_to;
                     unset($row['id']);
-                    unset($row['fnum']);
 
                     try {
-                        $query = 'INSERT INTO #__emundus_uploads (`fnum`, `'.implode('`,`', array_keys($row)).'`) VALUES('.$db->Quote($fnum_to).', '.implode(',', $db->Quote($row)).')';
+                        $query = 'INSERT INTO #__emundus_uploads (`'.implode('`,`', array_keys($row)).'`) VALUES('.implode(',', $db->Quote($row)).')';
                         $db->setQuery($query);
                         $db->execute();
                         $id = $db->insertid();
                         $path = EMUNDUS_PATH_ABS.$row['user_id'].DS;
-
                         if (!copy($path.$src, $path.$dest)) {
                             $query = 'UPDATE #__emundus_uploads SET filename='.$src.' WHERE id='.$id;
                             $db->setQuery($query);
