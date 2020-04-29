@@ -65,7 +65,7 @@ foreach ($this->groups as $group) :
     <div class="<?= $group->class; ?>" id="group<?= $group->id;?>" style="<?= $group->css;?>">
 
 		<?php
-		if ($group->showLegend && $group->id !== '697') :?>
+		if ($group->showLegend && $group->id !== '697' && $group->id !== '717') :?>
             <h3 class="legend">
                 <span><?= $group->title;?></span>
             </h3>
@@ -83,7 +83,7 @@ foreach ($this->groups as $group) :
 
 		$this->elements = $group->elements;
 
-		if ($group->id === '696') :?>
+		if ($group->id === '696' || $group->id === '716') :?>
 
             <h5><?= $this->elements['campaign_id']->value[0]; ?></h5>
             <div>
@@ -91,7 +91,7 @@ foreach ($this->groups as $group) :
 				<?= $this->elements['date_time']->label_raw; ?> <u><?= date('d/m/Y' , strtotime($this->elements['date_time']->value)); ?></u>
             </div>
 
-		<?php elseif ($group->id === '697') :?>
+		<?php elseif ($group->id === '697' || $group->id === '717') :?>
             <br>
             <br>
             <u><?= $group->title; ?></u>
@@ -103,7 +103,7 @@ foreach ($this->groups as $group) :
                     <tr role="row"><td><?= $sgroup['name']->value; ?></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td> <?= ($sgroup['present']->value[0] === '1')? 'oui' : 'non'; ?></td></tr>
 				<?php endforeach; ?>
             </table>
-		<?php elseif ($group->id === '698') :?>
+		<?php elseif ($group->id === '698' || $group->id === '718') :?>
             <br>
             <br>
             <br>
