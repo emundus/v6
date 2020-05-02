@@ -1,9 +1,12 @@
+DELETE FROM `#__securitycheckpro_storage` WHERE `storage_key` = 'geoblock';
+DELETE FROM `#__securitycheckpro_storage` WHERE `storage_key` = 'geoip_database_update';
+
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_users_control` (
 `id` INT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
 `users` VARCHAR(100) NOT NULL,
 `contador` INT(3) UNSIGNED NOT NULL,
 PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_db`;
 CREATE TABLE `#__securitycheckpro_db` (
@@ -21,7 +24,7 @@ CREATE TABLE `#__securitycheckpro_db` (
 `solution_type` VARCHAR(35) DEFAULT '???',
 `solution` VARCHAR(70),
 PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,`modvulnversion`,`Joomlaversion`,
 `modvulnjoomla`,`description`,`vuln_class`,`published`,`vulnerable`,`solution_type`,`solution`) VALUES 
 ('Joomla!','core','3.0.0','==','3.0.0','==','Joomla! XSS Vulnerability','Typographical error','Oct 09 2012','Joomla! 3.0.0','update','3.0.1'),
@@ -494,7 +497,11 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_j2store','component','3.3.9','<=','3.0.0','>=','J2Store Component','Xss vulnerability','Nov 14 2019','Version 3.3.9 and previous','none','No details'),
 ('Joomla!','core','3.9.13','<=','3.0.0','>=','Joomla! core','Two vulnerabilities','Dec 18 2019','Joomla 2.5.0 through 3.9.13','update','3.9.14'),
 ('Joomla!','core','3.9.14','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Jan 28 2020','Joomla 3.0.0 through 3.9.14','update','3.9.15'),
-('Joomla!','core','3.9.15','<=','3.0.0','>=','Joomla! core','Six low vulnerabilities','Mar 10 2020','Joomla 1.7.0 through 3.9.15','update','3.9.16');
+('Joomla!','core','3.9.15','<=','3.0.0','>=','Joomla! core','Six low vulnerabilities','Mar 10 2020','Joomla 1.7.0 through 3.9.15','update','3.9.16'),
+('com_simplecalendar','component','3.1.9','<=','3.0.0','>=','Simple Calendar Component','Sql injection Vulnerability','Mar 24 2020','Version 3.1.9 and lower','update','3.2.1'),
+('com_acym','component','6.9.2','<','3.0.0','>=','Acymailing 6 Component','File upload Vulnerability','Mar 24 2020','Version 6','update','6.9.2'),
+('com_gmapfp','component','3.30','==','3.0.0','>=','GMapFP Component','Other Vulnerability','Apr 14 2020','Version 3.30','update','3.52'),
+('Joomla!','core','3.9.16','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Apr 22 2020','Joomla 2.5.0 through 3.9.16','update','3.9.18');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_sessions`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (
@@ -504,7 +511,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (
 `ip` VARCHAR(26) NOT NULL,
 `user_agent` VARCHAR(300) NOT NULL,
 PRIMARY KEY (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -512,8 +519,8 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `last_check` DATETIME,
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.70');
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.75');
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -522,7 +529,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `forbidden_words` VARCHAR(300) NOT NULL,
 `date_added` DATETIME,
 PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_url_inspector_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
@@ -532,7 +539,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `forbidden_words` VARCHAR(300) NOT NULL,
 `date_added` DATETIME,
 PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_trackactions` (
 `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,

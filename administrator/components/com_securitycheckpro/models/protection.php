@@ -507,8 +507,8 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
         
             $rules .= PHP_EOL . "## Begin Securitycheck Pro Xframe-options protection";
             $rules .= PHP_EOL . "## Don't allow any pages to be framed - Defends against CSRF";
-            $rules .= PHP_EOL . "<IfModule mod_headers.c>";
-            $rules .= PHP_EOL . "Header set X-Frame-Options " . $this->getValue("xframe_options");            
+            $rules .= PHP_EOL . "<IfModule mod_headers.c>";			
+            $rules .= PHP_EOL . 'Header always set X-Frame-Options "' . $this->getValue("xframe_options") . '"';            
             $rules .= PHP_EOL . "</IfModule>";
             $rules .= PHP_EOL . "## End Securitycheck Pro Xframe-options protection" . PHP_EOL;    
         
@@ -519,7 +519,7 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
         
             $rules .= PHP_EOL . "## Begin Securitycheck Pro Prevent mime based attacks";
             $rules .= PHP_EOL . "<IfModule mod_headers.c>";
-            $rules .= PHP_EOL . 'Header set X-Content-Type-Options "nosniff"';            
+            $rules .= PHP_EOL . 'Header always set X-Content-Type-Options "nosniff"';            
             $rules .= PHP_EOL . "</IfModule>";
             $rules .= PHP_EOL . "## End Securitycheck Pro Prevent mime based attacks" . PHP_EOL;    
         
@@ -531,7 +531,7 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
         
             $rules .= PHP_EOL . "## Begin Securitycheck Pro Strict Transport Security";
             $rules .= PHP_EOL . "<IfModule mod_headers.c>";
-            $rules .= PHP_EOL . 'Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"';            
+            $rules .= PHP_EOL . 'Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"';            
             $rules .= PHP_EOL . "</IfModule>";
             $rules .= PHP_EOL . "## End Securitycheck Pro Strict Transport Security" . PHP_EOL;    
         
@@ -543,7 +543,7 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
         
             $rules .= PHP_EOL . "## Begin Securitycheck Pro X-Xss-Protection";
             $rules .= PHP_EOL . "<IfModule mod_headers.c>";
-            $rules .= PHP_EOL . 'Header set X-Xss-Protection "1; mode=block"';            
+            $rules .= PHP_EOL . 'Header always set X-Xss-Protection "1; mode=block"';            
             $rules .= PHP_EOL . "</IfModule>";
             $rules .= PHP_EOL . "## End Securitycheck Pro X-Xss-Protection" . PHP_EOL;    
         
@@ -556,7 +556,7 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
         
             $rules .= PHP_EOL . "## Begin Securitycheck Pro Content-Security-Policy protection";
             $rules .= PHP_EOL . "<IfModule mod_headers.c>";
-            $rules .= PHP_EOL . 'Header set Content-Security-Policy "' . $csp_policy . '"';        
+            $rules .= PHP_EOL . 'Header always set Content-Security-Policy "' . $csp_policy . '"';        
             $rules .= PHP_EOL . "</IfModule>";
             $rules .= PHP_EOL . "## End Securitycheck Pro Content-Security-Policy protection" . PHP_EOL;    
         
@@ -569,7 +569,7 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
         
             $rules .= PHP_EOL . "## Begin Securitycheck Pro Referrer policy protection";
             $rules .= PHP_EOL . "<IfModule mod_headers.c>";
-            $rules .= PHP_EOL . 'Header set Referrer-Policy "' . $referrer_policy . '"';            
+            $rules .= PHP_EOL . 'Header always set Referrer-Policy "' . $referrer_policy . '"';            
             $rules .= PHP_EOL . "</IfModule>";
             $rules .= PHP_EOL . "## End Securitycheck Pro Referrer policy protection" . PHP_EOL;    
         
