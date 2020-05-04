@@ -1,0 +1,13 @@
+{
+    "name": "benj/emundus",
+    "authors": [
+        {
+            "name": "Benjamin Rivalland",
+            "email": "benjamin.rivalland@emundus.fr"
+        }
+    ],
+    "require": {
+        "php-http/guzzle6-adapter": "^2.0",
+        "thecodingmachine/gotenberg-php-client": "^6.2"
+    }
+}
