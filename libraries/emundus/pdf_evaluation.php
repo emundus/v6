@@ -79,7 +79,9 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
 
     //get title
     $title = $config->get('sitename');
-    $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+    if (is_file($logo)) {
+	    $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+    }
     unset($logo);
     unset($title);
     
