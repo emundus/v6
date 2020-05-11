@@ -118,10 +118,13 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 			$reload++;
 
 			if ($this->getParam('admission', 0) == 1) {
-			    if(!empty($fnum))
+			    if(!empty($fnum)) {
                     $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$user->fnums[$fnum]->admission_start_date)) ? true : false;
+                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$fnum]->admission_start_date)) ? true : false;
+                }
                 else{
                     $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$user->fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$user->fnums[$user->fnum]->admission_start_date)) ? true : false;
+                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$user->fnum]->admission_start_date)) ? true : false;
                 }
             }
 			else {

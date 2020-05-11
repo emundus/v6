@@ -57,12 +57,15 @@ class EmundusViewDecision extends JViewLegacy
 		$jinput = JFactory::getApplication()->input;
 		$layout = $jinput->getString('layout', 0);
 
+        $m_files = new EmundusModelFiles();
+
 		switch  ($layout) {
 			case 'menuactions':
 				$display = JFactory::getApplication()->input->getString('display', 'none');
 
 				$items = @EmundusHelperFiles::getMenuList($menu_params);
-				$actions = @EmundusHelperFiles::getActionsACL();
+                //$actions = @EmundusHelperFiles::getActionsACL();
+                $actions = $m_files->getAllActions();
 
 				$menuActions = array();
 				foreach ($items as $key => $item) {

@@ -724,10 +724,19 @@ class EmundusControllerFiles extends JControllerLegacy
      *
      */
     public function updatestate() {
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
         $app    = JFactory::getApplication();
         $jinput = $app->input;
         $fnums  = $jinput->getString('fnums', null);
         $state  = $jinput->getInt('state', null);
+
+        $h_files    = new EmundusHelperFiles();
+        $m_messages = new EmundusModelMessages();
+
+        $get_candidate_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_candidate_attachment');
+        $get_letters_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_letter_attachment');
+
 
         $email_from_sys = $app->getCfg('mailfrom');
 	    if (!is_array($fnums)) {
@@ -758,6 +767,8 @@ class EmundusControllerFiles extends JControllerLegacy
             $code = array();
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
+                $step = $fnum['step'];
+                $fnum = $fnum['fnum'];
                 $row = array('applicant_id' => $fnum['applicant_id'],
                     'user_id' => $this->_user->id,
                     'reason' => JText::_('STATUS'),
@@ -766,12 +777,13 @@ class EmundusControllerFiles extends JControllerLegacy
                 );
                 $m_application->addComment($row);
             }
+
             //*********************************************************************
             // Get triggered email
             include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
             $m_email = new EmundusModelEmails;
             $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
-
+            $toAttach = [];
             if (count($trigger_emails) > 0) {
 
                 foreach ($trigger_emails as $trigger_email) {
@@ -779,11 +791,68 @@ class EmundusControllerFiles extends JControllerLegacy
                     // Manage with default recipient by programme
                     foreach ($trigger_email as $code => $trigger) {
 
+                        $email_id = array_keys($trigger_emails);
+
+                        $template = $m_messages->getEmail($email_id[0], $get_candidate_attachments, $get_letters_attachments);
+                        $attachments[]=$template->letter_attachments;
+
+                        // Files generated using the Letters system. Requires attachment creation and doc generation rights.
+                        if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($attachments)) {
+
+                            // Get from DB and generate using the tags.
+                            foreach ($attachments as $setup_letter) {
+
+                                $letter = $m_messages->get_letter($setup_letter);
+
+                                // We only get the letters if they are for that particular programme.
+                                if ($letter && in_array($code, explode('","',$letter->training))) {
+
+                                    // Some letters are only for files of a certain status, this is where we check for that.
+                                    if ($letter->status != null && !in_array($step, explode(',',$letter->status))) {
+                                        continue;
+                                    }
+
+                                    // A different file is to be generated depending on the template type.
+                                    switch ($letter->template_type) {
+
+                                        case '1':
+                                            // This is a static file, we just need to find its path add it as an attachment.
+                                            if (file_exists(JPATH_BASE.$letter->file)) {
+                                                $toAttach[] = JPATH_BASE.$letter->file;
+                                            }
+                                            break;
+
+                                        case '2':
+                                            // This is a PDF to be generated from HTML.
+                                            require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
+
+                                            $path = generateLetterFromHtml($letter, $fnum, $fnum->applicant_id, $fnum->training);
+
+                                            if ($path && file_exists($path)) {
+                                                $toAttach[] = $path;
+                                            }
+                                            break;
+
+                                        case '3':
+                                            // This is a DOC template to be completed with applicant information.
+                                            $path = $m_messages->generateLetterDoc($letter, $fnum);
+
+                                            if ($path && file_exists($path)) {
+                                                $toAttach[] = $path;
+                                            }
+                                            break;
+
+                                        default:
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+
                         if ($trigger['to']['to_applicant'] == 1) {
 
                             // Manage with selected fnum
                             foreach ($fnumsInfos as $file) {
-                            	
                             	if ($file['training'] != $code) {
                             		continue;
 	                            }
@@ -827,6 +896,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $mailer->isHTML(true);
                                 $mailer->Encoding = 'base64';
                                 $mailer->setBody($body);
+                                $mailer->addAttachment($toAttach);
 
                                 $send = $mailer->Send();
                                 if ($send !== true) {
@@ -879,6 +949,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             $mailer->isHTML(true);
                             $mailer->Encoding = 'base64';
                             $mailer->setBody($body);
+                            $mailer->addAttachment($toAttach);
 
                             $send = $mailer->Send();
                             if ($send !== true) {
@@ -1833,7 +1904,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $application_form_name = preg_replace('/\s/', '', $application_form_name);
                 $application_form_name = strtolower($application_form_name);
 
-                if ($file != $application_form_name.'.pdf') {
+                if ($file != $application_form_name.'.pdf' && file_exists(JPATH_BASE.DS.'tmp'.DS.$application_form_name.'.pdf')) {
                     unlink(JPATH_BASE.DS.'tmp'.DS.$application_form_name.'.pdf');
                 }
 

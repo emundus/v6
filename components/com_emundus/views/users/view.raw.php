@@ -160,6 +160,7 @@ class EmundusViewUsers extends JViewLegacy
 			die("ACCESS_DENIED");
 
 		$layout = JFactory::getApplication()->input->getString('layout', null);
+        $m_files = new EmundusModelFiles();
 		switch ($layout) {
 			case 'user':
 				$this->_loadData();
@@ -186,7 +187,8 @@ class EmundusViewUsers extends JViewLegacy
 				$params = $menu->getParams($current_menu->id);
 
 				$items = EmundusHelperFiles::getMenuList($params);
-				$actions = EmundusHelperFiles::getActionsACL();
+                //$actions = @EmundusHelperFiles::getActionsACL();
+                $actions = $m_files->getAllActions();
 
 				$menuActions = array();
 				foreach ($items as $key => $item) {

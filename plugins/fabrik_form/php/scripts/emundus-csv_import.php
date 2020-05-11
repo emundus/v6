@@ -207,16 +207,19 @@ $parsed_data = [];
 while (($data = fgetcsv($handle, 0, ';')) !== false) {
 
 	//try to convert char
-	$data = array_map( "convert", $data );
+	$data = array_map("convert", $data);
 
 	foreach ($data as $column_number => $column) {
 
+		// Clean up data from any invisible chars in xls.
+		$column = trim(preg_replace('/[^\PC\s]/u', '', $column));
+
 		if ($column_number === $profile_column) {
-			$profile_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
+			$profile_row[$row] = $column;
 		}
 
 		if ($column_number === $campaign_column) {
-			$campaign_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
+			$campaign_row[$row] = $column;
 
 			// If we have no profile, we must get the associated one using the campaign.
 			if (empty($profile) && !isset($profile_column)) {
@@ -224,7 +227,7 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 				$query->clear()
 					->select($db->quoteName('profile_id'))
 					->from($db->quoteName('#__emundus_setup_campaigns'))
-					->where($db->quoteName('id').' = '.preg_replace('/[^\PC\s]/u', '', $column));
+					->where($db->quoteName('id').' = '.$column);
 				$db->setQuery($query);
 
 				try {
@@ -238,12 +241,12 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 
 			continue;
 		} elseif ($column_number === $status_column) {
-			$status_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
+			$status_row[$row] = $column;
 			continue;
 		} elseif ($column_number === $cas_column) {
-			$cas_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
+			$cas_row[$row] = $column;
 		} elseif ($column_number === $group_column) {
-			$group_row[$row] = preg_replace('/[^\PC\s]/u', '', $column);
+			$group_row[$row] = $column;
 		}
 
 		if (in_array($column_number, $bad_columns)) {
@@ -252,10 +255,10 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 		
 		if (in_array($column_number, array_keys($repeat_tables))) {
 			// The repeat values are inserted into a separate array as they will be inserted into the DB AFTER their parent table.
-			$parsed_repeat[$row][$repeat_tables[$column_number]->parent][$repeat_tables[$column_number]->table][$database_elements[$column_number]->column] = preg_replace('/[^\PC\s]/u', '', $column);
+			$parsed_repeat[$row][$repeat_tables[$column_number]->parent][$repeat_tables[$column_number]->table][$database_elements[$column_number]->column] = $column;
 		} else {
 			// Build the complex data structure.
-			$parsed_data[$row][$database_elements[$column_number]->table][$database_elements[$column_number]->column] = preg_replace('/[^\PC\s]/u', '', $column);
+			$parsed_data[$row][$database_elements[$column_number]->table][$database_elements[$column_number]->column] = $column;
 		}
 
 	}

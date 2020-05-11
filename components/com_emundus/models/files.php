@@ -3524,15 +3524,18 @@ if (JFactory::getUser()->id == 63)
             ->where($db->quoteName('fe.group_id') . ' = 47 AND '.$db->quoteName('fe.name').' LIKE '.$db->quote('category'));
         $db->setQuery($query);
         $element = $db->loadColumn();
-        
-        $params = json_decode($element[0]);
 
-        $return = [];
-        if (!empty($params->sub_options->sub_values)) {
-            foreach ($params->sub_options->sub_values as $key => $value) {
-                $return[$value] = $params->sub_options->sub_labels[$key];
-            }
-        }
+	    $return = [];
+
+	    if (isset($element[0])) {
+		    $params = json_decode($element[0]);
+
+		    if (!empty($params->sub_options->sub_values)) {
+			    foreach ($params->sub_options->sub_values as $key => $value) {
+				    $return[$value] = $params->sub_options->sub_labels[$key];
+			    }
+		    }
+	    }
         return $return;
     }
 
