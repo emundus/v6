@@ -689,8 +689,9 @@ class EmundusModelProfile extends JModelList
             $incomplete = $this->getCurrentIncompleteCampaignByApplicant($current_user->id);
             $p 			= $this->isProfileUserSet($current_user->id);
 
-            if (empty($p['profile']) || empty($campaign["id"]) || !isset($p['profile']) || !isset($campaign["id"]) )
-                $app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
+            if (empty($p['profile']) || empty($campaign["id"]) || !isset($p['profile']) || !isset($campaign["id"])) {
+            	$app->redirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=102&random=0'));
+            }
 
             $profile 	= $this->getProfileByCampaign($campaign["id"]);
 
@@ -714,7 +715,7 @@ class EmundusModelProfile extends JModelList
             $emundus_user->status                 = @$campaign["status"];
         } else {
             $emundus_user->profile                = $profile["profile"];
-            $emundus_user->profile_label          = $profile["profile_label"];
+            $emundus_user->profile_label          = $profile["label"];
             $emundus_user->menutype               = $profile["menutype"];
             $emundus_user->university_id          = $profile["university_id"];
             $emundus_user->applicant              = 0;

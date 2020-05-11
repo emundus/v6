@@ -1941,6 +1941,10 @@ label[for="em-file_to_upload"]:hover {
 }
 
 /* files form */
+.g-flushed > .g-container{
+    width: 90%;
+    margin: 0 auto!important;
+}
 
 .em-container-form-body{
     padding: 20px;

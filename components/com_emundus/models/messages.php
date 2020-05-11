@@ -499,10 +499,11 @@ class EmundusModelMessages extends JModelList {
                 if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown") {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
 
-                        if ($elt['plugin'] == "checkbox")
-                            $val = json_decode($val['val']);
-                        else
-                            $val = explode(',', $val['val']);
+                        if ($elt['plugin'] == "checkbox") {
+                        	$val = json_decode($val['val']);
+                        } else {
+                        	$val = explode(',', $val['val']);
+                        }
 
                         if (count($val) > 0) {
                             foreach ($val as $k => $v) {
@@ -526,10 +527,11 @@ class EmundusModelMessages extends JModelList {
                     }
 
                 } else {
-                    if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin)
-                        $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnum, $params, $groupParams->repeat_group_button == 1);
-                    else
-                        $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnum, $elt['db_table_name'], $elt['name']);
+                    if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+                    	$fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnum, $params, $groupParams->repeat_group_button == 1);
+                    } else {
+                    	$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnum, $elt['db_table_name'], $elt['name']);
+                    }
                 }
 
             }
@@ -541,11 +543,11 @@ class EmundusModelMessages extends JModelList {
                     $val = "";
                     $lowerTag = strtolower($tag);
 
-                    if (array_key_exists($lowerTag, $const))
-                        $preprocess->setValue($tag, $const[$lowerTag]);
-                    elseif (!empty(@$fnumsInfos[$lowerTag]))
-                        $preprocess->setValue($tag, @$fnumsInfos[$lowerTag]);
-                    else {
+                    if (array_key_exists($lowerTag, $const)) {
+                    	$preprocess->setValue($tag, $const[$lowerTag]);
+                    } elseif (!empty(@$fnumsInfos[$lowerTag])) {
+                    	$preprocess->setValue($tag, @$fnumsInfos[$lowerTag]);
+                    } else {
                         $tags = $m_emails->setTagsWord(@$fnumsInfos['applicant_id'], null, $fnum, '');
                         $i = 0;
                         foreach ($tags['patterns'] as $key => $value) {
@@ -570,8 +572,9 @@ class EmundusModelMessages extends JModelList {
                 }
 
                 $rand = rand(0, 1000000);
-                if (!file_exists(EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id']))
-                    mkdir(EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'], 0775);
+                if (!file_exists(EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id']))  {
+                	mkdir(EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'], 0775);
+                }
 
                 $filename = str_replace(' ', '', $fnumsInfos['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".docx";
 
@@ -584,9 +587,7 @@ class EmundusModelMessages extends JModelList {
             }
             unset($preprocess);
 
-            // ka makani
-
-        } catch (Extension $e) {
+        } catch (Exception $e) {
             JLog::add('Error generating DOC file in model/messages', JLog::ERROR, 'com_emundus');
             return false;
         }
