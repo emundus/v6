@@ -29,6 +29,12 @@
 	<help key="EMUNDUS_SITE" />
 	<config>
 		<fields name="params">
+			<fieldset name="standard" label="Settings">
+				<field name="showprint" type="list" default="1" label="COM_EMUNDUS_SEND_APP_SHOW_PRINT_LABEL" description="COM_EMUNDUS_SEND_APP_SHOW_PRINT_DESC">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
+			</fieldset>
 			<fieldset name="advanced">
 				<field
 					name="layout"

@@ -19,6 +19,7 @@ if (!empty($user->fnum)) {
 	require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 
 	$layout = $params->get('layout', 'default');
+	$print = $params->get('showprint', 1);
 	$moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
 	$eMConfig = JComponentHelper::getParams('com_emundus');
@@ -47,10 +48,12 @@ if (!empty($user->fnum)) {
 		echo $e->getMessage() . '<br />';
 	}
 
-	if (!empty($user->end_date))
+	if (!empty($user->end_date)) {
 		$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))?true:false;
-	if (!empty($user->status))
+	}
+	if (!empty($user->status)) {
 		$is_app_sent = ($user->status != 0)? true : false;
+	}
 
 	require JModuleHelper::getLayoutPath('mod_emundus_send_application', $layout);
 }
