@@ -103,8 +103,16 @@ class EmundusControllerExport extends JControllerLegacy
                 $client->post($request);          
             } catch (RequestException $e) {
                 # this exception is thrown if given paper size or margins are not correct.
+                $res->status = false;
+                $res->msg = JText::_('COM_EMUNDUS_ERROR_EXPORT_MARGIN');
+                echo json_encode($res);
+                exit();
             } catch (ClientException $e) {
                 # this exception is thrown by the client if the API has returned a code != 200.
+                $res->status = false;
+                $res->msg = JText::_('COM_EMUNDUS_ERROR_EXPORT_API');
+                echo json_encode($res);
+                exit();
             }
 
             $res->status = true;
