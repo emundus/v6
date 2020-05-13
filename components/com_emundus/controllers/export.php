@@ -87,6 +87,13 @@ class EmundusControllerExport extends JControllerLegacy
 */
             ///
             $src = JPATH_ROOT.DS.'tmp'.DS.$file_src;
+            //$dest = JPATH_ROOT.DS.'images'.DS.'emundus'.DS.'test.pdf';
+            if (!empty($file_dest) && !empty($user_id)) {
+                $dest = EMUNDUS_PATH_ABS . $user_id . DS . $file_dest;
+            } else {
+                $dest = JPATH_ROOT.DS.'tmp'.DS.$file_src.'.pdf';
+            }
+
             $client = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
             $files = [
                 DocumentFactory::makeFromPath($file_src, $src),
@@ -110,10 +117,6 @@ class EmundusControllerExport extends JControllerLegacy
                     $request->setMargins(Request::NO_MARGINS);
                     $request->setScale(0.75);
                 }
-
-
-                //$dest = JPATH_ROOT.DS.'images'.DS.'emundus'.DS.'test.pdf';
-                $dest = EMUNDUS_PATH_ABS.$user_id.DS.$file_dest;
                 
                 # store method allows you to... store the resulting PDF in a particular destination.
                 $client->store($request, $dest);
