@@ -761,7 +761,7 @@ class EmundusHelperFiles
         if (!empty($elements_id) && !empty(ltrim($elements_id))) {
 
             $db = JFactory::getDBO();
-            $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
+            $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, element.hidden as element_hidden, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
                     FROM #__fabrik_elements element
                     INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
                     INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
@@ -2165,7 +2165,7 @@ class EmundusHelperFiles
         $element_id = $m_evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
         $elements = $h_files->getElementsName(implode(',',$element_id));
         $evaluations = $m_files->getFnumArray($fnums, $elements);
-        
+
         $data = array();
         foreach ($evaluations as $eval) {
 
@@ -2177,7 +2177,12 @@ class EmundusHelperFiles
                 $str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
                 foreach ($elements as $element) {
-                    $k = $element->tab_name.'___'.$element->element_name;
+                    if($element->table_join == null){
+                        $k = $element->tab_name.'___'.$element->element_name;
+                    }
+                    else{
+                        $k = $element->table_join.'___'.$element->element_name;
+                    }
 
                     if ($element->element_name != 'id' &&
                         $element->element_name != 'time_date' &&
@@ -2189,6 +2194,8 @@ class EmundusHelperFiles
                         $element->element_name != 'label' &&
                         $element->element_name != 'code' &&
                         $element->element_name != 'spacer' &&
+                        $element->element_name != 'parent_id' &&
+                        $element->element_hidden == 0 &&
                         array_key_exists($k, $eval))
                     {
                         $str .= '<tr>';
@@ -2199,7 +2206,7 @@ class EmundusHelperFiles
                         }
                         $str .= '</tr>';
                     }
-                }
+                } 
 
                 $str .= '</table>';
                 $str .= '<p></p><hr>';
