@@ -48,20 +48,11 @@ if ($pageClass !== '') :
 endif;
 
 if ($this->tablePicker != '') : ?>
-    <div style="text-align:right"><?php echo FText::_('COM_FABRIK_LIST') ?>: <?php echo $this->tablePicker; ?></div>
+    <div style="text-align:right"><?= FText::_('COM_FABRIK_LIST') ?>: <?= $this->tablePicker; ?></div>
 <?php endif;
 
 if ($this->params->get('show_page_heading')) :?>
-    <h1><?php echo $this->params->get('page_heading');?> </h1>
-<?php endif; ?>
-
-<?php if ($this->showTitle == 1) : ?>
-    <div class="page-header">
-        <?php if (!JFactory::getUser()->guest) :?><h1>Vous êtes un <?php echo $user->profile_label;?></h1> <?php endif; ?>
-        <div class="em-page-header-description">
-            <p style="padding: 1rem; background-color: #e9e9e9; text-align: justify;"><span style="font-size: 14pt;"><span style="text-decoration: underline;">Sur cette page, vous pouvez consulter les offres déjà en ligne</span>. Vous pouvez préciser votre demande par type d'acteur recherché, par région, département et thématique souhaités grâce aux filtres ci-dessous. Cliquez sur l'intitulé de l'annonce qui vous intéresse pour la découvrir en détail et pouvoir contacter son auteur (dit aussi "déposant").<br /><br />Vous n'avez pas trouvez ce que vous cherchiez ? Déposez l'annonce qui vous correspond en <a href="https://hesam.emundus.fr/index.php?option=com_fabrik&amp;view=form&amp;formid=102">proposant une offre</a>. </span><span style="font-size: 14pt;"></span><br /><br /><span style="font-size: 14pt;"><span style="text-decoration: underline;">Vous souhaitez en savoir plus avant de vous lancer</span> ? Découvrez les récits d'expérience et astuces d'une <a href="https://hesam.emundus.fr/index.php?option=com_content&amp;view=article&amp;id=122:francoise-ramel-un-chercheur-nous-permet-de-formuler-des-desirs-des-besoins-mais-aussi-des-solutions&amp;catid=101">conseillère municipale de Pontivy</a> ou d'un <a href="https://hesam.emundus.fr/1000-doctorants/les-temoignages/58-boris-chevrot">doctorant d'une communauté de communes de Bourgogne</a> dans la rubrique <a href="https://hesam.emundus.fr/1000-doctorants/les-temoignages">Témoignages</a> de cette plateforme. Dans la rubrique <a href="https://hesam.emundus.fr/1000-doctorants/boite-a-outils">Boîte à outils</a></span><span style="font-size: 14pt;">, des articles sont régulièrement déposés pour rendre toujours plus clair et plus simple le programme. A la moindre question, consultez la <a href="https://hesam.emundus.fr/vos-questions">Foire aux questions</a> ou écrivez-nous à</span><span style="font-size: 14pt;"> <a href="mailto:1000docs@hesam.eu">1000docs@hesam.eu</a> </span><strong><span style="font-size: 14pt;"><br /></span></strong></p>
-        </div>
-    </div>
+    <h1><?= $this->params->get('page_heading');?> </h1>
 <?php endif;
 
 ////// PAGE FUNCTIONS
@@ -71,8 +62,7 @@ function getAllRegions() {
     $db = JFactory::getDBO();
     $query = $db->getquery('true');
 
-    $query
-        ->select("*")
+    $query->select("*")
         ->from($db->qn('data_regions'));
 
     $db->setQuery($query);
@@ -84,8 +74,7 @@ function getAllDepartments() {
     $db = JFactory::getDBO();
     $query = $db->getquery('true');
 
-    $query
-        ->select("*")
+    $query->select("*")
         ->from($db->qn('data_departements'));
 
     $db->setQuery($query);
@@ -94,21 +83,19 @@ function getAllDepartments() {
 
 // GET SELECTED REGIONS
 function getSelectedRegions($headRegions) {
-    if(!empty($headRegions)) {
+    if (!empty($headRegions)) {
         $db = JFactory::getDBO();
         $query = $db->getquery('true');
         $query2 = $db->getquery('true');
 
 
-        $query2
-            ->select("cc2.id")
+        $query2->select("cc2.id")
             ->from($db->qn('#__emundus_campaign_candidature', 'cc2'))
             ->join('INNER', $db->qn('#__emundus_recherche', 'er2') . ' ON ' . $db->qn('er2.fnum') . ' = ' . $db->qn('cc2.fnum'))
             ->join('INNER', $db->qn('#__emundus_recherche_744_repeat', 'err744') . ' ON ' . $db->qn('err744.parent_id') . ' = ' . $db->qn('er2.id'))
             ->where($db->qn('err744.region') . ' IN (' . $headRegions . ')');
 
-        $query
-            ->select("cc1.id")
+        $query->select("cc1.id")
             ->from($db->qn('#__emundus_campaign_candidature', 'cc1'))
             ->join('INNER', $db->qn('#__emundus_recherche', 'er1') . ' ON ' . $db->qn('er1.fnum') . ' = ' . $db->qn('cc1.fnum'))
             ->join('INNER', $db->qn('#__emundus_recherche_630_repeat', 'err630') . ' ON ' . $db->qn('err630.parent_id') . ' = ' . $db->qn('er1.id'))
@@ -118,8 +105,7 @@ function getSelectedRegions($headRegions) {
         $db->setQuery($query);
 
         return $db->loadColumn();
-    }
-    else {
+    } else {
         return array();
     }
 }
@@ -127,22 +113,19 @@ function getSelectedRegions($headRegions) {
 
 // GET SELECTED REGIONS
 function getSelectedDepartments($headDepartments) {
-    if(!empty($headDepartments)) {
+    if (!empty($headDepartments)) {
         $db = JFactory::getDBO();
         $query = $db->getquery('true');
         $query2 = $db->getquery('true');
 
-
-        $query2
-            ->select("cc2.id")
+        $query2->select("cc2.id")
             ->from($db->qn('#__emundus_campaign_candidature', 'cc2'))
             ->join('INNER', $db->qn('#__emundus_recherche', 'er2') . ' ON ' . $db->qn('er2.fnum') . ' = ' . $db->qn('cc2.fnum'))
             ->join('INNER', $db->qn('#__emundus_recherche_744_repeat', 'err744') . ' ON ' . $db->qn('err744.parent_id') . ' = ' . $db->qn('er2.id'))
             ->join('INNER', $db->qn('#__emundus_recherche_744_repeat_repeat_department', 'errd744') . ' ON ' . $db->qn('errd744.parent_id') . ' = ' . $db->qn('err744.id'))
             ->where($db->qn('errd744.department') . ' IN (' . $headDepartments . ')');
 
-        $query
-            ->select("cc1.id")
+        $query->select("cc1.id")
             ->from($db->qn('#__emundus_campaign_candidature', 'cc1'))
             ->join('INNER', $db->qn('#__emundus_recherche', 'er1') . ' ON ' . $db->qn('er1.fnum') . ' = ' . $db->qn('cc1.fnum'))
             ->join('INNER', $db->qn('#__emundus_recherche_630_repeat', 'err630') . ' ON ' . $db->qn('err630.parent_id') . ' = ' . $db->qn('er1.id'))
@@ -152,8 +135,7 @@ function getSelectedDepartments($headDepartments) {
 
         $db->setQuery($query);
         return $db->loadColumn();
-    }
-    else {
+    } else {
         return array();
     }
 }
@@ -164,11 +146,9 @@ function getSelectedDepartments($headDepartments) {
 function getActeurDepartments($fnum) {
     $db = JFactory::getDBO();
 
-
     $query = $db->getquery('true');
 
-    $query
-        ->select($db->quoteName('dd.departement_nom'))
+    $query->select($db->quoteName('dd.departement_nom'))
         ->from($db->quoteName('#__emundus_recherche', 'u'))
         ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
         ->leftJoin($db->quoteName('#__emundus_recherche_744_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
@@ -193,11 +173,9 @@ function getActeurDepartments($fnum) {
 function getOtherDepartments($fnum) {
     $db = JFactory::getDBO();
 
-
     $query = $db->getquery('true');
 
-    $query
-        ->select($db->quoteName('dd.departement_nom'))
+    $query->select($db->quoteName('dd.departement_nom'))
         ->from($db->quoteName('#__emundus_recherche', 'u'))
         ->leftJoin($db->quoteName('#__emundus_recherche_630_repeat', 'ur'). ' ON '.$db->quoteName('ur.parent_id') . ' = ' . $db->quoteName('u.id'))
         ->leftJoin($db->quoteName('#__emundus_recherche_630_repeat_repeat_department', 'urd'). ' ON '.$db->quoteName('urd.parent_id') . ' = ' . $db->quoteName('ur.id'))
@@ -222,13 +200,19 @@ echo $this->table->intro;
 
 ?>
 
-<div class="main">
-    <div class="form">
-        <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
+<div class="content">
+    <div class="w-container">
+
+	    <?php if ($this->showTitle == 1) : ?>
+            <h1 class="heading-2"><?= $this->table->label;?></h1>
+        <?php endif; ?>
+
+        <form class="fabrikForm form-search" action="<?= $this->table->action;?>" method="post" id="<?= $this->formid;?>" name="fabrikList">
 
             <?php
-            if ($this->hasButtons)
+            if ($this->hasButtons) {
                 echo $this->loadTemplate('buttons');
+            }
             ?>
 
             <div class="fabrikDataContainer">
@@ -244,26 +228,25 @@ echo $this->table->intro;
                 $i = 0;
                 if (!empty($this->rows[0])) {
                     foreach ($this->rows[0] as $k => $v) {
-                        if ((in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedRegions) && $getSelectedRegions) || (in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedDepartments) && $getSelectedDepartments) || (!$getSelectedDepartments && !$getSelectedRegions)) {
-                                foreach ($this->headings as $key => $val) {
-                                    $raw = $key.'_raw';
-                                    if (array_key_exists($key, $v->data)) {
-                                        if (strcasecmp($v->data->$key, "1") == 0)
-                                            $data[$i][$val] = $v->data->$key;
-                                        else {
-                                            $data[$i][$key] = $v->data->$key;
-                                            if (array_key_exists($raw, $v->data)) {
-                                                $data[$i][$raw] = $v->data->$raw;
-                                            }
+                        if (($getSelectedRegions && in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedRegions)) || ($getSelectedDepartments && in_array($v->data->jos_emundus_campaign_candidature___id_raw, $getSelectedDepartments)) || (!$getSelectedDepartments && !$getSelectedRegions)) {
+                            foreach ($this->headings as $key => $val) {
+                                $raw = $key.'_raw';
+                                if (array_key_exists($key, $v->data)) {
+                                    if (strcasecmp($v->data->$key, "1") == 0) {
+                                        $data[$i][$val] = $v->data->$key;
+                                    } else {
+                                        $data[$i][$key] = $v->data->$key;
+                                        if (array_key_exists($raw, $v->data)) {
+                                            $data[$i][$raw] = $v->data->$raw;
                                         }
                                     }
                                 }
-                                if (array_key_exists('fabrik_view_url', $v->data)) {
-                                    $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
-                                }
-                                $i = $i + 1;
-                        }
-                        else {
+                            }
+                            if (array_key_exists('fabrik_view_url', $v->data)) {
+                                $data[$i]['fabrik_view_url'] = $v->data->fabrik_view_url;
+                            }
+                            $i++;
+                        } else {
                             unset($this->rows[0][$k]);
                         }
                         $v->total = $i;
@@ -271,56 +254,52 @@ echo $this->table->intro;
                 }
                 ?>
 
-                <div class="em-search-engine-filters">
-                    <?php if ($this->showFilters && $this->bootShowFilters)
+                <div class="profil-container">
+                    <?php if ($this->showFilters && $this->bootShowFilters) {
                         echo $this->layoutFilters();
-                    ?>
+                    } ?>
                 </div>
 
-                <div class="em-search-engine-data">
-
-                    <table>
+                <div class="profil-container">
+                    <div class="column-card-container w-row">
                         <?php if (!empty($data)) :?>
-                            <thead>
-                            <tr>
-                                <td><h3>RÉSULTATS DE LA RECHERCHE</h3></td>
-                            </tr>
-                            </thead>
                             <tfoot>
-                            <tr class="fabrik___heading">
-                                <td colspan="<?php echo count($this->headings);?>">
-                                    <?php echo $this->nav;?>
-                                </td>
-                            </tr>
+                                <tr class="fabrik___heading">
+                                    <td colspan="<?= count($this->headings);?>">
+                                        <?= $this->nav; ?>
+                                    </td>
+                                </tr>
                             </tfoot>
                         <?php endif; ?>
 
-                        <tbody>
-
 						<?php
-
 						$gCounter = 0;
 						foreach ($data as $d) {
 
 							$cherches = [];
-							if ($d['jos_emundus_recherche___futur_doctorant_yesno'] == 'oui')
-								$cherches[] = $this->headings['jos_emundus_recherche___futur_doctorant_yesno'];
-							if ($d['jos_emundus_recherche___acteur_public_yesno'] == 'oui')
-								$cherches[] = $this->headings['jos_emundus_recherche___acteur_public_yesno'];
-							if ($d['jos_emundus_recherche___equipe_de_recherche_direction_yesno'] == 'oui')
-								$cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_direction_yesno'];
-							if ($d['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'] == 'oui')
-								$cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'];
+							if ($d['jos_emundus_recherche___futur_doctorant_yesno'] == 'oui') {
+							    $cherches[] = $this->headings['jos_emundus_recherche___futur_doctorant_yesno'];
+							}
+							if ($d['jos_emundus_recherche___acteur_public_yesno'] == 'oui') {
+							    $cherches[] = $this->headings['jos_emundus_recherche___acteur_public_yesno'];
+							}
+							if ($d['jos_emundus_recherche___equipe_de_recherche_direction_yesno'] == 'oui') {
+							    $cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_direction_yesno'];
+							}
+							if ($d['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'] == 'oui') {
+							    $cherches[] = $this->headings['jos_emundus_recherche___equipe_de_recherche_codirection_yesno'];
+							}
 
 							$themes = jsonDecode($d['data_thematics___thematic_raw']);
 							if (is_array($themes)) {
 								if (sizeof($themes) > 4) {
-									$themes = implode('</div> - <div class="em-highlight">', array_slice($themes, 0, 4)).' ... ';
+									$themes = implode(' - ', array_slice($themes, 0, 4)).' ... ';
 								} else {
-									$themes = implode('</div> - <div class="em-highlight">', $themes);
+									$themes = implode(' - ', $themes);
 								}
 							}
-                            if($d["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
+
+                            if ($d["jos_emundus_recherche___all_regions_depatments_raw"] == "non") {
                                 if ($d["jos_emundus_setup_profiles___id_raw"] != "1008") {
                                     $departments = getOtherDepartments($d["jos_emundus_recherche___fnum_raw"]);
                                     if ($departments) {
@@ -330,76 +309,75 @@ echo $this->table->intro;
                                             $departments = implode('</div> - <div class="em-highlight">', $departments);
                                         }
                                     }
-                                }
-
-                                else {
+                                } else {
                                     $departments =  array_unique(array_column(getActeurDepartments($d["jos_emundus_recherche___fnum_raw"]), 'departement_nom'));
                                     if (sizeof($departments) > 8) {
                                         $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)) . ' ... ';
-                                    }
-                                    else {
+                                    } else {
                                         $departments = implode('</div> - <div class="em-highlight">', $departments);
                                     }
                                 }
                             }
 
-                                if ((isset($d['Status']) && $d['Status'] == 2) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 2)) {
-                                    $status = 2;
-                                } else {
-                                    $status = 1;
-                                }
-
-
-
+                            if ((isset($d['Status']) && $d['Status'] == 2) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 2)) {
+                                $status = 2;
+                            } else {
+                                $status = 1;
+                            }
                             ?>
-                            <tr class="em-search-engine-offer">
-                                <td>
-                                    <div class="em-search-engine-div-data <?php echo ($status === 2)?'em-closed-offer':''; ?>">
-                                        <div class="em-search-engine-result-title"><?php echo $d['jos_emundus_projet___titre']; ?></div>
-                                        <div class="em-search-engine-deposant">
-                                            <i class="fa fa-user"></i> <strong>Déposant : </strong> <?php echo strtolower($d['jos_emundus_setup_profiles___label']); ?>
+
+                            <div class="w-col w-col-6">
+                                <div>
+                                    <div class="card-offre <?= ($status === 2)?'em-closed-offer':''; ?>">
+                                        <div class="text-block-2"><?= $d['jos_emundus_projet___titre']; ?></div>
+                                        <div class="div-block margin">
+                                            <i class="fa fa-user"></i>
+                                            <div class="name"><?= ucfirst(strtolower($d['jos_emundus_setup_profiles___label'])); ?></div>
                                         </div>
                                         <?php if (!empty($cherches)) :?>
-                                            <div class="em-search-engine-addressed">
-                                                <i class="fa fa-users"></i> <strong>Projet adressé à : &nbsp;</strong><?php echo strtolower(implode( '&#32;-&#32;', $cherches)); ?>
+                                            <div class="div-block">
+                                                <i class="fa fa-bullseye"></i>
+                                                <div class="name"><?= implode( '&#32;-&#32;', $cherches); ?></div>
                                             </div>
                                         <?php endif; ?>
-                                        <div class="em-search-engine-thematics">
-                                            <strong>Thématique(s)</strong> : <div class="em-highlight"><?php echo $themes?$themes:'Aucune thématique'; ?></div>
+                                        <div class="div-block-copy">
+                                            <div class="text-block-2-copy">Thématiques</div>
+                                            <div class="name"><?= $themes?$themes:'Aucune thématique'; ?></div>
                                         </div>
-                                        <div class="em-search-engine-departments">
-                                            <strong>Département(s)</strong> :
-                                            <div class="em-highlight">
+                                        <div class="div-block-copy">
+                                            <div class="text-block-2-copy">Départements</div>
+                                            <div class="name">
                                                 <?php
-                                                    if($d["jos_emundus_recherche___all_regions_depatments_raw"] == "oui") {
+                                                    if ($d["jos_emundus_recherche___all_regions_depatments_raw"] == "oui") {
                                                         echo JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS');
-                                                    }
-                                                    else {
+                                                    } else {
                                                         echo $departments ? $departments : 'Aucun département';
                                                     }
                                                 ?>
                                             </div>
                                         </div>
-                                        <?php if (JFactory::getUser()->guest) :?>
-                                            <div class="em-search-engine-learn-more"><a href="<?php echo 'index.php?option=com_users&view=login&return='.base64_encode(JFactory::getURI())?>"> Connectez-vous pour en savoir plus </a></div>
-                                        <?php else :?>
-                                            <div class='em-search-engine-details <?php echo ($status === 2)?'em-closed-offer-btn':'em-open-offer-btn'; ?>'><a href="<?php echo $d['fabrik_view_url']; ?>"><?php echo ($status === 2)?'Offre clôturée':'Consultez l\'offre'; ?></a></div>
-
-                                            <?php if ($d['jos_emundus_campaign_candidature___applicant_id_raw'] == JFactory::getUser()->id && ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3))) :?>
-                                                <div class="em-float-left em-offer-not-published"><span class="label label-darkyellow">Offre en attente de validation</span></div>
-                                            <?php endif; ?>
-                                        <?php endif; ?>
                                     </div>
-                                </td>
-                            </tr>
+	                                <?php if (JFactory::getUser()->guest) :?>
+                                        <a href="<?= 'index.php?option=com_users&view=login&return='.base64_encode(JFactory::getURI()); ?>" class="cta-offre w-inline-block"><div class="text-block-2"> Connectez-vous pour en savoir plus </div></a>
+	                                <?php else :?>
+                                        <a href="<?= $d['fabrik_view_url']; ?>" class="cta-offre w-inline-block"><div class='text-block-2 <?= ($status === 2)?'em-closed-offer-btn':'em-open-offer-btn'; ?>'><?= ($status === 2)?'Offre clôturée':'Consultez l\'offre'; ?></div></a>
+
+                                        <!--
+		                                <?php if ($d['jos_emundus_campaign_candidature___applicant_id_raw'] == JFactory::getUser()->id && ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3))) :?>
+                                            <div class="cta-offre w-inline-block">
+                                                <div class="text-block-2">Offre en attente de validation</div>
+                                            </div>
+		                                <?php endif; ?>
+		                                -->
+	                                <?php endif; ?>
+                                </div>
+                            </div>
                             <?php
                             unset($cherches);
                             unset($themes);
                             $gCounter++;
                         }
                         ?>
-
-                        </tbody>
 
                         <?php if ($this->hasCalculations) : ?>
                             <tfoot>
@@ -408,7 +386,7 @@ echo $this->table->intro;
                                 <?php foreach ($this->headings as $key => $heading) :
                                     $h = $this->headingClass[$key];
                                     $style = empty($h['style']) ? '' : 'style="' . $h['style'] . '"'; ?>
-                                    <td class="<?php echo $h['class']?>" <?php echo $style?>>
+                                    <td class="<?= $h['class']?>" <?= $style?>>
                                         <?php
                                         $cal = $this->calculations[$key];
                                         echo array_key_exists($groupedBy, $cal->grouped) ? $cal->grouped[$groupedBy] : $cal->calc;
@@ -420,7 +398,7 @@ echo $this->table->intro;
                             </tr>
                             </tfoot>
                         <?php endif ?>
-                    </table>
+                    </div>
                 </div>
             </div>
 	        <?php print_r($this->hiddenFields);?>
@@ -434,33 +412,33 @@ echo $this->table->intro;
             </select>
             <ul class="list-pagin"></ul>
         </div>
-        <?php if($user->id != 0) : ?>
+        <?php if ($user->id != 0) :?>
             <a href="/?option=com_fabrik&view=form&formid=102" class="em-search-not-found-btn">
                 <span class="em-search-not-found-btn-content">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.<br> <strong>Proposez une offre</strong></span>
                 <span class="em-search-not-found-icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>
             </a>
         <?php endif; ?>
 
-
     </div>
 </div>
-<script>
 
-    let data = <?php echo sizeof($data); ?>;
+
+<script>
+    let data = <?= sizeof($data); ?>;
 
     //Pagination
-    pageSize = jQuery(".em-number-of-results").val();
+    let pageSize = jQuery(".em-number-of-results").val();
 
-    var pageCount =  data / pageSize;
+    let pageCount =  data / pageSize;
 
     if (pageCount > 1) {
-        for (var i = 0 ; i<pageCount;i++) {
+        for (let i = 0 ; i<pageCount;i++) {
             jQuery(".list-pagin").append('<li><p>'+(i+1)+'</p></li> ');
         }
     }
 
     jQuery(".list-pagin li").first().find("p").addClass("current");
-    showPage = function(page) {
+    let showPage = function(page) {
         jQuery(".em-search-engine-offer").hide();
         jQuery(".em-search-engine-offer").each(function(n) {
             if (n >= pageSize * (page - 1) && n < pageSize * page)
@@ -476,51 +454,50 @@ echo $this->table->intro;
         showPage(parseInt(jQuery(this).text()));
     });
 
-
     jQuery(document).ready(function(){
         //region and department object
-        $allRegions= <?php echo json_encode(getAllRegions()); ?>;
-        $allDepartments= <?php echo json_encode(getAllDepartments()); ?>;
+        let allRegions = <?= json_encode(getAllRegions()); ?>;
+        let allDepartments= <?= json_encode(getAllDepartments()); ?>;
 
-        $regionArray = <?php echo json_encode($selectedHeadRegions); ?>;
+        let regionArray = <?= json_encode($selectedHeadRegions); ?>;
 
-        $departmentArray = <?php echo json_encode($selectedHeadDepartments);?>;
+        let departmentArray = <?= json_encode($selectedHeadDepartments); ?>;
 
         //add region select
-        $regionSelect = '<tr><td>Dans quelle(s) région(s)</td><td><select id="data_regions___name_0value" class="chosen chosen-region" multiple="true" style="width:400px;">';
-        $pushRegions = [];
-            jQuery($allRegions).each(region =>{
-                $allRegions[region]["selected"] = "";
-                jQuery($regionArray).each(selected => {
-                    if ($allRegions[region].id == jQuery($regionArray)[selected]) {
-                        $allRegions[region]["selected"] = "selected";
-                        $pushRegions.push($regionArray);
-                    }
-                });
-                $regionSelect += '<option value="'+jQuery($allRegions)[region].id+'" '+ jQuery($allRegions)[region].selected +'>'+jQuery($allRegions)[region].name+'</option>';
+        let regionSelect = '<tr><td>Dans quelle(s) région(s)</td><td><select id="data_regions___name_0value" class="chosen chosen-region" multiple="true" style="width:400px;">';
+        let pushRegions = [];
+        jQuery(allRegions).each(region =>{
+            allRegions[region]["selected"] = "";
+            jQuery(regionArray).each(selected => {
+                if (allRegions[region].id == jQuery(regionArray)[selected]) {
+                    allRegions[region]["selected"] = "selected";
+                    pushRegions.push(regionArray);
+                }
             });
-        $regionSelect += '</select></td><input type="hidden" id="hidden-regions-input" name="regions" value="'+$regionArray+'"></tr>';
+            regionSelect += '<option value="'+jQuery(allRegions)[region].id+'" '+ jQuery(allRegions)[region].selected +'>'+jQuery(allRegions)[region].name+'</option>';
+        });
+        regionSelect += '</select></td><input type="hidden" id="hidden-regions-input" name="regions" value="'+regionArray+'"></tr>';
 
-        jQuery(".filtertable tbody .fabrik_row").first().after($regionSelect);
+        jQuery(".filtertable tbody .fabrik_row").first().after(regionSelect);
 
         jQuery('#data_regions___name_0value').after('<button type="button" onclick="selectAllRegions()" class="chosen-toggle-region select">Sélectionnez toutes les régions</button>');
         jQuery(".chosen-region").chosen();
 
         //add department select
-        $departmentSelect = '<tr><td>Dans quel(s) département(s)</td><td><select id="data_departements___departement_nomvalue" class="chosen chosen-department" multiple="true" style="width:400px;">';
-        $pushDepartments = [];
-        jQuery($allDepartments).each(department =>{
-            $allDepartments[department]["selected"] = "";
-                jQuery($departmentArray).each(selected => {
-                    if ($allDepartments[department].departement_id == jQuery($departmentArray)[selected]) {
-                        $allDepartments[department]["selected"] = "selected";
-                        $pushDepartments.push($departmentArray);
+        let departmentSelect = '<tr><td>Dans quel(s) département(s)</td><td><select id="data_departements___departement_nomvalue" class="chosen chosen-department" multiple="true" style="width:400px;">';
+        let pushDepartments = [];
+        jQuery(allDepartments).each(department =>{
+            allDepartments[department]["selected"] = "";
+                jQuery(departmentArray).each(selected => {
+                    if (allDepartments[department].departement_id == jQuery(departmentArray)[selected]) {
+                        allDepartments[department]["selected"] = "selected";
+                        pushDepartments.push(departmentArray);
                     }
                 });
-                $departmentSelect += '<option value="'+jQuery($allDepartments)[department].departement_id+'"'+ jQuery($allDepartments)[department].selected +'>'+jQuery($allDepartments)[department].departement_nom+'</option>';
+                departmentSelect += '<option value="'+jQuery(allDepartments)[department].departement_id+'"'+ jQuery(allDepartments)[department].selected +'>'+jQuery(allDepartments)[department].departement_nom+'</option>';
             });
-        $departmentSelect += '</select></td><input type="hidden" id="hidden-department-input" name="departments" value="'+$departmentArray+'"></tr>';
-        jQuery(".filtertable tbody .fabrik_row").first().after($departmentSelect);
+        departmentSelect += '</select></td><input type="hidden" id="hidden-department-input" name="departments" value="'+departmentArray+'"></tr>';
+        jQuery(".filtertable tbody .fabrik_row").first().after(departmentSelect);
         
         jQuery('#data_departements___departement_nomvalue').after('<button type="button" onclick="selectAllDepartments()" class="chosen-toggle-department select">Sélectionnez tous les départements</button>');
         jQuery(".chosen-department").chosen();
@@ -528,47 +505,50 @@ echo $this->table->intro;
         // chosen change regions
         jQuery("#data_regions___name_0value").chosen().change(function(event){
             if (event.target == this){
-                $regionArray = jQuery(this).val();
-                if (jQuery(this).val())
-                    jQuery("#hidden-regions-input").val($regionArray);
-                if ($regionArray == null)
+                regionArray = jQuery(this).val();
+                if (jQuery(this).val()) {
+                    jQuery("#hidden-regions-input").val(regionArray);
+                }
+                if (regionArray == null) {
                     jQuery("#hidden-regions-input").val("");
+                }
             }
         });
 
         // chosen change departments
         jQuery("#data_departements___departement_nomvalue").chosen().change(function(event){
-            if (event.target == this){
-                $departmentArray = (jQuery(this).val());
-                if (jQuery(this).val())
-                    jQuery("#hidden-department-input").val($departmentArray);
-                if ($departmentArray == null)
+            if (event.target == this) {
+                departmentArray = (jQuery(this).val());
+                if (jQuery(this).val()) {
+                    jQuery("#hidden-department-input").val(departmentArray);
+                }
+                if (departmentArray == null) {
                     jQuery("#hidden-department-input").val("");
+                }
             }
         });
 
         jQuery('select.fabrik_filter[multiple]').chosen({
-            placeholder_text_single: "<?php echo JText::_('CHOSEN_SELECT_ONE'); ?>",
-            placeholder_text_multiple: "<?php echo JText::_('CHOSEN_SELECT_MANY'); ?>",
-            no_results_text: "<?php echo JText::_('CHOSEN_NO_RESULTS'); ?>"
+            placeholder_text_single: "<?= JText::_('CHOSEN_SELECT_ONE'); ?>",
+            placeholder_text_multiple: "<?= JText::_('CHOSEN_SELECT_MANY'); ?>",
+            no_results_text: "<?= JText::_('CHOSEN_NO_RESULTS'); ?>"
         });
     });
 
 
     jQuery(".em-number-of-results").change(function () {
-        let data = <?php echo sizeof($data); ?>;
+        data = <?= sizeof($data); ?>;
 
         //Pagination
         pageSize = jQuery(this).val();
 
-        var pageCount =  data / pageSize;
+        pageCount =  data / pageSize;
 
         if (pageCount > 1) {
-            for (var i = 0 ; i<pageCount;i++) {
+            for (let i = 0 ; i<pageCount;i++) {
                 jQuery(".list-pagin").append('<li><p>'+(i+1)+'</p></li> ');
             }
-        }
-        else {
+        } else {
             jQuery(".list-pagin li").hide();
         }
 
@@ -576,8 +556,9 @@ echo $this->table->intro;
         showPage = function(page) {
             jQuery(".em-search-engine-offer").hide();
             jQuery(".em-search-engine-offer").each(function(n) {
-                if (n >= pageSize * (page - 1) && n < pageSize * page)
+                if (n >= pageSize * (page - 1) && n < pageSize * page) {
                     jQuery(this).show();
+                }
             });
         };
 
@@ -591,14 +572,14 @@ echo $this->table->intro;
     });
 
     function selectAllRegions() {
-        if(jQuery('.chosen-toggle-region').hasClass('select')) {
-            $regionArray = [];
+        if (jQuery('.chosen-toggle-region').hasClass('select')) {
+            let regionArray = [];
             jQuery('#data_regions___name_0value option').each(function() {
-                $regionArray.push(jQuery(this).val());
+                regionArray.push(jQuery(this).val());
             });
             jQuery('#data_regions___name_0value option').prop('selected', jQuery('.chosen-toggle-region').hasClass('select')).parent().trigger('chosen:updated');
 
-            jQuery('#hidden-regions-input').val($regionArray);
+            jQuery('#hidden-regions-input').val(regionArray);
             jQuery('.chosen-toggle-region').addClass('deselect');
             jQuery('.chosen-toggle-region').removeClass('select');
             jQuery('.chosen-toggle-region').text("Désélectionnez toutes les régions");
@@ -610,15 +591,15 @@ echo $this->table->intro;
             jQuery('.chosen-toggle-region').removeClass('deselect');
             jQuery('.chosen-toggle-region').text("Sélectionnez toutes les régions");
         }
-
     }
+
     function selectAllDepartments() {
-        if(jQuery('.chosen-toggle-department').hasClass('select')) {
-            $departmentArray = [];
+        if (jQuery('.chosen-toggle-department').hasClass('select')) {
+            let departmentArray = [];
             jQuery('#data_departements___departement_nomvalue option').each(function() {
-                $departmentArray.push(jQuery(this).val());
+                departmentArray.push(jQuery(this).val());
             });
-            jQuery('#hidden-department-input').val($departmentArray);
+            jQuery('#hidden-department-input').val(departmentArray);
             jQuery('#data_departements___departement_nomvalue option').prop('selected', jQuery('.chosen-toggle-department').hasClass('select')).parent().trigger('chosen:updated');
             jQuery('.chosen-toggle-department').addClass('deselect');
             jQuery('.chosen-toggle-department').removeClass('select');
@@ -632,7 +613,4 @@ echo $this->table->intro;
             jQuery('.chosen-toggle-department').text("Sélectionnez toutes les départements");
         }
     }
-
-
-
 </script>
