@@ -445,112 +445,116 @@ function getProjectThematics($fnum) {
 
         <!-- Button used for matching with the offer -->
         <span class="alert alert-danger hidden" id="em-action-text"></span>
-        <?php if ($action_button == 'contact') : ?>
+        <div id="em-search-item-action-button">
+            <?php if ($action_button == 'contact') : ?>
 
-            <?php $offers = $c_ciffe->getOwnOffers($fnum); ?>
-            <a href="#" class="link-block-copy w-inline-block" disabled data-toggle="modal" data-target="#contactModal">
-                <div class="cta-end">
-                    <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CONTACT_BUTTON'); ?></h3>
-                </div>
-            </a>
+                <?php $offers = $c_ciffe->getOwnOffers($fnum); ?>
+                <a href="#" class="link-block-copy w-inline-block" disabled data-toggle="modal" data-target="#contactModal">
+                    <div class="cta-end">
+                        <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CONTACT_BUTTON'); ?></h3>
+                    </div>
+                </a>
 
-            <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="headertop">
-                            <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CONTACT'); ?></h3>
-                        </div>
-                        <div class="div-block-4">
-                        <?php if ($user->profile == '1006') :?>
-                            <p class="paragraph-demande-de-contact"><?= JText::_('COM_EMUNDUS_CIFRE_FUTUR_DOC_FIRST_QUESTION'); ?></p>
-                            <textarea id="em-contact-message" class="text-field-bigger-margintop w-input" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>
-                            <p class="paragraph-demande-de-contact"><?= JText::_('COM_EMUNDUS_CIFRE_FUTUR_DOC_SECOND_QUESTION'); ?></p>
-                            <textarea id="em-contact-motivation" class="text-field-bigger-margintop w-input" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>
-                        <?php else :?>
-                            <p class="paragraph-demande-de-contact"><?= JText::_('COM_EMUNDUS_CIFRE_QUESTION'); ?></p>
-                            <textarea id="em-contact-message" class="text-field-bigger-margintop w-input" placeholder="Texte (3000 caractères)" maxlength="3000"></textarea>
-                        <?php endif; ?>
+                <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="headertop">
+                                <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CONTACT'); ?></h3>
+                            </div>
+                            <div class="div-block-4">
+                                <?php if ($user->profile == '1006') :?>
+                                    <p class="paragraph-demande-de-contact"><?= JText::_('COM_EMUNDUS_CIFRE_FUTUR_DOC_FIRST_QUESTION'); ?></p>
+                                    <textarea id="em-contact-message" class="text-field-bigger-margintop w-input" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>
+                                    <p class="paragraph-demande-de-contact"><?= JText::_('COM_EMUNDUS_CIFRE_FUTUR_DOC_SECOND_QUESTION'); ?></p>
+                                    <textarea id="em-contact-motivation" class="text-field-bigger-margintop w-input" placeholder="Texte (2000 caractères)" maxlength="2000"></textarea>
+                                <?php else :?>
+                                    <p class="paragraph-demande-de-contact"><?= JText::_('COM_EMUNDUS_CIFRE_QUESTION'); ?></p>
+                                    <textarea id="em-contact-message" class="text-field-bigger-margintop w-input" placeholder="Texte (3000 caractères)" maxlength="3000"></textarea>
+                                <?php endif; ?>
 
-                        <?php if (!empty($offers)) :?>
-                            <p class="paragraph-demande-de-contact"><?= JText::_('COM_EMUNDUS_CIFRE_JOIN_CIFRE'); ?></p>
-                            <select id="em-join-offer" class="text-field w-select">
-                                <option value=""><?= JText::_('COM_EMUNDUS_CIFRE_NO_JOIN_CIFRE'); ?></option>
-                                <?php foreach ($offers as $offer) : ?>
-                                    <option value="<?= $offer->fnum; ?>"><?= $offer->titre; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        <?php endif; ?>
-                        <hr>
-                        <!-- Upload a file from computer -->
-                        <div id="em-attachment-list">
-                            <?php if ($user->profile == '1006') : ?>
-                                <div id="cv-upload_file">
-                                    <p class="paragraph-demande-de-contact">
-                                        <strong><?= JText::_('COM_EMUNDUS_CIFRE_ADD_CV'); ?></strong>
-                                    </p>
-                                    <div class="w-clearfix">
-                                        <label for="em-cv_to_upload" accept="application/pdf" id="em-cv_to_upload_label" class="ajouter">
-                                            <input type="file" id="em-cv_to_upload" onchange="cvAddFile()">
-                                        </label>
+                                <?php if (!empty($offers)) :?>
+                                    <p class="paragraph-demande-de-contact"><?= JText::_('COM_EMUNDUS_CIFRE_JOIN_CIFRE'); ?></p>
+                                    <select id="em-join-offer" class="text-field w-select">
+                                        <option value=""><?= JText::_('COM_EMUNDUS_CIFRE_NO_JOIN_CIFRE'); ?></option>
+                                        <?php foreach ($offers as $offer) : ?>
+                                            <option value="<?= $offer->fnum; ?>"><?= $offer->titre; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                <?php endif; ?>
+                                <hr>
+                                <!-- Upload a file from computer -->
+                                <div id="em-attachment-list">
+                                    <?php if ($user->profile == '1006') : ?>
+                                        <div id="cv-upload_file">
+                                            <p class="paragraph-demande-de-contact">
+                                                <strong><?= JText::_('COM_EMUNDUS_CIFRE_ADD_CV'); ?></strong>
+                                            </p>
+                                            <div class="w-clearfix">
+                                                <label for="em-cv_to_upload" accept="application/pdf" id="em-cv_to_upload_label" class="ajouter">
+                                                    <input type="file" id="em-cv_to_upload" onchange="cvAddFile()">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <!-- Upload a file from computer -->
+                                    <div id="doc-upload_file">
+                                        <p class="paragraph-demande-de-contact">
+                                            <strong><?= JText::_('COM_EMUNDUS_CIFRE_ADD_FILE'); ?></strong>
+                                            <?= JText::_('COM_EMUNDUS_CIFRE_SELECT_FILE'); ?>
+                                        </p>
+                                        <div class="w-clearfix">
+                                            <label for="em-doc_to_upload" id="em-doc_to_upload_label" class="ajouter">
+                                                <input type="file" id="em-doc_to_upload" onchange="docAddFile();">
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
-                            <?php endif; ?>
-
-                            <!-- Upload a file from computer -->
-                            <div id="doc-upload_file">
-                                <p class="paragraph-demande-de-contact">
-                                    <strong><?= JText::_('COM_EMUNDUS_CIFRE_ADD_FILE'); ?></strong>
-                                    <?= JText::_('COM_EMUNDUS_CIFRE_SELECT_FILE'); ?>
-                                </p>
-                                <div class="w-clearfix">
-                                    <label for="em-doc_to_upload" id="em-doc_to_upload_label" class="ajouter">
-                                        <input type="file" id="em-doc_to_upload" onchange="docAddFile();">
-                                    </label>
+                                <div class="div-block-5">
+                                    <a href="#" class="button w-button" data-dismiss="modal" onclick="actionButton('contact')">
+                                        <?= JText::_('COM_EMUNDUS_CIFRE_SEND_CONTACT'); ?>
+                                    </a>
+                                    <a href="#" class="cancel" data-dismiss="modal">
+                                        <?= JText::_('CANCEL'); ?>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="div-block-5">
-                            <a href="#" class="button w-button" data-dismiss="modal" onclick="actionButton('contact')">
-                                <?= JText::_('COM_EMUNDUS_CIFRE_SEND_CONTACT'); ?>
-                            </a>
-                            <a href="#" class="cancel" data-dismiss="modal">
-                                <?= JText::_('CANCEL'); ?>
-                            </a>
-                        </div>
                     </div>
                 </div>
-            </div>
-        <?php elseif ($action_button == 'reply') :?>
-            <a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="actionButton('reply')">
-                <div class="cta-end disabled">
-                    <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_ANSWER'); ?></h3>
-                </div>
-            </a>
-            <a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="breakUp('ignore')">
-                <div class="cta-end disabled">
-                    <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_IGNORE'); ?></h3>
-                </div>
-            </a>
-        <?php elseif ($action_button == 'retry') :?>
-            <a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="actionButton('retry')">
-                <div class="cta-end disabled">
-                    <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_RECALL'); ?></h3>
-                </div>
-            </a>
-            <a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="actionButton('cancel')">
-                <div class="cta-end disabled">
-                    <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CANCEL'); ?></h3>
-                </div>
-            </a>
-        <?php elseif ($action_button == 'breakup') :?>
-	        <?php $offers = $c_ciffe->getOwnOffers($fnum); ?>
-            <a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="actionButton('breakup')">
-                <div class="cta-end disabled">
-                    <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CUT_CONTACT'); ?></h3>
-                </div>
-            </a>
-        <?php endif; ?>
-
+            <?php elseif ($action_button == 'reply') :?>
+                <a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="actionButton('reply')">
+                    <div class="cta-end disabled">
+                        <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_ANSWER'); ?></h3>
+                    </div>
+                </a>
+                <br>
+                <a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="breakUp('ignore')">
+                    <div class="cta-end disabled">
+                        <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_IGNORE'); ?></h3>
+                    </div>
+                </a>
+            <?php elseif ($action_button == 'retry') :?>
+                <a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="actionButton('retry')">
+                    <div class="cta-end disabled">
+                        <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_RECALL'); ?></h3>
+                    </div>
+                </a>
+                <br>
+                <br>
+                <a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="breakUp('cancel')">
+                    <div class="cta-end disabled">
+                        <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CANCEL'); ?></h3>
+                    </div>
+                </a>
+            <?php elseif ($action_button == 'breakup') :?>
+                <?php $offers = $c_ciffe->getOwnOffers($fnum); ?>
+                <a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="breakUp('breakup')">
+                    <div class="cta-end disabled">
+                        <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CUT_CONTACT'); ?></h3>
+                    </div>
+                </a>
+            <?php endif; ?>
         </div>
     </div>
     <div class="link-2">
@@ -572,7 +576,7 @@ function getProjectThematics($fnum) {
             fnum: fnum
         };
 
-        if (action == 'contact') {
+        if (action === 'contact') {
 
             jQuery('#em-modal-sending-emails').css('display', 'block');
             if (document.getElementById('em-join-offer') != null) {
@@ -616,7 +620,7 @@ function getProjectThematics($fnum) {
             beforeSend: function () {
                 jQuery('#em-search-item-action-button').html('<button type="button" class="btn btn-default" disabled> ... </button>');
 
-                if (action == 'contact') {
+                if (action === 'contact') {
                     jQuery('#contactModal').modal('hide');
                     jQuery('body').removeClass('modal-open');
                     jQuery('.modal-backdrop').remove();
@@ -633,29 +637,34 @@ function getProjectThematics($fnum) {
                 if (result.status) {
 
                     // When we successfully change the status, we simply dynamically change the button.
-                    if (action == 'contact') {
-                        jQuery('#em-search-item-action-button').html('<a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="actionButton(\'retry\')">'+
-                       ' <div class="cta-end disabled">'+
-                            '<h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_RECALL'); ?></h3>'+
-                            '</div>'+
+                    if (action === 'contact') {
+                        jQuery('#em-search-item-action-button').html('' +
+                            '<a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="actionButton(\'retry\')">'+
+                                '<div class="cta-end disabled">'+
+                                    '<h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_RECALL'); ?></h3>'+
+                                '</div>'+
                             '</a>'+
-                            '<a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="actionButton(\'cancel\')">'+
-                            '<div class="cta-end disabled">'+
-                            '<h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CANCEL'); ?></h3>'+
-                            '</div>'+
+                            '<br>'+
+                            '<br'+
+                            '<a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="breakUp(\'cancel\')">'+
+                                '<div class="cta-end disabled">'+
+                                    '<h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CANCEL'); ?></h3>'+
+                                '</div>'+
                             '</a>');
-                    } else if (action == 'retry') {
-                        jQuery('#em-search-item-action-button').html('<a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled>\n'+
-                        '<div class="cta-end disabled">\n'+
-                        '    <h3 class="entrer-en-contact no-dash"><?= JText::_("COM_EMUNDUS_CIFRE_SENT"); ?></h3>\n'+
-                        '</div>\n'+
-                        '</a>');
-                    } else if (action == 'reply') {
-                        jQuery('#em-search-item-action-button').html('<a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="actionButton(\'breakup\')">\n'+
-                        '<div class="cta-end disabled">\n'+
-                        '    <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CUT_CONTACT'); ?></h3>\n'+
-                        '</div>\n'+
-                        '</a>');
+                    } else if (action === 'retry') {
+                        jQuery('#em-search-item-action-button').html('' +
+                            '<a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled>\n'+
+                                '<div class="cta-end disabled">\n'+
+                                    '<h3 class="entrer-en-contact no-dash"><?= JText::_("COM_EMUNDUS_CIFRE_SENT"); ?></h3>\n'+
+                                '</div>\n'+
+                            '</a>');
+                    } else if (action === 'reply') {
+                        jQuery('#em-search-item-action-button').html('' +
+                            '<a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="breakUp(\'breakup\')">\n'+
+                                '<div class="cta-end disabled">\n'+
+                                    '<h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CUT_CONTACT'); ?></h3>\n'+
+                                '</div>\n'+
+                            '</a>');
                     }
 
                 } else {
@@ -689,7 +698,7 @@ function getProjectThematics($fnum) {
 
                     // Dynamically change the button back to the state of not having a link.
                     jQuery('#em-search-item-action-button').html(''+
-                        '<a href="#" class="link-block-copy w-inline-block" disabled data-toggle="modal" data-target="#contactModal">\n' +
+                        '        <a href="#" class="link-block-copy w-inline-block" disabled data-toggle="modal" data-target="#contactModal">\n' +
                         '                <div class="cta-end">\n' +
                         '                    <h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CONTACT_BUTTON'); ?></h3>\n'+
 					'                </div>\n'+
@@ -722,7 +731,6 @@ function getProjectThematics($fnum) {
 					'                            </select>\n'+
 					'                        <?php endif; ?>\n'+
 					'                        <hr>\n'+
-					'                        <!-- Upload a file from computer -->\n'+
 					'                        <div id="em-attachment-list">\n'+
 					'                            <?php if ($user->profile == '1006') : ?>\n'+
 					'                                <div id="cv-upload_file">\n'+
@@ -737,7 +745,6 @@ function getProjectThematics($fnum) {
 					'                                </div>\n'+
 					'                            <?php endif; ?>\n'+
 					'\n'+
-					'                            <!-- Upload a file from computer -->\n'+
 					'                            <div id="doc-upload_file">\n'+
 					'                                <p class="paragraph-demande-de-contact">\n'+
 					'                                    <strong><?= JText::_('COM_EMUNDUS_CIFRE_ADD_FILE'); ?></strong>\n'+
@@ -763,7 +770,7 @@ function getProjectThematics($fnum) {
 					'            </div>');
 
                 } else {
-                    var actionText = document.getElementById('em-action-text');
+                    let actionText = document.getElementById('em-action-text');
                     actionText.classList.remove('hidden');
                     actionText.innerHTML = result.msg;
                 }
