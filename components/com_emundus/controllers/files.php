@@ -2847,6 +2847,9 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 $m_export = new EmundusModelExport;
 
+                $eMConfig = JComponentHelper::getParams('com_emundus');
+                $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
+
                 $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
 
                 // Special tags which require a bit more work.
@@ -2992,7 +2995,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                             $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$filename);
 
-                            if($tmpl[0]['pdf'] == 1){
+                            if($gotenberg_activation == 1 && $tmpl[0]['pdf'] == 1){
                                 //convert to PDF
                                 $src = EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$filename;
                                 $dest = str_replace('.docx', '.pdf', $src);

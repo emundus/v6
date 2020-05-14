@@ -452,9 +452,11 @@ class EmundusModelMessages extends JModelList {
         $m_emails   = new EmundusModelEmails;
         $m_files    = new EmundusModelFiles;
 
-
         $fnumsInfos = $m_files->getFnumTagsInfos($fnum);
         $attachInfos= $m_files->getAttachmentInfos($letter->attachment_id);
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
 
         $user = JFactory::getUser();
 
@@ -581,7 +583,7 @@ class EmundusModelMessages extends JModelList {
 
                 $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'].DS.$filename);
 
-                if($letter->pdf == 1){
+                if($gotenberg_activation == 1 && $letter->pdf == 1){
                     //convert to PDF
                     $src = EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'].DS.$filename;
                     $dest = str_replace('.docx', '.pdf', $src);
