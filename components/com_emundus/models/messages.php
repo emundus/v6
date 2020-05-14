@@ -445,6 +445,9 @@ class EmundusModelMessages extends JModelList {
         require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'vendor'.DS.'autoload.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'export.php');
+
+        $m_export = new EmundusModelExport;
 
         $m_emails   = new EmundusModelEmails;
         $m_files    = new EmundusModelFiles;
