@@ -427,18 +427,22 @@ class EmundusModelApplication extends JModelList {
             $nb = 0;
             $formLst = array();
 
-            foreach ($forms as $form) {
-                $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum);
-                $this->_db->setQuery($query);
-                $cpt = $this->_db->loadResult();
-                if ($cpt == 1) {
-                    $nb++;
-                } else {
-                    $formLst[] = $form->label;
+            if(count($forms) > 0) {
+                foreach ($forms as $form) {
+                    $query = 'SELECT count(*) FROM ' . $form->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum);
+                    $this->_db->setQuery($query);
+                    $cpt = $this->_db->loadResult();
+                    if ($cpt == 1) {
+                        $nb++;
+                    } else {
+                        $formLst[] = $form->label;
+                    }
                 }
-            }
 
-            return  @floor(100*$nb/count($forms));
+                return @floor(100 * $nb / count($forms));
+            } else {
+                return 0;
+            }
 
         } else {
 
