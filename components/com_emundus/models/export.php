@@ -92,12 +92,7 @@ class EmundusModelExport extends JModelList {
 */
             ///
             $src = $file_src;
-
-            if (!empty($file_dest) && !empty($user_id)) {
-                $dest = EMUNDUS_PATH_ABS . $user_id . DS . $file_dest;
-            } else {
-                $dest = $file_src.'.pdf';
-            }
+            $dest = $file_dest;
 
             $client = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
             $files = [
