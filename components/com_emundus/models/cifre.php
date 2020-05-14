@@ -53,9 +53,8 @@ class EmundusModelCifre extends JModelList {
 		}
 
 		// If a link was not found, we need to look the other way, the link could have been formed in the other direction.
-		$query = $this->db->getQuery(true);
-
-		$query->select($this->db->quoteName('state'))
+		$query->clear()
+			->select($this->db->quoteName('state'))
 			->from($this->db->quoteName('#__emundus_cifre_links'))
 			->where($this->db->quoteName('fnum_from').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('user_to').'='.$user_id);
 		$this->db->setQuery($query);
@@ -109,21 +108,26 @@ class EmundusModelCifre extends JModelList {
 	 */
 	function getOffersByUser($user_id, $fnum = null) {
 		
-		if (empty($fnum)) {
-			return false;
-		}
-		
 		// This is custom code, we need to make this able to work for everyone.
 		$query = $this->db->getQuery(true);
 
 		$query->select(array($this->db->quoteName('esp.id', 'profile_id'), $this->db->quoteName('esp.label', 'profile'), $this->db->quoteName('cc.fnum'), $this->db->quoteName('p.titre')))
 			->from($this->db->quoteName('#__emundus_campaign_candidature','cc'))
-			->join('LEFT', $this->db->quoteName('#__emundus_projet', 'p') . ' ON (' . $this->db->quoteName('p.fnum') . ' = ' . $this->db->quoteName('cc.fnum') . ')')
-			->join('LEFT', $this->db->quoteName('#__emundus_users', 'eu') . ' ON (' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('cc.applicant_id') . ')')
-			->join('LEFT', $this->db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON (' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('eu.profile') . ')')
-			->where($this->db->quoteName('cc.user_id') . ' = '.$user_id . ' AND ' . $this->db->quoteName('cc.status') . ' = 1');
+			->leftJoin($this->db->quoteName('#__emundus_projet', 'p') . ' ON (' . $this->db->quoteName('p.fnum') . ' = ' . $this->db->quoteName('cc.fnum') . ')')
+			->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON (' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('cc.applicant_id') . ')')
+			->leftJoin($this->db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON (' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('eu.profile') . ')');
 
-			$this->db->setQuery($query);
+		if (!empty($fnum)) {
+			$query->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('cc.fnum').' OR '.$this->db->quoteName('cl.fnum_from').' LIKE '.$this->db->quoteName('cc.fnum').')');
+		}
+
+		$where = $this->db->quoteName('cc.user_id') . ' = '.$user_id . ' AND ' . $this->db->quoteName('cc.status') . ' IN (1,3)';
+		if (!empty($fnum)) {
+			$where .= ' AND '.$this->db->quoteName('cl.id').' NOT IN (SELECT '.$this->db->quoteName('c.id').' FROM '.$this->db->quoteName('jos_emundus_cifre_links', 'c').' WHERE ( '.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('cl.user_from').'='.$user_id.' ) OR ( '.$this->db->quoteName('cl.fnum_from').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('cl.user_to').'='.$user_id.' ))';
+		}
+		$query->where($where);
+
+		$this->db->setQuery($query);
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
@@ -224,7 +228,6 @@ class EmundusModelCifre extends JModelList {
 			->values(implode(',', $values));
 
 		$this->db->setQuery($query);
-
 		try {
 			$this->db->execute();
 			return true;
@@ -234,11 +237,18 @@ class EmundusModelCifre extends JModelList {
 		}
 	}
 
-
+	/**
+	 * @param $user_to
+	 * @param $user_from
+	 * @param $fnum_to
+	 *
+	 * @return bool|mixed|null
+	 *
+	 * @since version
+	 */
 	function getContactRequestID($user_to, $user_from, $fnum_to) {
 
 		$query = $this->db->getQuery(true);
-
 
 		$query->select($this->db->quoteName('id'))
 			->from($this->db->quoteName('#__emundus_cifre_links'))
@@ -265,13 +275,11 @@ class EmundusModelCifre extends JModelList {
 
 		$query = $this->db->getQuery(true);
 
-		$fields = [$this->db->quoteName('state').' = 2'];
-		$where = '(('.$this->db->quoteName('user_to').'='.$user1.' AND '.$this->db->quoteName('user_from').'='.$user2.' ) OR ('.$this->db->quoteName('user_to').'='.$user2.' AND '.$this->db->quoteName('user_from').'='.$user1.' ) AND ('.$this->db->quoteName('fnum_to').' LIKE '.$this->db->quote($fnum).' OR '.$this->db->quoteName('fnum_from').' LIKE '.$this->db->quote($fnum).'))';
-
-		$query->update($this->db->quoteName('#__emundus_cifre_links'))->set($fields)->where($where);
+		$query->update($this->db->quoteName('#__emundus_cifre_links'))
+			->set([$this->db->quoteName('state').' = 2'])
+			->where('(('.$this->db->quoteName('user_to').'='.$user1.' AND '.$this->db->quoteName('user_from').'='.$user2.' ) OR ('.$this->db->quoteName('user_to').'='.$user2.' AND '.$this->db->quoteName('user_from').'='.$user1.' ) AND ('.$this->db->quoteName('fnum_to').' LIKE '.$this->db->quote($fnum).' OR '.$this->db->quoteName('fnum_from').' LIKE '.$this->db->quote($fnum).'))');
 
 		$this->db->setQuery($query);
-
 		try {
 			$this->db->execute();
 			return true;
@@ -293,8 +301,8 @@ class EmundusModelCifre extends JModelList {
 
 		$query = $this->db->getQuery(true);
 
-		$where = '(('.$this->db->quoteName('user_to').'='.$user1.' AND '.$this->db->quoteName('user_from').'='.$user2.' ) OR ('.$this->db->quoteName('user_to').'='.$user2.' AND '.$this->db->quoteName('user_from').'='.$user1.' ) AND ('.$this->db->quoteName('fnum_to').' LIKE '.$this->db->quote($fnum).' OR '.$this->db->quoteName('fnum_from').' LIKE '.$this->db->quote($fnum).'))';
-		$query->delete($this->db->quoteName('#__emundus_cifre_links'))->where($where);
+		$query->delete($this->db->quoteName('#__emundus_cifre_links'))
+			->where('(('.$this->db->quoteName('user_to').'='.$user1.' AND '.$this->db->quoteName('user_from').'='.$user2.' ) OR ('.$this->db->quoteName('user_to').'='.$user2.' AND '.$this->db->quoteName('user_from').'='.$user1.' ) AND ('.$this->db->quoteName('fnum_to').' LIKE '.$this->db->quote($fnum).' OR '.$this->db->quoteName('fnum_from').' LIKE '.$this->db->quote($fnum).'))');
 
 		$this->db->setQuery($query);
 
@@ -322,7 +330,9 @@ class EmundusModelCifre extends JModelList {
 
 		// First step is to get the user in question and make sure his profile is correct.
 		$query = $this->db->getQuery(true);
-		$query->select($this->db->quoteName('profile').', '.$this->db->quoteName('laboratoire'))->from($this->db->quoteName('#__emundus_users'))->where('user_id = '.$user_id);
+		$query->select($this->db->quoteName('profile').', '.$this->db->quoteName('laboratoire'))
+			->from($this->db->quoteName('#__emundus_users'))
+			->where('user_id = '.$user_id);
 		$this->db->setQuery($query);
 		try {
 			$user = $this->db->loadObject();
@@ -337,7 +347,10 @@ class EmundusModelCifre extends JModelList {
 		}
 
 		// Get the lab details from the DB.
-		$query->clear()->select('*')->from($this->db->quoteName('em_laboratoire'))->where('id = '.$user->laboratoire);
+		$query->clear()
+			->select('*')
+			->from($this->db->quoteName('em_laboratoire'))
+			->where('id = '.$user->laboratoire);
 		$this->db->setQuery($query);
 		try {
 			return $this->db->loadObject();
@@ -384,7 +397,8 @@ class EmundusModelCifre extends JModelList {
 
 	/**
 	 * Gets the title of the user's doctoral school.
-	 * @param null $id
+	 *
+	 * @param   null  $user_id
 	 *
 	 * @return bool
 	 */
@@ -395,7 +409,9 @@ class EmundusModelCifre extends JModelList {
         }
 
         $query = $this->db->getQuery(true);
-        $query->select($this->db->quoteName('titre_ecole_doctorale'))->from($this->db->quoteName('#__emundus_users'))->where('user_id = '.$user_id);
+        $query->select($this->db->quoteName('titre_ecole_doctorale'))
+	        ->from($this->db->quoteName('#__emundus_users'))
+	        ->where('user_id = '.$user_id);
         $this->db->setQuery($query);
 
         try {
@@ -420,7 +436,9 @@ class EmundusModelCifre extends JModelList {
 
 		// First step is to get the user in question and make sure his profile is correct.
 		$query = $this->db->getQuery(true);
-		$query->select($this->db->quoteName('profile').', '.$this->db->quoteName('nom_de_structure'))->from($this->db->quoteName('#__emundus_users'))->where('user_id = '.$user_id);
+		$query->select($this->db->quoteName('profile').', '.$this->db->quoteName('nom_de_structure'))
+			->from($this->db->quoteName('#__emundus_users'))
+			->where('user_id = '.$user_id);
 		$this->db->setQuery($query);
 		try {
 			$user = $this->db->loadObject();
@@ -435,7 +453,10 @@ class EmundusModelCifre extends JModelList {
 		}
 
 		// Get the lab details from the DB.
-		$query->clear()->select('*')->from($this->db->quoteName('em_municipalitees'))->where('id = '.$user->nom_de_structure);
+		$query->clear()
+			->select('*')
+			->from($this->db->quoteName('em_municipalitees'))
+			->where('id = '.$user->nom_de_structure);
 		$this->db->setQuery($query);
 		try {
 			return $this->db->loadObject();
@@ -526,8 +547,7 @@ class EmundusModelCifre extends JModelList {
 			JLog::add('Error getting departments in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 		}
 
-		$query = $this->db->getQuery(true);
-		$query
+		$query->clear()
 			->select($this->db->quoteName('t.thematic','thematics'))
 			->from($this->db->quoteName('#__emundus_users', 'eu'))
 			->leftJoin($this->db->quoteName('#__emundus_users_600_repeat', 't').' ON '.$this->db->quoteName('t.parent_id').' = '.$this->db->quoteName('eu.id'))
@@ -576,8 +596,8 @@ class EmundusModelCifre extends JModelList {
 
 		$where = $fallbackWhere.' '.$thematicsOrLocations;
 
-		$query = $this->db->getQuery(true);
-		$query->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
+		$query->clear()
+			->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
 			->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
             ->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.applicant_id').' LIKE '.$this->db->quoteName('cl.user_to').' OR '.$this->db->quoteName('cc.applicant_id').' LIKE '.$this->db->quoteName('cl.user_from').')')
 			->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('cc.user_id'))
@@ -619,8 +639,8 @@ class EmundusModelCifre extends JModelList {
 			}
 
 			// Same query except we are using JUST the fallback where, this means that we are getting more results but less related to the user's situation.
-			$query = $this->db->getQuery(true);
-			$query->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
+			$query->clear()
+				->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
 				->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
 				->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.applicant_id').' LIKE '.$this->db->quoteName('cl.user_to').' OR '.$this->db->quoteName('cc.applicant_id').' LIKE '.$this->db->quoteName('cl.user_from').')')
 				->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('cc.user_id'))
@@ -652,8 +672,7 @@ class EmundusModelCifre extends JModelList {
 
         $query = $this->db->getQuery(true);
 
-        $query
-            ->select(array($this->db->quoteName('departement_id'), $this->db->quoteName('departement_nom')))
+        $query->select(array($this->db->quoteName('departement_id'), $this->db->quoteName('departement_nom')))
             ->from($this->db->quoteName('data_departements'))
             ->where($this->db->quoteName('region_id') . " = " . $id);
 
@@ -663,7 +682,7 @@ class EmundusModelCifre extends JModelList {
             return $this->db->loadObject();
         } catch (Exception $e) {
             JLog::add('Error getting cifre suggestions in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
         }
 	}
-
 }
