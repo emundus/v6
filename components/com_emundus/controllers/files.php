@@ -2669,8 +2669,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
 
-        $m_evalutaion = $this->getModel('Evaluation');
-        $myEval = $m_evalutaion->getEvaluationsFnumUser($fnum, $current_user->id);
+        $m_evaluation = $this->getModel('Evaluation');
+        $myEval = $m_evaluation->getEvaluationsFnumUser($fnum, $current_user->id);
         $evalid = ($myEval[0]->id>0)?$myEval[0]->id:-1;
 
         $result = array('status' => true, 'evalid' => $evalid);
@@ -2706,13 +2706,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnumsArray = explode(",", $fnums);
 
         $m_files = $this->getModel('Files');
-        $m_evalutaion = $this->getModel('Evaluation');
+        $m_evaluation = $this->getModel('Evaluation');
         $m_emails = $this->getModel('Emails');
 
         $user = JFactory::getUser();
 
         $fnumsArray = $m_files->checkFnumsDoc($code, $fnumsArray);
-        $tmpl = $m_evalutaion->getLettersTemplateByID($idTmpl);
+        $tmpl = $m_evaluation->getLettersTemplateByID($idTmpl);
         $attachInfos = $m_files->getAttachmentInfos($tmpl[0]['attachment_id']);
 
         $res = new stdClass();
