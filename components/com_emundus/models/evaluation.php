@@ -1139,7 +1139,7 @@ class EmundusModelEvaluation extends JModelList {
 	                            }
 
 	                            if (!empty($value)) {
-		                            $query['q'] .= ' and eta.id_tag IN ('.implode(',', $value).') ';
+	                            	$query['q'] .= 'AND (c.fnum IN (SELECT ta.fnum FROM jos_emundus_tag_assoc as ta WHERE ta.id_tag = '.implode(') OR c.fnum IN (SELECT ta.fnum FROM jos_emundus_tag_assoc as ta WHERE ta.id_tag = ', $value).'))';
 	                            }
                             }
                         }
