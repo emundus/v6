@@ -8,20 +8,11 @@
  */
 
 // No direct access
-/*
-if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-
-    use PhpOffice\PhpWord\IOFactory;
-    use PhpOffice\PhpWord\PhpWord;
-    use PhpOffice\PhpWord\TemplateProcessor;
-}
-*/
+defined( '_JEXEC' ) or die( 'Restricted access' );
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 //use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-
-defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 jimport( 'joomla.user.helper' );
@@ -2749,8 +2740,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
 
-        $m_evalutaion = $this->getModel('Evaluation');
-        $myEval = $m_evalutaion->getEvaluationsFnumUser($fnum, $current_user->id);
+        $m_evaluation = $this->getModel('Evaluation');
+        $myEval = $m_evaluation->getEvaluationsFnumUser($fnum, $current_user->id);
         $evalid = ($myEval[0]->id>0)?$myEval[0]->id:-1;
 
         $result = array('status' => true, 'evalid' => $evalid);
@@ -2786,13 +2777,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnumsArray = explode(",", $fnums);
 
         $m_files = $this->getModel('Files');
-        $m_evalutaion = $this->getModel('Evaluation');
+        $m_evaluation = $this->getModel('Evaluation');
         $m_emails = $this->getModel('Emails');
 
         $user = JFactory::getUser();
 
         $fnumsArray = $m_files->checkFnumsDoc($code, $fnumsArray);
-        $tmpl = $m_evalutaion->getLettersTemplateByID($idTmpl);
+        $tmpl = $m_evaluation->getLettersTemplateByID($idTmpl);
         $attachInfos = $m_files->getAttachmentInfos($tmpl[0]['attachment_id']);
 
         $res = new stdClass();
@@ -2921,7 +2912,14 @@ class EmundusControllerFiles extends JControllerLegacy
 
             case 3:
                 // template DOCX
-                require_once JPATH_LIBRARIES . DS . 'vendor' . DS . 'autoload.php';
+                //require_once JPATH_LIBRARIES . DS . 'vendor' . DS . 'autoload.php';
+                require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+                require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'export.php');
+
+                $m_export = new EmundusModelExport;
+
+                $eMConfig = JComponentHelper::getParams('com_emundus');
+                $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
 
                 $const = array('user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'current_date' => date('d/m/Y', time()));
 
@@ -3068,6 +3066,14 @@ class EmundusControllerFiles extends JControllerLegacy
 
                             $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$filename);
 
+                            if($gotenberg_activation == 1 && $tmpl[0]['pdf'] == 1){
+                                //convert to PDF
+                                $src = EMUNDUS_PATH_ABS.$fnumsInfos[$fnum]['applicant_id'].DS.$filename;
+                                $dest = str_replace('.docx', '.pdf', $src);
+                                $filename = str_replace('.docx', '.pdf', $filename);
+                                $res = $m_export->toPdf($src, $dest, $fnum);
+                            }
+
                             $upId = $m_files->addAttachment($fnum, $filename, $fnumsInfos[$fnum]['applicant_id'], $fnumsInfos[$fnum]['campaign_id'], $tmpl[0]['attachment_id'], $attachInfos['description']);
 
                             $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => JURI::base().EMUNDUS_PATH_REL . $fnumsInfos[$fnum]['applicant_id'] . '/',);
@@ -3085,7 +3091,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 break;
 
         case 4 :
-            require_once JPATH_LIBRARIES.DS.'phpspreadsheet'.DS.'phpspreadsheet.php';
+            //require_once JPATH_LIBRARIES.DS.'phpspreadsheet'.DS.'phpspreadsheet.php';
+            require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
 
             $inputFileName = JPATH_BASE . $tmpl[0]['file'];
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);

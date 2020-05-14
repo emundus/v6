@@ -1912,7 +1912,6 @@ if (JFactory::getUser()->id == 63)
 	function getLettersTemplateByID($id = null) {
 
 		try {
-			//$query = "SELECT * FROM #__emundus_setup_letters WHERE id=" . $id;
             $query = "SELECT l.*, GROUP_CONCAT( DISTINCT(`lrs`.`status`) SEPARATOR ',' ) as `status`, CONCAT('\"',GROUP_CONCAT( DISTINCT(`lrt`.`training`) SEPARATOR '\",\"' ), '\"') as `training`
             			FROM #__emundus_setup_letters as l
             			left join #__emundus_setup_letters_repeat_status as lrs on lrs.parent_id=l.id

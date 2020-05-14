@@ -458,7 +458,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
 
             beforeSend: function() {
                 $('#em-appli-block').empty();
-                $('#em-appli-block').append('<div class="em-container-loader"><img src="http://emundus.local/media/com_emundus/images/emundusLogoV2.svg"></div>');
+                $('#em-appli-block').append('<div class="em-container-loader"><img src="media/com_emundus/images/emundusLogoV2.svg"></div>');
             },
             success: function(result) {
                     $('#em-appli-block').empty();
