@@ -441,7 +441,8 @@ class EmundusModelMessages extends JModelList {
 	 */
     function generateLetterDoc($letter, $fnum) {
 
-        require_once (JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php');
+        //require_once (JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php');
+        require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'vendor'.DS.'autoload.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
 
@@ -576,6 +577,14 @@ class EmundusModelMessages extends JModelList {
                 $filename = str_replace(' ', '', $fnumsInfos['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".docx";
 
                 $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'].DS.$filename);
+
+                if($letter->pdf == 1){
+                    //convert to PDF
+                    $src = EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'].DS.$filename;
+                    $dest = str_replace('.docx', '.pdf', $src);
+                    $filename = str_replace('.docx', '.pdf', $filename);
+                    $res = $m_export->toPdf($src, $dest, $fnum);
+                }
 
                 $m_files->addAttachment($fnum, $filename, $fnumsInfos['applicant_id'], $fnumsInfos['campaign_id'], $letter->attachment_id, $attachInfos['description']);
 
