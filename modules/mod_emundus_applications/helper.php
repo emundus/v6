@@ -205,44 +205,49 @@ class modemundusApplicationsHelper {
 
 	}
 
+	/** Get all contact offers for the fnums.
+	 *  This also includes contact offers sent with this offer attached.
+	 *
+	 * @param $fnums
+	 *
+	 * @return array
+	 * @since version
+	 */
+    static function getContactOffers($fnums) {
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+		$m_cifre = new EmundusModelCifre();
+		$m_messages = new EmundusModelMessages();
+		
+		$fnums = $m_cifre->getContactsByFnums($fnums);
 
-	// HESAM Get ammount of demands for an offer
-	static function getNumberOfContactOffers($fnum) {
-
-        $db = JFactory::getDbo();
-
-        $query = 'SELECT count(ec.id)
-					FROM #__emundus_cifre_links ec
-					WHERE ec.fnum_to LIKE "'.$fnum.'"
-					AND (ec.state = 2 OR ec.state = 1)';
-
-        try {
-            $db->setQuery($query);
-            return $db->loadResult();
-
-        } catch (Exception $e) {
-            JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
-            return false;
-        }
+		// Here we organize fnums by profile in order to have the split contact cards in HESAM.
+	    $return = [];
+	    foreach ($fnums as $fnum => $data) {
+	    	$data['unread'] = $m_messages->getUnread($data['applicant_id']);
+		    $return[$fnum][$data['profile_id']][] = $data;
+	    }
+	    return $return;
     }
 
-    static function getSearchEngineId($fnum) {
-        $db = JFactory::getDbo();
+	/** Get all chat requests for a user.
+	 *
+	 * @param $user
+	 *
+	 * @return array
+	 * @since version
+	 */
+	static function getChatRequests($user) {
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+		$m_cifre = new EmundusModelCifre();
+		$m_messages = new EmundusModelMessages();
 
-        $query = $db->getQuery('true');
+		$return = $m_cifre->getChatRequestsByUser($user);
 
-        $query
-            ->select($db->quoteName('id'))
-            ->from($db->quoteName('#__emundus_recherche'))
-            ->where($db->quoteName('fnum') . ' LIKE "' . $fnum . '"' );
-
-        try {
-            $db->setQuery($query);
-            return $db->loadResult();
-
-        } catch (Exception $e) {
-            JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
+		foreach ($return as $key => $data) {
+			$return[$key]['unread'] = $m_messages->getUnread($data['applicant_id']);
+		}
+		return $return;
+	}
 }

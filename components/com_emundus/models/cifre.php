@@ -135,6 +135,90 @@ class EmundusModelCifre extends JModelList {
 		}
 	}
 
+	/** Gets list of offers based on their connections to the fnums.
+	 * @param   array  $fnums
+	 *
+	 * @return array|bool|mixed
+	 *
+	 * @since version
+	 */
+	public function getContactsByFnums($fnums = array()) {
+
+		$query = $this->db->getQuery(true);
+
+		// First we need to see if they are in contact and or are working together.
+		// If the state is 1, that means that the OTHER person has contacted the current user.
+		$query->select([$this->db->quoteName('cl.state'), $this->db->quoteName('cl.fnum_from', 'linked_fnum'), $this->db->quoteName('cl.fnum_to','fnum'), '1 AS direction', $this->db->quoteName('c.profile_id'), $this->db->quoteName('r.id', 'search_engine_page'), $this->db->quoteName('cc.applicant_id'), $this->db->quoteName('p.titre'), $this->db->quoteName('cc.status'), $this->db->quoteName('cl.id', 'link_id')])
+			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
+			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$this->db->quoteName('cl.fnum_from').' = '.$this->db->quoteName('cc.fnum'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$this->db->quoteName('cc.campaign_id').' = '.$this->db->quoteName('c.id'))
+			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' = '.$this->db->quoteName('cc.fnum'))
+			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('cc.fnum').' = '.$this->db->quoteName('r.fnum'))
+			->where($this->db->quoteName('cl.fnum_to').' IN ('.implode(',',$fnums).')');
+		$this->db->setQuery($query);
+
+		try {
+			$contact = $this->db->loadAssocList('fnum');
+		} catch (Exception $e) {
+			JLog::add('Error getting cifre links in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			$contact = [];
+		}
+
+		// If a link was not found, we need to look the other way, the link could have been formed in the other direction.
+		// We return -1 to indicate that a contact request exists but in the other direction.
+		$query->clear()
+			->select([$this->db->quoteName('cl.state'), $this->db->quoteName('cl.fnum_to', 'linked_fnum'), $this->db->quoteName('cl.fnum_from','fnum'), '-1 AS direction', $this->db->quoteName('c.profile_id'), $this->db->quoteName('r.id', 'search_engine_page'), $this->db->quoteName('cc.applicant_id'), $this->db->quoteName('p.titre'), $this->db->quoteName('cc.status'), $this->db->quoteName('cl.id', 'link_id')])
+			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
+			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$this->db->quoteName('cl.fnum_to').' = '.$this->db->quoteName('cc.fnum'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$this->db->quoteName('cc.campaign_id').' = '.$this->db->quoteName('c.id'))
+			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' = '.$this->db->quoteName('cc.fnum'))
+			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('r.fnum'))
+			->where($this->db->quoteName('cl.fnum_from').' IN ('.implode(',',$fnums).')');
+		$this->db->setQuery($query);
+
+		try {
+			$contact = array_merge($contact, $this->db->loadAssocList('fnum'));
+		} catch (Exception $e) {
+			JLog::add('Error getting cifre links in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+		return $contact;
+	}
+
+	/** Gets list of offers based on their connections to the fnums.
+	 *
+	 * @return array|bool|mixed
+	 *
+	 * @since version
+	 */
+	public function getChatRequestsByUser($user) {
+
+		if (empty($user) || !is_numeric($user)) {
+			return false;
+		}
+
+		$query = $this->db->getQuery(true);
+
+		// If a link was not found, we need to look the other way, the link could have been formed in the other direction.
+		// We return -1 to indicate that a contact request exists but in the other direction.
+		$query->select([$this->db->quoteName('cl.state'), $this->db->quoteName('cl.fnum_to', 'linked_fnum'), $this->db->quoteName('c.profile_id'), $this->db->quoteName('r.id', 'search_engine_page'), $this->db->quoteName('cc.applicant_id'), $this->db->quoteName('p.titre'), $this->db->quoteName('cc.status'), $this->db->quoteName('cl.id', 'link_id')])
+			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
+			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$this->db->quoteName('cl.fnum_to').' = '.$this->db->quoteName('cc.fnum'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$this->db->quoteName('cc.campaign_id').' = '.$this->db->quoteName('c.id'))
+			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' = '.$this->db->quoteName('cc.fnum'))
+			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('r.fnum'))
+			->where($this->db->quoteName('user_from').' = '.$user.' AND '.$this->db->quoteName('fnum_from').' IS NULL');
+		$this->db->setQuery($query);
+
+		try {
+			return $this->db->loadAssocList();
+		} catch (Exception $e) {
+			JLog::add('Error getting cifre links in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
 	/**
 	 * This function gets all of the contact requests that are destined to the user.
 	 * @param null $user Int The user who has received the contact requests.

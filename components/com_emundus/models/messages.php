@@ -670,16 +670,42 @@ class EmundusModelMessages extends JModelList {
             ->order('message_id DESC');
 
         try {
-
             $db->setQuery($query);
             return $db->loadObjectList();
-
         } catch (Exception $e) {
             JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
 
     }
+
+	/** Get number of unread messages between two users (messages with folder_id 2)
+	 *
+	 * @param         $sender
+	 * @param   null  $receiver
+	 *
+	 * @return bool|mixed
+	 */
+	public function getUnread($sender, $receiver = null) {
+
+		if (empty($receiver)) {
+			$receiver = $this->user->id;
+		}
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('COUNT(state)')
+			->from($db->quoteName('#__messages'))
+			->where($db->quoteName('state').' = 1 AND '.$db->quoteName('folder_id').' = 2 AND '.$db->quoteName('user_id_to').' = '.$receiver.' AND '.$db->quoteName('user_id_from').' = '.$sender);
+		try {
+			$db->setQuery($query);
+			return $db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('Error loading unread messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
 
 	/** load messages between two users ( messages with folder_id 2 )
 	 *
@@ -703,10 +729,8 @@ class EmundusModelMessages extends JModelList {
 		    ->where('('.$db->quoteName('user_id_to').' = '.$user2.' AND '.$db->quoteName('user_id_from').' = '.$user1.') OR ('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.')');
 
         try {
-
             $db->setQuery($query);
             $db->execute();
-
         } catch (Exception $e) {
             JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
@@ -719,15 +743,12 @@ class EmundusModelMessages extends JModelList {
 	        ->order($db->quoteName('date_time').' ASC')
             ->setLimit('100');
         try {
-            
             $db->setQuery($query);
             return $db->loadObjectList();
-
         } catch (Exception $e) {
             JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
-
     }
 
 	/** sends message folder_id=2 from user_from to user_to and sets stats to 1
