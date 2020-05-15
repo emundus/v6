@@ -629,28 +629,17 @@ function getProjectThematics($fnum) {
             },
             success: function (result) {
                 jQuery('#em-modal-sending-emails').css('display', 'none');
-                Swal.fire(
-                    '<?= JText::_("COM_EMUNDUS_CIFRE_SENT"); ?>',
-                    '',
-                    'success'
-                )
                 if (result.status) {
 
                     // When we successfully change the status, we simply dynamically change the button.
                     if (action === 'contact') {
-                        jQuery('#em-search-item-action-button').html('' +
-                            '<a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="actionButton(\'retry\')">'+
-                                '<div class="cta-end disabled">'+
-                                    '<h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_RECALL'); ?></h3>'+
-                                '</div>'+
-                            '</a>'+
-                            '<br>'+
-                            '<br'+
-                            '<a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled onclick="breakUp(\'cancel\')">'+
-                                '<div class="cta-end disabled">'+
-                                    '<h3 class="entrer-en-contact no-dash"><?= JText::_('COM_EMUNDUS_CIFRE_CANCEL'); ?></h3>'+
-                                '</div>'+
-                            '</a>');
+                        Swal.fire(
+                            '<?= JText::_("COM_EMUNDUS_CIFRE_SENT"); ?>',
+                            '',
+                            'success'
+                        ).then(() => {
+                            window.location = '<?= JUri::base(); ?>/espace-personnel'
+                        })
                     } else if (action === 'retry') {
                         jQuery('#em-search-item-action-button').html('' +
                             '<a href="#" class="link-block-copy w-inline-block" data-ix="open-box" disabled>\n'+
