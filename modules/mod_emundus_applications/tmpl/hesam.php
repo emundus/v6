@@ -303,7 +303,6 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
             </div>
         <?php endif; ?>
 
-
         <?php foreach ($chat_requests as $chat_request) :?>
             <div class="wrapper-big-card" id="card-<?= $chat_request['link_id']; ?>">
                 <div class="card w-clearfix">
@@ -325,7 +324,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                         <div class="div-block-contact">
                             <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4873152d535b204da4b_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image">
                             <div class="name">
-                                <?= JFactory::getUser($contact['applicant_id'])->name; ?>
+                                <?= JFactory::getUser($chat_request['applicant_id'])->name; ?>
                             </div>
                         </div>
                         <div class="div-block-mail">
@@ -337,20 +336,16 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                 </div>
                                 <div class="column-2 w-col w-col-3">
                                     <!-- TODO: Notifications -->
-                                    <a href="/index.php?option=com_emundus&view=messages&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block">
+                                    <a href="/index.php?option=com_emundus&view=messages&chatid=<?= $chat_request['applicant_id']; ?>" class="link w-inline-block">
                                         <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail">
                                     </a>
-	                                <?php
-	                                $nb_messages = 0;
-	                                // TODO : Rework this to get unread messages for a single link -> modemundusApplicationsHelper::getNumberOfContactOffers($application->fnum);
-	                                ?>
-                                    <div class="notif <?= ($nb_messages > 0)?'_0notif':''; ?>">
-                                        <div class="notif-number <?= ($nb_messages > 0)?'_0notif':''; ?>"><?= $nb_messages; ?></div>
+                                    <div class="notif <?= ($chat_request['unread'] > 0)?'_0notif':''; ?>">
+                                        <div class="notif-number <?= ($chat_request['unread'] > 0)?'_0notif':''; ?>"><?= $chat_request['unread']; ?></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div id="contactButtons-<?= $contact['link_id']; ?>" onclick="breakUp('<?= $contact['link_id']; ?>')">
+                        <div id="contactButtons-<?= $chat_request['link_id']; ?>" onclick="breakUp('<?= $chat_request['link_id']; ?>')">
                             <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5ebbe17210aa833dc56beaea_5e9f03ced3a57f18c49bad26_5e9ef4873152d535b204da4b_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image-delete-smallcard">
                         </div>
                     </div>
