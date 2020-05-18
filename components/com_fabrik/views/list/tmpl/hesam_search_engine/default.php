@@ -304,17 +304,17 @@ echo $this->table->intro;
                                     $departments = getOtherDepartments($d["jos_emundus_recherche___fnum_raw"]);
                                     if ($departments) {
                                         if (sizeof($departments) > 8) {
-                                            $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)).' ... ';
+                                            $departments = implode(' - ', array_slice($departments, 0, 8)).' ... ';
                                         } else {
-                                            $departments = implode('</div> - <div class="em-highlight">', $departments);
+                                            $departments = implode(' - ', $departments);
                                         }
                                     }
                                 } else {
                                     $departments =  array_unique(array_column(getActeurDepartments($d["jos_emundus_recherche___fnum_raw"]), 'departement_nom'));
                                     if (sizeof($departments) > 8) {
-                                        $departments = implode('</div> - <div class="em-highlight">', array_slice($departments, 0, 8)) . ' ... ';
+                                        $departments = implode(' - ', array_slice($departments, 0, 8)) . ' ... ';
                                     } else {
-                                        $departments = implode('</div> - <div class="em-highlight">', $departments);
+                                        $departments = implode(' - ', $departments);
                                     }
                                 }
                             }
