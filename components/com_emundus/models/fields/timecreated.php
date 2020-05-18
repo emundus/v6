@@ -33,10 +33,12 @@ class JFormFieldTimecreated extends JFormField
 	protected function getInput() {
         // Initialize variables.
         $html = array();
+		$config     = JFactory::getConfig();
+		$timezone 	= new DateTimeZone( $config->get('offset') );
 
         $time_created = $this->value;
         if (!strtotime($time_created)) {
-            $time_created = JFactory::getDate()->toSql();
+            $time_created = JFactory::getDate()->setTimezone($timezone);
             $html[] = '<input type="hidden" name="' . $this->name . '" value="' . $time_created . '" />';
         }
         $hidden = (boolean) $this->element['hidden'];

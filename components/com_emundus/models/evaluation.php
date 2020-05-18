@@ -1821,10 +1821,8 @@ if (JFactory::getUser()->id == 63)
 		} else {
 
 			$config = JFactory::getConfig();
-			$tz 	= $config->get('offset');
-			$jdate 	= JFactory::getDate();
-			$jdate->setTimezone(new DateTimeZone($tz));
-			$now = $jdate->toSql();
+			$timezone = new DateTimeZone( $config->get('offset') );
+			$now = JFactory::getDate()->setTimezone($timezone);
 
 
 			$query = "INSERT INTO #__emundus_evaluations ( ";
