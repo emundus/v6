@@ -724,22 +724,32 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $h_files    = new EmundusHelperFiles();
         $m_messages = new EmundusModelMessages();
+        $m_files = $this->getModel('Files');
 
         $get_candidate_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_candidate_attachment');
         $get_letters_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_letter_attachment');
 
 
-        $email_from_sys = $app->getCfg('mailfrom');
-	    if (!is_array($fnums)) {
-		    $fnums = (array) json_decode(stripslashes($fnums));
-	    }
+        $email_from_sys = $app->getCfg('mailfrom'); 
 
-        $m_files = $this->getModel('Files');
-        $validFnums = array();
-
-        if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all") {
-	        $fnums = $m_files->getAllFnums();
+        if($fnums == "all") {
+            $fnums = array(0 => "all");
+            $fnums = $m_files->getAllFnums();
         }
+        
+        if (!is_array($fnums)) {
+            $fnums = (array) json_decode(stripslashes($fnums));
+        }
+
+        if (count($fnums) == 0 || !is_array($fnums)) {
+            $res = false;
+            $msg = JText::_('STATE_ERROR');
+
+            echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+            exit;
+        }
+
+        $validFnums = array();
 
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)) {
