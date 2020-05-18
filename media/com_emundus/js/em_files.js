@@ -189,7 +189,7 @@ function reloadActions(view, fnum, onCheck, async) {
     $.ajax({
         type: 'GET',
         async: async,
-        url: 'index.php?option=com_emundus&view='+view+'&layout=menuactions&format=raw&Itemid=' + itemId+ '&display=none&fnum='+fnum+'&multi='+multi,
+        url: 'index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId+ '&display=none&fnum='+fnum+'&multi='+multi,
         dataType: 'html',
         success: function(data) {
             //$('.em-dimmer').remove();
