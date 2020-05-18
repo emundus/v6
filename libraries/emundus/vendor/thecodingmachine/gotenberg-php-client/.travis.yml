@@ -1,0 +1,10 @@
+sudo: required
+
+language: generic
+
+services:
+  - docker
+
+script:
+  - make lint
+  - make tests

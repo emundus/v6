@@ -226,16 +226,57 @@
 			   description="GOOGLE_MAPS_API_DESC"
 		/>
 	</fieldset>
-
+	<fieldset name="users" label="COM_EMUNDUS_USERS_LABEL" description="COM_EMUNDUS_USERS_DESC">
+		<field name="showUniversities" type="list" menu="hide" default="1" label="COM_EMUNDUS_SHOW_UNIVERSITIES" description="COM_EMUNDUS_SHOW_UNIVERSITIES_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="showNewsletter" type="list" menu="hide" default="1" label="COM_EMUNDUS_SHOW_NEWSLETTER" description="COM_EMUNDUS_SHOW_NEWSLETTER_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="ldapFilters" type="text" required="false" label="COM_EMUNDUS_LDAP_FILTERS_LABEL" description="COM_EMUNDUS_LDAP_FILTERS_DESC" />
+		<field name="ldapElements" type="text" required="false" label="COM_EMUNDUS_LDAP_ELEMENTS_LABEL" description="COM_EMUNDUS_LDAP_ELEMENTS_DESC" default="uid, mail, givenName, sn, telephoneNumber" />
+		<field name="logUserEmail" type="list" menu="hide" default="0" label="COM_EMUNDUS_LOG_USER_EMAIL" description="COM_EMUNDUS_LOG_USER_EMAIL_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="allowed_non_applicant_profiles" type="text" default="" label="COM_EMUNDUS_ALLOWED_NON_APPLICANT_PROFILES" description="COM_EMUNDUS_ALLOWED_NON_APPLICANT_PROFILES_DESC" />
+	</fieldset>
 	<fieldset label="COM_EMUNDUS_INTEGRATION" name="ametys" description="COM_EMUNDUS_INTEGRATION_DESC">
+		<field
+				name="integration_gotenberg"
+				type="note"
+				label="COM_EMUNDUS_GOTENBERG_DESC"
+		/>
+		<field name="gotenberg_activation" type="list" menu="hide" default="0" label="COM_EMUNDUS_GOTENBERG_ACTIVATION" description="COM_EMUNDUS_GOTENBERG_ACTIVATION_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="gotenberg_url" type="text" default="http://localhost:3000" label="COM_EMUNDUS_GOTENBERG_URL" description="COM_EMUNDUS_GOTENBERG_URL_DESC" />
+		<field
+				name="spacer4"
+				type="spacer"
+				hr="true"
+		/>
+		<field
+				name="integration_addpipe"
+				type="note"
+				label="COM_EMUNDUS_ADDPIPE_DESC"
+		/>
 		<field name="addpipe_path_ftp" type="text" default="/home/sftpusers/emundus" label="COM_EMUNDUS_ADDPIPE_PATH_FTP" description="COM_EMUNDUS_ADDPIPE_PATH_FTP_DESC" />
 		<field name="addpipe_account_hash" type="text" default="" label="COM_EMUNDUS_ADDPIPE_ACCOUNT_HASH" description="COM_EMUNDUS_ADDPIPE_ACCOUNT_HASH_DESC" />
 		<field name="addpipe_eid" type="text" default="" label="COM_EMUNDUS_ADDPIPE_EID" description="COM_EMUNDUS_ADDPIPE_EID_DESC" />
 		<field name="addpipe_api_key" type="text" default="" label="COM_EMUNDUS_ADDPIPE_API_KEY" description="COM_EMUNDUS_ADDPIPE_API_KEY_DESC" />
 		<field
-				name="spacer4"
+				name="spacer5"
 				type="spacer"
 				hr="true"
+		/>
+		<field
+				name="integration_ametys"
+				type="note"
+				label="Ametys CMS"
 		/>
 		<field name="ametys_integration" menu="hide" type="list" default="0" label="COM_EMUNDUS_AMETYS" description="COM_EMUNDUS_AMETYS_DESC">
 			<option value="0">JNO</option>
@@ -256,22 +297,5 @@
 				class="inputbox" filter="rules" validate="rules"
 				label="JCONFIG_PERMISSIONS_LABEL"
 				section="component" />
-	</fieldset>
-	<fieldset name="users" label="COM_EMUNDUS_USERS_LABEL" description="COM_EMUNDUS_USERS_DESC">
-		<field name="showUniversities" type="list" menu="hide" default="1" label="COM_EMUNDUS_SHOW_UNIVERSITIES" description="COM_EMUNDUS_SHOW_UNIVERSITIES_DESC">
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
-		<field name="showNewsletter" type="list" menu="hide" default="1" label="COM_EMUNDUS_SHOW_NEWSLETTER" description="COM_EMUNDUS_SHOW_NEWSLETTER_DESC">
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
-		<field name="ldapFilters" type="text" required="false" label="COM_EMUNDUS_LDAP_FILTERS_LABEL" description="COM_EMUNDUS_LDAP_FILTERS_DESC" />
-		<field name="ldapElements" type="text" required="false" label="COM_EMUNDUS_LDAP_ELEMENTS_LABEL" description="COM_EMUNDUS_LDAP_ELEMENTS_DESC" default="uid, mail, givenName, sn, telephoneNumber" />
-		<field name="logUserEmail" type="list" menu="hide" default="0" label="COM_EMUNDUS_LOG_USER_EMAIL" description="COM_EMUNDUS_LOG_USER_EMAIL_DESC">
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
-		<field name="allowed_non_applicant_profiles" type="text" default="" label="COM_EMUNDUS_ALLOWED_NON_APPLICANT_PROFILES" description="COM_EMUNDUS_ALLOWED_NON_APPLICANT_PROFILES_DESC" />
 	</fieldset>
 </config>

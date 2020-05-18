@@ -2748,7 +2748,7 @@ ENDDATA;
 
 			foreach ($ips_passed['whitelist'] as $whitelist)
 			{
-				$returned_message = $firewall_config_model->manage_list('whitelist', 'add', $whitelist, true, true);
+				$returned_message = $firewall_config_model->manage_list('whitelist', 'add', $blacklist, true, true);
 
 				if (!empty($returned_message))
 				{

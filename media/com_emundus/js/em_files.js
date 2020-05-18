@@ -433,9 +433,9 @@ function openFiles(fnum) {
                 $('#'+fnum.fnum+'_ls_op' ).addClass('active');
             } else {
                 if (fnum.hasOwnProperty('name')) {
-                    $('#em-last-open .list-group').append('<a href="#" class="list-group-item active" title="'+fnum.fnum+'" id="'+fnum.fnum+'_ls_op"><strong>'+fnum.name+'</strong><span> - '+fnum.label+'</span></a>');
+                    $('#em-last-open .list-group').append('<a href="#'+fnum.fnum+'|open" class="list-group-item active" title="'+fnum.fnum+'" id="'+fnum.fnum+'_ls_op"><strong>'+fnum.name+'</strong><span> - '+fnum.label+'</span></a>');
                 } else {
-                    $('#em-last-open .list-group').append('<a href="#" class="list-group-item active" id="'+fnum.fnum+'_ls_op">'+fnum.fnum+'</a>');
+                    $('#em-last-open .list-group').append('<a href="#'+fnum.fnum+'|open" class="list-group-item active" id="'+fnum.fnum+'_ls_op">'+fnum.fnum+'</a>');
                 }
             }
 
@@ -546,20 +546,36 @@ function getUserCheck() {
         var checkInput = 'all';
     } else {
         var i = 0;
+
+        if($('.em-check:checked').length == 0) {
+            var hash = $(location).attr('hash');
+            var fnum = hash.replace("#", "");
+            var fnum = fnum.replace("|open", "");
+            if(fnum != "") {
+                var checkInput = '{"0":'+fnum+'}';
+                return checkInput;
+            } else {
+                return null;
+            }
+        }
+
         var myJSONObject = '{';
         $('.em-check:checked').each(function(){
             i = i + 1;
             myJSONObject += '"'+i+'"'+':"'+$(this).attr('id').split('_')[0]+'",';
         });
+
         myJSONObject = myJSONObject.substr(0, myJSONObject.length-1);
         myJSONObject += '}';
-        if (myJSONObject.length == 2) {
+        
+        if (myJSONObject.length <= 2) {
             alert('SELECT_FILES');
-            return;
+            return null;
         } else {
             checkInput = myJSONObject;
         }
     }
+
     return checkInput;
 }
 
@@ -4719,12 +4735,12 @@ $(document).ready(function() {
 
                 // Get all form elements.
                 var data = {
-                    recipients 		: $('#fnums').val(),
-                    template		: $('#message_template :selected').val(),
-                    mail_from_name 	: $('#mail_from_name').text(),
-                    mail_from 		: $('#mail_from').text(),
-                    mail_subject 	: $('#mail_subject').text(),
-                    message			: $('#mail_body').val(),
+                    recipients      : $('#fnums').val(),
+                    template        : $('#message_template :selected').val(),
+                    mail_from_name  : $('#mail_from_name').text(),
+                    mail_from       : $('#mail_from').text(),
+                    mail_subject    : $('#mail_subject').text(),
+                    message         : $('#mail_body').val(),
                     bcc             : [],
                     cc              : []
                 };
