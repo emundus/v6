@@ -424,11 +424,20 @@ class EmundusModelApplication extends JModelList {
         }
 
         if (!is_array($fnum)) {
-            $query = 'SELECT esc.profile_id
+
+            $query = 'SELECT ess.profile
+                    FROM #__emundus_setup_status AS ess
+                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
+                    WHERE ecc.fnum like '.$this->_db->Quote($fnum);
+            $this->_db->setQuery($query);
+
+            if (empty($this->_db->loadResult())) {
+                $query = 'SELECT esc.profile_id
                     FROM #__emundus_setup_campaigns AS esc
                     LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
                     WHERE ecc.fnum like '.$this->_db->Quote($fnum);
-            $this->_db->setQuery($query);
+                $this->_db->setQuery($query);
+            }
 
             $forms = @EmundusHelperMenu::buildMenuQuery($this->_db->loadResult());
             $nb = 0;
@@ -451,11 +460,20 @@ class EmundusModelApplication extends JModelList {
 
             $result = array();
             foreach ($fnum as $f) {
-                $query = 'SELECT esc.profile_id
-                    FROM #__emundus_setup_campaigns AS esc
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+
+                $query = 'SELECT ess.profile
+                    FROM #__emundus_setup_status AS ess
+                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
                     WHERE ecc.fnum like '.$this->_db->Quote($f);
                 $this->_db->setQuery($query);
+
+                if (empty($this->_db->loadResult())) {
+                    $query = 'SELECT esc.profile_id
+                        FROM #__emundus_setup_campaigns AS esc
+                        LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                        WHERE ecc.fnum like '.$this->_db->Quote($f);
+                    $this->_db->setQuery($query);
+                }
 
                 $forms = @EmundusHelperMenu::buildMenuQuery($this->_db->loadResult());
                 $nb = 0;
@@ -491,11 +509,19 @@ class EmundusModelApplication extends JModelList {
 
         if (!is_array($fnum)) {
 
-            $query = 'SELECT esc.profile_id
-                    FROM #__emundus_setup_campaigns AS esc
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+            $query = 'SELECT ess.profile
+                    FROM #__emundus_setup_status AS ess
+                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
                     WHERE ecc.fnum like '.$this->_db->Quote($fnum);
             $this->_db->setQuery($query);
+
+            if (empty($this->_db->loadResult())) {
+                $query = 'SELECT esc.profile_id
+                FROM #__emundus_setup_campaigns AS esc
+                LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                WHERE ecc.fnum like '.$this->_db->Quote($fnum);
+                $this->_db->setQuery($query);
+            }
 
             $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
@@ -509,11 +535,19 @@ class EmundusModelApplication extends JModelList {
 
             $result = array();
             foreach ($fnum as $f) {
-                $query = 'SELECT esc.profile_id
-                    FROM #__emundus_setup_campaigns AS esc
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                $query = 'SELECT ess.profile
+                    FROM #__emundus_setup_status AS ess
+                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
                     WHERE ecc.fnum like '.$this->_db->Quote($f);
                 $this->_db->setQuery($query);
+
+                if (empty($this->_db->loadResult())) {
+                    $query = 'SELECT esc.profile_id
+                        FROM #__emundus_setup_campaigns AS esc
+                        LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                        WHERE ecc.fnum like '.$this->_db->Quote($f);
+                    $this->_db->setQuery($query);
+                }
 
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles

@@ -493,7 +493,8 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('Joomla!','core','3.9.12','<=','3.0.0','>=','Joomla! core','Two vulnerabilities','Nov 05 2019','Joomla 3.2.0 through 3.9.12','update','3.9.13'),
 ('com_j2store','component','3.3.9','<=','3.0.0','>=','J2Store Component','Xss vulnerability','Nov 14 2019','Version 3.3.9 and previous','none','No details'),
 ('Joomla!','core','3.9.13','<=','3.0.0','>=','Joomla! core','Two vulnerabilities','Dec 18 2019','Joomla 2.5.0 through 3.9.13','update','3.9.14'),
-('Joomla!','core','3.9.14','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Jan 28 2020','Joomla 3.0.0 through 3.9.14','update','3.9.15');
+('Joomla!','core','3.9.14','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Jan 28 2020','Joomla 3.0.0 through 3.9.14','update','3.9.15'),
+('Joomla!','core','3.9.15','<=','3.0.0','>=','Joomla! core','Six low vulnerabilities','Mar 10 2020','Joomla 1.7.0 through 3.9.15','update','3.9.16');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_sessions`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (

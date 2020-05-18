@@ -231,11 +231,12 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 		}
 		$profile_id = $m_profile->getProfileByFnum($student->fnum);
 
-		// This bit of code gets some custom pdf code based on the programme.
-		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.@$fnum['training'].'.php';
-		if (!file_exists($file)) {
-			$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
-		}
+        // This bit of code gets some custom pdf code based on the programme.
+        if (empty($this->getParam('custom_attachment', ''))) {
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.@$fnum['training'].'.php';
+        } else {
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.$this->getParam('custom_attachment', '');
+        }
 
 		require_once($file);
 		application_form_pdf($student->id, $student->fnum, false, 1, null, null, null, $profile_id, $attachment_label);

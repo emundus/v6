@@ -721,27 +721,33 @@ class EmundusControllerMessages extends JControllerLegacy {
             if (!empty($toAttach)) {
 
                 $files = '<ul>';
-                foreach ($attachments['upload'] as $attach) {
-                    $filesName = basename($attach);
-                    $files .= '<li>' . $filesName . '</li>';
-                }
-                foreach ($attachments['candidate_file'] as $attach) {
-
-                    $idTypeFile = $attach;
-                    $typeAttachments = $this->getTypeAttachment($idTypeFile);
-                    foreach ($typeAttachments as $typeAttachment) {
-                        $nameType = $typeAttachment->value;
+                if(count($attachments['upload']) > 0) {
+                    foreach ($attachments['upload'] as $attach) {
+                        $filesName = basename($attach);
+                        $files .= '<li>' . $filesName . '</li>';
                     }
-
-                    $files .= '<li>' . $nameType . '</li>';
                 }
-                foreach ($attachments['setup_letters'] as $attach) {
-                    $idTypeFile = $attach;
-                    $typeAttachments = $this->getTypeLetters($idTypeFile);
-                    foreach ($typeAttachments as $typeAttachment) {
-                        $nameType = $typeAttachment->title;
+                if(count($attachments['candidate_file']) > 0) {
+                    foreach ($attachments['candidate_file'] as $attach) {
+
+                        $idTypeFile = $attach;
+                        $typeAttachments = $this->getTypeAttachment($idTypeFile);
+                        foreach ($typeAttachments as $typeAttachment) {
+                            $nameType = $typeAttachment->value;
+                        }
+
+                        $files .= '<li>' . $nameType . '</li>';
                     }
-                    $files .= '<li>' . $nameType . '</li>';
+                }
+                if(count($attachments['setup_letters']) > 0) {
+                    foreach ($attachments['setup_letters'] as $attach) {
+                        $idTypeFile = $attach;
+                        $typeAttachments = $this->getTypeLetters($idTypeFile);
+                        foreach ($typeAttachments as $typeAttachment) {
+                            $nameType = $typeAttachment->title;
+                        }
+                        $files .= '<li>' . $nameType . '</li>';
+                    }
                 }
             }
 
