@@ -238,6 +238,10 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.$this->getParam('custom_attachment', '');
         }
 
+        if (!file_exists($file)) {
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+        }
+
 		require_once($file);
 		application_form_pdf($student->id, $student->fnum, false, 1, null, null, null, $profile_id, $attachment_label);
 
