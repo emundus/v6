@@ -600,17 +600,18 @@ class EmundusModelCifre extends JModelList {
 	}
 
 
-    /**
-     * Gets suggestions of potential offers that may interest the user
-     *
-     * @param Int $user_id The ID of the user we are getting suggestions for.
-     * @param Int $user_profile The profile of the user
-     * @param DateTime $time_ago Minimum publish date for the offers.
-     *
-     * @return Mixed
-     * @since 6.9.1
-     */
-	public function getSuggestions($user_id, $user_profile, $time_ago = null) {
+	/**
+	 * Gets suggestions of potential offers that may interest the user
+	 *
+	 * @param   Int       $user_id       The ID of the user we are getting suggestions for.
+	 * @param   Int       $user_profile  The profile of the user
+	 * @param   DateTime  $time_ago      Minimum publish date for the offers.
+	 * @param   int       $nb_res        Number of results to display.
+	 *
+	 * @return Mixed
+	 * @since 6.9.1
+	 */
+	public function getSuggestions($user_id, $user_profile, $time_ago = null, $nb_res = 4) {
 
 		if (empty($user_id) || empty($user_profile)) {
 			return false;
@@ -681,10 +682,11 @@ class EmundusModelCifre extends JModelList {
 		$where = $fallbackWhere.' '.$thematicsOrLocations;
 
 		$query->clear()
-			->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
+			->select(['cc.fnum', 'ep.titre', 'er.id AS search_engine_page', 'p.label AS profile' , 'GROUP_CONCAT(t.themes) AS themes', 'GROUP_CONCAT(dep.department) as department', 'er.futur_doctorant_yesno', 'er.acteur_public_yesno', 'er.equipe_de_recherche_codirection_yesno', 'er.equipe_de_recherche_direction_yesno'])
 			->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
             ->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.applicant_id').' LIKE '.$this->db->quoteName('cl.user_to').' OR '.$this->db->quoteName('cc.applicant_id').' LIKE '.$this->db->quoteName('cl.user_from').')')
 			->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('cc.user_id'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_profiles', 'p').' ON '.$this->db->quoteName('p.id').' = '.$this->db->quoteName('eu.profile'))
 			->leftJoin($this->db->quoteName('#__emundus_projet', 'ep').' ON '.$this->db->quoteName('ep.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
 			->leftJoin($this->db->quoteName('#__emundus_projet_620_repeat', 't').' ON '.$this->db->quoteName('t.parent_id').' = '.$this->db->quoteName('ep.id'))
 			->leftJoin($this->db->quoteName('#__emundus_recherche', 'er').' ON '.$this->db->quoteName('er.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
@@ -705,7 +707,7 @@ class EmundusModelCifre extends JModelList {
 
 		// If we have not gotten enough (or any) results, we need to rerun the query but with less constraints on the WHERE.
 		// Why? Because we want to suggest the results with the most pertinance to the user, and if there arent enough: suggest something anyways
-		if (is_array($results) && sizeof($results) < 4) {
+		if (is_array($results) && sizeof($results) < $nb_res) {
 
 			// Here we are making sure that we do not get the same fnums are before, to avoid duplicates.
 			$noDuplicates = array();
@@ -724,10 +726,11 @@ class EmundusModelCifre extends JModelList {
 
 			// Same query except we are using JUST the fallback where, this means that we are getting more results but less related to the user's situation.
 			$query->clear()
-				->select([$this->db->quoteName('cc.fnum'), $this->db->quoteName('ep.titre'), $this->db->quoteName('er.id', 'search_engine_page')])
+				->select(['cc.fnum', 'ep.titre', 'er.id AS search_engine_page', 'p.label AS profile' , 'GROUP_CONCAT(t.themes) AS themes', 'GROUP_CONCAT(dep.department) as department', 'er.futur_doctorant_yesno', 'er.acteur_public_yesno', 'er.equipe_de_recherche_codirection_yesno', 'er.equipe_de_recherche_direction_yesno'])
 				->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
 				->leftJoin($this->db->quoteName('#__emundus_cifre_links', 'cl').' ON ('.$this->db->quoteName('cc.applicant_id').' LIKE '.$this->db->quoteName('cl.user_to').' OR '.$this->db->quoteName('cc.applicant_id').' LIKE '.$this->db->quoteName('cl.user_from').')')
 				->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('cc.user_id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_profiles', 'p').' ON '.$this->db->quoteName('p.id').' = '.$this->db->quoteName('eu.profile'))
 				->leftJoin($this->db->quoteName('#__emundus_projet', 'ep').' ON '.$this->db->quoteName('ep.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
 				->leftJoin($this->db->quoteName('#__emundus_projet_620_repeat', 't').' ON '.$this->db->quoteName('t.parent_id').' = '.$this->db->quoteName('ep.id'))
 				->leftJoin($this->db->quoteName('#__emundus_recherche', 'er').' ON '.$this->db->quoteName('er.fnum').' LIKE '.$this->db->quoteName('cc.fnum'))
@@ -746,8 +749,8 @@ class EmundusModelCifre extends JModelList {
 			}
 		}
 
-		// return a randomized, 4 element long array.
-		$results = array_slice($results, 0, 4);
+		// return a randomized, $nb_res element long array.
+		$results = array_slice($results, 0, $nb_res);
 		shuffle($results);
 		return $results;
 	}
