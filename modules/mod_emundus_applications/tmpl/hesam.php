@@ -127,7 +127,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                                         <?php if ($contact['status'] === 3) :?>
                                                                             <?= JText::_('OFFER_UNPUBLISHED'); ?>
                                                                         <?php else :?>
-                                                                            <a href="les-offres/consultez-les-offres/details/299/<?= $contact['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
+                                                                            <a href="consultez-les-offres/details/299/<?= $contact['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
                                                                         <?php endif; ?>
                                                                     </div>
                                                                 </div>
@@ -199,7 +199,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                                         <?php if ($contact['status'] === 3) :?>
                                                                             <?= JText::_('OFFER_UNPUBLISHED'); ?>
                                                                         <?php else :?>
-                                                                            <a href="les-offres/consultez-les-offres/details/299/<?= $contact['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
+                                                                            <a href="consultez-les-offres/details/299/<?= $contact['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
                                                                         <?php endif; ?>
                                                                     </div>
                                                                 </div>
@@ -271,7 +271,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                                         <?php if ($contact['status'] === 3) :?>
                                                                             <?= JText::_('OFFER_UNPUBLISHED'); ?>
                                                                         <?php else :?>
-                                                                            <a href="les-offres/consultez-les-offres/details/299/<?= $contact['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
+                                                                            <a href="consultez-les-offres/details/299/<?= $contact['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
                                                                         <?php endif; ?>
                                                                     </div>
                                                                 </div>
@@ -331,7 +331,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                             <div class="w-row">
                                 <div class="column-9 w-col w-col-9">
                                     <div class="sujet">
-                                        <a href="les-offres/consultez-les-offres/details/299/<?= $chat_request['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
+                                        <a href="consultez-les-offres/details/299/<?= $chat_request['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
                                     </div>
                                 </div>
                                 <div class="column-2 w-col w-col-3">
