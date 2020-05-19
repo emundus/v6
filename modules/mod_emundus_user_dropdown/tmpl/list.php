@@ -8,6 +8,7 @@
 
 ?>
 
+<?= $intro; ?>
 
 <div class="user-list-menu">
     <div class="content">

@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
 ?>
 
+<?= $intro; ?>
+
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown' id="userDropdown">
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
