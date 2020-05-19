@@ -48,7 +48,7 @@ defined('_JEXEC') or die;
                                 </div>
                             </div>
                         </div>
-                        <a href="<?= JRoute::_(JURI::base()."/consultez-les-offres/details/299/".$offer->search_engine_page); ?>" class="cta-offre w-inline-block">
+                        <a href="<?= JRoute::_(JURI::base()."consultez-les-offres/details/299/".$offer->search_engine_page); ?>" class="cta-offre w-inline-block">
                             <div class="text-block-2"><?= JText::_('MOD_EMUNDUS_CIFRE_OFFERS_VIEW'); ?></div>
                         </a>
                     </div>
@@ -63,7 +63,7 @@ defined('_JEXEC') or die;
 
                     <div class="w-col w-col-6">
                         <div>
-                            <a href="/consultez-les-offres" class="voir-toutes-les-offres w-inline-block">
+                            <a href="consultez-les-offres" class="voir-toutes-les-offres w-inline-block">
                                 <div class="voir-offres">Voir toutes les offres</div>
                             </a>
                         </div>
