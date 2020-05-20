@@ -648,12 +648,13 @@ class EmundusModelMessages extends JModelList {
 
 	/** gets all messages received after the message $lastID
 	 *
-	 * @param      $lastId
-	 * @param null $user
+	 * @param         $lastId
+	 * @param   null  $user
+	 * @param   null  $other_user
 	 *
 	 * @return bool|mixed
 	 */
-    public function updateMessages($lastId, $user = null) {
+    public function updateMessages($lastId, $user = null, $other_user = null) {
 
         if (empty($user)) {
 	        $user = $this->user->id;
@@ -661,12 +662,15 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
-        // Update message state to read
-        $query = $db->getQuery(true);
+        $where = $db->quoteName('message_id').' > '.$lastId.' AND '.$db->quoteName('user_id_to').' = '.$user.' AND ' . $db->quoteName('state') . ' = 1 AND '.$db->quoteName('folder_id').' = 2';
+        if (!empty($other_user)) {
+        	$where .= ' AND '.$db->quoteName('user_id_from').' = '.$other_user;
+        }
 
+        $query = $db->getQuery(true);
         $query->select('*')
             ->from($db->quoteName('#__messages'))
-            ->where($db->quoteName('message_id').' > '.$lastId.' AND '.$db->quoteName('user_id_to').' = '.$user.' AND ' . $db->quoteName('state') . ' = 1 AND '.$db->quoteName('folder_id').' = 2')
+            ->where($where)
             ->order('message_id DESC');
 
         try {
@@ -707,6 +711,7 @@ class EmundusModelMessages extends JModelList {
 		}
 	}
 
+	
 	/** load messages between two users ( messages with folder_id 2 )
 	 *
 	 * @param      $user1
@@ -739,9 +744,10 @@ class EmundusModelMessages extends JModelList {
 	    $query = $db->getQuery(true);
         $query->select('*')
             ->from($db->quoteName('#__messages'))
-	        ->where('(('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.' AND '.$db->quoteName('folder_id').' = 2) OR ('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.' AND ('.$db->quoteName('folder_id').' = 2 OR '.$db->quoteName('folder_id').' = 3)))')
+	        ->where('('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.' AND '.$db->quoteName('folder_id').' = 2) OR ('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.' AND '.$db->quoteName('folder_id').' IN (2,3))')
 	        ->order($db->quoteName('date_time').' ASC')
             ->setLimit('100');
+        
         try {
             $db->setQuery($query);
             return $db->loadObjectList();
@@ -751,6 +757,7 @@ class EmundusModelMessages extends JModelList {
         }
     }
 
+    
 	/** sends message folder_id=2 from user_from to user_to and sets stats to 1
 	 *
 	 * @param      $receiver
@@ -779,8 +786,7 @@ class EmundusModelMessages extends JModelList {
 
         $values = array($user, $receiver, $folder, $db->quote(date("Y-m-d H:i:s")), 1, 0, $db->quote($message));
 
-        $query
-            ->insert($db->quoteName('#__messages'))
+        $query->insert($db->quoteName('#__messages'))
             ->columns($db->quoteName($columns))
             ->values(implode(',', $values));
 

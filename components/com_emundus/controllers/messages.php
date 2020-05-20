@@ -1266,7 +1266,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $jinput = JFactory::getApplication()->input;
         $lastId = $jinput->post->get('id', null);
-        $messages = $m_messages->updateMessages($lastId);
+        $other_user = $jinput->post->get('user', null);
+        $messages = $m_messages->updateMessages($lastId, null, $other_user);
 
         if (!empty($messages)) {
             foreach ($messages as $message) {

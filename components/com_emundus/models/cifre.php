@@ -27,6 +27,7 @@ class EmundusModelCifre extends JModelList {
 		parent::__construct($config);
 	}
 
+
 	/**
 	 * @param $user_id Int The ID of the user who we are checking if he has contacted or been contacted.
 	 * @param $fnum String The fnum of the file to verify.
@@ -76,6 +77,7 @@ class EmundusModelCifre extends JModelList {
 
 	}
 
+
 	/**
 	 * @param null $fnum String The fnum of the offer.
 	 * @return Mixed An array of objects.
@@ -100,6 +102,7 @@ class EmundusModelCifre extends JModelList {
 			return false;
 		}
 	}
+
 
 	/**
 	 * @param $user_id Int The ID of the user who's offers we are getting.
@@ -134,6 +137,7 @@ class EmundusModelCifre extends JModelList {
 			return false;
 		}
 	}
+
 
 	/** Gets list of offers based on their connections to the fnums.
 	 * @param   array  $fnums
@@ -186,7 +190,10 @@ class EmundusModelCifre extends JModelList {
 		return $contact;
 	}
 
+
 	/** Gets list of offers based on their connections to the fnums.
+	 *
+	 * @param $user
 	 *
 	 * @return array|bool|mixed
 	 *
@@ -219,6 +226,7 @@ class EmundusModelCifre extends JModelList {
 		}
 	}
 
+
 	/**
 	 * This function gets all of the contact requests that are destined to the user.
 	 * @param null $user Int The user who has received the contact requests.
@@ -249,6 +257,7 @@ class EmundusModelCifre extends JModelList {
 		}
 	}
 
+
 	/**
 	 * This function gets all of the contact requests that are sent by the user.
 	 * @param null $user Int The user who has sent the contact requests.
@@ -275,6 +284,39 @@ class EmundusModelCifre extends JModelList {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
 			JLog::add('Error getting offers to user in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+
+	/**
+	 * @param $user1
+	 * @param $user2
+	 *
+	 * @return array|bool|mixed
+	 *
+	 * @since version
+	 */
+	function getOffersBetweenUsers($user1, $user2) {
+
+		if (empty($user1) || empty($user2)) {
+			return false;
+		}
+
+		$query = $this->db->getQuery(true);
+		$query->select(['p.*', $this->db->quoteName('r.id', 'search_engine_page')])
+			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
+			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' LIKE '.$this->db->quoteName('cl.fnum_to'))
+			->leftJoin($this->db->quoteName('#__emundus_recherche', 'r').' ON '.$this->db->quoteName('cl.fnum_to').' LIKE '.$this->db->quoteName('r.fnum'))
+			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quoteName('r.fnum'))
+			->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON (' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('cc.applicant_id') . ')')
+			->where('('.$this->db->quoteName('cl.user_from').' = '.$user1.' AND '.$this->db->quoteName('cl.user_to').' = '.$user2.') OR ('.$this->db->quoteName('cl.user_from').' = '.$user2.' AND '.$this->db->quoteName('cl.user_to').' = '.$user1.')');
+
+		$this->db->setQuery($query);
+		try {
+			return $this->db->loadObjectList();
+		} catch (Exception $e) {
+			JLog::add('Error getting offers between two users in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -321,6 +363,7 @@ class EmundusModelCifre extends JModelList {
 		}
 	}
 
+
 	/**
 	 * @param $user_to
 	 * @param $user_from
@@ -346,6 +389,7 @@ class EmundusModelCifre extends JModelList {
 			return false;
 		}
 	}
+
 
 	/**
 	 * Accept a contact request, this function is unilateral and accepts contact offers both in the inbound and outbound directions.
@@ -444,6 +488,7 @@ class EmundusModelCifre extends JModelList {
 		}
 	}
 
+
     /**
 	 * Gets the Masters information linked to the user passed in the params or the currently logged in user if not.
 	 *
@@ -462,10 +507,9 @@ class EmundusModelCifre extends JModelList {
 			->from($this->db->quoteName('#__emundus_users'))
 			->where('user_id = '.$user_id);
 		$this->db->setQuery($query);
+
 		try {
-
 			$master = $this->db->loadObject();
-
 			// Do not continue if the user is not a PhD.
 			if ($master->profile != '1006') {
 				return false;
@@ -478,6 +522,7 @@ class EmundusModelCifre extends JModelList {
 			return false;
 		}
 	}
+
 
 	/**
 	 * Gets the title of the user's doctoral school.
@@ -505,6 +550,7 @@ class EmundusModelCifre extends JModelList {
             return false;
         }
     }
+
 
 	/**
 	 * Gets the institution information linked to the user passed in the params or the currently logged in user if not.
@@ -549,6 +595,7 @@ class EmundusModelCifre extends JModelList {
 			return false;
 		}
 	}
+
 
 	/**
 	 * Gets the CIFRE link by ID.
@@ -651,15 +698,7 @@ class EmundusModelCifre extends JModelList {
 		if (!empty($time_ago)) {
 		    $fallbackWhere .= ' AND '.$this->db->quoteName('cc.date_submitted').' >= '.$this->db->quote(date('Y-m-d H:i:s', $time_ago));
         }
-/*
-		if ($user_profile == 1006) {
-			$fallbackWhere .= ' AND '.$this->db->quoteName('er.futur_doctorant_yesno').' = 1 ';
-		} elseif ($user_profile == 1007) {
-			$fallbackWhere .= ' AND ('.$this->db->quoteName('er.equipe_recherche_direction_yesno').' = 1 OR '.$this->db->quoteName('er.equipe_recherche_codirection_yesno').' = 1) ';
-		} elseif ($user_profile == 1008) {
-			$fallbackWhere .= ' AND '.$this->db->quoteName('er.acteur_publique_yesno').' = 1 ';
-		}
-*/
+
 		// Dynamically add a WHERE clause that can allow for the retrieval of offers, this where can change if not enough results are loaded.
 		$thematicsOrLocations = '';
 		if ((!empty($thematics) && $thematics[0] !== null) || (!empty($departments) && $departments[0] !== null)) {
@@ -755,6 +794,14 @@ class EmundusModelCifre extends JModelList {
 		return $results;
 	}
 
+
+	/**
+	 * @param $id
+	 *
+	 * @return bool|mixed|null
+	 *
+	 * @since version
+	 */
 	public function getDepartmentsByRegion($id) {
 
         $query = $this->db->getQuery(true);

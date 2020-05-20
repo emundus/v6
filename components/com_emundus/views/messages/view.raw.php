@@ -23,23 +23,20 @@ class EmundusViewMessages extends JViewLegacy {
 
 	var $user_id = null;
 	var $user_name = null;
-	var $getMessages = null;
+	var $messages = null;
 	var $message_contacts = null;
+	var $other_user = null;
+	var $offers = null;
 
 	public function __construct($config = array()) {
-
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'messages.php');
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
 		parent::__construct($config);
-
 	}
 
     public function display($tpl = null) {
 
 		$current_user = JFactory::getUser();
-
     	if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id)) {
 		    die(JText::_('RESTRICTED_ACCESS'));
 	    }
@@ -47,17 +44,21 @@ class EmundusViewMessages extends JViewLegacy {
         $m_messages = new EmundusModelMessages();
 
         $jinput = JFactory::getApplication()->input;
-        $id = $jinput->post->get('id', null);
         $tmpl = $jinput->get->get('layout', 'default');
 
-        if ($tmpl == 'chat') {
-            $this->getMessages = $m_messages->loadMessages($id);
+        if ($tmpl === 'chat') {
+	        $this->other_user = $jinput->get->getInt('chatid', null);
+            $this->messages = $m_messages->loadMessages($this->other_user);
             $this->user_id = $current_user->id;
-        } elseif ($tmpl == 'default') {
-            $this->message_contacts = $m_messages->getContacts();
+
+	        require_once (JPATH_COMPONENT.DS.'models'.DS.'cifre.php');
+	        $m_cifre = new EmundusModelCifre();
+            $this->offers = $m_cifre->getOffersBetweenUsers($this->user_id, $this->other_user);
+
+        } elseif ($tmpl === 'default') {
+	        $this->message_contacts = $m_messages->getContacts();
             $this->user_id = $current_user->id;
             $this->user_name = $current_user->name;
-            parent::display($tpl);
         }
 
 		parent::display($tpl);
