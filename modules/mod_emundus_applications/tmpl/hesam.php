@@ -115,7 +115,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                             <?php endif; ?>
                                                         </div>
                                                         <div class="div-block">
-                                                            <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5eaad57abe49fe2776f6c619_5ea96638ecdbea5ddd688bb4_Inergeen%20-Plan%20de%20travail%201%20copie.svg" alt="" class="image">
+                                                            <span class="fa fa-user-graduate"></span>
                                                             <div class="name">
                                                                 <?= JFactory::getUser($contact['applicant_id'])->name; ?>
                                                             </div>
@@ -132,7 +132,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                                     </div>
                                                                 </div>
                                                                 <div class="column-2 w-col w-col-3">
-                                                                    <a href="#" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9f28c9278d0a09357c1ff9_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image-bell"></a>
+                                                                    <!-- <a href="#" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9f28c9278d0a09357c1ff9_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image-bell"></a> -->
                                                                     <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail"></a>
                                                                     <div class="notif <?= ($contact['unread'] > 0)?'_0notif':''; ?>">
                                                                         <div class="notif-number <?= ($contact['unread'] > 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
@@ -187,7 +187,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                             <?php endif; ?>
                                                         </div>
                                                         <div class="div-block">
-                                                            <!-- TODO: Get lab image. -->
+                                                            <span class="fa fa-flask"></span>
                                                             <div class="name">
                                                                 <?php $m_cifre->getUserLaboratory($contact['applicant_id'])->name; ?>
                                                             </div>
@@ -204,7 +204,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                                     </div>
                                                                 </div>
                                                                 <div class="column-2 w-col w-col-3">
-                                                                    <a href="#" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9f28c9278d0a09357c1ff9_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image-bell"></a>
+                                                                    <!-- <a href="#" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9f28c9278d0a09357c1ff9_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image-bell"></a> -->
                                                                     <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail"></a>
                                                                     <div class="notif <?= ($contact['unread'] > 0)?'_0notif':''; ?>">
                                                                         <div class="notif-number <?= ($contact['unread'] > 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
@@ -259,7 +259,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                             <?php endif; ?>
                                                         </div>
                                                         <div class="div-block">
-                                                            <!-- TODO: Get collectivité image. -->
+                                                            <span class="fa fa-public"></span>
                                                             <div class="name">
                                                                 <?= $m_cifre->getUserInstitution($contact['applicant_id'])->nom_de_structure; ?>
                                                             </div>
@@ -276,7 +276,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                                     </div>
                                                                 </div>
                                                                 <div class="column-2 w-col w-col-3">
-                                                                    <a href="#" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9f28c9278d0a09357c1ff9_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image-bell"></a>
+                                                                    <!-- <a href="#" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9f28c9278d0a09357c1ff9_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image-bell"></a> -->
                                                                     <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail"></a>
                                                                     <div class="notif <?= ($contact['unread'] > 0)?'_0notif':''; ?>">
                                                                         <div class="notif-number <?= ($contact['unread'] > 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
