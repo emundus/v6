@@ -127,10 +127,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 		if (!empty($doc) && file_exists(JPATH_BASE.DS.$doc)) {
 			$toAttach[] = JPATH_BASE.DS.$doc;
 		}
-		
-		if (!empty($message)) {
-			$mailMessage = "Message de l'utilisateur : ".$message;
-		}
+
 		if (!empty($motivation)) {
             $mailMotivation = "Motivation de l'utilisateur : ".$motivation;
 		}
@@ -176,7 +173,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'LINKED_OFFER_FNUM' => $linkedOffer->fnum,
 					'LINKED_OFFER_NAME' => $linkedOffer->titre,
 					'LINKED_OFFER_ID' => $linkedOffer->search_engine_page,
-					'OFFER_MESSAGE' => $mailMessage . '<br>' . $mailMotivation
+					'OFFER_MESSAGE' => $message . '<br>' . $mailMotivation
 				];
 
 				$email_to_send = 72;
@@ -193,7 +190,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'OFFER_NAME' => $offerInformation->titre,
 					'CONTACT_ID' => $contact_id,
 					'OFFER_USER_ID' => $fnum['applicant_id'],
-					'OFFER_MESSAGE' => $mailMessage . '<br>' . $mailMotivation
+					'OFFER_MESSAGE' => $message . '<br>' . $mailMotivation
 				];
 
 				$email_to_send = 71;

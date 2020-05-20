@@ -182,17 +182,9 @@ $lastId = 0;
             dataType: 'json',
             url: 'index.php?option=com_emundus&controller=cifre&task=replybyid',
             data: { id : id },
-            beforeSend: () => {
-                document.getElementById('em-buttons-'+id).innerHTML = '<button type="button" class="btn btn-default" disabled> ... </button>';
-            },
             success: result => {
                 if (result.status) {
-                    // When we successfully change the status, we simply dynamically change the button.
-                    document.getElementById('em-buttons-'+id).innerHTML = '<button type="button" class="btn btn-primary" onclick="breakUp(\'breakup\','+id+')"> <?= JText::_('COM_EMUNDUS_CIFRE_CUT_CONTACT'); ?> </button>';
-                } else {
-                    let actionText = document.getElementById('em-action-text-'+id);
-                    actionText.classList.remove('hidden');
-                    actionText.innerHTML = result.msg;
+                    document.getElementsByClassName('accepter')[0].remove();
                 }
             },
             error: jqXHR => {
@@ -208,17 +200,10 @@ $lastId = 0;
             dataType: 'json',
             url: 'index.php?option=com_emundus&controller=cifre&task=breakupbyid&action='+action,
             data: { id : id },
-            beforeSend: () => {
-                document.getElementById('em-buttons-'+id).innerHTML = '<button type="button" class="btn btn-default" disabled> ... </button>';
-            },
             success: result => {
                 if (result.status) {
-                    // Dynamically change the button back to the state of not having a link.
-                    document.getElementById('em-buttons-'+id).innerHTML = '<button type="button" class="btn btn-default" disabled><?= JText::_('COM_EMUNDUS_CIFRE_CANCELLED'); ?></button>';
-                } else {
-                    let actionText = document.getElementById('em-action-text-'.id);
-                    actionText.classList.remove('hidden');
-                    actionText.innerHTML = result.msg;
+                    document.getElementsByClassName('accepter')[0].remove();
+                    document.getElementsByClassName('refuser')[0].remove();
                 }
             },
             error: jqXHR => {
