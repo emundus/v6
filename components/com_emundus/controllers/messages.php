@@ -1171,10 +1171,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 			$mail_from_name
 		];
 
-		if (!empty($attachments) && is_array($attachments))
+		if (!empty($attachments) && is_array($attachments)) {
 			$toAttach = $attachments;
-		else
+		} else {
 			$toAttach[] = $attachments;
+		}
 
 		// In case no post value is supplied
 		if (empty($post)) {
@@ -1193,8 +1194,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 		// Tags are replaced with their corresponding values using the PHP preg_replace function.
 		$subject = preg_replace($keys, $post, $template->subject);
 		$body = $template->message;
-		if ($template != false)
+		if ($template != false) {
 			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+		}
 		$body = preg_replace($keys, $post, $body);
 
 		// Configure email sender
@@ -1207,13 +1209,18 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mailer->Encoding = 'base64';
 		$mailer->setBody($body);
 
-		if (!empty($toAttach))
+		if (!empty($toAttach)) {
 			$mailer->addAttachment($toAttach);
+		}
 
 		// Send and log the email.
 		$send = $mailer->Send();
 		if ($send !== true) {
-			JLog::add($send->getMessage(), JLog::ERROR, 'com_emundus');
+			if ($send === false) {
+				JLog::add('Tried sending email with mailer disabled in site settings.', JLog::ERROR, 'com_emundus');
+			} else {
+				JLog::add($send->getMessage(), JLog::ERROR, 'com_emundus');
+			}
 			return false;
 		} else {
 			return true;
