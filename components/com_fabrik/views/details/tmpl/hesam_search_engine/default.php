@@ -638,7 +638,7 @@ function getProjectThematics($fnum) {
                             '',
                             'success'
                         ).then(() => {
-                            window.location = '<?= JUri::base(); ?>/votre-espace-personnel'
+                            window.location = '<?= JUri::base(); ?>espace-personnel'
                         })
                     } else if (action === 'retry') {
                         jQuery('#em-search-item-action-button').html('' +
