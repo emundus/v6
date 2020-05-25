@@ -227,7 +227,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                     <?php if ($application->profile_id !== '1008') :?>
                                         <div class="w-col w-col-6">
 
-                                            <a href="consultez-les-offres?q=collectivité" class="card-ajouter-these w-inline-block">
+                                            <a href="consultez-les-offres?q=collectivite" class="card-ajouter-these w-inline-block">
                                                 <div class="ajouter-sujet"><?= JText::_('SEARCH_COLLECTIVITY'); ?></div>
                                             </a>
 
