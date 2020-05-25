@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 $other_user = $this->other_user;
 $lastId = 0;
+
+JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
 ?>
 
 <div class="content">
