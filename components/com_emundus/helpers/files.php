@@ -280,10 +280,8 @@ class EmundusHelperFiles
         $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
         $config     = JFactory::getConfig();
 
-        $jdate = JFactory::getDate();
         $timezone = new DateTimeZone( $config->get('offset') );
-        $jdate->setTimezone($timezone);
-        $now = $jdate->toSql();
+		$now = JFactory::getDate()->setTimezone($timezone);
 
         $db = JFactory::getDBO();
         $query = 'SELECT DISTINCT year as schoolyear
@@ -302,10 +300,8 @@ class EmundusHelperFiles
         $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
         $config = JFactory::getConfig();
 
-        $jdate = JFactory::getDate();
         $timezone = new DateTimeZone( $config->get('offset') );
-        $jdate->setTimezone($timezone);
-        $now = $jdate->toSql();
+		$now = JFactory::getDate()->setTimezone($timezone);
 
         $db = JFactory::getDBO();
         $query = 'SELECT id

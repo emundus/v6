@@ -34,7 +34,8 @@ class JFormFieldTimeupdated extends JFormField
 	{
 		// Initialize variables.
 		$html = array();
-        
+        $config     = JFactory::getConfig();
+		$timezone 	= new DateTimeZone( $config->get('offset') );
         
 		$old_time_updated = $this->value;
         $hidden = (boolean) $this->element['hidden'];
@@ -47,7 +48,8 @@ class JFormFieldTimeupdated extends JFormField
                 $html[] = "<div>".$pretty_date."</div>";
             }
         }
-        $time_updated = JFactory::getDate()->toSql();
+		
+		$time_updated = JFactory::getDate()->setTimezone($timezone);
         $html[] = '<input type="hidden" name="'.$this->name.'" value="'.$time_updated.'" />';
         
 		return implode($html);

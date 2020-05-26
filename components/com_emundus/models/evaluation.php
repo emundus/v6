@@ -1394,12 +1394,13 @@ class EmundusModelEvaluation extends JModelList {
 				}
 			}
 		}
+        $query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
+        $group_by .= ', evaluation_id';
 		if (count($this->_elements_default) > 0) {
 			$query .= ', '.implode(',', $this->_elements_default);
 		}
 
-		$query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
-		$group_by .= ', evaluation_id';
+
 
 		$query .= ' FROM #__emundus_campaign_candidature as c
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status
@@ -1821,10 +1822,8 @@ if (JFactory::getUser()->id == 63)
 		} else {
 
 			$config = JFactory::getConfig();
-			$tz 	= $config->get('offset');
-			$jdate 	= JFactory::getDate();
-			$jdate->setTimezone(new DateTimeZone($tz));
-			$now = $jdate->toSql();
+			$timezone = new DateTimeZone( $config->get('offset') );
+			$now = JFactory::getDate()->setTimezone($timezone);
 
 
 			$query = "INSERT INTO #__emundus_evaluations ( ";

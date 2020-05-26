@@ -1908,7 +1908,7 @@ class EmundusModelApplication extends JModelList {
                                         }
 
                                         if ($element->plugin == 'textarea') {
-                                            $forms .= '<tr><td   colspan="2" ><span style="color: #000000;">'.JText::_($element->label).' : '.'</span>'.JText::_($elt).'</td></tr>';
+                                            $forms .= '<tr><td   colspan="2" ><strong><span style="color: #000000;">'.JText::_($element->label).' : '.'</span></strong>'.JText::_($elt).'<br/></td></tr>';
                                         } else {
                                             $forms .= '<tr ><td ><span style="color: #000000;">'.JText::_($element->label).' : '.'</span></td> <td> '.JText::_($elt).'</td></tr>';
 										}

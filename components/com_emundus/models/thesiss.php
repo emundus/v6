@@ -180,10 +180,8 @@ class EmundusModelThesiss extends JModelList
 		$config     = JFactory::getConfig();
         
 		// Get current date and set it to timezone defined in settings
-        $jdate = JFactory::getDate();
         $timezone = new DateTimeZone( $config->get('offset') );
-    	$jdate->setTimezone($timezone);
-		$now = $jdate->toSql();
+		$now = JFactory::getDate()->setTimezone($timezone);
 
 		// Create a new query object.
 		$db    = $this->getDbo();
