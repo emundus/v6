@@ -17,18 +17,18 @@ $uri = JUri::getInstance();
 	<?php if ((!empty($attachments) && (int)($attachments) >= 100 && !empty($forms) && (int)($forms) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) :?>
         <?php if ($print) :?>
             <div class="col-md-12 em-print-button">
-                <a id="print" class="btn btn-info btn-xs" href="index.php?option=com_emundus&task=pdf&fnum=<?php echo $user->fnum; ?>" title="Print" target="_blank" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i> <?php echo JText::_('PRINT_APPLICATION_FILE'); ?></a>
+                <a id="print" class="btn btn-info btn-xs" href="index.php?option=com_emundus&task=pdf&fnum=<?= $user->fnum; ?>" title="Print" target="_blank" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i> <?= JText::_('PRINT_APPLICATION_FILE'); ?></a>
             </div>
         <?php endif; ?>
         <div class="suivant w-inline-block">
-            <a class="entrer-en-contact" href="<?php echo JRoute::_(JURI::base().$confirm_form_url); ?>" title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"><?php echo JText::_('SEND_APPLICATION_FILE'); ?></a>
+            <a class="entrer-en-contact" href="<?= JRoute::_(JURI::base().$confirm_form_url); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><?= JText::_('SEND_APPLICATION_FILE'); ?></a>
         </div>
     <?php elseif (modemundusSendApplicationHelper::getSearchEngineId($user->fnum) && $print)  :?>
         <div class="col-md-12 em-print-button">
-            <a id="print" class="btn btn-info btn-xs" href="<?php echo JRoute::_(JURI::base().'les-offres/consultez-les-offres/details/299/'. modemundusSendApplicationHelper::getSearchEngineId($application->fnum)).'?format=pdf'; ?>" title="Print" target="_blank" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i> <?php echo JText::_('PRINT_APPLICATION_FILE'); ?></a>
+            <a id="print" class="btn btn-info btn-xs" href="<?= JRoute::_(JURI::base().'consultez-les-offres/details/299/'. modemundusSendApplicationHelper::getSearchEngineId($application->fnum)).'?format=pdf'; ?>" title="Print" target="_blank" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i> <?= JText::_('PRINT_APPLICATION_FILE'); ?></a>
         </div>
 	<?php endif; ?>
-    <a class="brouillon w-inline-block" href="votre-espace-personnel">
+    <a class="brouillon w-inline-block" href="espace-personnel">
         <h3 class="enregistrer-brouillon">Enregistrer en brouillon</h3>
     </a>
 </div>
