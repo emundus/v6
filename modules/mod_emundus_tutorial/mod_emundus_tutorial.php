@@ -30,6 +30,6 @@ if (!$user->guest) {
 		}
 
 		$articles = $helper->getArticles($artids);
-		require JModuleHelper::getLayoutPath('mod_emundus_tutorial', 'default');
+		require JModuleHelper::getLayoutPath('mod_emundus_tutorial', $params->get('layout', 'default'));
 	}
 }

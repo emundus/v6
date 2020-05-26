@@ -22,6 +22,7 @@
 			<fieldset name="basic">
 				<field name="artids" type="text" label="MOD_EMUNDUS_TUTORIAL_ARTICLE_IDS" description="MOD_EMUNDUS_TUTORIAL_ARTICLE_IDS_DESC"/>
 				<field name="user_param" type="text" label="MOD_EMUNDUS_TUTORIAL_USER_PARAM" description="MOD_EMUNDUS_TUTORIAL_USER_PARAM_DESC"/>
+				<field name="layout" type="modulelayout" label="JFIELD_ALT_LAYOUT_LABEL" description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
 			</fieldset>
 		</fields>
 	</config>
