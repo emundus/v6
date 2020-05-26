@@ -345,6 +345,9 @@ class EmundusModelCifre extends JModelList {
 	 */
 	function createContactRequest($user_to, $user_from, $fnum_to, $fnum_from = null, $message = null, $motivation  = null, $cv  = null, $doc  = null) {
 
+		JPluginHelper::importPlugin('emundus');
+		$dispatcher = JEventDispatcher::getInstance();
+
 		$query = $this->db->getQuery(true);
 
 		$columns = ['user_to', 'user_from', 'fnum_to','time_date_created', 'state', 'message', 'motivation', 'cv', 'document'];
@@ -361,7 +364,9 @@ class EmundusModelCifre extends JModelList {
 
 		$this->db->setQuery($query);
 		try {
+			$dispatcher->trigger('onBeforeNewCifreLink', [$user_to, $user_from, $fnum_to, $fnum_from]);
 			$this->db->execute();
+			$dispatcher->trigger('onAfterNewCifreLink', [$user_to, $user_from, $fnum_to, $fnum_from]);
 			return true;
 		} catch (Exception $e) {
 			JLog::add('Error adding cifre link in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -407,6 +412,9 @@ class EmundusModelCifre extends JModelList {
 	 */
 	function acceptContactRequest($user1, $user2, $fnum) {
 
+		JPluginHelper::importPlugin('emundus');
+		$dispatcher = JEventDispatcher::getInstance();
+
 		$query = $this->db->getQuery(true);
 
 		$query->update($this->db->quoteName('#__emundus_cifre_links'))
@@ -415,7 +423,9 @@ class EmundusModelCifre extends JModelList {
 
 		$this->db->setQuery($query);
 		try {
+			$dispatcher->trigger('onBeforeAcceptContactRequest', [$user1, $user2, $fnum]);
 			$this->db->execute();
+			$dispatcher->trigger('onAfterAcceptContactRequest', [$user1, $user2, $fnum]);
 			return true;
 		} catch (Exception $e) {
 			JLog::add('Error updating cifre link in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -433,6 +443,9 @@ class EmundusModelCifre extends JModelList {
 	 */
 	function deleteContactRequest($user1, $user2, $fnum) {
 
+		JPluginHelper::importPlugin('emundus');
+		$dispatcher = JEventDispatcher::getInstance();
+
 		$query = $this->db->getQuery(true);
 
 		$query->delete($this->db->quoteName('#__emundus_cifre_links'))
@@ -441,7 +454,9 @@ class EmundusModelCifre extends JModelList {
 		$this->db->setQuery($query);
 
 		try {
+			$dispatcher->trigger('onBeforeDeleteContactRequest', [$user1, $user2, $fnum]);
 			$this->db->execute();
+			$dispatcher->trigger('onAfterDeleteContactRequest', [$user1, $user2, $fnum]);
 			return true;
 		} catch (Exception $e) {
 			JLog::add('Error deleting cifre link in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
