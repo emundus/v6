@@ -162,7 +162,7 @@ class EmundusModelCifre extends JModelList {
 		$this->db->setQuery($query);
 
 		try {
-			$contact = $this->db->loadAssocList('fnum');
+			$contact = $this->db->loadAssocList();
 		} catch (Exception $e) {
 			JLog::add('Error getting cifre links in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			$contact = [];
@@ -181,13 +181,18 @@ class EmundusModelCifre extends JModelList {
 		$this->db->setQuery($query);
 
 		try {
-			$contact = array_merge($contact, $this->db->loadAssocList('fnum'));
+			$contact = array_merge($contact, $this->db->loadAssocList());
 		} catch (Exception $e) {
 			JLog::add('Error getting cifre links in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
-		return $contact;
+		$return = [];
+		foreach ($contact as $ct) {
+			$return[$ct['fnum']][] = $ct;
+		}
+
+		return $return;
 	}
 
 

@@ -223,9 +223,11 @@ class modemundusApplicationsHelper {
 
 		// Here we organize fnums by profile in order to have the split contact cards in HESAM.
 	    $return = [];
-	    foreach ($fnums as $fnum => $data) {
-	    	$data['unread'] = $m_messages->getUnread($data['applicant_id']);
-		    $return[$fnum][$data['profile_id']][] = $data;
+	    foreach ($fnums as $fnum => $offers) {
+	    	foreach ($offers as $data) {
+			    $data['unread'] = $m_messages->getUnread($data['applicant_id']);
+			    $return[$fnum][$data['profile_id']][] = $data;
+		    }
 	    }
 	    return $return;
     }
