@@ -126,7 +126,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                                     <div class="sujet">
                                                                         <?php if ($contact['status'] === 3) :?>
                                                                             <?= JText::_('OFFER_UNPUBLISHED'); ?>
-                                                                        <?php else :?>
+                                                                        <?php elseif (!empty($contact['linked_fnum'])) :?>
                                                                             <a href="consultez-les-offres/details/299/<?= $contact['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
                                                                         <?php endif; ?>
                                                                     </div>
@@ -198,7 +198,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                                     <div class="sujet">
                                                                         <?php if ($contact['status'] === 3) :?>
                                                                             <?= JText::_('OFFER_UNPUBLISHED'); ?>
-                                                                        <?php else :?>
+                                                                        <?php elseif (!empty($contact['linked_fnum'])) :?>
                                                                             <a href="consultez-les-offres/details/299/<?= $contact['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
                                                                         <?php endif; ?>
                                                                     </div>
@@ -270,7 +270,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                                     <div class="sujet">
                                                                         <?php if ($contact['status'] === 3) :?>
                                                                             <?= JText::_('OFFER_UNPUBLISHED'); ?>
-                                                                        <?php else :?>
+                                                                        <?php elseif (!empty($contact['linked_fnum'])) :?>
                                                                             <a href="consultez-les-offres/details/299/<?= $contact['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
                                                                         <?php endif; ?>
                                                                     </div>
