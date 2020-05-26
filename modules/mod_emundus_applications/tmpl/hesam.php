@@ -282,7 +282,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                                         <div class="notif-number <?= ($contact['unread'] > 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
                                                                     </div>
                                                                     <?php if ($contact['direction'] === '1' && $contact['state'] === '1') :?>
-                                                                        <div id="contactButtons-<?= $contact['link_id']; ?>">
+                                                                        <div id="contactButtons-<?= $contact['link_id']; ?>" class="contact-buttons">
                                                                             <div class="accepter" onclick="reply('<?= $contact['link_id']; ?>')"></div>
                                                                             <div class="refuser" onclick="breakUp('<?= $contact['link_id']; ?>')"></div>
                                                                         </div>
