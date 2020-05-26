@@ -9,6 +9,8 @@
 // No direct access.
 defined('_JEXEC') or die;
 
+JFactory::getDocument()->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@9');
+
 if (!empty($articles)) :?>
 
 	<script>
