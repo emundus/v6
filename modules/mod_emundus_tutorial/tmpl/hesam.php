@@ -20,16 +20,15 @@ if (!empty($articles)) :?>
             Swal.mixin({
                 confirmButtonText: '<?= JText::_('MOD_EMUNDUS_TUTORIAL_NEXT'); ?>',
                 customClass: {
-                    confirmButton: 'button-2 w-button',
-                    title: 'heading'
+                    confirmButton: 'button-2 w-button'
                 },
                 buttonsStyling: false
             }).queue([
 
 				<?php foreach ($articles as $key => $article) :?>
 	                {
-	                    title: <?= json_encode($article['title'].'<div class="underline-small"></div>'); ?>,
-	                    html: <?= json_encode($article['introtext']); ?>
+	                    title: <?= json_encode('<h2 class="heading">'.$article['title'].'</h2>'); ?>,
+	                    html: <?= json_encode('<div class="underline-small"></div>'.$article['introtext']); ?>
 	                },
 				<?php endforeach; ?>
 
