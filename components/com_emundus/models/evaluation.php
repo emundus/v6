@@ -1394,12 +1394,13 @@ class EmundusModelEvaluation extends JModelList {
 				}
 			}
 		}
+        $query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
+        $group_by .= ', evaluation_id';
 		if (count($this->_elements_default) > 0) {
 			$query .= ', '.implode(',', $this->_elements_default);
 		}
 
-		$query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
-		$group_by .= ', evaluation_id';
+
 
 		$query .= ' FROM #__emundus_campaign_candidature as c
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status
