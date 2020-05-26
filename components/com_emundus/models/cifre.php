@@ -152,8 +152,9 @@ class EmundusModelCifre extends JModelList {
 
 		// First we need to see if they are in contact and or are working together.
 		// If the state is 1, that means that the OTHER person has contacted the current user.
-		$query->select([$this->db->quoteName('cl.state'), $this->db->quoteName('cl.fnum_from', 'linked_fnum'), $this->db->quoteName('cl.fnum_to','fnum'), '1 AS direction', $this->db->quoteName('c.profile_id'), $this->db->quoteName('r.id', 'search_engine_page'), $this->db->quoteName('cc.applicant_id'), $this->db->quoteName('p.titre'), $this->db->quoteName('cc.status'), $this->db->quoteName('cl.id', 'link_id')])
+		$query->select([$this->db->quoteName('cl.state'), $this->db->quoteName('cl.fnum_from', 'linked_fnum'), $this->db->quoteName('cl.fnum_to','fnum'), '1 AS direction', $this->db->quoteName('eu.profile', 'profile_id'), $this->db->quoteName('r.id', 'search_engine_page'), $this->db->quoteName('cl.user_from', 'applicant_id'), $this->db->quoteName('p.titre'), $this->db->quoteName('cc.status'), $this->db->quoteName('cl.id', 'link_id')])
 			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
+			->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('cl.user_from').' = '.$this->db->quoteName('eu.user_id'))
 			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$this->db->quoteName('cl.fnum_from').' = '.$this->db->quoteName('cc.fnum'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$this->db->quoteName('cc.campaign_id').' = '.$this->db->quoteName('c.id'))
 			->leftJoin($this->db->quoteName('#__emundus_projet', 'p').' ON '.$this->db->quoteName('p.fnum').' = '.$this->db->quoteName('cc.fnum'))
