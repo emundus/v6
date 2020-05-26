@@ -47,6 +47,10 @@ if (!empty($articles)) :?>
         <?php if ($run) :?>
 			 tip<?= $user_param->name; ?>();
 		<?php endif; ?>
+
+        document.getElementsByClassName('show-<?= $user_param->name; ?>').forEach(e => {
+            e.onclick = tip<?= $user_param->name; ?>();
+        })
 	</script>
 
 <?php endif; ?>
