@@ -27,7 +27,7 @@ if (!empty($articles)) :?>
 
 				<?php foreach ($articles as $key => $article) :?>
 	                {
-	                    title: <?= json_encode('<h2 class="heading">'.$article['title'].'</h2>'); ?>,
+	                    title: <?= json_encode('<h2 class="heading no-dash">'.$article['title'].'</h2>'); ?>,
 	                    html: <?= json_encode('<div class="underline-small"></div>'.$article['introtext']); ?>
 	                },
 				<?php endforeach; ?>
