@@ -293,9 +293,9 @@ echo $this->table->intro;
 							$themes = jsonDecode($d['data_thematics___thematic_raw']);
 							if (is_array($themes)) {
 								if (sizeof($themes) > 4) {
-									$themes = implode('</div> - <div class="name">', array_slice($themes, 0, 4)).' ... ';
+									$themes = implode('</div>&nbsp;-&nbsp;<div class="name">', array_slice($themes, 0, 4)).' ... ';
 								} else {
-									$themes = implode(' - ', $themes);
+									$themes = implode('</div>&nbsp;-&nbsp;<div class="name">', $themes);
 								}
 							}
 
@@ -304,17 +304,17 @@ echo $this->table->intro;
                                     $departments = getOtherDepartments($d["jos_emundus_recherche___fnum_raw"]);
                                     if ($departments) {
                                         if (sizeof($departments) > 8) {
-                                            $departments = implode('</div> - <div class="name">', array_slice($departments, 0, 8)).' ... ';
+                                            $departments = implode('</div>&nbsp;-&nbsp;<div class="name">', array_slice($departments, 0, 8)).' ... ';
                                         } else {
-                                            $departments = implode('</div> - <div class="name">', $departments);
+                                            $departments = implode('</div>&nbsp;-&nbsp;<div class="name">', $departments);
                                         }
                                     }
                                 } else {
                                     $departments =  array_unique(array_column(getActeurDepartments($d["jos_emundus_recherche___fnum_raw"]), 'departement_nom'));
                                     if (sizeof($departments) > 8) {
-                                        $departments = implode('</div> - <div class="name">', array_slice($departments, 0, 8)) . ' ... ';
+                                        $departments = implode('</div>&nbsp;-&nbsp;<div class="name">', array_slice($departments, 0, 8)) . ' ... ';
                                     } else {
-                                        $departments = implode('</div> - <div class="name">', $departments);
+                                        $departments = implode('</div>&nbsp;-&nbsp;<div class="name">', $departments);
                                     }
                                 }
                             }
@@ -337,7 +337,7 @@ echo $this->table->intro;
                                         <?php if (!empty($cherches)) :?>
                                             <div class="div-block">
                                                 <i class="fa fa-bullseye"></i>
-                                                <div class="name"><?= implode( '</div>&#32;-&#32;<div class="name">', $cherches); ?></div>
+                                                <div class="name"><?= implode('</div>&nbsp-&nbsp;<div class="name">', $cherches); ?></div>
                                             </div>
                                         <?php endif; ?>
                                         <div class="div-block-copy">
