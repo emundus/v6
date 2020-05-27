@@ -254,7 +254,7 @@ echo $this->table->intro;
                 }
                 ?>
 
-                <div class="profil-container">
+                <div class="hesam-search-filters">
                     <?php if ($this->showFilters && $this->bootShowFilters) {
                         echo $this->layoutFilters();
                     } ?>
