@@ -14,7 +14,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	<div class="queryBuilder">
 		<form action="" method="POST" onsubmit="return false;">
 			<input type="button" id="createButton" class="btn" value="CREATE_MODULE" onclick="buttonCreateModule()"/>
-			<div class="createModule" id="createModule">
+			<div class="createModule" id="createModule" style="display:none;">
 				<input type="text" id="titleModule" placeholder="Titre du graphe" />
 				<label>Type</label>
 				<select id="typeModule">
@@ -24,7 +24,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					<option value="scrollcolumn2d"><?php echo JText::_("COLUMN_SCROLL_LABEL") ?></option>
 					<option value="line"><?php echo JText::_("LINE_LABEL") ?></option>
 					<option value="scrollline2d"><?php echo JText::_("LINE_SCROLL_LABEL") ?></option>
-					<option value="area2d"><?php echo JText::_("LINE_TIME_LABEL") ?></option>
+					<option value="area2d"><?php echo JText::_("AREA_LABEL") ?></option>
 					<option value="scrollarea2d"><?php echo JText::_("AREA_SCROLL_LABEL") ?></option>
 					<option value="bar2d"><?php echo JText::_("BAR_LABEL") ?></option>
 					<option value="bar3d"><?php echo JText::_("BAR_3D_LABEL") ?></option>
@@ -46,9 +46,41 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	</div>
 </center>
 
+<!--<div id="debug"></div>-->
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script>
+	function changeOrder(id, symbole) {
+		var continuer = true;
+		var vraiI = 0;
+		for(var i = 0; i < document.getElementsByClassName('input').length && continuer ; i++)
+		{
+			vraiI = i;
+			if(document.getElementsByClassName('input')[i].id == 'order_'+id)
+				continuer = false;
+		}
+		
+		if(symbole === '+')
+			vraiI = (vraiI+1);
+		else
+			vraiI = (vraiI-1);
+		
+		jQuery.ajax({
+			type : "POST",
+			url : "index.php?option=com_ajax&module=emundus_query_builder&method=changeOrderModule&format=json",
+			async: true,
+			cache: false,
+			data : {
+				id1: document.getElementsByClassName('input')[(vraiI)].id.substring(6),
+				id2: id
+			},
+			success : function(data) {
+				window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+			}
+		});
+	}
+	
 	function buttonCreateModule() {
 		var elt = document.getElementById("createModule");
 		var button = document.getElementById("createButton");
@@ -64,9 +96,10 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	function createModule() {
 		jQuery.ajax({
 			type : "POST",
-			url : "<?php echo basename($_SERVER['REQUEST_URI']); ?>",
+			url : "index.php?option=com_ajax&module=emundus_query_builder&method=createModule&format=json",
+			async: true,
+			cache: false,
 			data : {
-				createModule: true,
 				titleModule: document.getElementById("titleModule").value,
 				typeModule: document.getElementById("typeModule").value,
 				indicateurModule: document.getElementById("indicateurModule").value,
@@ -74,8 +107,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				axeYModule: document.getElementById("axeYModule").value
 			},
 			success : function(data) {
-				console.log(data);
-				// window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+				// document.getElementById('debug').innerHTML = data;
+				window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
 			}
 		});
 	}
@@ -83,7 +116,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	function changePublished(idModule) {
 		jQuery.ajax({
 			type : "POST",
-			url : "<?php echo basename($_SERVER['REQUEST_URI']); ?>",
+			url : "index.php?option=com_ajax&module=emundus_query_builder&method=changePublishedModule&format=json",
+			async: true,
+			cache: false,
 			data : {idChangePublishedModule: idModule},
 			success : function(data) {
 				window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
@@ -112,7 +147,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					scrollcolumn2d: '<?php echo JText::_("COLUMN_SCROLL_LABEL") ?>',
 					line: '<?php echo JText::_("LINE_LABEL") ?>',
 					scrollline2d: '<?php echo JText::_("LINE_SCROLL_LABEL") ?>',
-					area2d: '<?php echo JText::_("LINE_TIME_LABEL") ?>',
+					area2d: '<?php echo JText::_("AREA_LABEL") ?>',
 					scrollarea2d: '<?php echo JText::_("AREA_SCROLL_LABEL") ?>',
 					bar2d: '<?php echo JText::_("BAR_LABEL") ?>',
 					bar3d: '<?php echo JText::_("BAR_3D_LABEL") ?>',
@@ -158,14 +193,17 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					scrollmsstackedcolumn2dlinedy: '<?php echo JText::_("SCROLL_MS_COLUMN_STACKED_LINE_DY_LABEL") ?>',
 					scrollcombi2d: '<?php echo JText::_("COMBI_SCROLL_LABEL") ?>',
 					scrollcombidy2d: '<?php echo JText::_("COMBI_DUAL_SCROLL_LABEL") ?>'
-				}
+				},
+				inputValue: typeModule
 			}
 		]).then((result) => {
 			if (result.value) {
 				const answers = result.value;
 				jQuery.ajax({
 					type : "POST",
-					url : "<?php echo basename($_SERVER['REQUEST_URI']); ?>",
+					url : "index.php?option=com_ajax&module=emundus_query_builder&method=changeModule&format=json",
+					async: true,
+					cache: false,
 					data : {idModifyModule: idModule, titleModule: answers[0], typeModule: answers[1]},
 					success : function(data) {
 						window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
@@ -189,7 +227,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			if (result.value) {
 				jQuery.ajax({
 					type : "POST",
-					url : "<?php echo basename($_SERVER['REQUEST_URI']); ?>",
+					url : "index.php?option=com_ajax&module=emundus_query_builder&method=deleteModule&format=json",
+					async: true,
+					cache: false,
 					data : {idDeleteModule: idModule},
 					success : function(data) {
 						window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
