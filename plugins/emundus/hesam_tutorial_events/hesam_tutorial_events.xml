@@ -10,7 +10,7 @@
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin sets a number of user params when an action is done for the first time.</description>
 	<files>
-		<filename plugin="send_file_archive">send_file_archive.php</filename>
+		<filename plugin="hesam_tutorial_events">hesam_tutorial_events.php</filename>
 	</files>
 	<config>
 		<fields name="params">
