@@ -189,7 +189,14 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                                         <div class="div-block">
                                                             <span class="fa fa-flask"></span>
                                                             <div class="name">
-                                                                <?= $m_cifre->getUserLaboratory($contact['applicant_id'])->name; ?>
+                                                                <?php
+                                                                    $lab = $m_cifre->getUserLaboratory($contact['applicant_id']);
+                                                                    if (empty($lab)) {
+                                                                        echo JFactory::getUser($contact['applicant_id'])->name;
+                                                                    } else {
+                                                                        echo $lab->name;
+                                                                    }
+                                                                ?>
                                                             </div>
                                                         </div>
                                                         <div class="div-block-mail">
