@@ -10,7 +10,7 @@ class modEmundusQueryBuilderHelper {
 		$db = JFactory::getDBO();
 		
         try {
-			$db->setQuery("SELECT id, title, published FROM jos_modules WHERE module = 'mod_emundus_stat' AND (published = 1 OR published = 0) ORDER BY ordering");
+			$db->setQuery("SELECT id, title, published, params FROM jos_modules WHERE module = 'mod_emundus_stat' AND (published = 1 OR published = 0) ORDER BY ordering");
 			return $db->loadAssocList();
         } catch(Exception $e) {
             return 0;

@@ -20,11 +20,13 @@ $showModule = "<div class='showModule'>";
 $i = 0;
 foreach($tabModule as $mod) {
 	$typeMod = $helper->getTypeStatModule($mod['id']);
+	$view = json_decode($mod['params'], true)['view'];
+	
 	$showModule .= "<div class='input' id='order_".$mod['id']."'>";
 	if($i != 0) $showModule .= "<input type='button'  class='btn' value='&#9652;' onclick='changeOrder(".$mod['id'].", \"-\")'/>";
 	if($i != count($tabModule)-1) $showModule .= "<input type='button'  class='btn' value='&#9662;' onclick='changeOrder(".$mod['id'].", \"+\")'/>";
 	$showModule .= "<input type='checkbox' id='".$mod['title']."' value='".$mod['id']."' onchange='changePublished(".$mod['id'].")' ".(($mod['published'] == 1)?"checked":"").">
-	<label>".$mod['title']."</label>
+	<a href='#chart-container-".$view."'><label>".$mod['title']."</label></a>
 	<input type='button' class='btn' value='Editer' onclick='modifyModule(".$mod['id'].", \"".$mod['title']."\", \"".$typeMod."\")'/>
 	<input type='button' class='btn' value='Corbeille' onclick='deleteModule(".$mod['id'].")'/>
 	</div>";
