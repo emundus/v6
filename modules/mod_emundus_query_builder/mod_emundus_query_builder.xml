@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+	<extension type="module" version ="2.5.0" method="upgrade">
+		<name>QueryBuilder</name>
+        <author>Anne-laure Drouard</author>
+        <creationDate>May 2020</creationDate>
+        <authorUrl>www.emundus.fr</authorUrl>
+        <version>6.0</version>
+		<description>MOD_EMUNDUS_QUERY_BUILDER_XML_DESCRIPTION</description>
+		<files>
+			<filename module="mod_emundus_query_builder">helper.php</filename>
+			<filename module="mod_emundus_query_builder">mod_emundus_query_builder.xml</filename>
+			<filename module="mod_emundus_query_builder">mod_emundus_query_builder.php</filename>
+			<filename module="mod_emundus_query_builder">index.html</filename>
+			<folder>tmpl</folder>
+			<folder>style</folder>
+			<folder>language</folder>
+		</files>
+		<config>
+			<fields name="params">
+				<fieldset name="basic" addfieldpath="/modules/mod_emundus_query_builder/tmpl" >
+					<field
+						name="mod_em_list_id10"
+						type="text"
+						label="MOD_EM_LIST_ID10"
+						description="MOD_EM_LIST_ID10_DESC"
+						size="60"
+					/>
+				</fieldset>
+			</fields>
+		</config>
+	</extension>
