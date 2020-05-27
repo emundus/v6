@@ -140,7 +140,7 @@ for($cpt = 0; $cpt < count($Detail); $cpt++)
 		
 	if($typeGraph === "timeseries") {
 		if($i === 1)
-			$aDataTableDetailHTML[$j][$i] = trim($sNodeDetail->textContent)." 12:00:00";
+			$aDataTableDetailHTML[$j][$i] = date('Y-m-d', strtotime(trim($sNodeDetail->textContent)))." 12:00:00";
 		else
 			$aDataTableDetailHTML[$j][$i] = intval(trim($sNodeDetail->textContent));
 		$j = $i === 1 ? $j + 1 : $j;
