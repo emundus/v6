@@ -364,9 +364,9 @@ class EmundusModelCifre extends JModelList {
 
 		$this->db->setQuery($query);
 		try {
-			$dispatcher->trigger('onBeforeNewCifreLink', [$user_to, $user_from, $fnum_to, $fnum_from]);
+			$dispatcher->trigger('onBeforeNewContactRequest', [$user_to, $user_from, $fnum_to, $fnum_from]);
 			$this->db->execute();
-			$dispatcher->trigger('onAfterNewCifreLink', [$user_to, $user_from, $fnum_to, $fnum_from]);
+			$dispatcher->trigger('onAfterNewContactRequest', [$user_to, $user_from, $fnum_to, $fnum_from]);
 			return true;
 		} catch (Exception $e) {
 			JLog::add('Error adding cifre link in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
