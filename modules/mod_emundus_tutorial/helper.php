@@ -77,7 +77,7 @@ class modEmundusTutorialHelper {
 		try {
 			return $db->loadAssocList();
 		} catch (Exception $e) {
-			JLog::add('Error getting articles : '.$e->getMessage(), 'mod_emundus_tutorial', JLog::ERROR);
+			JLog::add('Error getting articles : '.$e->getMessage(), JLog::ERROR, 'mod_emundus_tutorial');
 			return false;
 		}
 	}
@@ -110,7 +110,7 @@ class modEmundusTutorialHelper {
 
 		// Save user data
 		if (!$table->store()) {
-			JLog::add('Error saving params : '.$table->getError(), 'mod_emundus_tutorial', JLog::ERROR);
+			JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'mod_emundus_tutorial');
 		}
 	}
 }

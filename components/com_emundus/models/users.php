@@ -1175,7 +1175,7 @@ class EmundusModelUsers extends JModelList {
             $gid = $db->insertid();
             $str = "";
         } catch(Exception $e) {
-	        JLog::add('Error on adding group: '.$e->getMessage().' at query -> '.$query, 'com_emundus', JLog::ERROR);
+	        JLog::add('Error on adding group: '.$e->getMessage().' at query -> '.$query, JLog::ERROR, 'com_emundus');
 	        return null;
         }
 
@@ -1190,7 +1190,7 @@ class EmundusModelUsers extends JModelList {
 	        $db->query();
 	        $str = "";
         } catch(Exception $e) {
-	        JLog::add('Error on adding group: '.$e->getMessage().' at query -> '.$query, 'com_emundus', JLog::ERROR);
+	        JLog::add('Error on adding group: '.$e->getMessage().' at query -> '.$query, JLog::ERROR, 'com_emundus');
 	        return null;
         }
 
@@ -1208,7 +1208,7 @@ class EmundusModelUsers extends JModelList {
 			        return $db->query();
 		        }
 	        } catch (Exception $e) {
-		        JLog::add('Error on adding group: '.$e->getMessage().' at query -> '.$query, 'com_emundus', JLog::ERROR);
+		        JLog::add('Error on adding group: '.$e->getMessage().' at query -> '.$query, JLog::ERROR, 'com_emundus');
 		        return null;
 	        }
         }
