@@ -52,7 +52,10 @@ if (!empty($articles)) :?>
 			 tip<?= $user_param->name; ?>();
 		<?php endif; ?>
 
-        let elements = document.getElementsByClassName('show-<?= $user_param->name; ?>');
+        if (typeof elements === "undefined") {
+            let elements = null;
+        }
+        elements = document.getElementsByClassName('show-<?= $user_param->name; ?>');
         for (var i = 0; i < elements.length; i++) {
             elements[i].addEventListener('click', tip<?= $user_param->name; ?>, false);
         }
