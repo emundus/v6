@@ -181,14 +181,19 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
 
     function reply(id) {
 
+        let chatBubble = document.getElementsByClassName('accepter')[0].parentElement.parentElement.parentElement
+
         jQuery.ajax({
             type: 'POST',
             dataType: 'json',
             url: 'index.php?option=com_emundus&controller=cifre&task=replybyid',
             data: { id : id },
+            beforeSend: () => {
+                chatBubble.innerText = '...';
+            },
             success: result => {
                 if (result.status) {
-                    document.getElementsByClassName('accepter')[0].remove();
+                    chatBubble.innerHTML = '<p class="chat-message">Demande Acceptée</p>';
                 }
             },
             error: jqXHR => {
@@ -199,15 +204,19 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
 
     function breakUp(action, id) {
 
+        let chatBubble = document.getElementsByClassName('accepter')[0].parentElement.parentElement.parentElement
+
         jQuery.ajax({
             type: 'POST',
             dataType: 'json',
             url: 'index.php?option=com_emundus&controller=cifre&task=breakupbyid&action='+action,
             data: { id : id },
+            beforeSend: () => {
+                chatBubble.innerText = '...';
+            },
             success: result => {
                 if (result.status) {
-                    document.getElementsByClassName('accepter')[0].remove();
-                    document.getElementsByClassName('refuser')[0].remove();
+                    chatBubble.innerHTML = '<p class="chat-message">Demande Refusée</p>';
                 }
             },
             error: jqXHR => {
