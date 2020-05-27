@@ -46,19 +46,6 @@ echo $this->plugintop;
 	<?php echo $form->error; ?>
 </div>
 
-<div class="row-fluid nav">
-	<div class="<?php echo FabrikHelperHTML::getGridSpan(6); ?> pull-right">
-		<?php
-		echo $this->loadTemplate('buttons');
-		?>
-	</div>
-	<div class="<?php echo FabrikHelperHTML::getGridSpan(6); ?>">
-		<?php
-		echo $this->loadTemplate('relateddata');
-		?>
-	</div>
-</div>
-
 <?php
 foreach ($this->groups as $group) :
 	$this->group = $group;
