@@ -81,6 +81,8 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
 
 <script type="text/javascript">
 
+    document.getElementsByTagName('body')[0].classList.add('espace-perso');
+
     let lastId = '<?= $lastId; ?>';
 
     function updateMessages() {
