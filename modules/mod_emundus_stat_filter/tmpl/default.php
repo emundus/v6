@@ -105,24 +105,19 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			type: 'POST',
 			url: 'index.php?option=com_ajax&module=emundus_stat_filter&method=reloadModule&format=json',
 			dataType: 'html',
-			data: {module_type: 'mod_emundus_stat', module_name: 'Nationality Statistic'},
 			success: function(response) {
 				if(fusioncharts != undefined) {
 					for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
 						fusioncharts[cpt].dispose();
 				}
-				// console.log(JSON.parse(response).data);
 				var modulesString = JSON.parse(response).data.split("////");
-				// console.log(document.getElementsByClassName('moduletable').length);
 				var cpt0 = 0;
 				for(var cpt = 1 ; cpt < modulesString.length ; cpt++) {
 					for(var i = 0 ; cpt0 < document.getElementsByClassName('moduletable').length &&
 					document.getElementsByClassName('moduletable')[cpt0].getElementsByClassName(modulesString[cpt]).length <= 0 ; i++) {
-						console.log(document.getElementsByClassName('moduletable')[cpt0]);
 						cpt0++;
 					}
 					cpt++;
-					// console.log(cpt + " : " + document.getElementsByClassName('moduletable').length);
 					document.getElementsByClassName('moduletable')[cpt0].innerHTML = modulesString[cpt];
 					var scripts = document.getElementsByClassName('moduletable')[cpt0].getElementsByTagName('script');
 					for(var i=0; i < scripts.length;i++)
@@ -140,7 +135,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					cpt0++;
 				}
 				
-				// console.log(fusioncharts);
 				if(fusioncharts != undefined) {
 					for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
 						fusioncharts[cpt].render();
