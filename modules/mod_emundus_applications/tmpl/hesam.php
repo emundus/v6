@@ -50,13 +50,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                             </div>
                             <div class="wrapper-edit">
                                 <?php if ($application->status === '1' || $application->status === '2') :?>
-                                    <!-- Share button -->
-                                    <span class="fa fa-share-alt" onclick="share('<?= $application->fnum; ?>')"></span>
-                                    <div id="shareButtons-<?= $application->fnum; ?>" class="hidden">
-                                        <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-url="<?= JUri::base(); ?>consultez-les-offres/details/299/<?= $application->search_engine_page; ?>" data-lang="fr" data-show-count="false">Tweet</a>
-                                        <div class="fb-share-button" data-href="<?= JUri::base(); ?>consultez-les-offres/details/299/<?= $application->search_engine_page; ?>" data-layout="button"></div>
-                                        <script type="IN/Share" data-url="<?= JUri::base(); ?>consultez-les-offres/details/299/<?= $application->search_engine_page; ?>"></script>
-                                    </div>
+                                    <span class="fa fa-share-alt" onclick="share('<?= JUri::base(); ?>consultez-les-offres/details/299/<?= $application->search_engine_page; ?>')"></span>
                                 <?php endif; ?>
 
                                 <!-- Edit button -->
@@ -375,20 +369,6 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
     </div>
 </div>
 
-<div id="fb-root"></div>
-
-<script>(function(d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s); js.id = id;
-        js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-</script>
-<script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: fr_FR</script>
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-
 <script type="text/javascript">
     function deletefile(fnum) {
         if (confirm("<?= JText::_('CONFIRM_DELETE_FILE'); ?>")) {
@@ -470,13 +450,15 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
         });
     }
 
-    function share(fnum) {
+    function share(url) {
         Swal.fire({
             customClass: {
                 title: "heading no-dash"
             },
             title: '<?= JText::_('SHARE_OFFER'); ?>',
-            html: document.getElementById('shareButtons-'+fnum).innerHTML,
+            html: '<a href="https://twitter.com/intent/tweet?url='+url+'" class="twitter-button cta-offre w-inline-block" target="_blank">Twitter</a>' +
+                '<a href="https://www.facebook.com/sharer/sharer.php?u='+url+'" class="fb-button cta-offre w-inline-block" target="_blank">Facebook</a>' +
+                '<a href="https://www.linkedin.com/shareArticle?mini=true&url='+url+'" class="linkedin-button cta-offre w-inline-block" target="_blank">LinkedIn</a>',
             showCloseButton: true,
             showConfirmButton: false
         });
