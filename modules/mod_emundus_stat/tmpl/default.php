@@ -10,7 +10,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-master'.DS.'semantic.min.css');
 // echo "<pre>".$jsonGraph."</pre>";
 ?>
-<div class="<?php echo $module->id; ?>" style="display:none;"></div>
+<div class="<?php echo $module->id; ?> moduleGraphe" style="display:none;"></div>
 <center>
 	<div class="container">
 		<div id="chart-container-<?php echo $view; ?>"></div>
