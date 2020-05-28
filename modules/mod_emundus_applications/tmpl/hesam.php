@@ -78,7 +78,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                     <?php if ($application->profile_id !== '1006') :?>
                                         <div class="w-col w-col-6">
 
-                                            <a href="consultez-les-offres?q=doctorant" class="card-ajouter-these w-inline-block">
+                                            <a href="consultez-les-offres?q=doctorant&fnum=<?= $application->fnum; ?>" class="card-ajouter-these w-inline-block">
                                                 <div class="ajouter-sujet"><?= JText::_('SEARCH_DOCTORANT'); ?></div>
                                             </a>
 
@@ -154,7 +154,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                     <?php if ($application->profile_id !== '1007') :?>
                                         <div class="w-col w-col-6">
 
-                                            <a href="consultez-les-offres?q=laboratoire" class="card-ajouter-these w-inline-block">
+                                            <a href="consultez-les-offres?q=laboratoire&fnum=<?= $application->fnum; ?>" class="card-ajouter-these w-inline-block">
                                                 <div class="ajouter-sujet"><?= JText::_('SEARCH_RESEARCH'); ?></div>
                                             </a>
 
@@ -233,7 +233,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                     <?php if ($application->profile_id !== '1008') :?>
                                         <div class="w-col w-col-6">
 
-                                            <a href="consultez-les-offres?q=collectivite" class="card-ajouter-these w-inline-block">
+                                            <a href="consultez-les-offres?q=collectivite&fnum=<?= $application->fnum; ?>" class="card-ajouter-these w-inline-block">
                                                 <div class="ajouter-sujet"><?= JText::_('SEARCH_COLLECTIVITY'); ?></div>
                                             </a>
 
