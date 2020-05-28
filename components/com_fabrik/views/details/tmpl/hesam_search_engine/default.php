@@ -190,8 +190,15 @@ function getProjectThematics($fnum) {
         die();
     }
 }
-?>
 
+// OpenGraph
+$document = JFactory::getDocument();
+$document->setMetaData('og:url', JUri::getInstance()->toString());
+$document->setMetaData('og:type', 'website');
+$document->setMetaData('og:title', $this->data['jos_emundus_projet___titre_raw'][0]);
+$document->setMetaData('og:description', $this->data['jos_emundus_projet___question_raw'][0]);
+
+?>
 
 <div class="content-2">
     <div class="w-container">

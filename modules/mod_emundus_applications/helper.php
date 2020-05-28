@@ -40,7 +40,7 @@ class modemundusApplicationsHelper {
 
 		// Hesam layout needs to get the title from the information about the project.
 		if ($has_table) {
-			$query .= ', pro.titre ';
+			$query .= ', pro.titre, pro.id AS search_engine_page ';
 		}
 
 		$query .= ' FROM #__emundus_campaign_candidature AS ecc
