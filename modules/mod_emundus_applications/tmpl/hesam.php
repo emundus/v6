@@ -50,7 +50,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                             </div>
                             <div class="wrapper-edit">
                                 <?php if ($application->status === '1' || $application->status === '2') :?>
-                                    <span class="fa fa-share-alt" onclick="share('<?= JUri::base(); ?>consultez-les-offres/details/299/<?= $application->search_engine_page; ?>')"></span>
+                                    <span class="fa fa-share-alt" onclick="share('<?= JUri::base().'consultez-les-offres/details/299/'.$application->search_engine_page; ?>')"></span>
                                 <?php endif; ?>
 
                                 <!-- Edit button -->
@@ -456,9 +456,9 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                 title: "heading no-dash"
             },
             title: '<?= JText::_('SHARE_OFFER'); ?>',
-            html: '<a href="https://twitter.com/intent/tweet?url='+url+'" class="twitter-button cta-offre w-inline-block" target="_blank">Twitter</a>' +
-                '<a href="https://www.facebook.com/sharer/sharer.php?u='+url+'" class="fb-button cta-offre w-inline-block" target="_blank">Facebook</a>' +
-                '<a href="https://www.linkedin.com/shareArticle?mini=true&url='+url+'" class="linkedin-button cta-offre w-inline-block" target="_blank">LinkedIn</a>',
+            html: '<a href="https://twitter.com/intent/tweet?url='+encodeURIComponent(url)+'" class="twitter-button cta-offre w-inline-block" target="_blank">Twitter</a>' +
+                '<a href="https://www.facebook.com/sharer.php?u='+encodeURIComponent(url)+'" class="fb-button cta-offre w-inline-block" target="_blank">Facebook</a>' +
+                '<a href="https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(url)+'" class="linkedin-button cta-offre w-inline-block" target="_blank">LinkedIn</a>',
             showCloseButton: true,
             showConfirmButton: false
         });
