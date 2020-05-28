@@ -75,39 +75,52 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 						order1: premierItem
 					},
 					success : function(data) {
-						window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+						refreshModuleGraphQueryBuilder();
 					}
 				});
 			}
 		});
 	});
 	
-	function changeOrder(id, symbole) {
-		var continuer = true;
-		var vraiI = 0;
-		for(var i = 0; i < document.getElementsByClassName('input').length && continuer ; i++)
-		{
-			vraiI = i;
-			if(document.getElementsByClassName('input')[i].id == 'order_'+id)
-				continuer = false;
-		}
-		
-		if(symbole === '+')
-			vraiI = (vraiI+1);
-		else
-			vraiI = (vraiI-1);
-		
+	function refreshModuleGraphQueryBuilder() {
 		jQuery.ajax({
-			type : "POST",
-			url : "index.php?option=com_ajax&module=emundus_query_builder&method=changeOrderModule&format=json",
-			async: true,
-			cache: false,
-			data : {
-				id1: document.getElementsByClassName('input')[(vraiI)].id.substring(6),
-				id2: id
-			},
-			success : function(data) {
-				window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+			type: 'POST',
+			url: 'index.php?option=com_ajax&module=emundus_stat_filter&method=reloadModule&format=json',
+			dataType: 'html',
+			success: function(response) {
+				if(fusioncharts != undefined) {
+					for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
+						fusioncharts[cpt].dispose();
+				}
+				var modulesString = JSON.parse(response).data.split("////");
+				var cpt0 = 0;
+				for(var cpt = 1 ; cpt < modulesString.length ; cpt++) {
+					for(var i = 0 ; cpt0 < document.getElementsByClassName('moduletable').length &&
+					document.getElementsByClassName('moduletable')[cpt0].getElementsByClassName("moduleGraphe").length <= 0 ; i++) {
+						cpt0++;
+					}
+					cpt++;
+					document.getElementsByClassName('moduletable')[cpt0].innerHTML = modulesString[cpt];
+					var scripts = document.getElementsByClassName('moduletable')[cpt0].getElementsByTagName('script');
+					for(var i=0; i < scripts.length;i++)
+					{
+						if (window.execScript)
+						{
+							window.execScript(scripts[i].text.replace('<!--',''));
+						}
+						else
+						{
+							window.eval(scripts[i].text);
+						}
+					}
+					
+					cpt0++;
+				}
+				
+				if(fusioncharts != undefined) {
+					for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
+						fusioncharts[cpt].render();
+				}
 			}
 		});
 	}
@@ -138,7 +151,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				axeYModule: document.getElementById("axeYModule").value
 			},
 			success : function(data) {
-				// document.getElementById('debug').innerHTML = data;
 				window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
 			}
 		});
