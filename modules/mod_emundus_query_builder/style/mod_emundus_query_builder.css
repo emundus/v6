@@ -26,3 +26,22 @@
 .createModule select {
 	margin-right:1%;
 }
+.editModule, .editModule td {
+	border:none;
+}
+.order {
+	width:5%;
+	text-align:center;
+}
+.radioModule {
+	width:75%;
+}
+.edit {
+	width:20%;
+}
+.move {
+	cursor:grab;
+	background: #de6339;
+	color:#ffffff;
+	border-radius:0.25rem;
+}

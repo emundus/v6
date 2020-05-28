@@ -10,7 +10,7 @@ class modEmundusQueryBuilderHelper {
 		$db = JFactory::getDBO();
 		
         try {
-			$db->setQuery("SELECT id, title, published, params FROM jos_modules WHERE module = 'mod_emundus_stat' AND (published = 1 OR published = 0) ORDER BY ordering");
+			$db->setQuery("SELECT id, title, published, params, ordering FROM jos_modules WHERE module = 'mod_emundus_stat' AND (published = 1 OR published = 0) ORDER BY ordering");
 			return $db->loadAssocList();
         } catch(Exception $e) {
             return 0;
@@ -57,20 +57,18 @@ class modEmundusQueryBuilderHelper {
 	
 	public function changeOrderModuleAjax()
 	{
-		$id1 = JFactory::getApplication()->input->post->get('id1');
-		$id2 = JFactory::getApplication()->input->post->get('id2');
+		$tabId = JFactory::getApplication()->input->post->get('id');
+		$order1 = JFactory::getApplication()->input->post->get('order1');
 		$db = JFactory::getDBO();
 		
         try {
-			$db->setQuery("SELECT ordering FROM jos_modules WHERE `jos_modules`.`id` = ".$id1);
-			$order1 = $db->loadResult();
-			$db->setQuery("SELECT ordering FROM jos_modules WHERE `jos_modules`.`id` = ".$id2);
-			$order2 = $db->loadResult();
-			$db->setQuery("UPDATE `jos_modules` SET `ordering` = '".$order2."' WHERE `jos_modules`.`id` = ".$id1);
-			$db->execute();
-			$db->setQuery("UPDATE `jos_modules` SET `ordering` = '".$order1."' WHERE `jos_modules`.`id` = ".$id2);
-			$db->execute();
-			return true;
+			for($i = $order1 ; $i < count($tabId)+$order1 ; $i++) {
+				$tab[$i-$order1] = "UPDATE `jos_modules` SET `ordering` = '".$i."' WHERE `jos_modules`.`module` = 'mod_emundus_stat' AND `jos_modules`.`id` = ".substr($tabId[$i-$order1], 3);
+				
+				$db->setQuery("UPDATE `jos_modules` SET `ordering` = '".$i."' WHERE `jos_modules`.`module` = 'mod_emundus_stat' AND `jos_modules`.`id` = ".substr($tabId[$i-$order1], 3));
+				$db->execute();
+			}
+			return $tab;
         } catch(Exception $e) {
             return false;
         }

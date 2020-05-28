@@ -50,7 +50,38 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 <script>
+	jQuery(function () {
+		var premierItem = '';
+		jQuery('#sortable').sortable({
+			cursor:"n-resize",
+			containment: '.queryBuilder',
+			handle:'.move',
+			start: function(event, ui) {
+				premierItem = document.getElementsByClassName('input')[0].className.substring(12);
+			},
+			update: function(event, ui) {
+				var s = jQuery(this).sortable('toArray');
+				console.log(premierItem);
+				
+				jQuery.ajax({
+					type : "POST",
+					url : "index.php?option=com_ajax&module=emundus_query_builder&method=changeOrderModule&format=json",
+					async: true,
+					cache: false,
+					data : {
+						id: s,
+						order1: premierItem
+					},
+					success : function(data) {
+						window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+					}
+				});
+			}
+		});
+	});
+	
 	function changeOrder(id, symbole) {
 		var continuer = true;
 		var vraiI = 0;
