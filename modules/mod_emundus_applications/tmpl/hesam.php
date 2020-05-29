@@ -53,10 +53,12 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                     <span class="fa fa-share-alt" onclick="share('<?= JUri::base().'consultez-les-offres/details/299/'.$application->search_engine_page; ?>')"></span>
                                 <?php endif; ?>
 
-                                <!-- Edit button -->
-                                <a id="edit" href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>" title="<?= JText::_('OPEN_APPLICATION'); ?>">
-                                    <span class="fa fa-edit"></span>
-                                </a>
+	                            <?php if ($application->status !== '0') :?>
+                                    <!-- Edit button -->
+                                    <a id="edit" href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>" title="<?= JText::_('OPEN_APPLICATION'); ?>">
+                                        <span class="fa fa-edit"></span>
+                                    </a>
+                                <?php endif; ?>
 
                                 <!-- Trash button -->
                                 <a id="trash" onClick="deletefile('<?= $application->fnum; ?>');" href="#row<?= !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>">
