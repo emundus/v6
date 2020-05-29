@@ -1659,7 +1659,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                     case "comment":
                         $comments = "";
-                        if (array_key_exists($fnum['fnum'],$vOpt)) {
+                        if (!empty($vOpt)) {
                             foreach ($colOpt['comment'] as $comment) {
                                 if ($comment['fnum'] == $fnum['fnum']) {
                                     $comments .= $comment['reason'] . " | " . $comment['comment_body'] . "\rn";

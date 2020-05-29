@@ -27,6 +27,7 @@ function convert( $str ) {
 $app = JFactory::getApplication();
 
 $csv = $formModel->data['jos_emundus_setup_csv_import___csv_file_raw'];
+$create_new_fnum = $formModel->data['jos_emundus_setup_csv_import___create_new_fnum'];
 
 // Check if the file is a file on the server and in the right format.
 if (!is_file(JPATH_ROOT.$csv)) {
@@ -532,27 +533,30 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		$user = JFactory::getUser($user);
 	}
 
-	// If the user has no fnum, get the one made by the user creation code.
-	if (empty($fnum)) {
+	if (!$create_new_fnum) {
+        // If the user has no fnum, get the one made by the user creation code.
+        if (empty($fnum)) {
 
-		$query->clear()
-			->select($db->quoteName('fnum'))
-			->from($db->quoteName('#__emundus_campaign_candidature'))
-			->where($db->quoteName('applicant_id').' = '.$user->id.' AND '.$db->quoteName('campaign_id').' = '.$campaign);
-		$db->setQuery($query);
+            $query->clear()
+                ->select($db->quoteName('fnum'))
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where($db->quoteName('applicant_id').' = '.$user->id.' AND '.$db->quoteName('campaign_id').' = '.$campaign);
+            $db->setQuery($query);
 
-		try {
-			$fnum = $db->loadResult();
-		} catch (Exception $e) {
-			JLog::add('ERROR: Could not get fnum for user : '.$user->id.$query->__toString(), JLog::ERROR, 'com_emundus.csvimport');
-		}
-	}
+            try {
+                $fnum = $db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('ERROR: Could not get fnum for user : '.$user->id.$query->__toString(), JLog::ERROR, 'com_emundus.csvimport');
+            }
+        }
+    }
+
 
 	// If no fnum is found, generate it.
 	if (empty($fnum) && !empty($campaign)) {
-
-		$fnum = date('YmdHis').str_pad($campaign, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
-		$query->clear()
+        $fnum_date = date('YmdHis');
+        $fnum_date = date('YmdHis',strtotime('+'.$row_id.' seconds',strtotime($fnum_date)));
+        $fnum = $fnum_date.str_pad($campaign, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);		$query->clear()
 			->insert($db->quoteName('#__emundus_campaign_candidature'))
 			->columns($db->quoteName(['applicant_id', 'user_id', 'campaign_id', 'fnum', 'status']))
 			->values($user->id.', '.JFactory::getUser()->id.', '.$campaign.', '.$db->quote($fnum).', '.$status);
