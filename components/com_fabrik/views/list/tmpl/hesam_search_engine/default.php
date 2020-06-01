@@ -463,7 +463,8 @@ echo $this->table->intro;
 
         let departmentArray = <?= json_encode($selectedHeadDepartments); ?>;
 
-        //add region select
+
+        // Build region select
         let regionSelect = '<tr><td>Dans quelle(s) région(s)</td><td><select id="data_regions___name_0value" class="chosen chosen-region" multiple="true" style="width:400px;">';
         let pushRegions = [];
         jQuery(allRegions).each(region =>{
@@ -478,30 +479,33 @@ echo $this->table->intro;
         });
         regionSelect += '</select></td><input type="hidden" id="hidden-regions-input" name="regions" value="'+regionArray+'"></tr>';
 
+
+        // Build department select
+        let departmentSelect = '<tr><td>Dans quel(s) département(s)</td><td><select id="data_departements___departement_nomvalue" class="chosen chosen-department" multiple="true" style="width:400px;">';
+        let pushDepartments = [];
+        jQuery(allDepartments).each(department => {
+            allDepartments[department]["selected"] = "";
+            jQuery(departmentArray).each(selected => {
+                if (allDepartments[department].departement_id == jQuery(departmentArray)[selected]) {
+                    allDepartments[department]["selected"] = "selected";
+                    pushDepartments.push(departmentArray);
+                }
+            });
+            departmentSelect += '<option value="'+jQuery(allDepartments)[department].departement_id+'"'+ jQuery(allDepartments)[department].selected +'>'+jQuery(allDepartments)[department].departement_nom+'</option>';
+        });
+        departmentSelect += '</select></td><input type="hidden" id="hidden-department-input" name="departments" value="'+departmentArray+'"></tr>';
+
+
+        // Place filters on page.
+        jQuery(".filtertable tbody .fabrik_row").first().after(departmentSelect);
         jQuery(".filtertable tbody .fabrik_row").first().after(regionSelect);
 
+        jQuery('#data_departements___departement_nomvalue').after('<button type="button" onclick="selectAllDepartments()" class="chosen-toggle-department select">Sélectionnez tous les départements</button>');
+        jQuery(".chosen-department").chosen();
         jQuery('#data_regions___name_0value').after('<button type="button" onclick="selectAllRegions()" class="chosen-toggle-region select">Sélectionnez toutes les régions</button>');
         jQuery(".chosen-region").chosen();
 
-        //add department select
-        let departmentSelect = '<tr><td>Dans quel(s) département(s)</td><td><select id="data_departements___departement_nomvalue" class="chosen chosen-department" multiple="true" style="width:400px;">';
-        let pushDepartments = [];
-        jQuery(allDepartments).each(department =>{
-            allDepartments[department]["selected"] = "";
-                jQuery(departmentArray).each(selected => {
-                    if (allDepartments[department].departement_id == jQuery(departmentArray)[selected]) {
-                        allDepartments[department]["selected"] = "selected";
-                        pushDepartments.push(departmentArray);
-                    }
-                });
-                departmentSelect += '<option value="'+jQuery(allDepartments)[department].departement_id+'"'+ jQuery(allDepartments)[department].selected +'>'+jQuery(allDepartments)[department].departement_nom+'</option>';
-            });
-        departmentSelect += '</select></td><input type="hidden" id="hidden-department-input" name="departments" value="'+departmentArray+'"></tr>';
-        jQuery(".filtertable tbody .fabrik_row").first().after(departmentSelect);
         
-        jQuery('#data_departements___departement_nomvalue').after('<button type="button" onclick="selectAllDepartments()" class="chosen-toggle-department select">Sélectionnez tous les départements</button>');
-        jQuery(".chosen-department").chosen();
-
         // chosen change regions
         jQuery("#data_regions___name_0value").chosen().change(function(event){
             if (event.target == this){
