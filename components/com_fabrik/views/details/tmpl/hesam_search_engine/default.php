@@ -390,9 +390,7 @@ $document->setMetaData('og:description', $this->data['jos_emundus_projet___quest
 
                 <p class="paragraph-infos">
                     <?php foreach ($files as $file) :?>
-                        <strong><?= $file["value"].' : '; ?></strong>
-                        <br>
-                        <a class="linkpj" target="_blank" href="<?= JURI::root().'images'.DS.'emundus'.DS.'files'.DS.$this->data['jos_emundus_campaign_candidature___applicant_id_raw'].DS.$file['filename']; ?>"><?= $file['filename']; ?></a>
+                        <a class="linkpj" target="_blank" href="<?= JURI::root().'images'.DS.'emundus'.DS.'files'.DS.$this->data['jos_emundus_campaign_candidature___applicant_id_raw'].DS.$file['filename']; ?>"><?= $file['value']; ?></a>
                         <br>
                         <br>
                     <?php endforeach; ?>
