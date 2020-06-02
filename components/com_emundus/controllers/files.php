@@ -769,7 +769,7 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
                 $step = $fnum['step'];
-                $fnum = $fnum['fnum'];
+                
                 $row = array('applicant_id' => $fnum['applicant_id'],
                     'user_id' => $this->_user->id,
                     'reason' => JText::_('STATUS'),
@@ -785,6 +785,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $m_email = new EmundusModelEmails;
             $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
             $toAttach = [];
+
             if (count($trigger_emails) > 0) {
 
                 foreach ($trigger_emails as $trigger_email) {
@@ -792,8 +793,11 @@ class EmundusControllerFiles extends JControllerLegacy
                     // Manage with default recipient by programme
                     foreach ($trigger_email as $code => $trigger) {
 
+/* BAD IDEA In that place, we do not known the FNUM for file generation                        
+                        
                         $email_id = array_keys($trigger_emails);
-
+                        $get_candidate_attachments = true;
+                        $get_letters_attachments = true;
                         $template = $m_messages->getEmail($email_id[0], $get_candidate_attachments, $get_letters_attachments);
                         $attachments[]=$template->letter_attachments;
 
@@ -846,10 +850,11 @@ class EmundusControllerFiles extends JControllerLegacy
                                         default:
                                             break;
                                     }
+
                                 }
                             }
                         }
-
+*/
                         if ($trigger['to']['to_applicant'] == 1) {
 
                             // Manage with selected fnum
@@ -976,7 +981,9 @@ class EmundusControllerFiles extends JControllerLegacy
             //***************************************************
 
             $msg .= JText::_('STATE_SUCCESS');
-        } else $msg .= JText::_('STATE_ERROR');
+        } else { 
+            $msg .= JText::_('STATE_ERROR');
+        }
 
         echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
         exit;

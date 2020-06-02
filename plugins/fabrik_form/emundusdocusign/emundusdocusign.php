@@ -233,10 +233,6 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 
         // This bit of code gets some custom pdf code based on the programme.
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.$this->getParam('custom_attachment', 'pdf_'.@$fnum['training'].'.php');
-        
-        if (!file_exists($file)) {
-            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
-        }
 
         if (!file_exists($file)) {
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';

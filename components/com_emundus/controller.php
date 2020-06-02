@@ -22,13 +22,11 @@ class EmundusController extends JControllerLegacy {
     var $_db = null;
 
     function __construct($config = array()){
-        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
-        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+        include_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+
 
         $this->_user = JFactory::getSession()->get('emundusUser');
         $this->_db = JFactory::getDBO();
@@ -127,7 +125,9 @@ class EmundusController extends JControllerLegacy {
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $rowid[0], true);
-        } else die(JText::_('ACCESS_DENIED'));
+        } else { 
+            die(JText::_('ACCESS_DENIED'));
+        }
 
         exit();
     }
@@ -152,7 +152,9 @@ class EmundusController extends JControllerLegacy {
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id) || EmundusHelperAccess::isApplicant($user->id)) {
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $rowid[0], true);
-        } else die(JText::_('ACCESS_DENIED'));
+        } else { 
+            die(JText::_('ACCESS_DENIED'));
+        }
 
         exit();
     }
@@ -162,8 +164,9 @@ class EmundusController extends JControllerLegacy {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
         $current_user = JFactory::getSession()->get('emundusUser');
-        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
             die (JText::_('RESTRICTED_ACCESS'));
+        }
 
         $jinput = JFactory::getApplication()->input;
         $fnums_post     = $jinput->getVar('fnums', null);
@@ -1147,8 +1150,10 @@ class EmundusController extends JControllerLegacy {
 
         $menu=JFactory::getApplication()->getMenu()->getActive();
         $access=!empty($menu)?$menu->access : 0;
-        if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access))
+        if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access)) {
             die(JText::_('ACCESS_DENIED'));
+        }
+
         require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_csv'.DS.'csv_'.$view.'.php');
         $elements = JRequest::getVar('ud', null, 'POST', 'array', 0);
 
@@ -1156,7 +1161,7 @@ class EmundusController extends JControllerLegacy {
     }
 
     function transfert_view($reqids=array()) {
-        //$allowed = array("Super Users", "Administrator", "Editor");
+
         $view = JRequest::getVar('v', null, 'GET');
 
         $profile        = JRequest::getVar('profile', null, 'POST', 'none', 0);
@@ -1174,28 +1179,24 @@ class EmundusController extends JControllerLegacy {
         $complete       = JRequest::getVar('complete', null, 'POST', 'none',0);
         $validate       = JRequest::getVar('validate', null, 'POST', 'none',0);
         $cid            = JRequest::getVar('ud', null, 'POST', 'array', 0);
-        /*
-        foreach($cids_params as $cid_params){
-            $params=explode('|',$cid_params);
-            $cid[]=$params[0];
-        }*/
+
 
         // Starting a session.
         $session = JFactory::getSession();
-        if ($cid)           $session->set( 'uid', $cid );
-        if ($profile)       $session->set( 'profile', $profile );
-        if ($finalgrade)    $session->set( 'finalgrade', $finalgrade );
-        if ($quick_search)  $session->set( 'quick_search', $quick_search );
-        if ($gid)           $session->set( 'groups', $gid );
-        if ($evaluator)     $session->set( 'evaluator', $evaluator );
-        if ($engaged)       $session->set( 'engaged', $engaged );
-        if ($schoolyears)   $session->set( 'schoolyears', $schoolyears );
-        if ($miss_doc)      $session->set( 'missing_doc', $miss_doc );
-        if ($search)        $session->set( 's_elements', $search );
-        if ($search_values) $session->set( 's_elements_values', $search_values );
-        if ($comments)      $session->set( 'comments', $comments );
-        if ($complete)      $session->set( 'complete', $complete );
-        if ($validate)      $session->set( 'validate', $validate );
+        if ($cid)           { $session->set( 'uid', $cid ); }
+        if ($profile)       { $session->set( 'profile', $profile ); }
+        if ($finalgrade)    { $session->set( 'finalgrade', $finalgrade ); }
+        if ($quick_search)  { $session->set( 'quick_search', $quick_search ); }
+        if ($gid)           { $session->set( 'groups', $gid ); }
+        if ($evaluator)     { $session->set( 'evaluator', $evaluator ); }
+        if ($engaged)       { $session->set( 'engaged', $engaged ); }
+        if ($schoolyears)   { $session->set( 'schoolyears', $schoolyears ); }
+        if ($miss_doc)      { $session->set( 'missing_doc', $miss_doc ); }
+        if ($search)        { $session->set( 's_elements', $search ); }
+        if ($search_values) { $session->set( 's_elements_values', $search_values ); }
+        if ($comments)      { $session->set( 'comments', $comments ); }
+        if ($complete)      { $session->set( 'complete', $complete ); }
+        if ($validate)      { $session->set( 'validate', $validate ); }
 
         $this->setRedirect('index.php?option=com_emundus&view=export_select_columns&v='.$view.'&Itemid='.$itemid);
     }
