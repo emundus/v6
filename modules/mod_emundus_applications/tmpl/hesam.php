@@ -311,55 +311,67 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
             </div>
         <?php endif; ?>
 
-        <?php foreach ($chat_requests as $chat_request) :?>
-            <div class="wrapper-big-card" id="card-<?= $chat_request['link_id']; ?>">
-                <div class="card w-clearfix">
-                    <a href="#" class="star link-block-3 w-inline-block" data-ix="star"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5ea32c2fd949eca178361a94_star.svg" alt="" class="image-8"></a>
-                    <div class="headsmallcard"></div>
-                    <div class="wrapper-small-card-content <?= ($chat_request['state'] === '1')?'pending':''; ?>">
-                        <div class="w-row">
-                            <div class="w-col w-col-8">
-                                <div class="div-block-3">
-                                    <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5ebbe1db264db9696201c765_5eaad27c076841830de7d513_5e9f6bfa9fb16576de7aa78d_5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-9">
-                                    <div>
-                                        <div class="small-explantation">Votre contact - <em><?= ($chat_request['state'] === '1')?JText::_('REQUEST_SENT'):JText::_('ACCEPTED'); ?></em></div>
-                                        <div class="text-block-2"><?= $chat_request['titre']; ?></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="column-8 w-col w-col-4"></div>
-                        </div>
-                        <div class="div-block-contact">
-                            <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4873152d535b204da4b_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image">
-                            <div class="name">
-                                <?= JFactory::getUser($chat_request['applicant_id'])->name; ?>
-                            </div>
-                        </div>
-                        <div class="div-block-mail">
-                            <div class="w-row">
-                                <div class="column-9 w-col w-col-9">
-                                    <div class="sujet">
-                                        <a href="consultez-les-offres/details/299/<?= $chat_request['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
-                                    </div>
-                                </div>
-                                <div class="column-2 w-col w-col-3">
-                                    <!-- TODO: Notifications -->
-                                    <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $chat_request['applicant_id']; ?>" class="link w-inline-block">
-                                        <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail">
-                                    </a>
-                                    <div class="notif <?= ($chat_request['unread'] == 0)?'_0notif':''; ?>">
-                                        <div class="notif-number <?= ($chat_request['unread'] == 0)?'_0notif':''; ?>"><?= $chat_request['unread']; ?></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="contactButtons-<?= $chat_request['link_id']; ?>" onclick="breakUp('<?= $chat_request['link_id']; ?>')">
-                            <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5ebbe17210aa833dc56beaea_5e9f03ced3a57f18c49bad26_5e9ef4873152d535b204da4b_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image-delete-smallcard">
-                        </div>
+        <?php if (!empty($chat_requests)) :?>
+            <div class="wrapper-big-car">
+                <div class="headerbig-card header-gray">
+                    <div class="div-block-3">
+                        <span class="fa fa-comments"></span>
+                        <div class="text-block-2">&nbsp;<?= JText::_('YOUR_RELATIONS'); ?></div>
                     </div>
                 </div>
+                <div class="big-card">
+                    <?php foreach ($chat_requests as $chat_request) :?>
+                        <div class="wrapper-big-card" id="card-<?= $chat_request['link_id']; ?>">
+                            <div class="card w-clearfix">
+                                <a href="#" class="star link-block-3 w-inline-block" data-ix="star"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5ea32c2fd949eca178361a94_star.svg" alt="" class="image-8"></a>
+                                <div class="headsmallcard"></div>
+                                <div class="wrapper-small-card-content <?= ($chat_request['state'] === '1')?'pending':''; ?>">
+                                    <div class="w-row">
+                                        <div class="w-col w-col-8">
+                                            <div class="div-block-3">
+                                                <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5ebbe1db264db9696201c765_5eaad27c076841830de7d513_5e9f6bfa9fb16576de7aa78d_5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-9">
+                                                <div>
+                                                    <div class="small-explantation">Votre contact - <em><?= ($chat_request['state'] === '1')?JText::_('REQUEST_SENT'):JText::_('ACCEPTED'); ?></em></div>
+                                                    <div class="text-block-2"><?= $chat_request['titre']; ?></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column-8 w-col w-col-4"></div>
+                                    </div>
+                                    <div class="div-block-contact">
+                                        <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4873152d535b204da4b_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image">
+                                        <div class="name">
+                                            <?= JFactory::getUser($chat_request['applicant_id'])->name; ?>
+                                        </div>
+                                    </div>
+                                    <div class="div-block-mail">
+                                        <div class="w-row">
+                                            <div class="column-9 w-col w-col-9">
+                                                <div class="sujet">
+                                                    <a href="consultez-les-offres/details/299/<?= $chat_request['search_engine_page']; ?>"><?= JText::_('CONSULT_OFFER'); ?></a>
+                                                </div>
+                                            </div>
+                                            <div class="column-2 w-col w-col-3">
+                                                <!-- TODO: Notifications -->
+                                                <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $chat_request['applicant_id']; ?>" class="link w-inline-block">
+                                                    <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail">
+                                                </a>
+                                                <div class="notif <?= ($chat_request['unread'] == 0)?'_0notif':''; ?>">
+                                                    <div class="notif-number <?= ($chat_request['unread'] == 0)?'_0notif':''; ?>"><?= $chat_request['unread']; ?></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="contactButtons-<?= $chat_request['link_id']; ?>" onclick="breakUp('<?= $chat_request['link_id']; ?>')">
+                                        <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5ebbe17210aa833dc56beaea_5e9f03ced3a57f18c49bad26_5e9ef4873152d535b204da4b_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image-delete-smallcard">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
-        <?php endforeach; ?>
+        <?php endif; ?>
 
 
         <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
