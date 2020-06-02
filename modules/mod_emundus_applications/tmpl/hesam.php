@@ -312,7 +312,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
         <?php endif; ?>
 
         <?php if (!empty($chat_requests)) :?>
-            <div class="wrapper-big-car">
+            <div class="wrapper-big-car relations-card">
                 <div class="headerbig-card header-gray">
                     <div class="div-block-3">
                         <span class="fa fa-comments"></span>
