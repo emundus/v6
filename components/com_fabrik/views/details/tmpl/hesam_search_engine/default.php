@@ -722,7 +722,7 @@ $document->setMetaData('og:description', $this->data['jos_emundus_projet___quest
 					'                            <select id="em-join-offer" class="text-field w-select">\n'+
 					'                                <option value=""><?= JText::_('COM_EMUNDUS_CIFRE_NO_JOIN_CIFRE'); ?></option>\n'+
 					'                                <?php foreach ($offers as $offer) : ?>\n'+
-					'                                    <option value="<?= $offer->fnum; ?>"><?= $offer->titre; ?></option>\n'+
+					'                                    <option value="<?= $offer->fnum; ?>"><?= addslashes($offer->titre); ?></option>\n'+
 					'                                <?php endforeach; ?>\n'+
 					'                            </select>\n'+
 					'                        <?php endif; ?>\n'+
