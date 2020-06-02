@@ -9,7 +9,7 @@ class modEmundusStatFilterHelper {
 		if($array["year"] != -1 || $array["campaign"] != -1) {
 			$query .= "WHERE ";
 			if($array["year"] != -1)
-				$query .= "`jos_emundus_setup_campaigns`.`year` = ".$array["year"];
+				$query .= "`jos_emundus_setup_campaigns`.`year` LIKE '".$array["year"]."'";
 			if($array["year"] != -1 && $array["campaign"] != -1)
 				$query .= " AND ";
 			if($array["campaign"] != -1)
@@ -32,7 +32,7 @@ class modEmundusStatFilterHelper {
 		if($array["prog"] != -1 || $array["campaign"] != -1) {
 			$query .= "WHERE ";
 			if($array["prog"] != -1)
-				$query .= "`jos_emundus_setup_campaigns`.`training` = '".$array["prog"]."'";
+				$query .= "`jos_emundus_setup_campaigns`.`training` LIKE '".$array["prog"]."'";
 			if($array["prog"] != -1 && $array["campaign"] != -1)
 				$query .= " AND ";
 			if($array["campaign"] != -1)
@@ -55,11 +55,11 @@ class modEmundusStatFilterHelper {
 		if($array["year"] != -1 || $array["prog"] != -1) {
 			$query .= "WHERE ";
 			if($array["year"] != -1)
-				$query .= "`jos_emundus_setup_campaigns`.`year` = ".$array["year"];
+				$query .= "`jos_emundus_setup_campaigns`.`year` LIKE '".$array["year"]."'";
 			if($array["year"] != -1 && $array["prog"] != -1)
 				$query .= " AND ";
 			if($array["prog"] != -1)
-				$query .= "`jos_emundus_setup_campaigns`.`training` = '".$array["prog"]."'";
+				$query .= "`jos_emundus_setup_campaigns`.`training` LIKE '".$array["prog"]."'";
 		}
 		$db = JFactory::getDbo();
 		
@@ -86,6 +86,7 @@ class modEmundusStatFilterHelper {
 		$tabYear		= $helper->getYear($session->get('filterStat'));
 		$tabCampaign	= $helper->getCampaign($session->get('filterStat'));
 		
+		
 		$output = "<option value=\"-1\"></option>";
 		foreach ($tabProg as $prog) { 
 			$output .= "<option value=\"".$prog['code']."\" ".(($array["prog"]===$prog['code'])?"selected":"").">".$prog['label']."</option>";
@@ -98,8 +99,7 @@ class modEmundusStatFilterHelper {
 		foreach ($tabCampaign as $campaign) {
 			$output .= "<option value=\"".$campaign['id']."\" ".(($array["campaign"]===$campaign['id'])?"selected":"").">".$campaign['label']."</option>";
 		}
-		
-		return $output;
+		return json_encode((object)['status' => true, 'msg' => $output]);
 	}
 	
 	public function reloadModuleAjax()
@@ -118,6 +118,7 @@ class modEmundusStatFilterHelper {
 				$contents = $renderer->render($modules[$cpt], $params);
 				$modulesString .= "////".$modules[$cpt]->id."////".JModuleHelper::renderModule($modules[$cpt]);
 			}
-		return $modulesString;
+		
+		return json_encode((object)['status' => true, 'msg' => $modulesString]);
 	}
 }

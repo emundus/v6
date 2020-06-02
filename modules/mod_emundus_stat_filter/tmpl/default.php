@@ -13,7 +13,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 <center>
 	<div class="filter">
 		<form action="" method="" onsubmit="return false;">
-			<label>Programme</label>
+			<label><?php echo JText::_('PROGRAM'); ?></label>
 			<select name="prog" id="progFilter" onchange="progAction()">
 				<option value="-1"></option>
 				<?php
@@ -21,7 +21,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					echo "<option value=\"".$prog['code']."\">".$prog['label']."</option>";
 				} ?>
 			</select>
-			<label>Année</label>
+			<label><?php echo JText::_('YEARS_CAMPAIGN'); ?></label>
 			<select name="years" id="yearsFilter" onchange="yearAction()">
 				<option value="-1"></option>
 				<?php
@@ -29,7 +29,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					echo "<option value=\"".$year['year']."\">".$year['year']."</option>";
 				} ?>
 			</select>
-			<label>Campagne</label>
+			<label><?php echo JText::_('CAMPAIGN'); ?></label>
 			<select name="campaign" id="campaignFilter" onchange="campaignAction()">
 				<option value="-1"></option>
 				<?php
@@ -53,10 +53,15 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				campaign : -2
 			},
 			success: function(response){
-				document.getElementById("yearsFilter").innerHTML = response["data"].split("////")[1];
-				document.getElementById("campaignFilter").innerHTML = response["data"].split("////")[2];
-				fusioncharts = new Array();
-				refreshModuleGraph();
+				msg = JSON.parse(response.data);
+				if (msg.status) {
+					document.getElementById("yearsFilter").innerHTML = msg.msg.split("////")[1];
+					document.getElementById("campaignFilter").innerHTML = msg.msg.split("////")[2];
+					fusioncharts = new Array();
+					refreshModuleGraph();
+				} else {
+					console.log(msg.msg);
+				}
 			}
 		});
 	}
@@ -73,10 +78,16 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				campaign : -2
 			},
 			success: function(response){
-				document.getElementById("progFilter").innerHTML = response["data"].split("////")[0];
-				document.getElementById("campaignFilter").innerHTML = response["data"].split("////")[2];
-				fusioncharts = new Array();
-				refreshModuleGraph();
+				msg = JSON.parse(response.data);
+				if (msg.status) {
+					document.getElementById("progFilter").innerHTML = msg.msg.split("////")[0];
+					document.getElementById("campaignFilter").innerHTML = msg.msg.split("////")[2];
+					fusioncharts = new Array();
+					refreshModuleGraph();
+				} else {
+					console.log(msg.msg);
+				}
+
 			}
 		});
 	}
@@ -92,10 +103,15 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				campaign : document.getElementById("campaignFilter").value
 			},
 			success: function(response){
-				document.getElementById("progFilter").innerHTML = response["data"].split("////")[0];
-				document.getElementById("yearsFilter").innerHTML = response["data"].split("////")[1];
-				fusioncharts = new Array();
-				refreshModuleGraph();
+				msg = JSON.parse(response.data);
+				if (msg.status) {
+					document.getElementById("progFilter").innerHTML = msg.msg.split("////")[0];
+					document.getElementById("yearsFilter").innerHTML = msg.msg.split("////")[1];
+					fusioncharts = new Array();
+					refreshModuleGraph();
+				} else {
+					console.log(msg.msg);
+				}
 			}
 		});
 	}
@@ -106,38 +122,45 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			url: 'index.php?option=com_ajax&module=emundus_stat_filter&method=reloadModule&format=json',
 			dataType: 'html',
 			success: function(response) {
-				if(fusioncharts != undefined) {
-					for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
-						fusioncharts[cpt].dispose();
-				}
-				var modulesString = JSON.parse(response).data.split("////");
-				var cpt0 = 0;
-				for(var cpt = 1 ; cpt < modulesString.length ; cpt++) {
-					for(var i = 0 ; cpt0 < document.getElementsByClassName('moduletable').length &&
-					document.getElementsByClassName('moduletable')[cpt0].getElementsByClassName(modulesString[cpt]).length <= 0 ; i++) {
+				msg = JSON.parse(JSON.parse(response).data);
+				if (msg.status) {
+					if(fusioncharts != undefined) {
+						for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
+							fusioncharts[cpt].dispose();
+					}
+					fusioncharts = [];
+					var modulesString = msg.msg.split("////");
+					var cpt0 = 0;
+					for(var cpt = 1 ; cpt < modulesString.length ; cpt++) {
+						for(var i = 0 ; cpt0 < document.getElementsByClassName('moduletable').length &&
+						document.getElementsByClassName('moduletable')[cpt0].getElementsByClassName(modulesString[cpt]).length <= 0 ; i++) {
+							cpt0++;
+						}
+						cpt++;
+						document.getElementsByClassName('moduletable')[cpt0].innerHTML = modulesString[cpt];
+						var scripts = document.getElementsByClassName('moduletable')[cpt0].getElementsByTagName('script');
+						for(var i=0; i < scripts.length;i++)
+						{
+							if (window.execScript)
+							{
+								window.execScript(scripts[i].text.replace('<!--',''));
+							}
+							else
+							{
+								window.eval(scripts[i].text);
+							}
+						}
+						
 						cpt0++;
 					}
-					cpt++;
-					document.getElementsByClassName('moduletable')[cpt0].innerHTML = modulesString[cpt];
-					var scripts = document.getElementsByClassName('moduletable')[cpt0].getElementsByTagName('script');
-					for(var i=0; i < scripts.length;i++)
-					{
-						if (window.execScript)
-						{
-							window.execScript(scripts[i].text.replace('<!--',''));
-						}
-						else
-						{
-							window.eval(scripts[i].text);
-						}
-					}
 					
-					cpt0++;
-				}
+					// if(fusioncharts != undefined) {
+						// for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
+							// fusioncharts[cpt].render();
+					// }
 				
-				if(fusioncharts != undefined) {
-					for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
-						fusioncharts[cpt].render();
+				} else {
+					console.log(msg.msg);
 				}
 			}
 		});
