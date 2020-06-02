@@ -45,3 +45,7 @@
 	color:#ffffff;
 	border-radius:0.25rem;
 }
+#errorCreateModule {
+	color:red;
+	font-weight:bold;
+}

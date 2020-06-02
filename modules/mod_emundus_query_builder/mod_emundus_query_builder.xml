@@ -18,13 +18,7 @@
 		<config>
 			<fields name="params">
 				<fieldset name="basic" addfieldpath="/modules/mod_emundus_query_builder/tmpl" >
-					<field
-						name="mod_em_list_id10"
-						type="text"
-						label="MOD_EM_LIST_ID10"
-						description="MOD_EM_LIST_ID10_DESC"
-						size="60"
-					/>
+					
 				</fieldset>
 			</fields>
 		</config>

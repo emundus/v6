@@ -9,15 +9,17 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
 $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS.'css'.DS.'bootstrap.min.css');
 $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-master'.DS.'semantic.min.css');
 ?>
-
 <center>
-	<div class="queryBuilder">
+	<button id="buttonOpen" class="btn" onclick="openCloseGraphManager()"><?php echo JText::_('OPEN_QUERY_BUILDER'); ?></button>
+	<br /><br />
+	<div class="queryBuilder" style="display:none;" >
 		<form action="" method="POST" onsubmit="return false;">
-			<input type="button" id="createButton" class="btn" value="CREATE_MODULE" onclick="buttonCreateModule()"/>
+			<input type="button" id="createButton" class="btn" value="<?php echo JText::_('CREATE_MODULE'); ?>" onclick="buttonCreateModule()"/>
 			<div class="createModule" id="createModule" style="display:none;">
-				<input type="text" id="titleModule" placeholder="Titre du graphe" />
-				<label>Type</label>
+				<input type="text" id="titleModule" placeholder="<?php echo JText::_('TITLE_MODULE'); ?>*" />
+				<label><?php echo JText::_('TYPE_MODULE'); ?>*</label>
 				<select id="typeModule">
+					<option value=""><?php echo JText::_('PLEASE_SELECT'); ?></option>
 					<option value="timeseries"><?php echo JText::_("LINE_TIME_LABEL") ?></option>
 					<option value="column2d"><?php echo JText::_("COLUMN_LABEL") ?></option>
 					<option value="column3d"><?php echo JText::_("COLUMN_3D_LABEL") ?></option>
@@ -37,21 +39,30 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					<option value="pareto3d"><?php echo JText::_("PARETO_3D_LABEL") ?></option>
 				</select>
 				<?php echo $selectIndicateur; ?>
-				<input type="text" id="axeXModule" placeholder="Nom de l'axe X" />
-				<input type="text" id="axeYModule" placeholder="Nom de l'axe Y" />
-				<input type="button" name="validation" class="btn" value="VALIDATION" onclick="createModule()"/>
+				<input type="text" id="axeXModule" placeholder="<?php echo JText::_('AXE_X_MODULE'); ?>*" />
+				<input type="text" id="axeYModule" placeholder="<?php echo JText::_('AXE_Y_MODULE'); ?>*" />
+				<input type="text" id="progModule" placeholder="<?php echo JText::_('PROGRAM_LABEL'); ?>" />
+				<input type="text" id="yearModule" placeholder="<?php echo JText::_('YEAR_LABEL'); ?>" />
+				<input type="text" id="campaignModule" placeholder="<?php echo JText::_('CAMPAIGN_LABEL'); ?>" />
+				<input type="button" name="validation" class="btn" value="<?php echo JText::_('VALIDATION'); ?>" onclick="createModule()"/>
+				<div id="errorCreateModule"></div>
 			</div>
 			<?php echo $showModule; ?>
 		</form>
 	</div>
 </center>
 
-<!--<div id="debug"></div>-->
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.0.272/jspdf.debug.js"></script>
+
 <script>
+	// var tab = [	"chart-container-jos_emundus_stats_nombre_comptes",
+			// "chart-container-jos_emundus_stats_candidature_create"]
+	// getPdf(tab);
+	
 	jQuery(function () {
 		var premierItem = '';
 		jQuery('#sortable').sortable({
@@ -63,7 +74,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			},
 			update: function(event, ui) {
 				var s = jQuery(this).sortable('toArray');
-				console.log(premierItem);
 				
 				jQuery.ajax({
 					type : "POST",
@@ -75,51 +85,73 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 						order1: premierItem
 					},
 					success : function(data) {
-						refreshModuleGraphQueryBuilder();
+						msg = JSON.parse(data.data);
+						if (msg.status) {
+							refreshModuleGraphQueryBuilder();
+						} else {
+							console.log(msg.msg);
+						}
 					}
 				});
 			}
 		});
 	});
 	
+	function openCloseGraphManager() {
+		if(document.getElementsByClassName('queryBuilder')[0].style.display === 'none') {
+			document.getElementById('buttonOpen').innerHTML = "<?php echo JText::_('CLOSE_QUERY_BUILDER'); ?>";
+			document.getElementsByClassName('queryBuilder')[0].style.display = 'block';
+		} else {
+			document.getElementById('buttonOpen').innerHTML = "<?php echo JText::_('OPEN_QUERY_BUILDER'); ?>";
+			document.getElementsByClassName('queryBuilder')[0].style.display = 'none';
+		}
+	}
+	
 	function refreshModuleGraphQueryBuilder() {
 		jQuery.ajax({
 			type: 'POST',
-			url: 'index.php?option=com_ajax&module=emundus_stat_filter&method=reloadModule&format=json',
+			url: 'index.php?option=com_ajax&module=emundus_query_builder&method=reloadModule&format=json',
 			dataType: 'html',
 			success: function(response) {
-				if(fusioncharts != undefined) {
-					for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
-						fusioncharts[cpt].dispose();
-				}
-				var modulesString = JSON.parse(response).data.split("////");
-				var cpt0 = 0;
-				for(var cpt = 1 ; cpt < modulesString.length ; cpt++) {
-					for(var i = 0 ; cpt0 < document.getElementsByClassName('moduletable').length &&
-					document.getElementsByClassName('moduletable')[cpt0].getElementsByClassName("moduleGraphe").length <= 0 ; i++) {
+				msg = JSON.parse(JSON.parse(response).data);
+				if (msg.status) {
+					if(fusioncharts != undefined) {
+						for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
+							fusioncharts[cpt].dispose();
+					}
+					fusioncharts = [];
+					var modulesString = msg.msg.split("////");
+					var cpt0 = 0;
+					for(var cpt = 1 ; cpt < modulesString.length ; cpt++) {
+						for(var i = 0 ; cpt0 < document.getElementsByClassName('moduletable').length &&
+						document.getElementsByClassName('moduletable')[cpt0].getElementsByClassName("moduleGraphe").length <= 0 ; i++) {
+							cpt0++;
+						}
+						cpt++;
+						document.getElementsByClassName('moduletable')[cpt0].innerHTML = modulesString[cpt];
+						var scripts = document.getElementsByClassName('moduletable')[cpt0].getElementsByTagName('script');
+						for(var i=0; i < scripts.length;i++)
+						{
+							if (window.execScript)
+							{
+								window.execScript(scripts[i].text.replace('<!--',''));
+							}
+							else
+							{
+								window.eval(scripts[i].text);
+							}
+						}
+						
 						cpt0++;
 					}
-					cpt++;
-					document.getElementsByClassName('moduletable')[cpt0].innerHTML = modulesString[cpt];
-					var scripts = document.getElementsByClassName('moduletable')[cpt0].getElementsByTagName('script');
-					for(var i=0; i < scripts.length;i++)
-					{
-						if (window.execScript)
-						{
-							window.execScript(scripts[i].text.replace('<!--',''));
-						}
-						else
-						{
-							window.eval(scripts[i].text);
-						}
-					}
 					
-					cpt0++;
-				}
-				
-				if(fusioncharts != undefined) {
-					for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
-						fusioncharts[cpt].render();
+				// console.log(fusioncharts);
+					// if(fusioncharts != undefined) {
+						// for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
+							// fusioncharts[cpt].render();
+					// }
+				} else {
+					console.log(msg.msg);
 				}
 			}
 		});
@@ -130,30 +162,44 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		var button = document.getElementById("createButton");
 		if(elt.style.display === "none") {
 			elt.style.display = "block";
-			button.value = "CANCEL";
+			button.value = "<?php echo JText::_('CANCEL'); ?>";
 		} else {
 			elt.style.display = "none";
-			button.value = "CREATE_MODULE";
+			button.value = "<?php echo JText::_('CREATE_MODULE'); ?>";
 		}
 	}
 	
 	function createModule() {
-		jQuery.ajax({
-			type : "POST",
-			url : "index.php?option=com_ajax&module=emundus_query_builder&method=createModule&format=json",
-			async: true,
-			cache: false,
-			data : {
-				titleModule: document.getElementById("titleModule").value,
-				typeModule: document.getElementById("typeModule").value,
-				indicateurModule: document.getElementById("indicateurModule").value,
-				axeXModule: document.getElementById("axeXModule").value,
-				axeYModule: document.getElementById("axeYModule").value
-			},
-			success : function(data) {
-				window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
-			}
-		});
+		if(document.getElementById("titleModule").value != "" && document.getElementById("typeModule").value != "" && document.getElementById("indicateurModule").value != "" && document.getElementById("axeXModule").value != "" && document.getElementById("axeYModule").value != "")
+		{
+			jQuery.ajax({
+				type : "POST",
+				url : "index.php?option=com_ajax&module=emundus_query_builder&method=createModule&format=json",
+				async: true,
+				cache: false,
+				data : {
+					titleModule: document.getElementById("titleModule").value,
+					typeModule: document.getElementById("typeModule").value,
+					indicateurModule: document.getElementById("indicateurModule").value,
+					axeXModule: document.getElementById("axeXModule").value,
+					axeYModule: document.getElementById("axeYModule").value,
+					progModule: document.getElementById("progModule").value,
+					yearModule: document.getElementById("yearModule").value,
+					campaignModule: document.getElementById("campaignModule").value,
+					idMenu: <?php echo $_GET['Itemid']; ?>
+				},
+				success : function(data) {
+					msg = JSON.parse(data.data);
+					if (msg.status) {
+						window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+					} else {
+						console.log(msg.msg);
+					}
+				}
+			});
+		} else {
+			document.getElementById('errorCreateModule').innerHTML = "<?php echo JText::_('ERROR_CREATE_MODULE'); ?>";
+		}
 	}
 	
 	function changePublished(idModule) {
@@ -164,7 +210,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			cache: false,
 			data : {idChangePublishedModule: idModule},
 			success : function(data) {
-				window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+				msg = JSON.parse(data.data);
+				if (msg.status) {
+					window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+				} else {
+					console.log(msg.msg);
+				}
 			}
 		});
 	}
@@ -172,16 +223,17 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	function modifyModule(idModule, titleModule, typeModule) {
 		Swal.mixin({
 			input: 'text',
-			confirmButtonText: 'Next &rarr;',
+			confirmButtonText: '<?php echo JText::_("NEXT"); ?> &rarr;',
+			cancelButtonText: '<?php echo JText::_("CANCEL"); ?>',
 			showCancelButton: true,
 			progressSteps: ['1', '2']
 		}).queue([
 			{
-				title: 'Title',
+				title: "<?php echo JText::_('TITLE_MODULE'); ?>",
 				inputValue: ''+titleModule
 			},
 			{
-				title: 'Type',
+				title: "<?php echo JText::_('TYPE_MODULE'); ?>",
 				input: 'select',
 				inputOptions: {
 					timeseries: '<?php echo JText::_("LINE_TIME_LABEL") ?>',
@@ -214,7 +266,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					cache: false,
 					data : {idModifyModule: idModule, titleModule: answers[0], typeModule: answers[1]},
 					success : function(data) {
-						window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+						msg = JSON.parse(data.data);
+						if (msg.status) {
+							window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+						} else {
+							console.log(msg.msg);
+						}
 					}
 				});
 			}
@@ -240,7 +297,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					cache: false,
 					data : {idDeleteModule: idModule},
 					success : function(data) {
-						window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+						msg = JSON.parse(data.data);
+						if (msg.status) {
+							window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+						} else {
+							console.log(msg.msg);
+						}
 					}
 				});
 			} else {
@@ -248,4 +310,27 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			}
 		})
 	}
+	
+	// function getPdf(tabContainer) {
+		// console.log(document.getElementById(tabContainer[0]).innerHTML);
+		// var svg = "";
+		// for(var i = 0 ; i < tabContainer.length ; i++)
+			// svg += document.getElementById(tabContainer[i]).innerHTML;
+
+		// if(svg)
+			// svg = svg.replace(/\r?\n|\r/g, '').trim();
+
+		// var canvas = document.createElement('canvas');
+		// var context = canvas.getContext('2d');
+		
+		// context.clearRect(0, 0, canvas.width, canvas.height);
+		// canvg(canvas, svg);
+
+		// var imgData = canvas.toDataURL('image/png');
+		
+		// var doc = new jsPDF('p', 'pt', 'a4');
+		// doc.addImage(imgData, 'PNG', 40, 40, 200, 400);
+		// doc.save('test.pdf');
+		// console.log("ok c'est good");
+	// }
 </script>
