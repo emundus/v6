@@ -124,20 +124,27 @@ class EmundusModelEmails extends JModelList {
                     $recipients = array();
                     $as_where = false;
                     $where = '';
-                    if (count(@$tmpl['to']['profile']) > 0) {
-                        $where = ' eu.profile IN ('.implode(',', $tmpl['to']['profile']).')';
-                        $as_where = true;
+
+                    if (isset($tmpl['to']['profile'])) {
+                        if (count($tmpl['to']['profile']) > 0) {
+                            $where = ' eu.profile IN ('.implode(',', $tmpl['to']['profile']).')';
+                            $as_where = true;
+                        }
                     }
 
-                    if (count(@$tmpl['to']['group']) > 0) {
-                        $where = ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
-                        $as_where = true;
+                    if (isset($tmpl['to']['group'])) {
+                        if (count($tmpl['to']['group']) > 0) {
+                            $where = ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
+                            $as_where = true;
+                        }
                     }
 
-                    if (count(@$tmpl['to']['user']) > 0) {
-                        $where .= $as_where?' OR ':'';
-                        $where .= 'u.block=0 AND u.id IN ('.implode(',', $tmpl['to']['user']).')';
-                        $as_where = true;
+                    if (isset($tmpl['to']['user'])) {
+                        if (count(@$tmpl['to']['user']) > 0) {
+                            $where .= $as_where?' OR ':'';
+                            $where .= 'u.block=0 AND u.id IN ('.implode(',', $tmpl['to']['user']).')';
+                            $as_where = true;
+                        }
                     }
 
                     if ($as_where) {
