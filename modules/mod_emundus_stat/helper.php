@@ -2,7 +2,7 @@
 defined('_JEXEC') or die('Access Deny');
 
 class modEmundusStatHelper {
-	public function getView($view, $number, $group) {
+	public function getView($view, $number, $group, $param) {
 		$session = JFactory::getSession();
 		$array = json_decode($session->get('filterStat'), true);
 		try {
@@ -16,7 +16,7 @@ class modEmundusStatHelper {
 			$db->execute();
 			$exists = (($db->getNumRows() != 0)?true:false);
 			if($exists) {
-				$tabCampaign = (new modEmundusStatHelper)->getCampaign();
+				$tabCampaign = (new modEmundusStatHelper)->getCampaign($param);
 				if($tabCampaign != null) {
 					$query .= "WHERE";
 					for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
@@ -30,7 +30,7 @@ class modEmundusStatHelper {
 				$db->execute();
 				$exists = (($db->getNumRows() != 0)?true:false);
 				if($exists) {
-					$tabCampaign = (new modEmundusStatHelper)->getCampaign();
+					$tabCampaign = (new modEmundusStatHelper)->getCampaign($param);
 					if($tabCampaign != null) {
 						$query .= "WHERE";
 						for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
@@ -45,18 +45,19 @@ class modEmundusStatHelper {
 					$db->execute();
 					$exists = (($db->getNumRows() != 0)?true:false);
 					if($exists) {
-						$tabCampaign = (new modEmundusStatHelper)->getCampaign();
+						$tabCampaign = (new modEmundusStatHelper)->getCampaign($param);
 						if($tabCampaign != null) {
 							$query .= "WHERE";
 							for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
 								$db->setQuery("SELECT `year` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
 								$yearCampaign = $db->loadResult();
 								if($cpt != 0) $query .= " OR";
-								$query .= " _year LIKE '".$yearCampaign."'";
+								if(substr_count($yearCampaign, "-") === 1)
+									$query .= " _year LIKE '".explode("-", $yearCampaign)[0]."' OR _year LIKE '".explode("-", $yearCampaign)[1]."'";
+								else
+									$query .= " _year LIKE '".$yearCampaign."'";
 							}
 							
-						} else {
-							$query .= "WHERE _year LIKE '".$array["year"]."'";
 						}
 					}
 				}
@@ -70,7 +71,7 @@ class modEmundusStatHelper {
         }
 	}
 	
-	public function getViewOrder($view, $number, $group, $order) {
+	public function getViewOrder($view, $number, $group, $order, $param) {
 		$session = JFactory::getSession();
 		$array = json_decode($session->get('filterStat'), true);
         try {
@@ -84,7 +85,7 @@ class modEmundusStatHelper {
 			$db->execute();
 			$exists = (($db->getNumRows() != 0)?true:false);
 			if($exists) {
-				$tabCampaign = (new modEmundusStatHelper)->getCampaign();
+				$tabCampaign = (new modEmundusStatHelper)->getCampaign($param);
 				if($tabCampaign != null) {
 					$query .= "WHERE";
 					for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
@@ -98,7 +99,7 @@ class modEmundusStatHelper {
 				$db->execute();
 				$exists = (($db->getNumRows() != 0)?true:false);
 				if($exists) {
-					$tabCampaign = (new modEmundusStatHelper)->getCampaign();
+					$tabCampaign = (new modEmundusStatHelper)->getCampaign($param);
 					if($tabCampaign != null) {
 						$query .= "WHERE";
 						for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
@@ -109,18 +110,24 @@ class modEmundusStatHelper {
 						}
 					}
 				} else {
-					$tabCampaign = (new modEmundusStatHelper)->getCampaign();
-					if($tabCampaign != null) {
-						$query .= "WHERE";
-						for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
-							$db->setQuery("SELECT `year` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
-							$yearCampaign = $db->loadResult();
-							if($cpt != 0) $query .= " OR";
-							$query .= " _year LIKE '".$yearCampaign."'";
+					$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE '_year'");
+					$db->execute();
+					$exists = (($db->getNumRows() != 0)?true:false);
+					if($exists) {
+						$tabCampaign = (new modEmundusStatHelper)->getCampaign($param);
+						if($tabCampaign != null) {
+							$query .= "WHERE";
+							for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
+								$db->setQuery("SELECT `year` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
+								$yearCampaign = $db->loadResult();
+								if($cpt != 0) $query .= " OR";
+								if(substr_count($yearCampaign, "-") === 1)
+									$query .= " _year LIKE '".explode("-", $yearCampaign)[0]."' OR _year LIKE '".explode("-", $yearCampaign)[1]."'";
+								else
+									$query .= " _year LIKE '".$yearCampaign."'";
+							}
+							
 						}
-						
-					} else {
-						$query .= "WHERE _year LIKE '".$array["year"]."'";
 					}
 				}
 			}
@@ -133,23 +140,38 @@ class modEmundusStatHelper {
         }
 	}
 	
-	public function getCampaign()
+	public function getCampaign($param)
 	{
 		$query = "SELECT id FROM `jos_emundus_setup_campaigns` ";
-		$session = JFactory::getSession();
-		$array = json_decode($session->get('filterStat'), true);
-		if($array["campaign"] != "-1" || $array["year"] != "-1" || $array["prog"] != "-1") {
+		if(($param->get('program')) == true || ($param->get('year')) == true || ($param->get('campaign')) == true) {
 			$query .= "WHERE ";
-			if($array["campaign"] != "-1")
-				$query .= "`jos_emundus_setup_campaigns`.`id` = ".$array["campaign"];
-			if($array["campaign"] != "-1" && $array["year"] != "-1")
+			if(($param->get('campaign')) == true)
+				$query .= "`jos_emundus_setup_campaigns`.`id` = ".$param->get('campaign');
+			if(($param->get('campaign')) == true && ($param->get('year')) == true)
 				$query .= " AND ";
-			if($array["year"] != "-1")
-				$query .= "`jos_emundus_setup_campaigns`.`year` = ".$array["year"];
-			if(($array["campaign"] != "-1" || $array["year"] != "-1") && $array["prog"] != "-1")
+			if(($param->get('year')) == true)
+				$query .= "`jos_emundus_setup_campaigns`.`year` LIKE '".$param->get('year')."'";
+			if((($param->get('campaign')) == true || ($param->get('year')) == true) && ($param->get('program')) == true)
 				$query .= " AND ";
-			if($array["prog"] != "-1")
-				$query .= "`jos_emundus_setup_campaigns`.`training` = '".$array["prog"]."'";
+			if(($param->get('program')) == true)
+				$query .= "`jos_emundus_setup_campaigns`.`training` LIKE '".$param->get('program')."'";
+		} else {
+			$session = JFactory::getSession();
+			$array = json_decode($session->get('filterStat'), true);
+			if($array["campaign"] != "-1" || $array["year"] != "-1" || $array["prog"] != "-1") {
+				$query .= "WHERE ";
+				if($array["campaign"] != "-1")
+					$query .= "`jos_emundus_setup_campaigns`.`id` = ".$array["campaign"];
+				if($array["campaign"] != "-1" && $array["year"] != "-1")
+					$query .= " AND ";
+				if($array["year"] != "-1") {
+					$query .= "`jos_emundus_setup_campaigns`.`year` LIKE '".$array["year"]."'";
+				}
+				if(($array["campaign"] != "-1" || $array["year"] != "-1") && $array["prog"] != "-1")
+					$query .= " AND ";
+				if($array["prog"] != "-1")
+					$query .= "`jos_emundus_setup_campaigns`.`training` LIKE '".$array["prog"]."'";
+			}
 		}
 		$db = JFactory::getDbo();
 		
@@ -161,16 +183,18 @@ class modEmundusStatHelper {
         }
 	}
 	
-	public function getUrlFiltre($view)
+	public function getUrlFiltre($view, $param)
 	{
 		$filtre = "";
 		
+		$session = JFactory::getSession();
+		$array = json_decode($session->get('filterStat'), true);
 		$db = JFactory::getDbo();
 		$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE 'campaign'");
 		$db->execute();
 		$exists = (($db->getNumRows() != 0)?true:false);
 		if($exists) {
-			$tabCampaign = (new modEmundusStatHelper)->getCampaign();
+			$tabCampaign = (new modEmundusStatHelper)->getCampaign($param);
 			if($tabCampaign != null) {
 				for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
 					$db->setQuery("SELECT `label` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
@@ -180,19 +204,25 @@ class modEmundusStatHelper {
 				$filtre .= "&".$view."___campaign[join]=OR";
 			}
 		} else {
-			$tabCampaign = (new modEmundusStatHelper)->getCampaign();
-			if($tabCampaign != null) {
-				$yearBack = "";
-				for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
-					$db->setQuery("SELECT `year` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
-					$yearCampaign = $db->loadResult();
-					if($yearBack != $yearCampaign)
-						$filtre .= "&".$view."____year[value][]=".$yearCampaign;
-					$yearBack = $yearCampaign;
+			$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE '_year'");
+			$db->execute();
+			$exists = (($db->getNumRows() != 0)?true:false);
+			if($exists && ((($param->get('year')) == true) || ($array["year"] != -1))) {
+				if(($param->get('year')) == true) {
+					if(substr_count($param->get('year'), "-") === 1) {
+						$filtre .= "&".$view."____year[value][]=".explode("-", $param->get('year'))[0];
+						$filtre .= "&".$view."____year[value][]=".explode("-", $param->get('year'))[1];
+					} else
+						$filtre .= "&".$view."____year[value][]=".$param->get('year');
+					
+				} elseif($array["year"] != -1) {
+					if(substr_count($array["year"], "-") === 1) {
+						$filtre .= "&".$view."____year[value][]=".explode("-", $array["year"])[0];
+						$filtre .= "&".$view."____year[value][]=".explode("-", $array["year"])[1];
+					} else
+						$filtre .= "&".$view."____year[value][]=".$array["year"];
 				}
 				$filtre .= "&".$view."____year[join]=OR";
-			} else {
-				$filtre .= "&".$view."____year[value][]=".$array["year"];
 			}
 		}
 		

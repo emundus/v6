@@ -16,7 +16,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		<div id="chart-container-<?php echo $view; ?>"></div>
 	</div>
 	<br />
-	<div class="btn"><i class="search icon"></i><a href="index.php?option=com_fabrik&task=list.view&listid=<?php echo $listId; ?>&Itemid=0<?php echo $urlFiltre; ?>">Consulter les données</a></div>
+	<div class="btn"><i class="search icon"></i><a href="index.php?option=com_fabrik&task=list.view&listid=<?php echo $listId; ?>&Itemid=0<?php echo $urlFiltre; ?>" onclick="window.open(this.href); return false;"><?php echo JText::_('VIEW_DATA')?></a></div>
 </center>
 
 <script type="text/javascript" src="./plugins/fabrik_visualization/fusionchart/libs/fusioncharts-suite-xt/js/fusioncharts.js"></script>
@@ -25,22 +25,22 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 <?php if($jsonGraph != 'null') { ?>
 	<?php if($typeGraph === "timeseries") { ?>
 			data<?php echo $view; ?> = JSON.parse('<?php echo $jsonGraph; ?>');
-			schema<?php echo $view; ?> = JSON.parse('[{"name": "<?php echo $yAxeName; ?>","type": "number"}, {"name": "<?php echo $xAxeName; ?>", "type": "date", "format": "%Y-%m-%d %I:%M:%S"}]');
+			schema<?php echo $view; ?> = JSON.parse('[{"name": "<?php echo JText::_($yAxeName); ?>","type": "number"}, {"name": "<?php echo JText::_($xAxeName); ?>", "type": "date", "format": "%Y-%m-%d %I:%M:%S"}]');
 
 
 			dataStore = new FusionCharts.DataStore();
 			dataSource<?php echo $view; ?> = {
 				chart: {
-					yaxisname: "<?php echo $yAxeName; ?>",
+					yaxisname: "<?php echo JText::_($yAxeName); ?>",
 					theme: "fusion"
 				},
 				caption: {
-					text: "<?php echo $titleGraph; ?>"
+					text: "<?php echo JText::_($titleGraph); ?>"
 				},
 				yAxis: [
 					{
 						plot: {
-							value: "<?php echo $yAxeName; ?>",
+							value: "<?php echo JText::_($yAxeName); ?>",
 							type: "column",
 							aggregation: "Sum"
 						}
@@ -51,12 +51,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	<?php } else { ?>
 	dataSource<?php echo $view; ?> = {
 		chart: {
-			caption: "<?php echo $titleGraph; ?>",
+			caption: "<?php echo JText::_($titleGraph); ?>",
 			<?php if(substr_count($typeGraph, "dy") != 0) {
 				echo "pYAxisName:\"".$yAxeName."\",";
 				echo "sYAxisName:\"".$yAxeName1."\",";
 			} else { ?>
-			yaxisname: "<?php echo $yAxeName; ?>",
+			yaxisname: "<?php echo JText::_($yAxeName); ?>",
 			<?php } ?>
 			theme: "fusion"
 		},
@@ -72,7 +72,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 <?php } ?>
 	chartConfig<?php echo $view; ?> = {
 		id: "<?php echo $view; ?>",
-		type: "<?php echo $typeGraph; ?>",
+		type: "<?php echo JText::_($typeGraph); ?>",
 		renderAt: "chart-container-<?php echo $view; ?>",
 		width: "100%",
 		height: "500"

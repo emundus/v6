@@ -60,9 +60,9 @@ if(substr_count($typeGraph, "msstacked") != 0) {
   */
 $html = "<table>";
 if($typeGraph === "timeseries")
-	$item = $helper->getViewOrder($view, $yAxeNameDB, $xAxeNameDB, $xAxeNameDB);
+	$item = $helper->getViewOrder($view, $yAxeNameDB, $xAxeNameDB, $xAxeNameDB, $params);
 else
-	$item = $helper->getView($view, $yAxeNameDB, $xAxeNameDB);
+	$item = $helper->getView($view, $yAxeNameDB, $xAxeNameDB, $params);
 if($item != null)
 	for($cpt = 0 ; $cpt < count($item); $cpt++)
 		if(substr_count($typeGraph, "ms") != 0 || substr_count($typeGraph, "stacked") != 0 || substr_count($typeGraph, "marimekko") != 0 || substr_count($typeGraph, "zoom") != 0 || substr_count($typeGraph, "over") != 0 || substr_count($typeGraph, "scrollcombi") != 0) {
@@ -188,6 +188,6 @@ for($cpt = 0; $cpt < count($Detail); $cpt++)
 $jsonGraph = json_encode($aDataTableDetailHTML);
 /************************/
 
-$urlFiltre = $helper->getUrlFiltre($view);
+$urlFiltre = $helper->getUrlFiltre($view, $params);
 
 require(JModuleHelper::getLayoutPath('mod_emundus_stat','default.php'));

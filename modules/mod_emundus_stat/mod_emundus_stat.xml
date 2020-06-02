@@ -7,6 +7,7 @@
         <version>6.0</version>
 		<description>MOD_EMUNDUS_STAT_XML_DESCRIPTION</description>
 		<files>
+			<filename module="mod_emundus_stat">helper.php</filename>
 			<filename module="mod_emundus_stat">mod_emundus_stat.xml</filename>
 			<filename module="mod_emundus_stat">mod_emundus_stat.php</filename>
 			<filename module="mod_emundus_stat">index.html</filename>
@@ -409,6 +410,27 @@
 						description="Y_NAME_1_DESC" 
 						size="60"
 						showon="type_graph:mscombidy2d,zoomlinedy,stackedcolumn2dlinedy,stackedcolumn3dlinedy,stackedarea2dlinedy,mscombidy2d,mscombidy3d,mscolumn3dlinedy,msstackedcolumn2dlinedy,scrollmsstackedcolumn2dlinedy,scrollcombidy2d"
+					/>
+					<field 
+						name="program" 
+						type="text"
+						label="PROGRAM_LABEL"
+						description="PROGRAM_DESC" 
+						size="60"
+					/>
+					<field 
+						name="year" 
+						type="text"
+						label="YEAR_LABEL"
+						description="YEAR_DESC" 
+						size="60"
+					/>
+					<field 
+						name="campaign" 
+						type="text"
+						label="CAMPAIGN_LABEL"
+						description="CAMPAIGN_DESC" 
+						size="60"
 					/>
 				</fieldset>
 			</fields>
