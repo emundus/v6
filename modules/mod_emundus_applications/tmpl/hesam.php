@@ -315,7 +315,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
             <div class="wrapper-big-car relations-card">
                 <div class="headerbig-card header-gray">
                     <div class="div-block-3">
-                        <span class="fa fa-comments"></span>
+                        <span class="fa fa-comments-o"></span>
                         <div class="text-block-2">&nbsp;<?= JText::_('YOUR_RELATIONS'); ?></div>
                     </div>
                 </div>
