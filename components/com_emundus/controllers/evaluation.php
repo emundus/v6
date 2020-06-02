@@ -339,7 +339,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $fnums = $jinput->getString('fnums', null);
         $title = $jinput->getString('title', '');
         $comment = $jinput->getString('comment', null);
-        $fnums = (array) json_decode(stripslashes($fnums));
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
         $appModel = $this->getModel('Application');
 
 
@@ -363,7 +363,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             exit;
 
         }
-        else
+        elseif($fnums == 'all')
         {
             //all result find by the request
             $m_files = $this->getmodel('Files');
@@ -431,9 +431,10 @@ class EmundusControllerEvaluation extends JControllerLegacy
          $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
          $m_files = $this->getModel('Files');
 
-         if ($fnums == "all")
+         if ($fnums == "all") {
              $fnums = $m_files->getAllFnums();
-
+		 }
+		 
          $validFnums = array();
 
          foreach($fnums as $fnum) {
@@ -463,9 +464,10 @@ class EmundusControllerEvaluation extends JControllerLegacy
          $m_files = $this->getModel('Files');
          $m_application = $this->getModel('application');
  
-         if ($fnums == "all")
+         if ($fnums == "all") {
              $fnums = $m_files->getAllFnums();
- 
+		 }
+		 
          foreach ($fnums as $fnum)
          {
              foreach ($tags as $tag){
@@ -496,7 +498,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $evals      = $jinput->getString('evals', null);
 
         $actions    = (array) json_decode(stripslashes($actions));
-        $fnums      = (array) json_decode(stripslashes($fnums));
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
 
         $m_files = $this->getModel('Files');
 
@@ -524,7 +526,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             else
                 $msg = JText::_('SHARE_ERROR');
 
-        } else {
+        } elseif($fnums == 'all') {
 
             $fnums = $m_files->getAllFnums();
             $validFnums = array();
@@ -578,13 +580,14 @@ class EmundusControllerEvaluation extends JControllerLegacy
 	    $state  = $jinput->getInt('state', null);
 
 	    $email_from_sys = $app->getCfg('mailfrom');
-	    $fnums = (array) json_decode(stripslashes($fnums));
+	    $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
 
 	    $m_files = $this->getModel('Files');
 	    $validFnums = array();
 
-	    if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
+	    if ($fnums == "all") {
 		    $fnums = $m_files->getAllFnums();
+		}
 
 	    foreach ($fnums as $fnum) {
 		    if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
@@ -893,12 +896,13 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getVar('fnums', null);
-        $fnums  = (array) json_decode(stripcslashes($fnums));
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
         $m_files  = $this->getModel('Files');
 
-        if (!is_array($fnums) || count($fnums)==0 || @$fnums===null)
+        if ($fnums == 'all') {
             $fnums = $m_files->getAllFnums();
-
+		}
+		
         $validFnums = array();
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
@@ -917,35 +921,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         echo json_encode((object) $result);
         exit();
     }
-/*
-    public function zip()
-    {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        $current_user = JFactory::getUser();
-        if(!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die( JText::_('RESTRICTED_ACCESS') );
-        $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->getVar('fnums', null);
-        $fnums = (array) json_decode(stripslashes($fnums));
-        $m_files = $this->getModel('Files');
-        if(!is_array($fnums) || count($fnums)==0 || $fnums===null)
-        {
-            $fnums = $m_files->getAllFnums();
-        }
-        $validFnums = array();
-        foreach($fnums as $fnum)
-        {
-            if(EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
-            {
-                $validFnums[] = $fnum;
-            }
-        }
-        unset($fnums);
-        $name = $this->export_zip($validFnums);
-        echo json_encode((object) array('status' => true, 'name' => $name));
-        exit();
-    }
-*/
+
     function pdf(){
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
@@ -1111,14 +1087,16 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function getfnums_csv() {
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getVar('fnums', null);
-        $fnums = (array) json_decode(stripslashes($fnums));
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
         $m_files = $this->getModel('Files');
-        if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
-        {
+        
+		if($fnums == "all"){
             $fnums = $m_files->getAllFnums();
         }
-        $validFnums = array();
-        foreach($fnums as $fnum)
+        
+		$validFnums = array();
+        
+		foreach($fnums as $fnum)
         {
             if(EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
             {

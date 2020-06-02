@@ -409,9 +409,10 @@ class EmundusControllerDecision extends JControllerLegacy
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
         $m_files = $this->getModel('Files');
 
-        if ($fnums == "all")
+        if ($fnums == "all") {
             $fnums = $m_files->getAllFnums();
-
+		}
+		
         $validFnums = array();
 
         foreach($fnums as $fnum) {
@@ -441,9 +442,10 @@ class EmundusControllerDecision extends JControllerLegacy
         $m_files = $this->getModel('Files');
         $m_application = $this->getModel('application');
 
-        if ($fnums == "all")
+        if ($fnums == "all") {
             $fnums = $m_files->getAllFnums();
-
+		}
+		
         foreach ($fnums as $fnum)
         {
             foreach ($tags as $tag){

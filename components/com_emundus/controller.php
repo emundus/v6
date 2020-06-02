@@ -175,18 +175,20 @@ class EmundusController extends JControllerLegacy {
         $eval_post      = $jinput->getVar('assessment', 0);
         $decision_post  = $jinput->getVar('decision', 0);
 
-        $fnums_post = (array) json_decode(stripslashes($fnums_post));
+        $fnums_array = (array) json_decode(stripslashes($fnums_post));
         $m_files = $this->getModel('Files');
 
-        if (!is_array($fnums_post) || count($fnums_post) == 0 || @$fnums_post[0] == "all") {
+        if ($fnums_array[0] == "all" || $fnums_post='all') {
             $fnums = $m_files->getAllFnums();
         } else {
             $fnums = array();
-            foreach ($fnums_post as $key => $value) {
+            foreach ($fnums_array as $key => $value) {
                 $fnums[] = $value->fnum;
             }
         }
+
         $validFnums = array();
+		
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
                 $validFnums[] = $fnum;

@@ -298,7 +298,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
             ]));
             exit;
 
-        } else {
+        } elseif($fnums == 'all') {
             //all result find by the request
             $m_files = $this->getmodel('Files');
 
@@ -452,7 +452,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
             else
                 $msg = JText::_('SHARE_ERROR');
 
-        } else {
+        } elseif($fnums == 'all') {
 
             $fnums = $m_files->getAllFnums();
             $validFnums = array();
@@ -517,7 +517,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
             }
             $res = $m_files->updateState($validFnums, $state);
 
-        } else {
+        } elseif($fnums == 'all') {
 
             $fnums = $m_files->getAllFnums();
             $validFnums = array();
@@ -638,20 +638,28 @@ class EmundusControllerAdmission extends JControllerLegacy {
 
         $current_user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+        if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
             die(JText::_('RESTRICTED_ACCESS') );
+		}
 
         $jinput = JFactory::getApplication()->input;
-        $fnums  = $jinput->getVar('fnums', null);
+        $fnums_post  = $jinput->getVar('fnums', null);
 
-        $fnums  = (array) json_decode(stripcslashes($fnums));
-
+        $fnums_array = (array) json_decode(stripslashes($fnums_post));
+		
         $m_files = $this->getModel('Files');
 
-        if (!is_array($fnums) || count($fnums)==0 || @$fnums===null)
+        if ($fnums_array[0] == "all" || $fnums_post='all') {
             $fnums = $m_files->getAllFnums();
-
-        $validFnums = array();
+        } else {
+            $fnums = array();
+            foreach ($fnums_array as $key => $value) {
+                $fnums[] = $value->fnum;
+            }
+        }
+		
+		$validFnums = array();
+		
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
                 $validFnums[] = $fnum;
@@ -771,13 +779,18 @@ class EmundusControllerAdmission extends JControllerLegacy {
     public function getfnums_csv() {
 
         $jinput = JFactory::getApplication()->input;
-        $fnums  = $jinput->getVar('fnums', null);
-        $fnums  = (array) json_decode(stripslashes($fnums));
+        $fnums_post  = $jinput->getVar('fnums', null);
+        $fnums_array = (array) json_decode(stripslashes($fnums_post));
+        $m_files = $this->getModel('Files');
 
-        $m_files  = $this->getModel('Files');
-
-        if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
+        if ($fnums_array[0] == "all" || $fnums_post='all') {
             $fnums = $m_files->getAllFnums();
+        } else {
+            $fnums = array();
+            foreach ($fnums_array as $key => $value) {
+                $fnums[] = $value->fnum;
+            }
+        }
 
         $validFnums = array();
         foreach ($fnums as $fnum) {
