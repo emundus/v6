@@ -28,8 +28,8 @@ $uri = JUri::getInstance();
             <a id="print" class="btn btn-info btn-xs" href="<?= JRoute::_(JURI::base().'consultez-les-offres/details/299/'. modemundusSendApplicationHelper::getSearchEngineId($application->fnum)).'?format=pdf'; ?>" title="Print" target="_blank" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i> <?= JText::_('PRINT_APPLICATION_FILE'); ?></a>
         </div>
 	<?php endif; ?>
-    <a class="brouillon w-inline-block" onclick="draft()">
-        <h3 class="enregistrer-brouillon">Enregistrer en brouillon</h3>
+    <a class="brouillon w-inline-block" onclick="draft()" href="#">
+        <p class="enregistrer-brouillon">Enregistrer en brouillon</p>
     </a>
 </div>
 
@@ -40,12 +40,12 @@ $uri = JUri::getInstance();
             position: 'center',
             type: 'info',
             title: 'Retour à votre éspace personnel',
-            html: '<p class="paragraph-infos"><strong>Uniquement les formulaires identifies par une case à cocher verte seront sauvegardées.</span></p>' +
-                '<div class="w-col w-col-6"><img src="https://1000docs.emundus.io/images/custom/formulaires-popup.png" width="340" height="220" /></div>',
-            width: 1000,
+            html: '<div class="columns-3 w-row"> <div class="column-6 w-col w-col-6"><p class="paragraph-infos">Uniquement les formulaires identifies par une case à cocher verte seront sauvegardées.</p></div>' +
+                '<div class="w-col w-col-6"><img src="https://1000docs.emundus.io/images/custom/formulaires-popup.png" /></div></div>',
             showCancelButton: true,
             confirmButtonText: 'Continuer',
-            cancelButtonText: 'Annuler'
+            cancelButtonText: 'Annuler',
+            reverseButtons: true
         }).then(function (confirm) {
             if (confirm.value) {
                 window.location = 'espace-personnel';
