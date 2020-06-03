@@ -104,10 +104,11 @@ class EmundusModelCifre extends JModelList {
 	}
 
 
-	/**
+	/** Gets the list of all offers made by a user, can also provide an fnum and avoid that offer.
+	 *
 	 * @param $user_id Int The ID of the user who's offers we are getting.
 	 * @param null $fnum String If any of the offers are linked to this fnum, do not get them.
-	 * @return Mixed An array of objects.
+	 * @return Mixed An array of objects, indexed by fnum in order to avoid duplicates.
 	 */
 	function getOffersByUser($user_id, $fnum = null) {
 		
@@ -132,7 +133,7 @@ class EmundusModelCifre extends JModelList {
 
 		$this->db->setQuery($query);
 		try {
-			return $this->db->loadObjectList();
+			return $this->db->loadObjectList('fnum');
 		} catch (Exception $e) {
 			return false;
 		}
@@ -140,6 +141,7 @@ class EmundusModelCifre extends JModelList {
 
 
 	/** Gets list of offers based on their connections to the fnums.
+	 *
 	 * @param   array  $fnums
 	 *
 	 * @return array|bool|mixed
