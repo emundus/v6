@@ -61,8 +61,8 @@ class modEmundusCifreSuggestionsHelper {
 				$db->setQuery($query);
 				try {
 					$themes = $db->loadColumn();
-					if (sizeof($themes) > 8) {
-						$themes = implode(' - ', array_slice($themes, 0, 8)).' ... ';
+					if (sizeof($themes) > 4) {
+						$themes = implode(' - ', array_slice($themes, 0, 4)).' ... ';
 					} else {
 						$themes = implode(' - ', $themes);
 					}
