@@ -50,7 +50,7 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                             </div>
                             <div class="wrapper-edit">
                                 <?php if ($application->status === '1' || $application->status === '2') :?>
-                                    <span class="fa fa-share-alt" onclick="share('<?= JUri::base().'consultez-les-offres/details/299/'.$application->search_engine_page; ?>')"></span>
+                                    <span class="fa fa-share-alt" onclick="share('<?= $application->titre; ?>', '<?= addslashes(preg_replace("/\r|\n/", "",(strlen($application->question) >= 150)?substr($application->question, 0, 147).'...':$application->question)); ?>')"></span>
                                 <?php endif; ?>
 
 	                            <?php if ($application->status !== '0') :?>
@@ -464,15 +464,27 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
         });
     }
 
-    function share(url) {
+    function share(name, desc) {
+
+        const addressed = '\n Addressée ' +
+            '<?= ($application->profile_id !== '1006')?' aux futurs doctorants':''; ?>' +
+            '<?= ($application->profile_id !== '1006' && $application->profile_id !== '1007')?'et ':''; ?><?= ($application->profile_id !== '1007')?' aux chercheurs(ses)':''; ?>' +
+            '<?= ($application->profile_id !== '1008')?' et aux collectivités':''; ?>' +
+            '.';
+
+        let text = name+' '+desc+' '+addressed;
+        if (text.length > 280) {
+            text =  text.substring(0, 280 - 3) + '...';
+        }
+
         Swal.fire({
             customClass: {
                 title: "heading no-dash"
             },
             title: '<?= JText::_('SHARE_OFFER'); ?>',
-            html: '<a href="https://twitter.com/intent/tweet?url='+encodeURIComponent(url)+'" class="twitter-button cta-offre w-inline-block" target="_blank">Twitter</a>' +
-                '<a href="https://www.facebook.com/sharer.php?u='+encodeURIComponent(url)+'" class="fb-button cta-offre w-inline-block" target="_blank">Facebook</a>' +
-                '<a href="https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(url)+'" class="linkedin-button cta-offre w-inline-block" target="_blank">LinkedIn</a>',
+            html: '<a href="https://twitter.com/intent/tweet?url='+encodeURIComponent('<?= JUri::base(); ?>')+'&text='+text+'" class="twitter-button cta-offre w-inline-block" target="_blank">Twitter</a>' +
+                '<a href="https://www.facebook.com/sharer.php?u='+encodeURIComponent('<?= JUri::base(); ?>')+'" class="fb-button cta-offre w-inline-block" target="_blank">Facebook</a>' +
+                '<a href="https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent('<?= JUri::base(); ?>')+'&summary='+text.replace(/ /g,"+")+'" class="linkedin-button cta-offre w-inline-block" target="_blank">LinkedIn</a>',
             showCloseButton: true,
             showConfirmButton: false
         });
