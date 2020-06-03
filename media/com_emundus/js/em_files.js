@@ -588,7 +588,6 @@ function getUserCheckArray() {
 
     if ($('#em-check-all-all').is(':checked')) {
         var fnums = 'all';
-        console.log(fnums);
     } else {
         var fnums = [];
         
@@ -596,22 +595,21 @@ function getUserCheckArray() {
             var hash = $(location).attr('hash');
             var fnum = hash.replace("#", "");
             var fnum = fnum.replace("|open", "");
-            
-            cid = parseInt(fnum.substr(14, 7));
-            sid = parseInt(fnum.substr(21, 7));
-            fnums.push({fnum: fnum, cid: cid, sid:sid});
                     
             if(fnum == "") {
                  return null;
             } else {
-                
-                $('.em-check:checked').each(function() {
-                    fnum = $(this).attr('id').split('_')[0];
-                    cid = parseInt(fnum.substr(14, 7));
-                    sid = parseInt(fnum.substr(21, 7));
-                    fnums.push({fnum: fnum, cid: cid, sid:sid});
-                });
+                cid = parseInt(fnum.substr(14, 7));
+                sid = parseInt(fnum.substr(21, 7));
+                fnums.push({fnum: fnum, cid: cid, sid:sid});
             }
+        } else {    
+            $('.em-check:checked').each(function() {
+                fnum = $(this).attr('id').split('_')[0];
+                cid = parseInt(fnum.substr(14, 7));
+                sid = parseInt(fnum.substr(21, 7));
+                fnums.push({fnum: fnum, cid: cid, sid:sid});
+            });
         }   
     }
 
@@ -3904,7 +3902,7 @@ $(document).ready(function() {
                 $('#can-val').append('<a class="btn btn-success btn-large" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
                 $('#can-val').show();
 
-                fnums = JSON.stringify(getUserCheckArray());
+                fnums = getUserCheckArray();
 
                 $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
                 $('.modal-footer').hide();
@@ -3950,7 +3948,7 @@ $(document).ready(function() {
                 $('.modal-dialog').addClass('modal-lg');
                 $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
 
-                fnums = JSON.stringify(getUserCheckArray());
+                fnums = getUserCheckArray();
 
                 $.ajax({
                     type:'POST',
@@ -4074,7 +4072,7 @@ $(document).ready(function() {
             case 17:
             case 18:
 
-                fnums = JSON.stringify(getUserCheckArray());
+                fnums = getUserCheckArray();
 
                 $('#can-val').empty();
                 $('.modal-body').append('<div>' +

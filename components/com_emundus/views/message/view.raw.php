@@ -74,14 +74,14 @@ class EmundusViewMessage extends JViewLegacy {
 
 	        // Default = sending an email to an FNUM.
 		    default:
-			    $fnums_post = $jinput->getString('fnums', null);
-			    $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
+			    $fnums = $jinput->getString('fnums', null);
+			    $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
 
 			    $m_files = new EmundusModelFiles();
 			    $m_application = new EmundusModelApplication();
 
 			    // If we are selecting all fnums: we get them using the files model
-			    if ($fnums_array == 'all') {
+			    if ($fnums == "all") {
 				    $fnums = $m_files->getAllFnums();
 				    $formatted_fnums = [];
 				    foreach ($fnums as $fnum) {
