@@ -45,7 +45,7 @@ class EmundusViewMessage extends JViewLegacy {
 	    $jinput = JFactory::getApplication()->input;
 		
 		$fnums_post = $jinput->getString('fnums', null);
-		$fnums_array = (array) json_decode($fnums_post);
+		$fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
 
 	    $document = JFactory::getDocument();
 		$document->addStyleSheet("media/com_emundus/css/emundus.css");
@@ -55,7 +55,7 @@ class EmundusViewMessage extends JViewLegacy {
 
 
 		// If we are selecting all fnums: we get them using the files model
-		if ($fnums_array[0] == "all" || $fnums_post='all') {
+		if ($fnums_array == 'all') {
 			$fnums = $m_files->getAllFnums();
 			$fnums_infos = $m_files->getFnumsInfos($fnums, 'object');
 			$fnums = $fnums_infos;

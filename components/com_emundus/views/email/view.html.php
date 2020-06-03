@@ -56,9 +56,9 @@ class EmundusViewEmail extends JViewLegacy
 		
 		$jinput = JFactory::getApplication()->input;
 	    $fnums_post = $jinput->getString('fnums', null);
-		$fnums_array = (array) json_decode(stripslashes($fnums_post));
+		$fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
 
-	    if ($fnums_array[0] == "all" || $fnums_post='all') {
+	    if ($fnums_array == 'all') {
 			$m_files = new EmundusModelFiles;
 		    $fnums = $m_files->getAllFnums();
 		    $fnums_infos = $m_files->getFnumsInfos($fnums, 'object');

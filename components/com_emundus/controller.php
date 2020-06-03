@@ -175,10 +175,10 @@ class EmundusController extends JControllerLegacy {
         $eval_post      = $jinput->getVar('assessment', 0);
         $decision_post  = $jinput->getVar('decision', 0);
 
-        $fnums_array = (array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
         $m_files = $this->getModel('Files');
 
-        if ($fnums_array[0] == "all" || $fnums_post='all') {
+        if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
         } else {
             $fnums = array();

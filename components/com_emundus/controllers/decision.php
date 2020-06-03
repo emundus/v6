@@ -887,9 +887,10 @@ class EmundusControllerDecision extends JControllerLegacy
     public function getfnums_csv() {
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getVar('fnums', null);
-        $fnums = (array) json_decode(stripslashes($fnums));
+		$fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+		
         $model = $this->getModel('Files');
-        if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
+        if($fnums == "all")
         {
             $fnums = $model->getAllFnums();
         }

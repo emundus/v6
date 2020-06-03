@@ -549,9 +549,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
 
 		$fnums_post = $jinput->getString('fnums', null);
-        $fnums_array = (array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
 
-        if ($fnums_array[0] == "all" || $fnums_post='all') {
+        if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
 		} else {
             $fnums = array();
@@ -1003,9 +1003,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
 
         $fnums_post = $jinput->getString('fnums', null);
-        $fnums_array = (array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
 
-        if ($fnums_array[0] == "all" || $fnums_post='all') {
+        if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
 		} else {
             $fnums = array();
@@ -1159,9 +1159,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files  = $this->getModel('Files');
 
         $fnums_post = $jinput->getVar('fnums', null);
-        $fnums_array = (array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
 
-        if ($fnums_array[0] == "all" || $fnums_post='all') {
+        if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
 		} else {
             $fnums = array();
@@ -1216,9 +1216,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files  = $this->getModel('Files');
 
         $fnums_post = $jinput->getVar('fnums', null);
-        $fnums_array = (array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
 
-        if ($fnums_array[0] == "all" || $fnums_post='all') {
+        if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
 		} else {
             $fnums = array();
@@ -1342,9 +1342,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
 
         $fnums_post = $jinput->getVar('fnums', null);
-        $fnums_array = (array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
 
-        if ($fnums_array[0] == "all" || $fnums_post='all') {
+        if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
 		} else {
             $fnums = array();
@@ -1379,9 +1379,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
 
         $fnums_post = $jinput->getVar('fnums', null);
-        $fnums_array = (array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
 
-        if ($fnums_array[0] == "all" || $fnums_post='all') {
+        if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
 		} else {
             $fnums = array();
@@ -3390,9 +3390,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = new EmundusModelFiles;
 		
 		$fnums_post = $jinput->getVar('checkInput', null);
-        $fnums_array = (array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
 
-        if ($fnums_array[0] == "all" || $fnums_post='all') {
+        if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
 		} else {
             $fnums = array();
@@ -3432,9 +3432,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $code        = $jinput->getString('code', null);
 
         $fnums_post = $jinput->getVar('checkInput', null);
-        $fnums_array = (array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
 
-        if ($fnums_array[0] == "all" || $fnums_post='all') {
+        if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
 		} else {
             $fnums = array();
