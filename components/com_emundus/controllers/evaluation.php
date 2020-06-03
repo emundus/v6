@@ -339,7 +339,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $fnums = $jinput->getString('fnums', null);
         $title = $jinput->getString('title', '');
         $comment = $jinput->getString('comment', null);
-        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         $appModel = $this->getModel('Application');
 
 
@@ -428,7 +428,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
          $jinput = JFactory::getApplication()->input;
          $fnums = $jinput->getString('fnums', null);
          $tag = $jinput->getInt('tag', null);
-         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
          $m_files = $this->getModel('Files');
 
          if ($fnums == "all") {
@@ -459,7 +459,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
          $tags    = $jinput->getVar('tag', null);
  
          //var_dump($fnums);
-         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
  
          $m_files = $this->getModel('Files');
          $m_application = $this->getModel('application');
@@ -498,7 +498,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $evals      = $jinput->getString('evals', null);
 
         $actions    = (array) json_decode(stripslashes($actions));
-        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
         $m_files = $this->getModel('Files');
 
@@ -580,7 +580,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 	    $state  = $jinput->getInt('state', null);
 
 	    $email_from_sys = $app->getCfg('mailfrom');
-	    $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+	    $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
 	    $m_files = $this->getModel('Files');
 	    $validFnums = array();
@@ -896,7 +896,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getVar('fnums', null);
-        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         $m_files  = $this->getModel('Files');
 
         if ($fnums == 'all') {
@@ -1087,7 +1087,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function getfnums_csv() {
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getVar('fnums', null);
-        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         $m_files = $this->getModel('Files');
         
 		if($fnums == "all"){

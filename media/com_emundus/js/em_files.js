@@ -587,7 +587,7 @@ function getUserCheck() {
 function getUserCheckArray() {   
 
     if ($('#em-check-all-all').is(':checked')) {
-        var fnums = 'all';
+        return 'all';
     } else {
         var fnums = [];
         
@@ -613,7 +613,7 @@ function getUserCheckArray() {
         }   
     }
 
-    return fnums;
+    return JSON.stringify(fnums);;
 }
 
 maxcsv = 65000;
@@ -1637,7 +1637,7 @@ $(document).ready(function() {
         var cid = parseInt(fnum.substr(14, 7));
         var sid = parseInt(fnum.substr(21, 7));
 
-        fnums = JSON.stringify(getUserCheckArray());
+        fnums = getUserCheckArray();
         fnums = encodeURIComponent(fnums);
 
         var view = $('#view').val();
@@ -3911,7 +3911,7 @@ $(document).ready(function() {
                     type: 'POST',
                     url: 'index.php?option=com_emundus&view=message&format=raw',
                     data: {
-                        fnums: JSON.stringify(fnums)
+                        fnums: fnums
                     },
                     success: function(result) {
                         $('.modal-body').empty();
@@ -3954,7 +3954,7 @@ $(document).ready(function() {
                     type:'POST',
                     url:'index.php?option=com_emundus&view=files&format=raw&layout=access',
                     data: {
-                        fnums: JSON.stringify(fnums)
+                        fnums: fnums
                     },
                     dataType:'html',
                     success: function(result) {
@@ -4086,7 +4086,7 @@ $(document).ready(function() {
                     url: url,
                     dataType: 'html',
                     data: {
-                        fnums: JSON.stringify(fnums)
+                        fnums: fnums
                     },
                     success: function(result) {
                         $('.modal-body').empty();

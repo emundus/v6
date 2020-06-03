@@ -45,7 +45,7 @@ class EmundusViewMessage extends JViewLegacy {
 	    $jinput = JFactory::getApplication()->input;
 		
 		$fnums_post = $jinput->getString('fnums', null);
-		$fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
+		$fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
 	    $document = JFactory::getDocument();
 		$document->addStyleSheet("media/com_emundus/css/emundus.css");

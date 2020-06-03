@@ -529,7 +529,7 @@ class EmundusModelEmails extends JModelList {
 
         if (count($fnums) == 0) {
             $fnums = $jinput->get('fnums', null, 'RAW');
-            $fnumsArray = (array) json_decode(stripslashes($fnums));
+            $fnumsArray = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         } else {
             $fnumsArray = $fnums;
         }

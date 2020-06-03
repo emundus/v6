@@ -428,7 +428,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $title  = $jinput->getString('title', '');
         $comment = $jinput->getString('comment', null);
 
-        $fnums = (array) json_decode(stripslashes($fnums));
+        $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         $fnumErrorList = [];
         $m_application = $this->getModel('Application');
 
@@ -475,7 +475,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnums  = $jinput->getString('fnums', null);
         $tag    = $jinput->get('tag', null);
-        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         $m_files = $this->getModel('Files');
 
         if ($fnums == "all") {
@@ -503,7 +503,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums  = $jinput->getString('fnums', null);
         $tags    = $jinput->getVar('tag', null);
 
-        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
         $m_files = $this->getModel('Files');
         $m_application = $this->getModel('application');
@@ -549,7 +549,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
 
 		$fnums_post = $jinput->getString('fnums', null);
-        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
         if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
@@ -739,12 +739,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $email_from_sys = $app->getCfg('mailfrom'); 
 
         if($fnums == "all") {
-            //$fnums = array(0 => "all");
             $fnums = $m_files->getAllFnums();
         }
         
         if (!is_array($fnums)) {
-            $fnums = (array) json_decode(stripslashes($fnums));
+            $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         }
 
         if (count($fnums) == 0 || !is_array($fnums)) {
@@ -1003,7 +1002,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
 
         $fnums_post = $jinput->getString('fnums', null);
-        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
         if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
@@ -1159,7 +1158,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files  = $this->getModel('Files');
 
         $fnums_post = $jinput->getVar('fnums', null);
-        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
         if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
@@ -1216,7 +1215,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files  = $this->getModel('Files');
 
         $fnums_post = $jinput->getVar('fnums', null);
-        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
         if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
@@ -1342,7 +1341,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
 
         $fnums_post = $jinput->getVar('fnums', null);
-        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
         if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
@@ -1379,7 +1378,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
 
         $fnums_post = $jinput->getVar('fnums', null);
-        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
         if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
@@ -3390,7 +3389,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = new EmundusModelFiles;
 		
 		$fnums_post = $jinput->getVar('checkInput', null);
-        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
         if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
@@ -3432,7 +3431,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $code        = $jinput->getString('code', null);
 
         $fnums_post = $jinput->getVar('checkInput', null);
-        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post));
+        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
         if ($fnums_array == 'all') {
             $fnums = $m_files->getAllFnums();
@@ -3799,7 +3798,7 @@ class EmundusControllerFiles extends JControllerLegacy
 	        exit;
         }
 
-        $fnums = (array) json_decode(stripslashes($fnums));
+        $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
         JPluginHelper::importPlugin('emundus');
         $dispatcher = JEventDispatcher::getInstance();

@@ -83,7 +83,7 @@ class EmundusHelperMessages {
 		$message	= JRequest::getVar( 'mail_body','','POST','STRING',JREQUEST_ALLOWHTML);
 
 		$fnums = $mainframe->input->get('fnums', null, 'RAW');
-        $fnums = (array) json_decode(stripslashes($fnums));
+        $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
 		if ($captcha !== 1) {
 			JError::raiseWarning( 500, JText::_( 'ERROR_NOT_A_VALID_POST' ) );
