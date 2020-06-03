@@ -3,6 +3,12 @@ defined('_JEXEC') or die('Access Deny');
 require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
 require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
 require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
+// require_once('thecodingmachine'.DS.'gotenberg-php-client');
+
+use TheCodingMachine\Gotenberg\Client;
+use TheCodingMachine\Gotenberg\DocumentFactory;
+use TheCodingMachine\Gotenberg\HTMLRequest;
 
 class modEmundusQueryBuilderHelper {
 	public function getModuleStat()
@@ -165,7 +171,7 @@ class modEmundusQueryBuilderHelper {
 					$db->execute();
 					$elementName = $paramElt['join_val_column'];
 				} else {
-					$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`applicant_id`) AS `nb`, `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`
+					$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`applicant_id`) AS `nb`, `".$dbTableName."`.`".$elementName."`, `esc`.`label` AS `campaign`
 					from `emundus_bdd`.`jos_emundus_campaign_candidature` `ecc`
 					left join `emundus_bdd`.`jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
 					left join `emundus_bdd`.`".$dbTableName."` on(`ecc`.`applicant_id` = `".$dbTableName."`.`user`)
@@ -322,5 +328,35 @@ class modEmundusQueryBuilderHelper {
 			}
 		
 		return json_encode((object)['status' => true, 'msg' => $modulesString]);
+	}
+	
+	public function convertPdfAjax()
+	{
+		$fichier = JPATH_BASE;
+		$res = new stdClass();
+
+		$jinput = JFactory::getApplication()->input;
+		$src = $jinput->get('src', '','RAW');
+		// var_dump($src).die();
+		
+		// $doc = new DOMDocument();
+		// $doc->loadHTML($src);
+		// $imgList = $doc->getElementsBytagName('img');
+		// for($i = 0 ; $i < count($imgList) ; $i++) {
+			// file_put_contents($fichier.DS."tmp".DS.'image'.$i.".svg", $imgList->item($i)->getAttribute('src'));
+		// }
+		
+		$index = DocumentFactory::makeFromString("index.html", '<html><body>'.$src.'</body></html>');
+		
+		
+		
+		$client = new Client('http://training.emundus.io:3000', new \Http\Adapter\Guzzle6\Client());
+		$request = new HTMLRequest($index);
+		$dest = 'result.pdf';
+		$client->store($request, $dest);
+
+		$res->status = true;
+		$res->msg = '<a href="'.$dest.'" target="_blank">Recuperer</a>';
+		return json_encode($res);
 	}
 }

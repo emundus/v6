@@ -9,6 +9,8 @@ $document->addScript('media'.DS.'com_emundus'.DS.'lib'.DS.'moment.min.js');
 $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS.'css'.DS.'bootstrap.min.css');
 $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-master'.DS.'semantic.min.css');
 ?>
+
+
 <center>
 	<button id="buttonOpen" class="btn" onclick="openCloseGraphManager()"><?php echo JText::_('OPEN_QUERY_BUILDER'); ?></button>
 	<br /><br />
@@ -51,19 +53,53 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		</form>
 	</div>
 </center>
+<button onclick="getPdf()">Exporter</button>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert"></script>
+<div id="debug"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.0.272/jspdf.debug.js"></script>
 
 <script>
-	// var tab = [	"chart-container-jos_emundus_stats_nombre_comptes",
-			// "chart-container-jos_emundus_stats_candidature_create"]
-	// getPdf(tab);
-	
+	function getPdf(tabContainer) {
+		var s = document.createElement('div');
+		var image = "";
+		if(fusioncharts != undefined) {
+			for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++) {
+				image = document.createElement('img');
+				svg = fusioncharts[cpt].getSVGString();
+				blob = new Blob([svg], {type: 'image/svg+xml'});
+				url = URL.createObjectURL(blob);
+				
+				image.src= url;
+				s.appendChild(image);
+			}
+		}
+		
+		console.log(s.outerHTML);
+		
+		jQuery.ajax({
+			type : "POST",
+			url : "index.php?option=com_ajax&module=emundus_query_builder&method=convertPdf&format=json",
+			async: true,
+			cache: false,
+			data : {
+				src: s.outerHTML
+			},
+			success : function(data) {
+				console.log(data);
+				data = JSON.parse(data.data);
+				if (data.status) {
+					// window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+					document.getElementById("debug").innerHTML = data.msg;
+				} else {
+					console.log(data.msg);
+				}
+			}
+		});
+	}
 	jQuery(function () {
+		
 		var premierItem = '';
 		jQuery('#sortable').sortable({
 			cursor:"n-resize",
@@ -144,12 +180,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 						
 						cpt0++;
 					}
-					
-				// console.log(fusioncharts);
-					// if(fusioncharts != undefined) {
-						// for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
-							// fusioncharts[cpt].render();
-					// }
 				} else {
 					console.log(msg.msg);
 				}
@@ -189,11 +219,15 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					idMenu: <?php echo $_GET['Itemid']; ?>
 				},
 				success : function(data) {
-					msg = JSON.parse(data.data);
-					if (msg.status) {
-						window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+					if(data.success) {
+						msg = JSON.parse(data.data);
+						if (msg.status) {
+							window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+						} else {
+							console.log(msg.msg);
+						}
 					} else {
-						console.log(msg.msg);
+						document.getElementById('errorCreateModule').innerHTML = "<?php echo JText::_('ERROR_CREATE_MODULE_2'); ?>";
 					}
 				}
 			});
@@ -311,26 +345,5 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		})
 	}
 	
-	// function getPdf(tabContainer) {
-		// console.log(document.getElementById(tabContainer[0]).innerHTML);
-		// var svg = "";
-		// for(var i = 0 ; i < tabContainer.length ; i++)
-			// svg += document.getElementById(tabContainer[i]).innerHTML;
-
-		// if(svg)
-			// svg = svg.replace(/\r?\n|\r/g, '').trim();
-
-		// var canvas = document.createElement('canvas');
-		// var context = canvas.getContext('2d');
-		
-		// context.clearRect(0, 0, canvas.width, canvas.height);
-		// canvg(canvas, svg);
-
-		// var imgData = canvas.toDataURL('image/png');
-		
-		// var doc = new jsPDF('p', 'pt', 'a4');
-		// doc.addImage(imgData, 'PNG', 40, 40, 200, 400);
-		// doc.save('test.pdf');
-		// console.log("ok c'est good");
-	// }
+	
 </script>
