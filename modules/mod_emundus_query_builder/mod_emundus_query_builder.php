@@ -12,6 +12,7 @@ $document->addStyleSheet("modules/mod_emundus_query_builder/style/mod_emundus_qu
 $helper = new modEmundusQueryBuilderHelper;
 
 $tabModule = $helper->getModuleStat();
+$tabExportModule = $helper->getExportModuleStat();
 
 $showModule = "<div class='showModule' id='sortable'>";
 $i = 0;
@@ -29,6 +30,18 @@ foreach($tabModule as $mod) {
 	$i++;
 }
 $showModule .= "</div>";
+
+
+$exportModule = "<div class='showModule'>";
+$i = 0;
+foreach($tabExportModule as $mod) {
+	$typeMod = $helper->getTypeStatModule($mod['id']);
+	$view = json_decode($mod['params'], true)['view'];
+	
+	$exportModule .= "<table class='editModule'><tr><td class='order'></td><td class='radioModule'><input type='checkbox' id='".JText::_($mod['title'])."' value='".$mod['id']."' onchange='exportNum(\"".$view."\")'><label>".JText::_($mod['title'])."</label></td></td></tr></table>";
+	$i++;
+}
+$exportModule .= "</div>";
 
 $selectIndicateur = $helper->getElements();
 

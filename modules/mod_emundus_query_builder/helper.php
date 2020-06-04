@@ -7,6 +7,7 @@ require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
 // require_once('thecodingmachine'.DS.'gotenberg-php-client');
 
 use TheCodingMachine\Gotenberg\Client;
+use TheCodingMachine\Gotenberg\Request;
 use TheCodingMachine\Gotenberg\DocumentFactory;
 use TheCodingMachine\Gotenberg\HTMLRequest;
 
@@ -17,6 +18,17 @@ class modEmundusQueryBuilderHelper {
 		
         try {
 			$db->setQuery("SELECT id, title, published, params, ordering FROM jos_modules WHERE module = 'mod_emundus_stat' AND (published = 1 OR published = 0) AND position LIKE 'content-bottom-a' ORDER BY ordering");
+			return $db->loadAssocList();
+		} catch(Exception $e) {
+			return 0;
+		}
+	}
+	public function getExportModuleStat()
+	{
+		$db = JFactory::getDBO();
+		
+        try {
+			$db->setQuery("SELECT id, title, published, params, ordering FROM jos_modules WHERE module = 'mod_emundus_stat' AND published = 1 AND position LIKE 'content-bottom-a' ORDER BY ordering");
 			return $db->loadAssocList();
 		} catch(Exception $e) {
 			return 0;
@@ -330,6 +342,16 @@ class modEmundusQueryBuilderHelper {
 		return json_encode((object)['status' => true, 'msg' => $modulesString]);
 	}
 	
+	function getInnerHtml($node) {
+		$innerHTML= '';
+		$children = $node->childNodes;
+		foreach ($children as $child) {
+			$innerHTML .= $child->ownerDocument->saveXML( $child );
+		}
+
+		return $innerHTML;
+	} 
+	
 	public function convertPdfAjax()
 	{
 		$fichier = JPATH_BASE;
@@ -339,24 +361,43 @@ class modEmundusQueryBuilderHelper {
 		$src = $jinput->get('src', '','RAW');
 		// var_dump($src).die();
 		
-		// $doc = new DOMDocument();
-		// $doc->loadHTML($src);
-		// $imgList = $doc->getElementsBytagName('img');
-		// for($i = 0 ; $i < count($imgList) ; $i++) {
-			// file_put_contents($fichier.DS."tmp".DS.'image'.$i.".svg", $imgList->item($i)->getAttribute('src'));
-		// }
+		$doc = new DOMDocument();
+		@$doc->loadHTML($src);
+		$imgList = $doc->getElementsBytagName('div');
+		for($i = 0 ; $i < count($imgList) ; $i++) {
+			file_put_contents($fichier.DS."tmp".DS.'image'.$i.".svg", utf8_decode((new modEmundusQueryBuilderHelper)->getInnerHtml($imgList->item($i))));
+			$oldNode = $imgList->item($i)->firstChild;
+			$imgList->item($i)->removeChild($oldNode);
+			$newNode = $doc->createElement("img");
+			$newNode->setAttribute('src',$fichier.DS."tmp".DS.'image'.$i.".svg");
+			$imgList->item($i)->appendChild($newNode);
+		}
 		
-		$index = DocumentFactory::makeFromString("index.html", '<html><body>'.$src.'</body></html>');
-		
-		
+		$index = DocumentFactory::makeFromString("index.html", '<html><body style="width:10%;">'.$src.'</body></html>');
 		
 		$client = new Client('http://training.emundus.io:3000', new \Http\Adapter\Guzzle6\Client());
 		$request = new HTMLRequest($index);
-		$dest = 'result.pdf';
+		$request->setPaperSize(Request::A4);
+		$request->setMargins(Request::NO_MARGINS);
+		$dest = $fichier.DS."tmp".DS.'Graph.pdf';
 		$client->store($request, $dest);
+		
+		for($i = 0 ; $i < count($imgList) ; $i++) {
+			unlink($fichier.DS."tmp".DS.'image'.$i.".svg");
+		}
 
 		$res->status = true;
-		$res->msg = '<a href="'.$dest.'" target="_blank">Recuperer</a>';
+		// $res->msg = '<a href="'.$dest.'" target="_blank">Recuperer</a>';
+		$res->msg = 'It\'s ok';
+		return json_encode($res);
+	}
+	
+	public function deleteFileAjax()
+	{
+		unlink(JPATH_BASE.DS."tmp".DS."Graph.pdf");
+		
+		$res->status = true;
+		$res->msg = 'It\'s ok';
 		return json_encode($res);
 	}
 }

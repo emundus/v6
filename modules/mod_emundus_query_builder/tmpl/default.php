@@ -50,33 +50,67 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				<div id="errorCreateModule"></div>
 			</div>
 			<?php echo $showModule; ?>
+			<button onclick="getExport()" class="btn"><?php echo JText::_('EXPORT_MODULE'); ?></button>
 		</form>
 	</div>
 </center>
-<button onclick="getPdf()">Exporter</button>
 
 <div id="debug"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-
 <script>
-	function getPdf(tabContainer) {
-		var s = document.createElement('div');
+	var tabNum = [];
+	function exportNum(num) {
+		if(tabNum.indexOf(num) != -1)
+			tabNum.splice(tabNum.indexOf(num), 1);
+		else
+			tabNum.push(num);
+		// console.log(num);
+	}
+	
+	function getExport() {
+		Swal.mixin({
+			confirmButtonText: '<?php echo JText::_("VALIDATION"); ?>',
+			cancelButtonText: '<?php echo JText::_("CANCEL"); ?>',
+			showCancelButton: true
+		}).queue([
+			{
+				title: "<?php echo JText::_('EXPORT_MODULE'); ?>",
+				html: "<?php echo addslashes(str_replace(CHR(10),"",str_replace(CHR(13),"",$exportModule))) ?>"
+			}
+		]).then((result) => {
+			if (result.value) {
+				getPdf(tabNum);
+			}
+		})
+	}
+	
+	async function getPdf(tab) {
+		var s = document.createElement('a');
 		var image = "";
 		if(fusioncharts != undefined) {
 			for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++) {
-				image = document.createElement('img');
-				svg = fusioncharts[cpt].getSVGString();
-				blob = new Blob([svg], {type: 'image/svg+xml'});
-				url = URL.createObjectURL(blob);
-				
-				image.src= url;
-				s.appendChild(image);
+				console.log(fusioncharts);
+				if(tab.indexOf(fusioncharts[cpt]["id"]) != -1) {
+					svg = fusioncharts[cpt].getSVGString();
+					blob = new Blob([svg], {type: 'image/svg+xml'});
+					
+					reader = new FileReader();
+
+					reader.readAsText(blob);
+					
+					const result = await new Promise((resolve, reject) => {
+						reader.onload = function(event) {
+							resolve(reader.result)
+						}
+					})
+					image = document.createElement('div');
+					image.innerHTML = result;
+					s.appendChild(image);
+				}
 			}
 		}
-		
-		console.log(s.outerHTML);
 		
 		jQuery.ajax({
 			type : "POST",
@@ -87,17 +121,40 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				src: s.outerHTML
 			},
 			success : function(data) {
-				console.log(data);
+				// console.log(data);
 				data = JSON.parse(data.data);
 				if (data.status) {
-					// window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
-					document.getElementById("debug").innerHTML = data.msg;
+					elem = document.createElement('a');
+					elem.href = "tmp/Graph.pdf";
+					elem.download = "Graph.pdf";
+					evt = new MouseEvent("click", { bubbles: true,cancelable: true,view: window,});
+					elem.dispatchEvent(evt);
+					deleteFile();
 				} else {
 					console.log(data.msg);
 				}
 			}
 		});
 	}
+	
+	function deleteFile() {
+		jQuery.ajax({
+			type : "POST",
+			url : "index.php?option=com_ajax&module=emundus_query_builder&method=deleteFile&format=json",
+			async: true,
+			cache: false,
+			success : function(data) {
+				console.log(data);
+				data = JSON.parse(data.data);
+				if (data.status) {
+					console.log(data.msg);
+				} else {
+					console.log(data.msg);
+				}
+			}
+		});
+	}
+	
 	jQuery(function () {
 		
 		var premierItem = '';
@@ -144,6 +201,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	}
 	
 	function refreshModuleGraphQueryBuilder() {
+		if(tabChart.length === 0)
+			tabChart = fusioncharts;
 		jQuery.ajax({
 			type: 'POST',
 			url: 'index.php?option=com_ajax&module=emundus_query_builder&method=reloadModule&format=json',
