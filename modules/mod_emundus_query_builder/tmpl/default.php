@@ -66,7 +66,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			tabNum.splice(tabNum.indexOf(num), 1);
 		else
 			tabNum.push(num);
-		// console.log(num);
 	}
 	
 	function getExport() {
@@ -82,6 +81,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		]).then((result) => {
 			if (result.value) {
 				getPdf(tabNum);
+			} else {
+				tabNum = [];
 			}
 		})
 	}
@@ -91,7 +92,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		var image = "";
 		if(fusioncharts != undefined) {
 			for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++) {
-				console.log(fusioncharts);
 				if(tab.indexOf(fusioncharts[cpt]["id"]) != -1) {
 					svg = fusioncharts[cpt].getSVGString();
 					blob = new Blob([svg], {type: 'image/svg+xml'});
@@ -111,6 +111,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				}
 			}
 		}
+		tabNum = [];
 		
 		jQuery.ajax({
 			type : "POST",
@@ -121,7 +122,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				src: s.outerHTML
 			},
 			success : function(data) {
-				// console.log(data);
 				data = JSON.parse(data.data);
 				if (data.status) {
 					elem = document.createElement('a');
