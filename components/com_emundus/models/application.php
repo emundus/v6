@@ -763,17 +763,14 @@ class EmundusModelApplication extends JModelList {
                         try {
 
                             $this->_db->setQuery($query);
-                            $table = $this->_db->loadResult();
+                            $r_table = $this->_db->loadResult();
 
                         } catch (Exception $e) {
                             return $e->getMessage();
                         }
 
-                        if ($itemg->group_id == 174) {
-                            $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.' WHERE parent_id=(SELECT id FROM '.$table['db_table_name'].' WHERE fnum like '.$this->_db->Quote($fnum).') OR applicant_id=' . $aid;
-                        } else {
-                            $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.' WHERE parent_id=(SELECT id FROM '.$table['db_table_name'].' WHERE fnum like '.$this->_db->Quote($fnum).')';
-                        }
+                        $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$r_table.' WHERE parent_id=(SELECT id FROM ' . $table[$i]->db_table_name . ' WHERE fnum like '.$this->_db->Quote($fnum).')';
+
 
                         try {
 
