@@ -201,8 +201,6 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	}
 	
 	function refreshModuleGraphQueryBuilder() {
-		if(tabChart.length === 0)
-			tabChart = fusioncharts;
 		jQuery.ajax({
 			type: 'POST',
 			url: 'index.php?option=com_ajax&module=emundus_query_builder&method=reloadModule&format=json',
