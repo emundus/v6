@@ -626,12 +626,12 @@ class EmundusModelApplication extends JModelList {
 
         
         for ($i = 0; $i < sizeof($table); $i++) {
-            $form .= '<br><hr><div class="TitleAdmission"><h3>';
+            $form .= '<br><hr><div class="TitleAdmission"><h2>';
 
-	        $title = explode('-', $table[$i]->label);
+            $title = explode('-', $table[$i]->label);
             $form .= !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
 
-            $form .= '</h3>';
+            $form .= '</h2>';
             if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $table[$i]->db_table_name != "#__emundus_training") {
 
                 $query = 'SELECT count(id) FROM `'.$table[$i]->db_table_name.'` WHERE fnum like '.$this->_db->Quote($fnum);
@@ -858,14 +858,14 @@ class EmundusModelApplication extends JModelList {
 
                         // AFFICHAGE EN LIGNE
                     } else {
-
+                        $form .='<table class="em-personalDetail-table-inline">';
+                        $modulo = 0;
                         foreach ($elements as &$element) {
 
                             if (!empty($element->label) && $element->label != ' ') {
                                 $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$table[$i]->db_table_name.'` WHERE fnum like '.$this->_db->Quote($fnum);
 
                                 try {
-
                                     $this->_db->setQuery($query);
                                     $res = $this->_db->loadRow();
                                 } catch (Exception $e) {
@@ -875,6 +875,10 @@ class EmundusModelApplication extends JModelList {
                                 $element->content = @$res[1];
                                 $element->content_id = @$res[0];
 
+                                // Do not display elements with no value inside them.
+                                if ($show_empty_fields == 0 && trim($element->content) == '') {
+                                    continue;
+                                }
                                 if ($element->plugin == 'date' && $element->content > 0) {
 
                                     $date_params = json_decode($element->params);
@@ -961,10 +965,17 @@ class EmundusModelApplication extends JModelList {
                                     $elt = $element->content;
                                 }
 
-                                $form .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
+                                // modulo for strips css
+                                if ($modulo%2) {
+                                    $form .= '<tr class="table-strip-1"><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
+                                } else {
+                                    $form .= '<tr class="table-strip-2"><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
+                                }
+                                $modulo++;
                             }
                         }
                     }
+                    $form .= '</table>';
                     $form .= '</fieldset>';
                 }
             }

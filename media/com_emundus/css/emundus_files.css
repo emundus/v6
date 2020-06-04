@@ -1708,6 +1708,7 @@ label[for="em-file_to_upload"]:hover {
 }
 .marginRightbutton{
     margin-right: 14vh;
+    height: 30px;
 }
 
 /* Title admission */
