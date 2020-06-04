@@ -224,11 +224,21 @@ class modemundusApplicationsHelper {
 		// Here we organize fnums by profile in order to have the split contact cards in HESAM.
 	    $return = [];
 	    foreach ($fnums as $fnum => $offers) {
-	    	foreach ($offers as $data) {
+
+	    	foreach ($offers as $key => $data) {
 			    $data['unread'] = $m_messages->getUnread($data['applicant_id']);
-			    $return[$fnum][$data['profile_id']][] = $data;
+				
+			    if ($data['favorite'] === '1') {
+				    // Place favorite at the front of the array.
+				    $return[$fnum][$data['profile_id']][0] = $data;
+				    ksort($return[$fnum][$data['profile_id']]);
+			    } else {
+			    	// We use $key+1 to avoid the case where $key is 0, we need to ensure the favorite is first.
+				    $return[$fnum][$data['profile_id']][$key+1] = $data;
+			    }
 		    }
 	    }
+
 	    return $return;
     }
 

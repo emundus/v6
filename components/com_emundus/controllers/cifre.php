@@ -762,6 +762,137 @@ class EmundusControllerCifre extends JControllerLegacy {
 		}
 	}
 
+	/**
+	 * Adds a contact request on an offer as favorite.
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function favorite() {
+
+		$jinput = JFactory::getApplication()->input;
+		$link_id = $jinput->post->getInt('link_id');
+
+		if (empty($link_id)) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
+			exit;
+		}
+		
+		
+		$link = $this->m_cifre->getLinkByID($link_id);
+
+		if ($link->user_to != $this->user->id && $link->user_from != $this->user->id) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link does not concern current user.']);
+			exit;
+		}
+
+		$favorite = null;
+		// By using this we can get the link direction, this is then used for checking if another favorite exists for that offer.
+		if ($link->user_to == $this->user->id) {
+
+			$profile = $this->getUserCifreProfile($link->user_from);
+			if (empty($profile)) {
+				echo json_encode((object) ['status' => false, 'msg' => 'No correct profile for user, this is bad.']);
+				exit;
+			}
+
+			// If the user TO is our user, then we need to look at USER_TO_FAVORITE.
+			$direction = 1;
+			$favorite = $this->m_cifre->checkForFavorites($link->fnum_to, $profile, $this->user->id);
+
+		} elseif (!empty($link->fnum_from)) {
+
+			// If the user FROM is us and we have linked an offer, then check for favorites on that offer / status.
+			$profile = $this->getUserCifreProfile($link->user_to);
+			if (empty($profile)) {
+				echo json_encode((object) ['status' => false, 'msg' => 'No correct profile for user, this is bad.']);
+				exit;
+			}
+
+			// If the user FROM is our user, then we need to look at USER_FROM_FAVORITE.
+			$direction = -1;
+			$favorite = $this->m_cifre->checkForFavorites($link->fnum_from, $profile, $this->user->id);
+		} else {
+			echo json_encode((object) ['status' => false, 'msg' => 'Error.']);
+			exit;
+		}
+
+		if (!empty($favorite)) {
+			$this->m_cifre->unfavorite($favorite, $direction);
+		}
+
+		$this->m_cifre->favorite($link_id, $direction);
+		echo json_encode((object) ['status' => true]);
+		exit;
+	}
+
+
+	/**
+	 * Removes a contact request on an offer as favorite.
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function unfavorite() {
+
+		$jinput = JFactory::getApplication()->input;
+		$link_id = $jinput->post->getInt('link_id');
+
+		if (empty($link_id)) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
+			exit;
+		}
+
+		$link = $this->m_cifre->getLinkByID($link_id);
+
+		if ($link->user_to != $this->user->id && $link->user_from != $this->user->id) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link does not concern current user.']);
+			exit;
+		}
+
+		// By using this we can get the link direction, this is then used for checking if another favorite exists for that offer.
+		if ($link->user_to == $this->user->id) {
+			// If the user TO is our user, then we need to remove USER_TO_FAVORITE.
+			$direction = 1;
+		} elseif (!empty($link->fnum_from)) {
+			// If the user FROM is our user, then we need to remove USER_FROM_FAVORITE.
+			$direction = -1;
+		} else {
+			echo json_encode((object) ['status' => false, 'msg' => 'Error.']);
+			exit;
+		}
+
+		$this->m_cifre->unfavorite($link_id, $direction);
+		echo json_encode((object) ['status' => true]);
+		exit;
+	}
+
+
+	/**
+	 * @param $user
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	private function getUserCifreProfile($user) {
+		require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+		$m_profile = new EmundusModelProfile();
+
+		// Get the other user's profile, used for checking for
+		$profiles = $m_profile->getUserProfiles($user);
+
+		// Filter out any secondary profiles, this is useful for coordinator accounts for example.
+		$profiles = array_filter($profiles, function ($profile) {
+			return ($profile->id === '1006' || $profile->id === '1007' || $profile->id === '1008');
+		});
+
+		return $profiles[0]->id;
+	}
+
+	/**
+	 *
+	 */
 	public function getdepartmentsbyregion() {
         try {
             $application = JFactory::getApplication();

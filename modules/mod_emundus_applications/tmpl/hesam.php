@@ -20,6 +20,11 @@ $confirm_form_url = $m_application->getConfirmUrl($fnums);
 $first_page = $m_application->getFirstPage('index.php', $fnums);
 $contacts = modemundusApplicationsHelper::getContactOffers($fnums);
 $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser()->id);
+
+// Include Iconate in order to animate de favorite icon.
+$document = JFactory::getDocument();
+$document->addScript('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/iconate.js');
+$document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/iconate.min.css');
 ?>
 
 <div class="content">
@@ -87,8 +92,14 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                             <?php foreach ($contacts[$application->fnum]['1006'] as $contact) :?>
                                                 <!-- Futur doc -->
                                                 <div class="card w-clearfix" id="card-<?= $contact['link_id']; ?>">
-                                                    <!-- TODO: Add favorite system. -->
-                                                    <!-- <a href="#" class="star link-block-3 w-inline-block" data-ix="star"><span class="fa fa-star"></span></a> -->
+
+                                                    <!-- Favorite system. -->
+	                                                <?php if ($contact['favorite']) :?>
+                                                        <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
+	                                                <?php else :?>
+                                                        <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
+	                                                <?php endif; ?>
+
                                                     <div class="headsmallcard"></div>
                                                     <?php
                                                         $cardClass = '';
@@ -163,8 +174,14 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                             <?php foreach ($contacts[$application->fnum]['1007'] as $contact) :?>
                                                 <!-- Équipe de recherche -->
                                                 <div class="card w-clearfix" id="card-<?= $contact['link_id']; ?>">
-                                                    <!-- TODO: Add favorite system. -->
-                                                    <!-- <a href="#" class="star link-block-3 w-inline-block" data-ix="star"><span class="fa fa-star"></span></a> -->
+
+                                                    <!-- Favorite system. -->
+	                                                <?php if ($contact['favorite']) :?>
+                                                        <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
+	                                                <?php else :?>
+                                                        <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
+	                                                <?php endif; ?>
+
                                                     <div class="headsmallcard"></div>
                                                     <?php
                                                         $cardClass = '';
@@ -242,8 +259,14 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                                             <?php foreach ($contacts[$application->fnum]['1008'] as $contact) :?>
                                                 <!-- Acteur public ou associatif -->
                                                 <div class="card w-clearfix" id="card-<?= $contact['link_id']; ?>">
-                                                    <!-- TODO: Add favorite system. -->
-                                                    <!-- <a href="#" class="star link-block-3 w-inline-block" data-ix="star"><span class="fa fa-star"></span></a> -->
+
+                                                    <!-- Favorite system. -->
+	                                                <?php if ($contact['favorite']) :?>
+                                                        <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
+	                                                <?php else :?>
+                                                        <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
+	                                                <?php endif; ?>
+
                                                     <div class="headsmallcard"></div>
                                                     <?php
                                                         $cardClass = '';
@@ -464,6 +487,11 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
         });
     }
 
+    /**
+     *
+     * @param name
+     * @param desc
+     */
     function share(name, desc) {
 
         const addressed = '\n Addressée ' +
@@ -487,6 +515,105 @@ $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser
                 '<a href="https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent('<?= JUri::base(); ?>')+'&summary='+text.replace(/ /g,"+")+'" class="linkedin-button cta-offre w-inline-block" target="_blank">LinkedIn</a>',
             showCloseButton: true,
             showConfirmButton: false
+        });
+    }
+
+    /**
+     *
+     * @param link_id
+     */
+    function favorite(link_id) {
+
+        const star_icon = document.querySelector('#card-'+link_id+' .em-star-button');
+        const other_fav = star_icon.parentElement.parentElement.querySelector('.fa-star');
+
+        jQuery.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus&controller=cifre&task=favorite',
+            data: {
+                link_id: link_id
+            },
+            beforeSend: function() {
+                star_icon.classList.add('fa-spin');
+            },
+            success: function(result) {
+
+                star_icon.classList.remove('fa-spin');
+
+                result = JSON.parse(result);
+                if (result.status) {
+                    iconate(star_icon, {
+                        from: 'fa-star-o',
+                        to: 'fa-star',
+                        animation: 'rotateClockwise'
+                    });
+                    star_icon.setAttribute('onclick', 'unfavorite('+link_id+')');
+                    star_icon.setAttribute('id', 'favorite-'+link_id);
+                    star_icon.setAttribute('data-original-title', '<?= JText::_('FAVORITE_CLICK_HERE_UNFAV');?>');
+
+                    const other_fav_link_id = other_fav.id.split("-").pop();
+                    iconate(other_fav, {
+                        from: 'fa-star',
+                        to: 'fa-star-o',
+                        animation: 'rotateClockwise'
+                    });
+                    other_fav.setAttribute('onclick', 'favorite('+other_fav_link_id+')');
+                    other_fav.removeAttribute('id');
+                    other_fav.setAttribute('data-original-title', '<?= JText::_('FAVORITE_CLICK_HERE_FAV');?>');
+
+                } else {
+                    star_icon.style.color = '#d91e18';
+                }
+            },
+            error: function(jqXHR) {
+                star_icon.classList.remove('fa-spin');
+                star_icon.style.color = '#d91e18';
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+
+
+    /**
+     *
+     * @param link_id
+     */
+    function unfavorite(link_id) {
+
+        const star_icon = document.querySelector('#card-'+link_id+' .em-star-button');
+
+        jQuery.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus&controller=cifre&task=unfavorite',
+            data: {
+                link_id: link_id
+            },
+            beforeSend: function() {
+                star_icon.classList.add('fa-spin');
+            },
+            success: function(result) {
+
+                star_icon.classList.remove('fa-spin');
+
+                result = JSON.parse(result);
+                if (result.status) {
+                    iconate(star_icon, {
+                        from: 'fa-star',
+                        to: 'fa-star-o',
+                        animation: 'rotateClockwise'
+                    });
+                    star_icon.setAttribute('onclick', 'favorite('+link_id+')');
+                    star_icon.removeAttribute('id');
+                    star_icon.setAttribute('data-original-title', '<?= JText::_('FAVORITE_CLICK_HERE_FAV');?>');
+                } else {
+                    star_icon.style.color = '#d91e18';
+                }
+            },
+            error: function(jqXHR) {
+                star_icon.classList.remove('fa-spin');
+                star_icon.style.color = '#d91e18';
+                console.log(jqXHR.responseText);
+            }
         });
     }
 

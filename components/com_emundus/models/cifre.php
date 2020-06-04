@@ -154,7 +154,7 @@ class EmundusModelCifre extends JModelList {
 
 		// First we need to see if they are in contact and or are working together.
 		// If the state is 1, that means that the OTHER person has contacted the current user.
-		$query->select([$this->db->quoteName('cl.state'), $this->db->quoteName('cl.fnum_from', 'linked_fnum'), $this->db->quoteName('cl.fnum_to','fnum'), '1 AS direction', $this->db->quoteName('eu.profile', 'profile_id'), $this->db->quoteName('r.id', 'search_engine_page'), $this->db->quoteName('cl.user_from', 'applicant_id'), $this->db->quoteName('p.titre'), $this->db->quoteName('cc.status'), $this->db->quoteName('cl.id', 'link_id')])
+		$query->select([$this->db->quoteName('cl.state'), $this->db->quoteName('cl.fnum_from', 'linked_fnum'), $this->db->quoteName('cl.fnum_to','fnum'), '1 AS direction', $this->db->quoteName('cl.user_to_favorite','favorite'), $this->db->quoteName('eu.profile', 'profile_id'), $this->db->quoteName('r.id', 'search_engine_page'), $this->db->quoteName('cl.user_from', 'applicant_id'), $this->db->quoteName('p.titre'), $this->db->quoteName('cc.status'), $this->db->quoteName('cl.id', 'link_id')])
 			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
 			->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON '.$this->db->quoteName('cl.user_from').' = '.$this->db->quoteName('eu.user_id'))
 			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$this->db->quoteName('cl.fnum_from').' = '.$this->db->quoteName('cc.fnum'))
@@ -174,7 +174,7 @@ class EmundusModelCifre extends JModelList {
 		// If a link was not found, we need to look the other way, the link could have been formed in the other direction.
 		// We return -1 to indicate that a contact request exists but in the other direction.
 		$query->clear()
-			->select([$this->db->quoteName('cl.state'), $this->db->quoteName('cl.fnum_to', 'linked_fnum'), $this->db->quoteName('cl.fnum_from','fnum'), '-1 AS direction', $this->db->quoteName('c.profile_id'), $this->db->quoteName('r.id', 'search_engine_page'), $this->db->quoteName('cc.applicant_id'), $this->db->quoteName('p.titre'), $this->db->quoteName('cc.status'), $this->db->quoteName('cl.id', 'link_id')])
+			->select([$this->db->quoteName('cl.state'), $this->db->quoteName('cl.fnum_to', 'linked_fnum'), $this->db->quoteName('cl.fnum_from','fnum'), '-1 AS direction', $this->db->quoteName('cl.user_from_favorite','favorite'), $this->db->quoteName('c.profile_id'), $this->db->quoteName('r.id', 'search_engine_page'), $this->db->quoteName('cc.applicant_id'), $this->db->quoteName('p.titre'), $this->db->quoteName('cc.status'), $this->db->quoteName('cl.id', 'link_id')])
 			->from($this->db->quoteName('#__emundus_cifre_links', 'cl'))
 			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$this->db->quoteName('cl.fnum_to').' = '.$this->db->quoteName('cc.fnum'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c').' ON '.$this->db->quoteName('cc.campaign_id').' = '.$this->db->quoteName('c.id'))
@@ -665,6 +665,90 @@ class EmundusModelCifre extends JModelList {
 			return true;
 		} catch (Exception $e) {
 			JLog::add('Error updating CIFRE link state in m/CIFRE at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+
+	/**
+	 * @param   String      $fnum       The fnum to check favorites for.
+	 * @param   String|Int  $profile    The profile to check has/is favorited.
+	 * @param   Int         $user
+	 *
+	 * @return mixed|null
+	 * @since version
+	 */
+	public function checkForFavorites($fnum, $profile, $user) {
+
+		$query = $this->db->getQuery(true);
+		$query->select($this->db->quoteName('c.id'))
+			->from($this->db->quoteName('#__emundus_cifre_links', 'c'))
+			->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON ('.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('c.user_from').' OR '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('c.user_to').')')
+			->where($this->db->quoteName('eu.profile').' = '.$profile.' AND ('.$this->db->quoteName('c.user_from').' = '.$user.' AND '.$this->db->quoteName('c.fnum_from').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('c.user_from_favorite').' = 1) OR ('.$this->db->quoteName('c.user_to').' = '.$user.' AND '.$this->db->quoteName('c.fnum_to').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('c.user_to_favorite').' = 1)');
+		$this->db->setQuery($query);
+
+		try {
+			return $this->db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('Error getting checking for favorites : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			return null;
+		}
+	}
+
+
+	/**
+	 * @param   Int  $link_id
+	 * @param   Int  $direction  The direction to look in for the favorite (1 is user_to_favorite, -1 is user_from_favorite).
+	 *
+	 *
+	 * @return bool
+	 * @since version
+	 */
+	public function unfavorite($link_id, $direction = 1) {
+
+		if (!is_numeric($link_id)) {
+			return false;
+		}
+
+		$query = $this->db->getQuery(true);
+		$query->update($this->db->quoteName('#__emundus_cifre_links'))
+			->set($this->db->quoteName(($direction === 1)?'user_to_favorite':'user_from_favorite').' = 0')
+			->where($this->db->quoteName('id').' = '.$link_id);
+		$this->db->setQuery($query);
+
+		try {
+			return $this->db->execute();
+		} catch (Exception $e) {
+			JLog::add('Error getting removing favorite : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+
+	/**
+	 * @param   Int  $link_id
+	 * @param   Int  $direction  The direction to look in for the favorite (1 is user_to_favorite, -1 is user_from_favorite).
+	 *
+	 *
+	 * @return bool
+	 * @since version
+	 */
+	public function favorite($link_id, $direction = 1) {
+
+		if (!is_numeric($link_id)) {
+			return false;
+		}
+
+		$query = $this->db->getQuery(true);
+		$query->update($this->db->quoteName('#__emundus_cifre_links'))
+			->set($this->db->quoteName(($direction === 1)?'user_to_favorite':'user_from_favorite').' = 1')
+			->where($this->db->quoteName('id').' = '.$link_id);
+		$this->db->setQuery($query);
+
+		try {
+			return $this->db->execute();
+		} catch (Exception $e) {
+			JLog::add('Error getting adding favorite : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
