@@ -19,13 +19,12 @@ jimport('joomla.application.component.controller');
  * @package    Joomla.Tutorials
  * @subpackage Components
  */
-//error_reporting(E_ALL);
+
 class EmundusControllerAdmission extends JControllerLegacy {
     var $_user = null;
     var $_db = null;
 
     public function __construct($config = array()) {
-        //require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
@@ -387,7 +386,6 @@ class EmundusControllerAdmission extends JControllerLegacy {
          $fnums  = $jinput->getString('fnums', null);
          $tags    = $jinput->getVar('tag', null);
  
-         //var_dump($fnums);
          $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
  
          $m_files = $this->getModel('Files');
@@ -1452,9 +1450,6 @@ class EmundusControllerAdmission extends JControllerLegacy {
             header('Pragma: anytextexeptno-cache', true);
             header('Cache-control: private');
             header('Expires: 0');
-            //header('Content-Transfer-Encoding: binary');
-            //header('Content-Length: ' . filesize($file));
-            //header('Accept-Ranges: bytes');
 
             ob_clean();
             flush();

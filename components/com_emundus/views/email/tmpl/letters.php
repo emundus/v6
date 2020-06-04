@@ -23,7 +23,6 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	$student_id = JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0); 
 	$evaluations_id = JRequest::getVar('jos_emundus_evaluations___id', null, 'GET', 'INT',0); 
 	$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT',0); 
-	//$campaign_id = JRequest::getVar('jos_emundus_evaluations___campaign_id[value]', null, 'GET', 'INT',0); 
 
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
@@ -32,35 +31,22 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	$emails = new EmundusModelEmails;
 
 	$evaluation = $evaluations->getEvaluationByID($evaluations_id);
-	//$reason = $evaluations->getEvaluationReasons();
 	$eligibility = $evaluations->getEvaluationEligibility();
 	$result_id = @$eligibility[$evaluation[0]["result"]]->whenneed;
 
-	//die(print_r($eligibility));
 	$campaign = EmundusHelperfilters::getCampaignByID($evaluation[0]["campaign_id"]);
 
 	$user = JFactory::getUser($student_id);
 
 	$final_grade = $evaluations->getFinalGrade($student_id, $evaluation[0]["campaign_id"]); 
-	//var_dump($campaign_candidature);
 
 	$chemin = EMUNDUS_PATH_REL;
 
 	// Get email 
-	/*if($result_id == 4)
-		$email_lb = "candidature_accepted";
-	elseif($result_id == 3)
-		$email_lb = "candidature_waiting_list";
-	elseif($result_id == 2)
-		$email_lb = "candidature_rejected";
-	*/
 	$email = $emails->getEmail("candidature_decision");
 
 	?>
-<!--
-<div class="em_email_block_nav"><input type="button" name="'.JText::_('BACK').'" onclick="history.back()" value="<?php echo JText::_( 'BACK' ); ?>" ></div>
-<h1><?php echo JText::_( 'INFORM_APPLICANT' ); ?></h1>
--->
+
 	<div id="attachment_list">
 	  <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" enctype="multipart/form-data" />
 	    <?php echo EmundusHelperEmails::createEmailBlock(array('evaluation_result')); ?>
@@ -74,7 +60,6 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php'); 
 		$files = letter_pdf($user->id, @$result_id, $campaign['training'], $campaign['id'], $evaluations_id, "F");
 	} else {
-		//var_dump($attachments);
 		if (!empty($attachments)) {
 			$files = array();
 			foreach ($attachments as $attachment) {
@@ -90,11 +75,6 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	}
 
 	echo '<fieldset><legend>'.JText::_('ATTACHMENTS').'</legend>'; 
-	// Upload ajax
-	/*$aupload .= '<input type="file" name="file_upload" id="file_upload" />';
-	echo $aupload;*/
-
-	//echo '<script type="text/javascript" src="/djs/webtoolkit.aim.js"></script>';
 	?>
 	<script type="text/javascript">
 			function startCallback() {
@@ -117,10 +97,6 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 				document.getElementById("em_attachment").innerHTML += html;
 
 				$('mail_attachments').value += "," + "<?php echo str_replace('\\', '\\\\', EMUNDUS_PATH_ABS.$student_id.DS); ?>" + objJSON.filename;
-				
-
-				//document.getElementById("nr").innerHTML = parseInt(document.getElementById("nr").innerHTML) + 1;
-				//document.getElementById("r").innerHTML = response;
 			}
 		</script>
  
@@ -139,17 +115,12 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	</form>
 	<?php
 	echo '<hr />'; 
-	/*	<div># of submited forms: <span id="nr">0</span></div>
-		<div>last submit response: <span id="r"></span></div>';*/
-
-/////////////////////////////////////////
 
 	echo '<ul class="em_attachments_list">';
 	$files_path = "";
 	if(!empty($files) && isset($files)) {
 		foreach ($files as $file) {
 			$files_path .= str_replace('\\', '\\\\', $file['path']).',';
-			//echo '<li><a href="'.$file['url'].'" target="_blank"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.JText::_('ATTACHMENTS').'" title="'.JText::_('ATTACHMENTS').'" width="22" height="22" align="absbottom" /> '.$file['name'].'</a></li>';
 			echo '<div id="em_attachment">
 				<div id="em_dl_'.$file['id'].'" class="em_dl">
 					<a class="dO" target="_blank" href="'.$file['url'].'">
@@ -179,7 +150,6 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 		btn[0].disabled = true;
 		btn[0].value = "<?php echo JText::_('SENDING_EMAIL'); ?>";
 
-		//alert(btn+' '+btn.disabled+' : '+btn.value);
 		switch(document.pressed) {
 			case 'evaluation_result_email': 
 				document.adminForm.action ="index.php?option=com_emundus&task=sendmail_applicant&Itemid=<?php echo $itemid ?>";
