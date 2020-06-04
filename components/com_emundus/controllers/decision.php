@@ -687,7 +687,7 @@ class EmundusControllerDecision extends JControllerLegacy
         echo json_encode((object)$res);
         exit;
     }
-
+/*
     public function send_elements()
     {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
@@ -724,7 +724,7 @@ class EmundusControllerDecision extends JControllerLegacy
         echo json_encode((object) $result);
         exit();
     }
-
+*/
     function pdf(){
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
@@ -1098,10 +1098,10 @@ class EmundusControllerDecision extends JControllerLegacy
         exit();
     }
 
-
+/*
     public function export_xls_from_csv()
     {
-        /** PHPExcel */
+        // PHPExcel 
         ini_set('include_path', JPATH_BASE . DS . 'libraries' . DS);
         include 'PHPExcel.php';
         include 'PHPExcel/Writer/Excel5.php';
@@ -1219,7 +1219,7 @@ class EmundusControllerDecision extends JControllerLegacy
         @set_time_limit(10800);
         jimport( 'joomla.user.user' );
         error_reporting(0);
-        /** PHPExcel */
+        // PHPExcel 
         ini_set('include_path', JPATH_BASE.DS.'libraries'.DS);
 
         include 'PHPExcel.php';
@@ -1457,7 +1457,7 @@ class EmundusControllerDecision extends JControllerLegacy
         //$objPHPExcel->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
         // Echo done
     }
-
+*/
     function get_mime_type($filename, $mimePath = '../etc') {
         $fileext = substr(strrchr($filename, '.'), 1);
         if (empty($fileext)) return (false);

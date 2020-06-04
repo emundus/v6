@@ -632,7 +632,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         echo json_encode((object)$res);
         exit;
     }
-
+/*
     public function send_elements() {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 
@@ -678,7 +678,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         echo json_encode((object) $result);
         exit();
     }
-
+*/
     function pdf_admission(){
         $jinput     = JFactory::getApplication()->input;
         $fnum       = $jinput->getString('fnum', null);
@@ -788,7 +788,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         } else {
             $fnums = array();
             foreach ($fnums_array as $key => $value) {
-                $fnums[] = $value->fnum;
+                $fnums[] = $value;
             }
         }
 
@@ -1048,10 +1048,10 @@ class EmundusControllerAdmission extends JControllerLegacy {
         echo json_encode((object) $result);
         exit();
     }
-
+/*
     public function export_xls_from_csv() {
 
-        /** PHPExcel */
+        // PHPExcel 
         ini_set('include_path', JPATH_BASE . DS . 'libraries' . DS);
         include 'PHPExcel.php';
         include 'PHPExcel/Writer/Excel5.php';
@@ -1171,7 +1171,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         @set_time_limit(10800);
         jimport( 'joomla.user.user' );
         error_reporting(0);
-        /** PHPExcel */
+        // PHPExcel 
         ini_set('include_path', JPATH_BASE.DS.'libraries'.DS);
 
         include 'PHPExcel.php';
@@ -1412,7 +1412,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $objWriter->save(JPATH_BASE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
         return JFactory::getUser()->id.'_extraction.xls';
     }
-
+*/
     function get_mime_type($filename, $mimePath = '../etc') {
         $fileext = substr(strrchr($filename, '.'), 1);
 

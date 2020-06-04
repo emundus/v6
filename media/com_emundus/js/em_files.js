@@ -1788,6 +1788,7 @@ $(document).ready(function() {
                                 '</div>');
 
                             var checkInput = getUserCheck();
+
                             $.ajax({
                                 type:'post',
                                 url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',

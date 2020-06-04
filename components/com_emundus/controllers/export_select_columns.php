@@ -21,6 +21,7 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
 	/**
 	 * Get application form elements to display in XLS file
 	*/
+	/*
 	function send_elements() {
 		error_reporting(0);
 		
@@ -41,7 +42,7 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
 		$xls->export_xls($cid, $elements); 
 		exit();
 		}
-
+*/
     /**
      * Gets all eMundus Tags from tags_table
      */

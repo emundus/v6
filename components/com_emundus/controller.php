@@ -158,7 +158,7 @@ class EmundusController extends JControllerLegacy {
 
         exit();
     }
-
+/*
     function export_pdf() {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
@@ -232,7 +232,7 @@ class EmundusController extends JControllerLegacy {
         echo json_encode($res);
         exit();
     }
-
+*/
 
     /*
         Delete file
