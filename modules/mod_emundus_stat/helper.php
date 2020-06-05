@@ -2,7 +2,22 @@
 defined('_JEXEC') or die('Access Deny');
 
 class modEmundusStatHelper {
+	public function codeProgramUser()
+	{
+		$db = JFactory::getDBO();
+        $session = JFactory::getSession();
+		$user = $session->get('emundusUser');
+		
+        try {
+			$db->setQuery("SELECT `jos_emundus_setup_groups_repeat_course`.`course` FROM `jos_emundus_groups` LEFT JOIN `jos_emundus_setup_groups_repeat_course` ON (`jos_emundus_groups`.`group_id` = `jos_emundus_setup_groups_repeat_course`.`parent_id` ) WHERE `user_id` = ".$user->id);
+			return $db->loadColumn();
+		} catch(Exception $e) {
+			return -1;
+		}
+	}
+	
 	public function getView($view, $number, $group, $param) {
+		$db = JFactory::getDBO();
 		$session = JFactory::getSession();
 		$array = json_decode($session->get('filterStat'), true);
 		try {
@@ -11,8 +26,7 @@ class modEmundusStatHelper {
 				$query .= "SUM(".$number[$cpt].") AS `number".$cpt."`, ";
 			$query .= $group." FROM ".$view." ";
 			
-			$db = JFactory::getDbo();
-			$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE 'campaign_id'");
+			$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE 'campaign'");
 			$db->execute();
 			$exists = (($db->getNumRows() != 0)?true:false);
 			if($exists) {
@@ -20,13 +34,14 @@ class modEmundusStatHelper {
 				if($tabCampaign != null) {
 					$query .= "WHERE";
 					for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
+						$db->setQuery("SELECT `label` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
+						$labelCampaign = $db->loadResult();
 						if($cpt != 0) $query .= " OR";
-						$query .= " campaign_id = ".$tabCampaign[$cpt]['id'];
+						$query .= " campaign LIKE '".$labelCampaign."'";
 					}
 				}
 			} else {
-			
-				$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE 'campaign'");
+				$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE '_year'");
 				$db->execute();
 				$exists = (($db->getNumRows() != 0)?true:false);
 				if($exists) {
@@ -34,31 +49,15 @@ class modEmundusStatHelper {
 					if($tabCampaign != null) {
 						$query .= "WHERE";
 						for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
-							$db->setQuery("SELECT `label` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
-							$labelCampaign = $db->loadResult();
+							$db->setQuery("SELECT `year` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
+							$yearCampaign = $db->loadResult();
 							if($cpt != 0) $query .= " OR";
-							$query .= " campaign LIKE '".$labelCampaign."'";
+							if(substr_count($yearCampaign, "-") === 1)
+								$query .= " _year LIKE '".explode("-", $yearCampaign)[0]."' OR _year LIKE '".explode("-", $yearCampaign)[1]."'";
+							else
+								$query .= " _year LIKE '".$yearCampaign."'";
 						}
-					}
-				} else {
-					$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE '_year'");
-					$db->execute();
-					$exists = (($db->getNumRows() != 0)?true:false);
-					if($exists) {
-						$tabCampaign = (new modEmundusStatHelper)->getCampaign($param);
-						if($tabCampaign != null) {
-							$query .= "WHERE";
-							for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
-								$db->setQuery("SELECT `year` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
-								$yearCampaign = $db->loadResult();
-								if($cpt != 0) $query .= " OR";
-								if(substr_count($yearCampaign, "-") === 1)
-									$query .= " _year LIKE '".explode("-", $yearCampaign)[0]."' OR _year LIKE '".explode("-", $yearCampaign)[1]."'";
-								else
-									$query .= " _year LIKE '".$yearCampaign."'";
-							}
-							
-						}
+						
 					}
 				}
 			}
@@ -72,6 +71,7 @@ class modEmundusStatHelper {
 	}
 	
 	public function getViewOrder($view, $number, $group, $order, $param) {
+		$db = JFactory::getDBO();
 		$session = JFactory::getSession();
 		$array = json_decode($session->get('filterStat'), true);
         try {
@@ -80,8 +80,7 @@ class modEmundusStatHelper {
 				$query .= "SUM(".$number[$cpt].") AS `number".$cpt."`,";
 			$query .= $group." FROM ".$view." ";
 			
-			$db = JFactory::getDbo();
-			$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE 'campaign_id'");
+			$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE 'campaign'");
 			$db->execute();
 			$exists = (($db->getNumRows() != 0)?true:false);
 			if($exists) {
@@ -89,13 +88,14 @@ class modEmundusStatHelper {
 				if($tabCampaign != null) {
 					$query .= "WHERE";
 					for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
+						$db->setQuery("SELECT `label` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
+						$labelCampaign = $db->loadResult();
 						if($cpt != 0) $query .= " OR";
-						$query .= " campaign_id = ".$tabCampaign[$cpt]['id'];
+						$query .= " campaign LIKE '".$labelCampaign."'";
 					}
 				}
 			} else {
-			
-				$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE 'campaign'");
+				$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE '_year'");
 				$db->execute();
 				$exists = (($db->getNumRows() != 0)?true:false);
 				if($exists) {
@@ -103,31 +103,15 @@ class modEmundusStatHelper {
 					if($tabCampaign != null) {
 						$query .= "WHERE";
 						for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
-							$db->setQuery("SELECT `label` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
-							$labelCampaign = $db->loadResult();
+							$db->setQuery("SELECT `year` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
+							$yearCampaign = $db->loadResult();
 							if($cpt != 0) $query .= " OR";
-							$query .= " campaign LIKE '".$labelCampaign."'";
+							if(substr_count($yearCampaign, "-") === 1)
+								$query .= " _year LIKE '".explode("-", $yearCampaign)[0]."' OR _year LIKE '".explode("-", $yearCampaign)[1]."'";
+							else
+								$query .= " _year LIKE '".$yearCampaign."'";
 						}
-					}
-				} else {
-					$db->setQuery("SHOW COLUMNS FROM `".$view."` LIKE '_year'");
-					$db->execute();
-					$exists = (($db->getNumRows() != 0)?true:false);
-					if($exists) {
-						$tabCampaign = (new modEmundusStatHelper)->getCampaign($param);
-						if($tabCampaign != null) {
-							$query .= "WHERE";
-							for($cpt = 0 ; $cpt < count($tabCampaign) ; $cpt++) {
-								$db->setQuery("SELECT `year` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
-								$yearCampaign = $db->loadResult();
-								if($cpt != 0) $query .= " OR";
-								if(substr_count($yearCampaign, "-") === 1)
-									$query .= " _year LIKE '".explode("-", $yearCampaign)[0]."' OR _year LIKE '".explode("-", $yearCampaign)[1]."'";
-								else
-									$query .= " _year LIKE '".$yearCampaign."'";
-							}
-							
-						}
+						
 					}
 				}
 			}
@@ -142,9 +126,10 @@ class modEmundusStatHelper {
 	
 	public function getCampaign($param)
 	{
-		$query = "SELECT id FROM `jos_emundus_setup_campaigns` ";
+		$db = JFactory::getDbo();
+		$query = "SELECT id FROM `jos_emundus_setup_campaigns` WHERE `jos_emundus_setup_campaigns`.`training` IN (".implode(",", $db->quote((new modEmundusStatHelper)->codeProgramUser())).")";
 		if(($param->get('program')) == true || ($param->get('year')) == true || ($param->get('campaign')) == true) {
-			$query .= "WHERE ";
+			$query .= " AND ";
 			if(($param->get('campaign')) == true)
 				$query .= "`jos_emundus_setup_campaigns`.`id` = ".$param->get('campaign');
 			if(($param->get('campaign')) == true && ($param->get('year')) == true)
@@ -159,7 +144,7 @@ class modEmundusStatHelper {
 			$session = JFactory::getSession();
 			$array = json_decode($session->get('filterStat'), true);
 			if($array["campaign"] != "-1" || $array["year"] != "-1" || $array["prog"] != "-1") {
-				$query .= "WHERE ";
+				$query .= " AND ";
 				if($array["campaign"] != "-1")
 					$query .= "`jos_emundus_setup_campaigns`.`id` = ".$array["campaign"];
 				if($array["campaign"] != "-1" && $array["year"] != "-1")
@@ -173,7 +158,6 @@ class modEmundusStatHelper {
 					$query .= "`jos_emundus_setup_campaigns`.`training` LIKE '".$array["prog"]."'";
 			}
 		}
-		$db = JFactory::getDbo();
 		
         try {
 			$db->setQuery($query);

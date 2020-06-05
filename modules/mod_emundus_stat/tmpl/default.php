@@ -53,8 +53,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		chart: {
 			caption: "<?php echo JText::_($titleGraph); ?>",
 			<?php if(substr_count($typeGraph, "dy") != 0) {
-				echo "pYAxisName:\"".$yAxeName."\",";
-				echo "sYAxisName:\"".$yAxeName1."\",";
+				echo "pYAxisName:\"".JText::_($yAxeName)."\",";
+				echo "sYAxisName:\"".JText::_($yAxeName1)."\",";
 			} else { ?>
 			yaxisname: "<?php echo JText::_($yAxeName); ?>",
 			<?php } ?>

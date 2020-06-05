@@ -158,7 +158,7 @@ for($cpt = 0; $cpt < count($Detail); $cpt++)
 		$i = $k != $nbValue-1 ? "value" : "label";
 		$k = $k === $nbValue ? 0 : $k + 1;
 	} elseif(substr_count($typeGraph, "scroll") != 0 && substr_count($typeGraph, "scrollcombi") === 0 && substr_count($typeGraph, "scrollstacked") === 0) {
-		$aDataTableDetailHTML[(($i === "label")?"categories":"dataset")][0][(($i === "label")?"category":"data")][$j][$i] = trim($sNodeDetail->textContent);
+		$aDataTableDetailHTML[(($i === "label")?"categories":"dataset")][0][(($i === "label")?"category":"data")][$j][$i] = JText::_(trim($sNodeDetail->textContent));
 		$j = $i === "label" ? $j + 1 : $j;
 		$i = $i === "label" ? "value" : "label";
 	} elseif(substr_count($typeGraph, "ms") != 0 || substr_count($typeGraph, "stacked") != 0 || substr_count($typeGraph, "marimekko") != 0 || substr_count($typeGraph, "zoom") != 0 || substr_count($typeGraph, "over") != 0 || substr_count($typeGraph, "scrollcombi") != 0) {
