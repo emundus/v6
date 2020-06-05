@@ -2,12 +2,27 @@
 defined('_JEXEC') or die('Access Deny');
 
 class modEmundusStatFilterHelper {
+	public function codeProgramUser()
+	{
+		$db = JFactory::getDBO();
+        $session = JFactory::getSession();
+		$user = $session->get('emundusUser');
+		
+        try {
+			$db->setQuery("SELECT `jos_emundus_setup_groups_repeat_course`.`course` FROM `jos_emundus_groups` LEFT JOIN `jos_emundus_setup_groups_repeat_course` ON (`jos_emundus_groups`.`group_id` = `jos_emundus_setup_groups_repeat_course`.`parent_id` ) WHERE `user_id` = ".$user->id);
+			return $db->loadColumn();
+		} catch(Exception $e) {
+			return -1;
+		}
+	}
+	
 	public function getProg($filter)
 	{
-		$query = "SELECT * FROM `jos_emundus_setup_programmes` INNER JOIN `jos_emundus_setup_campaigns` ON `jos_emundus_setup_programmes`.`code` = `jos_emundus_setup_campaigns`.`training` ";
+		$db = JFactory::getDbo();
+		$query = "SELECT * FROM `jos_emundus_setup_programmes` INNER JOIN `jos_emundus_setup_campaigns` ON `jos_emundus_setup_programmes`.`code` = `jos_emundus_setup_campaigns`.`training` WHERE `jos_emundus_setup_programmes`.`code` IN (".implode(",", $db->quote((new modEmundusStatFilterHelper)->codeProgramUser())).")";
 		$array = json_decode($filter, true);
 		if($array["year"] != -1 || $array["campaign"] != -1) {
-			$query .= "WHERE ";
+			$query .= " AND ";
 			if($array["year"] != -1)
 				$query .= "`jos_emundus_setup_campaigns`.`year` LIKE '".$array["year"]."'";
 			if($array["year"] != -1 && $array["campaign"] != -1)
@@ -16,7 +31,6 @@ class modEmundusStatFilterHelper {
 				$query .= "`jos_emundus_setup_campaigns`.`id` = ".$array["campaign"];
 		}
 		$query .= " GROUP BY `jos_emundus_setup_programmes`.`code`";
-		$db = JFactory::getDbo();
 		
         try {
 			$db->setQuery($query);
@@ -27,10 +41,11 @@ class modEmundusStatFilterHelper {
 	}
 	public function getYear($filter)
 	{
-		$query = "SELECT * FROM `jos_emundus_setup_campaigns` ";
+		$db = JFactory::getDbo();
+		$query = "SELECT * FROM `jos_emundus_setup_campaigns` WHERE `jos_emundus_setup_campaigns`.`training` IN (".implode(",", $db->quote((new modEmundusStatFilterHelper)->codeProgramUser())).")";
 		$array = json_decode($filter, true);
 		if($array["prog"] != -1 || $array["campaign"] != -1) {
-			$query .= "WHERE ";
+			$query .= " AND ";
 			if($array["prog"] != -1)
 				$query .= "`jos_emundus_setup_campaigns`.`training` LIKE '".$array["prog"]."'";
 			if($array["prog"] != -1 && $array["campaign"] != -1)
@@ -39,7 +54,6 @@ class modEmundusStatFilterHelper {
 				$query .= "`jos_emundus_setup_campaigns`.`id` = ".$array["campaign"];
 		}
 		$query .= " GROUP BY `year`";
-		$db = JFactory::getDbo();
 		
         try {
 			$db->setQuery($query);
@@ -50,10 +64,11 @@ class modEmundusStatFilterHelper {
 	}
 	public function getCampaign($filter)
 	{
-		$query = "SELECT * FROM `jos_emundus_setup_campaigns` ";
+		$db = JFactory::getDbo();
+		$query = "SELECT * FROM `jos_emundus_setup_campaigns` WHERE `jos_emundus_setup_campaigns`.`training` IN (".implode(",", $db->quote((new modEmundusStatFilterHelper)->codeProgramUser())).")";
 		$array = json_decode($filter, true);
 		if($array["year"] != -1 || $array["prog"] != -1) {
-			$query .= "WHERE ";
+			$query .= "AND ";
 			if($array["year"] != -1)
 				$query .= "`jos_emundus_setup_campaigns`.`year` LIKE '".$array["year"]."'";
 			if($array["year"] != -1 && $array["prog"] != -1)
@@ -61,7 +76,6 @@ class modEmundusStatFilterHelper {
 			if($array["prog"] != -1)
 				$query .= "`jos_emundus_setup_campaigns`.`training` LIKE '".$array["prog"]."'";
 		}
-		$db = JFactory::getDbo();
 		
         try {
 			$db->setQuery($query);
@@ -88,17 +102,20 @@ class modEmundusStatFilterHelper {
 		
 		
 		$output = "<option value=\"-1\"></option>";
-		foreach ($tabProg as $prog) { 
-			$output .= "<option value=\"".$prog['code']."\" ".(($array["prog"]===$prog['code'])?"selected":"").">".$prog['label']."</option>";
-		}
+		if($tabProg != null)
+			foreach ($tabProg as $prog) { 
+				$output .= "<option value=\"".$prog['code']."\" ".(($array["prog"]===$prog['code'])?"selected":"").">".$prog['label']."</option>";
+			}
 		$output .= "////<option value=\"-1\"></option>";
-		foreach ($tabYear as $year) { 
-			$output .= "<option value=\"".$year['year']."\" ".(($array["year"]===$year['year'])?"selected":"").">".$year['year']."</option>";
-		}
+		if($tabYear != null)
+			foreach ($tabYear as $year) { 
+				$output .= "<option value=\"".$year['year']."\" ".(($array["year"]===$year['year'])?"selected":"").">".$year['year']."</option>";
+			}
 		$output .= "////<option value=\"-1\"></option>";
-		foreach ($tabCampaign as $campaign) {
-			$output .= "<option value=\"".$campaign['id']."\" ".(($array["campaign"]===$campaign['id'])?"selected":"").">".$campaign['label']."</option>";
-		}
+		if($tabCampaign != null)
+			foreach ($tabCampaign as $campaign) {
+				$output .= "<option value=\"".$campaign['id']."\" ".(($array["campaign"]===$campaign['id'])?"selected":"").">".$campaign['label']."</option>";
+			}
 		return json_encode((object)['status' => true, 'msg' => $output]);
 	}
 	
