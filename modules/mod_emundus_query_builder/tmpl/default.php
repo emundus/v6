@@ -122,8 +122,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				src: s.outerHTML
 			},
 			success : function(data) {
+				console.log(data);
 				data = JSON.parse(data.data);
-				if (data.status) {
+				if (data.status != null) {
 					elem = document.createElement('a');
 					elem.href = "tmp/Graph.pdf";
 					elem.download = "Graph.pdf";
@@ -146,7 +147,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			success : function(data) {
 				console.log(data);
 				data = JSON.parse(data.data);
-				if (data.status) {
+				if (data.status != null) {
 					console.log(data.msg);
 				} else {
 					console.log(data.msg);
