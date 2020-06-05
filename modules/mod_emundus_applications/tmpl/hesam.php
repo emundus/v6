@@ -21,6 +21,7 @@ $first_page = $m_application->getFirstPage('index.php', $fnums);
 $contacts = modemundusApplicationsHelper::getContactOffers($fnums);
 $chat_requests = modemundusApplicationsHelper::getChatRequests(JFactory::getUser()->id);
 
+
 // Include Iconate in order to animate de favorite icon.
 $document = JFactory::getDocument();
 $document->addScript('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/iconate.js');
@@ -39,6 +40,17 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 
             <div class="em-hesam-applications w-container">
                 <?php foreach ($applications as $application) :?>
+
+                <?php
+	                // We need to find out if we have 2 favorites for this .
+	                $nb_faves = 0;
+	                foreach ($contacts[$application->fnum] as $profile_id => $requests) {
+                        if ($requests[0]['favorite']) {
+                            $nb_faves++;
+                        }
+	                }
+                ?>
+
                     <div class="wrapper-big-car" id="row<?= $application->fnum; ?>">
 
                         <div class="headerbig-card">
@@ -66,7 +78,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                 <?php endif; ?>
 
                                 <!-- Trash button -->
-                                <a id="trash" onClick="deletefile('<?= $application->fnum; ?>');" href="#row<?= !empty($attachments)?$attachments[$application->fnum]:''; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>">
+                                <a id="trash" onClick="<?= ($application->status !== '1')?'deletefile('.$application->fnum.');':'completefile('.$application->fnum.', true)'; ?>" href="#row<?= $application->fnum; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>">
                                     <i class="icon-trash"></i>
                                 </a>
                             </div>
@@ -81,6 +93,12 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                 <a class="cta-brouillon w-button" href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>"><?= JText::_('OPEN_APPLICATION'); ?></a>
                             <?php else :?>
                                 <div class="column-card-container w-row">
+
+                                    <?php if ($nb_faves === 2) :?>
+                                        <div class="em-join-icon" onclick="completefile('<?= $application->fnum; ?>', false)">
+                                            <span class="fa fa-check"></span>
+                                        </div>
+                                    <?php endif; ?>
 
                                     <?php if ($application->profile_id !== '1006') :?>
                                         <div class="w-col w-col-6">
@@ -409,22 +427,39 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 </div>
 
 <script type="text/javascript">
+
     function deletefile(fnum) {
-        if (confirm("<?= JText::_('CONFIRM_DELETE_FILE'); ?>")) {
-            document.location.href = "index.php?option=com_emundus&task=deletefile&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>";
-        }
+
+        Swal.fire({
+            customClass: {
+                title: "heading no-dash"
+            },
+            title: '<?= JText::_('CONFIRM_DELETE_FILE'); ?>',
+            icon: 'warning',
+            showCancelButton: true,
+            showConfirmButton: true,
+            reverseButtons: true
+        }).then(confirm => {
+            if (confirm.value) {
+                document.location.href = "index.php?option=com_emundus&task=deletefile&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>";
+            }
+        });
     }
 
-    function completefile(fnum) {
-        if (confirm("<?= JText::_('CONFIRM_COMPLETE_FILE'); ?>")) {
-            document.location.href = "index.php?option=com_emundus&task=completefile&status=2&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>";
-        }
-    }
+    function completefile(fnum, trash) {
 
-    function publishfile(fnum) {
-        if (confirm("<?= JText::_('CONFIRM_PUBLISH_FILE'); ?>")) {
-            document.location.href = "index.php?option=com_emundus&task=publishfile&status=1&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>";
-        }
+        Swal.fire({
+            customClass: {
+                title: "heading no-dash"
+            },
+            title: '<?= JText::_('CONFIRM_COMPLETE_FILE'); ?>',
+            html: (trash ? '<a href="index.php?option=com_emundus&task=deletefile&fnum='+fnum+'&redirect=<?= base64_encode($uri->getPath()); ?>" class="cta-offre w-inline-block"><?= JText::_('DELETE_FILE'); ?></a>':'') +
+                '<a href="index.php?option=com_emundus&task=completefile&status=2&fnum='+fnum+'&redirect=<?= base64_encode($uri->getPath()); ?>" class="cta-offre w-inline-block"><?= JText::_('FILE_BOOKED_WITH_HESAM'); ?></a>' +
+                '<a href="index.php?option=com_emundus&task=completefile&status=5&fnum='+fnum+'&redirect=<?= base64_encode($uri->getPath()); ?>" class="cta-offre w-inline-block"><?= JText::_('FILE_BOOKED_WITH_HESAM'); ?></a>',
+            icon: 'warning',
+            showConfirmButton: false,
+            showCloseButton: true
+        });
     }
 
     function reply(id) {
