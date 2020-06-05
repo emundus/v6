@@ -448,14 +448,16 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 
     function completefile(fnum, trash) {
 
+        const trashButton = trash ? "<a href=\"index.php?option=com_emundus&task=deletefile&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>\" class=\"cta-offre w-inline-block\"><?= JText::_('DELETE_FILE'); ?></a>":"";
+
         Swal.fire({
             customClass: {
                 title: "heading no-dash"
             },
             title: '<?= JText::_('CONFIRM_COMPLETE_FILE'); ?>',
-            html: (trash ? '<a href="index.php?option=com_emundus&task=deletefile&fnum='+fnum+'&redirect=<?= base64_encode($uri->getPath()); ?>" class="cta-offre w-inline-block"><?= JText::_('DELETE_FILE'); ?></a>':'') +
-                '<a href="index.php?option=com_emundus&task=completefile&status=2&fnum='+fnum+'&redirect=<?= base64_encode($uri->getPath()); ?>" class="cta-offre w-inline-block"><?= JText::_('FILE_BOOKED_WITH_HESAM'); ?></a>' +
-                '<a href="index.php?option=com_emundus&task=completefile&status=5&fnum='+fnum+'&redirect=<?= base64_encode($uri->getPath()); ?>" class="cta-offre w-inline-block"><?= JText::_('FILE_BOOKED_WITH_HESAM'); ?></a>',
+            html: trashButton +
+                "<a href=\"index.php?option=com_emundus&task=completefile&status=2&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>\" class=\"cta-offre w-inline-block\"><?= JText::_('FILE_BOOKED_WITH_HESAM'); ?></a>" +
+                "<a href=\"index.php?option=com_emundus&task=completefile&status=5&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>\" class=\"cta-offre w-inline-block\"><?= JText::_('FILE_BOOKED_WITH_HESAM'); ?></a>",
             icon: 'warning',
             showConfirmButton: false,
             showCloseButton: true
