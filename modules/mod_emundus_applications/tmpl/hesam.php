@@ -94,11 +94,13 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                 <div class="card w-clearfix" id="card-<?= $contact['link_id']; ?>">
 
                                                     <!-- Favorite system. -->
-	                                                <?php if ($contact['favorite']) :?>
-                                                        <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
-	                                                <?php else :?>
-                                                        <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
-	                                                <?php endif; ?>
+	                                                <?php if ($contact['state'] === '2') :?>
+                                                        <?php if ($contact['favorite']) :?>
+                                                            <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
+                                                        <?php else :?>
+                                                            <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
+                                                        <?php endif; ?>
+                                                    <?php endif; ?>
 
                                                     <div class="headsmallcard"></div>
                                                     <?php
@@ -176,11 +178,13 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                 <div class="card w-clearfix" id="card-<?= $contact['link_id']; ?>">
 
                                                     <!-- Favorite system. -->
-	                                                <?php if ($contact['favorite']) :?>
-                                                        <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
-	                                                <?php else :?>
-                                                        <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
-	                                                <?php endif; ?>
+	                                                <?php if ($contact['state'] === '2') :?>
+                                                        <?php if ($contact['favorite']) :?>
+                                                            <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
+                                                        <?php else :?>
+                                                            <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
+                                                        <?php endif; ?>
+                                                    <?php endif; ?>
 
                                                     <div class="headsmallcard"></div>
                                                     <?php
@@ -209,11 +213,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                             <div class="name">
                                                                 <?php
                                                                     $lab = $m_cifre->getUserLaboratory($contact['applicant_id']);
-                                                                    if (empty($lab)) {
-                                                                        echo JFactory::getUser($contact['applicant_id'])->name;
-                                                                    } else {
-                                                                        echo $lab->name;
-                                                                    }
+                                                                    echo (empty($lab)) ? JFactory::getUser($contact['applicant_id'])->name : $lab->name;
                                                                 ?>
                                                             </div>
                                                         </div>
@@ -260,12 +260,14 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                 <!-- Acteur public ou associatif -->
                                                 <div class="card w-clearfix" id="card-<?= $contact['link_id']; ?>">
 
-                                                    <!-- Favorite system. -->
-	                                                <?php if ($contact['favorite']) :?>
-                                                        <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
-	                                                <?php else :?>
-                                                        <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
-	                                                <?php endif; ?>
+                                                    <?php if ($contact['state'] === '2') :?>
+                                                        <!-- Favorite system. -->
+                                                        <?php if ($contact['favorite']) :?>
+                                                            <i class="fa fa-star em-star-button link-block-3 w-inline-block" id="favorite-<?= $contact['link_id']; ?>" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE_UNFAV'); ?>" onclick="unfavorite(<?= $contact['link_id']; ?>)"></i>
+                                                        <?php else :?>
+                                                            <i class="fa fa-star-o em-star-button link-block-3 w-inline-block" rel="tooltip" title="<?= JText::_('FAVORITE_CLICK_HERE'); ?>" onclick="favorite(<?= $contact['link_id']; ?>)"></i>
+                                                        <?php endif; ?>
+                                                    <?php endif; ?>
 
                                                     <div class="headsmallcard"></div>
                                                     <?php
