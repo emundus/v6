@@ -14,6 +14,7 @@ $helper = new modEmundusQueryBuilderHelper;
 $tabModule = $helper->getModuleStat();
 $tabExportModule = $helper->getExportModuleStat();
 
+// Create the table of stats modules which will allow you to change the order, modify, delete and display or not the stats modules
 $showModule = "<div class='showModule' id='sortable'>";
 $i = 0;
 foreach($tabModule as $mod) {
@@ -31,7 +32,7 @@ foreach($tabModule as $mod) {
 }
 $showModule .= "</div>";
 
-
+// Create the table of statistics modules which will allow you to export the selected statistics modules
 $exportModule = "<div class='showModule'>";
 $i = 0;
 foreach($tabExportModule as $mod) {

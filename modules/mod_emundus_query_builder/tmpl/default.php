@@ -55,12 +55,13 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	</div>
 </center>
 
-<div id="debug"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 <script>
+	// Array which keeps the numbers of the chosen stats modules
 	var tabNum = [];
+	
+	// Add or remove a number from the array
 	function exportNum(num) {
 		if(tabNum.indexOf(num) != -1)
 			tabNum.splice(tabNum.indexOf(num), 1);
@@ -68,6 +69,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			tabNum.push(num);
 	}
 	
+	// Request the stats modules to export
 	function getExport() {
 		Swal.mixin({
 			confirmButtonText: '<?php echo JText::_("VALIDATION"); ?>',
@@ -87,6 +89,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		})
 	}
 	
+	// Create the images of the graphs and put them in the pdf which will download by itself
 	async function getPdf(tab) {
 		var s = document.createElement('a');
 		var image = "";
@@ -138,6 +141,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		});
 	}
 	
+	// Delete pdf from temporary files
 	function deleteFile() {
 		jQuery.ajax({
 			type : "POST",
@@ -157,8 +161,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	}
 	
 	jQuery(function () {
-		
 		var premierItem = '';
+		
+		// Change the order of the stats modules
 		jQuery('#sortable').sortable({
 			cursor:"n-resize",
 			containment: '.queryBuilder',
@@ -191,6 +196,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		});
 	});
 	
+	// Display or not the statistics module manager
 	function openCloseGraphManager() {
 		if(document.getElementsByClassName('queryBuilder')[0].style.display === 'none') {
 			document.getElementById('buttonOpen').innerHTML = "<?php echo JText::_('CLOSE_QUERY_BUILDER'); ?>";
@@ -201,6 +207,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		}
 	}
 	
+	// Allows you to refresh the stats modules dynamically
 	function refreshModuleGraphQueryBuilder() {
 		jQuery.ajax({
 			type: 'POST',
@@ -245,6 +252,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		});
 	}
 	
+	// Display or not the stat module creation form
 	function buttonCreateModule() {
 		var elt = document.getElementById("createModule");
 		var button = document.getElementById("createButton");
@@ -257,6 +265,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		}
 	}
 	
+	// Create user-made stat module
 	function createModule() {
 		if(document.getElementById("titleModule").value != "" && document.getElementById("typeModule").value != "" && document.getElementById("indicateurModule").value != "" && document.getElementById("axeXModule").value != "" && document.getElementById("axeYModule").value != "")
 		{
@@ -294,6 +303,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		}
 	}
 	
+	// Display or not the chosen stat module
 	function changePublished(idModule) {
 		jQuery.ajax({
 			type : "POST",
@@ -312,6 +322,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		});
 	}
 	
+	// Modify the stat module chosen
 	function modifyModule(idModule, titleModule, typeModule) {
 		Swal.mixin({
 			input: 'text',
@@ -370,6 +381,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		})
 	}
 	
+	// Delete the stat module chosen
 	function deleteModule(idModule) {
 		
 		Swal.fire({
