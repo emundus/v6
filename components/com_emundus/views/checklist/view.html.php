@@ -93,13 +93,8 @@ class EmundusViewChecklist extends JViewLegacy {
                         }
                     }
                     $app->redirect($m_checklist->getConfirmUrl($this->_user->profile).'&usekey=fnum&rowid='.$this->_user->fnum);
-
-                    //$applications = $m_application->getApplications($this->_user->id);
                 }
 
-                //$this->assignRef('applications', $applications);
-                //$this->assignRef('attachments', $attachments);
-                //$this->assignRef('forms', $forms);
                 break;
 
             default :
@@ -156,9 +151,9 @@ class EmundusViewChecklist extends JViewLegacy {
 
                 $is_dead_line_passed = $end_date < $now;
 
-                if ($is_dead_line_passed) {
+                if ($is_dead_line_passed && $eMConfig->get('can_edit_after_deadline', 0) == 0) {
                     $m_checklist->setDelete(0, $this->_user);
-                } elseif (!empty($eMConfig->get('can_edit_until_deadline', 0))) {
+                } elseif (!empty($eMConfig->get('can_edit_until_deadline', 0)) || $eMConfig->get('can_edit_after_deadline', 0) == 1) {
                     $m_checklist->setDelete(1, $this->_user);
                 }
 
