@@ -21,6 +21,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					echo "<option value=\"".$prog['code']."\">".$prog['label']."</option>";
 				} ?>
 			</select>
+			
 			<label><?php echo JText::_('YEARS_CAMPAIGN'); ?></label>
 			<select name="years" id="yearsFilter" onchange="yearAction()">
 				<option value="-1"></option>
@@ -29,6 +30,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					echo "<option value=\"".$year['year']."\">".$year['year']."</option>";
 				} ?>
 			</select>
+			
 			<label><?php echo JText::_('CAMPAIGN'); ?></label>
 			<select name="campaign" id="campaignFilter" onchange="campaignAction()">
 				<option value="-1"></option>
@@ -40,7 +42,9 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		</form>
 	</div>
 </center>
+
 <script>
+	// Allows the display in the filter of years and campaigns associated with the chosen program
 	function progAction() {
 		jQuery.ajax({
 			url: "index.php?option=com_ajax&module=emundus_stat_filter&format=json", 
@@ -66,6 +70,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		});
 	}
 	
+	// Allows the display in the filter of programs and campaigns associated with the chosen year
 	function yearAction() {
 		jQuery.ajax({
 			url: "index.php?option=com_ajax&module=emundus_stat_filter&format=json", 
@@ -91,6 +96,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			}
 		});
 	}
+	
+	// Allows the display in the filter of programs and years associated with the chosen campaign
 	function campaignAction() {
 		jQuery.ajax({
 			url: "index.php?option=com_ajax&module=emundus_stat_filter&format=json", 
@@ -116,6 +123,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		});
 	}
 	
+	// Allows you to refresh the stats modules dynamically
 	function refreshModuleGraph() {
 		jQuery.ajax({
 			type: 'POST',

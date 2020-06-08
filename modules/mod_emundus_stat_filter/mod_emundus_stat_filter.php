@@ -9,6 +9,7 @@ JHtml::script('media/jui/js/bootstrap.min.js');
 $document   = JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_stat_filter/style/mod_emundus_stat_filter.css" );
 
+// Resetting the filter when the page loads
 $session = JFactory::getSession();
 $session->set('filterStat', null);
 if($session->get('filterStat') === null) {
@@ -20,6 +21,7 @@ if($session->get('filterStat') === null) {
 
 $helper = new modEmundusStatFilterHelper;
 
+// Arrays that will allow display of elements in the drop-down menus
 $tabProg		= $helper->getProg($session->get('filterStat'));
 $tabYear		= $helper->getYear($session->get('filterStat'));
 $tabCampaign	= $helper->getCampaign($session->get('filterStat'));

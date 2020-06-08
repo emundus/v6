@@ -2,6 +2,10 @@
 defined('_JEXEC') or die('Access Deny');
 
 class modEmundusStatFilterHelper {
+	
+	/** 
+	  * Retrieve the program codes to which the user has access 
+	  */
 	public function codeProgramUser()
 	{
 		$db = JFactory::getDBO();
@@ -16,6 +20,9 @@ class modEmundusStatFilterHelper {
 		}
 	}
 	
+	/** 
+	  * Retrieve the programs according to the current filter
+	  */
 	public function getProg($filter)
 	{
 		$db = JFactory::getDbo();
@@ -39,6 +46,10 @@ class modEmundusStatFilterHelper {
             return 0;
         }
 	}
+	
+	/** 
+	  * Retrieve the years according to the current filter
+	  */
 	public function getYear($filter)
 	{
 		$db = JFactory::getDbo();
@@ -62,6 +73,10 @@ class modEmundusStatFilterHelper {
             return 0;
         }
 	}
+	
+	/** 
+	  * Retrieve the campaigns according to the current filter
+	  */
 	public function getCampaign($filter)
 	{
 		$db = JFactory::getDbo();
@@ -84,6 +99,10 @@ class modEmundusStatFilterHelper {
             return 0;
         }
 	}
+	
+	/** 
+	  * Retrieve filter selects according to the current filter
+	  */
 	public function getAjax()
 	{
 		$session = JFactory::getSession();
@@ -119,6 +138,9 @@ class modEmundusStatFilterHelper {
 		return json_encode((object)['status' => true, 'msg' => $output]);
 	}
 	
+	/** 
+	  * Retrieve the currents stats modules
+	  */
 	public function reloadModuleAjax()
 	{
 		jimport( 'joomla.application.module.helper' );
