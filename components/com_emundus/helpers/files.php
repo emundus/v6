@@ -612,7 +612,7 @@ class EmundusHelperFiles
                 $allowed_groups = EmundusHelperAccess::getUserFabrikGroups(JFactory::getUser()->id);
                 if (count($elements) > 0) {
                     foreach ($elements as $key => $value) {
-	                    if ($allowed_groups !== true && !in_array($value->group_id, $allowed_groups)) {
+	                    if ($allowed_groups !== true && is_array($allowed_groups) && !in_array($value->group_id, $allowed_groups)) {
 		                    continue;
 	                    }
                         $value->id = $key;
