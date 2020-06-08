@@ -501,9 +501,17 @@ echo $this->table->intro;
         jQuery(".filtertable tbody .fabrik_row").first().after(regionSelect);
 
         jQuery('#data_departements___departement_nomvalue').after('<button type="button" onclick="selectAllDepartments()" class="chosen-toggle-department select">Sélectionnez tous les départements</button>');
-        jQuery(".chosen-department").chosen();
+        jQuery(".chosen-department").chosen({
+            placeholder_text_single: "<?= JText::_('CHOSEN_SELECT_ONE'); ?>",
+            placeholder_text_multiple: "<?= JText::_('CHOSEN_SELECT_MANY'); ?>",
+            no_results_text: "<?= JText::_('CHOSEN_NO_RESULTS'); ?>"
+        });
         jQuery('#data_regions___name_0value').after('<button type="button" onclick="selectAllRegions()" class="chosen-toggle-region select">Sélectionnez toutes les régions</button>');
-        jQuery(".chosen-region").chosen();
+        jQuery(".chosen-region").chosen({
+            placeholder_text_single: "<?= JText::_('CHOSEN_SELECT_ONE'); ?>",
+            placeholder_text_multiple: "<?= JText::_('CHOSEN_SELECT_MANY'); ?>",
+            no_results_text: "<?= JText::_('CHOSEN_NO_RESULTS'); ?>"
+        });
 
         
         // chosen change regions
