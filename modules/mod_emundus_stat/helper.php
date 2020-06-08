@@ -2,6 +2,10 @@
 defined('_JEXEC') or die('Access Deny');
 
 class modEmundusStatHelper {
+	
+	/** 
+	  * Retrieve the program codes to which the user has access 
+	  */
 	public function codeProgramUser()
 	{
 		$db = JFactory::getDBO();
@@ -16,6 +20,9 @@ class modEmundusStatHelper {
 		}
 	}
 	
+	/** 
+	  * Retrieve data from view
+	  */
 	public function getView($view, $number, $group, $param) {
 		$db = JFactory::getDBO();
 		$session = JFactory::getSession();
@@ -70,6 +77,9 @@ class modEmundusStatHelper {
         }
 	}
 	
+	/** 
+	  * Retrieve view data in a given order
+	  */
 	public function getViewOrder($view, $number, $group, $order, $param) {
 		$db = JFactory::getDBO();
 		$session = JFactory::getSession();
@@ -124,6 +134,9 @@ class modEmundusStatHelper {
         }
 	}
 	
+	/** 
+	  * Retrieve campaigns according to the default filter or the session filter
+	  */
 	public function getCampaign($param)
 	{
 		$db = JFactory::getDbo();
@@ -167,6 +180,9 @@ class modEmundusStatHelper {
         }
 	}
 	
+	/** 
+	  * Construction of the URL filtering for the button which allows to consult the data
+	  */
 	public function getUrlFiltre($view, $param)
 	{
 		$filtre = "";

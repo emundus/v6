@@ -123,6 +123,7 @@ $k = 0;
 $dateBefore = null;
 for($cpt = 0; $cpt < count($Detail); $cpt++)
 {
+	// For a timeseries, we set to 0 before and after for the date ranges
 	if($typeGraph === "timeseries")
 	{
 		if($i === 0 && $dateBefore != null && date('Y-m-d', strtotime('+1 day', strtotime($dateBefore))) != date('Y-m-d', strtotime(trim($Detail[$cpt+1]->textContent)))) {
@@ -137,7 +138,9 @@ for($cpt = 0; $cpt < count($Detail); $cpt++)
 		
 	}
 	$sNodeDetail = $Detail[$cpt];
-		
+	
+	
+	// We write the data in the array PHP according to the type of graph
 	if($typeGraph === "timeseries") {
 		if($i === 1)
 			$aDataTableDetailHTML[$j][$i] = date('Y-m-d', strtotime(trim($sNodeDetail->textContent)))." 12:00:00";
