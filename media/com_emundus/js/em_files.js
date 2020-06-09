@@ -4202,17 +4202,16 @@ $(document).ready(function() {
         if ($('#em-check-all-all').is(':checked')) {
             var fnums = 'all';
         } else {
-            fnums = [];
-            var myJSONObject = '{';
+            var fnums = '{';
             var i = 0;
             $('.em-check:checked').each(function() {
-                myJSONObject += '"'+i+'"'+':"'+$(this).attr('id').split('_')[0]+'",';
+                fnums += '"'+i+'"'+':"'+$(this).attr('id').split('_')[0]+'",';
                 i++;
             });
-            myJSONObject = myJSONObject.substr(0, myJSONObject.length-1);
-            myJSONObject += '}';
+            fnums = fnums.substr(0, fnums.length-1);
+            fnums += '}';
 
-            if (myJSONObject.length == 2) {
+            if (fnums.length == 2) {
                 alert('SELECT_FILES');
                 return;
             }
@@ -4262,7 +4261,7 @@ $(document).ready(function() {
             type:'get',
             url:url,
             data: {
-                fnums: myJSONObject,
+                fnums: fnums,
                 forms: forms,
                 attachment: attachment,
                 assessment: assessment,
