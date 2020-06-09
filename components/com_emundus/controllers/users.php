@@ -542,17 +542,15 @@ class EmundusControllerUsers extends JControllerLegacy {
 		if ($users === 'all') {
 
 			$us = $m_users->getUsers(0,0);
-            //var_dump($us).die();
 			$users = array();
 
 			foreach ($us as $u) {
 				$users[] = $u->id;
-                //var_dump($u).die();
 			}
-			//$users = array_unique($users);
 
-		} else $users = (array) json_decode(stripslashes($users));
-
+		} else {
+			$users = (array) json_decode(stripslashes($users));
+		}
 
 		$res = $m_users->changeBlock($users, $state);
 

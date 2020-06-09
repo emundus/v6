@@ -21,11 +21,10 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
 	/**
 	 * Get application form elements to display in XLS file
 	*/
+	/*
 	function send_elements() {
 		error_reporting(0);
-		/*error_reporting(E_ALL);
-ini_set('display_errors', TRUE);
-ini_set('display_startup_errors', TRUE);*/
+		
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		$current_user = JFactory::getUser();
 		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) 
@@ -43,7 +42,7 @@ ini_set('display_startup_errors', TRUE);*/
 		$xls->export_xls($cid, $elements); 
 		exit();
 		}
-
+*/
     /**
      * Gets all eMundus Tags from tags_table
      */

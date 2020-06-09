@@ -43,7 +43,7 @@ class EmundusViewEmail extends JViewLegacy {
 
 		$jinput = JFactory::getApplication()->input;
 		$fnums = $jinput->post->getString('fnums', null);
-		$fnums = (array) json_decode(stripslashes($fnums));
+		$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
 		$dest = $jinput->getInt('desc', 0);
 

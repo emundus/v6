@@ -326,7 +326,7 @@ class EmundusControllerDecision extends JControllerLegacy
         $fnums      = $jinput->getString('fnums', null);
         $title      = $jinput->getString('title', '');
         $comment    = $jinput->getString('comment', null);
-        $fnums      = (array) json_decode(stripslashes($fnums));
+        $fnums      = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         $appModel   = $this->getModel('Application');
 
 
@@ -406,12 +406,13 @@ class EmundusControllerDecision extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getString('fnums', null);
         $tag = $jinput->getInt('tag', null);
-        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         $m_files = $this->getModel('Files');
 
-        if ($fnums == "all")
+        if ($fnums == "all") {
             $fnums = $m_files->getAllFnums();
-
+		}
+		
         $validFnums = array();
 
         foreach($fnums as $fnum) {
@@ -435,15 +436,15 @@ class EmundusControllerDecision extends JControllerLegacy
         $fnums  = $jinput->getString('fnums', null);
         $tags    = $jinput->getVar('tag', null);
 
-        //var_dump($fnums);
-        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums));
+        $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
         $m_files = $this->getModel('Files');
         $m_application = $this->getModel('application');
 
-        if ($fnums == "all")
+        if ($fnums == "all") {
             $fnums = $m_files->getAllFnums();
-
+		}
+		
         foreach ($fnums as $fnum)
         {
             foreach ($tags as $tag){
@@ -474,7 +475,7 @@ class EmundusControllerDecision extends JControllerLegacy
         $evals = $jinput->getString('evals', null);
 
         $actions = (array) json_decode(stripslashes($actions));
-        $fnums = (array) json_decode(stripslashes($fnums));
+        $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         $model = $this->getModel('Files');
         if(is_array($fnums))
         {
@@ -566,7 +567,7 @@ class EmundusControllerDecision extends JControllerLegacy
         $fnums = $jinput->getString('fnums', null);
         $state = $jinput->getInt('state', null);
 
-        $fnums = (array) json_decode(stripslashes($fnums));
+        $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         $model = $this->getModel('Files');
         if(is_array($fnums))
         {
@@ -686,7 +687,7 @@ class EmundusControllerDecision extends JControllerLegacy
         echo json_encode((object)$res);
         exit;
     }
-
+/*
     public function send_elements()
     {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
@@ -721,34 +722,6 @@ class EmundusControllerDecision extends JControllerLegacy
         $name = $this->export_xls($validFnums, $objs, $elts);
         $result = array('status' => true, 'name' => $name);
         echo json_encode((object) $result);
-        exit();
-    }
-/*
-    public function zip()
-    {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        $current_user = JFactory::getUser();
-        if(!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die( JText::_('RESTRICTED_ACCESS') );
-        $jinput = JFactory::getApplication()->input;
-        $fnums = $jinput->getVar('fnums', null);
-        $fnums = (array) json_decode(stripslashes($fnums));
-        $model = $this->getModel('Files');
-        if(!is_array($fnums) || count($fnums)==0 || $fnums===null)
-        {
-            $fnums = $model->getAllFnums();
-        }
-        $validFnums = array();
-        foreach($fnums as $fnum)
-        {
-            if(EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
-            {
-                $validFnums[] = $fnum;
-            }
-        }
-        unset($fnums);
-        $name = $this->export_zip($validFnums);
-        echo json_encode((object) array('status' => true, 'name' => $name));
         exit();
     }
 */
@@ -885,9 +858,10 @@ class EmundusControllerDecision extends JControllerLegacy
     public function getfnums_csv() {
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getVar('fnums', null);
-        $fnums = (array) json_decode(stripslashes($fnums));
+		$fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+		
         $model = $this->getModel('Files');
-        if(!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all")
+        if($fnums == "all")
         {
             $fnums = $model->getAllFnums();
         }
@@ -1124,10 +1098,10 @@ class EmundusControllerDecision extends JControllerLegacy
         exit();
     }
 
-
+/*
     public function export_xls_from_csv()
     {
-        /** PHPExcel */
+        // PHPExcel 
         ini_set('include_path', JPATH_BASE . DS . 'libraries' . DS);
         include 'PHPExcel.php';
         include 'PHPExcel/Writer/Excel5.php';
@@ -1245,7 +1219,7 @@ class EmundusControllerDecision extends JControllerLegacy
         @set_time_limit(10800);
         jimport( 'joomla.user.user' );
         error_reporting(0);
-        /** PHPExcel */
+        // PHPExcel 
         ini_set('include_path', JPATH_BASE.DS.'libraries'.DS);
 
         include 'PHPExcel.php';
@@ -1483,7 +1457,7 @@ class EmundusControllerDecision extends JControllerLegacy
         //$objPHPExcel->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
         // Echo done
     }
-
+*/
     function get_mime_type($filename, $mimePath = '../etc') {
         $fileext = substr(strrchr($filename, '.'), 1);
         if (empty($fileext)) return (false);
