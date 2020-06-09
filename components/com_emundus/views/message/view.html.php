@@ -37,13 +37,15 @@ class EmundusViewMessage extends JViewLegacy {
 
 		$current_user = JFactory::getUser();
 
-    	if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+    	if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 			die (JText::_('RESTRICTED_ACCESS'));
+		}
 
 		// List of fnum is sent via GET in JSON format.
 	    $jinput = JFactory::getApplication()->input;
-		$fnums = $jinput->getString('fnums', null);
-		$fnums = (array) json_decode($fnums);
+		
+		$fnums_post = $jinput->getString('fnums', null);
+		$fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
 	    $document = JFactory::getDocument();
 		$document->addStyleSheet("media/com_emundus/css/emundus.css");
@@ -53,15 +55,21 @@ class EmundusViewMessage extends JViewLegacy {
 
 
 		// If we are selecting all fnums: we get them using the files model
-		if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all") {
+		if ($fnums_array == 'all') {
 			$fnums = $m_files->getAllFnums();
 			$fnums_infos = $m_files->getFnumsInfos($fnums, 'object');
 			$fnums = $fnums_infos;
-		}
+		} else {
+            $fnums = array();
+            foreach ($fnums_array as $key => $value) {
+                $fnums[] = $value->fnum;
+            }
+        }
 
 		$fnum_array = [];
 
 		$tables = array('jos_users.name', 'jos_users.username', 'jos_users.email', 'jos_users.id');
+		
 		foreach ($fnums as $fnum) {
 			if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
 				$user = $m_application->getApplicantInfos($fnum->sid, $tables);

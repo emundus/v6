@@ -62,7 +62,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
 			// get access list for application file
 			case 'access':
 				$fnums = $app->input->getString('users', null);
-				$fnums_obj = (array) json_decode(stripslashes($fnums)); 
+				$fnums_obj = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING); 
 
 			    if(@$fnums_obj[0] == 'all')
 					$fnums = $model->getAllFnums();
@@ -135,7 +135,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
 
 			case 'docs':
 				$fnumsObj = $app->input->getString('fnums', "");
-				$fnumsObj = json_decode(stripslashes($fnumsObj));
+				$fnumsObj = json_decode(stripslashes($fnumsObj), false, 512, JSON_BIGINT_AS_STRING);
 				$fnums = array();
 				foreach($fnumsObj as $fObj)
 				{
