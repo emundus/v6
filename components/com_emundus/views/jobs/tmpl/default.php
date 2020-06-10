@@ -31,58 +31,18 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
 
 <?php if ($user->guest): ?>
     <div class="alert alert-error">
-        <b><?php echo JText::_('WARNING'); ?> ! </b> <?php echo JText::_('COM_EMUNDUS_JOBS_PLEASE_CONNECT_OR_LOGIN_TO_APPLY'); ?>
+        <?php echo JText::_('COM_EMUNDUS_JOBS_PLEASE_CONNECT_OR_LOGIN_TO_APPLY'); ?>
     </div>
-
-    <div class="row">
-        <div class="col-md-5">
-            <div class="rt-block box1">
-                <div class="module-surround">
-                    <div class="module-title">
-                        <h2 class="title"><?php echo JText::_('COM_EMUNDUS_JOBS_LOGIN'); ?></h2>
-                    </div>
-                    <div class="module-content">
-
-
-                        <div class="custombox1">
-                            <p><?php echo JText::_('COM_EMUNDUS_JOBS_LOGIN_DESC'); ?></p>
-
-                            <a class="readon" href="index.php?option=com_users&view=login&Itemid=<?php echo $this->itemid; ?>"><?php echo JText::_('COM_EMUNDUS_JOBS_LOGIN_BTN'); ?></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-5">
-            <div class="rt-block box1">
-                <div class="module-surround">
-                    <div class="module-title">
-                        <h2 class="title"><?php echo JText::_('COM_EMUNDUS_JOBS_REGISTER'); ?></h2>
-                    </div>
-                    <div class="module-content">
-
-
-                        <div class="custombox1">
-                            <p><?php echo JText::_('COM_EMUNDUS_JOBS_REGISTER_DESC'); ?></p>
-
-                            <a class="readon" href="index.php?option=com_users&view=registration&course=utc-dfp-dri&Itemid=<?php echo $this->itemid; ?>"><?php echo JText::_('COM_EMUNDUS_JOBS_REGISTER_BTN'); ?></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 <?php endif; ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_emundus&view=jobs'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JURI::base(); ?>index.php?option=com_emundus&view=jobs" method="post" name="adminForm" id="adminForm">
     <?php echo $this->loadTemplate('filter'); ?>
     <?php if (count($this->items)==0): ?>
         <div class="alert alert-warning">
             <b><?php echo JText::_('COM_EMUNDUS_JOBS_NO_RESULT'); ?></b>
         </div>
     <?php else: ?>
-        <table class="front-end-list">
+        <table class="front-end-list jobs">
             <thead>
             <tr>
                 <th class="align-left">
@@ -124,7 +84,7 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
                         <?php if (isset($item->checked_out) && $item->checked_out) : ?>
                             <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'jobs.', $canCheckin); ?>
                         <?php endif; ?>
-                        <a class="em-job" href="<?php echo JRoute::_('index.php?option=com_emundus&view=job&id=' . (int) $item->id); ?>&tmpl=component">
+                        <a class="em-job" href="<?php echo JURI::base() . 'index.php?option=com_emundus&view=job&id=' . (int) $item->id; ?>&tmpl=">
                             <span class="glyphicon glyphicon-play"></span>
                             <?php echo $item->intitule_poste; ?>
                         </a>
@@ -142,15 +102,15 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
                         <td class="align-left">
                             <?php if ($canEdit || $canDelete): ?>
                                 <?php if ($canEdit): ?>
-                                    <button onclick="this.disabled = true; window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&task=pdf_emploi&user='.$item->user.'&rowid=' . $item->id, false, 2); ?>';" class="btn-xs btn-mini" type="button"><?php echo JText::_('COM_EMUNDUS_JOBS_PDF'); ?></button>
+                                    <button onclick="this.disabled = true; window.location.href = '<?php echo JURI::base().'index.php?option=com_emundus&task=pdf_emploi&user='.$item->user.'&rowid=' . $item->id; ?>';" class="btn-xs btn-mini" type="button"><?php echo JText::_('COM_EMUNDUS_JOBS_PDF'); ?></button>
                                 <?php endif; ?>
                             <?php else: ?>
                                 <?php if ($item->student_id == $user->id): ?>
-                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=job&task=display&fnum='.$item->fnum.'&id=' . $item->id, false, 2); ?>';" class="btn btn-success glyphicon glyphicon-eye-open" type="button"> <?php echo JText::_('COM_EMUNDUS_JOBS_DISPLAY'); ?></button>
-                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=job&task=cancel&fnum='.$item->fnum.'&id=' . $item->id, false, 2); ?>';" class="btn-xs btn-danger glyphicon glyphicon-trash" type="button"></button>
+                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php JURI::base().'index.php?option=com_emundus&controller=job&task=display&fnum='.$item->fnum.'&id=' . $item->id; ?>';" class="btn btn-success glyphicon glyphicon-eye-open" type="button"> <?php echo JText::_('COM_EMUNDUS_JOBS_DISPLAY'); ?></button>
+                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php JURI::base().'index.php?option=com_emundus&controller=job&task=cancel&fnum='.$item->fnum.'&id=' . $item->id; ?>';" class="btn-xs btn-danger glyphicon glyphicon-trash" type="button"></button>
                                     <span class="label label-<?php echo $item->class; ?>"><?php echo $item->application_status; ?></span>
                                 <?php else: ?>
-                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&controller=job&task=apply&id=' . $item->id, false, 2); ?>';" class="btn btn-info glyphicon glyphicon-circle-arrow-right" type="button"> <?php echo JText::_('COM_EMUNDUS_JOBS_APPLY'); ?></button>
+                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JURI::base().'index.php?option=com_emundus&controller=job&task=apply&id=' . $item->id; ?>';" class="btn btn-info glyphicon glyphicon-circle-arrow-right" type="button"> <?php echo JText::_('COM_EMUNDUS_JOBS_APPLY'); ?></button>
                                 <?php endif; ?>
                             <?php endif; ?>
                         </td>
@@ -214,7 +174,7 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
         $('.modal-dialog').addClass('modal-lg');
         $(".modal-body").empty();
 
-        $(".modal-body").append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px; height:'+window.getHeight()*0.8+'px; border:none"></iframe>');
+        $(".modal-body").append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.9+'px; height:'+window.getHeight()*0.9+'px; border:none"></iframe>');
     });
 
 
@@ -222,7 +182,6 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
         var headTag = document.getElementsByTagName("head")[0];
         var jqTag = document.createElement('script');
         jqTag.type = 'text/javascript';
-        /* jqTag.src = '<?php echo JURI::base() . 'media/com_emundus/lib/jquery-1.10.2.min.js'; ?>';*/
         jqTag.src = '<?php echo JURI::base() . 'media/jui/js/jquery.min.js'; ?>';
         jqTag.onload = jQueryCode;
         headTag.appendChild(jqTag);
@@ -234,7 +193,7 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
         jQuery('.delete-button').click(function () {
             var item_id = jQuery(this).attr('data-item-id');
             if (confirm("<?php echo JText::_('COM_EMUNDUS_DELETE_MESSAGE'); ?>")) {
-                window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&task=jobform.remove&id=', false, 2) ?>' + item_id;
+                window.location.href = '<?php echo JURI::base(); ?> + "index.php?option=com_emundus&task=jobform.remove&id="' + item_id;
             }
         });
     }

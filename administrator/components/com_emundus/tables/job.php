@@ -233,7 +233,7 @@ class EmundusTablejob extends JTable
 	 *
 	 * @see JTable::_getAssetParentId
 	 */
-	protected function _getAssetParentId($table = null, $id = null)
+	protected function _getAssetParentId(JTable $table = null, $id = null)
 	{
 		// We will retrieve the parent-asset from the Asset-table
 		$assetParent = JTable::getInstance('Asset');
