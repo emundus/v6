@@ -185,12 +185,12 @@ class modEmundusQueryBuilderHelper {
 			
 			$nameView = "jos_emundus_stat_".(mb_strtolower(str_replace(" ", "_", $nameGraph), 'UTF-8'));
 			if($typeModule === "timeseries") {
-				$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`applicant_id`) AS `nb`, `ecc`.`date_time` AS date, `esc`.`label` AS `campaign`
+				$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, cast(`ecc`.`date_time` as date) AS date, `esc`.`label` AS `campaign`
 				from `jos_emundus_campaign_candidature` `ecc`
 				left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
-				left join `jos_emundus_personal_detail` `".$dbTableName."` on(`ecc`.`applicant_id` = `".$dbTableName."`.`user`)
+				left join `".$dbTableName."` on(`ecc`.`fnum` = `".$dbTableName."`.`fnum`)
 				where `".$dbTableName."`.`".$elementName."` is not null and `ecc`.`submitted` = 1
-				group by `".$dbTableName."`.`".$elementName."`");
+				group by `".$dbTableName."`.`".$elementName."`, cast(`ecc`.`date_time` as date)");
 				$db->execute();
 				
 				$elementName = 'date';
@@ -203,13 +203,13 @@ class modEmundusQueryBuilderHelper {
 					$result = $db->loadAssoc();
 					$paramElt = json_decode($result['params'],true);
 					
-					$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`applicant_id`) AS `nb`, `".$paramElt['join_db_name']."`.`".$paramElt['join_val_column']."`, `esc`.`label` AS `campaign`
+					$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, `".$paramElt['join_db_name']."`.`".$paramElt['join_val_column']."`, `esc`.`label` AS `campaign`
 					from `jos_emundus_campaign_candidature` `ecc`
 					left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
-					left join `".$dbTableName."` on(`ecc`.`applicant_id` = `".$dbTableName."`.`user`)
+					left join `".$dbTableName."` on(`ecc`.`fnum` = `".$dbTableName."`.`fnum`)
 					left join `".$paramElt['join_db_name']."` on ( `".$dbTableName."`.`".$elementName."` = `".$paramElt['join_db_name']."`.`".$paramElt['join_key_column']."`)
 					where `".$dbTableName."`.`".$elementName."` is not null and `ecc`.`submitted` = 1
-					group by `".$dbTableName."`.`".$elementName."`");
+					group by `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`");
 					$db->execute();
 					$elementName = $paramElt['join_val_column'];
 				} elseif($plugin === "dropdown" || $plugin === "radiobutton") {
@@ -225,19 +225,19 @@ class modEmundusQueryBuilderHelper {
 						}
 					$join .= "ELSE '' END)";
 					
-					$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`applicant_id`) AS `nb`, ".$join." AS `elt`, `esc`.`label` AS `campaign`
+					$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, ".$join." AS `elt`, `esc`.`label` AS `campaign`
 					from `jos_emundus_campaign_candidature` `ecc`
 					left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
-					left join `".$dbTableName."` on(`ecc`.`applicant_id` = `".$dbTableName."`.`user`)
+					left join `".$dbTableName."` on(`ecc`.`fnum` = `".$dbTableName."`.`fnum`)
 					where `".$dbTableName."`.`".$elementName."` is not null and `ecc`.`submitted` = 1
 					group by `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`");
 					$db->execute();
 					$elementName = 'elt';
 				} else {
-					$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`applicant_id`) AS `nb`, `".$dbTableName."`.`".$elementName."`, `esc`.`label` AS `campaign`
+					$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, `".$dbTableName."`.`".$elementName."`, `esc`.`label` AS `campaign`
 					from `jos_emundus_campaign_candidature` `ecc`
 					left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
-					left join `".$dbTableName."` on(`ecc`.`applicant_id` = `".$dbTableName."`.`user`)
+					left join `".$dbTableName."` on(`ecc`.`fnum` = `".$dbTableName."`.`fnum`)
 					where `".$dbTableName."`.`".$elementName."` is not null and `ecc`.`submitted` = 1
 					group by `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`");
 					$db->execute();
