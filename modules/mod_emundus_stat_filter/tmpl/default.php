@@ -18,7 +18,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				<option value="-1"></option>
 				<?php
 				foreach ($tabProg as $prog) { 
-					echo "<option value=\"".$prog['code']."\">".$prog['label']."</option>";
+					echo "<option value=\"".$prog['code']."\" ".(($array["prog"]===$prog['code'])?"selected":"").">".$prog['label']."</option>";
 				} ?>
 			</select>
 			
@@ -27,7 +27,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				<option value="-1"></option>
 				<?php
 				foreach ($tabYear as $year) { 
-					echo "<option value=\"".$year['year']."\">".$year['year']."</option>";
+					echo "<option value=\"".$year['year']."\"".(($array["year"]===$year['year'])?"selected":"").">".$year['year']."</option>";
 				} ?>
 			</select>
 			
@@ -36,7 +36,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				<option value="-1"></option>
 				<?php
 				foreach ($tabCampaign as $campaign) { 
-					echo "<option value=\"".$campaign['id']."\">".$campaign['label']."</option>";
+					echo "<option value=\"".$campaign['id']."\"".(($array["campaign"]===$campaign['id'])?"selected":"").">".$campaign['label']."</option>";
 				} ?>
 			</select>
 		</form>

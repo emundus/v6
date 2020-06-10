@@ -11,7 +11,7 @@ $document->addStyleSheet("modules/mod_emundus_stat_filter/style/mod_emundus_stat
 
 // Resetting the filter when the page loads
 $session = JFactory::getSession();
-$session->set('filterStat', null);
+// $session->set('filterStat', null);
 if($session->get('filterStat') === null) {
 	$array["prog"] = "-1";
 	$array["year"] = "-1";
@@ -26,5 +26,6 @@ $tabProg		= $helper->getProg($session->get('filterStat'));
 $tabYear		= $helper->getYear($session->get('filterStat'));
 $tabCampaign	= $helper->getCampaign($session->get('filterStat'));
 
+$array = json_decode($session->get('filterStat'), true);
 
 require(JModuleHelper::getLayoutPath('mod_emundus_stat_filter','default.php'));
