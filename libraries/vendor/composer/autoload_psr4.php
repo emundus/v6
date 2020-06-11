@@ -6,9 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname(dirname($vendorDir));
 
 return array(
-    'Zend\\Validator\\' => array($vendorDir . '/zendframework/zend-validator/src'),
-    'Zend\\Stdlib\\' => array($vendorDir . '/zendframework/zend-stdlib/src'),
-    'Zend\\Escaper\\' => array($vendorDir . '/zendframework/zend-escaper/src'),
     'TYPO3\\PharStreamWrapper\\' => array($vendorDir . '/typo3/phar-stream-wrapper/src'),
     'Symfony\\Polyfill\\Util\\' => array($vendorDir . '/symfony/polyfill-util'),
     'Symfony\\Polyfill\\Php73\\' => array($vendorDir . '/symfony/polyfill-php73'),
@@ -20,8 +17,6 @@ return array(
     'ReCaptcha\\' => array($vendorDir . '/google/recaptcha/src/ReCaptcha'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
-    'PhpOffice\\PhpWord\\' => array($vendorDir . '/phpoffice/phpword/src/PhpWord'),
-    'PhpOffice\\Common\\' => array($vendorDir . '/phpoffice/common/src/Common'),
     'Joomla\\Utilities\\' => array($vendorDir . '/joomla/utilities/src'),
     'Joomla\\Uri\\' => array($vendorDir . '/joomla/uri/src'),
     'Joomla\\String\\' => array($vendorDir . '/joomla/string/src'),
