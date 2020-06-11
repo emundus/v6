@@ -432,13 +432,16 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 
         Swal.fire({
             customClass: {
-                title: "heading no-dash"
+                title: "heading no-dash",
+                confirmButton: 'button-2 w-button',
+                cancelButton: 'button-2 w-button'
             },
             title: '<?= JText::_('CONFIRM_DELETE_FILE'); ?>',
             icon: 'warning',
             showCancelButton: true,
             showConfirmButton: true,
-            reverseButtons: true
+            reverseButtons: true,
+            cancelButtonText: '<?= JText::_('CANCEL'); ?>'
         }).then(confirm => {
             if (confirm.value) {
                 document.location.href = "index.php?option=com_emundus&task=deletefile&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>";
