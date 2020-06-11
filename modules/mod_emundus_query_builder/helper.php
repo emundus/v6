@@ -203,7 +203,15 @@ class modEmundusQueryBuilderHelper {
 					$result = $db->loadAssoc();
 					$paramElt = json_decode($result['params'],true);
 					
-					$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, `".$paramElt['join_db_name']."`.`".$paramElt['join_val_column']."`, `esc`.`label` AS `campaign`
+					$session = JFactory::getSession();
+					$user = $session->get('emundusUser');
+					
+					$tableDataBaseJoin = ($paramElt['join_val_column_concat']==="")?$paramElt['join_db_name'].".".$paramElt['join_val_column']:$paramElt['join_val_column_concat']." AS `elt`";
+					$tableDataBaseJoin = preg_replace('#{thistable}#', $paramElt['join_db_name'], $tableDataBaseJoin);
+					$tableDataBaseJoin = preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0 , 2), $tableDataBaseJoin);
+                    $tableDataBaseJoin  = preg_replace('#{my->id}#', $user->id, $tableDataBaseJoin);
+					
+					$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, ".$tableDataBaseJoin.", `esc`.`label` AS `campaign`
 					from `jos_emundus_campaign_candidature` `ecc`
 					left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
 					left join `".$dbTableName."` on(`ecc`.`fnum` = `".$dbTableName."`.`fnum`)
@@ -211,12 +219,11 @@ class modEmundusQueryBuilderHelper {
 					where `".$dbTableName."`.`".$elementName."` is not null and `ecc`.`submitted` = 1
 					group by `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`");
 					$db->execute();
-					$elementName = $paramElt['join_val_column'];
+					$elementName = 'elt';
 				} elseif($plugin === "dropdown" || $plugin === "radiobutton") {
 					$db->setQuery("SELECT params FROM jos_fabrik_elements WHERE id = ".$indicateur);
 					$result = $db->loadAssoc();
 					$paramElt = json_decode($result['params'],true);
-					
 					$join = "(CASE `".$dbTableName."`.`".$elementName."` ";
 					if($paramElt['sub_options']['sub_values'] != null)
 						for($i = 0 ; $i < count($paramElt['sub_options']['sub_values']);$i++) {
@@ -224,7 +231,6 @@ class modEmundusQueryBuilderHelper {
 								$join .= "WHEN '".addslashes($paramElt['sub_options']['sub_values'][$i])."' THEN '".addslashes($paramElt['sub_options']['sub_labels'][$i])."' ";
 						}
 					$join .= "ELSE '' END)";
-					
 					$db->setQuery("CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, ".$join." AS `elt`, `esc`.`label` AS `campaign`
 					from `jos_emundus_campaign_candidature` `ecc`
 					left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
