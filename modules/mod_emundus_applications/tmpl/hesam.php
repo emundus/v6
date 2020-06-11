@@ -70,7 +70,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                     <span class="fa fa-share-alt" onclick="share('<?= $application->titre; ?>', '<?= addslashes(preg_replace("/\r|\n/", "",(strlen($application->question) >= 150)?substr($application->question, 0, 147).'...':$application->question)); ?>')"></span>
                                 <?php endif; ?>
 
-	                            <?php if ($application->status !== '0') :?>
+	                            <?php if ($application->status === '0') :?>
                                     <!-- Edit button -->
                                     <a id="edit" href="<?= JRoute::_(JURI::base().'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>" title="<?= JText::_('OPEN_APPLICATION'); ?>">
                                         <span class="fa fa-edit"></span>
