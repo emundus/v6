@@ -12,12 +12,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
 
 <center>
-	<button id="buttonOpen" class="btn" onclick="openCloseGraphManager()"><?php echo JText::_('OPEN_QUERY_BUILDER'); ?></button>
+	<button id="buttonOpen" class="btn" onclick="openCloseGraphManager()"><?php if(isset($_GET['gOpen'])) { echo JText::_('CLOSE_QUERY_BUILDER'); } else { echo JText::_('OPEN_QUERY_BUILDER'); } ?></button>
 	<br /><br />
-	<div class="queryBuilder" style="display:none;" >
+	<div class="queryBuilder" style="display:<?php if(isset($_GET['gOpen'])) { echo "block;"; } else { echo "none;"; } ?>" >
 		<form action="" method="POST" onsubmit="return false;">
 			<input type="button" id="createButton" class="btn" value="<?php echo JText::_('CREATE_MODULE'); ?>" onclick="buttonCreateModule()"/>
-			<div class="createModule" id="createModule" style="display:none;">
+			<div class="createModule" id="createModule" style="display:none;" >
 				<input type="text" id="titleModule" placeholder="<?php echo JText::_('TITLE_MODULE'); ?>*" />
 				<label><?php echo JText::_('TYPE_MODULE'); ?>*</label>
 				<select id="typeModule">
@@ -41,17 +41,17 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					<option value="pareto3d"><?php echo JText::_("PARETO_3D_LABEL") ?></option>
 				</select>
 				<?php echo $selectIndicateur; ?>
-				<input type="text" id="axeXModule" placeholder="<?php echo JText::_('AXE_X_MODULE'); ?>*" />
+				<input type="text" id="axeXModule" placeholder="<?php echo JText::_('AXE_X_MODULE'); ?>*"  />
 				<input type="text" id="axeYModule" placeholder="<?php echo JText::_('AXE_Y_MODULE'); ?>*" />
 				<input type="text" id="progModule" placeholder="<?php echo JText::_('PROGRAM_LABEL'); ?>" />
 				<input type="text" id="yearModule" placeholder="<?php echo JText::_('YEAR_LABEL'); ?>" />
 				<input type="text" id="campaignModule" placeholder="<?php echo JText::_('CAMPAIGN_LABEL'); ?>" />
-				<input type="button" name="validation" class="btn" value="<?php echo JText::_('VALIDATION'); ?>" onclick="createModule()"/>
+				<input type="button" name="validation" class="btn" id="validation" value="<?php echo JText::_('VALIDATION'); ?>" onclick="createModule()"/>
 				<div id="errorCreateModule"></div>
 			</div>
 			<?php echo $showModule; ?>
-			<button onclick="getExport()" class="btn"><?php echo JText::_('EXPORT_MODULE'); ?></button>
 		</form>
+		<button onclick="getExport()" class="btn btnExport"><?php echo JText::_('EXPORT_MODULE'); ?></button>
 	</div>
 </center>
 
@@ -314,7 +314,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			success : function(data) {
 				msg = JSON.parse(data.data);
 				if (msg.status) {
-					window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+					window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?><?php if(!isset($_GET['gOpen'])) echo '&gOpen=1'; ?>");
 				} else {
 					console.log(msg.msg);
 				}
@@ -371,7 +371,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					success : function(data) {
 						msg = JSON.parse(data.data);
 						if (msg.status) {
-							window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+							window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?><?php if(!isset($_GET['gOpen'])) echo '&gOpen=1'; ?>");
 						} else {
 							console.log(msg.msg);
 						}
@@ -403,7 +403,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					success : function(data) {
 						msg = JSON.parse(data.data);
 						if (msg.status) {
-							window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
+							window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?><?php if(!isset($_GET['gOpen'])) echo '&gOpen=1'; ?>");
 						} else {
 							console.log(msg.msg);
 						}

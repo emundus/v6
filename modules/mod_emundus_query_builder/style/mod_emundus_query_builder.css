@@ -2,6 +2,7 @@
 	text-align:left;
 	border:5px solid #de6339;
 	padding-left:5%;
+	padding-bottom:1%;
 }
 .swal2-select {
 	font-size:14px !important;
@@ -35,6 +36,13 @@
 }
 .radioModule {
 	width:75%;
+}
+.exportModule, .exportModule td {
+	text-align:left;
+	border:none;
+}
+.exportModule .radioButton {
+	margin-right:1%;
 }
 .edit {
 	width:20%;

@@ -39,7 +39,7 @@ foreach($tabExportModule as $mod) {
 	$typeMod = $helper->getTypeStatModule($mod['id']);
 	$view = json_decode($mod['params'], true)['view'];
 	
-	$exportModule .= "<table class='editModule'><tr><td class='order'></td><td class='radioModule'><input type='checkbox' id='".JText::_($mod['title'])."' value='".$mod['id']."' onchange='exportNum(\"".$view."\")'><label>".JText::_($mod['title'])."</label></td></td></tr></table>";
+	$exportModule .= "<table class='exportModule'><tr><td class='radioModule'><label><input type='checkbox' class='radioButton' id='".JText::_($mod['title'])."' value='".$mod['id']."' onchange='exportNum(\"".$view."\")'>".JText::_($mod['title'])."</label></td></td></tr></table>";
 	$i++;
 }
 $exportModule .= "</div>";
