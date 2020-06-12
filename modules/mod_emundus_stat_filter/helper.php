@@ -1,6 +1,10 @@
 <?php
 defined('_JEXEC') or die('Access Deny');
 
+
+jimport('joomla.log.log');
+JLog::addLogger(['text_file' => 'com_emundus.stat_filter.php'], JLog::ALL, ['com_emundus']);
+
 class modEmundusStatFilterHelper {
 	
 	/** 
@@ -13,9 +17,12 @@ class modEmundusStatFilterHelper {
 		$user = $session->get('emundusUser');
 		
         try {
-			$db->setQuery("SELECT `jos_emundus_setup_groups_repeat_course`.`course` FROM `jos_emundus_groups` LEFT JOIN `jos_emundus_setup_groups_repeat_course` ON (`jos_emundus_groups`.`group_id` = `jos_emundus_setup_groups_repeat_course`.`parent_id` ) WHERE `user_id` = ".$user->id);
+			$query = "SELECT `jos_emundus_setup_groups_repeat_course`.`course` FROM `jos_emundus_groups` LEFT JOIN `jos_emundus_setup_groups_repeat_course` ON (`jos_emundus_groups`.`group_id` = `jos_emundus_setup_groups_repeat_course`.`parent_id` ) WHERE `user_id` = ".$user->id;
+			$db->setQuery($query);
 			return $db->loadColumn();
 		} catch(Exception $e) {
+			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+			JLog::add($error, JLog::ERROR, 'com_emundus');
 			return -1;
 		}
 	}
@@ -26,6 +33,8 @@ class modEmundusStatFilterHelper {
 	public function getProg($filter)
 	{
 		$db = JFactory::getDbo();
+        $session = JFactory::getSession();
+		$user = $session->get('emundusUser');
 		$query = "SELECT * FROM `jos_emundus_setup_programmes` INNER JOIN `jos_emundus_setup_campaigns` ON `jos_emundus_setup_programmes`.`code` = `jos_emundus_setup_campaigns`.`training` WHERE `jos_emundus_setup_programmes`.`code` IN (".implode(",", $db->quote((new modEmundusStatFilterHelper)->codeProgramUser())).")";
 		$array = json_decode($filter, true);
 		if($array["year"] != -1 || $array["campaign"] != -1) {
@@ -43,6 +52,8 @@ class modEmundusStatFilterHelper {
 			$db->setQuery($query);
             return $db->loadAssocList();
         } catch(Exception $e) {
+			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+			JLog::add($error, JLog::ERROR, 'com_emundus');
             return 0;
         }
 	}
@@ -53,6 +64,8 @@ class modEmundusStatFilterHelper {
 	public function getYear($filter)
 	{
 		$db = JFactory::getDbo();
+        $session = JFactory::getSession();
+		$user = $session->get('emundusUser');
 		$query = "SELECT * FROM `jos_emundus_setup_campaigns` WHERE `jos_emundus_setup_campaigns`.`training` IN (".implode(",", $db->quote((new modEmundusStatFilterHelper)->codeProgramUser())).")";
 		$array = json_decode($filter, true);
 		if($array["prog"] != -1 || $array["campaign"] != -1) {
@@ -70,6 +83,8 @@ class modEmundusStatFilterHelper {
 			$db->setQuery($query);
             return $db->loadAssocList();
         } catch(Exception $e) {
+			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+			JLog::add($error, JLog::ERROR, 'com_emundus');
             return 0;
         }
 	}
@@ -80,6 +95,8 @@ class modEmundusStatFilterHelper {
 	public function getCampaign($filter)
 	{
 		$db = JFactory::getDbo();
+        $session = JFactory::getSession();
+		$user = $session->get('emundusUser');
 		$query = "SELECT * FROM `jos_emundus_setup_campaigns` WHERE `jos_emundus_setup_campaigns`.`training` IN (".implode(",", $db->quote((new modEmundusStatFilterHelper)->codeProgramUser())).")";
 		$array = json_decode($filter, true);
 		if($array["year"] != -1 || $array["prog"] != -1) {
@@ -96,6 +113,8 @@ class modEmundusStatFilterHelper {
 			$db->setQuery($query);
             return $db->loadAssocList();
         } catch(Exception $e) {
+			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+			JLog::add($error, JLog::ERROR, 'com_emundus');
             return 0;
         }
 	}
@@ -148,16 +167,26 @@ class modEmundusStatFilterHelper {
 		$renderer = $document->loadRenderer('module');
 		$contents = '';	
 		$database = JFactory::getDBO();
-		$database->setQuery("SELECT * FROM jos_modules WHERE module = 'mod_emundus_stat' AND published = 1 ORDER BY ordering");
-		$modules = $database->loadObjectList();
-		$params = array('style'=>'xhtml');					
-		$modulesString = "";
-		if($modules != null)
-			for($cpt = 0; $cpt < count($modules); $cpt++) {
-				$contents = $renderer->render($modules[$cpt], $params);
-				$modulesString .= "////".$modules[$cpt]->id."////".JModuleHelper::renderModule($modules[$cpt]);
-			}
-		
-		return json_encode((object)['status' => true, 'msg' => $modulesString]);
+        $session = JFactory::getSession();
+		$user = $session->get('emundusUser');
+		try {
+			$query = "SELECT * FROM jos_modules WHERE module = 'mod_emundus_stat' AND published = 1 ORDER BY ordering";
+			$database->setQuery($query);
+			$modules = $database->loadObjectList();
+			$params = array('style'=>'xhtml');					
+			$modulesString = "";
+			if($modules != null)
+				for($cpt = 0; $cpt < count($modules); $cpt++) {
+					$contents = $renderer->render($modules[$cpt], $params);
+					$modulesString .= "////".$modules[$cpt]->id."////".JModuleHelper::renderModule($modules[$cpt]);
+				}
+			
+			return json_encode((object)['status' => true, 'msg' => $modulesString]);
+		} catch(Exception $e) {
+			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+			JLog::add($error, JLog::ERROR, 'com_emundus');
+			echo json_encode((object)['status' => false, 'msg' => "Error"]);
+			exit;
+		}
 	}
 }
