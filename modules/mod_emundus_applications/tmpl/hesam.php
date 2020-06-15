@@ -67,7 +67,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                             </div>
                             <div class="wrapper-edit">
                                 <?php if ($application->status === '1' || $application->status === '2') :?>
-                                    <span class="fa fa-share-alt" onclick="share('<?= $application->titre; ?>', '<?= addslashes(preg_replace("/\r|\n/", "",(strlen($application->question) >= 150)?substr($application->question, 0, 147).'...':$application->question)); ?>')"></span>
+                                    <span class="fa fa-share-alt" onclick="share('<?= addslashes(preg_replace("/\r|\n/", "",$application->titre)); ?>', '<?= addslashes(preg_replace("/\r|\n/", "",(strlen($application->question) >= 150)?substr($application->question, 0, 147).'...':$application->question)); ?>')"></span>
                                 <?php endif; ?>
 
 	                            <?php if ($application->status === '0') :?>
