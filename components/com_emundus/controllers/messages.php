@@ -1240,6 +1240,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $message = $jinput->post->getRaw('message', null);
         $receiver = $jinput->post->get('receiver', null);
         $message = str_replace("&nbsp;", "", $message);
+        $cifre_link = $jinput->post->get('cifre_link', null);
 
         // Get receiver info
 	    $m_profile = new EmundusModelProfile();
@@ -1249,16 +1250,31 @@ class EmundusControllerMessages extends JControllerLegacy {
         // Send notification email to the receiver
 	    $post = [
 		    'USER_NAME' => strtoupper($receiver_profile["lastname"]). ' '.ucfirst($receiver_profile["firstname"]),
-		    'SENDER' => strtoupper($user->lastname). ' '.ucfirst($user->firstname)
+		    'SENDER' => strtoupper($user->lastname). ' '.ucfirst($user->firstname),
+		    'MESSAGE' => $message
 	    ];
-	    
-	    // check if the receiver is online
-	    // IF he isn't connected we send them a notification email
-	    $m_user = new EmundusModelUsers();
-	    $online_users = $m_user->getOnlineUsers();
-		if (!in_array($receiver, $online_users)) {
-			$this->sendEmailNoFnum($email, 'notification_mail', $post);
-		}
+
+	    if (!empty($cifre_link)) {
+
+	    	// Find out if we should notify the receiver using the CIFRE notification system.
+		    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+		    $m_cifre = new EmundusModelCifre();
+		    $notify = $m_cifre->checkNotify($user->id, $receiver);
+		    if (!empty($notify)) {
+			    $this->sendEmailNoFnum($email, 'notification_mail', $post);
+		    }
+
+
+	    } else {
+		    // check if the receiver is online
+		    // IF he isn't connected we send them a notification email
+		    $m_user = new EmundusModelUsers();
+		    $online_users = $m_user->getOnlineUsers();
+		    if (!in_array($receiver, $online_users)) {
+			    $this->sendEmailNoFnum($email, 'notification_mail', $post);
+		    }
+	    }
+
 
 	    echo json_encode((object) ['status' => $m_messages->sendMessage($receiver, $message)]);
 	    exit;

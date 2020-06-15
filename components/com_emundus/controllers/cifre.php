@@ -869,6 +869,90 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 
 	/**
+	 * Enables notification on a contact request.
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function notify() {
+
+		$jinput = JFactory::getApplication()->input;
+		$link_id = $jinput->post->getInt('link_id');
+
+		if (empty($link_id)) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
+			exit;
+		}
+
+		$link = $this->m_cifre->getLinkByID($link_id);
+		if ($link->user_to != $this->user->id && $link->user_from != $this->user->id) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link does not concern current user.']);
+			exit;
+		}
+
+		// By using this we can get the link direction, this allows us to see which column should be filled (user to or from).
+		if ($link->user_to == $this->user->id) {
+
+			// If the user TO is our user, then we need to look at USER_TO_NOTIFY.
+			$direction = 1;
+
+		} elseif (!empty($link->fnum_from)) {
+
+			// If the user FROM is our user, then we need to look at USER_FROM_FAVORITE.
+			$direction = -1;
+
+		} else {
+			echo json_encode((object) ['status' => false, 'msg' => 'Error.']);
+			exit;
+		}
+
+		$this->m_cifre->notify($link_id, $direction);
+		echo json_encode((object) ['status' => true]);
+		exit;
+	}
+
+
+	/**
+	 * Disables notification on a contact request.
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function unnotify() {
+
+		$jinput = JFactory::getApplication()->input;
+		$link_id = $jinput->post->getInt('link_id');
+
+		if (empty($link_id)) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
+			exit;
+		}
+
+		$link = $this->m_cifre->getLinkByID($link_id);
+		if ($link->user_to != $this->user->id && $link->user_from != $this->user->id) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link does not concern current user.']);
+			exit;
+		}
+
+		// By using this we can get the link direction, this allows us to see which column should be filled (user to or from).
+		if ($link->user_to == $this->user->id) {
+			// If the user TO is our user, then we need to remove USER_TO_NOTIFY.
+			$direction = 1;
+		} elseif (!empty($link->fnum_from)) {
+			// If the user FROM is our user, then we need to remove USER_FROM_NOTIFY.
+			$direction = -1;
+		} else {
+			echo json_encode((object) ['status' => false, 'msg' => 'Error.']);
+			exit;
+		}
+
+		$this->m_cifre->unnotify($link_id, $direction);
+		echo json_encode((object) ['status' => true]);
+		exit;
+	}
+
+
+	/**
 	 * @param $user
 	 *
 	 * @return mixed

@@ -149,7 +149,8 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
                 url: 'index.php?option=com_emundus&controller=messages&task=sendMessage',
                 data : {
                     message: message,
-                    receiver: receiver
+                    receiver: receiver,
+                    cifre_link : 1
                 },
                 success: function (result) {
                     let messageList = $('.message-list');

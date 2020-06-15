@@ -164,7 +164,15 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                     </div>
                                                                 </div>
                                                                 <div class="column-2 w-col w-col-3">
-                                                                    <!-- <a href="#" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9f28c9278d0a09357c1ff9_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image-bell"></a> -->
+
+	                                                                <?php if ($contact['state'] === '2') :?>
+                                                                        <?php if ($contact['notify']) :?>
+                                                                            <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
+                                                                        <?php else :?>
+                                                                            <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
+                                                                        <?php endif; ?>
+                                                                    <?php endif; ?>
+
                                                                     <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail"></a>
                                                                     <div class="notif <?= ($contact['unread'] == 0)?'_0notif':''; ?>">
                                                                         <div class="notif-number <?= ($contact['unread'] == 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
@@ -247,7 +255,15 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                     </div>
                                                                 </div>
                                                                 <div class="column-2 w-col w-col-3">
-                                                                    <!-- <a href="#" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9f28c9278d0a09357c1ff9_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image-bell"></a> -->
+
+	                                                                <?php if ($contact['state'] === '2') :?>
+		                                                                <?php if ($contact['notify']) :?>
+                                                                            <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
+		                                                                <?php else :?>
+                                                                            <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
+		                                                                <?php endif; ?>
+	                                                                <?php endif; ?>
+
                                                                     <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail"></a>
                                                                     <div class="notif <?= ($contact['unread'] == 0)?'_0notif':''; ?>">
                                                                         <div class="notif-number <?= ($contact['unread'] == 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
@@ -327,7 +343,15 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                     </div>
                                                                 </div>
                                                                 <div class="column-2 w-col w-col-3">
-                                                                    <!-- <a href="#" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9f28c9278d0a09357c1ff9_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image-bell"></a> -->
+
+	                                                                <?php if ($contact['state'] === '2') :?>
+		                                                                <?php if ($contact['notify']) :?>
+                                                                            <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
+		                                                                <?php else :?>
+                                                                            <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
+		                                                                <?php endif; ?>
+	                                                                <?php endif; ?>
+
                                                                     <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail"></a>
                                                                     <div class="notif <?= ($contact['unread'] == 0)?'_0notif':''; ?>">
                                                                         <div class="notif-number <?= ($contact['unread'] == 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
@@ -395,7 +419,15 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                 </div>
                                             </div>
                                             <div class="column-2 w-col w-col-3">
-                                                <!-- TODO: Notifications -->
+
+	                                            <?php if ($contact['state'] === '2') :?>
+                                                    <?php if ($chat_request['notify']) :?>
+                                                        <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $chat_request['link_id']; ?>)"></i>
+                                                    <?php else :?>
+                                                        <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $chat_request['link_id']; ?>)"></i>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+
                                                 <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $chat_request['applicant_id']; ?>" class="link w-inline-block">
                                                     <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail">
                                                 </a>
@@ -654,6 +686,81 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
             error: function(jqXHR) {
                 star_icon.classList.remove('fa-spin');
                 star_icon.style.color = '#d91e18';
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+
+
+    /**
+     *
+     * @param link_id
+     */
+    function notify(link_id) {
+
+        const bell_icon = document.querySelector('#card-'+link_id+' .em-bell-button');
+
+        jQuery.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus&controller=cifre&task=notify',
+            data: {
+                link_id: link_id
+            },
+            success: function(result) {
+
+                result = JSON.parse(result);
+                if (result.status) {
+                    iconate(bell_icon, {
+                        from: 'fa-bell-slash-o',
+                        to: 'fa-bell',
+                        animation: 'horizontalFlip'
+                    });
+                    bell_icon.setAttribute('onclick', 'unnotify('+link_id+')');
+                    bell_icon.setAttribute('data-original-title', '<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF');?>');
+
+                } else {
+                    bell_icon.style.color = '#d91e18';
+                }
+            },
+            error: function(jqXHR) {
+                bell_icon.style.color = '#d91e18';
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+
+
+    /**
+     *
+     * @param link_id
+     */
+    function unnotify(link_id) {
+
+        const bell_icon = document.querySelector('#card-'+link_id+' .em-bell-button');
+
+        jQuery.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus&controller=cifre&task=unnotify',
+            data: {
+                link_id: link_id
+            },
+            success: function(result) {
+
+                result = JSON.parse(result);
+                if (result.status) {
+                    iconate(bell_icon, {
+                        from: 'fa-bell',
+                        to: 'fa-bell-slash-o',
+                        animation: 'horizontalFlip'
+                    });
+                    bell_icon.setAttribute('onclick', 'notify('+link_id+')');
+                    bell_icon.setAttribute('data-original-title', '<?= JText::_('NOTIFY_CLICK_HERE');?>');
+                } else {
+                    bell_icon.style.color = '#d91e18';
+                }
+            },
+            error: function(jqXHR) {
+                bell_icon.style.color = '#d91e18';
                 console.log(jqXHR.responseText);
             }
         });
