@@ -283,7 +283,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					progModule: document.getElementById("progModule").value,
 					yearModule: document.getElementById("yearModule").value,
 					campaignModule: document.getElementById("campaignModule").value,
-					idMenu: <?php echo $_GET['Itemid']; ?>
+					idMenu: <?php echo JFactory::getApplication()->getMenu()->getActive()->id; ?>
 				},
 				success : function(data) {
 					if(data.success) {
@@ -314,7 +314,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			success : function(data) {
 				msg = JSON.parse(data.data);
 				if (msg.status) {
-					window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?><?php if(!isset($_GET['gOpen'])) echo '&gOpen=1'; ?>");
+					window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
 				} else {
 					console.log(msg.msg);
 				}
@@ -371,7 +371,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					success : function(data) {
 						msg = JSON.parse(data.data);
 						if (msg.status) {
-							window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?><?php if(!isset($_GET['gOpen'])) echo '&gOpen=1'; ?>");
+							window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
 						} else {
 							console.log(msg.msg);
 						}
@@ -403,7 +403,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					success : function(data) {
 						msg = JSON.parse(data.data);
 						if (msg.status) {
-							window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?><?php if(!isset($_GET['gOpen'])) echo '&gOpen=1'; ?>");
+							window.location.assign("<?php echo basename($_SERVER['REQUEST_URI']); ?>");
 						} else {
 							console.log(msg.msg);
 						}
