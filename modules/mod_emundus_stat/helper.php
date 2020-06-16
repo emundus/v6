@@ -12,10 +12,10 @@ class modEmundusStatHelper {
 	public function codeProgramUser()
 	{
 		$db = JFactory::getDBO();
-        $session = JFactory::getSession();
+		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		
-        try {
+		try {
 			$query = "SELECT `jos_emundus_setup_groups_repeat_course`.`course` FROM `jos_emundus_groups` LEFT JOIN `jos_emundus_setup_groups_repeat_course` ON (`jos_emundus_groups`.`group_id` = `jos_emundus_setup_groups_repeat_course`.`parent_id` ) WHERE `user_id` = ".$user->id;
 			$db->setQuery($query);
 			return $db->loadColumn();
@@ -31,7 +31,7 @@ class modEmundusStatHelper {
 	  */
 	public function getView($view, $number, $group, $param) {
 		$db = JFactory::getDBO();
-        $session = JFactory::getSession();
+		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		$array = json_decode($session->get('filterStat'), true);
 		try {
@@ -97,10 +97,10 @@ class modEmundusStatHelper {
 	  */
 	public function getViewOrder($view, $number, $group, $order, $param) {
 		$db = JFactory::getDBO();
-        $session = JFactory::getSession();
+		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		$array = json_decode($session->get('filterStat'), true);
-        try {
+		try {
 			$query1 = "SELECT ";
 			for($cpt = 0 ; $cpt < @count($number) ; $cpt++)
 				$query1 .= "SUM(".$number[$cpt].") AS `number".$cpt."`,";
@@ -159,7 +159,7 @@ class modEmundusStatHelper {
 	public function getCampaign($param)
 	{
 		$db = JFactory::getDbo();
-        $session = JFactory::getSession();
+		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		$query = "SELECT id FROM `jos_emundus_setup_campaigns` WHERE `jos_emundus_setup_campaigns`.`training` IN (".implode(",", $db->quote((new modEmundusStatHelper)->codeProgramUser())).")";
 		if(($param->get('program')) == true || ($param->get('year')) == true || ($param->get('campaign')) == true) {
