@@ -322,6 +322,8 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                             } elseif ($contact['direction'] === '1') {
                                                                 $cardClass = 'demandecontact';
                                                             }
+                                                        } elseif ($contact['state'] === '2') {
+	                                                        $cardClass = 'accepted';
                                                         }
                                                     ?>
                                                     <div class="wrapper-small-card-content <?= $cardClass; ?>">
@@ -538,8 +540,16 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
             },
             success: result => {
                 if (result.status) {
+
                     // When we successfully change the status, we simply dynamically change the button.
                     document.getElementById('contactButtons-'+id).outerHTML = '';
+
+                    let cardClass = document.querySelector('#card-'+id+' .demandecontact');
+                    if (typeof cardClass !== 'undefined') {
+                        cardClass.classList.remove('demandecontact');
+                        cardClass.classList.add('accepted');
+                    }
+
                     Swal.fire({
                         icon: 'success',
                         text: '<?= JText::_('OFFER_ACCEPTED'); ?>'
@@ -573,8 +583,10 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
             },
             success: result => {
                 if (result.status) {
+
                     // Dynamically change the button back to the state of not having a link.
                     document.getElementById('card-'+id).outerHTML = '';
+
                 } else {
                     Swal.fire({
                         icon: 'error',
