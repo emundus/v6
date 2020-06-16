@@ -420,7 +420,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                             </div>
                                             <div class="column-2 w-col w-col-3">
 
-	                                            <?php if ($contact['state'] === '2') :?>
+	                                            <?php if ($chat_request['state'] === '2') :?>
                                                     <?php if ($chat_request['notify']) :?>
                                                         <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $chat_request['link_id']; ?>)"></i>
                                                     <?php else :?>
