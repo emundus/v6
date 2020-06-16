@@ -258,7 +258,7 @@ class EmundusHelperAccess {
 	 */
 	public static function isDataAnonymized($user_id) {
 		JLog::addLogger(['text_file' => 'com_emundus.access.error.php'], JLog::ERROR, 'com_emundus');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		$m_users = new EmundusModelUsers();
 
 		$group_ids = $m_users->getUserGroups($user_id);
@@ -267,7 +267,7 @@ class EmundusHelperAccess {
 			// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
 			$group_ids = array_keys(array_flip(array_keys($group_ids)));
 
-			$db    = JFactory::getDbo();
+			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 			$query->select($db->quoteName('anonymize'))->from($db->quoteName('#__emundus_setup_groups'))->where($db->quoteName('id').' IN ('.implode(',', $group_ids).')');
 			$db->setQuery($query);
