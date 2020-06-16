@@ -145,10 +145,15 @@ class modEmundusQueryBuilderHelper {
 		$user = $session->get('emundusUser');
 		
 		try {
-			$query = "SELECT published FROM jos_modules WHERE `jos_modules`.`id` = ".$id;
+			$query = "SELECT published, params FROM jos_modules WHERE `jos_modules`.`id` = ".$id;
 			$db->setQuery($query);
-			$published = $db->loadResult();
+			$result = $db->loadAssoc();
+			$published = $result['published'];
+			$paramModule = json_decode($result['params'], true);
 			$query = "UPDATE `jos_modules` SET `published` = '-2' WHERE `jos_modules`.`id` = ".$id;
+			$db->setQuery($query);
+			$db->execute();
+			$query = "DROP VIEW ".$paramModule['view'];
 			$db->setQuery($query);
 			$db->execute();
 			return json_encode((object)['status' => true, 'msg' => 'It\'s ok']);
