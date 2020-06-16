@@ -892,18 +892,11 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 		// By using this we can get the link direction, this allows us to see which column should be filled (user to or from).
 		if ($link->user_to == $this->user->id) {
-
 			// If the user TO is our user, then we need to look at USER_TO_NOTIFY.
 			$direction = 1;
-
-		} elseif (!empty($link->fnum_from)) {
-
-			// If the user FROM is our user, then we need to look at USER_FROM_FAVORITE.
-			$direction = -1;
-
 		} else {
-			echo json_encode((object) ['status' => false, 'msg' => 'Error.']);
-			exit;
+			// If the user FROM is our user, then we need to look at USER_FROM_NOTIFYE.
+			$direction = -1;
 		}
 
 		$this->m_cifre->notify($link_id, $direction);
@@ -938,12 +931,9 @@ class EmundusControllerCifre extends JControllerLegacy {
 		if ($link->user_to == $this->user->id) {
 			// If the user TO is our user, then we need to remove USER_TO_NOTIFY.
 			$direction = 1;
-		} elseif (!empty($link->fnum_from)) {
+		} else {
 			// If the user FROM is our user, then we need to remove USER_FROM_NOTIFY.
 			$direction = -1;
-		} else {
-			echo json_encode((object) ['status' => false, 'msg' => 'Error.']);
-			exit;
 		}
 
 		$this->m_cifre->unnotify($link_id, $direction);
