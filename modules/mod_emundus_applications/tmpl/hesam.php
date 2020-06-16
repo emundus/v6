@@ -173,7 +173,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                         <?php endif; ?>
                                                                     <?php endif; ?>
 
-                                                                    <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail"></a>
+                                                                    <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block">
+                                                                        <i class="image-mail fa <?= ($contact['unread'] == 0)?'fa-envelope-o':'fa-envelope'; ?>"></i>
+                                                                    </a>
                                                                     <div class="notif <?= ($contact['unread'] == 0)?'_0notif':''; ?>">
                                                                         <div class="notif-number <?= ($contact['unread'] == 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
                                                                     </div>
@@ -264,7 +266,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 		                                                                <?php endif; ?>
 	                                                                <?php endif; ?>
 
-                                                                    <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail"></a>
+                                                                    <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block">
+                                                                        <i class="image-mail fa <?= ($contact['unread'] == 0)?'fa-envelope-o':'fa-envelope'; ?>"></i>
+                                                                    </a>
                                                                     <div class="notif <?= ($contact['unread'] == 0)?'_0notif':''; ?>">
                                                                         <div class="notif-number <?= ($contact['unread'] == 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
                                                                     </div>
@@ -352,7 +356,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 		                                                                <?php endif; ?>
 	                                                                <?php endif; ?>
 
-                                                                    <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail"></a>
+                                                                    <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block">
+                                                                        <i class="image-mail fa <?= ($contact['unread'] == 0)?'fa-envelope-o':'fa-envelope'; ?>"></i>
+                                                                    </a>
                                                                     <div class="notif <?= ($contact['unread'] == 0)?'_0notif':''; ?>">
                                                                         <div class="notif-number <?= ($contact['unread'] == 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
                                                                     </div>
@@ -429,7 +435,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                 <?php endif; ?>
 
                                                 <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $chat_request['applicant_id']; ?>" class="link w-inline-block">
-                                                    <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image-mail">
+                                                    <i class="image-mail fa <?= ($chat_request['unread'] == 0)?'fa-envelope-o':'fa-envelope'; ?>"></i>
                                                 </a>
                                                 <div class="notif <?= ($chat_request['unread'] == 0)?'_0notif':''; ?>">
                                                     <div class="notif-number <?= ($chat_request['unread'] == 0)?'_0notif':''; ?>"><?= $chat_request['unread']; ?></div>
