@@ -225,7 +225,9 @@ class modEmundusQueryBuilderHelper {
 		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		
-		$date = date("Y-m-d H:i:s");
+		$config = JFactory::getConfig();
+		$timezone = new DateTimeZone( $config->get('offset') );
+		$date = JFactory::getDate()->setTimezone($timezone);
 		$nameView = "jos_emundus_stat_".(mb_strtolower(str_replace(" ", "_", $nameGraph), 'UTF-8'));
 		
 		try {
