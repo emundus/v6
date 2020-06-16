@@ -20,7 +20,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	</div>
 	<br />
 	<!-- Button to consult the data of the graph -->
-	<div class="btn"><i class="search icon"></i><a href="index.php?option=com_fabrik&task=list.view&listid=<?php echo $listId; ?>&Itemid=0<?php echo $urlFiltre; ?>" target="_blank"><?php echo JText::_('VIEW_DATA')?></a></div>
+	<div class="btn"><i class="search icon"></i><a href="\index.php?option=com_fabrik&task=list.view&listid=<?php echo $listId; ?>&Itemid=0<?php echo $urlFiltre; ?>" target="_blank"><?php echo JText::_('VIEW_DATA')?></a></div>
 </center>
 
 <script type="text/javascript" src="./plugins/fabrik_visualization/fusionchart/libs/fusioncharts-suite-xt/js/fusioncharts.js"></script>
