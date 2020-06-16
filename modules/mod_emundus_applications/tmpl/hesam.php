@@ -135,6 +135,8 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                             } elseif ($contact['direction'] === '1') {
                                                                 $cardClass = 'demandecontact';
                                                             }
+                                                        } elseif ($contact['state'] === '2') {
+	                                                        $cardClass = 'accepted';
                                                         }
                                                     ?>
                                                     <div class="wrapper-small-card-content <?= $cardClass; ?>">
@@ -229,6 +231,8 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                             } elseif ($contact['direction'] === '1') {
                                                                 $cardClass = 'demandecontact';
                                                             }
+                                                        } elseif ($contact['state'] === '2') {
+	                                                        $cardClass = 'accepted';
                                                         }
                                                     ?>
                                                     <div class="wrapper-small-card-content <?= $cardClass; ?>">
@@ -406,7 +410,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                             <div class="card w-clearfix">
                                 <a href="#" class="star link-block-3 w-inline-block" data-ix="star"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5ea32c2fd949eca178361a94_star.svg" alt="" class="image-8"></a>
                                 <div class="headsmallcard"></div>
-                                <div class="wrapper-small-card-content <?= ($chat_request['state'] === '1')?'pending':''; ?>">
+                                <div class="wrapper-small-card-content <?= ($chat_request['state'] === '1')?'pending':'accepted'; ?>">
                                     <div class="w-row">
                                         <div class="w-col w-col-8">
                                             <div class="div-block-3">
