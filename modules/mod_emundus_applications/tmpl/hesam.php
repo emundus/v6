@@ -77,6 +77,12 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                     </a>
                                 <?php endif; ?>
 
+
+                                <?php if ($application->status === '6') :?>
+                                    <!-- Automatically unpublished offers have a republish button that appears. -->
+                                    <a class="cta-republish w-button" href="#" onclick="publishfile(<?= $application->fnum; ?>)"><?= JText::_('REPUBLISH_APPLICATION'); ?></a>
+                                <?php endif; ?>
+
                                 <!-- Trash button -->
                                 <a id="trash" onClick="<?= ($application->status !== '1')?'deletefile('.$application->fnum.');':'completefile('.$application->fnum.', true)'; ?>" href="#row<?= $application->fnum; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>">
                                     <i class="icon-trash"></i>
@@ -483,6 +489,21 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
         }).then(confirm => {
             if (confirm.value) {
                 document.location.href = "index.php?option=com_emundus&task=deletefile&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>";
+            }
+        });
+    }
+
+    function publishfile(fnum) {
+        Swal.fire({
+            customClass: {
+                title: "heading no-dash"
+            },
+            title: '<?= JText::_('CONFIRM_REPUBLISH_FILE'); ?>',
+            icon: 'warning',
+            showCloseButton: true
+        }).then(confirm => {
+            if (confirm.value) {
+                document.location.href = "index.php?option=com_emundus&task=completefile&status=1&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>";
             }
         });
     }
