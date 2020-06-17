@@ -130,7 +130,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				data = JSON.parse(data.data);
 				if (data.status != null) {
 					elem = document.createElement('a');
-					elem.href = "tmp/Graph.pdf";
+					elem.href = "/tmp/Graph.pdf";
 					elem.download = "Graph.pdf";
 					evt = new MouseEvent("click", { bubbles: true,cancelable: true,view: window,});
 					elem.dispatchEvent(evt);
