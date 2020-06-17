@@ -247,10 +247,12 @@ class modEmundusStatHelper {
 					if(substr_count($array["year"], "-") === 1) {
 						$filtre .= "&".$view."____year[value][]=".explode("-", $array["year"])[0];
 						$filtre .= "&".$view."____year[value][]=".explode("-", $array["year"])[1];
-					} else
+					} else {
 						$filtre .= "&".$view."____year[value][]=".$array["year"];
+						$filtre .= "&".$view."____year[value][]=".$array["year"];
+					}
 				}
-				$filtre .= "&".$view."____year[join]=OR";
+				$filtre .= "&".$view."____year[condition]=BETWEEN";
 			}
 		}
 		
