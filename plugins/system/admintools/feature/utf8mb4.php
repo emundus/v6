@@ -14,6 +14,12 @@ class AtsystemFeatureUtf8mb4 extends AtsystemFeatureAbstract
 {
 	protected $loadOrder = 0;
 
+	public function isEnabled()
+	{
+		// This feature only applies to Joomla 3.7 and earlier
+		return version_compare(JVERSION, '3.7.999', 'le');
+	}
+
 	public function onAfterInitialise()
 	{
 		$db = $this->container->db;
@@ -40,11 +46,11 @@ class AtsystemFeatureUtf8mb4 extends AtsystemFeatureAbstract
 
 			return;
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			// If we failed don't worry, the next statement will revert the connection to plain old UTF-8
 		}
 
 		$db->setQuery('SET NAMES utf8')->execute();
 	}
-} 
+}

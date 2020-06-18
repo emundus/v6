@@ -5,20 +5,48 @@
  * @license   GNU General Public License version 3, or later
  */
 
-use Akeeba\Engine\Platform;
-use FOF30\Container\Container;
-
 defined('_JEXEC') or die();
 
+use Akeeba\AdminTools\Admin\Controller\AdminPassword;
+use Akeeba\AdminTools\Admin\Controller\AutoBannedAddresses;
+use Akeeba\AdminTools\Admin\Controller\BadWord;
+use Akeeba\AdminTools\Admin\Controller\BlacklistedAddresses;
+use Akeeba\AdminTools\Admin\Controller\ChangeDBCollation;
+use Akeeba\AdminTools\Admin\Controller\CheckTempAndLogDirectories;
+use Akeeba\AdminTools\Admin\Controller\CleanTempDirectory;
+use Akeeba\AdminTools\Admin\Controller\ConfigureFixPermissions;
+use Akeeba\AdminTools\Admin\Controller\ConfigureWAF;
+use Akeeba\AdminTools\Admin\Controller\DatabaseTools;
+use Akeeba\AdminTools\Admin\Controller\EmergencyOffline;
+use Akeeba\AdminTools\Admin\Controller\ExceptionsFromWAF;
+use Akeeba\AdminTools\Admin\Controller\FixPermissions;
+use Akeeba\AdminTools\Admin\Controller\HtaccessMaker;
+use Akeeba\AdminTools\Admin\Controller\ImportAndExport;
+use Akeeba\AdminTools\Admin\Controller\IPAutoBanHistories;
+use Akeeba\AdminTools\Admin\Controller\MasterPassword;
+use Akeeba\AdminTools\Admin\Controller\NginXConfMaker;
+use Akeeba\AdminTools\Admin\Controller\QuickStart;
+use Akeeba\AdminTools\Admin\Controller\Redirections;
+use Akeeba\AdminTools\Admin\Controller\Scans;
+use Akeeba\AdminTools\Admin\Controller\SEOAndLinkTools;
+use Akeeba\AdminTools\Admin\Controller\WAFBlacklistedRequests;
+use Akeeba\AdminTools\Admin\Controller\WAFEmailTemplates;
+use Akeeba\AdminTools\Admin\Controller\WebConfigMaker;
+use Akeeba\AdminTools\Admin\Controller\WhitelistedAddresses;
+use Akeeba\AdminTools\Admin\Model\BadWords;
+use Akeeba\AdminTools\Admin\Model\ScanAlerts;
+use Akeeba\AdminTools\Admin\Model\SecurityExceptions;
+use FOF30\Container\Container;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Plugin\CMSPlugin;
+
 // PHP version check
-if (!version_compare(PHP_VERSION, '5.6.0', '>='))
+if (!version_compare(PHP_VERSION, '7.1.0', '>='))
 {
 	return;
 }
 
-JLoader::import('joomla.application.plugin');
-
-class plgAconlogAdmintools extends JPlugin
+class plgActionlogAdmintools extends CMSPlugin
 {
 	/** @var Container */
 	private $container;
@@ -26,12 +54,12 @@ class plgAconlogAdmintools extends JPlugin
 	/**
 	 * Constructor
 	 *
-	 * @param       object $subject The object to observe
-	 * @param       array  $config  An array that holds the plugin configuration
+	 * @param   object  $subject  The object to observe
+	 * @param   array   $config   An array that holds the plugin configuration
 	 *
 	 * @since       2.5
 	 */
-	public function __construct(& $subject, $config)
+	public function __construct(&$subject, $config)
 	{
 		// Make sure Akeeba Backup is installed
 		if (!file_exists(JPATH_ADMINISTRATOR . '/components/com_admintools'))
@@ -39,10 +67,8 @@ class plgAconlogAdmintools extends JPlugin
 			return;
 		}
 
-		// Make sure Akeeba Backup is enabled
-		JLoader::import('joomla.application.component.helper');
-
-		if ( !JComponentHelper::isEnabled('com_admintools'))
+		// Make sure Admin Tools is enabled
+		if (!ComponentHelper::isEnabled('com_admintools'))
 		{
 			return;
 		}
@@ -66,7 +92,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\QuickStart	$controller
+	 * @param   QuickStart  $controller
 	 */
 	public function onComAdmintoolsControllerQuickstartAfterCommit($controller)
 	{
@@ -74,7 +100,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\AdminPassword	$controller
+	 * @param   AdminPassword  $controller
 	 */
 	public function onComAdmintoolsControllerAdminPasswordBeforeProtect($controller)
 	{
@@ -82,7 +108,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\AdminPassword	$controller
+	 * @param   AdminPassword  $controller
 	 */
 	public function onComAdmintoolsControllerAdminPasswordBeforeUnprotect($controller)
 	{
@@ -90,7 +116,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\MasterPassword	$controller
+	 * @param   MasterPassword  $controller
 	 */
 	public function onComAdmintoolsControllerMasterPasswordAfterSave($controller)
 	{
@@ -98,7 +124,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\EmergencyOffline	$controller
+	 * @param   EmergencyOffline  $controller
 	 */
 	public function onComAdmintoolsControllerEmergencyOfflineBeforeOffline($controller)
 	{
@@ -106,7 +132,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\EmergencyOffline	$controller
+	 * @param   EmergencyOffline  $controller
 	 */
 	public function onComAdmintoolsControllerEmergencyOfflineBeforeOnline($controller)
 	{
@@ -114,7 +140,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\CleanTempDirectory	$controller
+	 * @param   CleanTempDirectory  $controller
 	 */
 	public function onComAdmintoolsControllerCleanTempDirectoryBeforeBrowse($controller)
 	{
@@ -122,7 +148,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\DatabaseTools	$controller
+	 * @param   DatabaseTools  $controller
 	 */
 	public function onComAdmintoolsControllerDatabaseToolsAfterBrowse($controller)
 	{
@@ -137,7 +163,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\DatabaseTools	$controller
+	 * @param   DatabaseTools  $controller
 	 */
 	public function onComAdmintoolsControllerDatabaseToolsBeforePurgesessions($controller)
 	{
@@ -145,7 +171,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\CheckTempAndLogDirectories	$controller
+	 * @param   CheckTempAndLogDirectories  $controller
 	 */
 	public function onComAdmintoolsControllerCheckTempAndLogDirectoriesBeforeCheck($controller)
 	{
@@ -153,7 +179,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\ConfigureWAF	$controller
+	 * @param   ConfigureWAF  $controller
 	 */
 	public function onComAdmintoolsControllerConfigureWAFAfterApply($controller)
 	{
@@ -161,7 +187,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\ConfigureWAF	$controller
+	 * @param   ConfigureWAF  $controller
 	 */
 	public function onComAdmintoolsControllerConfigureWAFAfterSave($controller)
 	{
@@ -169,7 +195,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\ImportAndExport	$controller
+	 * @param   ImportAndExport  $controller
 	 */
 	public function onComAdmintoolsControllerImportAndExportBeforeDoexport($controller)
 	{
@@ -177,7 +203,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\ImportAndExport	$controller
+	 * @param   ImportAndExport  $controller
 	 */
 	public function onComAdmintoolsControllerImportAndExportBeforeDoimport($controller)
 	{
@@ -185,7 +211,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\ChangeDBCollation	$controller
+	 * @param   ChangeDBCollation  $controller
 	 */
 	public function onComAdmintoolsControllerChangeDBCollationBeforeApply($controller)
 	{
@@ -193,7 +219,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\SEOAndLinkTools	$controller
+	 * @param   SEOAndLinkTools  $controller
 	 */
 	public function onComAdmintoolsControllerSEOAndLinkToolsAfterApply($controller)
 	{
@@ -201,7 +227,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\SEOAndLinkTools	$controller
+	 * @param   SEOAndLinkTools  $controller
 	 */
 	public function onComAdmintoolsControllerSEOAndLinkToolsAfterSave($controller)
 	{
@@ -209,7 +235,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\FixPermissions	$controller
+	 * @param   FixPermissions  $controller
 	 */
 	public function onComAdmintoolsControllerFixPermissionsBeforeBrowse($controller)
 	{
@@ -217,7 +243,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\ConfigureFixPermissions	$controller
+	 * @param   ConfigureFixPermissions  $controller
 	 */
 	public function onComAdmintoolsControllerConfigureFixPermissionsAfterSavedefaults($controller)
 	{
@@ -225,7 +251,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\ConfigureFixPermissions	$controller
+	 * @param   ConfigureFixPermissions  $controller
 	 */
 	public function onComAdmintoolsControllerConfigureFixPermissionsBeforeSaveperms($controller)
 	{
@@ -233,7 +259,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\ConfigureFixPermissions	$controller
+	 * @param   ConfigureFixPermissions  $controller
 	 */
 	public function onComAdmintoolsControllerConfigureFixPermissionsBeforeSaveapplyperms($controller)
 	{
@@ -241,7 +267,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\HtaccessMaker	$controller
+	 * @param   HtaccessMaker  $controller
 	 */
 	public function onComAdmintoolsControllerHtaccessMakerAfterSave($controller)
 	{
@@ -249,7 +275,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\HtaccessMaker	$controller
+	 * @param   HtaccessMaker  $controller
 	 */
 	public function onComAdmintoolsControllerHtaccessMakerAfterApply($controller)
 	{
@@ -257,7 +283,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\NginXConfMaker	$controller
+	 * @param   NginXConfMaker  $controller
 	 */
 	public function onComAdmintoolsControllerNginXConfMakerAfterSave($controller)
 	{
@@ -265,7 +291,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\HtaccessMaker	$controller
+	 * @param   HtaccessMaker  $controller
 	 */
 	public function onComAdmintoolsControllerNginXConfMakerAfterApply($controller)
 	{
@@ -273,7 +299,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\WebConfigMaker	$controller
+	 * @param   WebConfigMaker  $controller
 	 */
 	public function onComAdmintoolsControllerWebConfigMakerAfterSave($controller)
 	{
@@ -281,7 +307,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\WebConfigMaker	$controller
+	 * @param   WebConfigMaker  $controller
 	 */
 	public function onComAdmintoolsControllerWebConfigMakerAfterApply($controller)
 	{
@@ -289,7 +315,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\Scans	$controller
+	 * @param   Scans  $controller
 	 */
 	public function onComAdmintoolsControllerScansBeforeStartscan($controller)
 	{
@@ -297,13 +323,13 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\ScanAlerts	$controller
+	 * @param   \Akeeba\AdminTools\Admin\Controller\ScanAlerts  $controller
 	 */
 	public function onComAdmintoolsControllerScanAlertsAfterPublish($controller)
 	{
-		/** @var \Akeeba\AdminTools\Admin\Model\ScanAlerts $model */
+		/** @var ScanAlerts $model */
 		$model = $controller->getModel();
-		$ids = $this->getIDsFromRequest();
+		$ids   = $this->getIDsFromRequest();
 
 		if (!$ids)
 		{
@@ -321,32 +347,32 @@ class plgAconlogAdmintools extends JPlugin
 	/* Start of CRUD tasks */
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\BadWord	$controller
+	 * @param   BadWord  $controller
 	 */
 	public function onComAdmintoolscontrollerBadWordsAfterApplySave($controller)
 	{
-		/** @var \Akeeba\AdminTools\Admin\Model\BadWords $model */
+		/** @var BadWords $model */
 		$model = $controller->getModel();
 
-		$link = '<a href="index.php?option=com_admintools&view=BadWords&task=edit&id='.$model->id.'">'.$model->word.'</a>';
+		$link = '<a href="index.php?option=com_admintools&view=BadWords&task=edit&id=' . $model->id . '">' . $model->word . '</a>';
 
 		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_BADWORDS_EDIT', 'com_admintools');
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\BadWord	$controller
+	 * @param   BadWord  $controller
 	 */
 	public function onComAdmintoolscontrollerBadWordsBeforeRemove($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
-					->select($db->qn('word'))
-					->from($db->qn('#__admintools_badwords'))
-					->where($db->qn('id').' IN ('.implode(',', $ids).')');
+			->select($db->qn('word'))
+			->from($db->qn('#__admintools_badwords'))
+			->where($db->qn('id') . ' IN (' . implode(',', $ids) . ')');
 		$words = $db->setQuery($query)->loadColumn();
 
 		foreach ($words as $word)
@@ -356,7 +382,7 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\WAFBlacklistedRequests	$controller
+	 * @param   WAFBlacklistedRequests  $controller
 	 */
 	public function onComAdmintoolscontrollerWAFBlacklistedRequestsAfterApplySave($controller)
 	{
@@ -364,94 +390,94 @@ class plgAconlogAdmintools extends JPlugin
 		$model = $controller->getModel();
 
 		$parts[] = $model->option ? $model->option : '(All)';
-		$parts[] = $model->view ? $model->view: '(All)';
-		$parts[] = $model->query ? $model->query: '(All)';
+		$parts[] = $model->view ? $model->view : '(All)';
+		$parts[] = $model->query ? $model->query : '(All)';
 
-		$link = '<a href="index.php?option=com_admintools&view=WAFBlacklistedRequests&task=edit&id='.$model->id.'">'.implode(' ', $parts).'</a>';
+		$link = '<a href="index.php?option=com_admintools&view=WAFBlacklistedRequests&task=edit&id=' . $model->id . '">' . implode(' ', $parts) . '</a>';
 
 		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_WAFBLACKLIST_EDIT', 'com_admintools');
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\WAFBlacklistedRequests	$controller
+	 * @param   WAFBlacklistedRequests  $controller
 	 */
 	public function onComAdmintoolscontrollerWAFBlacklistedRequestsAfterPublish($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
-					->select('*')
-					->from($db->qn('#__admintools_wafblacklists'))
-					->where($db->qn('id').' IN ('.implode(',', $ids).')');
-		$rows = $db->setQuery($query)->loadObjectList();
+			->select('*')
+			->from($db->qn('#__admintools_wafblacklists'))
+			->where($db->qn('id') . ' IN (' . implode(',', $ids) . ')');
+		$rows  = $db->setQuery($query)->loadObjectList();
 
 		foreach ($rows as $row)
 		{
 			$parts[] = $row->option ? $row->option : '(All)';
-			$parts[] = $row->view ? $row->view: '(All)';
-			$parts[] = $row->query ? $row->query: '(All)';
+			$parts[] = $row->view ? $row->view : '(All)';
+			$parts[] = $row->query ? $row->query : '(All)';
 
 			$this->container->platform->logUserAction(implode(' ', $parts), 'COM_ADMINTOOLS_LOGS_WAFBLACKLIST_PUBLISH', 'com_admintools');
 		}
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\WAFBlacklistedRequests	$controller
+	 * @param   WAFBlacklistedRequests  $controller
 	 */
 	public function onComAdmintoolscontrollerWAFBlacklistedRequestsAfterUnpublish($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
 			->select('*')
 			->from($db->qn('#__admintools_wafblacklists'))
-			->where($db->qn('id').' IN ('.implode(',', $ids).')');
-		$rows = $db->setQuery($query)->loadObjectList();
+			->where($db->qn('id') . ' IN (' . implode(',', $ids) . ')');
+		$rows  = $db->setQuery($query)->loadObjectList();
 
 		foreach ($rows as $row)
 		{
 			$parts[] = $row->option ? $row->option : '(All)';
-			$parts[] = $row->view ? $row->view: '(All)';
-			$parts[] = $row->query ? $row->query: '(All)';
+			$parts[] = $row->view ? $row->view : '(All)';
+			$parts[] = $row->query ? $row->query : '(All)';
 
 			$this->container->platform->logUserAction(implode(' ', $parts), 'COM_ADMINTOOLS_LOGS_WAFBLACKLIST_UNPUBLISH', 'com_admintools');
 		}
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\WAFBlacklistedRequests	$controller
+	 * @param   WAFBlacklistedRequests  $controller
 	 */
 	public function onComAdmintoolscontrollerWAFBlacklistedRequestsBeforeRemove($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
-					->select('*')
-					->from($db->qn('#__admintools_wafblacklists'))
-					->where($db->qn('id').' IN ('.implode(',', $ids).')');
-		$rows = $db->setQuery($query)->loadObjectList();
+			->select('*')
+			->from($db->qn('#__admintools_wafblacklists'))
+			->where($db->qn('id') . ' IN (' . implode(',', $ids) . ')');
+		$rows  = $db->setQuery($query)->loadObjectList();
 
 		foreach ($rows as $row)
 		{
 			$parts[] = $row->option ? $row->option : '(All)';
-			$parts[] = $row->view ? $row->view: '(All)';
-			$parts[] = $row->query ? $row->query: '(All)';
+			$parts[] = $row->view ? $row->view : '(All)';
+			$parts[] = $row->query ? $row->query : '(All)';
 
 			$this->container->platform->logUserAction(implode(' ', $parts), 'COM_ADMINTOOLS_LOGS_WAFBLACKLIST_DELETE', 'com_admintools');
 		}
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\ExceptionsFromWAF	$controller
+	 * @param   ExceptionsFromWAF  $controller
 	 */
 	public function onComAdmintoolscontrollerExceptionsFromWAFAfterApplySave($controller)
 	{
@@ -459,68 +485,68 @@ class plgAconlogAdmintools extends JPlugin
 		$model = $controller->getModel();
 
 		$parts[] = $model->option ? $model->option : '(All)';
-		$parts[] = $model->view ? $model->view: '(All)';
-		$parts[] = $model->query ? $model->query: '(All)';
+		$parts[] = $model->view ? $model->view : '(All)';
+		$parts[] = $model->query ? $model->query : '(All)';
 
-		$link = '<a href="index.php?option=com_admintools&view=ExceptionsFromWAF&task=edit&id='.$model->id.'">'.implode(' ', $parts).'</a>';
+		$link = '<a href="index.php?option=com_admintools&view=ExceptionsFromWAF&task=edit&id=' . $model->id . '">' . implode(' ', $parts) . '</a>';
 
 		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_WAFEXCEPTIONS_EDIT', 'com_admintools');
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\ExceptionsFromWAF	$controller
+	 * @param   ExceptionsFromWAF  $controller
 	 */
 	public function onComAdmintoolscontrollerExceptionsFromWAFBeforeRemove($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
 			->select('*')
 			->from($db->qn('#__admintools_wafexceptions'))
-			->where($db->qn('id').' IN ('.implode(',', $ids).')');
-		$rows = $db->setQuery($query)->loadObjectList();
+			->where($db->qn('id') . ' IN (' . implode(',', $ids) . ')');
+		$rows  = $db->setQuery($query)->loadObjectList();
 
 		foreach ($rows as $row)
 		{
 			$parts[] = $row->option ? $row->option : '(All)';
-			$parts[] = $row->view ? $row->view: '(All)';
-			$parts[] = $row->query ? $row->query: '(All)';
+			$parts[] = $row->view ? $row->view : '(All)';
+			$parts[] = $row->query ? $row->query : '(All)';
 
 			$this->container->platform->logUserAction(implode(' ', $parts), 'COM_ADMINTOOLS_LOGS_WAFEXCEPTIONS_DELETE', 'com_admintools');
 		}
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\WhitelistedAddresses	$controller
+	 * @param   WhitelistedAddresses  $controller
 	 */
 	public function onComAdmintoolscontrollerWhitelistedAddressesAfterApplySave($controller)
 	{
 		/** @var \Akeeba\AdminTools\Admin\Model\WhitelistedAddresses $model */
 		$model = $controller->getModel();
 
-		$link = '<a href="index.php?option=com_admintools&view=WhitelistedAddresses&task=edit&id='.$model->id.'">'.$model->ip.'</a>';
+		$link = '<a href="index.php?option=com_admintools&view=WhitelistedAddresses&task=edit&id=' . $model->id . '">' . $model->ip . '</a>';
 
 		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_WHITELISTEDADDRESSES_EDIT', 'com_admintools');
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\WhitelistedAddresses	$controller
+	 * @param   WhitelistedAddresses  $controller
 	 */
 	public function onComAdmintoolscontrollerWhitelistedAddressesBeforeRemove($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
-					->select($db->qn('ip'))
-					->from($db->qn('#__admintools_adminiplist'))
-					->where($db->qn('id').' IN ('.implode(',', $ids).')');
-		$rows = $db->setQuery($query)->loadColumn();
+			->select($db->qn('ip'))
+			->from($db->qn('#__admintools_adminiplist'))
+			->where($db->qn('id') . ' IN (' . implode(',', $ids) . ')');
+		$rows  = $db->setQuery($query)->loadColumn();
 
 		foreach ($rows as $row)
 		{
@@ -529,33 +555,33 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\BlacklistedAddresses	$controller
+	 * @param   BlacklistedAddresses  $controller
 	 */
 	public function onComAdmintoolscontrollerBlacklistedAddressesAfterApplySave($controller)
 	{
 		/** @var \Akeeba\AdminTools\Admin\Model\BlacklistedAddresses $model */
 		$model = $controller->getModel();
 
-		$link = '<a href="index.php?option=com_admintools&view=BlacklistedAddresses&task=edit&id='.$model->id.'">'.$model->ip.'</a>';
+		$link = '<a href="index.php?option=com_admintools&view=BlacklistedAddresses&task=edit&id=' . $model->id . '">' . $model->ip . '</a>';
 
 		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_BLACKLISTEDADDRESSES_EDIT', 'com_admintools');
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\BlacklistedAddresses	$controller
+	 * @param   BlacklistedAddresses  $controller
 	 */
 	public function onComAdmintoolscontrollerBlacklistedAddressesBeforeRemove($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
-					->select($db->qn('ip'))
-					->from($db->qn('#__admintools_ipblock'))
-					->where($db->qn('id').' IN ('.implode(',', $ids).')');
-		$rows = $db->setQuery($query)->loadColumn();
+			->select($db->qn('ip'))
+			->from($db->qn('#__admintools_ipblock'))
+			->where($db->qn('id') . ' IN (' . implode(',', $ids) . ')');
+		$rows  = $db->setQuery($query)->loadColumn();
 
 		foreach ($rows as $row)
 		{
@@ -564,38 +590,20 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\GeographicBlocking	$controller
-	 */
-	public function onComAdmintoolscontrollerGeographicBlockingAfterSave($controller)
-	{
-		$continents = $this->container->input->get('continent', array(), 'array', 2);
-		$countries  = $this->container->input->get('country', array(), 'array', 2);
-
-		$text = 'COM_ADMINTOOLS_LOGS_GEOBLOCK_EDIT';
-
-		if (!$continents && !$countries)
-		{
-			$text = 'COM_ADMINTOOLS_LOGS_GEOBLOCK_DISABLED';
-		}
-
-		$this->container->platform->logUserAction('', $text, 'com_admintools');
-	}
-
-	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\SecurityExceptions	$controller
+	 * @param   \Akeeba\AdminTools\Admin\Controller\SecurityExceptions  $controller
 	 */
 	public function onComAdmintoolscontrollerSecurityExceptionsBeforeRemove($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
 			->select($db->qn('ip'))
 			->from($db->qn('#__admintools_log'))
-			->where($db->qn('id').' IN ('.implode(',', $ids).')');
-		$rows = $db->setQuery($query)->loadColumn();
+			->where($db->qn('id') . ' IN (' . implode(',', $ids) . ')');
+		$rows  = $db->setQuery($query)->loadColumn();
 
 		foreach ($rows as $row)
 		{
@@ -604,29 +612,29 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\SecurityExceptions	$controller
+	 * @param   \Akeeba\AdminTools\Admin\Controller\SecurityExceptions  $controller
 	 */
 	public function onComAdmintoolscontrollerSecurityExceptionsAfterBan($controller)
 	{
-		/** @var \Akeeba\AdminTools\Admin\Model\SecurityExceptions $model */
+		/** @var SecurityExceptions $model */
 		$model = $controller->getModel();
 
 		$this->container->platform->logUserAction($model->ip, 'COM_ADMINTOOLS_LOGS_SECURITYEXCEPTIONS_BAN', 'com_admintools');
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\SecurityExceptions	$controller
+	 * @param   \Akeeba\AdminTools\Admin\Controller\SecurityExceptions  $controller
 	 */
 	public function onComAdmintoolscontrollerSecurityExceptionsAfterUnban($controller)
 	{
-		/** @var \Akeeba\AdminTools\Admin\Model\SecurityExceptions $model */
+		/** @var SecurityExceptions $model */
 		$model = $controller->getModel();
 
 		$this->container->platform->logUserAction($model->ip, 'COM_ADMINTOOLS_LOGS_SECURITYEXCEPTIONS_UNBAN', 'com_admintools');
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\AutoBannedAddresses	$controller
+	 * @param   AutoBannedAddresses  $controller
 	 */
 	public function onComAdmintoolscontrollerAutoBannedAddressesBeforeRemove($controller)
 	{
@@ -639,20 +647,20 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\IPAutoBanHistories	$controller
+	 * @param   IPAutoBanHistories  $controller
 	 */
 	public function onComAdmintoolscontrollerIPAutoBanHistoriesBeforeRemove($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
 			->select($db->qn('ip'))
 			->from($db->qn('#__admintools_ipautobanhistory'))
-			->where($db->qn('id').' IN ('.implode(',', $ids).')');
-		$rows = $db->setQuery($query)->loadColumn();
+			->where($db->qn('id') . ' IN (' . implode(',', $ids) . ')');
+		$rows  = $db->setQuery($query)->loadColumn();
 
 		foreach ($rows as $row)
 		{
@@ -661,32 +669,32 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\WAFEmailTemplates	$controller
+	 * @param   WAFEmailTemplates  $controller
 	 */
 	public function onComAdmintoolscontrollerWAFEmailTemplatesAfterApplySave($controller)
 	{
 		/** @var \Akeeba\AdminTools\Admin\Model\WAFEmailTemplates $model */
 		$model = $controller->getModel();
 
-		$link = '<a href="index.php?option=com_admintools&view=WAFEmailTemplates&task=edit&id='.$model->admintools_waftemplate_id.'">'.$model->subject.'</a>';
+		$link = '<a href="index.php?option=com_admintools&view=WAFEmailTemplates&task=edit&id=' . $model->admintools_waftemplate_id . '">' . $model->subject . '</a>';
 
 		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_WAFEMAILTEMPLATES_EDIT', 'com_admintools');
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\WAFEmailTemplates	$controller
+	 * @param   WAFEmailTemplates  $controller
 	 */
 	public function onComAdmintoolscontrollerWAFEmailTemplatesBeforeRemove($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
 			->select($db->qn('subject'))
 			->from($db->qn('#__admintools_waftemplates'))
-			->where($db->qn('admintools_waftemplate_id').' IN ('.implode(',', $ids).')');
+			->where($db->qn('admintools_waftemplate_id') . ' IN (' . implode(',', $ids) . ')');
 		$words = $db->setQuery($query)->loadColumn();
 
 		foreach ($words as $word)
@@ -696,33 +704,33 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\Redirections	$controller
+	 * @param   Redirections  $controller
 	 */
 	public function onComAdmintoolscontrollerRedirectionAfterApplySave($controller)
 	{
 		/** @var \Akeeba\AdminTools\Admin\Model\Redirections $model */
 		$model = $controller->getModel();
 
-		$link = '<a href="index.php?option=com_admintools&view=Redirections&task=edit&id='.$model->id.'">'.$model->dest.'</a>';
+		$link = '<a href="index.php?option=com_admintools&view=Redirections&task=edit&id=' . $model->id . '">' . $model->dest . '</a>';
 
 		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_REDIRECTIONS_EDIT', 'com_admintools');
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\Redirections	$controller
+	 * @param   Redirections  $controller
 	 */
 	public function onComAdmintoolscontrollerRedirectionsAfterPublish($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
-					->select('*')
-					->from($db->qn('#__admintools_redirects'))
-					->where($db->qn('id').' IN ('.implode(',', $ids).')');
-		$rows = $db->setQuery($query)->loadObjectList();
+			->select('*')
+			->from($db->qn('#__admintools_redirects'))
+			->where($db->qn('id') . ' IN (' . implode(',', $ids) . ')');
+		$rows  = $db->setQuery($query)->loadObjectList();
 
 		foreach ($rows as $row)
 		{
@@ -731,20 +739,20 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\Redirections	$controller
+	 * @param   Redirections  $controller
 	 */
 	public function onComAdmintoolscontrollerRedirectionsAfterUnpublish($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
-					->select('*')
-					->from($db->qn('#__admintools_redirects'))
-					->where($db->qn('id').' IN ('.implode(',', $ids).')');
-		$rows = $db->setQuery($query)->loadObjectList();
+			->select('*')
+			->from($db->qn('#__admintools_redirects'))
+			->where($db->qn('id') . ' IN (' . implode(',', $ids) . ')');
+		$rows  = $db->setQuery($query)->loadObjectList();
 
 		foreach ($rows as $row)
 		{
@@ -753,20 +761,20 @@ class plgAconlogAdmintools extends JPlugin
 	}
 
 	/**
-	 * @param \Akeeba\AdminTools\Admin\Controller\Redirections	$controller
+	 * @param   Redirections  $controller
 	 */
 	public function onComAdmintoolscontrollerRedirectionsBeforeRemove($controller)
 	{
 		$ids = $this->getIDsFromRequest();
 		$db  = $this->container->db;
 
-		$ids = array_map(array($db, 'quote'), $ids);
+		$ids = array_map([$db, 'quote'], $ids);
 
 		$query = $db->getQuery(true)
-					->select('*')
-					->from($db->qn('#__admintools_redirects'))
-					->where($db->qn('id').' IN ('.implode(',', $ids).')');
-		$rows = $db->setQuery($query)->loadObjectList();
+			->select('*')
+			->from($db->qn('#__admintools_redirects'))
+			->where($db->qn('id') . ' IN (' . implode(',', $ids) . ')');
+		$rows  = $db->setQuery($query)->loadObjectList();
 
 		foreach ($rows as $row)
 		{
@@ -784,10 +792,10 @@ class plgAconlogAdmintools extends JPlugin
 	private function getIDsFromRequest()
 	{
 		// Get the ID or list of IDs from the request or the configuration
-		$cid = $this->container->input->get('cid', array(), 'array');
+		$cid = $this->container->input->get('cid', [], 'array');
 		$id  = $this->container->input->getInt('id', 0);
 
-		$ids = array();
+		$ids = [];
 
 		if (is_array($cid) && !empty($cid))
 		{
@@ -795,7 +803,7 @@ class plgAconlogAdmintools extends JPlugin
 		}
 		elseif (!empty($id))
 		{
-			$ids = array($id);
+			$ids = [$id];
 		}
 
 		return $ids;

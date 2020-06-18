@@ -13,6 +13,7 @@ use FOF30\Cli\Traits\JoomlaConfigAware;
 use FOF30\Cli\Traits\MemStatsAware;
 use FOF30\Cli\Traits\TimeAgoAware;
 use Joomla\CMS\Application\CliApplication;
+use Joomla\CMS\Application\ExtensionNamespaceMapper;
 use Joomla\CMS\Factory;
 use Joomla\Event\Dispatcher;
 use Joomla\Registry\Registry;
@@ -36,13 +37,33 @@ if (function_exists('error_reporting'))
 	@error_reporting($oldErrorReporting);
 }
 
-
-// Load the CMS import file if it exists (newer Joomla! 3 versions and Joomla! 4)
-$cmsImportFilePath = JPATH_LIBRARIES . '/cms.php';
+// Load the Framework (J4 beta 1 and later) or CMS import file (J4 a12 and lower)
+$cmsImportFilePath = JPATH_BASE . '/includes/framework.php';
+$cmsImportFilePathOld = JPATH_LIBRARIES . '/cms.php';
 
 if (@file_exists($cmsImportFilePath))
 {
 	@include_once $cmsImportFilePath;
+
+	// Boot the DI container
+	$container = \Joomla\CMS\Factory::getContainer();
+
+	/*
+	 * Alias the session service keys to the CLI session service as that is the primary session backend for this application
+	 *
+	 * In addition to aliasing "common" service keys, we also create aliases for the PHP classes to ensure autowiring objects
+	 * is supported.  This includes aliases for aliased class names, and the keys for aliased class names should be considered
+	 * deprecated to be removed when the class name alias is removed as well.
+	 */
+	$container->alias('session', 'session.cli')
+		->alias('JSession', 'session.cli')
+		->alias(\Joomla\CMS\Session\Session::class, 'session.cli')
+		->alias(\Joomla\Session\Session::class, 'session.cli')
+		->alias(\Joomla\Session\SessionInterface::class, 'session.cli');
+}
+elseif (@file_exists($cmsImportFilePathOld))
+{
+	@include_once $cmsImportFilePathOld;
 }
 
 /**
@@ -50,6 +71,8 @@ if (@file_exists($cmsImportFilePath))
  */
 abstract class FOFCliApplicationJoomla4 extends CliApplication
 {
+	use ExtensionNamespaceMapper;
+
 	use CGIModeAware, CustomOptionsAware, JoomlaConfigAware, MemStatsAware, TimeAgoAware;
 
 	private $allowedToClose = false;
@@ -78,6 +101,9 @@ abstract class FOFCliApplicationJoomla4 extends CliApplication
 	{
 		// Some servers only provide a CGI executable. While not ideal for running CLI applications we can make do.
 		$this->detectAndWorkAroundCGIMode();
+
+		// We need to tell Joomla to register its default namespace conventions
+		$this->createExtensionNamespaceMap();
 
 		// Initialize custom options handling which is a bit more straightforward than Input\Cli.
 		$this->initialiseCustomOptions();

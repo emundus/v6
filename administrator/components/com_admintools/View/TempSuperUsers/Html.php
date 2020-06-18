@@ -13,6 +13,7 @@ defined('_JEXEC') or die();
 use Akeeba\AdminTools\Admin\Model\TempSuperUsers;
 use Akeeba\AdminTools\Admin\View\Mixin\SystemPluginExists;
 use FOF30\View\DataView\Html as BaseView;
+use Joomla\CMS\Language\Text;
 
 class Html extends BaseView
 {
@@ -50,8 +51,8 @@ class Html extends BaseView
 
 		// Construct the array of sorting fields
 		$this->sortFields = [
-			'user_id'    => \JText::_('COM_ADMINTOOLS_TEMPSUPERUSERS_FIELD_USER_ID'),
-			'expiration' => \JText::_('COM_ADMINTOOLS_TEMPSUPERUSERS_FIELD_EXPIRATION'),
+			'user_id'    => Text::_('COM_ADMINTOOLS_TEMPSUPERUSERS_FIELD_USER_ID'),
+			'expiration' => Text::_('COM_ADMINTOOLS_TEMPSUPERUSERS_FIELD_EXPIRATION'),
 		];
 	}
 

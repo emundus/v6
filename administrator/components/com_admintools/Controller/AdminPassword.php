@@ -15,11 +15,11 @@ use Akeeba\AdminTools\Admin\Controller\Mixin\SendTroubleshootingEmail;
 use Exception;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
-use JText;
+use Joomla\CMS\Language\Text;
 
 class AdminPassword extends Controller
 {
-    use PredefinedTaskList, CustomACL, SendTroubleshootingEmail;
+	use PredefinedTaskList, CustomACL, SendTroubleshootingEmail;
 
 	/**
 	 * AdminPassword constructor.
@@ -27,88 +27,88 @@ class AdminPassword extends Controller
 	 * @param   Container  $container  Component container
 	 * @param   array      $config     Controller configuration overrides
 	 */
-    public function __construct(Container $container, array $config)
-    {
-        parent::__construct($container, $config);
+	public function __construct(Container $container, array $config)
+	{
+		parent::__construct($container, $config);
 
-        $this->predefinedTaskList = ['browse', 'protect', 'unprotect'];
-    }
+		$this->predefinedTaskList = ['browse', 'protect', 'unprotect'];
+	}
 
 	/**
 	 * Enabled administrator directory password protection
 	 *
 	 * @throws Exception
 	 */
-    public function protect()
-    {
-	    // CSRF prevention
-	    $this->csrfProtection();
+	public function protect()
+	{
+		// CSRF prevention
+		$this->csrfProtection();
 
-	    $username        = $this->input->get('username', '', 'raw', 2);
-	    $password        = $this->input->get('password', '', 'raw', 2);
-	    $password2       = $this->input->get('password2', '', 'raw', 2);
-	    $resetErrorPages = $this->input->get('resetErrorPages', 1, 'int');
+		$username        = $this->input->get('username', '', 'raw', 2);
+		$password        = $this->input->get('password', '', 'raw', 2);
+		$password2       = $this->input->get('password2', '', 'raw', 2);
+		$resetErrorPages = $this->input->get('resetErrorPages', 1, 'int');
 
-	    if (empty($username))
-	    {
-		    $this->setRedirect('index.php?option=com_admintools&view=AdminPassword', JText::_('COM_ADMINTOOLS_ERR_ADMINPASSWORD_NOUSERNAME'), 'error');
+		if (empty($username))
+		{
+			$this->setRedirect('index.php?option=com_admintools&view=AdminPassword', Text::_('COM_ADMINTOOLS_ERR_ADMINPASSWORD_NOUSERNAME'), 'error');
 
-		    return;
-	    }
+			return;
+		}
 
-	    if (empty($password))
-	    {
-		    $this->setRedirect('index.php?option=com_admintools&view=AdminPassword', JText::_('COM_ADMINTOOLS_ERR_ADMINPASSWORD_NOPASSWORD'), 'error');
+		if (empty($password))
+		{
+			$this->setRedirect('index.php?option=com_admintools&view=AdminPassword', Text::_('COM_ADMINTOOLS_ERR_ADMINPASSWORD_NOPASSWORD'), 'error');
 
-		    return;
-	    }
+			return;
+		}
 
-	    if ($password != $password2)
-	    {
-		    $this->setRedirect('index.php?option=com_admintools&view=AdminPassword', JText::_('COM_ADMINTOOLS_ERR_ADMINPASSWORD_PASSWORDNOMATCH'), 'error');
+		if ($password != $password2)
+		{
+			$this->setRedirect('index.php?option=com_admintools&view=AdminPassword', Text::_('COM_ADMINTOOLS_ERR_ADMINPASSWORD_PASSWORDNOMATCH'), 'error');
 
-		    return;
-	    }
+			return;
+		}
 
-	    $this->sendTroubelshootingEmail($this->getName());
+		$this->sendTroubelshootingEmail($this->getName());
 
-	    /** @var \Akeeba\AdminTools\Admin\Model\AdminPassword $model */
-	    $model = $this->getModel();
+		/** @var \Akeeba\AdminTools\Admin\Model\AdminPassword $model */
+		$model = $this->getModel();
 
-	    $model->username        = $username;
-	    $model->password        = $password;
-	    $model->resetErrorPages = $resetErrorPages;
+		$model->username        = $username;
+		$model->password        = $password;
+		$model->resetErrorPages = $resetErrorPages;
 
-	    $status = $model->protect();
-	    $url    = 'index.php?option=com_admintools';
+		$status = $model->protect();
+		$url    = 'index.php?option=com_admintools';
 
-	    if ($status)
-	    {
-		    $this->setRedirect($url, JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_APPLIED'));
+		if ($status)
+		{
+			$this->setRedirect($url, Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_APPLIED'));
 
-		    return;
-	    }
+			return;
+		}
 
-	    $this->setRedirect($url, JText::_('COM_ADMINTOOLS_ERR_ADMINPASSWORD_NOTAPPLIED'), 'error');
-    }
+		$this->setRedirect($url, Text::_('COM_ADMINTOOLS_ERR_ADMINPASSWORD_NOTAPPLIED'), 'error');
+	}
 
 	public function unprotect()
-    {
-        // CSRF prevention
-        $this->csrfProtection();
+	{
+		// CSRF prevention
+		$this->csrfProtection();
 
-        /** @var \Akeeba\AdminTools\Admin\Model\AdminPassword $model */
-        $model  = $this->getModel();
-        $status = $model->unprotect();
-        $url    = 'index.php?option=com_admintools';
+		/** @var \Akeeba\AdminTools\Admin\Model\AdminPassword $model */
+		$model  = $this->getModel();
+		$status = $model->unprotect();
+		$url    = 'index.php?option=com_admintools';
 
-        if ($status)
-        {
-            $this->setRedirect($url, JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_UNAPPLIED'));
+		if ($status)
+		{
+			$this->setRedirect($url, Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_UNAPPLIED'));
 
-            return;
-        }
+			return;
+		}
 
-        $this->setRedirect($url, JText::_('COM_ADMINTOOLS_ERR_ADMINPASSWORD_NOTUNAPPLIED'), 'error');
-    }
+		$this->setRedirect($url, Text::_('COM_ADMINTOOLS_ERR_ADMINPASSWORD_NOTUNAPPLIED'), 'error');
+	}
 }

@@ -4,15 +4,15 @@
   ~ @license   GNU General Public License version 3, or later
   -->
 
-<extension type="component" version="2.5.0" method="upgrade">
+<extension type="component" version="3.9.0" method="upgrade">
 	<name>Admintools</name>
-	<creationDate>2020-03-20</creationDate>
+	<creationDate>2020-06-17</creationDate>
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@akeebabackup.com</authorEmail>
 	<authorUrl>http://www.akeebabackup.com</authorUrl>
 	<copyright>Copyright (c)2010-2019 Nicholas K. Dionysopoulos</copyright>
 	<license>This component in released under the GNU/GPL v3 or later license</license>
-	<version>5.6.0</version>
+	<version>5.7.3</version>
 	<description>Security and utilitarian tools for Joomla! site administrators</description>
 
 	<!-- Public front end files -->

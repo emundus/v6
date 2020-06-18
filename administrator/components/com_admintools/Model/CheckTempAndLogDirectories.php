@@ -10,12 +10,12 @@ namespace Akeeba\AdminTools\Admin\Model;
 defined('_JEXEC') or die;
 
 use FOF30\Model\Model;
-use JClientHelper;
-use JFactory;
-use JFile;
-use JFolder;
-use JPath;
-use JText;
+use Joomla\CMS\Client\ClientHelper;
+use Joomla\CMS\Client\FtpClient;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Filesystem\Path;
+use Joomla\CMS\Language\Text;
 use RuntimeException;
 
 class CheckTempAndLogDirectories extends Model
@@ -32,7 +32,7 @@ class CheckTempAndLogDirectories extends Model
 
 		return [
 			'tmp' => $tmpDir,
-		    'log' => $logDir,
+			'log' => $logDir,
 		];
 	}
 
@@ -55,12 +55,12 @@ class CheckTempAndLogDirectories extends Model
 		// Folder is NOT ok? Let's try with "tmp"
 		$tmpDir = JPATH_ROOT . '/tmp';
 
-		if (!JFolder::exists($tmpDir))
+		if (!Folder::exists($tmpDir))
 		{
-			JFolder::create($tmpDir);
+			Folder::create($tmpDir);
 		}
 
-		if (JFolder::exists($tmpDir))
+		if (Folder::exists($tmpDir))
 		{
 			// If it's writable, let's save the path inside the configuration file
 			if (is_writable($tmpDir))
@@ -74,12 +74,12 @@ class CheckTempAndLogDirectories extends Model
 		// Still no luck? Let's try with "temp"
 		$tmpDir = JPATH_ROOT . '/temp';
 
-		if (!JFolder::exists($tmpDir))
+		if (!Folder::exists($tmpDir))
 		{
-			JFolder::create($tmpDir);
+			Folder::create($tmpDir);
 		}
 
-		if (JFolder::exists($tmpDir))
+		if (Folder::exists($tmpDir))
 		{
 			// If it's writable, let's save the path inside the configuration file
 			if (is_writable($tmpDir))
@@ -93,7 +93,7 @@ class CheckTempAndLogDirectories extends Model
 				// Still not writable? Let's try a nasty hack: chmod it to 0777 and put a .htaccess file in it
 				if (!$this->chmod($tmpDir) || !is_writable($tmpDir))
 				{
-					throw new RuntimeException(JText::_('COM_ADMINTOOLS_ERR_CHECKTEMPANDLOGDIRECTORIES_CHMOD_TMPFOLDER'));
+					throw new RuntimeException(Text::_('COM_ADMINTOOLS_ERR_CHECKTEMPANDLOGDIRECTORIES_CHMOD_TMPFOLDER'));
 				}
 
 				$contents = "<IfModule !mod_authz_core.c>
@@ -109,17 +109,17 @@ Deny from all
 
 				if (!@file_put_contents($tmpDir . '/.htaccess', $contents))
 				{
-					JFile::write($tmpDir . '/.htaccess', $contents);
+					File::write($tmpDir . '/.htaccess', $contents);
 				}
 
 
 				$this->saveConfigurationValue('tmp_path', $tmpDir);
 
-				return JText::sprintf('COM_ADMINTOOLS_LBL_CHECKTEMPANDLOGDIRECTORIES_TMPDIR_WORKAROUND', $tmpDir);
+				return Text::sprintf('COM_ADMINTOOLS_LBL_CHECKTEMPANDLOGDIRECTORIES_TMPDIR_WORKAROUND', $tmpDir);
 			}
 		}
 
-		throw new RuntimeException(JText::_('COM_ADMINTOOLS_ERR_CHECKTEMPANDLOGDIRECTORIES_TMPDIR_CREATION'));
+		throw new RuntimeException(Text::_('COM_ADMINTOOLS_ERR_CHECKTEMPANDLOGDIRECTORIES_TMPDIR_CREATION'));
 	}
 
 	private function checkLogFolder()
@@ -133,59 +133,53 @@ Deny from all
 			return $logDir;
 		}
 
-		// Joomla! 3.6 or later? Let's try administrator/logs
-		if (version_compare(JVERSION, '3.5.999', 'gt'))
+		// Let's try administrator/logs
+		$logDir = JPATH_ROOT . '/logs';
+
+		if (!Folder::exists($logDir))
 		{
-			$logDir = JPATH_ROOT . '/logs';
+			Folder::create($logDir);
+		}
 
-			if (!JFolder::exists($logDir))
+		if (Folder::exists($logDir))
+		{
+			// If it's writable, let's save the path inside the configuration file
+			if (is_writable($logDir))
 			{
-				JFolder::create($logDir);
-			}
+				$this->saveConfigurationValue('log_path', $logDir);
 
-			if (JFolder::exists($logDir))
-			{
-				// If it's writable, let's save the path inside the configuration file
-				if (is_writable($logDir))
-				{
-					$this->saveConfigurationValue('log_path', $logDir);
-
-					return $logDir;
-				}
+				return $logDir;
 			}
 		}
 
-		// Joomla! 3.6 or later? Let's try administrator/log
-		if (version_compare(JVERSION, '3.5.999', 'gt'))
+		// Let's try administrator/log
+		$logDir = JPATH_ROOT . '/log';
+
+		if (!Folder::exists($logDir))
 		{
-			$logDir = JPATH_ROOT . '/log';
+			Folder::create($logDir);
+		}
 
-			if (!JFolder::exists($logDir))
+		if (Folder::exists($logDir))
+		{
+			// If it's writable, let's save the path inside the configuration file
+			if (is_writable($logDir))
 			{
-				JFolder::create($logDir);
-			}
+				$this->saveConfigurationValue('log_path', $logDir);
 
-			if (JFolder::exists($logDir))
-			{
-				// If it's writable, let's save the path inside the configuration file
-				if (is_writable($logDir))
-				{
-					$this->saveConfigurationValue('log_path', $logDir);
-
-					return $logDir;
-				}
+				return $logDir;
 			}
 		}
 
 		// Folder is NOT ok? Let's try with "logs"
 		$logDir = JPATH_ROOT . '/logs';
 
-		if (!JFolder::exists($logDir))
+		if (!Folder::exists($logDir))
 		{
-			JFolder::create($logDir);
+			Folder::create($logDir);
 		}
 
-		if (JFolder::exists($logDir))
+		if (Folder::exists($logDir))
 		{
 			// If it's writable, let's save the path inside the configuration file
 			if (is_writable($logDir))
@@ -199,12 +193,12 @@ Deny from all
 		// Still no luck? Let's try with "log"
 		$logDir = JPATH_ROOT . '/log';
 
-		if (!JFolder::exists($logDir))
+		if (!Folder::exists($logDir))
 		{
-			JFolder::create($logDir);
+			Folder::create($logDir);
 		}
 
-		if (JFolder::exists($logDir))
+		if (Folder::exists($logDir))
 		{
 			// If it's writable, let's save the path inside the configuration file
 			if (is_writable($logDir))
@@ -218,7 +212,7 @@ Deny from all
 				// Still not writable? Let's try a nasty hack: chmod it to 0777 and put a .htaccess file in it
 				if (!$this->chmod($logDir) || !is_writable($logDir))
 				{
-					throw new RuntimeException(JText::_('COM_ADMINTOOLS_ERR_CHECKTEMPANDLOGDIRECTORIES_CHMOD_LOGFOLDER'));
+					throw new RuntimeException(Text::_('COM_ADMINTOOLS_ERR_CHECKTEMPANDLOGDIRECTORIES_CHMOD_LOGFOLDER'));
 				}
 
 				$contents = "<IfModule !mod_authz_core.c>
@@ -234,22 +228,22 @@ Deny from all
 
 				if (!@file_put_contents($logDir . '/.htaccess', $contents))
 				{
-					JFile::write($logDir . '/.htaccess', $contents);
+					File::write($logDir . '/.htaccess', $contents);
 				}
 
 				$this->saveConfigurationValue('log_path', $logDir);
 
-				return JText::sprintf('COM_ADMINTOOLS_MSG_CHECKTEMPANDLOGDIRECTORIES_LOGDIR_WORKAROUND', $logDir);
+				return Text::sprintf('COM_ADMINTOOLS_MSG_CHECKTEMPANDLOGDIRECTORIES_LOGDIR_WORKAROUND', $logDir);
 			}
 		}
 
-		throw new RuntimeException(JText::_('COM_ADMINTOOLS_ERR_CHECKTEMPANDLOGDIRECTORIES_LOGDIR_CREATION'));
+		throw new RuntimeException(Text::_('COM_ADMINTOOLS_ERR_CHECKTEMPANDLOGDIRECTORIES_LOGDIR_CREATION'));
 	}
 
 	/**
 	 * Checks if the directory has a correct value: not empty, not the site root and it's writable
 	 *
-	 * @param   string  $dir    Absolute path to the folder
+	 * @param   string  $dir  Absolute path to the folder
 	 *
 	 * @return  bool    Is the folder path ok?
 	 */
@@ -284,19 +278,19 @@ Deny from all
 		$config->set($key, $value);
 
 		// Attempt to write the configuration file as a PHP class named JConfig.
-		$configuration = $config->toString('PHP', array('class' => 'JConfig', 'closingtag' => false));
+		$configuration = $config->toString('PHP', ['class' => 'JConfig', 'closingtag' => false]);
 
 		$configurationFilePath = JPATH_CONFIGURATION . '/configuration.php';
 		$result                = @file_put_contents($configurationFilePath, $configuration);
 
 		if (!$result)
 		{
-			$result = JFile::write($configurationFilePath, $configuration);
+			$result = File::write($configurationFilePath, $configuration);
 		}
 
 		if (!$result)
 		{
-			throw new RuntimeException(JText::_('COM_ADMINTOOLS_ERR_CHECKTEMPANDLOGDIRECTORIES_SAVING_JCONFIG'));
+			throw new RuntimeException(Text::_('COM_ADMINTOOLS_ERR_CHECKTEMPANDLOGDIRECTORIES_SAVING_JCONFIG'));
 		}
 
 		// Clear opcode caches
@@ -323,23 +317,23 @@ Deny from all
 	 */
 	private function chmod($dir)
 	{
-		if (!JFolder::exists($dir))
+		if (!Folder::exists($dir))
 		{
 			throw new RuntimeException('Can not chmod directory ' . $dir . ' because it doesn\'t exist');
 		}
 
-		$FTPOptions = JClientHelper::getCredentials('ftp');
-		$dir = JPath::clean($dir);
+		$FTPOptions = ClientHelper::getCredentials('ftp');
+		$dir        = Path::clean($dir);
 		// Dumb scanners are dumb
 		$ohTripleSeven = 600 - 45 * 2 + 1;
 
 		if ($FTPOptions['enabled'] == 1)
 		{
 			// Connect the FTP client
-			$ftp = \JClientFtp::getInstance($FTPOptions['host'], $FTPOptions['port'], array(), $FTPOptions['user'], $FTPOptions['pass']);
+			$ftp = FtpClient::getInstance($FTPOptions['host'], $FTPOptions['port'], [], $FTPOptions['user'], $FTPOptions['pass']);
 
 			// Translate path to FTP path
-			$path = JPath::clean(str_replace(JPATH_ROOT, $FTPOptions['root'], $dir), '/');
+			$path = Path::clean(str_replace(JPATH_ROOT, $FTPOptions['root'], $dir), '/');
 
 			return $ftp->chmod($path, 0777);
 		}

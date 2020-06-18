@@ -8,6 +8,7 @@
 namespace Akeeba\AdminTools\Admin\View\Mixin;
 
 use Akeeba\AdminTools\Admin\Model\ControlPanel;
+use AtsystemUtilRescueurl;
 
 defined('_JEXEC') or die;
 
@@ -84,7 +85,7 @@ trait SystemPluginExists
 		}
 
 		// Is Rescue Mode enabled?
-		$this->isRescueMode          = class_exists('AtsystemUtilRescueurl', true) ? \AtsystemUtilRescueurl::isRescueMode() : false;
+		$this->isRescueMode = class_exists('AtsystemUtilRescueurl', true) ? AtsystemUtilRescueurl::isRescueMode() : false;
 
 		if ($this->isRescueMode)
 		{

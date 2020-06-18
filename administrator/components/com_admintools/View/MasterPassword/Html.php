@@ -9,6 +9,7 @@ namespace Akeeba\AdminTools\Admin\View\MasterPassword;
 
 defined('_JEXEC') or die;
 
+use Akeeba\AdminTools\Admin\Model\MasterPassword;
 use FOF30\View\DataView\Html as BaseView;
 
 class Html extends BaseView
@@ -29,7 +30,7 @@ class Html extends BaseView
 
 	public function onBeforeMain()
 	{
-		/** @var \Akeeba\AdminTools\Admin\Model\MasterPassword $model */
+		/** @var MasterPassword $model */
 		$model          = $this->getModel();
 		$this->masterpw = $model->getMasterPassword();
 		$this->items    = $model->getItemList();
