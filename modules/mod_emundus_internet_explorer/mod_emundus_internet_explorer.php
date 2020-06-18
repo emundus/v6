@@ -18,9 +18,8 @@ if($message === "")
 	$message = "TEXT_DEFAULT";
 
 $session = JFactory::getSession();
-// $session->set('showInternetExplorer', true);
 $agent = $_SERVER['HTTP_USER_AGENT'];
-if(($session->get('showInternetExplorer') === null || $session->get('showInternetExplorer') === true) && preg_match('/MSIE/i',$agent)) {
+if(($session->get('showInternetExplorer') === null || $session->get('showInternetExplorer') === true) && (preg_match('/MSIE/i',$agent) || preg_match('/Trident/i',$agent))) {
 	$show = true;
 } else {
 	$show = false;

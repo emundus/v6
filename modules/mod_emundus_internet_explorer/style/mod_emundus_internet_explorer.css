@@ -12,3 +12,11 @@
 	cursor:pointer;
 	color:darkred;
 }
+.bandeau-internet-explorer a {
+	color:black;
+	font-weight:bold;
+}
+.bandeau-internet-explorer a:hover {
+	color:white;
+	font-weight:bold;
+}
