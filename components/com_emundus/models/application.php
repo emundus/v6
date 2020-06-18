@@ -2923,9 +2923,10 @@ class EmundusModelApplication extends JModelList {
      * @param $fnum_from String the fnum of the source
      * @param $fnum_to String the fnum of the duplicated application
      * @param $pid Int the profile_id to get list of forms
+     * @param null $duplicated
      * @return bool
      */
-    public function copyDocuments($fnum_from, $fnum_to, $pid = null, $duplicated = null) {
+    public function copyDocuments($fnum_from, $fnum_to, $pid = null, $can_delete = null) {
         $db = JFactory::getDbo();
 
         try {
@@ -2959,6 +2960,7 @@ class EmundusModelApplication extends JModelList {
                     $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
                     $row['filename'] = $dest;
                     $row['fnum'] = $fnum_to;
+                    $row['can_delete'] = empty($can_delete) ? 0 : 1;
                     unset($row['id']);
 
                     try {
