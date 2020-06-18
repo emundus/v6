@@ -777,7 +777,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
 			exit;
 		}
-		
+
 		
 		$link = $this->m_cifre->getLinkByID($link_id);
 
@@ -798,7 +798,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 			// If the user TO is our user, then we need to look at USER_TO_FAVORITE.
 			$direction = 1;
-			$favorite = $this->m_cifre->checkForFavorites($link->fnum_to, $profile, $this->user->id);
+			$fnum = $link->fnum_to;
+			$favorite = $this->m_cifre->checkForFavorites($fnum, $profile, $this->user->id);
 
 		} elseif (!empty($link->fnum_from)) {
 
@@ -811,7 +812,9 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 			// If the user FROM is our user, then we need to look at USER_FROM_FAVORITE.
 			$direction = -1;
-			$favorite = $this->m_cifre->checkForFavorites($link->fnum_from, $profile, $this->user->id);
+			$fnum = $link->fnum_from;
+			$favorite = $this->m_cifre->checkForFavorites($fnum, $profile, $this->user->id);
+
 		} else {
 			echo json_encode((object) ['status' => false, 'msg' => 'Error.']);
 			exit;
@@ -822,6 +825,62 @@ class EmundusControllerCifre extends JControllerLegacy {
 		}
 
 		$this->m_cifre->favorite($link_id, $direction);
+
+		// If two favorites are picked, send email notifying, and create chatroom.
+		$favorites = $this->m_cifre->checkForTwoFavorites($fnum, $this->user->id);
+		if (count($favorites) === 2) {
+
+			$m_messages = new EmundusModelMessages();
+
+			$users = [];
+			// Here we get the two users from our favorites who are not us.
+			foreach ($favorites as $fav) {
+				if ($fav->user_to == $this->user->id) {
+					$users[] = $fav->user_from;
+				} else {
+					$users[] = $fav->user_to;
+				}
+			}
+
+			// Look up the chatroom id using our three users.
+			$chatroom_id = $m_messages->getChatroomByUsers($this->user->id, $users[0], $users[1]);
+
+			if (empty($chatroom_id)) {
+				$chatroom_id = $m_messages->createChatroom($fnum);
+
+				if (empty($chatroom_id)) {
+					echo json_encode((object) ['status' => false, 'msg' => 'Cannot create chatroom.']);
+					exit;
+				}
+
+				$m_messages->joinChatroom($chatroom_id, $this->user->id, $users[0], $users[1]);
+
+				// Send the email notifying they can chat.
+				$offerInformation = $this->m_cifre->getOffer($fnum);
+
+				$email_user = JFactory::getUser($users[0]);
+				$this->c_messages->sendEmailNoFnum($email_user->email, 'chatroom_created', [
+					'USER_NAME'       => $email_user->name,
+					'OFFER_USER_NAME' => $this->user->name,
+					'OFFER_NAME'      => $offerInformation->titre,
+				]);
+
+				$email_user = JFactory::getUser($users[1]);
+				$this->c_messages->sendEmailNoFnum($email_user->email, 'chatroom_created', [
+					'USER_NAME'       => $email_user->name,
+					'OFFER_USER_NAME' => $this->user->name,
+					'OFFER_NAME'      => $offerInformation->titre,
+				]);
+
+				$this->c_messages->sendEmailNoFnum($this->user->email, 'chatroom_created', [
+					'USER_NAME'       => $this->user->name,
+					'OFFER_USER_NAME' => $this->user->name,
+					'OFFER_NAME'      => $offerInformation->titre,
+				]);
+			}
+
+		}
+
 		echo json_encode((object) ['status' => true]);
 		exit;
 	}
