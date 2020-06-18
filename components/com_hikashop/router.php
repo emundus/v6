@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -298,12 +298,9 @@ function hikashop_retrieve_url_id(&$vars,$name){
 		$translationHelper = hikashop_get('helper.translation');
 		$lang = JFactory::getLanguage();
 
-		if($translationHelper->isMulti()){
+		if($translationHelper->isMulti() && $translationHelper->falang){
 			$lang_id = $translationHelper->getId($lang->getTag());
-			$trans_table = 'jf_content';
-			if($translationHelper->falang){
-				$trans_table = 'falang_content';
-			}
+			$trans_table = 'falang_content';
 			$db->setQuery('SELECT reference_id FROM '.hikashop_table($trans_table,false).' WHERE language_id='.(int)$lang_id.' AND reference_table='.$db->Quote('hikashop_'.$type).' AND reference_field='.$db->Quote($type.'_alias').' AND value = '.$db->Quote(str_replace(':','-',$name)));
 			$retrieved_id = $db->loadResult();
 			if($retrieved_id){
@@ -321,12 +318,9 @@ function hikashop_retrieve_url_id(&$vars,$name){
 		}
 
 		$name_regex = '^ *p?'.str_replace(array('-',':'),'.+',$name).' *$';
-		if($translationHelper->isMulti()){
+		if($translationHelper->isMulti() && $translationHelper->falang){
 			$lang_id = $translationHelper->getId($lang->getTag());
-			$trans_table = 'jf_content';
-			if($translationHelper->falang){
-				$trans_table = 'falang_content';
-			}
+			$trans_table = 'falang_content';
 			$db->setQuery('SELECT reference_id FROM '.hikashop_table($trans_table,false).' WHERE language_id='.(int)$lang_id.' AND reference_table='.$db->Quote('hikashop_'.$type).' AND ((reference_field='.$db->Quote($type.'_alias').' AND (value = '.$db->Quote(str_replace(':','-',$name)).' OR value REGEXP '.$db->Quote($name_regex).')) OR (reference_field='.$db->Quote($type.'_name').' AND value REGEXP '.$db->Quote($name_regex).'))');
 			$retrieved_id = $db->loadResult();
 			if($retrieved_id){

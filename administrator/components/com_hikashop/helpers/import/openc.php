@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -65,7 +65,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 				$elasped = microtime(true) - $time;
 
 				if( !$this->refreshPage )
-					echo '<p></br><a'.$this->linkstyle.'href="'.hikashop_completeLink('import&task=import&importfrom=openc&'.$this->token.'=1&import=1&time='.time()).'">'.JText::_('HIKA_NEXT').'</a></p>';
+					echo '<p><br/><a'.$this->linkstyle.'href="'.hikashop_completeLink('import&task=import&importfrom=openc&'.$this->token.'=1&import=1&time='.time()).'">'.JText::_('HIKA_NEXT').'</a></p>';
 
 				echo '<p style="font-size:0.85em; color:#605F5D;">Elasped time: ' . round($elasped * 1000, 2) . 'ms</p>';
 			}
@@ -126,7 +126,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 			}
 			catch(Exception $e)
 			{
-				$returnString .= '<p style="color:red">Error with the openning of the `'.$this->opencDatabase.'` database.</br><span style="font-size:0.75em">Mysql Error :'.$e.'</span></p>';
+				$returnString .= '<p style="color:red">Error with the openning of the `'.$this->opencDatabase.'` database.<br/><span style="font-size:0.75em">Mysql Error :'.$e.'</span></p>';
 				$continue = false;
 			}
 			if ($continue)
@@ -134,7 +134,7 @@ class hikashopImportopencHelper extends hikashopImportHelper
 				if (empty($table))
 					$returnString .= '<p style="color:red">Opencart has not been found in the database you specified : '.$this->opencDatabase.'</p>';
 				else
-					$returnString .= 'The import will now start from the database `'.$this->opencDatabase.'`.</br>First, make a backup of your databases.<br/>'.
+					$returnString .= 'The import will now start from the database `'.$this->opencDatabase.'`.<br/>First, make a backup of your databases.<br/>'.
 									'When ready, click on <a '.$this->linkstyle.' href="'.hikashop_completeLink('import&task=import&importfrom=openc&'.$this->token.'=1&import=1').'">'.JText::_('HIKA_NEXT').'</a>, otherwise ';
 			}
 		}

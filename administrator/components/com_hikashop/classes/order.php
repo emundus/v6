@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -599,7 +599,8 @@ class hikashopOrderClass extends hikashopClass {
 		$order->cart =& $cart;
 
 		$order->order_billing_address_id = $cart->cart_billing_address_id;
-		$order->order_shipping_address_id = (int)$cart->cart_shipping_address_ids;
+		if(!empty($cart->usable_methods->shipping) || !empty($cart->package['weight']['value']) || $config->get('force_shipping', 0))
+			$order->order_shipping_address_id = (int)$cart->cart_shipping_address_ids;
 		$order->order_discount_code = @$cart->coupon->discount_code;
 
 		$order->order_currency_id = (int)$cart->full_total->prices[0]->price_currency_id;
@@ -867,6 +868,25 @@ class hikashopOrderClass extends hikashopClass {
 		$cleanCart->products = $cart->products;
 		$cart = $cleanCart;
 
+		if(!empty($order->cart->additional)) {
+			foreach($order->cart->additional as $k => $p) {
+				$order->cart->additional[$k]->product_id = 0;
+				$order->cart->additional[$k]->order_product_quantity = 0;
+				$order->cart->additional[$k]->order_product_code = 'order additional';
+				$order->cart->additional[$k]->order_product_tax = 0;
+				if(!empty($p->name))
+					$order->cart->additional[$k]->order_product_name = $p->name;
+				if(!empty($p->value))
+					$order->cart->additional[$k]->order_product_options = $p->value;
+				if(!empty($p->price_value))
+					$order->cart->additional[$k]->order_product_price = $p->price_value;
+				if(!empty($p->price_value_with_tax) && is_numeric($p->price_value_with_tax) && is_numeric($p->price_value))
+					$order->cart->additional[$k]->order_product_tax = $p->price_value_with_tax - $p->price_value;
+				if(!empty($p->taxes))
+					$order->cart->additional[$k]->order_product_tax_info = $p->taxes;
+			}
+		}
+
 		ob_start();
 		if(!empty($cart->shipping)) {
 			foreach($cart->shipping as $ship) {
@@ -1111,13 +1131,8 @@ class hikashopOrderClass extends hikashopClass {
 
 				$set_address = hikaInput::get()->getInt('set_user_address', 0);
 				if($set_address) {
-					$db = JFactory::getDBO();
-					$db->setQuery('SELECT address_id FROM '.hikashop_table('address').' WHERE address_user_id = '. (int)$order_user_id . ' AND address_published = 1 ORDER BY address_default DESC, address_id ASC LIMIT 1');
-					$address_id = $db->loadResult();
-					if($address_id){
-						$order->order_billing_address_id = (int)$address_id;
-						$order->order_shipping_address_id = (int)$address_id;
-					}
+					$order->order_billing_address_id = hikaInput::get()->getInt('billing_address', 0);
+					$order->order_shipping_address_id = hikaInput::get()->getInt('shipping_address', 0);
 				}
 			}
 		}
@@ -1279,7 +1294,12 @@ class hikashopOrderClass extends hikashopClass {
 		if(!isset($order->order_payment_price))
 			$order->order_payment_price = @$old->order_payment_price;
 
-		$order->order_full_price = $total - $order->order_discount_price + $order->order_shipping_price + $order->order_payment_price;
+		$additionals = 0 - $order->order_discount_price + $order->order_shipping_price + $order->order_payment_price;
+
+		$order->order_full_price = $total + $additionals;
+
+		if($order->order_full_price < 0 && $total > 0)
+			$order->order_full_price = 0;
 
 		$config =& hikashop_config();
 		if(!isset($order->order_tax_info) || empty($order->order_tax_info)) {
@@ -1305,6 +1325,8 @@ class hikashopOrderClass extends hikashopClass {
 					foreach($order->order_tax_info as $k => $tax) {
 						if($tax->tax_namekey == $namekey) {
 							$order->order_tax_info[$k]->tax_amount = $amount + @$tax->tax_amount_for_shipping + @$tax->tax_amount_for_payment - @$tax->tax_amount_for_coupon;
+							if($order->order_full_price == 0)
+								$order->order_tax_info[$k]->tax_amount = 0;
 							unset($order->order_tax_info[$k]->todo);
 							$found = true;
 							break;
@@ -1314,6 +1336,9 @@ class hikashopOrderClass extends hikashopClass {
 						$obj = new stdClass();
 						$obj->tax_namekey = $namekey;
 						$obj->tax_amount = $amount;
+
+						if($order->order_full_price == 0)
+							$obj->tax_amount = 0;
 						$order->order_tax_info[$namekey] = $obj;
 					}
 				}
@@ -1323,6 +1348,8 @@ class hikashopOrderClass extends hikashopClass {
 			foreach($order->order_tax_info as $k => $tax) {
 				if(isset($tax->todo)) {
 					$order->order_tax_info[$k]->tax_amount = @$tax->tax_amount_for_shipping + @$tax->tax_amount_for_payment - @$tax->tax_amount_for_coupon;
+					if($order->order_full_price == 0)
+						$order->order_tax_info[$k]->tax_amount = 0;
 					if(!bccomp($order->order_tax_info[$k]->tax_amount,0,5)) {
 						$unset[]=$k;
 					} else {
@@ -1422,6 +1449,8 @@ class hikashopOrderClass extends hikashopClass {
 			foreach($order->shippings as $k => $shipping) {
 				if(!empty($shipping->shipping_name))
 					$order->shippings[$k]->shipping_name = hikashop_translate($shipping->shipping_name);
+				if(!empty($shipping->shipping_description))
+					$order->shippings[$k]->shipping_description = hikashop_translate($shipping->shipping_description);
 			}
 		}
 
@@ -1441,6 +1470,8 @@ class hikashopOrderClass extends hikashopClass {
 			$order->payment = $this->database->loadObject();
 			if(!empty($order->payment->payment_name))
 				$order->payment->payment_name = hikashop_translate($order->payment->payment_name);
+			if(!empty($order->payment->payment_description))
+				$order->payment->payment_description = hikashop_translate($order->payment->payment_description);
 		}
 
 		$this->loadProducts($order);
@@ -1516,13 +1547,13 @@ class hikashopOrderClass extends hikashopClass {
 					$products[$k]->files = array();
 					foreach($files as $file) {
 						if($product->product_id == $file->file_ref_id) {
-							$this->_setDownloadFile($file, $products, $k);
+							$this->_setDownloadFile($file, $products, $k, $files);
 						}
 					}
 					if(empty($products[$k]->files) && !empty($product->product_parent_id)) {
 						foreach($files as $file) {
 							if($product->product_parent_id==$file->file_ref_id) {
-								$this->_setDownloadFile($file, $products, $k);
+								$this->_setDownloadFile($file, $products, $k, $files);
 							}
 						}
 					}
@@ -1554,9 +1585,15 @@ class hikashopOrderClass extends hikashopClass {
 		}
 	}
 
-	public function _setDownloadFile(&$file, &$products, $k) {
-		$product = $products[$k];
-		$product_quantity = $product->order_product_quantity;
+	public function _setDownloadFile(&$file, &$products, $k, &$files) {
+
+		$total_product_quantity = 0;
+		foreach($products as $i => $product) {
+			if($product->product_id == $file->file_ref_id) {
+				$total_product_quantity += $product->order_product_quantity;
+			}
+		}
+		$product_quantity =  $products[$k]->order_product_quantity;
 
 		if(empty($file->file_limit)) {
 			$config =& hikashop_config();
@@ -1573,22 +1610,27 @@ class hikashopOrderClass extends hikashopClass {
 					unset($f);
 				}
 			} else {
-				$id = $file->file_id.'_1';
-				if(!isset($products[$k]->files[$id])) {
-					for($i = 1; $i <= $product_quantity; $i++) {
-						$f = clone($file);
-						$f->file_pos = $i + $file->file_pos;
-						$f->download_number = 0;
-						$id = sprintf('%05d-%05d-%05d', $file->file_ordering, $file->file_id, $i);
-						$products[$k]->files[$id] = $f;
-						unset($f);
+				for($i = 1; $i <= $product_quantity; $i++) {
+					$skip = false;
+					foreach($files as $fileFromDB) {
+						if($fileFromDB->file_id == $file->file_id && $fileFromDB->file_pos == $i) {
+							$skip = true;
+						}
 					}
-
+					if($skip) {
+						continue;
+					}
+					$id = sprintf('%05d-%05d-%05d', $file->file_ordering, $file->file_id, $i);
+					$f = clone($file);
+					$f->file_pos = $i;
+					$f->download_number = 0;
+					$products[$k]->files[$id] = $f;
+					unset($f);
 				}
+
 				$id = sprintf('%05d-%05d-%05d', $file->file_ordering, $file->file_id, (int)$file->file_pos);
 				$products[$k]->files[$id] = $file;
 			}
-			$file->file_pos += $product_quantity;
 		} else {
 			$file->file_pos = 0;
 			$file->file_limit *= $product_quantity;
@@ -1650,40 +1692,7 @@ class hikashopOrderClass extends hikashopClass {
 		$translationHelper = hikashop_get('helper.translation');
 		$locale = '';
 		$lgid = 0;
-		if(hikashop_isClient('administrator') && $translationHelper->isMulti()) {
-			$user = JFactory::getUser();
-			$locale = $user->getParam('language');
-			if(empty($locale)) {
-				$params   = JComponentHelper::getParams('com_languages');
-				$locale = $params->get('site', 'en-GB');
-			}
-			$lgid = $translationHelper->getId($locale);
-			if(is_string($trans)) {
-				$status = $trans;
-			} else {
-				$status = $order->order_status;
-			}
-			$query = 'SELECT category_id FROM '.hikashop_table('category').' WHERE category_name='.$this->database->Quote($status).' LIMIT 1';
-			$this->database->setQuery($query);
-			$id = $this->database->loadResult();
-			$trans_table = 'jf_content';
-			if($translationHelper->falang) {
-				$trans_table = 'falang_content';
-			}
-			$query = 'SELECT value FROM '.hikashop_table($trans_table,false).' AS b WHERE b.reference_id='.(int)$id.' AND b.reference_table=\'hikashop_category\' AND b.reference_field=\'category_name\' AND b.published=1 AND b.language_id='.$lgid.' LIMIT 1';
-			$this->database->setQuery($query);
-			$order->value = $this->database->loadResult();
 
-			if(empty($order->value)) {
-				$val = str_replace(' ','_',strtoupper($status));
-				$trans = JText::_($val);
-				if($val==$trans) {
-					$order->value = $status;
-				} else {
-					$order->value = $trans;
-				}
-			}
-		}
 		if(!empty($lgid)) {
 			$order->order_current_lgid = $lgid;
 			$order->order_current_locale = $locale;
@@ -1788,6 +1797,8 @@ class hikashopOrderClass extends hikashopClass {
 
 		$locale = $this->loadLocale($order);
 
+		$fieldsClass = hikashop_get('class.field');
+		$fieldsClass->getData('reset', '');
 
 		if(!isset($order->mail_status))
 			$order->mail_status = '';
@@ -1815,6 +1826,8 @@ class hikashopOrderClass extends hikashopClass {
 		}
 
 		$this->loadBackLocale();
+
+		$fieldsClass->getData('reset', '');
 	}
 
 	public function loadBackLocale() {

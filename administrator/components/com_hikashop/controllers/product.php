@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,7 +25,7 @@ class ProductController extends hikashopController {
 			'listing','show','cancel',
 			'selectcategory','addcategory',
 			'selectrelated','addrelated',
-			'form_price_edit',
+			'form_price_edit','form',
 			'getprice','addimage','selectimage','addfile','selectfile','file_entry',
 			'variant','updatecart','export',
 			'trashlist',
@@ -42,6 +42,10 @@ class ProductController extends hikashopController {
 
 		if(hikaInput::get()->getInt('variant'))
 			$this->publish_return_view = 'variant';
+	}
+
+	public function form(){
+		return $this->edit();
 	}
 
 	public function edit(){
@@ -573,6 +577,9 @@ class ProductController extends hikashopController {
 		if($currency){
 			$newprice = $currencyClass->format($newprice,$currency);
 		}
+
+		hikashop_nocache();
+		hikashop_cleanBuffers();
 		echo $newprice;
 		exit;
 	}

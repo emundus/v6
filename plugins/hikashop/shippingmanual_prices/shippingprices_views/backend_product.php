@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,6 +25,10 @@ defined('_JEXEC') or die('Restricted access');
 		<tbody>
 <?php
 $i = 0;
+$type = '';
+if ($product->product_type != 'main')
+	$type = 'variant_';
+
 $previous_shipping_id = -1;
 foreach($shippings as &$shipping) {
 	$shipping->shipping_params = hikashop_unserialize($shipping->shipping_params);
@@ -59,7 +63,7 @@ foreach($shippings as &$shipping) {
 
 	if($previous_shipping_id != $shipping->shipping_id) {
 		echo "\r\n".'<tr class="hikashop_shipping_price_category"><td colspan="5">'.$shipping_data.'</td><td class="hk_center">'.
-			'<a href="#" title="'.JText::_('ADD').'" onclick="return hikashop_addline_shippingprice(this,'.$shipping->shipping_id.',\''.str_replace(array('"',"'"),array('&quot;','\\\''),$shipping->shipping_name).'\',\''.$shipping->currency_symbol.'\',\''.$product->product_type.'\');"><i class="fa fa-plus"></i></a>'.
+			'<a href="#" title="'.JText::_('ADD').'" onclick="return hikashop_addline_shippingprice(this,'.$shipping->shipping_id.',\''.str_replace(array('"',"'"),array('&quot;','\\\''),$shipping->shipping_name).'\',\''.$shipping->currency_symbol.'\',\''.$type.'\');"><i class="fa fa-plus"></i></a>'.
 			'</td></tr>';
 	}
 	$previous_shipping_id = $shipping->shipping_id;
@@ -77,12 +81,12 @@ foreach($shippings as &$shipping) {
 			$attribute = '';
 		}
 		echo '<tr><td>'.
-			'<input type="hidden" name="shipping_prices['.$i.'][id]" value="'.$shipping->shipping_price_id.'"/>'.
-			'<input type="hidden" name="shipping_prices['.$i.'][shipping_id]" value="'.$shipping->shipping_id.'"/>'.
-			'</td><td><input type="text" name="shipping_prices['.$i.'][qty]" value="'.$shipping->shipping_price_min_quantity.'" size="3"/></td>'.
-			'<td style="text-align:center"><input type="text" id="shipping_prices_value_'.$i.'" '.$attribute.' name="shipping_prices['.$i.'][value]" value="'.$shipping->shipping_price_value.'" size="7"/> '.$shipping->currency_symbol.'</td>'.
-			'<td style="text-align:center"><input type="text" id="shipping_prices_fee_'.$i.'" '.$attribute.' name="shipping_prices['.$i.'][fee]" value="'.$shipping->shipping_fee_value.'" size="7"/> '.$shipping->currency_symbol.'</td>'.
-			'<td><input type="checkbox" name="shipping_prices['.$i.'][blocked]" onchange="hikashop_shippingprice_blocked_change('.$i.', this)" '.$blocked_checked.'/></td>'.
+			'<input type="hidden" name="'.$type.'shipping_prices['.$i.'][id]" value="'.$shipping->shipping_price_id.'"/>'.
+			'<input type="hidden" name="'.$type.'shipping_prices['.$i.'][shipping_id]" value="'.$shipping->shipping_id.'"/>'.
+			'</td><td><input type="text" name="'.$type.'shipping_prices['.$i.'][qty]" value="'.$shipping->shipping_price_min_quantity.'" size="3"/></td>'.
+			'<td style="text-align:center"><input type="text" id="'.$type.'shipping_prices_value_'.$i.'" '.$attribute.' name="'.$type.'shipping_prices['.$i.'][value]" value="'.$shipping->shipping_price_value.'" size="7"/> '.$shipping->currency_symbol.'</td>'.
+			'<td style="text-align:center"><input type="text" id="'.$type.'shipping_prices_fee_'.$i.'" '.$attribute.' name="'.$type.'shipping_prices['.$i.'][fee]" value="'.$shipping->shipping_fee_value.'" size="7"/> '.$shipping->currency_symbol.'</td>'.
+			'<td><input type="checkbox" name="'.$type.'shipping_prices['.$i.'][blocked]" onchange="hikashop_shippingprice_blocked_change('.$i.', this, \''.$type.'\')" '.$blocked_checked.'/></td>'.
 			'<td class="hk_center">'.
 			'<a href="#" onclick="return hikashop_remline_shippingprice(this);" title="'.JText::_('HIKA_DELETE').'"><i class="fas fa-trash"></i></a>'.
 			'</td></tr>';
@@ -92,12 +96,12 @@ foreach($shippings as &$shipping) {
 	unset($shipping);
 }
 ?>
-		<tr id="hikashop_shipping_price_tpl_line_<?php echo $product->product_type;?>" style="display:none">
+		<tr id="hikashop_shipping_price_tpl_line_<?php echo $type;?>" style="display:none">
 			<td><input type="hidden" name="{field_id}" value="{shipping_id}"/></td>
 			<td><input type="text" name="{field_qty}" value="" size="3"/></td>
-			<td style="text-align:center"><input id="shipping_prices_value_{cpt}" type="text" name="{field_value}" value="" size="7"/> {currency}</td>
-			<td style="text-align:center"><input id="shipping_prices_fee_{cpt}" type="text" name="{field_fee}" value="" size="7"/> {currency}</td>
-			<td><input type="checkbox" name="{field_blocked} onchange="hikashop_shippingprice_blocked_change({cpt}, this)"/></td>
+			<td style="text-align:center"><input id="<?php echo $type; ?>shipping_prices_value_{cpt}" type="text" name="{field_value}" value="" size="7"/> {currency}</td>
+			<td style="text-align:center"><input id="<?php echo $type; ?>shipping_prices_fee_{cpt}" type="text" name="{field_fee}" value="" size="7"/> {currency}</td>
+			<td><input type="checkbox" name="{field_blocked}" onchange="hikashop_shippingprice_blocked_change({cpt}, this, '<?php echo $type; ?>')"/></td>
 			<td class="hk_center"><a href="#" onclick="return hikashop_remline_shippingprice(this);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fas fa-trash"></i></a></td>
 		</tr>
 	</tbody>
@@ -110,11 +114,11 @@ function hikashop_addline_shippingprice(el,id,name,currency,product_type) {
 		tableUser = tplLine.parentNode,
 		htmlblocks = {
 			cpt: hikashop_shippingprice_cpt,
-			field_id: "shipping_prices["+hikashop_shippingprice_cpt+"][shipping_id]",
-			field_qty: "shipping_prices["+hikashop_shippingprice_cpt+"][qty]",
-			field_fee: "shipping_prices["+hikashop_shippingprice_cpt+"][fee]",
-			field_value: "shipping_prices["+hikashop_shippingprice_cpt+"][value]",
-			field_blocked: "shipping_prices["+hikashop_shippingprice_cpt+"][blocked]",
+			field_id: product_type+"shipping_prices["+hikashop_shippingprice_cpt+"][shipping_id]",
+			field_qty: product_type+"shipping_prices["+hikashop_shippingprice_cpt+"][qty]",
+			field_fee: product_type+"shipping_prices["+hikashop_shippingprice_cpt+"][fee]",
+			field_value: product_type+"shipping_prices["+hikashop_shippingprice_cpt+"][value]",
+			field_blocked: product_type+"shipping_prices["+hikashop_shippingprice_cpt+"][blocked]",
 			shipping_id: id,
 			name: name,
 			currency: currency
@@ -146,12 +150,13 @@ function hikashop_remline_shippingprice(el) {
 	table.removeChild(el);
 	return false;
 }
-function hikashop_shippingprice_blocked_change(id, el) {
+function hikashop_shippingprice_blocked_change(id, el, product_type) {
 	var d = document,
-		elValue = d.getElementById("shipping_prices_value_"+id),
-		elFee = d.getElementById("shipping_prices_fee_"+id);
-	if(!elValue || !elFee)
+		elValue = d.getElementById(product_type+"shipping_prices_value_"+id),
+		elFee = d.getElementById(product_type+"shipping_prices_fee_"+id);
+	if(!elValue || !elFee) {
 		return false;
+	}
 	if(el.checked) {
 		elValue.setAttribute("readonly", "readonly");
 		elFee.setAttribute("readonly", "readonly");

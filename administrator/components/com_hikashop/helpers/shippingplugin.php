@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -73,44 +73,45 @@ class hikashopShippingPlugin extends hikashopPlugin {
 			}
 			$rate->shipping_price = $currencyClass->round($rate->shipping_price, $currencyClass->getRounding($rate->shipping_currency_id, true));
 
-			if(!empty($rate->shipping_params->shipping_min_price) && hikashop_toFloat($rate->shipping_params->shipping_min_price) > $price)
+			if(!empty($rate->shipping_params->shipping_min_price) && bccomp((float)hikashop_toFloat($rate->shipping_params->shipping_min_price), (float)$price, 5) == 1)
 				$rate->errors['min_price'] = (hikashop_toFloat($rate->shipping_params->shipping_min_price) - $price);
 
-			if(!empty($rate->shipping_params->shipping_max_price) && hikashop_toFloat($rate->shipping_params->shipping_max_price) < $price)
+			if(!empty($rate->shipping_params->shipping_max_price) && bccomp((float)hikashop_toFloat($rate->shipping_params->shipping_max_price), (float)$price, 5) == -1)
 				$rate->errors['max_price'] = ($price - hikashop_toFloat($rate->shipping_params->shipping_max_price));
 
 			if(!empty($rate->shipping_params->shipping_max_volume) && bccomp((float)@$rate->shipping_params->shipping_max_volume, 0, 3)) {
 				$rate->shipping_params->shipping_max_volume_orig = $rate->shipping_params->shipping_max_volume;
 				$rate->shipping_params->shipping_max_volume = $this->volumeHelper->convert($rate->shipping_params->shipping_max_volume, @$rate->shipping_params->shipping_size_unit);
-				if($rate->shipping_params->shipping_max_volume < $shipping_prices->volume)
+				if(bccomp((float)$rate->shipping_params->shipping_max_volume, (float)$shipping_prices->volume) == -1)
 					$rate->errors['max_volume'] = ($rate->shipping_params->shipping_max_volume - $shipping_prices->volume);
 			}
 			if(!empty($rate->shipping_params->shipping_min_volume) && bccomp((float)@$rate->shipping_params->shipping_min_volume, 0, 3)) {
 				$rate->shipping_params->shipping_min_volume_orig = $rate->shipping_params->shipping_min_volume;
 				$rate->shipping_params->shipping_min_volume = $this->volumeHelper->convert($rate->shipping_params->shipping_min_volume, @$rate->shipping_params->shipping_size_unit);
-				if($rate->shipping_params->shipping_min_volume > $shipping_prices->volume)
+				if(bccomp((float)$rate->shipping_params->shipping_min_volume, (float)$shipping_prices->volume) == 1)
 					$rate->errors['min_volume'] = ($shipping_prices->volume - $rate->shipping_params->shipping_min_volume);
 			}
 
 			if(!empty($rate->shipping_params->shipping_max_weight) && bccomp((float)@$rate->shipping_params->shipping_max_weight, 0, 3)) {
 				$rate->shipping_params->shipping_max_weight_orig = $rate->shipping_params->shipping_max_weight;
 				$rate->shipping_params->shipping_max_weight = $this->weightHelper->convert($rate->shipping_params->shipping_max_weight, @$rate->shipping_params->shipping_weight_unit);
-				if($rate->shipping_params->shipping_max_weight < $shipping_prices->weight)
+				if(bccomp((float)$rate->shipping_params->shipping_max_weight, (float)$shipping_prices->weight, 3) == -1)
 					$rate->errors['max_weight'] = ($rate->shipping_params->shipping_max_weight - $shipping_prices->weight);
 			}
+
 			if(!empty($rate->shipping_params->shipping_min_weight) && bccomp((float)@$rate->shipping_params->shipping_min_weight,0,3)){
 				$rate->shipping_params->shipping_min_weight_orig = $rate->shipping_params->shipping_min_weight;
-				$rate->shipping_params->shipping_min_weight = $this->weightHelper->convert($rate->shipping_params->shipping_min_weight, @$rate->shipping_params->shipping_weight_unit);
-				if($rate->shipping_params->shipping_min_weight > $shipping_prices->weight)
+				$rate->shipping_params->shipping_min_weight = (float)$this->weightHelper->convert($rate->shipping_params->shipping_min_weight, @$rate->shipping_params->shipping_weight_unit);
+				if(bccomp((float)$rate->shipping_params->shipping_min_weight, (float)$shipping_prices->weight, 3) == 1)
 					$rate->errors['min_weight'] = ($shipping_prices->weight - $rate->shipping_params->shipping_min_weight);
 			}
 
 			if(!empty($rate->shipping_params->shipping_max_quantity) && (int)$rate->shipping_params->shipping_max_quantity) {
-				if($rate->shipping_params->shipping_max_quantity < $shipping_prices->total_quantity)
+				if((int)$rate->shipping_params->shipping_max_quantity < (int)$shipping_prices->total_quantity)
 					$rate->errors['max_quantity'] = ($rate->shipping_params->shipping_max_quantity - $shipping_prices->total_quantity);
 			}
 			if(!empty($rate->shipping_params->shipping_min_quantity) && (int)$rate->shipping_params->shipping_min_quantity){
-				if($rate->shipping_params->shipping_min_quantity > $shipping_prices->total_quantity)
+				if((int)$rate->shipping_params->shipping_min_quantity > (int)$shipping_prices->total_quantity)
 					$rate->errors['min_quantity'] = ($shipping_prices->total_quantity - $rate->shipping_params->shipping_min_quantity);
 			}
 
@@ -203,7 +204,7 @@ class hikashopShippingPlugin extends hikashopPlugin {
 					foreach($rate_prices['products']['product_names'] as $product_name) {
 						if(empty($product_name) || $product_name == '""')
 							continue;
-						$rate->errors['X_PRODUCTS_ARE_NOT_SHIPPABLE_TO_YOU'] .= $product_name . ', '; 
+						$rate->errors['X_PRODUCTS_ARE_NOT_SHIPPABLE_TO_YOU'] .= $product_name . ', ';
 					}
 					trim($rate->errors['X_PRODUCTS_ARE_NOT_SHIPPABLE_TO_YOU'], ', ');
 				} else {

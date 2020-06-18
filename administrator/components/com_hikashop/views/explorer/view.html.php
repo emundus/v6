@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -30,12 +30,12 @@ class ExplorerViewExplorer extends hikashopView {
 				}
 			}
 			$lgid = $translationHelper->getId($locale);
-			$select .= ',b.value';
-			$trans_table = 'jf_content';
+
 			if($translationHelper->falang){
+				$select .= ',b.value';
 				$trans_table = 'falang_content';
+				$table .= ' LEFT JOIN '.hikashop_table($trans_table, false).' AS b ON a.category_id = b.reference_id AND b.reference_table = \'hikashop_category\' AND b.reference_field = \'category_name\' AND b.published = 1 AND language_id = '.$lgid;
 			}
-			$table .= ' LEFT JOIN '.hikashop_table($trans_table, false).' AS b ON a.category_id = b.reference_id AND b.reference_table = \'hikashop_category\' AND b.reference_field = \'category_name\' AND b.published = 1 AND language_id = '.$lgid;
 		}
 
 		$where = '';

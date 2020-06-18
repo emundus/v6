@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -91,7 +91,11 @@ $remind = 'index.php?option=com_users&view=remind';
 <?php } ?>
 	<div id="form-login-submit" class="control-group">
 		<div class="controls">
-			<?php echo $this->cart->displayButton(JText::_('HIKA_LOGIN'), 'login', @$this->params, '',' var b = document.getElementById(\'login_view_action\'); if(b) { b.value = \'login\'; } document.hikashop_checkout_form.submit(); return false;','', 0, 1, 'btn btn-primary'); ?>
+			<?php
+			$params = null;
+			if(isset($this->params))
+				$params = $this->params;
+			echo $this->cart->displayButton(JText::_('HIKA_LOGIN'), 'login', $params, '',' var b = document.getElementById(\'login_view_action\'); if(b) { b.value = \'login\'; } document.hikashop_checkout_form.submit(); return false;','', 0, 1, 'btn btn-primary'); ?>
 		</div>
 	</div>
 </div>

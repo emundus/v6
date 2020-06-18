@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -218,7 +218,9 @@ function displayRegistration(el) {
 		pwd = d.getElementById("hikashop_registration_password_line"),
 		pwd2 = d.getElementById("hikashop_registration_password2_line"),
 		registration_div = d.getElementById("hikashop_checkout_registration"),
-		login_div = d.getElementById("hikashop_checkout_login_form");
+		login_div = d.getElementById("hikashop_checkout_login_form"),
+		privacy = d.getElementById("hikashop_registration_privacy_area"),
+		privacy_guest = d.getElementById("hikashop_registration_privacy_guest_area");
 
 	if(!checked)
 		return;
@@ -271,6 +273,8 @@ function displayRegistration(el) {
 		return;';
 }?>
 
+		if(privacy_guest) privacy_guest.style.display = "none";
+		if(privacy) privacy.style.display = "";
 		if(value == 0) {
 			if(name) name.style.display = "";
 			if(username) username.style.display = "";
@@ -317,6 +321,8 @@ function displayRegistration(el) {
 		if(username) username.style.display = "none";
 		if(pwd) pwd.style.display = "none";
 		if(pwd2) pwd2.style.display = "none";
+		if(privacy_guest) privacy_guest.style.display = "";
+		if(privacy) privacy.style.display = "none";
 	}
 }
 </script>

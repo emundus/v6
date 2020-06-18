@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -69,6 +69,7 @@ window.hikashop.ready(function(){ SqueezeBox.fromElement(\'hikashop_notice_box_t
 		$config =& hikashop_config();
 		$this->display_checkout_bar = $config->get('display_checkout_bar', 2);
 		$this->continueShopping = $config->get('continue_shopping');
+		$this->continueShopping = hikashop_translate($this->continueShopping);
 
 		$step = hikaInput::get()->getInt('step',0);
 		if(!isset($this->steps[$step])) {
@@ -254,6 +255,7 @@ function hikashopCheckMethods() {
 		if(empty($done)) {
 			$config =& hikashop_config();
 			$redirect_url = $config->get('redirect_url_when_cart_is_empty');
+			$redirect_url = hikashop_translate($redirect_url);
 			if(!preg_match('#^https?://#',$redirect_url)) $redirect_url = JURI::base().ltrim($redirect_url,'/');
 			$app->redirect( JRoute::_($redirect_url,false), JText::_('CART_EMPTY'));
 			return true;

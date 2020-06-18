@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -881,9 +881,10 @@ class hikashopCartClass extends hikashopClass {
 
 
 		$parent_product_ids = array();
-		foreach($cart->products as $product) {
+		foreach($cart->products as $k => $product) {
 			if(!empty($product->product_parent_id))
 				$parent_product_ids[$product->cart_product_id] = (int)$product->product_parent_id;
+			$cart->products[$k]->product_name = hikashop_translate($product->product_name);
 		}
 
 		$parent_products = null;
@@ -904,6 +905,8 @@ class hikashopCartClass extends hikashopClass {
 					$p->cart_product_option_parent_id = 0;
 					$p->cart_product_parent_id = 0;
 				}
+
+				$p->product_name = hikashop_translate($p->product_name);
 
 				$cart->products['p'.$k] = $p;
 				$cart->products[$k]->cart_product_parent_id = 'p'.$k;
@@ -1564,6 +1567,9 @@ class hikashopCartClass extends hikashopClass {
 		if(!empty($cart->cart_type) && $cart->cart_type != 'cart' && empty($this->user))
 			return false;
 
+		if(empty($options['fields_area']))
+			$options['fields_area'] = 'frontcomp';
+
 		if(!is_array($products))
 			$products = array(array(
 				'id' => (int)$products,
@@ -1606,20 +1612,22 @@ class hikashopCartClass extends hikashopClass {
 		$cart_product_options = array();
 
 		foreach($products as $k => $p) {
-			foreach($cart->cart_products as &$cart_product) {
-				if($cart_product->cart_product_quantity == 0 || (is_string($cart_product->cart_product_id) && substr($cart_product->cart_product_id, 0, 1) == 'p'))
-					continue;
+			if(!empty($cart->cart_products)) {
+				foreach($cart->cart_products as &$cart_product) {
+					if($cart_product->cart_product_quantity == 0 || (is_string($cart_product->cart_product_id) && substr($cart_product->cart_product_id, 0, 1) == 'p'))
+						continue;
 
-				if(!$this->compareCartProducts($p, $cart_product, $cart_product_options, $fields))
-					continue;
+					if(!$this->compareCartProducts($p, $cart_product, $cart_product_options, $fields))
+						continue;
 
 
-				unset($products[$k]['id']);
-				$products[$k]['pid'] = (int)$cart_product->cart_product_id;
+					unset($products[$k]['id']);
+					$products[$k]['pid'] = (int)$cart_product->cart_product_id;
 
-				break;
+					break;
+				}
+				unset($cart_product);
 			}
-			unset($cart_product);
 		}
 
 		$quantityCheck = $this->checkQuantities($products, $cart, array('message' => true));
@@ -1685,7 +1693,7 @@ class hikashopCartClass extends hikashopClass {
 		return;
 	}
 
-	protected function loadFieldsForProducts($product_ids, $area = 'frontcomp') {
+	public function loadFieldsForProducts($product_ids, $area = 'frontcomp') {
 		$fields = array();
 		return $fields;
 	}
@@ -2042,6 +2050,45 @@ class hikashopCartClass extends hikashopClass {
 		$addr = $addressClass->get($address_id);
 		if(empty($addr->address_published) || $addr->address_user_id != $cart->user_id)
 			return false;
+
+
+		$null = null;
+		$fieldClass = hikashop_get('class.field');
+		$field_type = $addr->address_type;
+		if(!empty($field_type))
+			$field_type .= '_address';
+
+		if(empty($addr->address_state) && !empty($addr->address_country)) {
+			$zoneClass = hikashop_get('class.zone');
+			$states = $zoneClass->getChildren($addr->address_country);
+			if(empty($states)) {
+				$addr->address_state = 'no_state_found';
+			} else {
+				$zones_pulished = $zoneClass->getZones($states, 'zone_published', 'zone_namekey', true);
+				if(empty($zones_pulished)) {
+					$addr->address_state = 'no_state_found';
+				} else {
+					$published = false;
+					foreach($zones_pulished as $zone_published) {
+						if($zone_published)
+							$published = true;
+					}
+					if(!$published) {
+						$addr->address_state = 'no_state_found';
+					}
+				}
+			}
+		}
+
+		$data = array($field_type => get_object_vars($addr));
+		$address = $fieldClass->getFilteredInput($field_type, $null, 'ret', $data, false, 'frontcomp');
+
+		$ret = true;
+		if(empty($address)) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage(JText::_('THE_'.strtoupper($addr->address_type).'_ADDRESS_YOU_SELECTED_CANNOT_BE_USED_AS_SOME_INFORMATION_IS_MISSING'), 'error');
+			return false;
+		}
 
 		if($type == 'billing' || $type === null) {
 			$cart->cart_billing_address_id = $address_id;
@@ -2446,10 +2493,16 @@ class hikashopCartClass extends hikashopClass {
 
 			if(!empty($product->cart_product_parent_id) && (!bccomp($product->product_length, 0, 5) || !bccomp($product->product_width, 0, 5) || !bccomp($product->product_height, 0, 5))) {
 				if(isset($product->parent_product)) {
-					$product->product_length = $product->parent_product->product_length;
-					$product->product_width = $product->parent_product->product_width;
-					$product->product_height = $product->parent_product->product_height;
-					$product->product_dimension_unit = $product->parent_product->product_dimension_unit;
+					if (!bccomp($product->product_length, 0, 5) && !bccomp($product->product_width, 0, 5) && !bccomp($product->product_height, 0, 5)) {
+						$product->product_length = $product->parent_product->product_length;
+						$product->product_width = $product->parent_product->product_width;
+						$product->product_height = $product->parent_product->product_height;
+						$product->product_dimension_unit = $product->parent_product->product_dimension_unit;
+					} else {
+						if (bccomp($product->product_length, 0, 5)) $product->product_length = $product->parent_product->product_length;
+						if (bccomp($product->product_length, 0, 5)) $product->product_width = $product->parent_product->product_width;
+						if (bccomp($product->product_length, 0, 5)) $product->product_height = $product->parent_product->product_height;
+					}
 				} elseif(is_string($product->cart_product_id) && substr($product->cart_product_id, 0, 1) == 'p' && isset($cart->products[ $product->cart_product_id ])) {
 					$parent_product = &$cart->products[ $product->cart_product_id ];
 					$product->product_length = $parent_product->product_length;

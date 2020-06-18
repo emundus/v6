@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -29,7 +29,13 @@ defined('_JEXEC') or die('Restricted access');
 	$this->category->multiple = false;
 ?></div>
 </div>
-	<table id="hikashop_order_listing" class="adminlist table table-striped table-hover" cellpadding="1">
+<?php
+	$classes = 'adminlist table';
+	if(empty($this->colors)) {
+		$classes .= ' table-striped table-hover';
+	}
+?>
+	<table id="hikashop_order_listing" class="<?php echo $classes; ?>" cellpadding="1">
 		<thead>
 			<tr>
 				<th class="hikashop_order_num_title title titlenum">
@@ -93,12 +99,14 @@ defined('_JEXEC') or die('Restricted access');
 				$target = '';
 				if($this->popup)
 					$target = '" target="_top';
-
 				$k = 0;
 				for($i = 0,$a = count($this->rows);$i<$a;$i++){
 					$row =& $this->rows[$i];
+					$attributes = '';
+					if(!empty($this->orderStatuses[$row->order_status]->orderstatus_color))
+						$attributes .= ' style="background-color:'.$this->orderStatuses[$row->order_status]->orderstatus_color.';"';
 			?>
-				<tr class="row<?php echo $k; ?>">
+				<tr class="row<?php echo $k; ?>"<?php echo $attributes; ?>>
 					<td class="hikashop_order_num_value">
 					<?php echo $this->pagination->getRowOffset($i);
 					?>

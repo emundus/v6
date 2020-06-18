@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -42,7 +42,7 @@ defined('_JEXEC') or die('Restricted access');
 	$edit_variant = hikashop_acl('product/variant/characteristics');
 	if(!empty($this->product->characteristics)) {
 		foreach($this->product->characteristics as $characteristic) { ?>
-			<dt class="hikashop_product_characteristic"><label><?php echo $characteristic->characteristic_value; ?></label></dt>
+			<dt class="hikashop_product_characteristic"><label><?php echo hikashop_translate($characteristic->characteristic_value); ?></label></dt>
 			<dd class="hikashop_product_characteristic"><?php
 				if($edit_variant)
 					echo $this->characteristicType->display('data[variant][characteristic]['.$characteristic->characteristic_id.']', (int)@$characteristic->default_id, @$characteristic->values);

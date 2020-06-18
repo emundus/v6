@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,10 +17,14 @@ class DiscountController extends hikashopController{
 		$this->modify_views[]='select_coupon';
 		$this->modify_views[]='add_coupon';
 		$this->modify[]='copy';
+		$this->modify_views[]='form';
 		$this->display[]='selection';
 		$this->display[]='export';
 		$this->modify[]='useselection';
 		$this->display[]='findList';
+	}
+	function form(){
+		return $this->edit();
 	}
 
 	function copy(){

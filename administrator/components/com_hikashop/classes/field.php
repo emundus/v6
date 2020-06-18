@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -30,6 +30,10 @@ class hikashopFieldClass extends hikashopClass {
 		static $data = array();
 		if(is_array($area))
 			return $area;
+		if(is_string($area) && $area == 'reset') {
+			$data = array();
+			return $area;
+		}
 		$key = $area.'_'.$type.'_'.$notcoreonly;
 		if(!empty($categories)) {
 			if(!empty($categories['originals']))
@@ -1449,7 +1453,7 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 
 
 
-		if(!preg_match('#^([a-z0-9_-]+ *= *"[\p{L}\p{N}\p{Z} ]+" *)* *$#i', $fieldOptions['attribute'])){
+		if(!preg_match('#^([a-z0-9_-]+ *= *"[\p{L}\p{N}\p{Z} :\-;\(\)]+" *)* *$#i', $fieldOptions['attribute'])){
 			$this->errors[] = 'Please specify a correct attribute';
 			return false;
 		}
@@ -2029,7 +2033,7 @@ class hikashopFieldText extends hikashopFieldItem {
 	}
 
 	function show(&$field, $value) {
-		if(in_array($field->field_table,array('address','order','item')))
+		if(in_array($field->field_table,array('address','order','item')) && in_array($field->field_type, array('text','textarea', 'link', 'wysiwyg')))
 			return $value;
 		return $this->trans($value);
 	}
@@ -2532,16 +2536,31 @@ class hikashopFieldDropdown extends hikashopFieldItem {
 		$app = JFactory::getApplication();
 		$admin = hikashop_isClient('administrator');
 
-		$isValue = !empty($value) && !is_array($value) && isset($field->field_value[$value]);
+		$values = array();
+		foreach($field->field_value as $oneValue => $title) {
+			$oneValue = htmlentities($oneValue, ENT_COMPAT, 'UTF-8');
+			$values[$oneValue] = $title;
+		}
 		if(is_array($value)) {
-			$keys = array_keys($field->field_value);
+			$tmp = array();
+			foreach($value as $k => $v) {
+				$k = htmlentities($k, ENT_COMPAT, 'UTF-8');
+				$tmp[$k] = $v;
+			}
+			$value = $tmp;
+			$keys = array_keys($values);
 			$isValue = array_intersect($value, $keys);
 			$isValue = !empty($isValue);
+		} else {
+			$value = htmlentities($value, ENT_COMPAT, 'UTF-8');
+			$isValue = !empty($value) && isset($values[$value]);
 		}
 		$selected = '';
-		foreach($field->field_value as $oneValue => $title) {
+		if(!empty($field->field_default))
+			$field->field_default = htmlentities($field->field_default, ENT_COMPAT, 'UTF-8');
+		foreach($values as $oneValue => $title) {
 			if(isset($field->field_default) && !$isValue) {
-				if(array_key_exists($field->field_default, $field->field_value)) {
+				if(array_key_exists($field->field_default, $values)) {
 					$defaultValueEqualToCurrentValue = (is_numeric($field->field_default) && is_numeric($oneValue) && $oneValue == $field->field_default) || (is_string($field->field_default) && $oneValue === $field->field_default);
 					if($defaultValueEqualToCurrentValue){
 						$selected = ($defaultValueEqualToCurrentValue || is_array($field->field_default) && in_array($oneValue,$field->field_default)) ? 'selected="selected" ' : '';
@@ -2787,7 +2806,7 @@ class hikashopFieldRadioCheck extends hikashopFieldItem {
 			$checked = ((int)$title->disabled && !$admin) ? 'disabled="disabled" ' : '';
 
 			$oneValue = (string)$oneValue;
-			$oneValue = htmlentities($oneValue, ENT_COMPAT, 'UTF-8');
+			$oneValue = preg_replace("/&#?[a-z0-9]{2,8};/i","", htmlentities($oneValue, ENT_COMPAT, 'UTF-8'));
 			$checked .= ((is_string($value) && $oneValue === $value) || is_array($value) && in_array($oneValue,$value)) ? 'checked="checked" ' : '';
 			$id = $this->prefix.$field->field_namekey.$this->suffix.'_'.$oneValue;
 			$options .= empty($field->field_options['attribute']) ? '' : $field->field_options['attribute'];
@@ -2814,6 +2833,8 @@ class hikashopFieldBoolean extends hikashopFieldItem {
 		return parent::show($field, $value);
 	}
 	function display($field, $value, $map, $inside, $options = '', $test = false, $allFields = null, $allValues = null) {
+		if(is_null($value))
+			$value = $field->field_default;
 		$radioType = hikashop_get('type.radio');
 		return $radioType->booleanlist($map, null, !!$value);
 	}

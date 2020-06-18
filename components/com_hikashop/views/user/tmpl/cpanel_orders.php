@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -34,7 +34,7 @@ foreach($this->cpanel_data->cpanel_orders as $order_id => $order) {
 		<a class="hk-row-fluid" href="<?php echo $order_link; ?>">
 			<div class="hkc-sm-6 hika_cpanel_date">
 				<i class="fa fa-clock"></i>
-				<?php echo hikashop_getDate((int)$order->order_created, '%Y-%m-%d %H:%M'); ?>
+				<?php echo hikashop_getDate((int)$order->order_created, '%d %B %Y %H:%M'); ?>
 			</div>
 			<div class="hkc-sm-6 hika_cpanel_price">
 				<i class="fa fa-credit-card"></i>

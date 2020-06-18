@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -302,7 +302,7 @@ window.orderMgr.setProduct = function(el) {
 window.orderMgr.delProduct = function(el, id) {
 	if(confirm("<?php echo JText::_('HIKA_CONFIRM_DELETE_ORDER_PRODUCT'); ?>")) {
 		var w = window, o = w.Oby;
-		el.parentNode.innerHTML = '<img src="<?php echo HIKASHOP_IMAGES; ?>loading.gif" alt="loading..."/>';
+		el.parentNode.innerHTML = '<img src="<?php echo HIKASHOP_IMAGES; ?>spinner.gif" alt="loading..."/>';
 		o.xRequest('<?php echo hikashop_completeLink('order&task=product_remove&order_id='.$this->order->order_id.'&order_product_id=HKPRODID', true, false, true); ?>'.replace('HKPRODID',id), {mode:'POST', data:'<?php echo hikashop_getFormToken(); ?>=1', update: 'hikashop_order_products'}, function() {
 			window.orderMgr.updateAdditional();
 			window.orderMgr.updateHistory();

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -416,6 +416,21 @@ class plgSystemHikashopmassaction extends JPlugin {
 				return false;
 			break;
 		}
+
+
+
+			$actions['mysqlQuery']=JText::_('RUN_MYSQL_QUERY');
+			$loadedData->massaction_actions['__num__'] = new stdClass();
+			$loadedData->massaction_actions['__num__']->type = $table->table;
+			$loadedData->massaction_actions['__num__']->data = array('type' => '','value' => '','operation' => '');
+			$loadedData->massaction_actions['__num__']->name = 'mysqlQuery';
+			$loadedData->massaction_actions['__num__']->html = '';
+			foreach($loadedData->massaction_actions as $key => &$value) {
+				if($value->name != 'mysqlQuery' || ($table->table != $loadedData->massaction_table && is_int($key)))
+					continue;
+				$output = ' <textarea name="action['.$table->table.']['.$key.'][mysqlQuery][query]" rows="15" cols="100">'. htmlspecialchars(@$value->data['query'], ENT_COMPAT, 'UTF-8').'</textarea>';
+				$actions_html[$value->name] =  $massactionClass->initDefaultDiv($value, $key, $type, $table->table, $loadedData, $output);
+			}
 
 		if(is_array($dispTables)){
 
@@ -1858,5 +1873,37 @@ class plgSystemHikashopmassaction extends JPlugin {
 			$massactionClass->_trigger('onHikashopCronTrigger'.ucfirst($period));
 		}
 		if(count($massactionClass->report)) $messages = array_merge($messages,$massactionClass->report);
+	}
+
+	function onProcessOrderMassActionmysqlQuery(&$elements,&$action,$k) {
+		$this->_processSQL($elements,$action);
+	}
+	function onProcessProductMassActionmysqlQuery(&$elements,&$action,$k){
+		$this->_processSQL($elements,$action);
+	}
+	function onProcessAddressMassActionmysqlQuery(&$elements,&$action,$k){
+		$this->_processSQL($elements,$action);
+	}
+	function onProcessUserMassActionmysqlQuery(&$elements,&$action,$k){
+		$this->_processSQL($elements,$action);
+	}
+	function onProcessCategoryMassActionmysqlQuery(&$elements,&$action,$k){
+		$this->_processSQL($elements,$action);
+	}
+	function _processSQL(&$elements, &$action) {
+		if(!empty($action['query'])) {
+			$db = JFactory::getDBO();
+			foreach($elements as $e) {
+				$attributes = get_object_vars($e);
+				$query = $action['query'];
+				foreach($attributes as $key => $value) {
+					if(is_object($value) || is_array($value))
+						continue;
+					$query = str_replace('{'.$key.'}', $value, $query);
+				}
+				$db->setQuery($query);
+				$db->execute();
+			}
+		}
 	}
 }

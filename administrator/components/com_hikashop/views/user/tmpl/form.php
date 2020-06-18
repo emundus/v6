@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,8 +15,8 @@ defined('_JEXEC') or die('Restricted access');
 
 <div class="hkc-lg-6 hikashop_tile_block hikashop_user_edit_general"><div>
 	<div class="hikashop_tile_title"><?php echo JText::_('MAIN_INFORMATION'); ?></div>
-	<dl class="hika_options large">
 
+	<dl class="hika_options">
 		<dt><label><?php
 			echo JText::_('HIKA_USER_NAME');
 		?></label></dt>
@@ -26,8 +26,10 @@ defined('_JEXEC') or die('Restricted access');
 			else
 				echo '<em>'.JText::_('GUEST').'</em>';
 		?></dd>
+	</dl>
 
 <?php if(!empty($this->user->username)) { ?>
+	<dl class="hika_options">
 		<dt><label><?php
 			echo JText::_('HIKA_USERNAME');
 		?></label></dt>
@@ -35,16 +37,20 @@ defined('_JEXEC') or die('Restricted access');
 			echo $this->escape(@$this->user->username);
 
 		?></dd>
+	</dl>
 <?php } ?>
 
+	<dl class="hika_options">
 		<dt><label for="user_email"><?php
 			echo JText::_('HIKA_EMAIL');
 		?></label></dt>
 		<dd class="input_large">
 			<input type="text" name="data[user][user_email]" id="user_email" class="inputbox" value="<?php echo $this->escape(@$this->user->user_email); ?>" />
 		</dd>
+	</dl>
 
 <?php if(hikashop_level(2) && !empty($this->user->geolocation_ip)) { ?>
+	<dl class="hika_options">
 		<dt><label><?php
 			echo JText::_('IP');
 		?></label></dt>
@@ -54,17 +60,18 @@ defined('_JEXEC') or die('Restricted access');
 				echo ' ( '.$this->user->geolocation_city.' '.$this->user->geolocation_state.' '.$this->user->geolocation_country.' )';
 			}
 		?></dd>
+	</dl>
 <?php } ?>
-
 <?php
 	if(!empty($this->fields['user'])) {
 		foreach($this->fields['user'] as $fieldName => $oneExtraField) {
 			$onWhat = ($oneExtraField->field_type == 'radio') ? 'onclick' : 'onchange';
 ?>
+	<dl id="hikashop_user_<?php echo $fieldName; ?>" class="hika_options">
 		<dt><label><?php
 			echo $this->fieldsClass->getFieldName($oneExtraField);
 		?></label></dt>
-		<dd><?php
+		<dd class="input_large"><?php
 			echo $this->fieldsClass->display(
 				$oneExtraField,
 				$this->user->$fieldName,
@@ -76,12 +83,11 @@ defined('_JEXEC') or die('Restricted access');
 				$this->user
 			);
 		?></dd>
+	</dl>
 <?php
 		}
 	}
 ?>
-
-	</dl>
 </div></div>
 
 <div class="hkc-lg-6 hikashop_tile_block hikashop_user_addresses_general"><div>
