@@ -3,8 +3,8 @@
  * @package         SCLogin
  * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v8.0.5
- * @build-date      2019/01/14
+ * @version         Release v8.4.3
+ * @build-date      2020/05/29
  */
 
 defined('_JEXEC') or die('Restricted access');
@@ -45,16 +45,17 @@ if ($params->get('showLoginForm'))
                 <div class="control-group pull-left" id="form-sclogin-password">
                     <div class="controls">
                         <div class="input-append">
-                            <input name="<?php echo $passwordName; ?>" tabindex="0" alt="password" type="password" class="sclogin-passwd input-small"
+                            <input id="sclogin-passwd<?php echo $module->id; ?>" name="<?php echo $passwordName; ?>" tabindex="0" alt="password" type="password" class="sclogin-passwd input-small"
                                    placeholder="<?php echo JText::_('MOD_SCLOGIN_PASSWORD') ?>" required aria-required="true">
+                            <?php echo $helper->getShowPasswordButton('sclogin-passwd'. $module->id ); ?>
                             <?php echo $helper->getForgotPasswordButton(); ?>
                         </div>
                     </div>
                 </div>
                 <div class="control-group pull-left" id="form-sclogin-submitcreate">
-                    <button type="submit" name="Submit" class="btn btn-primary"><?php echo JText::_('MOD_SCLOGIN_LOGIN') ?></button>
+                    <button type="submit" name="Submit" class="<?php echo $loginButtonClass;?>"><?php echo JText::_('MOD_SCLOGIN_LOGIN') ?></button>
                     <?php if ($showRegisterLinkInLogin) : ?>
-                        <a class="btn" href="<?php echo $helper->registerLink; ?>"><?php echo JText::_('MOD_SCLOGIN_REGISTER_FOR_THIS_SITE'); ?></a>
+                        <a class="<?php echo $registerButtonClass;?>" href="<?php echo $helper->registerLink; ?>"><?php echo JText::_('MOD_SCLOGIN_REGISTER_FOR_THIS_SITE'); ?></a>
                     <?php endif; ?>
                 </div>
                 <?php if (JPluginHelper::isEnabled('system', 'remember')) :

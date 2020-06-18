@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="1.6" type="module" method="upgrade" client="site">
     <name>SCLogin</name>
-    <version>8.0.5</version>
-    <creationDate>2019/01/14</creationDate>
+    <version>8.4.3</version>
+    <creationDate>2020/05/29</creationDate>
     <author>SourceCoast | www.sourcecoast.com</author>
     <authorEmail>support@sourcecoast.com</authorEmail>
     <authorUrl>http://www.sourcecoast.com</authorUrl>
@@ -142,6 +142,15 @@
                     <option value="button_white">MOD_SCLOGIN_LOGIN_FORGOT_VALUE_BUTTON_WHITE</option>
                     <option value="link">MOD_SCLOGIN_LOGIN_FORGOT_VALUE_LINK</option>
                 </field>
+                <field name="showShowPassword"
+                       type="radio"
+                       class="btn-group"
+                       default="0"
+                       label="MOD_SCLOGIN_LOGIN_SHOW_SHOW_PASSWORD_LABEL"
+                       description="MOD_SCLOGIN_LOGIN_SHOW_SHOW_PASSWORD_DESC">
+                    <option value="0">MOD_SCLOGIN_VALUE_HIDE</option>
+                    <option value="1">MOD_SCLOGIN_VALUE_SHOW</option>
+                </field>
                 <field name="showRegisterLink"
                        type="list"
                        default="1"
@@ -162,6 +171,18 @@
                     <option value="2">MOD_SCLOGIN_SHOW_REMEMBER_ME_VALUE_HIDE_UNCHECKED</option>
                     <option value="3">MOD_SCLOGIN_SHOW_REMEMBER_ME_VALUE_HIDE_CHECKED</option>
                 </field>
+                <field name="loginbutton_class"
+                       type="text"
+                       label="MOD_SCLOGIN_LOGINBUTTON_CLASS_LABEL"
+                       description="MOD_SCLOGIN_LOGINBUTTON_CLASS_DESC"
+                       default=""
+                />
+                <field name="registerbutton_class"
+                       type="text"
+                       label="MOD_SCLOGIN_REGISTERBUTTON_CLASS_LABEL"
+                       description="MOD_SCLOGIN_REGISTERBUTTON_CLASS_DESC"
+                       default=""
+                />
                 <field name="autoFocusUsername"
                        type="radio"
                        class="btn-group"
