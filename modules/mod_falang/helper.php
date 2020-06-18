@@ -23,8 +23,6 @@ abstract class modFaLangHelper
 		$lang   = JFactory::getLanguage();
 		$languages	= JLanguageHelper::getLanguages();
 		$app	= JFactory::getApplication();
-        $levels = JFactory::getUser()->getAuthorisedViewLevels();
-
 
         //use to remove default language code in url
         $lang_codes 	= JLanguageHelper::getLanguages('lang_code');
@@ -80,8 +78,8 @@ abstract class modFaLangHelper
             }
 		}
    		foreach($languages as $i => &$language) {
-			// Do not display language without frontend UI, check user access level
-			if ((!JLanguage::exists($language->lang_code)) || ($language->access && !in_array($language->access, $levels))) {
+			// Do not display language without frontend UI
+			if (!JLanguage::exists($language->lang_code)) {
 				unset($languages[$i]);
 			}
 
