@@ -130,14 +130,14 @@ fonts/rockettheme-apps/rockettheme-apps.svg	431a7de65db6fea600722c933bb795ee
 fonts/rockettheme-apps/rockettheme-apps.woff2	0b76f0674592d3d4653e6524045e890e
 fonts/rockettheme-apps/rockettheme-apps.ttf	2185692f8168ab2fa54c0923be97f190
 fonts/rockettheme-apps/rockettheme-apps.eot	371fde3d2b3e06ba11bab5b4706292f2
-templateDetails.xml	d13504610f4276e6cc8b3f47c7251a55
+templateDetails.xml	ab63ced3b63d7e19a1eb10363cadf8fb
 layouts/default.yaml	15fd05bda30a83f05ccfde7b970d716f
 layouts/_offline.yaml	8a05c4dde55e6811ac95fdc639c88404
 layouts/home_-_particles.yaml	83439c33dd1e3ee0c16fae1d0bfba5b8
 layouts/_error.yaml	ade3d185bc08148bd7295c1e89f1e4b1
 layouts/_body_only.yaml	43dce3ad03bac74c337c6151f59bc94a
 MD5SUMS	d41d8cd98f00b204e9800998ecf8427e
-gantry/theme.yaml	dcfbe169ebd62a2bfaa0d64a3a11fb8f
+gantry/theme.yaml	5ab50f53f1d65fa51d29943025430774
 gantry/presets.yaml	4edfd8f32f98ba3020831b1ed61db43f
 images/header/img01.jpg	fb3b9862ecc04e7206e246659e68f2af
 images/header/img02.jpg	8f73bdf0cf0fad13ce7de37dad9e8d5c
@@ -215,7 +215,7 @@ scss/helium/styles/_buttons.scss	0b3abf205d0f557b76fa045993137818
 scss/helium/styles/_tables.scss	84e30ada4aa5c38ee47079cfcaaefe3d
 scss/helium/styles/_helium-style.scss	f894e149d0ea0d6c396ce981b6e85853
 scss/helium/styles/_core.scss	e8d0c0eb9d9815be073c9c1305640f72
-scss/helium/styles/_typography.scss	b68a76910605a7eb183a0210c6906d08
+scss/helium/styles/_typography.scss	3ceef80704646c220c50c9f2e9ec5ada
 scss/helium/styles/_variations.scss	e71e10fbd7111c99822b38b98d339bd6
 scss/helium/styles/_utilities.scss	bb92e9b78813fe09e0fdf78a1fd7081a
 scss/helium/styles/_fonts.scss	b101ca9e6436bca82ff603915d9e68c8
