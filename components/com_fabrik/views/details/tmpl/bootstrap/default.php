@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.1
  */
@@ -21,6 +21,7 @@ defined('_JEXEC') or die('Restricted access');
         <span class="pdfdate"> </span>
     </div>
 <?php
+
 $form = $this->form;
 $model = $this->getModel();
 

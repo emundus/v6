@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.1
  */
@@ -32,7 +32,7 @@ endif;
 
 if ($this->params->get('show-title', 1)) :?>
 	<div class="page-header">
-		<h1><?php $title = explode('-', $form->label); echo !empty($title[1])?$title[1]:$title[0]; ?></h1>
+		<h1><?php echo $form->label;?></h1>
 	</div>
 <?php
 endif;
