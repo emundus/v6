@@ -16,7 +16,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	jQuery(document).ready( function() {
 		Swal.fire({
 			title: '',
-			html: '<?php echo JText::_($message) ?>',
+			html: '<?php echo addslashes(JText::_($message)) ?>',
 			icon: 'warning'
 		}).then(function(result) {
 			jQuery.ajax({
