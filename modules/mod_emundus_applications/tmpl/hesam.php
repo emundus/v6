@@ -124,6 +124,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                         <div class="em-join-icon" onclick="completefile('<?= $application->fnum; ?>', false)">
                                             <span class="fa fa-check"></span>
                                         </div>
+                                        <div class="em-join-icon em-mobile-join-icon" onclick="completefile('<?= $application->fnum; ?>', false)">
+                                            <span class="fa fa-check"></span>
+                                        </div>
                                     <?php endif; ?>
 
                                     <?php if ($application->profile_id !== '1006') :?>
