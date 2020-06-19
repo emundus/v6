@@ -879,6 +879,9 @@ class EmundusControllerCifre extends JControllerLegacy {
 				]);
 			}
 
+			echo json_encode((object) ['status' => true, 'reload' => true]);
+			exit;
+
 		}
 
 		echo json_encode((object) ['status' => true]);

@@ -44,9 +44,9 @@ class EmundusViewMessages extends JViewLegacy {
         $m_messages = new EmundusModelMessages();
 
         $jinput = JFactory::getApplication()->input;
-        $tmpl = $jinput->get->get('layout', 'default');
+        $layout = $jinput->get->get('layout', 'default');
 
-        if ($tmpl === 'chat') {
+        if ($layout === 'chat') {
 	        $this->other_user = $jinput->get->getInt('chatid', null);
             $this->messages = $m_messages->loadMessages($this->other_user);
             $this->user_id = $current_user->id;
@@ -55,7 +55,25 @@ class EmundusViewMessages extends JViewLegacy {
 	        $m_cifre = new EmundusModelCifre();
             $this->offers = $m_cifre->getOffersBetweenUsers($this->user_id, $this->other_user);
 
-        } elseif ($tmpl === 'default') {
+        } elseif ($layout === 'hesam_chatroom') {
+
+	        $chatroom = $jinput->get->getInt('chatroom', null);
+	        if (empty($chatroom)) {
+		        die('error');
+	        }
+
+	        $chatroom = $m_messages->getChatroom($chatroom);
+
+	        require_once (JPATH_COMPONENT.DS.'models'.DS.'cifre.php');
+	        $m_cifre = new EmundusModelCifre();
+	        $this->offers = $m_cifre->getOffer($chatroom->fnum);
+
+	        $this->messages = $m_messages->getChatroomMessages($chatroom->id);
+	        $this->user_id = $current_user->id;
+	        $this->user_name = $current_user->name;
+	        $this->chatroom_id = $chatroom->id;
+
+        } else {
 	        $this->message_contacts = $m_messages->getContacts();
             $this->user_id = $current_user->id;
             $this->user_name = $current_user->name;

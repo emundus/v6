@@ -42,14 +42,27 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                 <?php foreach ($applications as $application) :?>
 
                 <?php
-	                // We need to find out if we have 2 favorites for this .
-	                $nb_faves = 0;
-	                foreach ($contacts[$application->fnum] as $profile_id => $requests) {
-                        if ($requests[0]['favorite']) {
-                            $nb_faves++;
-                        }
+	                // If two favorites are present, display chat icon.
+	                $favorites = $m_cifre->checkForTwoFavorites($application->fnum, $user->id);
+	                $nb_faves = count($favorites);
+	                if ($nb_faves === 2) {
+
+		                $m_messages = new EmundusModelMessages();
+
+		                $favorite_users = [];
+		                // Here we get the two users from our favorites who are not us.
+		                foreach ($favorites as $fav) {
+			                if ($fav->user_to == $user->id) {
+				                $favorite_users[] = $fav->user_from;
+			                } else {
+				                $favorite_users[] = $fav->user_to;
+			                }
+		                }
+
+		                // Look up the chatroom id using our three users.
+		                $chatroom_id = $m_messages->getChatroomByUsers($user->id, $favorite_users[0], $favorite_users[1]);
 	                }
-                ?>
+	                ?>
 
                     <div class="wrapper-big-car" id="row<?= $application->fnum; ?>">
 
@@ -66,6 +79,13 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                 </div>
                             </div>
                             <div class="wrapper-edit">
+
+                                <?php if ($nb_faves === 2 && !empty($chatroom_id)) :?>
+                                    <a href="/index.php?option=com_emundus&view=messages&layout=hesamchatroom&chatroom=<?= $chatroom_id; ?>" class="link w-inline-block">
+                                        <i class="image-chatroom fa fa-chatroom"></i>
+                                    </a>
+                                <?php endif; ?>
+
                                 <?php if ($application->status === '1' || $application->status === '2') :?>
                                     <span class="fa fa-share-alt" onclick="share('<?= addslashes(preg_replace("/\r|\n/", "",$application->titre)); ?>', '<?= addslashes(preg_replace("/\r|\n/", "",(strlen($application->question) >= 150)?substr($application->question, 0, 147).'...':$application->question)); ?>')"></span>
                                 <?php endif; ?>
@@ -114,6 +134,38 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                             </a>
 
                                             <?php foreach ($contacts[$application->fnum]['1006'] as $contact) :?>
+
+
+                                                <?php
+	                                            // Here we are checking if a double favorite has been made in the other direction.
+	                                            if ($contact['linked_fnum'] === $application->fnum) {
+		                                            $other_fnum = $contact['fnum'];
+	                                            } else {
+		                                            $other_fnum = $contact['linked_fnum'];
+	                                            }
+
+	                                            // If two favorites are present, display chat icon.
+	                                            $contact_favorites[$contact['link_id']] = $m_cifre->checkForTwoFavorites($other_fnum, (int)substr($other_fnum,-7));
+	                                            $contact_nb_faves[$contact['link_id']] = count($contact_favorites[$contact['link_id']]);
+	                                            if ($contact_nb_faves[$contact['link_id']] === 2) {
+
+		                                            $m_messages = new EmundusModelMessages();
+
+		                                            $favorite_users = [];
+		                                            // Here we get the two users from our favorites who are not us.
+		                                            foreach ($contact_favorites[$contact['link_id']] as $fav) {
+			                                            $favorite_users[] = $fav->user_from;
+			                                            $favorite_users[] = $fav->user_to;
+		                                            }
+
+		                                            $favorite_users = array_values(array_unique($favorite_users));
+
+		                                            // Look up the chatroom id using our three users.
+		                                            $contact_chat[$contact['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
+	                                            }
+
+                                                ?>
+
                                                 <!-- Futur doc -->
                                                 <div class="card w-clearfix" id="card-<?= $contact['link_id']; ?>">
 
@@ -173,6 +225,12 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                 </div>
                                                                 <div class="column-2 w-col w-col-3">
 
+	                                                                <?php if ($contact_nb_faves[$contact['link_id']] === 2 && !empty($contact_chat[$contact['link_id']])) :?>
+                                                                        <a href="/index.php?option=com_emundus&view=messages&layout=hesamchatroom&chatroom=<?= $contact_chat[$contact['link_id']]; ?>" class="link w-inline-block">
+                                                                            <i class="image-chatroom fa fa-chatroom"></i>
+                                                                        </a>
+	                                                                <?php endif; ?>
+
 	                                                                <?php if ($contact['state'] === '2') :?>
                                                                         <?php if ($contact['notify']) :?>
                                                                             <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
@@ -187,6 +245,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                     <div class="notif <?= ($contact['unread'] == 0)?'_0notif':''; ?>">
                                                                         <div class="notif-number <?= ($contact['unread'] == 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
                                                                     </div>
+
                                                                     <?php if ($contact['direction'] === '1' && $contact['state'] === '1') :?>
                                                                         <div id="contactButtons-<?= $contact['link_id']; ?>" class="contact-buttons">
                                                                             <div class="accepter" onclick="reply('<?= $contact['link_id']; ?>')"></div>
@@ -210,6 +269,37 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                             </a>
 
                                             <?php foreach ($contacts[$application->fnum]['1007'] as $contact) :?>
+
+	                                            <?php
+	                                            // Here we are checking if a double favorite has been made in the other direction.
+	                                            if ($contact['linked_fnum'] === $application->fnum) {
+		                                            $other_fnum = $contact['fnum'];
+	                                            } else {
+		                                            $other_fnum = $contact['linked_fnum'];
+	                                            }
+
+	                                            // If two favorites are present, display chat icon.
+	                                            $contact_favorites[$contact['link_id']] = $m_cifre->checkForTwoFavorites($other_fnum, (int)substr($other_fnum,-7));
+	                                            $contact_nb_faves[$contact['link_id']] = count($contact_favorites[$contact['link_id']]);
+	                                            if ($contact_nb_faves[$contact['link_id']] === 2) {
+
+		                                            $m_messages = new EmundusModelMessages();
+
+		                                            $favorite_users = [];
+		                                            // Here we get the two users from our favorites who are not us.
+		                                            foreach ($contact_favorites[$contact['link_id']] as $fav) {
+			                                            $favorite_users[] = $fav->user_from;
+			                                            $favorite_users[] = $fav->user_to;
+		                                            }
+
+		                                            $favorite_users = array_values(array_unique($favorite_users));
+
+		                                            // Look up the chatroom id using our three users.
+		                                            $contact_chat[$contact['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
+	                                            }
+
+	                                            ?>
+                                            
                                                 <!-- Équipe de recherche -->
                                                 <div class="card w-clearfix" id="card-<?= $contact['link_id']; ?>">
 
@@ -268,6 +358,12 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                 </div>
                                                                 <div class="column-2 w-col w-col-3">
 
+	                                                                <?php if ($contact_nb_faves[$contact['link_id']] === 2 && !empty($contact_chat[$contact['link_id']])) :?>
+                                                                        <a href="/index.php?option=com_emundus&view=messages&layout=hesamchatroom&chatroom=<?= $contact_chat[$contact['link_id']]; ?>" class="link w-inline-block">
+                                                                            <i class="image-chatroom fa fa-chatroom"></i>
+                                                                        </a>
+	                                                                <?php endif; ?>
+
 	                                                                <?php if ($contact['state'] === '2') :?>
 		                                                                <?php if ($contact['notify']) :?>
                                                                             <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
@@ -282,6 +378,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                     <div class="notif <?= ($contact['unread'] == 0)?'_0notif':''; ?>">
                                                                         <div class="notif-number <?= ($contact['unread'] == 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
                                                                     </div>
+
                                                                     <?php if ($contact['direction'] === '1' && $contact['state'] === '1') :?>
                                                                         <div id="contactButtons-<?= $contact['link_id']; ?>" class="contact-buttons">
                                                                             <div class="accepter" onclick="reply('<?= $contact['link_id']; ?>')"></div>
@@ -305,6 +402,37 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                             </a>
 
                                             <?php foreach ($contacts[$application->fnum]['1008'] as $contact) :?>
+
+	                                            <?php
+	                                            // Here we are checking if a double favorite has been made in the other direction.
+	                                            if ($contact['linked_fnum'] === $application->fnum) {
+		                                            $other_fnum = $contact['fnum'];
+	                                            } else {
+		                                            $other_fnum = $contact['linked_fnum'];
+	                                            }
+
+	                                            // If two favorites are present, display chat icon.
+	                                            $contact_favorites[$contact['link_id']] = $m_cifre->checkForTwoFavorites($other_fnum, (int)substr($other_fnum,-7));
+	                                            $contact_nb_faves[$contact['link_id']] = count($contact_favorites[$contact['link_id']]);
+	                                            if ($contact_nb_faves[$contact['link_id']] === 2) {
+	                                                
+		                                            $m_messages = new EmundusModelMessages();
+
+		                                            $favorite_users = [];
+		                                            // Here we get the two users from our favorites who are not us.
+		                                            foreach ($contact_favorites[$contact['link_id']] as $fav) {
+                                                        $favorite_users[] = $fav->user_from;
+                                                        $favorite_users[] = $fav->user_to;
+		                                            }
+
+		                                            $favorite_users = array_values(array_unique($favorite_users));
+
+		                                            // Look up the chatroom id using our three users.
+		                                            $contact_chat[$contact['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
+	                                            }
+
+	                                            ?>
+                                            
                                                 <!-- Acteur public ou associatif -->
                                                 <div class="card w-clearfix" id="card-<?= $contact['link_id']; ?>">
 
@@ -360,6 +488,12 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                 </div>
                                                                 <div class="column-2 w-col w-col-3">
 
+	                                                                <?php if ($contact_nb_faves[$contact['link_id']] === 2 && !empty($contact_chat[$contact['link_id']])) :?>
+                                                                        <a href="/index.php?option=com_emundus&view=messages&layout=hesamchatroom&chatroom=<?= $contact_chat[$contact['link_id']]; ?>" class="link w-inline-block">
+                                                                            <i class="image-chatroom fa fa-chatroom"></i>
+                                                                        </a>
+	                                                                <?php endif; ?>
+
 	                                                                <?php if ($contact['state'] === '2') :?>
 		                                                                <?php if ($contact['notify']) :?>
                                                                             <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
@@ -374,6 +508,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                     <div class="notif <?= ($contact['unread'] == 0)?'_0notif':''; ?>">
                                                                         <div class="notif-number <?= ($contact['unread'] == 0)?'_0notif':''; ?>"><?= $contact['unread']; ?></div>
                                                                     </div>
+
                                                                     <?php if ($contact['direction'] === '1' && $contact['state'] === '1') :?>
                                                                         <div id="contactButtons-<?= $contact['link_id']; ?>" class="contact-buttons">
                                                                             <div class="accepter" onclick="reply('<?= $contact['link_id']; ?>')"></div>
@@ -406,6 +541,31 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                 </div>
                 <div class="big-card">
                     <?php foreach ($chat_requests as $chat_request) :?>
+
+	                    <?php
+	                    // Here we are checking if a double favorite has been made in the other direction.
+	                    // If two favorites are present, display chat icon.
+	                    $contact_favorites[$chat_request['link_id']] = $m_cifre->checkForTwoFavorites($chat_request['linked_fnum'], (int)substr($chat_request['linked_fnum'],-7));
+	                    $contact_nb_faves[$chat_request['link_id']] = count($contact_favorites[$chat_request['link_id']]);
+	                    if ($contact_nb_faves[$chat_request['link_id']] === 2) {
+
+		                    $m_messages = new EmundusModelMessages();
+
+		                    $favorite_users = [];
+		                    // Here we get the two users from our favorites who are not us.
+		                    foreach ($contact_favorites[$chat_request['link_id']] as $fav) {
+			                    $favorite_users[] = $fav->user_from;
+			                    $favorite_users[] = $fav->user_to;
+		                    }
+
+		                    $favorite_users = array_values(array_unique($favorite_users));
+
+		                    // Look up the chatroom id using our three users.
+		                    $contact_chat[$chat_request['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
+	                    }
+
+	                    ?>
+                    
                         <div class="wrapper-big-card" id="card-<?= $chat_request['link_id']; ?>">
                             <div class="card w-clearfix">
                                 <a href="#" class="star link-block-3 w-inline-block" data-ix="star"><img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5ea32c2fd949eca178361a94_star.svg" alt="" class="image-8"></a>
@@ -437,6 +597,12 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                 </div>
                                             </div>
                                             <div class="column-2 w-col w-col-3">
+
+	                                            <?php if ($contact_nb_faves[$chat_request['link_id']] === 2 && !empty($contact_chat[$chat_request['link_id']])) :?>
+                                                    <a href="/index.php?option=com_emundus&view=messages&layout=hesamchatroom&chatroom=<?= $contact_chat[$chat_request['link_id']]; ?>" class="link w-inline-block">
+                                                        <i class="image-chatroom fa fa-chatroom"></i>
+                                                    </a>
+	                                            <?php endif; ?>
 
 	                                            <?php if ($chat_request['state'] === '2') :?>
                                                     <?php if ($chat_request['notify']) :?>
@@ -668,15 +834,21 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                     star_icon.setAttribute('id', 'favorite-'+link_id);
                     star_icon.setAttribute('data-original-title', '<?= JText::_('FAVORITE_CLICK_HERE_UNFAV');?>');
 
-                    const other_fav_link_id = other_fav.id.split("-").pop();
-                    iconate(other_fav, {
-                        from: 'fa-star',
-                        to: 'fa-star-o',
-                        animation: 'rotateClockwise'
-                    });
-                    other_fav.setAttribute('onclick', 'favorite('+other_fav_link_id+')');
-                    other_fav.removeAttribute('id');
-                    other_fav.setAttribute('data-original-title', '<?= JText::_('FAVORITE_CLICK_HERE_FAV');?>');
+                    if (other_fav) {
+                        const other_fav_link_id = other_fav.id.split("-").pop();
+                        iconate(other_fav, {
+                            from: 'fa-star',
+                            to: 'fa-star-o',
+                            animation: 'rotateClockwise'
+                        });
+                        other_fav.setAttribute('onclick', 'favorite(' + other_fav_link_id + ')');
+                        other_fav.removeAttribute('id');
+                        other_fav.setAttribute('data-original-title', '<?= JText::_('FAVORITE_CLICK_HERE_FAV');?>');
+                    }
+
+                    if (result.reload) {
+                        window.location.reload();
+                    }
 
                 } else {
                     star_icon.style.color = '#d91e18';

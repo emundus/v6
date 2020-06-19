@@ -1280,6 +1280,22 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    exit;
     }
 
+
+	/** send message in chatroom
+	 *
+	 */
+	public function sendChatroomMessage() {
+
+		$m_messages = new EmundusModelMessages();
+		$jinput = JFactory::getApplication()->input;
+		$message = $jinput->post->getRaw('message', null);
+		$chatroom = $jinput->post->getInt('chatroom', null);
+		$message = str_replace("&nbsp;", "", $message);
+
+		echo json_encode((object) ['status' => $m_messages->sendChatroomMessage($chatroom, $message)]);
+		exit;
+	}
+
     /** update message list
      *
      */
@@ -1290,7 +1306,13 @@ class EmundusControllerMessages extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $lastId = $jinput->post->get('id', null);
         $other_user = $jinput->post->get('user', null);
-        $messages = $m_messages->updateMessages($lastId, null, $other_user);
+        $chatroom = $jinput->post->getInt('chatroom', null);
+
+        if (empty($other_user) && !empty($chatroom)) {
+	        $messages = $m_messages->updateChatroomMessages($lastId, $chatroom);
+        } else {
+	        $messages = $m_messages->updateMessages($lastId, null, $other_user);
+        }
 
         if (!empty($messages)) {
             foreach ($messages as $message) {
@@ -1303,6 +1325,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         exit;
     }
+
+
     public function getTypeAttachment($id) {
         $db = JFactory::getDbo();
 
@@ -1316,6 +1340,8 @@ class EmundusControllerMessages extends JControllerLegacy {
         $db->setQuery($query);
         return $db->loadObjectList() ;
     }
+
+
     public function getTypeLetters($id) {
         $db = JFactory::getDbo();
 
