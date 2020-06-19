@@ -684,7 +684,7 @@ class EmundusModelCifre extends JModelList {
 		$query->select($this->db->quoteName('c.id'))
 			->from($this->db->quoteName('#__emundus_cifre_links', 'c'))
 			->leftJoin($this->db->quoteName('#__emundus_users', 'eu').' ON (('.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('c.user_from').' AND '.$this->db->quoteName('c.user_to').' = '.$user.') OR ('.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('c.user_to').'AND '.$this->db->quoteName('c.user_to').' = '.$user.'))')
-			->where($this->db->quoteName('eu.profile').' = '.$profile.' AND ('.$this->db->quoteName('c.fnum_from').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('c.user_from_favorite').' = 1) OR ('.$this->db->quoteName('c.fnum_to').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('c.user_to_favorite').' = 1)');
+			->where($this->db->quoteName('eu.profile').' = '.$profile.' AND (('.$this->db->quoteName('c.fnum_from').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('c.user_from_favorite').' = 1) OR ('.$this->db->quoteName('c.fnum_to').' LIKE '.$this->db->quote($fnum).' AND '.$this->db->quoteName('c.user_to_favorite').' = 1))');
 		$this->db->setQuery($query);
 
 		try {
