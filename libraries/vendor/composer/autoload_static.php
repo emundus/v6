@@ -33,21 +33,9 @@ class ComposerStaticInit205c915b9c7d3e718e7c95793ee67ffe
     );
 
     public static $prefixLengthsPsr4 = array (
-        'Z' => 
-        array (
-            'Zend\\Validator\\' => 15,
-            'Zend\\Stdlib\\' => 12,
-            'Zend\\Escaper\\' => 13,
-        ),
         'T' => 
         array (
             'TYPO3\\PharStreamWrapper\\' => 24,
-        ),
-        'P' => 
-        array (
-            'Psr\\Log\\' => 8,
-            'PhpOffice\\PhpWord\\' => 18,
-            'PhpOffice\\Common\\' => 17,
         ),
         'S' => 
         array (
@@ -97,18 +85,6 @@ class ComposerStaticInit205c915b9c7d3e718e7c95793ee67ffe
         array (
             0 => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src',
         ),
-        'Zend\\Validator\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/zendframework/zend-validator/src',
-        ),
-        'Zend\\Stdlib\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/zendframework/zend-stdlib/src',
-        ),
-        'Zend\\Escaper\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/zendframework/zend-escaper/src',
-        ),
         'Symfony\\Polyfill\\Util\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-util',
@@ -148,14 +124,6 @@ class ComposerStaticInit205c915b9c7d3e718e7c95793ee67ffe
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
-        ),
-        'PhpOffice\\PhpWord\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/phpoffice/phpword/src/PhpWord',
-        ),
-        'PhpOffice\\Common\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/phpoffice/common/src/Common',
         ),
         'Joomla\\Utilities\\' => 
         array (
