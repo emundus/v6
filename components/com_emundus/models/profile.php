@@ -408,8 +408,8 @@ class EmundusModelProfile extends JModelList
 
             $query = 'SELECT DISTINCT(esc.profile_id)
 					FROM  #__emundus_setup_campaigns AS esc
-					WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'") AND esc.id IN ("'.implode("','", $camps).'")';
-
+					WHERE esc.published = 1 AND esc.training IN ('.implode(",", $this->_db->quote($code)).') AND esc.id IN ('.implode(",", $camps).')';
+			
             try
             {
                 $this->_db->setQuery( $query );
