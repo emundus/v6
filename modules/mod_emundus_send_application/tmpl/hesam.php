@@ -39,8 +39,8 @@ $uri = JUri::getInstance();
         Swal.fire({
             position: 'center',
             type: 'info',
-            title: 'Retour à votre éspace personnel',
-            html: '<div class="columns-3 w-row"> <div class="column-6 w-col w-col-6"><p class="paragraph-infos">Uniquement les formulaires identifies par une case à cocher verte seront sauvegardées.</p></div>' +
+            title: 'Retour à votre espace personnel',
+            html: '<div class="columns-3 w-row"> <div class="column-6 w-col w-col-6"><p class="paragraph-infos">Uniquement les formulaires identifiés par une case à cocher verte seront sauvegardés.</p></div>' +
                 '<div class="w-col w-col-6"><img src="https://1000docs.emundus.io/images/custom/formulaires-popup.png" /></div></div>',
             showCancelButton: true,
             confirmButtonText: 'Continuer',
