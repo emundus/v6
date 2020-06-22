@@ -85,4 +85,17 @@ class modEmundusUserDropdownHelper {
 
 		return $items;
 	}
+	
+	static function getCampaign() {
+		$db = JFactory::getDBO();
+		
+		try {
+			$query = "SELECT COUNT(*) FROM `jos_emundus_setup_campaigns` WHERE `published` = 1 AND NOW() BETWEEN `start_date` AND `end_date`";
+			$db->setQuery($query);
+			$result = $db->loadResult();
+			return ($result > 0)?true:false;
+		} catch(Exception $e) {
+			return false;
+		}
+	}
 }
