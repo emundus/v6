@@ -1051,6 +1051,32 @@ class EmundusModelMessages extends JModelList {
 		}
 	}
 
+	/**
+	 * @param int $chatroom_id
+	 *
+	 * @return bool|mixed|null
+	 *
+	 * @since version
+	 */
+	public function getChatroomUsersId($chatroom_id) {
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('id')
+			->from($db->quoteName('jos_emundus_chatroom','c'))
+			->leftJoin($db->quoteName('jos_emundus_chatroom_users','cu').' ON '.$db->quoteName('cu.chatroom_id').' = '.$db->quoteName('c.id'))
+			->where($db->quoteName('c.id').' = '.$chatroom_id);
+		$db->setQuery($query);
+
+		try {
+			return $db->loadColumn();
+		} catch (Exception $e) {
+			JLog::add('Error getting chatroom users : '.$e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			return false;
+		}
+	}
+
 
 	/**
 	 * @param   mixed  ...$users

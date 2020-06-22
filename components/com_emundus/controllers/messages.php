@@ -1298,7 +1298,40 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$chatroom = $jinput->post->getInt('chatroom', null);
 		$message = str_replace("&nbsp;", "", $message);
 
-		echo json_encode((object) ['status' => $m_messages->sendChatroomMessage($chatroom, $message)]);
+		// Here we need to notify those that have a bell based on the link.
+		if ($m_messages->sendChatroomMessage($chatroom, $message)) {
+
+			require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+			require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+			$m_cifre = new EmundusModelCifre();
+			$m_profile = new EmundusModelProfile();
+			
+			$users = $m_messages->getChatroomUsersId($chatroom);
+			$current_user = JFactory::getSession()->get('emundusUser');
+			foreach ($users as $receiver) {
+
+				if ($receiver === $current_user->id) {
+					continue;
+				}
+
+				$receiver_profile = $m_profile->getProfileByApplicant($receiver);
+				// Send notification email to the receiver
+				$post = [
+					'USER_NAME' => strtoupper($receiver_profile["lastname"]). ' '.ucfirst($receiver_profile["firstname"]),
+					'SENDER' => strtoupper($current_user->lastname). ' '.ucfirst($current_user->firstname),
+					'MESSAGE' => $message
+				];
+
+				// Find out if we should notify the receiver using the CIFRE notification system.
+				$notify = $m_cifre->checkNotify($current_user->id, $receiver);
+				if (!empty($notify)) {
+					$this->sendEmailNoFnum(JFactory::getUser($receiver)->email, 'notification_mail', $post);
+				}
+			}
+
+		}
+
+		echo json_encode((object) ['status' => true]);
 		exit;
 	}
 
