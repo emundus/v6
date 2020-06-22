@@ -168,7 +168,7 @@ JFactory::getDocument()->addStyleSheet("media/com_emundus/css/emundus_chat.css")
         }
     }
 
-    document.getElementById("sendMessage").addEventListener("keyup", function(e) {
+    document.getElementById("Tapez-votre-message-ici").addEventListener("keyup", function(e) {
         e.preventDefault();
         if (e.keyCode === 13) {
             sendMessage();
