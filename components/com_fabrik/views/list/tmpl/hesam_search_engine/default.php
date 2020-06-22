@@ -403,22 +403,12 @@ echo $this->table->intro;
             </div>
 	        <?php print_r($this->hiddenFields);?>
         </form>
-        <div>
-            <select class="em-number-of-results">
-                <option value="10" selected="selected">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </select>
-            <ul class="list-pagin"></ul>
-        </div>
         <?php if ($user->id != 0) :?>
             <a href="/?option=com_fabrik&view=form&formid=102" class="em-search-not-found-btn">
                 <span class="em-search-not-found-btn-content">Vous n'avez pas trouvé ce que vous cherchiez ? Déposez l'annonce qui vous correspond.<br> <strong>Proposez une offre</strong></span>
                 <span class="em-search-not-found-icon"><i class="fa fa-arrow-right" aria-hidden="true"></i></span>
             </a>
         <?php endif; ?>
-
     </div>
 </div>
 
