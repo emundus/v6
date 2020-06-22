@@ -100,11 +100,11 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 
                                 <?php if ($application->status === '6') :?>
                                     <!-- Automatically unpublished offers have a republish button that appears. -->
-                                    <a class="cta-republish w-button" href="#" onclick="publishfile(<?= $application->fnum; ?>)"><?= JText::_('REPUBLISH_APPLICATION'); ?></a>
+                                    <a class="cta-republish w-button" href="#" onclick="publishfile('<?= $application->fnum; ?>')"><?= JText::_('REPUBLISH_APPLICATION'); ?></a>
                                 <?php endif; ?>
 
                                 <!-- Trash button -->
-                                <a id="trash" onClick="<?= ($application->status !== '1')?'deletefile('.$application->fnum.');':'completefile('.$application->fnum.', true)'; ?>" href="#row<?= $application->fnum; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>">
+                                <a id="trash" onClick="<?= ($application->status !== '1')?'deletefile(\''.$application->fnum.'\');':'completefile(\''.$application->fnum.'\', true)'; ?>" href="#row<?= $application->fnum; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>">
                                     <i class="icon-trash"></i>
                                 </a>
                             </div>
@@ -660,7 +660,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
             showCancelButton: true,
             showConfirmButton: true,
             reverseButtons: true,
-            cancelButtonText: '<?= JText::_('CANCEL'); ?>'
+            cancelButtonText: '<?= JText::_('BACK'); ?>'
         }).then(confirm => {
             if (confirm.value) {
                 document.location.href = "index.php?option=com_emundus&task=deletefile&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>";
