@@ -60,7 +60,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 		                }
 
 		                // Look up the chatroom id using our three users.
-		                $chatroom_id = $m_messages->getChatroomByUsers($user->id, $favorite_users[0], $favorite_users[1]);
+                        if (in_array($user->id, $favorite_users)) {
+	                        $chatroom_id = $m_messages->getChatroomByUsers($user->id, $favorite_users[0], $favorite_users[1]);
+                        }
 	                }
 	                ?>
 
@@ -164,7 +166,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 		                                            $favorite_users = array_values(array_unique($favorite_users));
 
 		                                            // Look up the chatroom id using our three users.
-		                                            $contact_chat[$contact['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
+                                                    if (in_array($user->id, $favorite_users)) {
+	                                                    $contact_chat[$contact['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
+                                                    }
 	                                            }
 
                                                 ?>
@@ -298,7 +302,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 		                                            $favorite_users = array_values(array_unique($favorite_users));
 
 		                                            // Look up the chatroom id using our three users.
-		                                            $contact_chat[$contact['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
+	                                                if (in_array($user->id, $favorite_users)) {
+		                                                $contact_chat[$contact['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
+	                                                }
 	                                            }
 
 	                                            ?>
@@ -431,7 +437,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 		                                            $favorite_users = array_values(array_unique($favorite_users));
 
 		                                            // Look up the chatroom id using our three users.
-		                                            $contact_chat[$contact['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
+	                                                if (in_array($user->id, $favorite_users)) {
+		                                                $contact_chat[$contact['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
+	                                                }
 	                                            }
 
 	                                            ?>
@@ -564,7 +572,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 		                    $favorite_users = array_values(array_unique($favorite_users));
 
 		                    // Look up the chatroom id using our three users.
-		                    $contact_chat[$chat_request['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
+	                        if (in_array($user->id, $favorite_users)) {
+		                        $contact_chat[$chat_request['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
+	                        }
 	                    }
 
 	                    ?>

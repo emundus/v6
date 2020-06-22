@@ -62,6 +62,10 @@ class EmundusViewMessages extends JViewLegacy {
 		        die('error');
 	        }
 
+	        if (!in_array($current_user->id, $m_messages->getChatroomUsersId($chatroom))) {
+		        die(JText::_('RESTRICTED_ACCESS'));
+	        }
+
 	        $chatroom = $m_messages->getChatroom($chatroom);
 
 	        require_once (JPATH_COMPONENT.DS.'models'.DS.'cifre.php');
