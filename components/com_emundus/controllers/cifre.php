@@ -846,6 +846,15 @@ class EmundusControllerCifre extends JControllerLegacy {
 			$chatroom_id = $m_messages->getChatroomByUsers($this->user->id, $users[0], $users[1]);
 
 			if (empty($chatroom_id)) {
+
+				require_once(JPATH_COMPONENT . DS . 'models' . DS . 'users.php');
+				$m_users = new EmundusModelUsers();
+				
+				// Set the user param in order to show onBoarding message for user adding a fave for first time or being added as a fav for the first time.
+				$m_users->createParam('addedFaves', $this->user->id);
+				$m_users->createParam('addedAsFav', $users[0]);
+				$m_users->createParam('addedAsFav', $users[1]);
+
 				$chatroom_id = $m_messages->createChatroom($fnum);
 
 				if (empty($chatroom_id)) {

@@ -1248,6 +1248,44 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
+	/**
+	 * @param         $param String The param to be saved in the user account.
+	 *
+	 * @param   null  $user_id
+	 *
+	 * @return bool
+	 * @since version
+	 */
+	public function createParam($param, $user_id) {
+
+		$user = JFactory::getUser($user_id);
+
+		$table = JTable::getInstance('user', 'JTable');
+		$table->load($user->id);
+
+		// Check if the param exists but is false, this avoids accidetally resetting a param.
+		$params = $user->getParameters();
+		if (!$params->get($param, true)) {
+			return true;
+		}
+
+		// Store token in User's Parameters
+		$user->setParam($param, true);
+
+		// Get the raw User Parameters
+		$params = $user->getParameters();
+
+		// Set the user table instance to include the new token.
+		$table->params = $params->toString();
+
+		// Save user data
+		if (!$table->store()) {
+			JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'mod_emundus.hesam');
+			return false;
+		}
+		return true;
+	}
+
     public function getNonApplicantId($users) {
         try {
             $db = $this->getDbo();
