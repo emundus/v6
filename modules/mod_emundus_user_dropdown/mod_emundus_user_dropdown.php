@@ -26,7 +26,7 @@ $show_logout = $params->get('show_logout', '1');
 $link_login = $params->get('link_login');
 $link_register = $params->get('link_register');
 $link_forgotten_password = $params->get('link_forgotten_password');
-$hide_registration_param = $params->get('show_registration');
+$show_registration = !$params->get('show_registration');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');
@@ -35,7 +35,6 @@ if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0') {
 	$list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);
 }
 
-$show_registration = !$hide_registration_param;
 if(!$show_registration && $user === null && modEmundusUserDropdownHelper::getCampaign()) {
 	$show_registration = true;
 }
