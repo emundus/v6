@@ -1422,7 +1422,7 @@ $(document).ready(function() {
 
     $(document).on('keyup', 'input:text', function(e) {
 
-        if ($(this).closest('.modal').length === 0 && e.keyCode == 13 ) {
+        if ($(this).closest('.modal').length === 0 && $(this).closest('#em-message').length === 0 && e.keyCode == 13 ) {
             search();
         }
     });
