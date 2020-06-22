@@ -403,7 +403,7 @@ $document->setMetaData('og:description', $this->data['jos_emundus_projet___quest
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
         EmundusModelLogs::log($user->id, $author->id, $fnum, 33, 'r', 'COM_EMUNDUS_LOGS_OPEN_OFFER');
 
-        if ((isset($this->data['Status']) && $this->data['Status'][0] == 2) || (isset($this->data['jos_emundus_campaign_candidature___status']) && $this->data['jos_emundus_campaign_candidature___status'][0] == 2)) {
+        if ((isset($this->data['Status']) && ($this->data['Status'][0] == 2 || $this->data['Status'][0] == 5)) || (isset($this->data['jos_emundus_campaign_candidature___status']) && ($this->data['jos_emundus_campaign_candidature___status'][0] == 2 || $this->data['jos_emundus_campaign_candidature___status'][0] == 5))) {
             $status = 2;
         } else {
             $status = 1;

@@ -360,7 +360,7 @@ echo $this->table->intro;
 	                                <?php if (JFactory::getUser()->guest) :?>
                                         <a href="<?= 'index.php?option=com_users&view=login&return='.base64_encode(JFactory::getURI()); ?>" class="cta-offre w-inline-block"><div class="text-block-2"> Connectez-vous pour en savoir plus </div></a>
 	                                <?php else :?>
-                                        <a href="<?= $d['fabrik_view_url']; ?>" class="cta-offre w-inline-block"><div class='text-block-2 <?= ($status === 2)?'em-closed-offer-btn':'em-open-offer-btn'; ?>'><?= ($status === 2)?'Offre clôturée':'Consultez l\'offre'; ?></div></a>
+                                        <a href="<?= $d['fabrik_view_url']; ?>" class="cta-offre w-inline-block"><div class='text-block-2 <?= ($status === 2 || $status === 5)?'em-closed-offer-btn':'em-open-offer-btn'; ?>'><?= ($status === 2 || $status === 5)?'Offre clôturée':'Consultez l\'offre'; ?></div></a>
 
                                         <!--
 		                                <?php if ($d['jos_emundus_campaign_candidature___applicant_id_raw'] == JFactory::getUser()->id && ((isset($d['Status']) && $d['Status'] == 3) || (isset($d['jos_emundus_campaign_candidature___status']) && $d['jos_emundus_campaign_candidature___status'] == 3))) :?>
