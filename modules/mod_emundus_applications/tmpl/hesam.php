@@ -780,9 +780,9 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
      */
     function share(name, desc) {
 
-        const addressed = '\n Addressée ' +
+        const addressed = '\n Adressée ' +
             '<?= ($application->profile_id !== '1006')?' aux futurs doctorants':''; ?>' +
-            '<?= ($application->profile_id !== '1006' && $application->profile_id !== '1007')?'et ':''; ?><?= ($application->profile_id !== '1007')?' aux chercheurs(ses)':''; ?>' +
+            '<?= ($application->profile_id !== '1006' && $application->profile_id !== '1007')?'et ':''; ?><?= ($application->profile_id !== '1007')?' aux cherchers(ses)':''; ?>' +
             '<?= ($application->profile_id !== '1008')?' et aux collectivités':''; ?>' +
             '.';
 
