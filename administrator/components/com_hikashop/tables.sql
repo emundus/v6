@@ -406,6 +406,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_orderstatus` (
 	`orderstatus_ordering` int(10) unsigned NOT NULL DEFAULT '0',
 	`orderstatus_email_params` LONGTEXT NULL,
 	`orderstatus_links_params` LONGTEXT NULL,
+	`orderstatus_color` varchar(255) NOT NULL DEFAULT '',
 	PRIMARY KEY (`orderstatus_id`),
 	UNIQUE KEY `orderstatus_namekey` (`orderstatus_namekey`)
 ) ENGINE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;

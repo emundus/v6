@@ -513,7 +513,12 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('Joomla!','core','3.9.12','<=','3.0.0','>=','Joomla! core','Two vulnerabilities','Nov 05 2019','Joomla 3.2.0 through 3.9.12','update','3.9.13'),
 ('com_j2store','component','3.3.9','<=','3.0.0','>=','J2Store Component','Xss vulnerability','Nov 14 2019','Version 3.3.9 and previous','none','No details'),
 ('Joomla!','core','3.9.13','<=','3.0.0','>=','Joomla! core','Two vulnerabilities','Dec 18 2019','Joomla 2.5.0 through 3.9.13','update','3.9.14'),
-('Joomla!','core','3.9.14','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Jan 28 2020','Joomla 3.0.0 through 3.9.14','update','3.9.15');
+('Joomla!','core','3.9.14','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Jan 28 2020','Joomla 3.0.0 through 3.9.14','update','3.9.15'),
+('Joomla!','core','3.9.15','<=','3.0.0','>=','Joomla! core','Six low vulnerabilities','Mar 10 2020','Joomla 1.7.0 through 3.9.15','update','3.9.16'),
+('com_simplecalendar','component','3.1.9','<=','3.0.0','>=','Simple Calendar Component','Sql injection Vulnerability','Mar 24 2020','Version 3.1.9 and lower','update','3.2.1'),
+('com_acym','component','6.9.2','<','3.0.0','>=','Acymailing 6 Component','File upload Vulnerability','Mar 24 2020','Version 6','update','6.9.2'),
+('com_gmapfp','component','3.30','==','3.0.0','>=','GMapFP Component','Other Vulnerability','Apr 14 2020','Version 3.30','update','3.52'),
+('Joomla!','core','3.9.16','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Apr 22 2020','Joomla 2.5.0 through 3.9.16','update','3.9.18');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -593,7 +598,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_storage` (
 `storage_key` varchar(255) NOT NULL,
 `storage_value` longtext NOT NULL,
 PRIMARY KEY (`storage_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=0;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `#__securitycheckpro_storage` (`storage_key`,`storage_value`) VALUES 
 ('locked','0');
@@ -635,7 +640,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.70');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.75');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (

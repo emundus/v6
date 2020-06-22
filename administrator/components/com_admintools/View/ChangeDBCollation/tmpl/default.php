@@ -6,37 +6,33 @@
  */
 
 // Protect from unauthorized access
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die;
 ?>
 
 <div class="akeeba-block--info">
 	<h3>
-		<?php echo \JText::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE_INFO_HEAD'); ?>
+		<?php echo Text::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE_INFO_HEAD'); ?>
 	</h3>
 	<p>
-		<?php echo \JText::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE_INFO_BODY'); ?>
-	</p>
-</div>
-
-<div class="akeeba-block--warning">
-	<p>
-		<?php echo \JText::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE_INFO_WARN'); ?>
+		<?php echo Text::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE_INFO_BODY'); ?>
 	</p>
 </div>
 
 <form action="index.php" name="adminForm" id="adminForm" class="akeeba-form--horizontal">
 	<div class="akeeba-form-group">
-		<label for="inputCollation"><?php echo $this->escape(trim(JText::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE'), ' -–')); ?></label>
+		<label for="inputCollation"><?php echo $this->escape(trim(Text::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE'), ' -–')); ?></label>
 		<div>
 			<select id="quickCollation" onchange="admintools.ChangeDBCollation.change();">
 				<option value="">
-					<?php echo \JText::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE_CUSTOM'); ?>
+					<?php echo Text::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE_CUSTOM'); ?>
 				</option>
 				<option value="utf8_general_ci">
-					<?php echo \JText::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE_UTF8'); ?>
+					<?php echo Text::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE_UTF8'); ?>
 				</option>
 				<option value="utf8mb4_general_ci" selected="selected">
-					<?php echo \JText::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE_UTF8MB4'); ?>
+					<?php echo Text::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_CHOOSE_UTF8MB4'); ?>
 				</option>
 			</select>
 
@@ -48,11 +44,11 @@ defined('_JEXEC') or die;
 		<div>
 			<a class="akeeba-btn--ghost" href="index.php?option=com_admintools">
 				<span class="akion-ios-arrow-back"></span>
-				<?php echo \JText::_('JTOOLBAR_BACK'); ?>
+				<?php echo Text::_('JTOOLBAR_BACK'); ?>
 			</a>
 			<button type="submit" class="akeeba-btn--orange">
 				<span class="akion-forward"></span>
-				<?php echo \JText::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_APPLY'); ?>
+				<?php echo Text::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_APPLY'); ?>
 			</button>
 		</div>
 	</div>

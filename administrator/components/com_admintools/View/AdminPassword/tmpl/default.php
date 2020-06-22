@@ -6,6 +6,9 @@
  */
 
 // Protect from unauthorized access
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die;
 
 /** @var \Akeeba\AdminTools\Admin\View\AdminPassword\Html $this */
@@ -13,47 +16,47 @@ defined('_JEXEC') or die;
 ?>
 <div class="akeeba-panel--teal">
 	<header class="akeeba-block-header">
-		<h3><?= JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_HOWITWORKS') ?></h3>
+		<h3><?= Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_HOWITWORKS') ?></h3>
 	</header>
 	<p>
-		<?php echo JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_INFO'); ?>
+		<?php echo Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_INFO'); ?>
 	</p>
 
 	<p class="akeeba-block--warning">
-		<?php echo JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_WARN'); ?>
+		<?php echo Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_WARN'); ?>
 	</p>
 </div>
 
 <form action="index.php" name="adminForm" id="adminForm" method="post" class="akeeba-form--horizontal">
 	<div class="akeeba-form-group">
-		<label for="resetErrorPages"><?php echo JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_RESETERRORPAGES'); ?></label>
-		<?php echo \JHtml::_('FEFHelper.select.booleanswitch', 'resetErrorPages', $this->resetErrorPages); ?>
+		<label for="resetErrorPages"><?php echo Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_RESETERRORPAGES'); ?></label>
+		<?php echo HTMLHelper::_('FEFHelper.select.booleanswitch', 'resetErrorPages', $this->resetErrorPages); ?>
 		<p class="akeeba-help-text">
-			<?= JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_RESETERRORPAGES_HELP') ?>
+			<?= Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_RESETERRORPAGES_HELP') ?>
 		</p>
 	</div>
 
 	<div class="akeeba-form-group">
-		<label for="username"><?php echo JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_USERNAME'); ?></label>
+		<label for="username"><?php echo Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_USERNAME'); ?></label>
 		<input type="text" name="username" id="username" value="<?php echo $this->escape($this->username); ?>" autocomplete="off"/>
 		<p class="akeeba-help-text">
-			<?= JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_USERNAME_HELP') ?>
+			<?= Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_USERNAME_HELP') ?>
 		</p>
 	</div>
 
 	<div class="akeeba-form-group">
-		<label for="password"><?php echo JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_PASSWORD'); ?></label>
+		<label for="password"><?php echo Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_PASSWORD'); ?></label>
 		<input type="password" name="password" id="password" value="<?php echo $this->escape($this->password); ?>" autocomplete="off"/>
 		<p class="akeeba-help-text">
-			<?= JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_PASSWORD_HELP') ?>
+			<?= Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_PASSWORD_HELP') ?>
 		</p>
 	</div>
 
 	<div class="akeeba-form-group">
-		<label for="password2"><?php echo JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_PASSWORD2'); ?></label>
+		<label for="password2"><?php echo Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_PASSWORD2'); ?></label>
 		<input type="password" name="password2" id="password2" value="<?php echo $this->escape($this->password); ?>"  autocomplete="off"/>
 		<p class="akeeba-help-text">
-			<?= JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_PASSWORD2_HELP') ?>
+			<?= Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_PASSWORD2_HELP') ?>
 		</p>
 	</div>
 
@@ -61,14 +64,14 @@ defined('_JEXEC') or die;
 		<div class="akeeba-form-group--actions">
 			<button type="submit" class="akeeba-btn--orange">
 				<span class="akion-android-lock"></span>
-				<?php echo JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_PROTECT'); ?>
+				<?php echo Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_PROTECT'); ?>
 			</button>
 		<?php if ($this->adminLocked): ?>
 			<a class="akeeba-btn--green"
 			   href="index.php?option=com_admintools&view=AdminPassword&task=unprotect&<?php echo $this->container->platform->getToken(true); ?>=1"
 			>
 				<span class="akion-android-unlock"></span>
-				<?php echo JText::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_UNPROTECT'); ?>
+				<?php echo Text::_('COM_ADMINTOOLS_LBL_ADMINPASSWORD_UNPROTECT'); ?>
 			</a>
 		<?php endif; ?>
 		</div>

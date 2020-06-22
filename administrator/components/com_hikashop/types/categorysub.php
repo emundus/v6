@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -37,19 +37,18 @@ class hikashopCategorysubType {
 					}
 				}
 				$lgid = $translationHelper->getId($locale);
-				$select .= ',b.value';
-				$trans_table = 'jf_content';
 				if($translationHelper->falang){
+					$select .= ',b.value';
 					$trans_table = 'falang_content';
+					$table .=' LEFT JOIN '.hikashop_table($trans_table,false).' AS b ON a.category_id=b.reference_id AND b.reference_table=\'hikashop_category\' AND b.reference_field=\'category_name\' AND b.published=1 AND language_id='.$lgid;
 				}
-				$table .=' LEFT JOIN '.hikashop_table($trans_table,false).' AS b ON a.category_id=b.reference_id AND b.reference_table=\'hikashop_category\' AND b.reference_field=\'category_name\' AND b.published=1 AND language_id='.$lgid;
 			}
 
 			static $multiTranslation = null;
 			$app = JFactory::getApplication();
 			if($multiTranslation === null && !hikashop_isClient('administrator')) {
 				$translationHelper = hikashop_get('helper.translation');
-				$multiTranslation = $translationHelper->isMulti(true);
+				$multiTranslation = $translationHelper->isMulti(true) && $translationHelper->falang;
 			}
 
 			$filters = array(
@@ -347,32 +346,50 @@ function callbackTree(tree,node,ev,skip) {
 		list($elements,$values) = $categoryClass->getNameboxData($typeConfig, $fullLoad, null, null, null, $options);
 
 		$parents = $categoryClass->getParents($value);
+		$brothers = $categoryClass->getBrothers($value);
+
 		if(count($parents) > 3) {
 			$parents = array_reverse($parents);
 			$data = array();
 			$first = true;
 			foreach($parents as $p) {
-				$o = new stdClass();
-				$o->status = 2;
 				if($first) {
-					if($p->category_left + 1 == $p->category_right) {
-						$o->status = 4;
-					} else {
-						$o->status = 3;
-					}
 					$first = false;
+					foreach($brothers as $b) {
+						$o = new stdClass();
+						$o->status = 2;
+						if($b->category_left + 1 == $b->category_right) {
+							$o->status = 4;
+						} else {
+							$o->status = 3;
+						}
+						$o->name = hikashop_translate($b->category_name);
+						$o->value = (int)$b->category_id;
+						$o->data = array();
+						$data[] = $o;
+					}
+				} else {
+					$o = new stdClass();
+					$o->status = 2;
+					if($first) {
+						if($p->category_left + 1 == $p->category_right) {
+							$o->status = 4;
+						} else {
+							$o->status = 3;
+						}
+					}
+
+					$o->name = hikashop_translate($p->category_name);
+					$o->value = (int)$p->category_id;
+					$o->data = $data;
+					$data = array($o);
+					$s = new stdClass();
+					$s->status = 4;
+					$s->name = '...';
+					$s->value = -(int)$p->category_parent_id;
+					$s->data = array();
+					$data[] = $s;
 				}
-
-				$o->name = JText::_($p->category_name);
-				$o->value = (int)$p->category_id;
-				$o->data = $data;
-
-				$s = new stdClass();
-				$s->status = 4;
-				$s->name = '...';
-				$s->value = -(int)$p->category_parent_id;
-				$s->data = array();
-				$data = array($o, $s);
 			}
 
 			foreach($elements as $k => $el) {

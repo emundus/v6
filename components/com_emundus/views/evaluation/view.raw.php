@@ -140,14 +140,14 @@ class EmundusViewEvaluation extends JViewLegacy
 				$defaultElements = $this->get('DefaultElements');
 				$datas = array(array('check' => '#', 'name' => JText::_('APPLICATION_FILES'), 'c.status' => JText::_('STATUS')));
 				$fl = array();
-
+                $fl['jos_emundus_evaluations.user'] = JText::_('EVALUATOR');
 			    // Get eval crieterion
 				if (count($defaultElements) > 0) {
 					foreach ($defaultElements as $key => $elt) {
 						$fl[$elt->tab_name . '.' . $elt->element_name] = $elt->element_label;
 					}
 				}
-				$fl['jos_emundus_evaluations.user'] = JText::_('EVALUATOR');
+
 				// merge eval criterion on application files
 				$datas[0] = array_merge($datas[0], $fl);
 
@@ -240,11 +240,11 @@ class EmundusViewEvaluation extends JViewLegacy
 
 								if ($formid > 0 && !empty($value)) {
 
-									if ($evaluators_can_see_other_eval) {
+									if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(5,'r',$this->_user->id)) {
 										$link_view = '<a href="'.$form_url_view.$user['evaluation_id'].'" target="_blank" data-remote="'.$form_url_view.$user['evaluation_id'].'" id="em_form_eval_'.$i.'-'.$user['evaluation_id'].'"><span class="glyphicon icon-eye-open" title="'.JText::_('DETAILS').'">  </span></a>';
 									}
 
-									if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+									if (EmundusHelperAccess::asAccessAction(5,'u',$this->_user->id)) {
 										$link_edit = '<a href="'.$form_url_edit.$user['evaluation_id'].'" target="_blank"><span class="glyphicon icon-edit" title="'.JText::_('EDIT').'"> </span></a>';
 									}
 

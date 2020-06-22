@@ -1,16 +1,23 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div>
-<?php if(!empty($this->params->delete) && !empty($this->params->uploader_id)) { ?>
-	<a href="#delete" class="deleteImg" onclick="return window.hkUploaderList['<?php echo $this->params->uploader_id; ?>'].delImage(this);"><i class="fa fa-times"></i></a>
-<?php } ?>
+<?php
+if(!empty($this->params->delete) && !empty($this->params->uploader_id)) {
+	$p = '';
+	if(!empty($this->params->field_name))
+		$p = ',\'' . $this->params->field_name . '\'';
+?>
+	<a href="#delete" class="deleteImg" onclick="return window.hkUploaderList['<?php echo $this->params->uploader_id; ?>'].delImage(this<?php echo $p;?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fa fa-times"></i></a>
+<?php
+}
+?>
 	<div class="hikashop_image"><?php
 		if(empty($this->params->thumbnail_url)) {
 			$img = $this->imageHelper->getThumbnail(@$this->params->file_path, array(100, 100), array('default' => true));

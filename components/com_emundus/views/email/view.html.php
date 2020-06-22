@@ -49,22 +49,26 @@ class EmundusViewEmail extends JViewLegacy
 		    die(JText::_('RESTRICTED_ACCESS'));
 	    }
 
-	    $jinput = JFactory::getApplication()->input;
-	    $fnums = $jinput->getString('fnums', null);
-
 	    $document = JFactory::getDocument();
 		$document->addStyleSheet("media/com_emundus/css/emundus.css" );
 		$document->addStyleSheet("media/com_emundus/lib/chosen/chosen.min.css" );
 		$document->addScript("media/com_emundus/lib/chosen/chosen.jquery.min.js" );
+		
+		$jinput = JFactory::getApplication()->input;
+	    $fnums_post = $jinput->getString('fnums', null);
+		$fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
-	    $fnums = (array)json_decode(stripslashes($fnums));
-
-	    if (!is_array($fnums) || count($fnums) == 0 || @$fnums[0] == "all") {
+	    if ($fnums_array == 'all') {
 			$m_files = new EmundusModelFiles;
 		    $fnums = $m_files->getAllFnums();
 		    $fnums_infos = $m_files->getFnumsInfos($fnums, 'object');
 		    $fnums = $fnums_infos;
-		}
+		} else {
+            $fnums = array();
+            foreach ($fnums_array as $key => $value) {
+                $fnums[] = $value->fnum;
+            }
+        }
 
 	   $dest = $jinput->getInt('desc', 0);
 	   $fnum_array = array();

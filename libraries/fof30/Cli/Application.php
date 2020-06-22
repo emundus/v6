@@ -90,7 +90,7 @@ if (version_compare(PHP_VERSION, $minphp, 'lt'))
 }
 
 // Required by scripts written for old Joomla! versions.
-define('DS', DIRECTORY_SEPARATOR);
+defined('DS') || define('DS', DIRECTORY_SEPARATOR);
 
 /**
  * Timezone fix

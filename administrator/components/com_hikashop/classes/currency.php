@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1136,6 +1136,8 @@ class hikashopCurrencyClass extends hikashopClass{
 					$discount->discount_product_id = explode(',', $discount->discount_product_id);
 
 				foreach($product->prices as $k => $price) {
+					if(!is_object($price))
+						continue;
 					if($product->product_id != $price->price_product_id && in_array($price->price_product_id, $discount->discount_product_id))
 						$product->prices[$k]->discount = $discountsSelected[0][$value] = $discount;
 				}
@@ -2008,7 +2010,7 @@ class hikashopCurrencyClass extends hikashopClass{
 				$matches = $tempMatches;
 			}
 		}
-		$prices = $matches;
+		$prices = hikashop_copy($matches);
 	}
 
 	function calculateProductPriceForQuantity(&$product) {
@@ -2201,6 +2203,9 @@ class hikashopCurrencyClass extends hikashopClass{
 			else
 				$price->price_value = $price->price_value_with_tax;
 		}
+
+		if(!is_object($price))
+			return;
 
 		$price->price_value_without_discount = $price->price_value;
 

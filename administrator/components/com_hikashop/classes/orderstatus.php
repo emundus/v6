@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -100,13 +100,12 @@ class hikashopOrderstatusClass extends hikashopClass {
 	}
 
 	public function getList($filters = array(), $options = array()) {
-
 		$query = 'SELECT orderstatus.* '.
 			' FROM ' .  hikashop_table('orderstatus') . ' AS orderstatus '.
 			' WHERE orderstatus.orderstatus_published = 1 '.
 			' ORDER BY orderstatus.orderstatus_ordering';
 		$this->db->setQuery($query);
-		$ret = $this->db->loadObjectList();
+		$ret = $this->db->loadObjectList('orderstatus_namekey');
 
 		if(!empty($options['legacy'])) {
 			foreach($ret as &$r) {

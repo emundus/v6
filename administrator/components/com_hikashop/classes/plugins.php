@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -90,11 +90,14 @@ class hikashopPluginsClass extends hikashopClass {
 			return;
 		$params = $type.'_params';
 		$name = $type . '_name';
+		$description = $type . '_description';
 		foreach($methods as $k => $el) {
 			if(!empty($el->$params))
 				$methods[$k]->$params = @hikashop_unserialize($el->$params);
 			if(!empty($el->$name))
 				$methods[$k]->$name = hikashop_translate($el->$name);
+			if(!empty($el->$description))
+				$methods[$k]->$description = hikashop_translate($el->$description);
 		}
 	}
 

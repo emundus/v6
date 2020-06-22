@@ -164,8 +164,8 @@ class plgUserEmundus extends JPlugin
 		        $params = JComponentHelper::getParams('com_emundus');
 		        $ldapElements = explode(',', $params->get('ldapElements'));
 
-		        $details['firstname'] = $return->users[0][$ldapElements[2]];
-		        $details['name'] = $return->users[0][$ldapElements[3]];
+		        $details['firstname'] = $return->users[0][trim($ldapElements[2])];
+		        $details['name'] = $return->users[0][trim($ldapElements[3])];
 		        if (is_array($details['firstname'])) {
 			        $details['firstname'] = $details['firstname'][0];
 		        }
@@ -198,7 +198,6 @@ class plgUserEmundus extends JPlugin
             $campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
             $lastname = @isset($details['emundus_profile']['lastname'])?$details['emundus_profile']['lastname']:@$details['name'];
             $firstname = @isset($details['emundus_profile']['firstname'])?$details['emundus_profile']['firstname']:@$details['firstname'];
-            $schoolyear = @isset($details['emundus_profile']['schoolyear'])?$details['emundus_profile']['schoolyear']:@$details['schoolyear'];
 
             if ($isnew) {
 
@@ -219,17 +218,15 @@ class plgUserEmundus extends JPlugin
                     $db->setQuery('SELECT * FROM #__emundus_setup_campaigns WHERE id='.$campaign_id);
                     $campaign = $db->loadAssocList();
 
-                    $schoolyear = $campaign[0]['year'];
                     $profile = $campaign[0]['profile_id'];
                 } else {
-                    $schoolyear = "";
-                    $profile = 1000;
+                    $profile = 'NULL';
                 }
 
                 // Insert data in #__emundus_users
                 $query = $db->getQuery(true);
-                $columns = array('user_id', 'firstname', 'lastname', 'profile', 'schoolyear', 'registerDate');
-                $values = array($user['id'], $db->quote(ucfirst($firstname)), $db->quote(strtoupper($lastname)), $profile, $db->quote($schoolyear), $db->quote($user['registerDate']));
+                $columns = array('user_id', 'firstname', 'lastname', 'profile', 'registerDate');
+                $values = array($user['id'], $db->quote(ucfirst($firstname)), $db->quote(strtoupper($lastname)), $profile, $db->quote($user['registerDate']));
                 $query
                     ->insert($db->quoteName('#__emundus_users'))
                     ->columns($db->quoteName($columns))

@@ -119,7 +119,7 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 			$attachment_label = $db->loadResult();
 		} catch (Exception $e) {
 			JLog::add('Error getting attachment label in plugin/docusign at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
-			return false;
+			return;
 		}
 
 		// Signer names and emails can be generated using Fabrik ID tags (ex: ${2302}) or standard tags (ex: [USER_NAME]).
@@ -148,8 +148,8 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 
 			$signTab = new DocuSign\eSign\Model\SignHere([
 				'anchor_string' => JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SINGATURE_1_ANCHOR'),
-				'anchor_y_offset' => '0',
-				'anchor_x_offset' => '-30',
+				'anchor_y_offset' => '30',
+				'anchor_x_offset' => '0',
 				'anchor_units' => 'pixels'
 			]);
 
@@ -177,8 +177,8 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 
 			$signTab = new DocuSign\eSign\Model\SignHere([
 				'anchor_string' => JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SINGATURE_2_ANCHOR'),
-				'anchor_y_offset' => '0',
-				'anchor_x_offset' => '-30',
+				'anchor_y_offset' => '30',
+				'anchor_x_offset' => '0',
 				'anchor_units' => 'pixels'
 			]);
 
@@ -206,8 +206,8 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 
 			$signTab = new DocuSign\eSign\Model\SignHere([
 				'anchor_string' => JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SINGATURE_3_ANCHOR'),
-				'anchor_y_offset' => '0',
-				'anchor_x_offset' => '-30',
+				'anchor_y_offset' => '30',
+				'anchor_x_offset' => '0',
 				'anchor_units' => 'pixels'
 			]);
 
@@ -231,11 +231,12 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 		}
 		$profile_id = $m_profile->getProfileByFnum($student->fnum);
 
-		// This bit of code gets some custom pdf code based on the programme.
-		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.@$fnum['training'].'.php';
-		if (!file_exists($file)) {
-			$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
-		}
+        // This bit of code gets some custom pdf code based on the programme.
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.$this->getParam('custom_attachment', 'pdf_'.@$fnum['training'].'.php');
+
+        if (!file_exists($file)) {
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+        }
 
 		require_once($file);
 		application_form_pdf($student->id, $student->fnum, false, 1, null, null, null, $profile_id, $attachment_label);

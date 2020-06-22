@@ -5,16 +5,22 @@
  * @license   GNU General Public License version 3, or later
  */
 
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+
 /** @var $this Akeeba\AdminTools\Admin\View\CleanTempDirectory\Html */
 
 defined('_JEXEC') or die;
 
-JHtml::_('behavior.modal');
+if (version_compare(JVERSION, '3.999.999', 'lt'))
+{
+	HTMLHelper::_('behavior.modal');
+}
 ?>
 <?php if ($this->more): ?>
-	<h1><?php echo \JText::_('COM_ADMINTOOLS_LBL_CLEANTEMPDIRECTORY_CLEANTMPINPROGRESS'); ?></h1>
+	<h1><?php echo Text::_('COM_ADMINTOOLS_LBL_CLEANTEMPDIRECTORY_CLEANTMPINPROGRESS'); ?></h1>
 <?php else: ?>
-	<h1><?php echo \JText::_('COM_ADMINTOOLS_LBL_CLEANTEMPDIRECTORY_CLEANTMPDONE'); ?></h1>
+	<h1><?php echo Text::_('COM_ADMINTOOLS_LBL_CLEANTEMPDIRECTORY_CLEANTMPDONE'); ?></h1>
 <?php endif; ?>
 
 	<div class="akeeba-progress">
@@ -33,6 +39,6 @@ JHtml::_('behavior.modal');
 
 <?php if (!$this->more): ?>
 	<div class="akeeba-block--info" id="admintools-cleantmp-autoclose">
-		<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_COMMON_AUTOCLOSEIN3S'); ?></p>
+		<p><?php echo Text::_('COM_ADMINTOOLS_LBL_COMMON_AUTOCLOSEIN3S'); ?></p>
 	</div>
 <?php endif; ?>

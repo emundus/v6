@@ -23,7 +23,7 @@ class EmundusViewFabrik extends JViewLegacy {
             die(JText::_("ACCESS_DENIED"));
         }
 
-        JHTML::stylesheet('emundus.css', 'administrator/components/com_emundus/assets/css/');
+        JHTML::stylesheet('administrator/components/com_emundus/assets/css/emundus.css');
 
         $document = JFactory::getDocument();
         $document->setTitle(JText::_('COM_EMUNDUS_TITLE') . ' :: ' .JText::_('COM_EMUNDUS_CONTROL_PANEL'));

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -72,7 +72,7 @@ class hikashopCartHelper {
 		return $this->config->get('product_quantity_display', 'show_default_div');
 	}
 
-	public function displayButton($name, $map, &$params, $url = '', $ajax = '', $options = '', $max_quantity = 0, $min_quantity = 1, $classname = '', $inc = true) {
+	public function displayButton($name, $map, $params, $url = '', $ajax = '', $options = '', $max_quantity = 0, $min_quantity = 1, $classname = '', $inc = true) {
 		$config =& hikashop_config();
 
 		static $i = 0;

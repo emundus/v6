@@ -17,8 +17,9 @@ use Exception;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
 use FOF30\Encrypt\Randval;
-use JText;
-use JUri;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
+use RuntimeException;
 
 class ControlPanel extends Controller
 {
@@ -43,7 +44,13 @@ class ControlPanel extends Controller
 			'renameMainPhp',
 			'ignoreServerConfigWarn',
 			'regenerateServerConfig',
+			'helloerror'
 		];
+	}
+
+	public function helloerror()
+	{
+		throw new RuntimeException('This is an error');
 	}
 
 	public function onBeforeBrowse()
@@ -56,7 +63,7 @@ class ControlPanel extends Controller
 		{
 			$model->checkAndFixDatabase();
 		}
-		catch (\RuntimeException $e)
+		catch (RuntimeException $e)
 		{
 			// The update is stuck. We will display a warning in the Control Panel
 		}
@@ -102,10 +109,10 @@ class ControlPanel extends Controller
 		if ($updateInfo->hasUpdate)
 		{
 			$strings = [
-				'header'  => JText::sprintf('COM_ADMINTOOLS_MSG_CONTROLPANEL_UPDATEFOUND', $updateInfo->version),
-				'button'  => JText::sprintf('COM_ADMINTOOLS_MSG_CONTROLPANEL_UPDATENOW', $updateInfo->version),
+				'header'  => Text::sprintf('COM_ADMINTOOLS_MSG_CONTROLPANEL_UPDATEFOUND', $updateInfo->version),
+				'button'  => Text::sprintf('COM_ADMINTOOLS_MSG_CONTROLPANEL_UPDATENOW', $updateInfo->version),
 				'infourl' => $updateInfo->infoURL,
-				'infolbl' => JText::_('COM_ADMINTOOLS_MSG_CONTROLPANEL_MOREINFO'),
+				'infolbl' => Text::_('COM_ADMINTOOLS_MSG_CONTROLPANEL_MOREINFO'),
 			];
 
 			$result = <<<ENDRESULT
@@ -157,7 +164,7 @@ ENDRESULT;
 		$unblockModel = $this->container->factory->model('UnblockIP')->tmpInstance();
 		$unblockModel->unblockIP($unblockIP);
 
-		$this->setRedirect('index.php?option=com_admintools', JText::_('COM_ADMINTOOLS_CONTROLPANEL_IP_UNBLOCKED'));
+		$this->setRedirect('index.php?option=com_admintools', Text::_('COM_ADMINTOOLS_CONTROLPANEL_IP_UNBLOCKED'));
 	}
 
 	public function endRescue()
@@ -175,7 +182,7 @@ ENDRESULT;
 	{
 		$this->csrfProtection();
 
-		$msg     = JText::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_INVALIDDOWNLOADID');
+		$msg     = Text::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_INVALIDDOWNLOADID');
 		$msgType = 'error';
 		$dlid    = $this->input->getString('dlid', '');
 
@@ -204,7 +211,7 @@ ENDRESULT;
 
 		if (empty($url))
 		{
-			$url = \JUri::base() . 'index.php?option=com_admintools';
+			$url = Uri::base() . 'index.php?option=com_admintools';
 		}
 
 		$this->setRedirect($url, $msg, $msgType);
@@ -218,7 +225,7 @@ ENDRESULT;
 		$model = $this->container->factory->model('Updates')->tmpInstance();
 		$model->getUpdates(true);
 
-		$msg = JText::_('COM_ADMINTOOLS_MSG_CONTROLPANEL_UPDATE_INFORMATION_RELOADED');
+		$msg = Text::_('COM_ADMINTOOLS_MSG_CONTROLPANEL_UPDATE_INFORMATION_RELOADED');
 		$url = 'index.php?option=com_admintools';
 
 		$this->setRedirect($url, $msg);
@@ -240,7 +247,7 @@ ENDRESULT;
 		{
 			$model->checkAndFixDatabase();
 		}
-		catch (\RuntimeException $e)
+		catch (RuntimeException $e)
 		{
 			// This should never happen, since we reset the flag before execute the update, but you never know
 		}
@@ -258,7 +265,7 @@ ENDRESULT;
 
 		if ($enable)
 		{
-			$msg = JText::_('COM_ADMINTOOLS_CPANEL_ERR_PRIVNET_ENABLED');
+			$msg = Text::_('COM_ADMINTOOLS_CPANEL_ERR_PRIVNET_ENABLED');
 		}
 
 		/** @var \Akeeba\AdminTools\Admin\Model\ControlPanel $model */
@@ -333,7 +340,7 @@ ENDRESULT;
 		if (!$classModel)
 		{
 
-			$this->setRedirect('index.php?option=com_admintools&view=ControlPanel', JText::_('COM_ADMINTOOLS_CPANEL_SERVERCONFIGWARN_ERR_REGENERATE'), 'error');
+			$this->setRedirect('index.php?option=com_admintools&view=ControlPanel', Text::_('COM_ADMINTOOLS_CPANEL_SERVERCONFIGWARN_ERR_REGENERATE'), 'error');
 
 			return;
 		}
@@ -343,7 +350,7 @@ ENDRESULT;
 
 		$model->writeConfigFile();
 
-		$this->setRedirect('index.php?option=com_admintools&view=ControlPanel', JText::_('COM_ADMINTOOLS_CPANEL_SERVERCONFIGWARN_REGENERATED'));
+		$this->setRedirect('index.php?option=com_admintools&view=ControlPanel', Text::_('COM_ADMINTOOLS_CPANEL_SERVERCONFIGWARN_REGENERATED'));
 	}
 
 	/**
@@ -368,7 +375,7 @@ ENDRESULT;
 		$this->container->params->set('frontend_secret_word', $newSecret);
 		$this->container->params->save();
 
-		$msg     = JText::sprintf('COM_ADMINTOOLS_MSG_CONTROLPANEL_FESECRETWORD_RESET', $newSecret);
+		$msg     = Text::sprintf('COM_ADMINTOOLS_MSG_CONTROLPANEL_FESECRETWORD_RESET', $newSecret);
 		$msgType = null;
 
 		$url = 'index.php?option=com_admintools';

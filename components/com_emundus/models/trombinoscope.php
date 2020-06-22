@@ -51,7 +51,7 @@ class EmundusModelTrombinoscope extends JModelLegacy
 
     public function fnums_json_decode($string_fnums)
     {
-        $fnums_obj = (array) json_decode(stripslashes($string_fnums));
+        $fnums_obj = (array) json_decode(stripslashes($string_fnums), false, 512, JSON_BIGINT_AS_STRING);
 
         if(@$fnums_obj[0] == 'all'){
             JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models', 'EmunusModel');

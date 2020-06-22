@@ -12,15 +12,14 @@ defined('_JEXEC') or die;
 use Akeeba\AdminTools\Admin\Helper\Storage;
 use FOF30\Container\Container;
 use FOF30\Model\DataModel;
-use JFolder;
-use JLoader;
-use JPath;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Filesystem\Path;
 
 /**
  * Class ConfigureFixPermissions
  *
- * @property   string  $path
- * @property   string  $perms
+ * @property   string $path
+ * @property   string $perms
  *
  * @method  $this  filter_path()  filter_path(string $v)
  * @method  $this  perms()  perms(string $v)
@@ -88,8 +87,6 @@ class ConfigureFixPermissions extends DataModel
 
 	public function applyPath()
 	{
-		\JLoader::import('joomla.filesystem.folder');
-
 		// Get and clean up the path
 		$path    = $this->getState('path', '');
 		$relpath = $this->getRelativePath($path);
@@ -102,10 +99,10 @@ class ConfigureFixPermissions extends DataModel
 	public function getRelativePath($somepath)
 	{
 		$path = JPATH_ROOT . '/' . $somepath;
-		$path = JPath::clean($path, '/');
+		$path = Path::clean($path, '/');
 
 		// Clean up the root
-		$root = JPath::clean(JPATH_ROOT, '/');
+		$root = Path::clean(JPATH_ROOT, '/');
 
 		// Find the relative path and get the custom permissions
 		$relpath = ltrim(substr($path, strlen($root)), '/');
@@ -115,25 +112,26 @@ class ConfigureFixPermissions extends DataModel
 
 	public function getListing()
 	{
-		JLoader::import('joomla.filesystem.folder');
 		$this->applyPath();
 
 		$relpath = $this->getState('filter_path', '');
-		$path = JPATH_ROOT . '/' . $relpath;
+		$path    = JPATH_ROOT . '/' . $relpath;
 
-		$folders_raw = JFolder::folders($path);
+		$folders_raw = Folder::folders($path);
 
 		$params = Storage::getInstance();
 
-		$excludeFilter = $params->getValue('perms_show_hidden', 0) ? array('.*~') : array('^\..*', '.*~');
-		$files_raw     = JFolder::files($path, '.', false, false, array('.svn', 'CVS', '.DS_Store', '__MACOSX'), $excludeFilter);
+		$excludeFilter = $params->getValue('perms_show_hidden', 0) ? ['.*~'] : ['^\..*', '.*~'];
+		$files_raw     = Folder::files($path, '.', false, false, [
+			'.svn', 'CVS', '.DS_Store', '__MACOSX',
+		], $excludeFilter);
 
 		if (!empty($relpath))
 		{
 			$relpath .= '/';
 		}
 
-		$folders = array();
+		$folders = [];
 
 		if (!empty($folders_raw))
 		{
@@ -144,18 +142,18 @@ class ConfigureFixPermissions extends DataModel
 				$owneruser    = function_exists('fileowner') ? fileowner(JPATH_ROOT . '/' . $relpath . $folder) : false;
 				$ownergroup   = function_exists('filegroup') ? filegroup(JPATH_ROOT . '/' . $relpath . $folder) : false;
 
-				$folders[] = array(
+				$folders[] = [
 					'item'      => $folder,
 					'path'      => $relpath . $folder,
 					'perms'     => $perms,
 					'realperms' => $currentperms,
 					'uid'       => $owneruser,
-					'gid'       => $ownergroup
-				);
+					'gid'       => $ownergroup,
+				];
 			}
 		}
 
-		$files = array();
+		$files = [];
 
 		if (!empty($files_raw))
 		{
@@ -166,20 +164,20 @@ class ConfigureFixPermissions extends DataModel
 				$owneruser    = function_exists('fileowner') ? @fileowner(JPATH_ROOT . '/' . $relpath . $file) : false;
 				$ownergroup   = function_exists('filegroup') ? @filegroup(JPATH_ROOT . '/' . $relpath . $file) : false;
 
-				$files[] = array(
+				$files[] = [
 					'item'      => $file,
 					'path'      => $relpath . $file,
 					'perms'     => $perms,
 					'realperms' => $currentperms,
 					'uid'       => $owneruser,
-					'gid'       => $ownergroup
-				);
+					'gid'       => $ownergroup,
+				];
 			}
 		}
 
 		$crumbs = explode('/', $relpath);
 
-		return array('folders' => $folders, 'files' => $files, 'crumbs' => $crumbs);
+		return ['folders' => $folders, 'files' => $files, 'crumbs' => $crumbs];
 	}
 
 	public function getPerms($path)
@@ -194,6 +192,7 @@ class ConfigureFixPermissions extends DataModel
 				}
 			}
 		}
+
 		return '';
 	}
 
@@ -205,13 +204,13 @@ class ConfigureFixPermissions extends DataModel
 			$fixmodel = $this->container->factory->model('FixPermissions')->tmpInstance();
 		}
 
-		$db = $this->getDbo();
+		$db      = $this->getDbo();
 		$relpath = $this->getState('filter_path', '');
 
 		if (!empty($relpath))
 		{
 			$path_esc = $db->escape($relpath);
-			$query = $db->getQuery(true)
+			$query    = $db->getQuery(true)
 				->delete($db->qn('#__admintools_customperms'))
 				->where(
 					$db->qn('path') . ' REGEXP ' .
@@ -221,7 +220,7 @@ class ConfigureFixPermissions extends DataModel
 			$db->setQuery($query)->execute();
 		}
 
-		$folders = $this->getState('folders', array());
+		$folders = $this->getState('folders', []);
 
 		if (!empty($folders))
 		{
@@ -230,7 +229,7 @@ class ConfigureFixPermissions extends DataModel
 				$query = $db->getQuery(true)
 					->delete($db->qn('#__admintools_customperms'));
 
-				$sqlparts = array();
+				$sqlparts = [];
 				foreach ($folders as $folder => $perms)
 				{
 					$sqlparts[] = $db->q($folder);
@@ -241,7 +240,7 @@ class ConfigureFixPermissions extends DataModel
 				$db->setQuery($query)->execute();
 			}
 
-			$sqlparts = array();
+			$sqlparts = [];
 
 			foreach ($folders as $folder => $perms)
 			{
@@ -260,16 +259,16 @@ class ConfigureFixPermissions extends DataModel
 			{
 				$query = $db->getQuery(true)
 					->insert($db->qn('#__admintools_customperms'))
-					->columns(array(
+					->columns([
 						$db->qn('path'),
-						$db->qn('perms')
-					))->values($sqlparts);
+						$db->qn('perms'),
+					])->values($sqlparts);
 
 				$db->setQuery($query)->execute();
 			}
 		}
 
-		$files = $this->getState('files', array());
+		$files = $this->getState('files', []);
 
 		if (!empty($files))
 		{
@@ -278,7 +277,7 @@ class ConfigureFixPermissions extends DataModel
 				$query = $db->getQuery(true)
 					->delete($db->qn('#__admintools_customperms'));
 
-				$sqlparts = array();
+				$sqlparts = [];
 				foreach ($files as $file => $perms)
 				{
 					$sqlparts[] = $db->q($file);
@@ -289,7 +288,7 @@ class ConfigureFixPermissions extends DataModel
 				$db->setQuery($query)->execute();
 			}
 
-			$sqlparts = array();
+			$sqlparts = [];
 
 			foreach ($files as $file => $perms)
 			{
@@ -308,10 +307,10 @@ class ConfigureFixPermissions extends DataModel
 			{
 				$query = $db->getQuery(true)
 					->insert($db->qn('#__admintools_customperms'))
-					->columns(array(
+					->columns([
 						$db->qn('path'),
-						$db->qn('perms')
-					))->values($sqlparts);
+						$db->qn('perms'),
+					])->values($sqlparts);
 
 				$db->setQuery($query)->execute();
 			}

@@ -57,10 +57,8 @@ class EmundusModelCampaign extends JModelList
 	function _buildQuery() {
 		$config = JFactory::getConfig();
 
-		$jdate = JFactory::getDate();
         $timezone = new DateTimeZone( $config->get('offset') );
-    	$jdate->setTimezone($timezone);
-		$now = $jdate->toSql();
+		$now = JFactory::getDate()->setTimezone($timezone);
 
 		$query = 'SELECT id, label, year, description, start_date, end_date
 		FROM #__emundus_setup_campaigns

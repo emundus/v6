@@ -21,8 +21,16 @@ $status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
 $id_applicants = $eMConfig->get('id_applicants', '0');
 $applicants = explode(',',$id_applicants);
 //ADDPIPE
+$addpipe_activation = $eMConfig->get('addpipe_activation', 0);
 $addpipe_account_hash = $eMConfig->get('addpipe_account_hash', null);
 $addpipe_eid = $eMConfig->get('addpipe_eid', null);
+$addpipe_showmenu = $eMConfig->get('addpipe_showmenu', 1);
+$addpipe_asv = $eMConfig->get('addpipe_asv', 0);
+$addpipe_dup = $eMConfig->get('addpipe_dup', 1);
+$addpipe_srec = $eMConfig->get('addpipe_srec', 0);
+$addpipe_mrt = $eMConfig->get('addpipe_mrt', 60);
+$addpipe_qualityurl = $eMConfig->get('addpipe_qualityurl', 'avq/480p.xml');
+$addpipe_size = $eMConfig->get('addpipe_size', '{width:640,height:510}');
 
 $offset = $mainframe->get('offset', 'UTC');
 try {
@@ -154,7 +162,7 @@ if (!empty($this->custom_title)) :?>
                 <tr>
                     <td>';
                 ///Video
-                if ($attachment->allowed_types == 'video') {
+                if ($attachment->allowed_types == 'video' && $addpipe_activation == 1) {
                     $document->addStyleSheet("//cdn.addpipe.com/2.0/pipe.css" );
                     $document->addScript("//cdn.addpipe.com/2.0/pipe.js" );
                     
@@ -164,20 +172,20 @@ if (!empty($this->custom_title)) :?>
                     $div .= '<script type="text/javascript">
     
                     var pipeParams = {
-                        size: {width:640,height:510},
-                        qualityurl: "avq/480p.xml", 
+                        size: '.$addpipe_size.',
+                        qualityurl: "'.$addpipe_qualityurl.'", 
                         accountHash:"'.$addpipe_account_hash.'", 
                         payload:"{\"userId\":\"'.$this->user->id.'\",\"fnum\":\"'.$this->user->fnum.'\",\"aid\":\"'.$attachment->id.'\",\"lbl\":\"'.$attachment->lbl.'\",\"jobId\":\"'.$this->user->fnum.'|'.$attachment->id.'|'.date("Y-m-d_H:i:s").'\"}", 
                         eid:"'.$addpipe_eid.'", 
-                        showMenu:1, 
-                        mrt:60,
+                        showMenu:'.$addpipe_showmenu.', 
+                        mrt:'.$addpipe_mrt.',
                         sis:0,
-                        asv:1, 
-                        mv:1, 
+                        asv:'.$addpipe_asv.', 
+                        mv:0, 
                         st:1, 
                         ssb:1,
-                        dup:1,
-                        srec:0
+                        dup:'.$addpipe_dup.',
+                        srec:'.$addpipe_srec.'
                     };
 
                     PipeSDK.insert("recorder-'.$attachment->id.'-'.$attachment->nb.'", pipeParams, function(recorderInserted){

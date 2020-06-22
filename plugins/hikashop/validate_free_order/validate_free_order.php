@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -47,7 +47,7 @@ class plgHikashopValidate_free_order extends JPlugin
 		if($send_confirmation) {
 			$orderObj = new stdClass();
 			$orderObj->order_id = (int)$order->order_id;
-			$orderObj->order_status = $config->get('order_confirmed_status', 'confirmed');
+			$orderObj->order_status = $order->order_status = $config->get('order_confirmed_status', 'confirmed');
 			$orderObj->history = new stdClass();
 			$orderObj->history->history_notified = 1;
 			$orderClass = hikashop_get('class.order');

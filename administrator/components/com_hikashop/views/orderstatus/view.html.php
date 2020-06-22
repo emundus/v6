@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -34,7 +34,7 @@ class OrderstatusViewOrderstatus extends hikashopView
 			'toggleHelper' => 'helper.toggle'
 		));
 
-		$pageInfo = $this->getPageInfo('o.orderstatus_id');
+		$pageInfo = $this->getPageInfo('o.orderstatus_ordering');
 
 		$filters = array();
 		$order = '';
@@ -50,6 +50,17 @@ class OrderstatusViewOrderstatus extends hikashopView
 			$rows = hikashop_search($pageInfo->search, $rows, array('orderstatus_id', 'orderstatus_namekey', 'orderstatus_published', 'orderstatus_ordering', 'orderstatus_email_params', 'orderstatus_links_params'));
 		}
 
+
+		$orderstatusClass = hikashop_get('class.orderstatus');
+		$this->orderStatuses = $orderstatusClass->getList();
+		$this->colors = true;
+		foreach($this->orderStatuses as $status) {
+			if(!empty($status->orderstatus_color)) {
+				$this->colors = true;
+				break;
+			}
+		}
+
 		$this->assignRef('rows', $rows);
 
 		$orderstatus_columns = array(
@@ -60,6 +71,38 @@ class OrderstatusViewOrderstatus extends hikashopView
 				'key' => 'order_created_status',
 				'default' => 'created',
 				'type' => 'radio'
+			),
+			'unpaid' => array(
+				'text' => JText::_('UNPAID'),
+				'title' => JText::_('UNPAID_ORDER_STATUSES'),
+				'description' => JText::_('UNPAID_DESC'),
+				'key' => 'order_unpaid_statuses',
+				'default' => 'created',
+				'type' => 'toggle'
+			),
+			'cancellable' => array(
+				'text' => JText::_('CANCELLABLE'),
+				'title' => JText::_('CANCELLABLE_ORDER_STATUS'),
+				'description' => JText::_('CANCELLABLE_DESC'),
+				'key' => 'cancellable_order_status',
+				'default' => '',
+				'type' => 'toggle'
+			),
+			'cancelled' => array(
+				'text' => JText::_('CANCELLED'),
+				'title' => JText::_('CANCELLED_ORDER_STATUS'),
+				'description' => JText::_('CANCELLED_DESC'),
+				'key' => 'cancelled_order_status',
+				'default' => '',
+				'type' => 'toggle'
+			),
+			'capture' => array(
+				'text' => JText::_('CAPTURE'),
+				'title' => JText::_('PAYMENT_CAPTURE_ORDER_STATUS'),
+				'description' => JText::_('CAPTURE_DESC'),
+				'key' => 'payment_capture_order_status',
+				'default' => '',
+				'type' => 'toggle'
 			),
 			'confirmed' => array(
 				'text' => JText::_('CONFIRMED'),
@@ -77,46 +120,25 @@ class OrderstatusViewOrderstatus extends hikashopView
 				'default' => 'confirmed,shipped',
 				'type' => 'toggle'
 			),
-			'download' => array(
-				'text' => JText::_('DOWNLOAD'),
-				'title' => JText::_('ORDER_STATUS_FOR_DOWNLOAD'),
-				'description' => JText::_('DOWNLOAD_DESC'),
-				'key' => 'order_status_for_download',
-				'default' => 'confirmed,shipped',
+		);
+
+		if(hikashop_level(1)){
+			$orderstatus_columns['print'] = array(
+				'text' => JText::_('PRINT_INVOICE'),
+				'title' => JText::_('PRINT_ORDER_STATUSES'),
+				'description' => JText::_('PRINT_DESC'),
+				'key' => 'print_invoice_statuses',
+				'default' => 'confirmed,shipped,refunded',
 				'type' => 'toggle'
-			),
-			'cancelled' => array(
-				'text' => JText::_('CANCELLED'),
-				'title' => JText::_('CANCELLED_ORDER_STATUS'),
-				'description' => JText::_('CANCELLED_DESC'),
-				'key' => 'cancelled_order_status',
-				'default' => '',
-				'type' => 'toggle'
-			),
-			'cancellable' => array(
-				'text' => JText::_('CANCELLABLE'),
-				'title' => JText::_('CANCELLABLE_ORDER_STATUS'),
-				'description' => JText::_('CANCELLABLE_DESC'),
-				'key' => 'cancellable_order_status',
-				'default' => '',
-				'type' => 'toggle'
-			),
-			'unpaid' => array(
-				'text' => JText::_('UNPAID'),
-				'title' => JText::_('UNPAID_ORDER_STATUSES'),
-				'description' => JText::_('UNPAID_DESC'),
-				'key' => 'order_unpaid_statuses',
-				'default' => 'created',
-				'type' => 'toggle'
-			),
-			'capture' => array(
-				'text' => JText::_('CAPTURE'),
-				'title' => JText::_('PAYMENT_CAPTURE_ORDER_STATUS'),
-				'description' => JText::_('CAPTURE_DESC'),
-				'key' => 'payment_capture_order_status',
-				'default' => '',
-				'type' => 'toggle'
-			),
+			);
+		}
+		$orderstatus_columns['download'] = array(
+			'text' => JText::_('DOWNLOAD'),
+			'title' => JText::_('ORDER_STATUS_FOR_DOWNLOAD'),
+			'description' => JText::_('DOWNLOAD_DESC'),
+			'key' => 'order_status_for_download',
+			'default' => 'confirmed,shipped',
+			'type' => 'toggle'
 		);
 
 
@@ -131,17 +153,6 @@ class OrderstatusViewOrderstatus extends hikashopView
 			);
 		}
 
-
-		if(hikashop_level(1)){
-			$orderstatus_columns['print'] = array(
-				'text' => JText::_('PRINT_INVOICE'),
-				'title' => JText::_('PRINT_ORDER_STATUSES'),
-				'description' => JText::_('PRINT_DESC'),
-				'key' => 'print_invoice_statuses',
-				'default' => 'confirmed,shipped,refunded',
-				'type' => 'toggle'
-			);
-		}
 
 		JPluginHelper::importPlugin('hikashop');
 		JPluginHelper::importPlugin('hikashoppayment');
@@ -175,7 +186,7 @@ class OrderstatusViewOrderstatus extends hikashopView
 		unset($row);
 
 		$this->getPagination();
-		$this->getOrdering('o.orderstatus_id', true);
+		$this->getOrdering('o.orderstatus_ordering', true);
 
 		hikashop_setTitle(JText::_($this->nameListing), $this->icon, $this->ctrl);
 
@@ -208,8 +219,8 @@ class OrderstatusViewOrderstatus extends hikashopView
 		$this->loadRef(array(
 			'editor' => 'helper.editor',
 			'joomlaAcl' => 'type.joomla_acl',
+			'colorType' => 'type.color',
 		));
-
 		$this->editor->name = 'orderstatus_description';
 		$this->editor->content = @$element->orderstatus_description;
 

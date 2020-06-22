@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -56,13 +56,16 @@ switch($this->params->get('child_display_type')){
 ?>
 	<ul class="hikashop_category_list <?php echo $this->params->get('ul_class_name'); ?>">
 <?php
-		$width = 0;
-		if((int)$this->params->get('columns', 0) > 0)
-			$width = (int)(100 / (int)$this->params->get('columns'));
+		$columns = $this->params->get('columns');
+		if(empty($columns)|| $columns == 0)
+			$columns = 1;
+		$width = (int)(100 / $columns) - 2;
+		$current_column = 1;
+
 		if(empty($width))
-			$width = '';
+			$width='style="float:left;"';
 		else
-			$width = 'style="width:' . (int)$width . '%;"';
+			$width='style="float:left;width:'.$width.'%;"';
 
 		$found = 0;
 		if($in_hikashop_context) {
@@ -92,6 +95,10 @@ switch($this->params->get('child_display_type')){
 			?></a>
 		</li>
 <?php
+			if($current_column >= $columns) {
+				$current_column = 0;
+			}
+			$current_column++;
 		}
 ?>
 	</ul>

@@ -124,20 +124,27 @@ class EmundusModelEmails extends JModelList {
                     $recipients = array();
                     $as_where = false;
                     $where = '';
-                    if (count(@$tmpl['to']['profile']) > 0) {
-                        $where = ' eu.profile IN ('.implode(',', $tmpl['to']['profile']).')';
-                        $as_where = true;
+
+                    if (isset($tmpl['to']['profile'])) {
+                        if (count($tmpl['to']['profile']) > 0) {
+                            $where = ' eu.profile IN ('.implode(',', $tmpl['to']['profile']).')';
+                            $as_where = true;
+                        }
                     }
 
-                    if (count(@$tmpl['to']['group']) > 0) {
-                        $where = ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
-                        $as_where = true;
+                    if (isset($tmpl['to']['group'])) {
+                        if (count($tmpl['to']['group']) > 0) {
+                            $where = ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
+                            $as_where = true;
+                        }
                     }
 
-                    if (count(@$tmpl['to']['user']) > 0) {
-                        $where .= $as_where?' OR ':'';
-                        $where .= 'u.block=0 AND u.id IN ('.implode(',', $tmpl['to']['user']).')';
-                        $as_where = true;
+                    if (isset($tmpl['to']['user'])) {
+                        if (count(@$tmpl['to']['user']) > 0) {
+                            $where .= $as_where?' OR ':'';
+                            $where .= 'u.block=0 AND u.id IN ('.implode(',', $tmpl['to']['user']).')';
+                            $as_where = true;
+                        }
                     }
 
                     if ($as_where) {
@@ -192,10 +199,10 @@ class EmundusModelEmails extends JModelList {
         if (count($trigger_emails) > 0) {
             // get current applicant course
             include_once(JPATH_BASE.'/components/com_emundus/models/campaign.php');
-            $campaigns = new EmundusModelCampaign;
-            $campaign = $campaigns->getCampaignByID($student->campaign_id);
+            $m_campaign = new EmundusModelCampaign;
+            $campaign = $m_campaign->getCampaignByID($student->campaign_id);
             $post = array(
-                'APPLICANT_ID'  => $student->id,
+                'APPLICANT_ID' => $student->id,
                 'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign['end_date'])),
                 'APPLICANTS_LIST' => '',
                 'EVAL_CRITERIAS' => '',
@@ -205,7 +212,8 @@ class EmundusModelEmails extends JModelList {
                 'CAMPAIGN_START' => $campaign['start_date'],
                 'CAMPAIGN_END' => $campaign['end_date'],
                 'CAMPAIGN_CODE' => $campaign['training'],
-                'FNUM'          => $student->fnum
+                'FNUM' => $student->fnum,
+	            'COURSE_NAME' => $campaign['label']
             );
 
             foreach ($trigger_emails as $trigger_email) {
@@ -521,7 +529,7 @@ class EmundusModelEmails extends JModelList {
 
         if (count($fnums) == 0) {
             $fnums = $jinput->get('fnums', null, 'RAW');
-            $fnumsArray = (array) json_decode(stripslashes($fnums));
+            $fnumsArray = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         } else {
             $fnumsArray = $fnums;
         }

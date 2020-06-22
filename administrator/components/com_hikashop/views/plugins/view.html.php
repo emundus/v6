@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -100,6 +100,8 @@ class PluginsViewPlugins extends hikashopView{
 			JPluginHelper::importPlugin('hikashop'.$type);
 		$app = JFactory::getApplication();
 		$obj =& $this;
+		$this->extrafilters = array();
+		$extrafilters =& $this->extrafilters;
 		$app->triggerEvent('onBeforeHikaPluginConfigurationListing', array($type, &$filters, &$order, &$searchMap, &$extrafilters, &$obj));
 
 		$query = 'FROM '.hikashop_table($cfg['table']).' AS plugin '.$joins.$filters.$order;
@@ -114,6 +116,9 @@ class PluginsViewPlugins extends hikashopView{
 		}
 		$this->assignRef('rows', $rows);
 		$pageInfo->elements->page = count($rows);
+
+		$db->setQuery('SELECT * FROM #__hikashop_warehouse ORDER BY warehouse_name;');
+		$this->warehouses = $db->loadObjectList('warehouse_id');
 
 		$listing_columns = array();
 		$pluginInterfaceClass = null;
@@ -130,7 +135,7 @@ class PluginsViewPlugins extends hikashopView{
 				break;
 		}
 		if(!empty($pluginInterfaceClass) && method_exists($pluginInterfaceClass, 'fillListingColumns'))
-			$pluginInterfaceClass->fillListingColumns($rows, $listing_columns, $this);
+			$pluginInterfaceClass->fillListingColumns($rows, $listing_columns, $this, $type);
 
 		$app->triggerEvent('onAfterHikaPluginConfigurationListing', array($type, &$rows, &$listing_columns, &$obj));
 
@@ -534,7 +539,7 @@ class PluginsViewPlugins extends hikashopView{
 		$field = $type.'_id';
 		$cid = hikashop_getCID($field);
 		$class = hikashop_get('class.'.$type);
-		$element = $class->get($cid);
+		$element = $class->getRaw($cid);
 		$translation = false;
 		$transHelper = hikashop_get('helper.translation');
 		if($transHelper && $transHelper->isMulti()) {
@@ -542,6 +547,7 @@ class PluginsViewPlugins extends hikashopView{
 			$transHelper->load('hikashop_'.$type, @$element->$field, $element, $language_id);
 			$this->assignRef('transHelper', $transHelper);
 		}
+
 		$editor = hikashop_get('helper.editor');
 		$desc = $type.'_description';
 		$editor->name = $desc;
@@ -626,6 +632,10 @@ class PluginsViewPlugins extends hikashopView{
 				} else {
 					$label = JText::_($value[0]);
 				}
+				if(isset($value[3]))
+					$options = $value[3];
+				else
+					$options = array();
 
 				$html .= '<tr><td class="key"><label for="data['.$type.']['.$paramsType.']['.$key.']">'.$label.'</label></td><td>';
 
@@ -642,6 +652,8 @@ class PluginsViewPlugins extends hikashopView{
 						break;
 
 					case 'boolean':
+						if(!isset($this->element->$paramsType))
+							$this->element->$paramsType = new stdClass();
 						if(!isset($this->element->$paramsType->$key) && isset($value[2]))
 							$this->element->$paramsType->$key = $value[2];
 						if(!isset($this->element->$paramsType->$key))
@@ -690,9 +702,27 @@ class PluginsViewPlugins extends hikashopView{
 					case 'html':
 						$html .= $value[2];
 						break;
+					case 'category':
+						if(!empty($this->element->$paramsType->$key)) {
+							if(!is_array($this->element->$paramsType->$key)) {
+								$this->element->$paramsType->$key = explode(',', trim(@$this->element->$paramsType->$key, ','));
+							}
+						}
+						$nameboxType = hikashop_get('type.namebox');
+						$html .= $nameboxType->display(
+							'data['.$type.']['.$paramsType.']['.$key.']',
+							@$this->element->$paramsType->$key,
+							hikashopNameboxType::NAMEBOX_MULTIPLE,
+							'category',
+							array(
+								'delete' => true,
+								'default_text' => '<em>'.JText::_('HIKA_ALL').'</em>',
+							)
+						);
+						break;
 					default:
 						if(method_exists($this->plugin, 'pluginConfigDisplay')) {
-							$html .= $this->plugin->pluginConfigDisplay($value[1], @$value[2], $type, $paramsType, $key, $this->element);
+							$html .= $this->plugin->pluginConfigDisplay($value[1], @$value[2], $type, $paramsType, $key, $this->element, $options);
 						}
 						break;
 				}

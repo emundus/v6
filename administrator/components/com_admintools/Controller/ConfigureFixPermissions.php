@@ -13,7 +13,7 @@ use Akeeba\AdminTools\Admin\Controller\Mixin\CustomACL;
 use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
 use FOF30\Container\Container;
 use FOF30\Controller\DataController;
-use JText;
+use Joomla\CMS\Language\Text;
 
 class ConfigureFixPermissions extends DataController
 {
@@ -38,7 +38,7 @@ class ConfigureFixPermissions extends DataController
 		$model->setState('perms_show_hidden', $this->input->getInt('perms_show_hidden', 0));
 		$model->saveDefaults();
 
-		$message = JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_DEFAULTSSAVED');
+		$message = Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_DEFAULTSSAVED');
 		$this->setRedirect('index.php?option=com_admintools&view=ConfigureFixPermissions', $message);
 	}
 
@@ -62,8 +62,8 @@ class ConfigureFixPermissions extends DataController
 
 		$this->save_custom_permissions();
 
-		$message = JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_CUSTOMSAVED');
-		$path = $this->input->get('path', '', 'raw', 2);
+		$message = Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_CUSTOMSAVED');
+		$path    = $this->input->get('path', '', 'raw', 2);
 		$this->setRedirect('index.php?option=com_admintools&view=ConfigureFixPermissions&path=' . urlencode($path), $message);
 	}
 
@@ -77,8 +77,8 @@ class ConfigureFixPermissions extends DataController
 
 		$this->save_custom_permissions(true);
 
-		$message = JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_CUSTOMSAVEDAPPLIED');
-		$path = $this->input->get('path', '', 'raw', 2);
+		$message = Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_CUSTOMSAVEDAPPLIED');
+		$path    = $this->input->get('path', '', 'raw', 2);
 		$this->setRedirect('index.php?option=com_admintools&view=ConfigureFixPermissions&path=' . urlencode($path), $message);
 	}
 
@@ -91,9 +91,9 @@ class ConfigureFixPermissions extends DataController
 		$model->setState('path', $path);
 		$model->applyPath();
 
-		$folders = $this->input->get('folders', array(), 'array', 2);
+		$folders = $this->input->get('folders', [], 'array', 2);
 		$model->setState('folders', $folders);
-		$files = $this->input->get('files', array(), 'array', 2);
+		$files = $this->input->get('files', [], 'array', 2);
 		$model->setState('files', $files);
 
 		$model->savePermissions($apply);

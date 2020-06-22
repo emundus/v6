@@ -51,7 +51,7 @@ if ($allowed_attachments !== true) {
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
     <div id="em-sending-email-caption" class="em-sending-email-caption"><?= JText::_('SENDING_EMAILS'); ?></div>
-    <img class="em-sending-email-img" id="em-sending-email-img" src="images/emundus/sending-email.gif">
+    <img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif">
 </div>
 
 <form id="emailForm" class="em-form-message" name="emailForm" style="padding:0px 15px;">

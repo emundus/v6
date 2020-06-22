@@ -7,6 +7,7 @@
 
 /** @var    $this   \Akeeba\AdminTools\Admin\View\ConfigureFixPermissions\Html */
 use Akeeba\AdminTools\Admin\Helper\Select;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die;
 
@@ -19,21 +20,21 @@ if (!empty($path))
 
 ?>
 <form name="defaultsForm" id="defaultsForm" action="index.php" method="post" class="akeeba-form--inline">
-	<h4><?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_DEFAULTS'); ?></h4>
+	<h4><?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_DEFAULTS'); ?></h4>
 
-	<label for="perms_show_hidden"><?php echo JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SHOW_HIDDEN')?></label>
+	<label for="perms_show_hidden"><?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SHOW_HIDDEN')?></label>
 	<?php echo Select::booleanlist('perms_show_hidden', array('class' => 'input-mini'), $this->perms_show_hidden)?>
 
-	<label for="dirperms"><?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_DEFDIRPERM'); ?></label>
+	<label for="dirperms"><?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_DEFDIRPERM'); ?></label>
 	<?php echo Select::perms('dirperms', array('class' => 'input-mini'), $this->dirperms); ?>
 
 
-	<label for="fileperms"><?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_DEFFILEPERMS'); ?></label>
+	<label for="fileperms"><?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_DEFFILEPERMS'); ?></label>
 	<?php echo Select::perms('fileperms', array('class' => 'input-mini'), $this->fileperms); ?>
 
 
 	<input type="submit" class="akeeba-btn--primary"
-		   value="<?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SAVEDEFAULTS'); ?>"/>
+		   value="<?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SAVEDEFAULTS'); ?>"/>
 
     <input type="hidden" name="option" value="com_admintools"/>
     <input type="hidden" name="view" value="ConfigureFixPermissions"/>
@@ -44,9 +45,9 @@ if (!empty($path))
 <?php if (!empty($this->listing['crumbs'])): ?>
 	<ul class="breadcrumb">
 		<li>
-			<?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_PATH'); ?>:
+			<?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_PATH'); ?>:
 			<a href="index.php?option=com_admintools&view=ConfigureFixPermissions&path=/">
-				<?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_ROOT'); ?>
+				<?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_ROOT'); ?>
 			</a>
 			<span class="divider">/</span>
 		</li>
@@ -80,18 +81,18 @@ if (!empty($path))
 	<input type="hidden" name="path" value="<?php echo $this->escape($this->at_path); ?>"/>
 	<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1"/>
 
-	<input type="submit" class="akeeba-btn--green" value="<?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SAVEPERMS'); ?>"/>
+	<input type="submit" class="akeeba-btn--green" value="<?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SAVEPERMS'); ?>"/>
 	<input type="submit" class="akeeba-btn--orange"
-		   value="<?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SAVEAPPLYPERMS'); ?>"
+		   value="<?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SAVEAPPLYPERMS'); ?>"
 		   onclick="document.forms.adminForm.task.value='saveapplyperms';"/>
 
 	<div class="akeeba-container--50-50">
         <table class="akeeba-table--striped">
             <thead>
             <tr>
-                <th><?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_FOLDER'); ?></th>
-                <th><?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_OWNER'); ?></th>
-                <th colspan="2"><?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_PERMS'); ?></th>
+                <th><?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_FOLDER'); ?></th>
+                <th><?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_OWNER'); ?></th>
+                <th colspan="2"><?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_PERMS'); ?></th>
             </tr>
             </thead>
             <tbody>
@@ -123,9 +124,9 @@ if (!empty($path))
         <table class="akeeba-table--striped">
             <thead>
             <tr>
-                <th><?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_FILE'); ?></th>
-                <th><?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_OWNER'); ?></th>
-                <th colspan="2"><?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_PERMS'); ?></th>
+                <th><?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_FILE'); ?></th>
+                <th><?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_OWNER'); ?></th>
+                <th colspan="2"><?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_PERMS'); ?></th>
             </tr>
             </thead>
             <tbody>
@@ -157,9 +158,9 @@ if (!empty($path))
 
 	<p>
 		<input type="submit" class="akeeba-btn--green"
-			   value="<?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SAVEPERMS'); ?>"/>
+			   value="<?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SAVEPERMS'); ?>"/>
 		<input type="submit" class="akeeba-btn--orange"
-			   value="<?php echo \JText::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SAVEAPPLYPERMS'); ?>"
+			   value="<?php echo Text::_('COM_ADMINTOOLS_LBL_CONFIGUREFIXPERMISSIONS_SAVEAPPLYPERMS'); ?>"
 			   onclick="document.forms.adminForm.task.value='saveapplyperms';"/>
 	</p>
 </form>

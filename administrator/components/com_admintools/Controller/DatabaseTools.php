@@ -13,6 +13,7 @@ use Akeeba\AdminTools\Admin\Controller\Mixin\CustomACL;
 use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
+use Joomla\CMS\Language\Text;
 
 class DatabaseTools extends Controller
 {
@@ -31,7 +32,7 @@ class DatabaseTools extends Controller
 		$model = $this->getModel();
 		$from  = $this->input->getString('from', null);
 
-		$tables    = (array)$model->findTables();
+		$tables    = (array) $model->findTables();
 		$lastTable = $model->repairAndOptimise($from);
 
 		if (empty($lastTable))
@@ -41,7 +42,7 @@ class DatabaseTools extends Controller
 		else
 		{
 			$lastTableID = array_search($lastTable, $tables);
-			$percent = round(100 * ($lastTableID + 1) / count($tables));
+			$percent     = round(100 * ($lastTableID + 1) / count($tables));
 
 			if ($percent < 1)
 			{
@@ -53,7 +54,7 @@ class DatabaseTools extends Controller
 				$percent = 100;
 			}
 		}
-		
+
 		$model->setState('lasttable', $lastTable);
 		$model->setState('percent', $percent);
 
@@ -66,6 +67,6 @@ class DatabaseTools extends Controller
 		$model = $this->getModel();
 		$model->garbageCollectSessions();
 		$model->purgeSessions();
-		$this->setRedirect('index.php?option=com_admintools', \JText::_('COM_ADMINTOOLS_LBL_DATABASETOOLS_PURGESESSIONS_COMPLETE'));
+		$this->setRedirect('index.php?option=com_admintools', Text::_('COM_ADMINTOOLS_LBL_DATABASETOOLS_PURGESESSIONS_COMPLETE'));
 	}
 }

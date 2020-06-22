@@ -30,7 +30,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Starter';
-	var $version = '4.2.2';
+	var $version = '4.3.0';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -806,6 +806,9 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 
 		if(version_compare($this->fromVersion, '4.1.1', '<')) {
 			$this->databaseHelper->addColumns("field", "`field_address_type` varchar(50) DEFAULT ''");
+		}
+		if(version_compare($this->fromVersion, '4.3.0', '<')) {
+			$this->databaseHelper->addColumns("orderstatus", "`orderstatus_color` varchar(255) NOT NULL DEFAULT ''");
 		}
 	}
 

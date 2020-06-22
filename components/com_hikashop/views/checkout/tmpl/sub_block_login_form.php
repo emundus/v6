@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -137,6 +137,20 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 			<button type="submit" onclick="window.checkout.submitLogin(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>, 'login'); return false;" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_checkout_login_form"><?php
 				echo JText::_('HIKA_LOGIN');
 			?></button>
+		</div>
+	</div>
+	<div class="control-group hikashop_login_forgot_password_line">
+		<div class="controls">
+			<a href="<?php echo JRoute::_( $reset_url ); ?>">
+				<?php echo JText::_('HIKA_FORGOT_YOUR_PASSWORD'); ?>
+			</a>
+		</div>
+	</div>
+	<div class="control-group hikashop_login_forgot_username_line">
+		<div class="controls">
+			<a href="<?php echo JRoute::_( $remind_url ); ?>">
+				<?php echo JText::_('HIKA_FORGOT_YOUR_USERNAME'); ?>
+			</a>
 		</div>
 	</div>
 <?php

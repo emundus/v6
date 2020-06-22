@@ -13,7 +13,7 @@ use Akeeba\AdminTools\Admin\Controller\Mixin\CustomACL;
 use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
-use JText;
+use Joomla\CMS\Language\Text;
 
 class EmergencyOffline extends Controller
 {
@@ -35,15 +35,15 @@ class EmergencyOffline extends Controller
 		$model = $this->getModel();
 
 		$status = $model->putOffline();
-		$url = 'index.php?option=com_admintools';
+		$url    = 'index.php?option=com_admintools';
 
 		if ($status)
 		{
-			$this->setRedirect($url, JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_APPLIED'));
+			$this->setRedirect($url, Text::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_APPLIED'));
 		}
 		else
 		{
-			$this->setRedirect($url, JText::_('COM_ADMINTOOLS_ERR_EMERGENCYOFFLINE_NOTAPPLIED'), 'error');
+			$this->setRedirect($url, Text::_('COM_ADMINTOOLS_ERR_EMERGENCYOFFLINE_NOTAPPLIED'), 'error');
 		}
 	}
 
@@ -59,11 +59,11 @@ class EmergencyOffline extends Controller
 
 		if ($status)
 		{
-			$this->setRedirect($url, JText::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_UNAPPLIED'));
+			$this->setRedirect($url, Text::_('COM_ADMINTOOLS_LBL_EMERGENCYOFFLINE_UNAPPLIED'));
 		}
 		else
 		{
-			$this->setRedirect($url, JText::_('COM_ADMINTOOLS_ERR_EMERGENCYOFFLINE_NOTUNAPPLIED'), 'error');
+			$this->setRedirect($url, Text::_('COM_ADMINTOOLS_ERR_EMERGENCYOFFLINE_NOTUNAPPLIED'), 'error');
 		}
 	}
 }

@@ -6,9 +6,19 @@
  */
 
 // Protect from unauthorized access
-use Akeeba\AdminTools\Admin\Model\ConfigureWAF;
-
 defined('_JEXEC') or die();
+
+use Akeeba\AdminTools\Admin\Helper\Storage;
+use Akeeba\AdminTools\Admin\Model\ConfigureWAF;
+use Akeeba\AdminTools\Admin\Model\Stats;
+use FOF30\Container\Container;
+use FOF30\Utils\InstallScript;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Installer\Adapter\ComponentAdapter;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Table\Table;
+use Joomla\Registry\Registry;
 
 // Load FOF if not already loaded
 if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
@@ -16,7 +26,7 @@ if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/inclu
 	throw new RuntimeException('This component requires FOF 3.0.');
 }
 
-class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
+class Com_AdmintoolsInstallerScript extends InstallScript
 {
 	/**
 	 * The component's name
@@ -37,14 +47,14 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '5.6.0';
+	protected $minimumPHPVersion = '7.1.0';
 
 	/**
 	 * The minimum Joomla! version required to install this extension
 	 *
 	 * @var   string
 	 */
-	protected $minimumJoomlaVersion = '3.8.0';
+	protected $minimumJoomlaVersion = '3.9.0';
 
 	/**
 	 * The maximum Joomla! version this extension can be installed on
@@ -75,7 +85,6 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			'plugins/system/admintools/feature/criticalfiles.php',
 			'plugins/system/admintools/feature/criticalfilesglobal.php',
 			'plugins/system/admintools/feature/csrfshield.php',
-			'plugins/system/admintools/feature/customadminfolder.php',
 			'plugins/system/admintools/feature/customblock.php',
 			'plugins/system/admintools/feature/customgenerator.php',
 			'plugins/system/admintools/feature/deleteinactive.php',
@@ -309,6 +318,9 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_admintools/Controller/GeographicBlocking.php',
 			'administrator/components/com_admintools/Model/GeographicBlocking.php',
 			'plugins/system/admintools/feature/geoblock.php',
+
+			// CSRFShield
+			'plugins/system/admintools/feature/customadminfolder.php',
 		],
 		'folders' => [
 			// Obsolete folders from AT 1.x, 2.x and 3.x
@@ -373,7 +385,7 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 	/**
 	 * Runs on installation
 	 *
-	 * @param   JInstallerAdapterComponent  $parent  The parent object
+	 * @param   ComponentAdapter  $parent  The parent object
 	 *
 	 * @return  void
 	 */
@@ -389,8 +401,9 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 	 * Joomla! pre-flight event. This runs before Joomla! installs or updates the component. This is our last chance to
 	 * tell Joomla! if it should abort the installation.
 	 *
-	 * @param   string                      $type    Installation type (install, update, discover_install)
-	 * @param   JInstallerAdapterComponent  $parent  Parent object
+	 * @param   string            $type                                  Installation type (install, update,
+	 *                                                                   discover_install)
+	 * @param   ComponentAdapter  $parent                                Parent object
 	 *
 	 * @return  boolean  True to let the installation proceed, false to halt the installation
 	 */
@@ -409,8 +422,8 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 	/**
 	 * Runs after install, update or discover_update
 	 *
-	 * @param   string                      $type  install, update or discover_update
-	 * @param   JInstallerAdapterComponent  $parent
+	 * @param   string            $type  install, update or discover_update
+	 * @param   ComponentAdapter  $parent
 	 *
 	 * @return  boolean  True to let the installation proceed, false to halt the installation
 	 */
@@ -424,22 +437,22 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 		{
 			try
 			{
-				$container = \FOF30\Container\Container::getInstance('com_admintools');
+				$container = Container::getInstance('com_admintools');
 			}
-			catch (\Exception $e)
+			catch (Exception $e)
 			{
 				$container = null;
 			}
 		}
 
-		if (is_object($container) && class_exists('FOF30\\Container\\Container') && ($container instanceof \FOF30\Container\Container))
+		if (is_object($container) && class_exists('FOF30\\Container\\Container') && ($container instanceof Container))
 		{
-			/** @var \Akeeba\AdminTools\Admin\Model\Stats $model */
+			/** @var Stats $model */
 			try
 			{
 				$model = $container->factory->model('Stats')->tmpInstance();
 			}
-			catch (\Exception $e)
+			catch (Exception $e)
 			{
 				$model = null;
 			}
@@ -471,7 +484,7 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 
 			if (class_exists('Akeeba\\AdminTools\\Admin\\Helper\\Storage'))
 			{
-				$params = new \Akeeba\AdminTools\Admin\Helper\Storage();
+				$params = new Storage();
 				$params->load();
 				$params->setValue('quickstart', 1, true);
 			}
@@ -523,7 +536,7 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 
 		?>
 		<img src="../administrator/components/com_admintools/media/images/admintools-48.png" width="48" height="48"
-		     alt="Admin Tools" align="right" />
+			 alt="Admin Tools" align="right" />
 
 		<h2>Welcome to Admin Tools!</h2>
 
@@ -531,7 +544,7 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			<?php if (ADMINTOOLS_PRO): ?>
 				<p>
 					We strongly recommend watching our <a
-						href="https://www.akeebabackup.com/videos/1207-admin-tools.html">video
+							href="https://www.akeebabackup.com/videos/1207-admin-tools.html">video
 						tutorials</a> before using this component.
 				</p>
 
@@ -563,28 +576,28 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 		{
 			try
 			{
-				$container = \FOF30\Container\Container::getInstance('com_admintools');
+				$container = Container::getInstance('com_admintools');
 			}
-			catch (\Exception $e)
+			catch (Exception $e)
 			{
 				$container = null;
 			}
 		}
 
-		if (is_object($container) && class_exists('FOF30\\Container\\Container') && ($container instanceof \FOF30\Container\Container))
+		if (is_object($container) && class_exists('FOF30\\Container\\Container') && ($container instanceof Container))
 		{
-			/** @var \Akeeba\AdminTools\Admin\Model\Stats $model */
+			/** @var Stats $model */
 			try
 			{
 				$model = $container->factory->model('Stats')->tmpInstance();
 			}
-			catch (\Exception $e)
+			catch (Exception $e)
 			{
 				$model = null;
 			}
 		}
 
-		/** @var \Akeeba\AdminTools\Admin\Model\Stats $model */
+		/** @var Stats $model */
 		try
 		{
 			if (is_object($model) && class_exists('Akeeba\\AdminTools\\Admin\\Model\\Stats')
@@ -599,7 +612,7 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 				}
 			}
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 		}
 	}
@@ -609,7 +622,8 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 		?>
 		<h2>Admin Tools Uninstallation Status</h2>
 		<p>We are sorry that you decided to uninstall Admin Tools. Please let us know why by using the <a
-				href="https://www.akeebabackup.com/contact-us.html" target="_blank">Contact Us form on our site</a>. We
+					href="https://www.akeebabackup.com/contact-us.html" target="_blank">Contact Us form on our site</a>.
+			We
 			appreciate your feedback; it helps us develop better software!</p>
 		<?php
 	}
@@ -618,7 +632,7 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 	 * Removes obsolete update sites created for the component (we are now using an update site for the package, not the
 	 * component).
 	 *
-	 * @param   JInstallerAdapterComponent  $parent  The parent installer
+	 * @param   ComponentAdapter  $parent  The parent installer
 	 */
 	protected function removeObsoleteUpdateSites($parent)
 	{
@@ -676,7 +690,7 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 			{
 				$db->execute();
 			}
-			catch (\Exception $e)
+			catch (Exception $e)
 			{
 				// Do not fail in this case
 			}
@@ -689,7 +703,7 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 	 */
 	private function warnAboutJSNPowerAdmin()
 	{
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 
 		$query         = $db->getQuery(true)
 			->select('COUNT(*)')
@@ -714,7 +728,7 @@ class Com_AdmintoolsInstallerScript extends \FOF30\Utils\InstallScript
 
 		$className = class_exists('JRegistry') ? 'JRegistry' : '\Joomla\Registry\Registry';
 
-		/** @var \Joomla\Registry\Registry $jsnPAManifest */
+		/** @var Registry $jsnPAManifest */
 		$jsnPAManifest = new $className();
 		$jsnPAManifest->loadString($paramsJson, 'JSON');
 		$version = $jsnPAManifest->get('version', '0.0.0');
@@ -747,7 +761,7 @@ HTML;
 	 */
 	private function removeFOFUpdateSites()
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getDbo();
 		$query = $db->getQuery(true)
 			->delete($db->qn('#__update_sites'))
 			->where($db->qn('location') . ' = ' . $db->q('http://cdn.akeebabackup.com/updates/fof.xml'));
@@ -755,7 +769,7 @@ HTML;
 		{
 			$db->setQuery($query)->execute();
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			// Do nothing on failure
 		}
@@ -764,7 +778,7 @@ HTML;
 
 	private function uninstallObsoletePostinstallMessages()
 	{
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 
 		$obsoleteTitleKeys = [
 			'COM_ADMINTOOLS_POSTSETUP_LBL_AUTOJUPDATE',
@@ -794,7 +808,7 @@ HTML;
 	 * If this is an update, disable the "Monitor Super User accounts" feature. It only happens ONCE. This will
 	 * prevent people from complaining about this feature doing exactly what it's supposed to do.
 	 *
-	 * @param   JInstallerAdapterComponent  $parent
+	 * @param   ComponentAdapter  $parent
 	 *
 	 * @return  void
 	 *
@@ -812,7 +826,7 @@ HTML;
 			return;
 		}
 
-		$params = new \Akeeba\AdminTools\Admin\Helper\Storage();
+		$params = new Storage();
 		$params->load();
 
 
@@ -829,7 +843,7 @@ HTML;
 	 * If this is an update, find the security exception logs for failed logins which may have contained failed
 	 * login passwords and remove them from the database.
 	 *
-	 * @param   JInstallerAdapterComponent  $parent
+	 * @param   ComponentAdapter  $parent
 	 *
 	 * @return  void
 	 *
@@ -847,7 +861,7 @@ HTML;
 			return;
 		}
 
-		$params = new \Akeeba\AdminTools\Admin\Helper\Storage();
+		$params = new Storage();
 		$params->load();
 
 		if ($params->getValue('showpwonloginfailure', 0) != 1)
@@ -856,7 +870,7 @@ HTML;
 		}
 
 		// Delete existing records
-		$db    = JFactory::getDbo();
+		$db    = Factory::getDbo();
 		$query = $db->getQuery(true)
 			->delete($db->qn('#__admintools_log'))
 			->where($db->qn('reason') . ' = ' . $db->q('loginfailure'))
@@ -882,7 +896,7 @@ HTML;
 	 */
 	private function _upgradeDeleteTextLogfiles()
 	{
-		$logpath = JFactory::getConfig()->get('log_path');
+		$logpath = Factory::getConfig()->get('log_path');
 		$files   = [
 			$logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log',
 			$logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log.1',
@@ -900,14 +914,14 @@ HTML;
 				continue;
 			}
 
-			JFile::delete($file);
+			\Joomla\CMS\Filesystem\File::delete($file);
 		}
 	}
 
 	/**
 	 * If IP Workarounds are set to No, migrate them to Auto
 	 *
-	 * @param   \FOF30\Container\Container  $container
+	 * @param   Container  $container
 	 */
 	private function migrateIpWorkarounds($container)
 	{
@@ -938,7 +952,7 @@ HTML;
 
 	private function switchActionLogPlugins()
 	{
-		$db = \Joomla\CMS\Factory::getDbo();
+		$db = Factory::getDbo();
 
 		// Does the plg_system_admintoolsactionlog plugin exist? If not, there's nothing to do here.
 		$query = $db->getQuery(true)
@@ -964,7 +978,7 @@ HTML;
 		}
 
 		// If plg_system_admintoolsactionlog is enabled: enable plg_actionlog_admintools
-		if (\Joomla\CMS\Plugin\PluginHelper::isEnabled('system', 'admintoolsactionlog'))
+		if (PluginHelper::isEnabled('system', 'admintoolsactionlog'))
 		{
 			$query = $db->getQuery(true)
 				->update($db->qn('#__extensions'))
@@ -1007,7 +1021,7 @@ HTML;
 		try
 		{
 			// Safely delete the row in the extensions table
-			$row = JTable::getInstance('extension');
+			$row = Table::getInstance('extension');
 			$row->load((int) $eid);
 			$row->delete($eid);
 
@@ -1016,7 +1030,7 @@ HTML;
 
 			if (is_dir($pluginPath))
 			{
-				JFolder::delete($pluginPath);
+				Folder::delete($pluginPath);
 			}
 
 			// Delete the plugin's language files
@@ -1029,7 +1043,7 @@ HTML;
 			{
 				if (@is_file($file))
 				{
-					JFile::delete($file);
+					\Joomla\CMS\Filesystem\File::delete($file);
 				}
 			}
 		}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -110,12 +110,19 @@ window.cartNotifyParams = '.json_encode(array(
 		$url_checkout = $menusClass->getCheckoutURL(true);
 		$link_to_checkout = (int)$this->params->get('checkout_button', 1);
 
+		$link_continue = $this->params->get('continue_url', '');
+		$link_continue = hikashop_translate($link_continue);
+		$continue_js = '';
+		if(!empty($link_continue)){
+			$continue_js = 'window.location="'.$link_continue.'";';
+		}
+
 		$extra_data = array();
 		if($link_to_checkout) {
 			$extra_data[] = '
 window.cartNotifyParams.cart_params = {buttons:[
 	{text:"'.JText::_('PROCEED_TO_CHECKOUT', true).'",type:"button",className:"vex-dialog-button-primary",click:function proceedClick(){window.location="'.$url_checkout.'";}},
-	{text:"'.JText::_('CONTINUE_SHOPPING', true).'",type:"submit",className:"vex-dialog-button-primary",click:function continueClick(){}}
+	{text:"'.JText::_('CONTINUE_SHOPPING', true).'",type:"submit",className:"vex-dialog-button-primary",click:function continueClick(){'.$continue_js.'}}
 ]};';
 		}
 

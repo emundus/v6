@@ -121,7 +121,11 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 			echo $e->getMessage() . '<br />';
 		}
 
-		$is_dead_line_passed = (strtotime(date($now)) > strtotime(@$student->end_date));
+        if ($this->getParam('admission', 0) == 1) {
+            $is_dead_line_passed = strtotime(date($now)) > strtotime(@$student->fnums[$student->fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$student->fnums[$student->fnum]->admission_start_date);
+        } else {
+            $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$student->end_date));
+        }
 
 		// If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
 		if ($is_dead_line_passed && !in_array($student->id, $id_applicants)) {

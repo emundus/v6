@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -567,9 +567,15 @@ class checkoutController extends checkoutLegacyController {
 
 		$orderClass = hikashop_get('class.order');
 		$order = $orderClass->get($order_id);
-		if(empty($order) || hikashop_loadUser(false) != $order->order_user_id)
-			return false;
 
+		$order_token = hikaInput::get()->getInt('order_token');
+		if(empty($order_token)) {
+			$app = JFactory::getApplication();
+			$order_token = $app->getUserState('com_hikashop.order_token');
+		}
+
+		if(empty($order) || (hikashop_loadUser(false) != $order->order_user_id && $order->order_token != $order_token))
+			return false;
 		hikaInput::get()->set('layout', 'after_end');
 		return $this->display();
 	}

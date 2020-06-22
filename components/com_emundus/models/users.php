@@ -562,10 +562,8 @@ class EmundusModelUsers extends JModelList {
     public function getCurrentCampaigns() {
         $config = JFactory::getConfig();
 
-        $jdate = JFactory::getDate();
         $timezone = new DateTimeZone( $config->get('offset') );
-        $jdate->setTimezone($timezone);
-        $now = $jdate->toSql();
+		$now = JFactory::getDate()->setTimezone($timezone);
 
         $db = JFactory::getDBO();
         $query = 'SELECT sc.id, sc;label
@@ -781,6 +779,10 @@ class EmundusModelUsers extends JModelList {
     public function addEmundusUser($user_id, $params) {
 
         $db = JFactory::getDBO();
+        $config     = JFactory::getConfig();
+
+        $timezone = new DateTimeZone( $config->get('offset') );
+        $now = JFactory::getDate()->setTimezone($timezone);
 
 	    JPluginHelper::importPlugin('emundus');
 	    $dispatcher = JEventDispatcher::getInstance();
@@ -796,11 +798,11 @@ class EmundusModelUsers extends JModelList {
 
         $dispatcher->trigger('onBeforeSaveEmundusUser', [$user_id, $params]);
         if (empty($univ_id)) {
-            $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".date('Y-m-d H:i:s')."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','',0)";
+            $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','',0)";
             $db->setQuery($query);
             $db->Query();
         } else {
-            $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".date('Y-m-d H:i:s')."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','','".$univ_id."')";
+            $query = "INSERT INTO `#__emundus_users` (id, user_id, registerDate, firstname, lastname, profile, schoolyear, disabled, disabled_date, cancellation_date, cancellation_received, university_id) VALUES ('',".$user_id.",'".$now."',".$db->quote($firstname).",".$db->quote($lastname).",".$profile.",'',0,'','','','".$univ_id."')";
             $db->setQuery($query);
             $db->Query();
         }
@@ -830,7 +832,7 @@ class EmundusModelUsers extends JModelList {
 
 	    $dispatcher->trigger('onBeforeAddUserProfile', [$user_id, $profile]);
         $query="INSERT INTO `#__emundus_users_profiles`
-                        VALUES ('','".date('Y-m-d H:i:s')."',".$user_id.",".$profile.",'','')";
+                        VALUES ('','".$now."',".$user_id.",".$profile.",'','')";
         $db->setQuery($query);
         $db->Query() or die($db->getErrorMsg());
 	    $dispatcher->trigger('onAfterAddUserProfile', [$user_id, $profile]);
@@ -839,7 +841,7 @@ class EmundusModelUsers extends JModelList {
             foreach ($oprofiles as $profile) {
 	            $dispatcher->trigger('onBeforeAddUserProfile', [$user_id, $profile]);
                 $query = "INSERT INTO `#__emundus_users_profiles`
-                                VALUES ('','".date('Y-m-d H:i:s')."',".$user_id.",".$profile.",'','')";
+                                VALUES ('','".$now."',".$user_id.",".$profile.",'','')";
                 $db->setQuery($query);
                 $db->Query();
 	            $dispatcher->trigger('onAfterAddUserProfile', [$user_id, $profile]);
@@ -1577,6 +1579,11 @@ class EmundusModelUsers extends JModelList {
 	 * @since version
 	 */
     public function addProfileToUser($uid, $pid) {
+        $config     = JFactory::getConfig();
+
+        $timezone = new DateTimeZone( $config->get('offset') );
+        $now = JFactory::getDate()->setTimezone($timezone);
+
         $db = JFactory::getDBO();
 
         $query = $db->getQuery(true);
@@ -1594,7 +1601,7 @@ class EmundusModelUsers extends JModelList {
 		    return false;
 	    }
 
-        $query = "INSERT INTO `#__emundus_users_profiles` VALUES ('','".date('Y-m-d H:i:s')."',".$uid.",".$pid.",'','')";
+        $query = "INSERT INTO `#__emundus_users_profiles` VALUES ('','".$now."',".$uid.",".$pid.",'','')";
         $db->setQuery($query);
         try {
 	        $db->query();
@@ -1612,7 +1619,7 @@ class EmundusModelUsers extends JModelList {
 		    return false;
 	    }
 
-        return JUserHelper::addUserToGroup($uid,$group);
+        return JUserHelper::addUserToGroup($uid, $group);
     }
 
 

@@ -7,9 +7,9 @@
 
 namespace FOF30\Container;
 
-use FOF30\Pimple\Container;
+defined('_JEXEC') || die;
 
-defined('_JEXEC') or die;
+use FOF30\Pimple\Container;
 
 class ContainerBase extends Container
 {
@@ -37,6 +37,14 @@ class ContainerBase extends Container
 	 */
 	function __set($name, $value)
 	{
+		// Special backwards compatible handling for the mediaVersion service
+		if ($name == 'mediaVersion')
+		{
+			$this[$name]->setMediaVersion($value);
+
+			return;
+		}
+
 		$this->offsetSet($name, $value);
 	}
 }

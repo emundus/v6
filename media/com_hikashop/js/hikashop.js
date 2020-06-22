@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.2.2
+ * @version    4.3.0
  * @author     hikashop.com
- * @copyright  (C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 (function() {
@@ -296,6 +296,10 @@ var Oby = {
 		if( typeof(elem) == 'string' )
 			elem = d.getElementById(elem);
 		var text = data.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, function(all, code){
+			if(all.indexOf('type="application/json"') != -1)
+				return '';
+			if(all.indexOf('type="application/ld+json"') != -1)
+				return '';
 			scripts += code + '\n';
 			return '';
 		});
@@ -894,6 +898,7 @@ var hikashop = {
 		}
 	},
 	refreshFilters: function (el, skipSelf) {
+		"use strict";
 		var d = document, t = this, o = window.Oby,
 		container = null, data = null, containerName = el.getAttribute('data-container-div');
 
@@ -1125,8 +1130,11 @@ var hikashop = {
 
 			var resp = Oby.evalJSON(xhr.responseText);
 			var cart_id = (resp && (resp.ret || resp.ret === 0)) ? resp.ret : parseInt(xhr.responseText);
-			if(isNaN(cart_id))
-				return;
+			if(isNaN(cart_id)) {
+				console.log('cart_id was not returned in addToCart AJAX call');
+				console.log(resp);
+				return false;
+			}
 
 			var triggers = window.Oby.fireAjax(cart_type+'.updated', {id: cart_id, el: el, product_id: product_id, type: cart_type, resp: resp});
 			if(triggers !== false && triggers.length > 0)
@@ -1459,7 +1467,7 @@ var hikashop = {
 	},
 	toggleField: function(new_value, namekey, field_type, id, prefix, type) {
 		var d = document, checked = 0, size = 0, obj = null, specialField = false,
-			checkedGood = 0, count = 0, el = null,
+			checkedGood = [], count = [], el = null,
 			arr = d.getElementsByName('data['+field_type+']['+namekey+'][]');
 
 		if(!arr)
@@ -1512,7 +1520,6 @@ var hikashop = {
 			if((obj.type && obj.type == 'checkbox') || obj.selected)
 				specialField = true;
 		}
-
 		var data = this.fields_data[field_type][namekey];
 		for(var k in data) {
 			if(typeof data[k] != 'object')
@@ -1550,7 +1557,20 @@ var hikashop = {
 				el = document.getElementById(elementName);
 				if(!el)
 					continue;
-				if( !parentHidden && ((specialField && checkedGood[j] == count[j] && new_value != '') || (!specialField && j == new_value) )) {
+
+				if( !parentHidden &&
+					(
+						(specialField && checkedGood[j] == count[j] && new_value != '')
+						||
+						(!specialField &&
+							(
+								j == new_value
+								||
+								(checkedGood[j] && count[j] && checkedGood[j] == count[j])
+							)
+						)
+					)
+				) {
 					el.style.display = '';
 					this.toggleField(el.value, data[j][i], field_type, id, prefix);
 				} else {

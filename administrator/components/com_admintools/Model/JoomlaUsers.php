@@ -9,11 +9,7 @@ namespace Akeeba\AdminTools\Admin\Model;
 
 use FOF30\Container\Container;
 use FOF30\Model\DataModel;
-use JApplicationHelper;
-use JComponentHelper;
-use JLoader;
-use JUser;
-use JUserHelper;
+use JDatabaseQuery;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
@@ -23,22 +19,22 @@ defined('_JEXEC') or die();
  *
  * Fields:
  *
- * @property  int     $id
- * @property  string  $name
- * @property  string  $username
- * @property  string  $email
- * @property  string  $password
- * @property  bool    $block
- * @property  bool    $sendEmail
- * @property  string  $registerDate
- * @property  string  $lastvisitDate
- * @property  string  $activation
- * @property  string  $params
- * @property  string  $lastResetTime
- * @property  int     $resetCount
- * @property  string  $otpKey
- * @property  string  $otep
- * @property  bool    $requireReset
+ * @property  int    $id
+ * @property  string $name
+ * @property  string $username
+ * @property  string $email
+ * @property  string $password
+ * @property  bool   $block
+ * @property  bool   $sendEmail
+ * @property  string $registerDate
+ * @property  string $lastvisitDate
+ * @property  string $activation
+ * @property  string $params
+ * @property  string $lastResetTime
+ * @property  int    $resetCount
+ * @property  string $otpKey
+ * @property  string $otep
+ * @property  bool   $requireReset
  *
  * Filters:
  *
@@ -65,12 +61,12 @@ class JoomlaUsers extends DataModel
 	/**
 	 * Override the constructor since I need to attach to a core table and add the Filters behaviour
 	 *
-	 * @param Container $container
-	 * @param array     $config
+	 * @param   Container  $container
+	 * @param   array      $config
 	 */
-	public function __construct(Container $container, array $config = array())
+	public function __construct(Container $container, array $config = [])
 	{
-		$config['tableName'] = '#__users';
+		$config['tableName']   = '#__users';
 		$config['idFieldName'] = 'id';
 
 		parent::__construct($container, $config);
@@ -85,12 +81,12 @@ class JoomlaUsers extends DataModel
 	/**
 	 * Build the SELECT query for returning records. Overridden to apply custom filters.
 	 *
-	 * @param   \JDatabaseQuery  $query           The query being built
-	 * @param   bool             $overrideLimits  Should I be overriding the limit state (limitstart & limit)?
+	 * @param   JDatabaseQuery  $query           The query being built
+	 * @param   bool            $overrideLimits  Should I be overriding the limit state (limitstart & limit)?
 	 *
 	 * @return  void
 	 */
-	public function onAfterBuildQuery(\JDatabaseQuery $query, $overrideLimits = false)
+	public function onAfterBuildQuery(JDatabaseQuery $query, $overrideLimits = false)
 	{
 		$db = $this->getDbo();
 

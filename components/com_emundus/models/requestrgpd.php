@@ -8,8 +8,10 @@
 
 public function em_createRequest($data)
 {
+	$config = JFactory::getConfig();
+	$timezone = new DateTimeZone( $config->get('offset') );
     // Creating requests requires the site's email sending be enabled
-    if (!JFactory::getConfig()->get('mailonline', 1))
+    if (!config->get('mailonline', 1))
     {
         $this->setError(JText::_('COM_PRIVACY_ERROR_CANNOT_CREATE_REQUEST_WHEN_SENDMAIL_DISABLED'));
 
@@ -81,7 +83,7 @@ public function em_createRequest($data)
     $hashedToken = JUserHelper::hashPassword($token);
 
     $data['confirm_token']            = $hashedToken;
-    $data['confirm_token_created_at'] = JFactory::getDate()->toSql();
+    $data['confirm_token_created_at'] = JFactory::getDate()->setTimezone($timezone);
 
     if (!$this->save($data))
     {

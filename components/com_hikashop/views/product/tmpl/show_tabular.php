@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -67,7 +67,10 @@ if(!empty($this->fields)){
 ?>
 	<div id="hikashop_product_description_main_mini" class="hikashop_product_description_main_mini"><?php
 		if(!empty($this->element->product_description)) {
-			$resume = substr(strip_tags(preg_replace('#<hr *id="system-readmore" */>.*#is','',$this->element->product_description)),0,300);
+			$function = 'mb_substr';
+			if(!function_exists($function))
+				$function = 'substr';
+			$resume = $function(strip_tags(preg_replace('#<hr *id="system-readmore" */>.*#is','',$this->element->product_description)),0,300);
 			if (!empty($this->element->product_description) && strlen($this->element->product_description)>300)
 				$resume .= " ...<a href='#hikashop_show_tabular_description'>".JText::_('READ_MORE')."</a>";
 			echo JHTML::_('content.prepare',$resume);
@@ -193,6 +196,9 @@ if(!empty($this->fields)){
 			$this->setLayout('quantity');
 			echo $this->loadTemplate();
 		?></div>
+		<div id="hikashop_product_quantity_alt" class="hikashop_product_quantity_main_alt" style="display:none;">
+			<?php echo JText::_('ADD_TO_CART_AVAILABLE_AFTER_CHARACTERISTIC_SELECTION'); ?>
+		</div>
 <?php
 	}
 

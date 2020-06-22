@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,6 +24,61 @@ class CartViewCart extends HikaShopView {
 		if(method_exists($this, $function))
 			$this->$function();
 		parent::display($tpl);
+	}
+	public function product_save() {
+		$cartClass = hikashop_get('class.cart');
+		$cart_id = hikashop_getCID('cart_id');
+		$this->config = hikashop_config();
+		$this->cart = $cartClass->getFullCart($cart_id);
+	}
+	public function product_edit() {
+		$cartClass = hikashop_get('class.cart');
+		$cart_id = hikashop_getCID('cart_id');
+		$this->config = hikashop_config();
+		$this->imageHelper = hikashop_get('helper.image');
+		$this->currencyClass = hikashop_get('class.currency');
+		$productClass = hikashop_get('class.product');
+		$this->cart = $cartClass->getFullCart($cart_id);
+		$this->mainProduct = null;
+		$this->parentProduct = null;
+		$this->options = array();
+		$this->optionsInCart = array();
+		$cart_product_id = hikaInput::get()->getInt('cart_product_id', 0);
+		foreach($this->cart->products as $p){
+			if($p->cart_product_id == $cart_product_id) {
+				$this->mainProduct = $this->product = $p;
+			}
+			if($p->cart_product_option_parent_id == $cart_product_id) {
+				$this->optionsInCart[$p->product_id] = $p;
+			}
+		}
+		if(!empty($this->product->cart_product_parent_id)) {
+			$this->mainProduct = $this->parentProduct = $this->cart->products[$this->product->cart_product_parent_id];
+		}
+
+		if(hikashop_level(2)) {
+			$fieldsClass = hikashop_get('class.field');
+			$this->itemFields = $fieldsClass->getFields('display:cart_edit=1', $this->mainProduct, 'item', 'checkout&task=state');
+
+			$null = array();
+			$fieldsClass->addJS($null, $null, $null);
+			$fieldsClass->jsToggle($this->itemFields, $this->mainProduct, 0);
+			$extraFields = array('item'=> &$this->itemFields);
+			$requiredFields = array();
+			$validMessages = array();
+			$values = array('item'=> $this->mainProduct);
+			$fieldsClass->checkFieldsForJS($extraFields, $requiredFields, $validMessages, $values);
+			$fieldsClass->addJS($requiredFields, $validMessages, array('item'));
+			$this->fieldsClass = $fieldsClass;
+		}
+
+		if($this->config->get('group_options', 0)) {
+			$prices = $this->product->prices;
+			$this->options = $productClass->loadProductOptions($this->product, array('user_id' => hikashop_loadUser(false)));
+			$this->product->prices = $prices;
+		}
+		if(!empty($this->parentProduct))
+			$productClass->loadProductVariants($this->parentProduct, array('user_id' => hikashop_loadUser(false), 'selected_variant_id' => $this->product->product_id));
 	}
 
 	 public function share() {

@@ -12,27 +12,27 @@ defined('_JEXEC') or die;
 use Akeeba\AdminTools\Admin\Helper\Storage;
 use FOF30\Container\Container;
 use FOF30\Model\Model;
-use JFactory;
-use JFolder;
-use JLoader;
-use JPath;
+use Joomla\CMS\Client\ClientHelper;
+use Joomla\CMS\Client\FtpClient;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Filesystem\Path;
 
 class FixPermissions extends Model
 {
-	/** @var float The time the process started */
-	private $startTime = null;
-
-	/** @var array The folders to process */
-	private $folderStack = array();
-
-	/** @var array The files to process */
-	private $filesStack = array();
-
 	/** @var int Total numbers of folders in this site */
 	public $totalFolders = 0;
 
 	/** @var int Numbers of folders already processed */
 	public $doneFolders = 0;
+
+	/** @var float The time the process started */
+	private $startTime = null;
+
+	/** @var array The folders to process */
+	private $folderStack = [];
+
+	/** @var array The files to process */
+	private $filesStack = [];
 
 	/** @var int Default directory permissions */
 	private $dirperms = 0755;
@@ -41,10 +41,10 @@ class FixPermissions extends Model
 	private $fileperms = 0644;
 
 	/** @var array Custom permissions */
-	private $customperms = array();
+	private $customperms = [];
 
 	/** @var array Skip subdirectories and files of these directories */
-	private $skipDirs = array();
+	private $skipDirs = [];
 
 	public function __construct(Container $container, array $config)
 	{
@@ -69,12 +69,12 @@ class FixPermissions extends Model
 		}
 		$this->fileperms = $fileperms;
 
-		$db = $this->container->db;
+		$db    = $this->container->db;
 		$query = $db->getQuery(true)
-			->select(array(
+			->select([
 				$db->qn('path'),
-				$db->qn('perms')
-			))->from($db->qn('#__admintools_customperms'))
+				$db->qn('perms'),
+			])->from($db->qn('#__admintools_customperms'))
 			->order($db->qn('path') . ' ASC');
 
 		$this->customperms = $db->setQuery($query)->loadAssocList('path');
@@ -92,118 +92,9 @@ class FixPermissions extends Model
 	}
 
 	/**
-	 * Returns the current timestampt in decimal seconds
-	 */
-	private function microtime_float()
-	{
-		list($usec, $sec) = explode(" ", microtime());
-
-		return ((float)$usec + (float)$sec);
-	}
-
-	/**
-	 * Starts or resets the internal timer
-	 */
-	private function resetTimer()
-	{
-		$this->startTime = $this->microtime_float();
-	}
-
-	/**
-	 * Makes sure that no more than 3 seconds since the start of the timer have
-	 * elapsed
-	 *
-	 * @return bool
-	 */
-	private function haveEnoughTime()
-	{
-		$now = $this->microtime_float();
-		$elapsed = abs($now - $this->startTime);
-
-		return $elapsed < 2;
-	}
-
-	/**
-	 * Saves the file/folder stack in the session
-	 */
-	private function saveStack()
-	{
-		$db = $this->container->db;
-
-		$query = $db->getQuery(true)
-			->delete($db->qn('#__admintools_storage'))
-			->where($db->qn('key') . ' = ' . $db->q('fixperms_stack'));
-
-		$db->setQuery($query)->execute();
-
-		$object = (object)array(
-			'key'   => 'fixperms_stack',
-			'value' => json_encode(array(
-				'folders' => $this->folderStack,
-				'files'   => $this->filesStack,
-				'total'   => $this->totalFolders,
-				'done'    => $this->doneFolders
-			))
-		);
-
-		$db->insertObject('#__admintools_storage', $object);
-	}
-
-	/**
-	 * Resets the file/folder stack saved in the session
-	 */
-	private function resetStack()
-	{
-		$db = $this->container->db;
-
-		$query = $db->getQuery(true)
-			->delete($db->qn('#__admintools_storage'))
-			->where($db->qn('key') . ' = ' . $db->q('fixperms_stack'));
-
-		$db->setQuery($query)->execute();
-
-		$this->folderStack	= array();
-		$this->filesStack	= array();
-		$this->totalFolders	= 0;
-		$this->doneFolders	= 0;
-	}
-
-	/**
-	 * Loads the file/folder stack from the session
-	 */
-	private function loadStack()
-	{
-		$db = $this->container->db;
-
-		$query = $db->getQuery(true)
-			->select(array($db->qn('value')))
-			->from($db->qn('#__admintools_storage'))
-			->where($db->qn('key') . ' = ' . $db->q('fixperms_stack'));
-
-		$stack = $db->setQuery($query)->loadResult();
-
-		if (empty($stack))
-		{
-			$this->folderStack	= array();
-			$this->filesStack	= array();
-			$this->totalFolders	= 0;
-			$this->doneFolders	= 0;
-
-			return;
-		}
-
-		$stack = json_decode($stack, true);
-
-		$this->folderStack	= $stack['folders'];
-		$this->filesStack	= $stack['files'];
-		$this->totalFolders	= $stack['total'];
-		$this->doneFolders	= $stack['done'];
-	}
-
-	/**
 	 * Scans $root for directories and updates $folderStack
 	 *
-	 * @param string $root The full path of the directory to scan
+	 * @param   string  $root  The full path of the directory to scan
 	 */
 	public function getDirectories($root = null)
 	{
@@ -212,14 +103,12 @@ class FixPermissions extends Model
 			$root = JPATH_ROOT;
 		}
 
-		JLoader::import('joomla.filesystem.folder');
-
 		if (in_array(rtrim($root, '/'), $this->skipDirs))
 		{
 			return;
 		}
 
-		$folders = JFolder::folders($root, '.', false, true);
+		$folders            = Folder::folders($root, '.', false, true);
 		$this->totalFolders += count($folders);
 
 		if (!empty($folders))
@@ -231,7 +120,7 @@ class FixPermissions extends Model
 	/**
 	 * Scans $root for files and updates $filesStack
 	 *
-	 * @param string $root The full path of the directory to scan
+	 * @param   string  $root  The full path of the directory to scan
 	 */
 	public function getFiles($root = null)
 	{
@@ -253,14 +142,14 @@ class FixPermissions extends Model
 
 		$root = rtrim($root, '/') . '/';
 
-		JLoader::import('joomla.filesystem.folder');
-
 		// Should I include dot files, too?
 		$params = Storage::getInstance();
 
-		$excludeFilter = $params->getValue('perms_show_hidden', 0) ? array('.*~') : array('^\..*', '.*~');
+		$excludeFilter = $params->getValue('perms_show_hidden', 0) ? ['.*~'] : ['^\..*', '.*~'];
 
-		$folders = JFolder::files($root, '.', false, true, array('.svn', 'CVS', '.DS_Store', '__MACOSX'), $excludeFilter);
+		$folders          = Folder::files($root, '.', false, true, [
+			'.svn', 'CVS', '.DS_Store', '__MACOSX',
+		], $excludeFilter);
 		$this->filesStack = array_merge($this->filesStack, $folders);
 
 		$this->totalFolders += count($folders);
@@ -297,19 +186,16 @@ class FixPermissions extends Model
 		}
 
 		// Initialize variables
-		JLoader::import('joomla.client.helper');
-		$ftpOptions = \JClientHelper::getCredentials('ftp');
+		$ftpOptions = ClientHelper::getCredentials('ftp');
 
 		// Check to make sure the path valid and clean
-		$path = JPath::clean($path);
+		$path = Path::clean($path);
 
 		if ($ftpOptions['enabled'] == 1)
 		{
 			// Connect the FTP client
-			JLoader::import('joomla.client.ftp');
-
-			$ftp = \JClientFtp::getInstance(
-				$ftpOptions['host'], $ftpOptions['port'], array(),
+			$ftp = FtpClient::getInstance(
+				$ftpOptions['host'], $ftpOptions['port'], [],
 				$ftpOptions['user'], $ftpOptions['pass']
 			);
 		}
@@ -321,9 +207,7 @@ class FixPermissions extends Model
 		elseif ($ftpOptions['enabled'] == 1)
 		{
 			// Translate path and delete
-			JLoader::import('joomla.client.ftp');
-
-			$path = JPath::clean(str_replace(JPATH_ROOT, $ftpOptions['root'], $path), '/');
+			$path = Path::clean(str_replace(JPATH_ROOT, $ftpOptions['root'], $path), '/');
 
 			// FTP connector throws an error
 			$ret = $ftp->chmod($path, $mode);
@@ -355,6 +239,128 @@ class FixPermissions extends Model
 		return $result;
 	}
 
+	public function getRelativePath($somepath)
+	{
+		$path = Path::clean($somepath, '/');
+
+		// Clean up the root
+		$root = Path::clean(JPATH_ROOT, '/');
+
+		// Find the relative path and get the custom permissions
+		$relpath = ltrim(substr($path, strlen($root)), '/');
+
+		return $relpath;
+	}
+
+	/**
+	 * Returns the current timestampt in decimal seconds
+	 */
+	private function microtime_float()
+	{
+		[$usec, $sec] = explode(" ", microtime());
+
+		return ((float) $usec + (float) $sec);
+	}
+
+	/**
+	 * Starts or resets the internal timer
+	 */
+	private function resetTimer()
+	{
+		$this->startTime = $this->microtime_float();
+	}
+
+	/**
+	 * Makes sure that no more than 3 seconds since the start of the timer have
+	 * elapsed
+	 *
+	 * @return bool
+	 */
+	private function haveEnoughTime()
+	{
+		$now     = $this->microtime_float();
+		$elapsed = abs($now - $this->startTime);
+
+		return $elapsed < 2;
+	}
+
+	/**
+	 * Saves the file/folder stack in the session
+	 */
+	private function saveStack()
+	{
+		$db = $this->container->db;
+
+		$query = $db->getQuery(true)
+			->delete($db->qn('#__admintools_storage'))
+			->where($db->qn('key') . ' = ' . $db->q('fixperms_stack'));
+
+		$db->setQuery($query)->execute();
+
+		$object = (object) [
+			'key'   => 'fixperms_stack',
+			'value' => json_encode([
+				'folders' => $this->folderStack,
+				'files'   => $this->filesStack,
+				'total'   => $this->totalFolders,
+				'done'    => $this->doneFolders,
+			]),
+		];
+
+		$db->insertObject('#__admintools_storage', $object);
+	}
+
+	/**
+	 * Resets the file/folder stack saved in the session
+	 */
+	private function resetStack()
+	{
+		$db = $this->container->db;
+
+		$query = $db->getQuery(true)
+			->delete($db->qn('#__admintools_storage'))
+			->where($db->qn('key') . ' = ' . $db->q('fixperms_stack'));
+
+		$db->setQuery($query)->execute();
+
+		$this->folderStack  = [];
+		$this->filesStack   = [];
+		$this->totalFolders = 0;
+		$this->doneFolders  = 0;
+	}
+
+	/**
+	 * Loads the file/folder stack from the session
+	 */
+	private function loadStack()
+	{
+		$db = $this->container->db;
+
+		$query = $db->getQuery(true)
+			->select([$db->qn('value')])
+			->from($db->qn('#__admintools_storage'))
+			->where($db->qn('key') . ' = ' . $db->q('fixperms_stack'));
+
+		$stack = $db->setQuery($query)->loadResult();
+
+		if (empty($stack))
+		{
+			$this->folderStack  = [];
+			$this->filesStack   = [];
+			$this->totalFolders = 0;
+			$this->doneFolders  = 0;
+
+			return;
+		}
+
+		$stack = json_decode($stack, true);
+
+		$this->folderStack  = $stack['folders'];
+		$this->filesStack   = $stack['files'];
+		$this->totalFolders = $stack['total'];
+		$this->doneFolders  = $stack['done'];
+	}
+
 	private function RealRun()
 	{
 		while (empty($this->filesStack) && !empty($this->folderStack))
@@ -376,7 +382,9 @@ class FixPermissions extends Model
 				// Skip over . and ..
 				$checkDir = str_replace('\\', '/', $dir);
 
-				if (in_array(basename($checkDir), array('.', '..')) || (substr($checkDir, -2) == '/.') || (substr($checkDir, -3) == '/..'))
+				if (in_array(basename($checkDir), [
+						'.', '..',
+					]) || (substr($checkDir, -2) == '/.') || (substr($checkDir, -3) == '/..'))
 				{
 					$dir = null;
 					continue;
@@ -453,18 +461,5 @@ class FixPermissions extends Model
 		}
 
 		return true;
-	}
-
-	public function getRelativePath($somepath)
-	{
-		$path = JPath::clean($somepath, '/');
-
-		// Clean up the root
-		$root = JPath::clean(JPATH_ROOT, '/');
-
-		// Find the relative path and get the custom permissions
-		$relpath = ltrim(substr($path, strlen($root)), '/');
-
-		return $relpath;
 	}
 }

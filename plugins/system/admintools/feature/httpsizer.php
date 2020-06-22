@@ -7,6 +7,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Uri\Uri;
+
 class AtsystemFeatureHttpsizer extends AtsystemFeatureAbstract
 {
 	/**
@@ -29,8 +31,8 @@ class AtsystemFeatureHttpsizer extends AtsystemFeatureAbstract
 		}
 
 		// Make sure we're accessed over SSL (HTTPS)
-		$uri = JUri::getInstance();
-		$protocol = $uri->toString(array('scheme'));
+		$uri      = Uri::getInstance();
+		$protocol = $uri->toString(['scheme']);
 
 		if ($protocol != 'https://')
 		{
@@ -46,25 +48,10 @@ class AtsystemFeatureHttpsizer extends AtsystemFeatureAbstract
 	 */
 	public function onAfterRenderLatebound()
 	{
-		if (method_exists($this->app, 'getBody'))
-		{
-			$buffer = $this->app->getBody();
-		}
-		else
-		{
-			$buffer = JResponse::getBody();
-		}
-
+		$buffer = $this->app->getBody();
 		$buffer = str_replace('http://', 'https://', $buffer);
 
-		if (method_exists($this->app, 'setBody'))
-		{
-			$this->app->setBody($buffer);
-		}
-		else
-		{
-			JResponse::setBody($buffer);
-		}
+		$this->app->setBody($buffer);
 
 		unset($buffer);
 	}

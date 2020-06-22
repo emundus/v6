@@ -14,7 +14,6 @@ $user = JFactory::getUser();
 
 $doc->addStyleSheet('components/com_emundus/assets/css/item.css');
 $doc->addStyleSheet('components/com_emundus/assets/css/list.css');
-//JHtml::stylesheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
 
 $offset = JFactory::getConfig()->get('offset');
 
@@ -32,7 +31,7 @@ if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->
 <?php if ($this->item) : ?>
     <h1><?php echo $this->item->intitule_poste; ?></h1>
     <div class="item_fields">
-        <table class="table">
+        <table class="table job">
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_ETABLISSEMENT'); ?></th>
                 <td><?php echo $this->item->etablissement; ?></td>
@@ -65,7 +64,6 @@ if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_COMPETENCES'); ?></th>
                 <td><?php echo $this->item->competences; ?></td>
             </tr>
-
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_MISSION'); ?></th>
                 <td><?php echo $this->item->mission; ?></td>
@@ -97,12 +95,7 @@ if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->
 
         </table>
     </div>
-    <?php if($canEdit): ?>
-        <button type="button" onclick="window.location.href='<?php echo JRoute::_('index.php?option=com_emundus&task=job.edit&id='.$this->item->id); ?>';"><?php echo JText::_("COM_EMUNDUS_EDIT_ITEM"); ?></button>
-    <?php endif; ?>
-    <?php if($user->authorise('core.delete','com_emundus.job.'.$this->item->id)):?>
-        <button type="button" onclick="window.location.href='<?php echo JRoute::_('index.php?option=com_emundus&task=job.remove&id=' . $this->item->id, false, 2); ?>';"><?php echo JText::_("COM_EMUNDUS_DELETE_ITEM"); ?></button>
-    <?php endif; ?>
+
 <?php
 else:
     echo JText::_('COM_EMUNDUS_ITEM_NOT_LOADED');

@@ -3,8 +3,8 @@
  * @package         SCLogin
  * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v8.0.5
- * @build-date      2019/01/14
+ * @version         Release v8.4.3
+ * @build-date      2020/05/29
  */
 
 // no direct access
@@ -534,6 +534,29 @@ class modSCLoginHelper
         }
         return $forgotButton;
     }
+    function getShowPasswordButton($passwordId)
+    {
+        $showButton = '';
+
+        if($this->params->get('showShowPassword'))
+        {
+            $showButton =
+                <<<EOT
+<script>
+function showpsw() {
+  var x = document.getElementById("{$passwordId}");
+  if (x.type === "password") {
+    x.type = "text";
+  } else {
+    x.type = "password";
+  }
+}</script>
+EOT;
+            $showButton .= '<a onclick="showpsw()"><span class="icon-eye field-icon"></span></a>';
+        }
+        return $showButton;
+    }
+
 
     function getForgotLinks()
     {

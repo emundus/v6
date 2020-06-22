@@ -424,11 +424,20 @@ class EmundusModelApplication extends JModelList {
         }
 
         if (!is_array($fnum)) {
-            $query = 'SELECT esc.profile_id
+
+            $query = 'SELECT ess.profile
+                    FROM #__emundus_setup_status AS ess
+                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
+                    WHERE ecc.fnum like '.$this->_db->Quote($fnum);
+            $this->_db->setQuery($query);
+
+            if (empty($this->_db->loadResult())) {
+                $query = 'SELECT esc.profile_id
                     FROM #__emundus_setup_campaigns AS esc
                     LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
                     WHERE ecc.fnum like '.$this->_db->Quote($fnum);
-            $this->_db->setQuery($query);
+                $this->_db->setQuery($query);
+            }
 
             $forms = @EmundusHelperMenu::buildMenuQuery($this->_db->loadResult());
             $nb = 0;
@@ -451,11 +460,20 @@ class EmundusModelApplication extends JModelList {
 
             $result = array();
             foreach ($fnum as $f) {
-                $query = 'SELECT esc.profile_id
-                    FROM #__emundus_setup_campaigns AS esc
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+
+                $query = 'SELECT ess.profile
+                    FROM #__emundus_setup_status AS ess
+                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
                     WHERE ecc.fnum like '.$this->_db->Quote($f);
                 $this->_db->setQuery($query);
+
+                if (empty($this->_db->loadResult())) {
+                    $query = 'SELECT esc.profile_id
+                        FROM #__emundus_setup_campaigns AS esc
+                        LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                        WHERE ecc.fnum like '.$this->_db->Quote($f);
+                    $this->_db->setQuery($query);
+                }
 
                 $forms = @EmundusHelperMenu::buildMenuQuery($this->_db->loadResult());
                 $nb = 0;
@@ -491,11 +509,19 @@ class EmundusModelApplication extends JModelList {
 
         if (!is_array($fnum)) {
 
-            $query = 'SELECT esc.profile_id
-                    FROM #__emundus_setup_campaigns AS esc
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+            $query = 'SELECT ess.profile
+                    FROM #__emundus_setup_status AS ess
+                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
                     WHERE ecc.fnum like '.$this->_db->Quote($fnum);
             $this->_db->setQuery($query);
+
+            if (empty($this->_db->loadResult())) {
+                $query = 'SELECT esc.profile_id
+                FROM #__emundus_setup_campaigns AS esc
+                LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                WHERE ecc.fnum like '.$this->_db->Quote($fnum);
+                $this->_db->setQuery($query);
+            }
 
             $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
@@ -509,11 +535,19 @@ class EmundusModelApplication extends JModelList {
 
             $result = array();
             foreach ($fnum as $f) {
-                $query = 'SELECT esc.profile_id
-                    FROM #__emundus_setup_campaigns AS esc
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                $query = 'SELECT ess.profile
+                    FROM #__emundus_setup_status AS ess
+                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
                     WHERE ecc.fnum like '.$this->_db->Quote($f);
                 $this->_db->setQuery($query);
+
+                if (empty($this->_db->loadResult())) {
+                    $query = 'SELECT esc.profile_id
+                        FROM #__emundus_setup_campaigns AS esc
+                        LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
+                        WHERE ecc.fnum like '.$this->_db->Quote($f);
+                    $this->_db->setQuery($query);
+                }
 
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
@@ -592,12 +626,12 @@ class EmundusModelApplication extends JModelList {
 
         
         for ($i = 0; $i < sizeof($table); $i++) {
-            $form .= '<br><hr><div class="TitleAdmission"><h3>';
+            $form .= '<br><hr><div class="TitleAdmission"><h2>';
 
-	        $title = explode('-', $table[$i]->label);
+            $title = explode('-', $table[$i]->label);
             $form .= !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
 
-            $form .= '</h3>';
+            $form .= '</h2>';
             if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $table[$i]->db_table_name != "#__emundus_training") {
 
                 $query = 'SELECT count(id) FROM `'.$table[$i]->db_table_name.'` WHERE fnum like '.$this->_db->Quote($fnum);
@@ -729,17 +763,14 @@ class EmundusModelApplication extends JModelList {
                         try {
 
                             $this->_db->setQuery($query);
-                            $table = $this->_db->loadResult();
+                            $r_table = $this->_db->loadResult();
 
                         } catch (Exception $e) {
                             return $e->getMessage();
                         }
 
-                        if ($itemg->group_id == 174) {
-                            $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.' WHERE parent_id=(SELECT id FROM '.$table['db_table_name'].' WHERE fnum like '.$this->_db->Quote($fnum).') OR applicant_id=' . $aid;
-                        } else {
-                            $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$table.' WHERE parent_id=(SELECT id FROM '.$table['db_table_name'].' WHERE fnum like '.$this->_db->Quote($fnum).')';
-                        }
+                        $query = 'SELECT `'.implode("`,`", $t_elt).'`, id FROM '.$r_table.' WHERE parent_id=(SELECT id FROM ' . $table[$i]->db_table_name . ' WHERE fnum like '.$this->_db->Quote($fnum).')';
+
 
                         try {
 
@@ -827,14 +858,14 @@ class EmundusModelApplication extends JModelList {
 
                         // AFFICHAGE EN LIGNE
                     } else {
-
+                        $form .='<table class="em-personalDetail-table-inline">';
+                        $modulo = 0;
                         foreach ($elements as &$element) {
 
                             if (!empty($element->label) && $element->label != ' ') {
                                 $query = 'SELECT `id`, `'.$element->name .'` FROM `'.$table[$i]->db_table_name.'` WHERE fnum like '.$this->_db->Quote($fnum);
 
                                 try {
-
                                     $this->_db->setQuery($query);
                                     $res = $this->_db->loadRow();
                                 } catch (Exception $e) {
@@ -844,6 +875,10 @@ class EmundusModelApplication extends JModelList {
                                 $element->content = @$res[1];
                                 $element->content_id = @$res[0];
 
+                                // Do not display elements with no value inside them.
+                                if ($show_empty_fields == 0 && trim($element->content) == '') {
+                                    continue;
+                                }
                                 if ($element->plugin == 'date' && $element->content > 0) {
 
                                     $date_params = json_decode($element->params);
@@ -930,10 +965,17 @@ class EmundusModelApplication extends JModelList {
                                     $elt = $element->content;
                                 }
 
-                                $form .= '<b>'.JText::_($element->label).': </b>'.JText::_($elt).'<br/>';
+                                // modulo for strips css
+                                if ($modulo%2) {
+                                    $form .= '<tr class="table-strip-1"><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
+                                } else {
+                                    $form .= '<tr class="table-strip-2"><td style="padding-right:50px;"><b>'.JText::_($element->label).'</b></td> <td> '.JText::_($elt).'</td></tr>';
+                                }
+                                $modulo++;
                             }
                         }
                     }
+                    $form .= '</table>';
                     $form .= '</fieldset>';
                 }
             }
@@ -1874,7 +1916,7 @@ class EmundusModelApplication extends JModelList {
                                         }
 
                                         if ($element->plugin == 'textarea') {
-                                            $forms .= '<tr><td   colspan="2" ><span style="color: #000000;">'.JText::_($element->label).' : '.'</span>'.JText::_($elt).'</td></tr>';
+                                            $forms .= '<tr><td   colspan="2" ><strong><span style="color: #000000;">'.JText::_($element->label).' : '.'</span></strong>'.JText::_($elt).'<br/></td></tr>';
                                         } else {
                                             $forms .= '<tr ><td ><span style="color: #000000;">'.JText::_($element->label).' : '.'</span></td> <td> '.JText::_($elt).'</td></tr>';
 										}
@@ -2881,9 +2923,10 @@ class EmundusModelApplication extends JModelList {
      * @param $fnum_from String the fnum of the source
      * @param $fnum_to String the fnum of the duplicated application
      * @param $pid Int the profile_id to get list of forms
+     * @param null $duplicated
      * @return bool
      */
-    public function copyDocuments($fnum_from, $fnum_to, $pid = null, $duplicated = null) {
+    public function copyDocuments($fnum_from, $fnum_to, $pid = null, $can_delete = null) {
         $db = JFactory::getDbo();
 
         try {
@@ -2917,6 +2960,7 @@ class EmundusModelApplication extends JModelList {
                     $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
                     $row['filename'] = $dest;
                     $row['fnum'] = $fnum_to;
+                    $row['can_delete'] = empty($can_delete) ? 0 : 1;
                     unset($row['id']);
 
                     try {

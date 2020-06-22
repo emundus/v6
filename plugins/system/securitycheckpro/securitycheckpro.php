@@ -1870,19 +1870,18 @@ class plgSystemSecuritycheckpro extends JPlugin
             
             $aparece_lista_negra = $model->chequear_ip_en_lista($attack_ip, $blacklist_ips);
             $aparece_lista_blanca = $model->chequear_ip_en_lista($attack_ip, $whitelist_ips);
-                    
+            
+			// If priority1 was set to "geoblock" we must set it to other value (i.e Blacklist) or no actions will be taken
+			if ($priority1 == "Geoblock") {		
+				$priority1 = "Blacklist";
+			}
                         
             // Prioridad            
             if ($priority1 == "Whitelist") {
                 if ($aparece_lista_blanca) {
                     return;
                 }            
-            } else    if ($priority1 == "Geoblock") {
-                if(!empty($countries) || !empty($continents)) {
-                    // Añadimos los logs de Geobloqueo si está habilitada la opción
-                    $this->geoBlocking($add_geoblock_logs, $request_uri, $not_applicable);
-                }
-            }  else if ($priority1 == "DynamicBlacklist") {
+            } else if ($priority1 == "DynamicBlacklist") {
                 // Chequeamos si la ip remota se encuentra en la lista negra dinámica
                 if ($dynamic_blacklist_on) {
                     $this->acciones_lista_negra_dinamica($dynamic_blacklist_time, $attack_ip, $dynamic_blacklist_counter, $logs_attacks, $request_uri, $not_applicable);

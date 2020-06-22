@@ -14,6 +14,8 @@ use Akeeba\AdminTools\Admin\Model\MasterPassword;
 use FOF30\Container\Container;
 use FOF30\Dispatcher\Mixin\ViewAliases;
 use FOF30\Utils\Ip;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 
 class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 {
@@ -133,7 +135,7 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 		if (!$model->accessAllowed($view))
 		{
 			$url = ($view == 'cpanel') ? 'index.php' : 'index.php?option=com_admintools&view=ControlPanel';
-			$this->container->platform->redirect($url, 303, \JText::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_NOTAUTHORIZED'), 'error');
+			$this->container->platform->redirect($url, 303, Text::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_NOTAUTHORIZED'), 'error');
 
 			return;
 		}
@@ -141,7 +143,7 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 		// Inject JS code to namespace the current jQuery instance
 		if ($this->container->platform->getDocument()->getType() == 'html')
 		{
-			\JHtml::_('jquery.framework');
+			HTMLHelper::_('jquery.framework');
 			$this->container->template->addJS('admin://components/com_admintools/media/js/namespace.min.js', false, false, ADMINTOOLS_VERSION);
 		}
 	}

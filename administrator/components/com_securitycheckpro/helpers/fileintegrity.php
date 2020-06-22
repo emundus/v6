@@ -179,9 +179,9 @@ use Joomla\CMS\Language\Text as JText;
         if ( percent == 100) {
         
         } else if  ( (cont > 40) && (percent < 90) ) {
-            var t = setTimeout("runButton()",75000);
+            var t = setTimeout(runButton,75000);
         } else {                                
-            var t = setTimeout("runButton()",1000);
+            var t = setTimeout(runButton,1000);
         }
                                                     
     }    

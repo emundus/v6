@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -300,14 +300,13 @@ class hikashopUserClass extends hikashopClass {
 			$this->database->setQuery($query);
 			$hasOrders = $this->database->loadResult();
 
+			$addresses = $addressClass->loadUserAddresses($el);
+			foreach($addresses as $id => $data) {
+				$addressClass->delete($id);
+			}
+
 			if(empty($hasOrders)) {
 				$result = parent::delete($el);
-				if($result){
-					$addresses = $addressClass->loadUserAddresses($el);
-					foreach($addresses as $id => $data) {
-						$addressClass->delete($id);
-					}
-				}
 				continue;
 			}
 
@@ -488,7 +487,8 @@ class hikashopUserClass extends hikashopClass {
 			}
 
 			jimport('joomla.mail.helper');
-			if(empty($registerData->email) || (method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($registerData->email))){
+			$mailer = JFactory::getMailer();
+			if(empty($registerData->email) || (method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($registerData->email)) || !$mailer->validateAddress($registerData->email)){
 				$status = false;
 				$messages['register_email'] = array(JText::_('EMAIL_INVALID'), 'error');
 			}
@@ -713,6 +713,13 @@ class hikashopUserClass extends hikashopClass {
 		} else if($mode == 2) {
 			$userData->user_email = $registerData->email;
 
+			$privacy = $this->getPrivacyConsentSettings('contact');
+			if($privacy && !empty($registerData->privacy_guest_check) && !$registerData->privacy_guest) {
+				$ret['status'] = false;
+				$ret['messages']['PLEASE_AGREE_TO_PRIVACY_POLICY'] = array(JText::_('PLEASE_AGREE_TO_PRIVACY_POLICY'), 'error');
+				return $ret;
+			}
+
 			$query = 'SELECT * FROM '.hikashop_table('user').
 					' WHERE user_email = '.$this->database->Quote($userData->user_email);
 			$this->database->setQuery($query);
@@ -908,6 +915,8 @@ class hikashopUserClass extends hikashopClass {
 			$messages['invalid_user'] = array(JText::_('INVALID_USER'), 'error');
 		}
 
+		$registerData->email = $hikaUser->user_email;
+
 		if(empty($registerData->name)) {
 			$status = false;
 			$messages['register_name'] = array(JText::sprintf('PLEASE_FILL_THE_FIELD', JText::_('HIKA_NAME')), 'error');
@@ -916,6 +925,13 @@ class hikashopUserClass extends hikashopClass {
 		if(empty($registerData->username)) {
 			$status = false;
 			$messages['register_username'] = array(JText::sprintf('PLEASE_FILL_THE_FIELD', JText::_('HIKA_USERNAME')), 'error');
+		}
+
+		jimport('joomla.mail.helper');
+		$mailer = JFactory::getMailer();
+		if(empty($registerData->email) || (method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($registerData->email)) || !$mailer->validateAddress($registerData->email)){
+			$status = false;
+			$messages['register_email'] = array(JText::_('EMAIL_INVALID'), 'error');
 		}
 
 		if(empty($registerData->password)) {
@@ -960,7 +976,7 @@ class hikashopUserClass extends hikashopClass {
 		$data['username'] = @$registerData->username;
 		$data['password'] = @$registerData->password;
 		$data['password2'] = @$registerData->password2;
-		$data['email'] = $registerData->email = $hikaUser->user_email;
+		$data['email'] = $registerData->email;
 
 		$_SESSION['hikashop_guest_data'] = $data;
 
@@ -1136,7 +1152,7 @@ class hikashopUserClass extends hikashopClass {
 		if($config->get('address_on_registration', 1) && isset($formData['address']))
 			$data['address'] = $formData['address'];
 
-		$ret = $this->register($data, $simplified, array('page' => $page));
+		$ret = $this->register($data, $simplified, array('page' => $page, 'address_type' => 'both'));
 
 		if($ret === false || !isset($ret['status']))
 			return false;

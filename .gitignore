@@ -2,6 +2,7 @@
 /.idea/*
 .idea/*
 .idea/workspace.xml
+.scannerwork
 workspace.xml
 /cache/*
 /installation/*
@@ -21,6 +22,7 @@ templates/rt_afterburner2/css/rt_afterburner2-custom.css
 #_bdd/*
 components/com_emundus.*
 components/com_emundus/*.bak
+components/com_emundus/.scannerwork
 media/com_emundus.*
 media/com_emundus/*.bak
 php.ini

@@ -444,16 +444,22 @@ class EmundusModelMessages extends JModelList {
 	 */
     function generateLetterDoc($letter, $fnum) {
 
-        require_once (JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php');
+        //require_once (JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php');
+        require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'vendor'.DS.'autoload.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'export.php');
+
+        $m_export = new EmundusModelExport;
 
         $m_emails   = new EmundusModelEmails;
         $m_files    = new EmundusModelFiles;
 
-
         $fnumsInfos = $m_files->getFnumTagsInfos($fnum);
         $attachInfos= $m_files->getAttachmentInfos($letter->attachment_id);
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
 
         $user = JFactory::getUser();
 
@@ -582,6 +588,14 @@ class EmundusModelMessages extends JModelList {
                 $filename = str_replace(' ', '', $fnumsInfos['applicant_name']).$attachInfos['lbl']."-".md5($rand.time()).".docx";
 
                 $preprocess->saveAs(EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'].DS.$filename);
+
+                if($gotenberg_activation == 1 && $letter->pdf == 1){
+                    //convert to PDF
+                    $src = EMUNDUS_PATH_ABS.$fnumsInfos['applicant_id'].DS.$filename;
+                    $dest = str_replace('.docx', '.pdf', $src);
+                    $filename = str_replace('.docx', '.pdf', $filename);
+                    $res = $m_export->toPdf($src, $dest, $fnum);
+                }
 
                 $m_files->addAttachment($fnum, $filename, $fnumsInfos['applicant_id'], $fnumsInfos['campaign_id'], $letter->attachment_id, $attachInfos['description']);
 

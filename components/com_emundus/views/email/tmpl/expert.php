@@ -45,7 +45,7 @@ foreach ($this->experts_list as $key => $value) {
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
     <div id="em-sending-email-caption"><?= JText::_('SENDING_EMAILS') ;?></div>
-    <img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
+    <img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif">
 </div>
 
 <div id="em-email">

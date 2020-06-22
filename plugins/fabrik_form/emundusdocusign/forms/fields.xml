@@ -17,6 +17,7 @@
 			<field name="email_subject" type="field" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_EMAIL_SUBJECT_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_EMAIL_SUBJECT_LABEL" />
 
 			<field name="attachment_id" type="field" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_ATTACHMENT_ID_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_ATTACHMENT_ID_LABEL" />
+			<field name="custom_attachment" type="field" description="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_CUSTOM_ATTACHMENT_DESC" label="PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_CUSTOM_ATTACHMENT_LABEL" />
 		</fieldset>
 	</fields>
 </form>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -41,6 +41,9 @@ if(!$canVote && $row->hikashop_vote_total_vote == '0'){
 }
 
 $row->hikashop_vote_average_score = (float)hikashop_toFloat($row->hikashop_vote_average_score);
+if($row->hikashop_vote_nb_star < $row->hikashop_vote_average_score) {
+	$row->hikashop_vote_average_score = $row->hikashop_vote_nb_star;
+}
 hikaInput::get()->set("rate_rounded",$row->hikashop_vote_average_score_rounded);
 hikaInput::get()->set("nb_max_star",$row->hikashop_vote_nb_star);
 $select_id = "select_id_".$row->vote_ref_id;

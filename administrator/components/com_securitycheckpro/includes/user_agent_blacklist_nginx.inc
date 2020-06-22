@@ -41,7 +41,6 @@
 	if ($http_user_agent ~* "^LeechFTP"){ return 403; }
 	if ($http_user_agent ~* "libwww"){ return 403; }
 	if ($http_user_agent ~* "libwww-perl"){ return 403; }
-	if ($http_user_agent ~* "^Link"){ return 403; }
 	if ($http_user_agent ~* "LinksManager.com_bot"){ return 403; }
 	if ($http_user_agent ~* "linkwalker"){ return 403; }
 	if ($http_user_agent ~* "lwp-trivial"){ return 403; }
@@ -140,7 +139,6 @@
 	if ($http_user_agent ~* "beegoServer"){ return 403; }
 	if ($http_user_agent ~* "BacklinkCrawler"){ return 403; }
 	if ($http_user_agent ~* "linkdex"){ return 403; }
-	if ($http_user_agent ~* "nbot"){ return 403; }
 	if ($http_user_agent ~* "oBot"){ return 403; }
 	if ($http_user_agent ~* "LoadTimeBot"){ return 403; }	
 	if ($http_user_agent ~* "niki-bot"){ return 403; }
