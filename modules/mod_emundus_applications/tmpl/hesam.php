@@ -80,10 +80,10 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                             </div>
                             <div class="wrapper-edit">
 
-                                <?php if ($nb_faves === 2 && !empty($chatroom_id)) :?>
-                                    <a href="/index.php?option=com_emundus&view=messages&layout=hesamchatroom&chatroom=<?= $chatroom_id; ?>" class="link w-inline-block">
-                                        <i class="image-chatroom fa fa-chatroom"></i>
-                                    </a>
+                                <?php if ($nb_faves === 2 && ($application->status === '1' || $application->status === '3')) :?>
+                                    <div class="link w-inline-block" onclick="completefile('<?= $application->fnum; ?>', false)">
+                                        <span class="fa fa-check"></span>
+                                    </div>
                                 <?php endif; ?>
 
                                 <?php if ($application->status === '1' || $application->status === '2') :?>
@@ -120,13 +120,13 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                             <?php else :?>
                                 <div class="column-card-container w-row">
 
-                                    <?php if ($nb_faves === 2) :?>
-                                        <div class="em-join-icon" onclick="completefile('<?= $application->fnum; ?>', false)">
-                                            <span class="fa fa-check"></span>
-                                        </div>
-                                        <div class="em-join-icon em-mobile-join-icon" onclick="completefile('<?= $application->fnum; ?>', false)">
-                                            <span class="fa fa-check"></span>
-                                        </div>
+                                    <?php if ($nb_faves === 2 && !empty($chatroom_id)) :?>
+                                        <a href="/index.php?option=com_emundus&view=messages&layout=hesamchatroom&chatroom=<?= $chatroom_id; ?>" class="em-join-icon">
+                                            <i class="image-chatroom fa fa-chatroom"></i>
+                                        </a>
+                                        <a href="/index.php?option=com_emundus&view=messages&layout=hesamchatroom&chatroom=<?= $chatroom_id; ?>" class="em-join-icon em-mobile-join-icon">
+                                            <i class="image-chatroom fa fa-chatroom"></i>
+                                        </a>
                                     <?php endif; ?>
 
                                     <?php if ($application->profile_id !== '1006') :?>
@@ -168,7 +168,6 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 	                                                    $contact_chat[$contact['link_id']] = $m_messages->getChatroomByUsers($favorite_users[0], $favorite_users[1], $favorite_users[2]);
                                                     }
 	                                            }
-
                                                 ?>
 
                                                 <!-- Futur doc -->
@@ -236,12 +235,10 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                         </a>
 	                                                                <?php endif; ?>
 
-	                                                                <?php if ($contact['state'] === '2') :?>
-                                                                        <?php if ($contact['notify']) :?>
-                                                                            <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
-                                                                        <?php else :?>
-                                                                            <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
-                                                                        <?php endif; ?>
+                                                                    <?php if ($contact['notify']) :?>
+                                                                        <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
+                                                                    <?php else :?>
+                                                                        <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
                                                                     <?php endif; ?>
 
                                                                     <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block">
@@ -371,13 +368,11 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                         </a>
 	                                                                <?php endif; ?>
 
-	                                                                <?php if ($contact['state'] === '2') :?>
-		                                                                <?php if ($contact['notify']) :?>
-                                                                            <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
-		                                                                <?php else :?>
-                                                                            <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
-		                                                                <?php endif; ?>
-	                                                                <?php endif; ?>
+                                                                    <?php if ($contact['notify']) :?>
+                                                                        <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
+                                                                    <?php else :?>
+                                                                        <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
+                                                                    <?php endif; ?>
 
                                                                     <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block">
                                                                         <i class="image-mail fa <?= ($contact['unread'] == 0)?'fa-envelope-o':'fa-envelope'; ?>"></i>
@@ -503,13 +498,11 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                                                         </a>
 	                                                                <?php endif; ?>
 
-	                                                                <?php if ($contact['state'] === '2') :?>
-		                                                                <?php if ($contact['notify']) :?>
-                                                                            <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
-		                                                                <?php else :?>
-                                                                            <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
-		                                                                <?php endif; ?>
-	                                                                <?php endif; ?>
+                                                                    <?php if ($contact['notify']) :?>
+                                                                        <i class="fa fa-bell em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE_UNNOTIF'); ?>" onclick="unnotify(<?= $contact['link_id']; ?>)"></i>
+                                                                    <?php else :?>
+                                                                        <i class="fa fa-bell-slash-o em-bell-button" rel="tooltip" title="<?= JText::_('NOTIFY_CLICK_HERE'); ?>" onclick="notify(<?= $contact['link_id']; ?>)"></i>
+                                                                    <?php endif; ?>
 
                                                                     <a href="/index.php?option=com_emundus&view=messages&layout=chat&chatid=<?= $contact['applicant_id']; ?>" class="link w-inline-block">
                                                                         <i class="image-mail fa <?= ($contact['unread'] == 0)?'fa-envelope-o':'fa-envelope'; ?>"></i>
