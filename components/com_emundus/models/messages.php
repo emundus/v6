@@ -1063,7 +1063,7 @@ class EmundusModelMessages extends JModelList {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$query->select('id')
+		$query->select('cu.user_id')
 			->from($db->quoteName('jos_emundus_chatroom','c'))
 			->leftJoin($db->quoteName('jos_emundus_chatroom_users','cu').' ON '.$db->quoteName('cu.chatroom_id').' = '.$db->quoteName('c.id'))
 			->where($db->quoteName('c.id').' = '.$chatroom_id);
