@@ -60,9 +60,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 		                }
 
 		                // Look up the chatroom id using our three users.
-                        if (in_array($user->id, $favorite_users)) {
-	                        $chatroom_id = $m_messages->getChatroomByUsers($user->id, $favorite_users[0], $favorite_users[1]);
-                        }
+                        $chatroom_id = $m_messages->getChatroomByUsers($user->id, $favorite_users[0], $favorite_users[1]);
 	                }
 	                ?>
 

@@ -28,7 +28,7 @@ $uri = JUri::getInstance();
             <a id="print" class="btn btn-info btn-xs" href="<?= JRoute::_(JURI::base().'consultez-les-offres/details/299/'. modemundusSendApplicationHelper::getSearchEngineId($application->fnum)).'?format=pdf'; ?>" title="Print" target="_blank" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i> <?= JText::_('PRINT_APPLICATION_FILE'); ?></a>
         </div>
 	<?php endif; ?>
-    <a class="brouillon w-inline-block" onclick="draft()" href="#">
+    <a class="brouillon w-inline-block" onclick="draft()">
         <p class="enregistrer-brouillon">Enregistrer en brouillon</p>
     </a>
 </div>
