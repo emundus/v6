@@ -414,9 +414,14 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 		if (!empty($link->fnum_from)) {
 
+			$fnum = $this->m_files->getFnumInfos($link->fnum_from);
+			$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
+
 			$post = [
 				'USER_NAME' => $this->user->name,
-				'CONTACT_ID' => $id
+				'OFFER_USER_NAME' => $fnum['name'],
+				'OFFER_NAME' => $offerInformation->titre,
+				'CONTACT_ID' => $id,
 			];
 
 			$fnum = $this->m_files->getFnumInfos($link->fnum_from);
