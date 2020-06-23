@@ -255,6 +255,9 @@ echo $this->table->intro;
                 ?>
 
                 <div class="hesam-search-filters">
+                    <a href="<?= JUri::current() ?>?resetfilters=1" class="em-reset-filter">
+                        <i data-isicon="true" class="icon-refresh"></i> Effacer les filtres
+                    </a>
                     <?php if ($this->showFilters && $this->bootShowFilters) {
                         echo $this->layoutFilters();
                     } ?>
@@ -416,34 +419,6 @@ echo $this->table->intro;
 <script>
     let data = <?= sizeof($data); ?>;
 
-    //Pagination
-    let pageSize = jQuery(".em-number-of-results").val();
-
-    let pageCount =  data / pageSize;
-
-    if (pageCount > 1) {
-        for (let i = 0 ; i<pageCount;i++) {
-            jQuery(".list-pagin").append('<li><p>'+(i+1)+'</p></li> ');
-        }
-    }
-
-    jQuery(".list-pagin li").first().find("p").addClass("current");
-    let showPage = function(page) {
-        jQuery(".em-search-engine-offer").hide();
-        jQuery(".em-search-engine-offer").each(function(n) {
-            if (n >= pageSize * (page - 1) && n < pageSize * page)
-                jQuery(this).show();
-        });
-    };
-
-    showPage(1);
-
-    jQuery(".list-pagin li p").click(function() {
-        jQuery(".list-pagin li p").removeClass("current");
-        jQuery(this).addClass("current");
-        showPage(parseInt(jQuery(this).text()));
-    });
-
     jQuery(document).ready(function(){
         //region and department object
         let allRegions = <?= json_encode(getAllRegions()); ?>;
@@ -534,42 +509,6 @@ echo $this->table->intro;
             placeholder_text_single: "<?= JText::_('CHOSEN_SELECT_ONE'); ?>",
             placeholder_text_multiple: "<?= JText::_('CHOSEN_SELECT_MANY'); ?>",
             no_results_text: "<?= JText::_('CHOSEN_NO_RESULTS'); ?>"
-        });
-    });
-
-
-    jQuery(".em-number-of-results").change(function () {
-        data = <?= sizeof($data); ?>;
-
-        //Pagination
-        pageSize = jQuery(this).val();
-
-        pageCount =  data / pageSize;
-
-        if (pageCount > 1) {
-            for (let i = 0 ; i<pageCount;i++) {
-                jQuery(".list-pagin").append('<li><p>'+(i+1)+'</p></li> ');
-            }
-        } else {
-            jQuery(".list-pagin li").hide();
-        }
-
-        jQuery(".list-pagin li").first().find("p").addClass("current");
-        showPage = function(page) {
-            jQuery(".em-search-engine-offer").hide();
-            jQuery(".em-search-engine-offer").each(function(n) {
-                if (n >= pageSize * (page - 1) && n < pageSize * page) {
-                    jQuery(this).show();
-                }
-            });
-        };
-
-        showPage(1);
-
-        jQuery(".list-pagin li p").click(function() {
-            jQuery(".list-pagin li p").removeClass("current");
-            jQuery(this).addClass("current");
-            showPage(parseInt(jQuery(this).text()));
         });
     });
 
