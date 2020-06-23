@@ -23,7 +23,7 @@ $uri = JUri::getInstance();
         <div class="suivant w-inline-block">
             <a class="entrer-en-contact" href="<?= JRoute::_(JURI::base().$confirm_form_url); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><?= JText::_('SEND_APPLICATION_FILE'); ?></a>
         </div>
-    <?php elseif (modemundusSendApplicationHelper::getSearchEngineId($user->fnum) && $print)  :?>
+    <?php elseif (modemundusSendApplicationHelper::getSearchEngineId($user->fnum) && $print) :?>
         <div class="col-md-12 em-print-button">
             <a id="print" class="btn btn-info btn-xs" href="<?= JRoute::_(JURI::base().'consultez-les-offres/details/299/'. modemundusSendApplicationHelper::getSearchEngineId($application->fnum)).'?format=pdf'; ?>" title="Print" target="_blank" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i> <?= JText::_('PRINT_APPLICATION_FILE'); ?></a>
         </div>
@@ -40,7 +40,7 @@ $uri = JUri::getInstance();
             position: 'center',
             type: 'info',
             title: 'Retour à votre espace personnel',
-            html: '<div class="columns-3 w-row"> <div class="column-6 w-col w-col-6"><p class="paragraph-infos">Uniquement les formulaires identifiés par une case à cocher verte seront sauvegardés.</p></div>' +
+            html: '<div class="columns-3 w-row"> <div class="column-6 w-col w-col-6"><p class="paragraph-infos">Uniquement les formulaires identifiés par un <span class="em_module need_ok"><a href="#"></a></span>seront sauvegardés.</p></div>' +
                 '<div class="w-col w-col-6"><img src="https://1000docs.emundus.io/images/custom/formulaires-popup.png" /></div></div>',
             showCancelButton: true,
             confirmButtonText: 'Continuer',
