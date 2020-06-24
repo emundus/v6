@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -232,6 +232,10 @@ window.localPage.imagepopupmode = function(el) {
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('characteristic_display');?>><?php echo JText::_('CHARACTERISTICS_DISPLAY'); ?></td>
 		<td><?php echo $this->characteristicdisplayType->display('config[characteristic_display]',$this->config->get('characteristic_display')); ?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('characteristic_dynamic_display');?>><?php echo JText::_('CHARACTERISTICS_DYNAMIC_DISPLAY'); ?></td>
+		<td><?php echo JHTML::_('hikaselect.booleanlist', 'config[characteristics_dynamic_display]', '',  $this->config->get('characteristics_dynamic_display', 1)); ?></td>
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('product_selection_method');?>><?php echo JText::_('PRODUCT_SELECTION_METHOD'); ?></td>
@@ -604,6 +608,12 @@ window.localPage.imagepopupmode = function(el) {
 		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_text_center');?>><?php echo JText::_('TEXT_CENTERED');?></td>
 		<td><?php
 			echo JHTML::_('hikaselect.booleanlist', 'config[default_params][text_center]' , '',@$this->default_params['text_center']);
+		?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('defparams_enable_switcher');?>><?php echo JText::_('HIKA_SWITCHER_MODE');?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[default_params][enable_switcher]' , '',@$this->default_params['enable_switcher']);
 		?></td>
 	</tr>
 

@@ -27,19 +27,6 @@ if (@file_exists($cmsImportFilePath))
 	@include_once $cmsImportFilePath;
 }
 
-// Load requirements for various versions of Joomla!. This should NOT be required since circa Joomla! 3.7.
-if (version_compare("$joomlaMajorVersion.$joomlaMinorVersion", '3.8', 'lt'))
-{
-	JLoader::import('joomla.base.object');
-	JLoader::import('joomla.application.application');
-	JLoader::import('joomla.application.applicationexception');
-	JLoader::import('joomla.log.log');
-	JLoader::import('joomla.registry.registry');
-	JLoader::import('joomla.filter.input');
-	JLoader::import('joomla.filter.filterinput');
-	JLoader::import('joomla.factory');
-}
-
 /**
  * Base class for a Joomla! command line application. Adapted from JCli / JApplicationCli
  */

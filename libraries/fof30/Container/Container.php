@@ -7,22 +7,29 @@
 
 namespace FOF30\Container;
 
+defined('_JEXEC') || die;
+
 use FOF30\Autoloader\Autoloader;
+use FOF30\Configuration\Configuration;
+use FOF30\Container\Exception\NoComponent;
+use FOF30\Dispatcher\Dispatcher;
 use FOF30\Encrypt\EncryptService;
 use FOF30\Factory\FactoryInterface;
 use FOF30\Inflector\Inflector;
+use FOF30\Input\Input as FOFInput;
 use FOF30\Params\Params;
+use FOF30\Platform\FilesystemInterface;
 use FOF30\Platform\Joomla\Filesystem as JoomlaFilesystem;
+use FOF30\Platform\PlatformInterface;
 use FOF30\Render\RenderInterface;
 use FOF30\Template\Template;
+use FOF30\Toolbar\Toolbar;
 use FOF30\TransparentAuthentication\TransparentAuthentication as TransparentAuth;
+use FOF30\Utils\MediaVersion;
 use FOF30\View\Compiler\Blade;
-use JFactory;
+use JDatabaseDriver;
 use Joomla\CMS\Factory;
-use Joomla\Registry\Registry;
-use JSession;
-
-defined('_JEXEC') or die;
+use Joomla\CMS\Input\Input as CMSInput;
 
 /**
  * Dependency injection container for FOF-powered components.
@@ -42,36 +49,45 @@ defined('_JEXEC') or die;
  *   </common>
  * </fof>
  *
- * The paths can use the variables %ROOT%, %PUBLIC%, %ADMIN%, %TMP%, %LOG% i.e. all the path keys returned by Platform's
+ * The paths can use the variables %ROOT%, %PUBLIC%, %ADMIN%, %TMP%, %LOG% i.e. all the path keys returned by
+ * Platform's
  * getPlatformBaseDirs() method in uppercase and surrounded by percent signs.
  *
  *
  * @property  string                                   $componentName      The name of the component (com_something)
- * @property  string                                   $bareComponentName  The name of the component without com_ (something)
- * @property  string                                   $componentNamespace The namespace of the component's classes (\Foobar)
+ * @property  string                                   $bareComponentName  The name of the component without com_
+ *            (something)
+ * @property  string                                   $componentNamespace The namespace of the component's classes
+ *            (\Foobar)
  * @property  string                                   $frontEndPath       The absolute path to the front-end files
  * @property  string                                   $backEndPath        The absolute path to the back-end files
- * @property  string                                   $thisPath           The preferred path. Backend for Admin application, frontend otherwise
- * @property  string                                   $rendererClass      The fully qualified class name of the view renderer we'll be using. Must implement FOF30\Render\RenderInterface.
- * @property  string                                   $factoryClass       The fully qualified class name of the MVC Factory object, default is FOF30\Factory\BasicFactory.
- * @property  string                                   $platformClass      The fully qualified class name of the Platform abstraction object, default is FOF30\Platform\Joomla\Platform.
- * @property  string                                   $mediaVersion       A version string for media files in forms. Default: md5 of release version, release date and site secret (if found)
+ * @property  string                                   $thisPath           The preferred path. Backend for Admin
+ *            application, frontend otherwise
+ * @property  string                                  $rendererClass      The fully qualified class name of the view
+ *            renderer we'll be using. Must implement FOF30\Render\RenderInterface.
+ * @property  string                                  $factoryClass       The fully qualified class name of the MVC
+ *            Factory object, default is FOF30\Factory\BasicFactory.
+ * @property  string                                  $platformClass      The fully qualified class name of the
+ *            Platform abstraction object, default is FOF30\Platform\Joomla\Platform.
+ * @property  MediaVersion                            $mediaVersion       A version string for media files in forms.
+ *            Default: md5 of release version, release date and site secret (if found)
  *
- * @property-read  \FOF30\Configuration\Configuration  $appConfig          The application configuration registry
- * @property-read  \FOF30\View\Compiler\Blade          $blade              The Blade view template compiler engine
- * @property-read  \JDatabaseDriver                    $db                 The database connection object
- * @property-read  \FOF30\Dispatcher\Dispatcher        $dispatcher         The component's dispatcher
- * @property-read  \FOF30\Factory\FactoryInterface     $factory            The MVC object factory
- * @property-read  \FOF30\Platform\FilesystemInterface $filesystem         The filesystem abstraction layer object
- * @property-read  \FOF30\Inflector\Inflector          $inflector          The English word inflector (pluralise / singularise words etc)
- * @property-read  \FOF30\Params\Params          	   $params             The component's params
- * @property-read  \FOF30\Input\Input                  $input              The input object
- * @property-read  \FOF30\Platform\PlatformInterface   $platform           The platform abstraction layer object
- * @property-read  \FOF30\Render\RenderInterface       $renderer           The view renderer
+ * @property-read  Configuration $appConfig          The application configuration registry
+ * @property-read  Blade                              $blade              The Blade view template compiler engine
+ * @property-read  JDatabaseDriver                    $db                 The database connection object
+ * @property-read  Dispatcher                         $dispatcher         The component's dispatcher
+ * @property-read  FactoryInterface                   $factory            The MVC object factory
+ * @property-read  FilesystemInterface                $filesystem         The filesystem abstraction layer object
+ * @property-read  Inflector                          $inflector          The English word inflector (pluralise /
+ *                 singularize words etc)
+ * @property-read  Params                             $params             The component's params
+ * @property-read  FOFInput                           $input              The input object
+ * @property-read  PlatformInterface                  $platform           The platform abstraction layer object
+ * @property-read  RenderInterface                    $renderer           The view renderer
  * @property-read  JSession                           $session            Joomla! session storage
- * @property-read  \FOF30\Template\Template            $template           The template helper
- * @property-read  TransparentAuth                     $transparentAuth    Transparent authentication handler
- * @property-read  \FOF30\Toolbar\Toolbar              $toolbar            The component's toolbar
+ * @property-read  Template                           $template           The template helper
+ * @property-read  TransparentAuth                    $transparentAuth    Transparent authentication handler
+ * @property-read  Toolbar                             $toolbar            The component's toolbar
  * @property-read  EncryptService                      $crypto             The component's data encryption service
  */
 class Container extends ContainerBase
@@ -82,238 +98,35 @@ class Container extends ContainerBase
 	 *
 	 * @var   array
 	 */
-	protected static $instances = array();
-
-	/**
-	 * The container SHOULD NEVER be serialised. If this happens, it means that any of the installed version is doing
-	 * something REALLY BAD, so let's die and inform the user of what it's going on.
-	 */
-	public function __sleep()
-	{
-		// If the site is in debug mode we die and let the user figure it out
-		if (defined('JDEBUG') && JDEBUG)
-		{
-			$msg = <<< END
-Something on your site is broken and tries to save the plugin state in the cache. This is a major security issue and
-will cause your site to not work properly. Go to your site's backend, Global Configuration and set Caching to OFF as a
-temporary solution. Possible causes: older versions of JoomlaShine templates, JomSocial, BetterPreview and other third
-party Joomla! extensions. 
-END;
-
-			die($msg);
-		}
-
-		// Otherwise we serialise the Container
-		return array('values', 'factories', 'protected', 'frozen', 'raw', 'keys');
-	}
-
-	/**
-	 * Returns a container instance for a specific component. This method goes through fof.xml to read the default
-	 * configuration values for the container. You are advised to use this unless you have a specific reason for
-	 * instantiating a Container without going through the fof.xml file.
-	 *
-	 * Pass the value 'tempInstance' => true in the $values array to get a temporary instance. Otherwise you will get
-	 * the cached instance of the previously created container.
-	 *
-	 * @param   string  $component  The component you want to get a container for, e.g. com_foobar.
-	 * @param   array   $values     Container configuration overrides you want to apply. Optional.
-	 * @param   string  $section    The application section (site, admin) you want to fetch. Any other value results in auto-detection.
-	 *
-	 * @return \FOF30\Container\Container
-	 */
-	public static function &getInstance($component, array $values = array(), $section = 'auto')
-	{
-		$tempInstance = false;
-
-		if (isset($values['tempInstance']))
-		{
-			$tempInstance = $values['tempInstance'];
-			unset($values['tempInstance']);
-		}
-
-		if ($tempInstance)
-		{
-			return self::makeInstance($component, $values, $section);
-		}
-
-		$signature = md5($component . '@' . $section);
-
-		if (!isset(self::$instances[$signature]))
-		{
-			self::$instances[$signature] = self::makeInstance($component, $values, $section);
-		}
-
-		return self::$instances[$signature];
-	}
-
-	/**
-	 * Returns a temporary container instance for a specific component.
-	 *
-	 * @param   string  $component  The component you want to get a container for, e.g. com_foobar.
-	 * @param   array   $values     Container configuration overrides you want to apply. Optional.
-	 * @param   string  $section    The application section (site, admin) you want to fetch. Any other value results in auto-detection.
-	 *
-	 * @return \FOF30\Container\Container
-	 */
-	protected static function &makeInstance($component, array $values = array(), $section = 'auto')
-	{
-		// Try to auto-detect some defaults
-		$tmpConfig = array_merge($values, array('componentName' => $component));
-		$tmpContainer = new Container($tmpConfig);
-
-		if (!in_array($section, array('site', 'admin')))
-		{
-			$section = $tmpContainer->platform->isBackend() ? 'admin' : 'site';
-		}
-
-		$appConfig = $tmpContainer->appConfig;
-
-		// Get the namespace from fof.xml
-		$namespace = $appConfig->get('container.componentNamespace', null);
-
-		// $values always overrides $namespace and fof.xml
-		if (isset($values['componentNamespace']))
-		{
-			$namespace = $values['componentNamespace'];
-		}
-
-		// If there is no namespace set, try to guess it.
-		if (empty($namespace))
-		{
-			$bareComponent = $component;
-
-			if (substr($component, 0, 4) == 'com_')
-			{
-				$bareComponent = substr($component, 4);
-			}
-
-			$namespace = ucfirst($bareComponent);
-		}
-
-		// Get the default front-end/back-end paths
-		$frontEndPath = $appConfig->get('container.frontEndPath', JPATH_SITE . '/components/' . $component);
-		$backEndPath = $appConfig->get('container.backEndPath', JPATH_ADMINISTRATOR . '/components/' . $component);
-
-		// Parse path variables if necessary
-		$frontEndPath = $tmpContainer->parsePathVariables($frontEndPath);
-		$backEndPath = $tmpContainer->parsePathVariables($backEndPath);
-
-		// Apply path overrides
-		if (isset($values['frontEndPath']))
-		{
-			$frontEndPath = $values['frontEndPath'];
-		}
-
-		if (isset($values['backEndPath']))
-		{
-			$backEndPath = $values['backEndPath'];
-		}
-
-		$thisPath = ($section == 'admin') ? $backEndPath : $frontEndPath;
-
-		// Get the namespaces for the front-end and back-end parts of the component
-		$frontEndNamespace = '\\' . $namespace . '\\Site\\';
-		$backEndNamespace = '\\' . $namespace . '\\Admin\\';
-
-		// Special case: if the frontend and backend paths are identical, we don't use the Site and Admin namespace
-		// suffixes after $this->componentNamespace (so you may use FOF with JApplicationWeb apps)
-		if ($frontEndPath == $backEndPath)
-		{
-			$frontEndNamespace = '\\' . $namespace . '\\';
-			$backEndNamespace = '\\' . $namespace . '\\';
-		}
-
-		// Do we have to register the component's namespaces with the autoloader?
-		$autoloader = Autoloader::getInstance();
-
-		if (!$autoloader->hasMap($frontEndNamespace))
-		{
-			$autoloader->addMap($frontEndNamespace, $frontEndPath);
-		}
-
-		if (!$autoloader->hasMap($backEndNamespace))
-		{
-			$autoloader->addMap($backEndNamespace, $backEndPath);
-		}
-
-		// Get the Container class name
-		$classNamespace = ($section == 'admin') ? $backEndNamespace : $frontEndNamespace;
-		$class = $classNamespace . 'Container';
-
-		// Get the values overrides from fof.xml
-		$values = array_merge(array(
-			'factoryClass'              => '\\FOF30\\Factory\\BasicFactory',
-			'platformClass'             => '\\FOF30\\Platform\\Joomla\\Platform',
-			'scaffolding'               => false,
-			'saveScaffolding'           => false,
-			'saveControllerScaffolding' => false,
-			'saveModelScaffolding'      => false,
-			'saveViewScaffolding'       => false,
-			'section'					=> $section,
-		), $values);
-
-		$values = array_merge($values, array(
-			'componentName'             => $component,
-			'componentNamespace'        => $namespace,
-			'frontEndPath'              => $frontEndPath,
-			'backEndPath'               => $backEndPath,
-			'thisPath'                  => $thisPath,
-			'rendererClass'             => $appConfig->get('container.rendererClass', null),
-			'factoryClass'              => $appConfig->get('container.factoryClass', $values['factoryClass']),
-			'platformClass'             => $appConfig->get('container.platformClass', $values['platformClass']),
-			'scaffolding'               => $appConfig->get('container.scaffolding', $values['scaffolding']),
-			'saveScaffolding'           => $appConfig->get('container.saveScaffolding', $values['saveScaffolding']),
-			'saveControllerScaffolding' => $appConfig->get('container.saveControllerScaffolding', $values['saveControllerScaffolding']),
-			'saveModelScaffolding'      => $appConfig->get('container.saveModelScaffolding', $values['saveModelScaffolding']),
-			'saveViewScaffolding'       => $appConfig->get('container.saveViewScaffolding', $values['saveViewScaffolding']),
-		));
-
-		if (empty($values['rendererClass']))
-		{
-			unset ($values['rendererClass']);
-		}
-
-		$mediaVersion = $appConfig->get('container.mediaVersion', null);
-
-		if (!empty($mediaVersion))
-		{
-			$values['mediaVersion'] = $mediaVersion;
-		}
-
-		unset($appConfig);
-		unset($tmpConfig);
-		unset($tmpContainer);
-
-		if (class_exists($class, true))
-		{
-			$container = new $class($values);
-		}
-		else
-		{
-			$container = new Container($values);
-		}
-
-		return $container;
-	}
+	protected static $instances = [];
 
 	/**
 	 * Public constructor. This does NOT go through the fof.xml file. You are advised to use getInstance() instead.
 	 *
 	 * @param   array  $values  Overrides for the container configuration and services
 	 *
-	 * @throws  \FOF30\Container\Exception\NoComponent  If no component name is specified
+	 * @throws  NoComponent  If no component name is specified
 	 */
-	public function __construct(array $values = array())
+	public function __construct(array $values = [])
 	{
 		// Initialise
-		$this->bareComponentName = '';
-		$this->componentName = '';
+		$this->bareComponentName  = '';
+		$this->componentName      = '';
 		$this->componentNamespace = '';
-		$this->frontEndPath = '';
-		$this->backEndPath = '';
-		$this->thisPath = '';
-		$this->factoryClass = 'FOF30\\Factory\\BasicFactory';
-		$this->platformClass = 'FOF30\\Platform\\Joomla\\Platform';
+		$this->frontEndPath       = '';
+		$this->backEndPath        = '';
+		$this->thisPath           = '';
+		$this->factoryClass       = 'FOF30\\Factory\\BasicFactory';
+		$this->platformClass      = 'FOF30\\Platform\\Joomla\\Platform';
+
+		$initMediaVersion = null;
+
+		if (isset($values['mediaVersion']) && !is_object($values['mediaVersion']))
+		{
+			$initMediaVersion = $values['mediaVersion'];
+
+			unset($values['mediaVersion']);
+		}
 
 		// Try to construct this container object
 		parent::__construct($values);
@@ -351,14 +164,14 @@ END;
 
 		// Get the namespaces for the front-end and back-end parts of the component
 		$frontEndNamespace = '\\' . $this->componentNamespace . '\\Site\\';
-		$backEndNamespace = '\\' . $this->componentNamespace . '\\Admin\\';
+		$backEndNamespace  = '\\' . $this->componentNamespace . '\\Admin\\';
 
 		// Special case: if the frontend and backend paths are identical, we don't use the Site and Admin namespace
 		// suffixes after $this->componentNamespace (so you may use FOF with JApplicationWeb apps)
 		if ($this->frontEndPath == $this->backEndPath)
 		{
 			$frontEndNamespace = '\\' . $this->componentNamespace . '\\';
-			$backEndNamespace = '\\' . $this->componentNamespace . '\\';
+			$backEndNamespace  = '\\' . $this->componentNamespace . '\\';
 		}
 
 		// Do we have to register the component's namespaces with the autoloader?
@@ -377,8 +190,7 @@ END;
 		// Inflector service
 		if (!isset($this['inflector']))
 		{
-			$this['inflector'] = function (Container $c)
-			{
+			$this['inflector'] = function (Container $c) {
 				return new Inflector();
 			};
 		}
@@ -386,8 +198,7 @@ END;
 		// Filesystem abstraction service
 		if (!isset($this['filesystem']))
 		{
-			$this['filesystem'] = function (Container $c)
-			{
+			$this['filesystem'] = function (Container $c) {
 				return new JoomlaFilesystem($c);
 			};
 		}
@@ -400,8 +211,7 @@ END;
 				$c['platformClass'] = 'FOF30\\Platform\\Joomla\\Platform';
 			}
 
-			$this['platform'] = function (Container $c)
-			{
+			$this['platform'] = function (Container $c) {
 				$className = $c['platformClass'];
 
 				return new $className($c);
@@ -421,8 +231,7 @@ END;
 		// MVC Factory service
 		if (!isset($this['factory']))
 		{
-			$this['factory'] = function (Container $c)
-			{
+			$this['factory'] = function (Container $c) {
 				if (empty($c['factoryClass']))
 				{
 					$c['factoryClass'] = 'FOF30\\Factory\\BasicFactory';
@@ -439,7 +248,7 @@ END;
 					else
 					{
 						$c['factoryClass'] = '\\FOF30\\Factory\\' . ucfirst($c['factoryClass']) . 'Factory';
- 					}
+					}
 				}
 
 				if (!class_exists($c['factoryClass'], true))
@@ -452,35 +261,10 @@ END;
 				/** @var FactoryInterface $factory */
 				$factory = new $factoryClass($c);
 
-				if (isset($c['scaffolding']))
+				if (isset($c['section']))
 				{
-					$factory->setScaffolding($c['scaffolding']);
+					$factory->setSection($c['section']);
 				}
-
-				if (isset($c['saveScaffolding']))
-				{
-					$factory->setSaveScaffolding($c['saveScaffolding']);
-				}
-
-                if (isset($c['saveControllerScaffolding']))
-                {
-                    $factory->setSaveControllerScaffolding($c['saveControllerScaffolding']);
-                }
-
-                if (isset($c['saveModelScaffolding']))
-                {
-                    $factory->setSaveModelScaffolding($c['saveModelScaffolding']);
-                }
-
-                if (isset($c['saveViewScaffolding']))
-                {
-                    $factory->setSaveViewScaffolding($c['saveViewScaffolding']);
-                }
-
-                if (isset($c['section']))
-                {
-                    $factory->setSection($c['section']);
-                }
 
 				return $factory;
 			};
@@ -489,8 +273,7 @@ END;
 		// Component Configuration service
 		if (!isset($this['appConfig']))
 		{
-			$this['appConfig'] = function (Container $c)
-			{
+			$this['appConfig'] = function (Container $c) {
 				$class = $c->getNamespacePrefix() . 'Configuration\\Configuration';
 
 				if (!class_exists($class, true))
@@ -505,8 +288,7 @@ END;
 		// Component Params service
 		if (!isset($this['params']))
 		{
-			$this['params'] = function (Container $c)
-			{
+			$this['params'] = function (Container $c) {
 				return new Params($c);
 			};
 		}
@@ -514,8 +296,7 @@ END;
 		// Blade view template compiler service
 		if (!isset($this['blade']))
 		{
-			$this['blade'] = function (Container $c)
-			{
+			$this['blade'] = function (Container $c) {
 				return new Blade($c);
 			};
 		}
@@ -523,8 +304,7 @@ END;
 		// Database Driver service
 		if (!isset($this['db']))
 		{
-			$this['db'] = function (Container $c)
-			{
+			$this['db'] = function (Container $c) {
 				return $c->platform->getDbo();
 			};
 		}
@@ -532,8 +312,7 @@ END;
 		// Request Dispatcher service
 		if (!isset($this['dispatcher']))
 		{
-			$this['dispatcher'] = function (Container $c)
-			{
+			$this['dispatcher'] = function (Container $c) {
 				return $c->factory->dispatcher();
 			};
 		}
@@ -541,8 +320,7 @@ END;
 		// Component toolbar provider
 		if (!isset($this['toolbar']))
 		{
-			$this['toolbar'] = function (Container $c)
-			{
+			$this['toolbar'] = function (Container $c) {
 				return $c->factory->toolbar();
 			};
 		}
@@ -550,8 +328,7 @@ END;
 		// Component toolbar provider
 		if (!isset($this['transparentAuth']))
 		{
-			$this['transparentAuth'] = function (Container $c)
-			{
+			$this['transparentAuth'] = function (Container $c) {
 				return $c->factory->transparentAuthentication();
 			};
 		}
@@ -559,11 +336,10 @@ END;
 		// View renderer
 		if (!isset($this['renderer']))
 		{
-			$this['renderer'] = function (Container $c)
-			{
+			$this['renderer'] = function (Container $c) {
 				if (isset($c['rendererClass']) && class_exists($c['rendererClass']))
 				{
-					$class = $c['rendererClass'];
+					$class    = $c['rendererClass'];
 					$renderer = new $class($c);
 
 					if ($renderer instanceof RenderInterface)
@@ -572,13 +348,13 @@ END;
 					}
 				}
 
-				$filesystem     = $c->filesystem;
+				$filesystem = $c->filesystem;
 
 				// Try loading the stock renderers shipped with F0F
-				$path = dirname(__FILE__) . '/../Render/';
+				$path        = dirname(__FILE__) . '/../Render/';
 				$renderFiles = $filesystem->folderFiles($path, '.php');
-				$renderer = null;
-				$priority = 0;
+				$renderer    = null;
+				$priority    = 0;
 
 				if (!empty($renderFiles))
 				{
@@ -625,43 +401,42 @@ END;
 
 		// Input Access service
 		if (isset($this['input']) &&
-		    (!(is_object($this['input'])) ||
-		     !($this['input'] instanceof \FOF30\Input\Input) ||
-		     !($this['input'] instanceof \JInput))
-		) {
+			(!(is_object($this['input'])) ||
+				!($this['input'] instanceof FOFInput) ||
+				!($this['input'] instanceof CMSInput))
+		)
+		{
 			if (empty($this['input']))
 			{
-				$this['input'] = array();
+				$this['input'] = [];
 			}
 
 			// This swap is necessary to prevent infinite recursion
 			$this['rawInputData'] = array_merge($this['input']);
 			unset($this['input']);
 
-			$this['input'] = function (Container $c)
-			{
-				$input = new \FOF30\Input\Input($c['rawInputData']);
+			$this['input'] = function (Container $c) {
+				$input = new FOFInput($c['rawInputData']);
 				unset($c['rawInputData']);
+
 				return $input;
 			};
 		}
 
 		if (!isset($this['input']))
 		{
-			$this['input'] = function ()
-			{
-				return new \FOF30\Input\Input();
+			$this['input'] = function () {
+				return new FOFInput();
 			};
 		}
 
 		// Session service
 		if (!isset($this['session']))
 		{
-			$this['session'] = function (Container $c)
-			{
+			$this['session'] = function (Container $c) {
 				if (version_compare(JVERSION, '3.999.999', 'le'))
 				{
-					return \JFactory::getSession();
+					return Factory::getSession();
 				}
 
 				return Factory::getApplication()->getSession();
@@ -671,8 +446,7 @@ END;
 		// Template service
 		if (!isset($this['template']))
 		{
-			$this['template'] = function (Container $c)
-			{
+			$this['template'] = function (Container $c) {
 				return new Template($c);
 			};
 		}
@@ -680,25 +454,235 @@ END;
 		// Media version string
 		if (!isset($this['mediaVersion']))
 		{
-			$this['mediaVersion'] = $this->getDefaultMediaVersion();
+			$this['mediaVersion'] = function (Container $c) {
+				return new MediaVersion($c);
+			};
+
+			if (!is_null($initMediaVersion))
+			{
+				$this['mediaVersion']->setMediaVersion($initMediaVersion);
+			}
 		}
 
 		// Encryption / cryptography service
 		if (!isset($this['crypto']))
 		{
-			$this['crypto'] = function (Container $c)
-			{
+			$this['crypto'] = function (Container $c) {
 				return new EncryptService($c);
 			};
 		}
 	}
 
 	/**
+	 * Returns a container instance for a specific component. This method goes through fof.xml to read the default
+	 * configuration values for the container. You are advised to use this unless you have a specific reason for
+	 * instantiating a Container without going through the fof.xml file.
+	 *
+	 * Pass the value 'tempInstance' => true in the $values array to get a temporary instance. Otherwise you will get
+	 * the cached instance of the previously created container.
+	 *
+	 * @param   string  $component  The component you want to get a container for, e.g. com_foobar.
+	 * @param   array   $values     Container configuration overrides you want to apply. Optional.
+	 * @param   string  $section    The application section (site, admin) you want to fetch. Any other value results in
+	 *                              auto-detection.
+	 *
+	 * @return Container
+	 */
+	public static function &getInstance($component, array $values = [], $section = 'auto')
+	{
+		$tempInstance = false;
+
+		if (isset($values['tempInstance']))
+		{
+			$tempInstance = $values['tempInstance'];
+			unset($values['tempInstance']);
+		}
+
+		if ($tempInstance)
+		{
+			return self::makeInstance($component, $values, $section);
+		}
+
+		$signature = md5($component . '@' . $section);
+
+		if (!isset(self::$instances[$signature]))
+		{
+			self::$instances[$signature] = self::makeInstance($component, $values, $section);
+		}
+
+		return self::$instances[$signature];
+	}
+
+	/**
+	 * Returns a temporary container instance for a specific component.
+	 *
+	 * @param   string  $component  The component you want to get a container for, e.g. com_foobar.
+	 * @param   array   $values     Container configuration overrides you want to apply. Optional.
+	 * @param   string  $section    The application section (site, admin) you want to fetch. Any other value results in
+	 *                              auto-detection.
+	 *
+	 * @return Container
+	 */
+	protected static function &makeInstance($component, array $values = [], $section = 'auto')
+	{
+		// Try to auto-detect some defaults
+		$tmpConfig    = array_merge($values, ['componentName' => $component]);
+		$tmpContainer = new Container($tmpConfig);
+
+		if (!in_array($section, ['site', 'admin']))
+		{
+			$section = $tmpContainer->platform->isBackend() ? 'admin' : 'site';
+		}
+
+		$appConfig = $tmpContainer->appConfig;
+
+		// Get the namespace from fof.xml
+		$namespace = $appConfig->get('container.componentNamespace', null);
+
+		// $values always overrides $namespace and fof.xml
+		if (isset($values['componentNamespace']))
+		{
+			$namespace = $values['componentNamespace'];
+		}
+
+		// If there is no namespace set, try to guess it.
+		if (empty($namespace))
+		{
+			$bareComponent = $component;
+
+			if (substr($component, 0, 4) == 'com_')
+			{
+				$bareComponent = substr($component, 4);
+			}
+
+			$namespace = ucfirst($bareComponent);
+		}
+
+		// Get the default front-end/back-end paths
+		$frontEndPath = $appConfig->get('container.frontEndPath', JPATH_SITE . '/components/' . $component);
+		$backEndPath  = $appConfig->get('container.backEndPath', JPATH_ADMINISTRATOR . '/components/' . $component);
+
+		// Parse path variables if necessary
+		$frontEndPath = $tmpContainer->parsePathVariables($frontEndPath);
+		$backEndPath  = $tmpContainer->parsePathVariables($backEndPath);
+
+		// Apply path overrides
+		if (isset($values['frontEndPath']))
+		{
+			$frontEndPath = $values['frontEndPath'];
+		}
+
+		if (isset($values['backEndPath']))
+		{
+			$backEndPath = $values['backEndPath'];
+		}
+
+		$thisPath = ($section == 'admin') ? $backEndPath : $frontEndPath;
+
+		// Get the namespaces for the front-end and back-end parts of the component
+		$frontEndNamespace = '\\' . $namespace . '\\Site\\';
+		$backEndNamespace  = '\\' . $namespace . '\\Admin\\';
+
+		// Special case: if the frontend and backend paths are identical, we don't use the Site and Admin namespace
+		// suffixes after $this->componentNamespace (so you may use FOF with JApplicationWeb apps)
+		if ($frontEndPath == $backEndPath)
+		{
+			$frontEndNamespace = '\\' . $namespace . '\\';
+			$backEndNamespace  = '\\' . $namespace . '\\';
+		}
+
+		// Do we have to register the component's namespaces with the autoloader?
+		$autoloader = Autoloader::getInstance();
+
+		if (!$autoloader->hasMap($frontEndNamespace))
+		{
+			$autoloader->addMap($frontEndNamespace, $frontEndPath);
+		}
+
+		if (!$autoloader->hasMap($backEndNamespace))
+		{
+			$autoloader->addMap($backEndNamespace, $backEndPath);
+		}
+
+		// Get the Container class name
+		$classNamespace = ($section == 'admin') ? $backEndNamespace : $frontEndNamespace;
+		$class          = $classNamespace . 'Container';
+
+		// Get the values overrides from fof.xml
+		$values = array_merge([
+			'factoryClass'              => '\\FOF30\\Factory\\BasicFactory',
+			'platformClass'             => '\\FOF30\\Platform\\Joomla\\Platform',
+			'section'                   => $section,
+		], $values);
+
+		$values = array_merge($values, [
+			'componentName'             => $component,
+			'componentNamespace'        => $namespace,
+			'frontEndPath'              => $frontEndPath,
+			'backEndPath'               => $backEndPath,
+			'thisPath'                  => $thisPath,
+			'rendererClass'             => $appConfig->get('container.rendererClass', null),
+			'factoryClass'              => $appConfig->get('container.factoryClass', $values['factoryClass']),
+			'platformClass'             => $appConfig->get('container.platformClass', $values['platformClass']),
+		]);
+
+		if (empty($values['rendererClass']))
+		{
+			unset ($values['rendererClass']);
+		}
+
+		$mediaVersion = $appConfig->get('container.mediaVersion', null);
+
+		unset($appConfig);
+		unset($tmpConfig);
+		unset($tmpContainer);
+
+		if (class_exists($class, true))
+		{
+			$container = new $class($values);
+		}
+		else
+		{
+			$container = new Container($values);
+		}
+
+		if (!is_null($mediaVersion))
+		{
+			$container->mediaVersion->setMediaVersion($mediaVersion);
+		}
+
+		return $container;
+	}
+
+	/**
+	 * The container SHOULD NEVER be serialised. If this happens, it means that any of the installed version is doing
+	 * something REALLY BAD, so let's die and inform the user of what it's going on.
+	 */
+	public function __sleep()
+	{
+		// If the site is in debug mode we die and let the user figure it out
+		if (defined('JDEBUG') && JDEBUG)
+		{
+			$msg = <<< END
+Something on your site is broken and tries to save the plugin state in the cache. This is a major security issue and
+will cause your site to not work properly. Go to your site's backend, Global Configuration and set Caching to OFF as a
+temporary solution. Possible causes: older versions of JoomlaShine templates, JomSocial, BetterPreview and other third
+party Joomla! extensions. 
+END;
+
+			die($msg);
+		}
+
+		// Otherwise we serialise the Container
+		return ['values', 'factories', 'protected', 'frozen', 'raw', 'keys'];
+	}
+
+	/**
 	 * Get the applicable namespace prefix for a component section. Possible sections:
-	 * auto			Auto-detect which is the current component section
+	 * auto            Auto-detect which is the current component section
 	 * inverse      The inverse area than auto
-	 * site			Frontend
-	 * admin		Backend
+	 * site            Frontend
+	 * admin        Backend
 	 *
 	 * @param   string  $section  The section you want to get information for
 	 *
@@ -708,14 +692,14 @@ END;
 	{
 		// Get the namespaces for the front-end and back-end parts of the component
 		$frontEndNamespace = '\\' . $this->componentNamespace . '\\Site\\';
-		$backEndNamespace = '\\' . $this->componentNamespace . '\\Admin\\';
+		$backEndNamespace  = '\\' . $this->componentNamespace . '\\Admin\\';
 
 		// Special case: if the frontend and backend paths are identical, we don't use the Site and Admin namespace
 		// suffixes after $this->componentNamespace (so you may use FOF with JApplicationWeb apps)
 		if ($this->frontEndPath == $this->backEndPath)
 		{
 			$frontEndNamespace = '\\' . $this->componentNamespace . '\\';
-			$backEndNamespace = '\\' . $this->componentNamespace . '\\';
+			$backEndNamespace  = '\\' . $this->componentNamespace . '\\';
 		}
 
 		switch ($section)
@@ -758,73 +742,11 @@ END;
 		$platformDirs = $this->platform->getPlatformBaseDirs();
 		// root public admin tmp log
 
-		$search = array_map(function ($x){
+		$search  = array_map(function ($x) {
 			return '%' . strtoupper($x) . '%';
 		}, array_keys($platformDirs));
 		$replace = array_values($platformDirs);
 
 		return str_replace($search, $replace, $path);
-	}
-
-	/**
-	 * Gets the default media version string for the component using the component's version and date, as well as the
-	 * site's secret key.
-	 *
-	 * @return  string
-	 */
-	protected function getDefaultMediaVersion()
-	{
-		// Initialise
-		$version = '0.0.0';
-		$date = '0000-00-00';
-		$secret = '';
-
-		// Get the version and date of the component from the manifest cache
-		try
-		{
-			$db = $this->db;
-			$query = $db->getQuery(true)
-	            ->select(array(
-		            $db->qn('manifest_cache')
-	            ))->from($db->qn('#__extensions'))
-	            ->where($db->qn('type') . ' = ' . $db->q('component'))
-	            ->where($db->qn('name') . ' = ' . $db->q($this->componentName));
-
-			$db->setQuery($query);
-
-			$json = $db->loadResult();
-
-			if (class_exists('JRegistry'))
-			{
-				$params = new \JRegistry($json);
-			}
-			else
-			{
-				$params = new Registry($json);
-			}
-
-			$version = $params->get('version', $version);
-			$date = $params->get('creationDate', $date);
-		}
-		catch (\Exception $e)
-		{
-		}
-
-		// Get the site's secret
-		try
-		{
-			$app = JFactory::getApplication();
-
-			if (method_exists($app, 'get'))
-			{
-				$secret = $app->get('secret');
-			}
-		}
-		catch (\Exception $e)
-		{
-		}
-
-		// Generate the version string
-		return md5($version . $date . $secret);
 	}
 }

@@ -7,10 +7,11 @@
 
 namespace Akeeba\AdminTools\Admin\Helper;
 
+use DateTimeZone;
 use FOF30\Container\Container;
-use FOF30\View\DataView\DataViewInterface;
 use FOF30\View\DataView\Raw;
-use JText;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die;
 
@@ -24,7 +25,7 @@ class Html
 		if (is_null($tz))
 		{
 			$timezone = $container->platform->getUser()->getParam('timezone', $container->platform->getConfig()->get('offset', 'GMT'));
-			$tz = new \DateTimeZone($timezone);
+			$tz       = new DateTimeZone($timezone);
 		}
 
 		$date = $container->platform->getDate($value, 'UTC');
@@ -32,7 +33,7 @@ class Html
 
 		if ($localise)
 		{
-			$format = \JText::_($format);
+			$format = Text::_($format);
 		}
 
 		return $date->format($format, $localTZ);
@@ -46,7 +47,7 @@ class Html
 
 		$link = str_replace('{ip}', $ip, $iplink);
 
-		$html = '<a href="'.$link.'" target="_blank" class="akeeba-btn--primary--small"><span class="akion-search"></span></a>&nbsp;';
+		$html = '<a href="' . $link . '" target="_blank" class="akeeba-btn--primary--small"><span class="akion-search"></span></a>&nbsp;';
 		$html .= $ip;
 
 		return $html;
@@ -58,11 +59,11 @@ class Html
 
 		if (!$languages)
 		{
-			$db = \JFactory::getDbo();
+			$db = Factory::getDbo();
 
 			$query = $db->getQuery(true)
-						->select('*')
-						->from($db->quoteName('#__languages'));
+				->select('*')
+				->from($db->quoteName('#__languages'));
 
 			$languages = $db->setQuery($query)->loadObjectList('lang_code');
 		}
@@ -73,24 +74,24 @@ class Html
 			return '';
 		}
 
-		$lang = \JText::_('JALL');
+		$lang = Text::_('JALL');
 
 		if (isset($languages[$value]))
 		{
 			$lang = $languages[$value]->title;
 		}
 
-		return '<span>'.$lang.'</span>';
+		return '<span>' . $lang . '</span>';
 	}
 
 	public static function ordering(Raw $view, $orderingField, $orderingValue)
 	{
 		$ordering = $view->getLists()->order == $orderingField;
-		$class = 'input-mini';
-		$icon = 'icon-menu';
+		$class    = 'input-mini';
+		$icon     = 'icon-menu';
 
 		// Default inactive ordering
-		$html  = '<span class="sortable-handler inactive" >';
+		$html = '<span class="sortable-handler inactive" >';
 		$html .= '<span class="' . $icon . '"></span>';
 		$html .= '</span>';
 
@@ -98,29 +99,27 @@ class Html
 		if ($view->getPerms()->editstate)
 		{
 			$disableClassName = '';
-			$disabledLabel = '';
+			$disabledLabel    = '';
 
 			// DO NOT REMOVE! It will initialize Joomla libraries and javascript functions
 			$hasAjaxOrderingSupport = $view->hasAjaxOrderingSupport();
 
 			if (!$hasAjaxOrderingSupport['saveOrder'])
 			{
-				$disabledLabel = JText::_('JORDERINGDISABLED');
+				$disabledLabel    = Text::_('JORDERINGDISABLED');
 				$disableClassName = 'inactive tip-top';
 			}
 
 			$orderClass = $ordering ? 'order-enabled' : 'order-disabled';
 
-			$html  = '<div class="' . $orderClass . '">';
-			$html .= 	'<span class="sortable-handler ' . $disableClassName . '" title="' . $disabledLabel . '" rel="tooltip">';
-			$html .= 		'<span class="' . $icon . '"></span>';
-			$html .= 	'</span>';
+			$html = '<div class="' . $orderClass . '">';
+			$html .= '<span class="sortable-handler ' . $disableClassName . '" title="' . $disabledLabel . '" rel="tooltip">';
+			$html .= '<span class="' . $icon . '"></span>';
+			$html .= '</span>';
 
 			if ($ordering)
 			{
-				$joomla35IsBroken = version_compare(JVERSION, '3.5.0', 'ge') ? 'style="display: none"': '';
-
-				$html .= '<input type="text" name="order[]" ' . $joomla35IsBroken . ' size="5" class="' . $class . ' text-area-order" value="' . $orderingValue . '" />';
+				$html .= '<input type="text" name="order[]" style="display: none" size="5" class="' . $class . ' text-area-order" value="' . $orderingValue . '" />';
 			}
 
 			$html .= '</div>';

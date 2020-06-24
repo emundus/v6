@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -232,7 +232,7 @@ class hikashopModuleHelper {
 
 		if($config->get('auto_init_options', 1) && !empty($menuData->link) && strpos($menuData->link, 'view=product') === false) {
 			$options = $config->get('menu_'.@$menu->id, null);
-			if(empty($options) || empty($options['modules'])) {
+			if(!HIKASHOP_J30 && (empty($options) || empty($options['modules']))) {
 				$menuClass->createMenuOption($menuData,$options);
 			}
 		}

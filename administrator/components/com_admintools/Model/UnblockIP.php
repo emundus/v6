@@ -16,9 +16,9 @@ class UnblockIP extends Model
 	/**
 	 * Removed the current IP from all the "block" lists
 	 *
-	 * @param	string|array	$ips	IP addresses to check and delete
+	 * @param   string|array  $ips  IP addresses to check and delete
 	 *
-	 * @return  bool			Did I had data to delete? If not, we will have to warn the user
+	 * @return  bool            Did I had data to delete? If not, we will have to warn the user
 	 */
 	public function unblockIP($ips)
 	{

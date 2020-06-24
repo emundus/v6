@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -294,6 +294,15 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 			$lang = JFactory::getLanguage();
 			$locale=strtolower(substr($lang->get('tag'), 0, 2));
 			$app->enqueueMessage(JText::sprintf('ENTER_INFO_REGISTER_IF_NEEDED','PayPal Pro',$field,'PayPal Pro','https://www.paypal.com/'.$locale.'/mrb/pal=SXL9FKNKGAEM8'));
+		}
+
+		if(!empty($element->payment_params->details)){
+			$config = hikashop_config();
+			$round_calculations = $config->get('round_calculations');
+			if(empty($round_calculations)){
+				$app = JFactory::getApplication();
+				$app->enqueueMessage('When you activate the "Send details of the order" setting, PayPal calculate itself the total amount and round prices during calculations. So you need to have option "Round prices during calculations" turned on in the HikaShop configuration in order for HikaShop to calculate the total in the same way. Otherwise, you might get payments with an amount different than the total amount of the orders and it will create an error.');
+			}
 		}
 	}
 

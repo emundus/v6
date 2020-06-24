@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -121,16 +121,16 @@ class ProductViewProduct  extends HikaShopView
 		$imageHelper = hikashop_get('helper.image');
 		foreach ( $products as $product )
 		{
-			$title = $this->escape( $product->product_name );
+			$title = $this->escape( hikashop_translate($product->product_name) );
 			$title = html_entity_decode( $title );
 			$pathway_sef_name = $config->get('pathway_sef_name','category_pathway');
 			$link = JURI::base().'index.php?option=com_hikashop&amp;ctrl=product&amp;task=show&amp;cid='.$product->product_id.'&amp;name='.$product->alias.'&amp;Itemid='.$Itemid.'&amp;'.$pathway_sef_name.'='.@$product->category_id;
 
 				if(!empty($product->prices) && $product->prices[0]->price_value_with_tax != 0 ){
-					$desc = $product->product_description.JText::_('CART_PRODUCT_PRICE').' : '.$currencyClass->format($product->prices[0]->price_value_with_tax,$product->prices[0]->price_currency_id);
+					$desc = hikashop_translate($product->product_description).JText::_('CART_PRODUCT_PRICE').' : '.$currencyClass->format($product->prices[0]->price_value_with_tax,$product->prices[0]->price_currency_id);
 				}
 				else{
-					$desc= $product->product_description.JText::_('FREE_PRICE');
+					$desc= hikashop_translate($product->product_description).JText::_('FREE_PRICE');
 				}
 				$desc = preg_replace('#<hr *id="system-readmore" */>#i','',$desc);
 

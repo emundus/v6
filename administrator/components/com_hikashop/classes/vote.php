@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -170,7 +170,7 @@ class hikashopVoteClass extends hikashopClass {
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 
-		if(isset($element->vote_ref_id) || !$this->app->isAdmin())
+		if(!$this->app->isAdmin())
 			$this->checkVote($element);
 
 		if(!empty($this->error['code']))
@@ -204,6 +204,15 @@ class hikashopVoteClass extends hikashopClass {
 					$this->error = array('code' => '505018', 'message' => JText::_('HIKA_VOTE_MISSING_ENTRY'));
 					return false;
 				}
+			}
+			if(isset($element->vote_user_type)) {
+				if($element->vote_user_type == 'registered') {
+					$element->vote_email = '0';
+					$element->vote_pseudo = '0';
+				} else {
+					$element->vote_user_id = 0;
+				}
+				unset($element->vote_user_type);
 			}
 		}elseif($element->vote_rating != 0 && !in_array($this->config->get('enable_status_vote','nothing'), array('nothing','comment','both'))){ //If it is only a rating
 			$result = $this->getUserRating($element->vote_type,$element->vote_ref_id,$element->vote_user_id);
@@ -247,6 +256,9 @@ class hikashopVoteClass extends hikashopClass {
 			$this->error = array('code' => '505016', 'message' => JText::_('HIKA_VOTE_ERROR_SAVING_DATA'));
 			return false;
 		}
+		if(empty($element->vote_id)) {
+			$element->vote_id = $success;
+		}
 
 		$return_data = array('average' => 0, 'total' => 0);
 		if($element->vote_type != 'product') {
@@ -282,7 +294,7 @@ class hikashopVoteClass extends hikashopClass {
 
 		$itemClass = hikashop_get('class.'.$element->vote_type);
 		if($itemClass === null)
-			return true;
+			return $success;
 
 		if(is_object($itemClass) && !empty($itemClass)){
 			$data = $itemClass->get($element->vote_ref_id);
@@ -293,7 +305,7 @@ class hikashopVoteClass extends hikashopClass {
 		}
 
 		if($element->vote_rating == 0)
-			return true;
+			return $success;
 
 		if($element->vote_type == 'product') {
 			$newValues = $this->updateAverage($element, $oldElement, $data);
@@ -302,13 +314,20 @@ class hikashopVoteClass extends hikashopClass {
 
 		$this->values = $return_data;
 
-		$success = $itemClass->save($data);
+		$itemSuccess = $itemClass->save($data);
 
-		if(!$success){
+		if(!$itemSuccess){
 			$this->error = array('code' => '505013', 'message' => JText::_('HIKA_VOTE_ERROR_SAVING_ITEM_DATA'));
 			return false;
+		} else {
+			if(!$this->app->isAdmin()){
+				if(!empty($element->vote_comment) && !$this->config->get('published_comment','1')) {
+					$this->error = array('code' => '2', 'message' => JText::_('THANK_YOU_FOR_YOUR_VOTE_REVIEWED_BEFORE_PUBLISHING'));
+
 		}
-		return true;
+			}
+		}
+		return $success;
 	}
 
 	function updateAverage(&$element, $oldElement, &$data){
@@ -440,11 +459,12 @@ function hikashop_send_vote(rating, from){ return hikaVote.vote(rating, from); }
 		$doc->addScriptDeclaration($js);
 	}
 
-	function sendNotifComment($vote_id, $comment, $vote_ref_id, $user_id, $pseudo, $email, $vote_type){
+	function sendNotifComment($vote_id, $comment, $vote_ref_id, $user_id, $pseudo, $email, $vote_type) {
+		$config =& hikashop_config();
+
 		if($pseudo != '0'){
 			$username = $pseudo;
 			$email = $email;
-			$config =& hikashop_config();
 			$email_enabled = $config->get('email_comment');
 			if($email_enabled == 0){
 				$email = "Not required";
@@ -478,9 +498,10 @@ function hikashop_send_vote(rating, from){ return hikaVote.vote(rating, from); }
 		$infos->result =& $result;
 		$mail = $mailClass->get('new_comment',$infos);
 		$mail->subject = JText::sprintf($mail->subject,HIKASHOP_LIVE);
-		$config =& hikashop_config();
 
-		$mail->dst_email = $config->get('email_each_comment');
+		if(empty($mail->dst_email))
+			$mail->dst_email = $config->get('email_each_comment');
+
 		$mailClass->sendMail($mail);
 		return ;
 	}

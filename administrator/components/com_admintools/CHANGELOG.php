@@ -1,4 +1,65 @@
 <?php die() ?>
+Admin Tools 5.7.3
+================================================================================
+~ Small change in the FOF library to prevent harmless but confusing and annoying errors from appearing during upgrade
+~ The following items are carried over from the retracted version 5.7.0
++ Improved Apache and IIS server signature removal
++ Improved CORS handling
++ Added support for Joomla 4 API application in the .htaccess Maker and Web.Config Maker
++ Added support for automatically serving .css.gz/.js.gz files in the .htaccess Maker and Web.Config Maker per Joomla 4 recommendations
+- Removed Change Database Collation and Repair & Optimise Tables features under Joomla 4 (not supported by the J4 database driver)
+- Removed the CSRFShield feature
+~ Minimum requirements raised to PHP 7.1, Joomla 3.9
+~ Use JAccess instead of DB queries [gh-223]
+~ Improve the rendering of the System - Admin Tools plugin options
+~ Improve the rendering of the component options
+~ Changed the terms blacklist and whitelist to be more clear
+~ Changed the term Security Exceptions to Blocked Requests for clarity
+# [HIGH] Emergency Off-line completely broken under Joomla 4
+# [HIGH] Purge Sessions does not work under Joomla 4
+# [HIGH] Features with modal dialogs would not work under Joomla 4
+# [MEDIUM] The "User groups to check for well-known passwords" feature could cause a PHP notice when modifying the component Options
+# [MEDIUM] Temporary Super Users feature does not work when Monitor Super Users or Disable Editing Backend Users features are enabled
+# [LOW] Some help text blocks were using the wrong class, making them illegible in Dark Mode.
+# [LOW] Email Templates help text referenced country and continent which were removed in version 5.5.0.
+# [LOW] Rescue URL doesn't work with Joomla 4
+# [LOW] Notices thrown when plugin loaded in Joomla 4 Console application
+# [LOW] Master Password page incorrectly referenced an UnlockIP view with an untranslated name; the correct is UnblockIP
+# [LOW] Missing filtering reason for "Monitor Super User" feature
+
+Admin Tools 5.7.2
+================================================================================
+# [LOW] Missing filtering reason for "Monitor Super User" feature
+
+Admin Tools 5.7.1
+================================================================================
+! Newline at the top of file can cause site breakage
+
+Admin Tools 5.7.0
+================================================================================
++ Improved Apache and IIS server signature removal
++ Improved CORS handling
++ Added support for Joomla 4 API application in the .htaccess Maker and Web.Config Maker
++ Added support for automatically serving .css.gz/.js.gz files in the .htaccess Maker and Web.Config Maker per Joomla 4 recommendations
+- Removed Change Database Collation and Repair & Optimise Tables features under Joomla 4 (not supported by the J4 database driver)
+- Removed the CSRFShield feature
+~ Minimum requirements raised to PHP 7.1, Joomla 3.9
+~ Use JAccess instead of DB queries [gh-223]
+~ Improve the rendering of the System - Admin Tools plugin options
+~ Improve the rendering of the component options
+~ Changed the terms blacklist and whitelist to be more clear
+~ Changed the term Security Exceptions to Blocked Requests for clarity
+# [HIGH] Emergency Off-line completely broken under Joomla 4
+# [HIGH] Purge Sessions does not work under Joomla 4
+# [HIGH] Features with modal dialogs would not work under Joomla 4
+# [MEDIUM] The "User groups to check for well-known passwords" feature could cause a PHP notice when modifying the component Options
+# [MEDIUM] Temporary Super Users feature does not work when Monitor Super Users or Disable Editing Backend Users features are enabled
+# [LOW] Some help text blocks were using the wrong class, making them illegible in Dark Mode.
+# [LOW] Email Templates help text referenced country and continent which were removed in version 5.5.0.
+# [LOW] Rescue URL doesn't work with Joomla 4
+# [LOW] Notices thrown when plugin loaded in Joomla 4 Console application
+# [LOW] Master Password page incorrectly referenced an UnlockIP view with an untranslated name; the correct is UnblockIP
+
 Admin Tools 5.6.0
 ================================================================================
 + Prevent www and non-www redirs when Joomla site settings are wrong

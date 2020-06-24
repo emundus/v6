@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -124,6 +124,7 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$this->imageHelper = $imageHelper;
 
 		$this->continueShopping = $this->config->get('continue_shopping');
+		$this->continueShopping = hikashop_translate($this->continueShopping);
 		$this->display_checkout_bar = $this->config->get('display_checkout_bar');
 		$cartHelper = hikashop_get('helper.cart');
 		$this->assignRef('cart', $cartHelper);

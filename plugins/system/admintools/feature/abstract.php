@@ -10,30 +10,43 @@ defined('_JEXEC') or die;
 use Akeeba\AdminTools\Admin\Helper\Storage;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
+use Joomla\CMS\Access\Access;
 use Joomla\CMS\Application\BaseApplication;
+use Joomla\CMS\Application\WebApplication;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Input\Input;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\User;
 use Joomla\Registry\Registry;
 
 class AtsystemFeatureAbstract
 {
-	/** @var   JRegistry   Component parameters */
+	/** @var null|bool Is this a CLI application? */
+	protected static $isCLI = null;
+
+	/** @var null|bool Is this an administrator application? */
+	protected static $isAdmin = null;
+
+	/** @var   Registry   Component parameters */
 	protected $params = null;
 
 	/** @var   Storage   WAF parameters */
 	protected $cparams = null;
 
-	/** @var   JInput  The Joomla! application input */
+	/** @var   Input  The Joomla! application input */
 	protected $input = null;
 
 	/** @var   AtsystemUtilExceptionshandler  The security exceptions handler */
 	protected $exceptionsHandler = null;
 
 	/** @var   array  The applicable WAF Exceptions which prevent filtering from taking place */
-	protected $exceptions = array();
+	protected $exceptions = [];
 
 	/** @var   bool   Should I skip filtering (because of whitelisted IPs, WAF Exceptions etc) */
 	protected $skipFiltering = false;
 
-	/** @var   JApplicationWeb|\Joomla\CMS\Application\WebApplication  The CMS application */
+	/** @var   WebApplication|WebApplication  The CMS application */
 	protected $app = null;
 
 	/** @var   JDatabaseDriver  The database driver */
@@ -42,40 +55,35 @@ class AtsystemFeatureAbstract
 	/** @var   int  The load order of each feature */
 	protected $loadOrder = 9999;
 
-	/** @var null|bool Is this a CLI application? */
-	protected static $isCLI = null;
-
-	/** @var null|bool Is this an administrator application? */
-	protected static $isAdmin = null;
-
 	/** @var plgSystemAdmintools  Our parent plugin */
 	protected $parentPlugin = null;
-
-	/** @var   array  Timestamps of the last run of each scheduled task */
-	private $timestamps = array();
 
 	/**
 	 * The container of the component
 	 *
-	 * @var   \FOF30\Container\Container
+	 * @var   Container
 	 */
 	protected $container;
+
+	/** @var   array  Timestamps of the last run of each scheduled task */
+	private $timestamps = [];
 
 	/**
 	 * Public constructor. Creates the feature class.
 	 *
-	 * @param   JApplication|BaseApplication   $app                The CMS application
-	 * @param   JDatabase                      $db                 The database driver
-	 * @param   JRegistry                      $params             Plugin parameters
+	 * @param   BaseApplication                $app                The CMS application
+	 * @param   JDatabaseDriver                $db                 The database driver
+	 * @param   Registry                       $params             Plugin parameters
 	 * @param   Storage                        $componentParams    Component parameters
-	 * @param   JInput                         $input              Global input object
-	 * @param   AtsystemUtilExceptionshandler  $exceptionsHandler  Security exceptions handler class (or null if the feature is not implemented)
+	 * @param   Input                          $input              Global input object
+	 * @param   AtsystemUtilExceptionshandler  $exceptionsHandler  Security exceptions handler class (or null if the
+	 *                                                             feature is not implemented)
 	 * @param   array                          $exceptions         A list of WAF exceptions
 	 * @param   bool                           $skipFiltering      Should I skip the filtering?
 	 * @param   Container                      $container          The component container
 	 * @param   plgSystemAdmintools            $parentPlugin       The plugin we belong to
 	 */
-	public function __construct($app, $db, JRegistry &$params, Storage &$componentParams, JInput &$input, &$exceptionsHandler, array &$exceptions, &$skipFiltering, $container, $parentPlugin)
+	public function __construct($app, $db, Registry &$params, Storage &$componentParams, Input &$input, &$exceptionsHandler, array &$exceptions, &$skipFiltering, $container, $parentPlugin)
 	{
 		$this->container         = $container;
 		$this->app               = $app;
@@ -112,7 +120,7 @@ class AtsystemFeatureAbstract
 	/**
 	 * Checks if a non logged in user is trying to access the administrator application
 	 *
-	 * @param bool $onlySubmit bool Return true only if the login form is submitted
+	 * @param   bool  $onlySubmit  bool Return true only if the login form is submitted
 	 *
 	 * @return bool
 	 */
@@ -134,7 +142,7 @@ class AtsystemFeatureAbstract
 
 		// If we have option=com_login&task=login then the user is submitting the login form. Otherwise Joomla! is
 		// just displaying the login form.
-		$input              = JFactory::getApplication()->input;
+		$input              = Factory::getApplication()->input;
 		$option             = $input->getCmd('option', null);
 		$task               = $input->getCmd('task', null);
 		$isPostingLoginForm = ($option == 'com_login') && ($task == 'login');
@@ -167,13 +175,13 @@ class AtsystemFeatureAbstract
 		AtsystemUtilRescueurl::processRescueURL($this->exceptionsHandler);
 
 		// Get the current URI
-		$myURI = JUri::getInstance();
-		$path = $myURI->getPath();
+		$myURI = Uri::getInstance();
+		$path  = $myURI->getPath();
 
 		// Pop the administrator from the URI path
 		$path_parts = explode('/', $path);
 		$path_parts = array_slice($path_parts, 0, count($path_parts) - 2);
-		$path = implode('/', $path_parts);
+		$path       = implode('/', $path_parts);
 		$myURI->setPath($path);
 
 		// Unset any query parameters
@@ -189,10 +197,10 @@ class AtsystemFeatureAbstract
 	 * of the array returns true and breaks the RegEx matching loop. If you pass
 	 * any other data type except an array or string, it returns false.
 	 *
-	 * @param string    $regex         The regular expressions to feed to preg_match
-	 * @param mixed     $array         The array to scan
-	 * @param bool      $striptags     Should I strip tags? Default: no
-	 * @param callable  $precondition  A callable to precondition each value before preg_match
+	 * @param   string    $regex         The regular expressions to feed to preg_match
+	 * @param   mixed     $array         The array to scan
+	 * @param   bool      $striptags     Should I strip tags? Default: no
+	 * @param   callable  $precondition  A callable to precondition each value before preg_match
 	 *
 	 * @return bool|int
 	 */
@@ -268,7 +276,7 @@ class AtsystemFeatureAbstract
 		$db->setQuery($query);
 		$temp = $db->loadAssocList();
 
-		$this->timestamps = array();
+		$this->timestamps = [];
 
 		if (!empty($temp))
 		{
@@ -286,13 +294,12 @@ class AtsystemFeatureAbstract
 	 */
 	protected function setTimestamp($key)
 	{
-		JLoader::import('joomla.utilities.date');
 		$date = new Date();
 
-		$pk = 'timestamp_' . $key;
-		$timestamp = $date->toUnix();
+		$pk           = 'timestamp_' . $key;
+		$timestamp    = $date->toUnix();
 		$oldTimestamp = $this->getTimestamp($key); // Make sure the array is populated, do not remove
-		$db = $this->container->db;
+		$db           = $this->container->db;
 
 		// This is necessary because using an UPDATE query results in Joomla!
 		// throwing a JLIB_APPLICATION_ERROR_COMPONENT_NOT_LOADING or blank
@@ -314,10 +321,10 @@ class AtsystemFeatureAbstract
 
 		$query = $db->getQuery(true)
 			->insert($db->qn('#__admintools_storage'))
-			->columns(array(
+			->columns([
 				$db->qn('key'),
 				$db->qn('value'),
-			))->values(
+			])->values(
 				$db->q($pk) . ', ' . $db->q($timestamp)
 			);
 		$db->setQuery($query);
@@ -349,7 +356,6 @@ class AtsystemFeatureAbstract
 			$this->loadTimestamps();
 		}
 
-		JLoader::import('joomla.utilities.date');
 		$pk = 'timestamp_' . $key;
 
 		if (!array_key_exists($pk, $this->timestamps))
@@ -376,13 +382,13 @@ class AtsystemFeatureAbstract
 		}
 
 		// Is the plugin enabled?
-		return JPluginHelper::isEnabled('system', 'privacyconsent');
+		return PluginHelper::isEnabled('system', 'privacyconsent');
 	}
 
 	/**
 	 * Has the user consented to the Privacy Policy?
 	 *
-	 * @param   JUser  $user
+	 * @param   User  $user
 	 *
 	 * @return  bool
 	 *
@@ -399,7 +405,7 @@ class AtsystemFeatureAbstract
 			return true;
 		}
 
-		$db = JFactory::getDbo();
+		$db    = Factory::getDbo();
 		$query = $db->getQuery(true)
 			->select($db->qn('state'))
 			->from($db->qn('#__privacy_consents'))
@@ -457,12 +463,12 @@ class AtsystemFeatureAbstract
 	protected function isBackendAccessGroup($group)
 	{
 		// First try to see if the group has explicit backend login privileges
-		if (JAccess::checkGroup($group, 'core.login.admin', 1))
+		if (Access::checkGroup($group, 'core.login.admin', 1))
 		{
 			return true;
 		}
 
 		// If not, is it a Super Admin (ergo inherited privileges)?
-		return (bool) JAccess::checkGroup($group, 'core.admin', 1);
+		return (bool) Access::checkGroup($group, 'core.admin', 1);
 	}
 }

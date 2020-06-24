@@ -8,9 +8,11 @@
 namespace Akeeba\AdminTools\Admin\Controller\Mixin;
 
 use Akeeba\AdminTools\Admin\Model\ConfigureWAF;
+use Exception;
 use FOF30\Container\Container;
 use FOF30\Factory\Exception\ModelNotFound;
-use JFactory;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die;
 
@@ -39,8 +41,8 @@ trait SendTroubleshootingEmail
 			return;
 		}
 
-		$wafConfig   = $configModel->getConfig();
-		$sendEmail   = isset($wafConfig['troubleshooteremail']) ? $wafConfig['troubleshooteremail'] : 1;
+		$wafConfig = $configModel->getConfig();
+		$sendEmail = isset($wafConfig['troubleshooteremail']) ? $wafConfig['troubleshooteremail'] : 1;
 
 		if (!$sendEmail)
 		{
@@ -52,19 +54,19 @@ trait SendTroubleshootingEmail
 		$config    = $container->platform->getConfig();
 		$siteName  = $config->get('sitename');
 		$actionKey = 'COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_ACTION_' . $controllerName;
-		$action    = \JText::_($actionKey);
-		$subject   = \JText::_('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_SUBJECT');
-		$body      = \JText::sprintf('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_BODY_HELLO', $user->name) . "\n\n" .
-			\JText::sprintf('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_BODY_DESCRIPTION', $action, $siteName) . "\n\n" .
+		$action    = Text::_($actionKey);
+		$subject   = Text::_('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_SUBJECT');
+		$body      = Text::sprintf('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_BODY_HELLO', $user->name) . "\n\n" .
+			Text::sprintf('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_BODY_DESCRIPTION', $action, $siteName) . "\n\n" .
 			"-  http://akee.ba/lockedout\n" .
 			"-  http://akee.ba/500htaccess\n" .
 			"-  http://akee.ba/adminpassword\n" .
 			"-  http://akee.ba/403edituser\n\n" .
-			\JText::_('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_BODY_SUPPORT') . "\n\n" .
-			\JText::_('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_BODY_WHOSENTTHIS') . "\n" .
+			Text::_('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_BODY_SUPPORT') . "\n\n" .
+			Text::_('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_BODY_WHOSENTTHIS') . "\n" .
 			str_repeat('=', 40) . "\n\n" .
-			\JText::_('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_BODY_WHOSENT_1') . "\n\n" .
-			\JText::_('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_BODY_WHOSENT_2') . "\n";
+			Text::_('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_BODY_WHOSENT_1') . "\n\n" .
+			Text::_('COM_ADMINTOOLS_TROUBLESHOOTEREMAIL_BODY_WHOSENT_2') . "\n";
 		$body      = wordwrap($body);
 
 		// Can't send email if I don't about this controller
@@ -82,7 +84,7 @@ trait SendTroubleshootingEmail
 		// Send the email
 		try
 		{
-			$mailer    = JFactory::getMailer();
+			$mailer    = Factory::getMailer();
 			$mailfrom  = $config->get('mailfrom');
 			$fromname  = $config->get('fromname');
 			$recipient = trim($user->email);
@@ -103,7 +105,7 @@ trait SendTroubleshootingEmail
 			$mailer->setBody($body);
 			$mailer->Send();
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			// Joomla! 3.5 and later throw an exception when crap happens instead of suppressing it and returning false
 		}

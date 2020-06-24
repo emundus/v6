@@ -5,13 +5,15 @@
  * @license   GNU General Public License version 3, or later
  */
 
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die;
 
 class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 {
-	protected $loadOrder = 500;
-
 	private static $siteTemplates = null;
+
+	protected $loadOrder = 500;
 
 	/**
 	 * Is this feature enabled?
@@ -34,10 +36,10 @@ class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 	public function onAfterInitialise()
 	{
 		// Get the base path
-		$basepath = ltrim(JUri::base(true), '/');
+		$basepath = ltrim(Uri::base(true), '/');
 
-		$myURL   = JUri::getInstance();
-		$fullurl = ltrim($myURL->toString(array('path', 'query', 'fragment')), '/');
+		$myURL   = Uri::getInstance();
+		$fullurl = ltrim($myURL->toString(['path', 'query', 'fragment']), '/');
 		$path    = ltrim($myURL->getPath(), '/');
 
 		$pathLength = strlen($path);
@@ -72,7 +74,7 @@ class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 		$db = $this->container->db;
 
 		$sql = $db->getQuery(true)
-			->select(array($db->qn('source'), $db->qn('keepurlparams')))
+			->select([$db->qn('source'), $db->qn('keepurlparams')])
 			->from($db->qn('#__admintools_redirects'))
 			->where(
 				'((' . $db->qn('dest') . ' = ' . $db->q($path) . ')' .
@@ -95,10 +97,10 @@ class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 
 		if (!empty($newURLStruct))
 		{
-			list ($newURL, $keepQueryParams) = $newURLStruct;
+			[$newURL, $keepQueryParams] = $newURLStruct;
 
-			$new      = JUri::getInstance($newURL);
-			$host     = $new->getHost();
+			$new  = Uri::getInstance($newURL);
+			$host = $new->getHost();
 
 			if ((substr($newURL, 0, 1) !== '/') && (strpos($newURL, '://') === false))
 			{
@@ -107,7 +109,7 @@ class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 
 			if (empty($host))
 			{
-				$base = JUri::getInstance(JUri::base());
+				$base = Uri::getInstance(Uri::base());
 				$new->setHost($base->getHost());
 				$new->setPort($base->getPort());
 				$new->setScheme($base->getScheme());
@@ -137,7 +139,7 @@ class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 			elseif ($keepQueryParams == 2)
 			{
 				$newUrlParams = $new->getQuery(true);
-				$myUrlParams = $myURL->getQuery(true);
+				$myUrlParams  = $myURL->getQuery(true);
 
 				foreach ($myUrlParams as $k => $v)
 				{
@@ -147,7 +149,7 @@ class AtsystemFeatureUrlredir extends AtsystemFeatureAbstract
 					}
 				}
 
-				$myFragment = $myURL->getFragment();
+				$myFragment  = $myURL->getFragment();
 				$newFragment = $new->getFragment();
 
 				if (!empty($myFragment) && empty($newFragment))

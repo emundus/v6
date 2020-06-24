@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,10 +27,12 @@ defined('_JEXEC') or die('Restricted access');
 			<dt class="hikashop_orderstatus_namekey"><label><?php echo JText::_('HIKA_NAMEKEY'); ?></label></dt>
 			<dd class="hikashop_orderstatus_namekey"><?php echo @$this->element->orderstatus_namekey; ?></dd>
 <?php } ?>
+			<dt class="hikashop_orderstatus_color"><label><?php echo JText::_('BOX_COLOR'); ?></label></dt>
+			<dd class="hikashop_orderstatus_color"><?php echo $this->colorType->displayAll('','data[orderstatus][orderstatus_color]',@$this->element->orderstatus_color); ?></dd>
 
 			<dt class="hikashop_orderstatus_published"><label><?php echo JText::_('HIKA_PUBLISHED'); ?></label></dt>
 			<dd class="hikashop_orderstatus_published"><?php echo JHTML::_('hikaselect.booleanlist', "data[orderstatus][orderstatus_published]" , '', @$this->element->orderstatus_published); ?></dd>
-<?php  ?>
+
 		</dl>
 	</div></div>
 

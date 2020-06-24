@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.2.2
+ * @version    4.3.0
  * @author     hikashop.com
- * @copyright  (C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 .hk-container {
@@ -501,6 +501,9 @@ input[type=checkbox].hkform-control, input[type=radio].hkform-control {
 	display: -moz-flex;
 	display: -ms-flexbox;
 	display: flex;
+	-webkit-flex-flow: row wrap;
+	-moz-flex-flow: row wrap;
+	flex-flow: row wrap;
 }
 .hkform-horizontal .hkcontrol-group:before,
 .hkform-horizontal .hkcontrol-group:after {
@@ -512,7 +515,7 @@ input[type=checkbox].hkform-control, input[type=radio].hkform-control {
 	clear: both;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 576px) {
 	.hkform-horizontal .hkcontrol-label {
 		text-align: right;
 		margin-bottom: 0;

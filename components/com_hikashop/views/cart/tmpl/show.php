@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -135,8 +135,12 @@ defined('_JEXEC') or die('Restricted access');
 		if(empty($this->cart->cart_products[$k]))
 			continue;
 
-		$cart_product = $this->cart->cart_products[$k];
+		if (isset($product->bundle_quantity)) {
+			if($product->product_quantity == -1 || $product->product_quantity > $product->bundle_quantity)
+				$product->product_quantity = $product->bundle_quantity;
+		}
 
+		$cart_product = $this->cart->cart_products[$k];
 		$status = 'err';
 		$text = '';
 		if (empty($product) || (!empty($product->product_sale_end) && $product->product_sale_end < time())) {
@@ -196,19 +200,35 @@ defined('_JEXEC') or die('Restricted access');
 				</span>
 <?php
 
-		if($this->config->get('show_code')) {
-			echo '<br/>' . '<span class="hikashop_cart_product_code">'.$product->product_code.'</span>';
+
+		$html = '';
+		$edit = false;
+		if(!empty($product->product_parent_id))
+			$edit = true;
+
+		if(hikashop_level(2) && !empty($this->itemFields)) {
+			$html .= '<p class="hikashop_order_product_custom_item_fields">';
+			foreach($this->itemFields as $field) {
+				$namekey = $field->field_namekey;
+				if(!empty($cart_product->$namekey) && strlen($cart_product->$namekey)) {
+					$edit = true;
+					$html .= '<p class="hikashop_order_item_'.$namekey.'">' .
+						$this->fieldsClass->getFieldName($field) . ': ' .
+						$this->fieldsClass->show($field, $cart_product->$namekey) .
+						'</p>';
+				}
+			}
+			$html .= '</p>';
+
 		}
 
 		if($group) {
 			foreach($this->cart->products as $opt_k => $opt_product) {
 				if($opt_product->cart_product_option_parent_id != $product->cart_product_id)
 					continue;
-?>
-				<p class="hikashop_cart_option_name"><?php
-					echo $opt_product->product_name;
-				?></p>
-<?php
+
+				$html .= '<p class="hikashop_cart_option_name">' . $opt_product->product_name . '</p>';
+				$edit = true;
 				if(!empty($opt_product->prices[0])) {
 					if(!isset($product->prices[0])) {
 						$product->prices[0] = new stdClass();
@@ -232,23 +252,22 @@ defined('_JEXEC') or die('Restricted access');
 			}
 		}
 
-		if(hikashop_level(2) && !empty($this->itemFields)) {
-?>
-				<p class="hikashop_order_product_custom_item_fields">
-<?php
-			foreach($this->itemFields as $field) {
-				$namekey = $field->field_namekey;
-				if(!empty($cart_product->$namekey) && strlen($cart_product->$namekey)) {
-					echo '<p class="hikashop_order_item_'.$namekey.'">' .
-						$this->fieldsClass->getFieldName($field) . ': ' .
-						$this->fieldsClass->show($field, $cart_product->$namekey) .
-						'</p>';
-				}
-			}
-?>
-				</p>
-<?php
+		if($edit) {
+			$popupHelper = hikashop_get('helper.popup');
+			echo ' '.$popupHelper->display(
+				'<i class="fas fa-pen"></i>',
+				'HIKASHOP_EDIT_CART_PRODUCT',
+				hikashop_completeLink('cart&task=product_edit&cart_id='.$this->cart->cart_id.'&cart_product_id='.$cart_product->cart_product_id.'&tmpl=component&'.hikashop_getFormToken().'=1'),
+				'edit_cart_product',
+				576, 480, 'title="'.JText::_('EDIT_THE_OPTIONS_OF_THE_PRODUCT').'"', '', 'link'
+			);
 		}
+
+		if($this->config->get('show_code')) {
+			echo '<br/>' . '<span class="hikashop_cart_product_code">'.$product->product_code.'</span>';
+		}
+
+		echo $html;
 
 		if(!empty($product->extraData) && !empty($product->extraData->cart))
 			echo '<div class="hikashop_cart_product_extradata"><p>' . implode('</p><p>', $product->extraData->cart) . '</p></div>';
@@ -387,6 +406,11 @@ defined('_JEXEC') or die('Restricted access');
 	<?php echo JHTML::_('form.token'); ?>
 </form>
 <script type="text/javascript">
+if(!window.checkout) window.checkout = {};
+window.Oby.registerAjax(['checkout.cart.updated','cart.updated'], function(params){
+	window.location.reload();
+});
+
 window.hikashop.ready(function(){
 	setTimeout(function(){window.hikashop.dlTitle('hikashop_show_cart_form')},1000);
 });

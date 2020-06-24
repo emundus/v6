@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -98,9 +98,13 @@ if(hikashop_level(2)){
 				<dt class="hikashop_option_name"><?php
 					echo JText::_('HIKA_SWITCHER_MODE');
 				?></dt>
-				<dd class="hikashop_option_value"><?php
-					echo JHTML::_('hikaselect.booleanlist', $this->name.'[enable_switcher]', '', @$this->element['enable_switcher']);
-				?></dd>
+				<dd class="hikashop_option_value">
+					<?php
+					if(!isset($this->element['enable_switcher'])) $this->element['enable_switcher'] = '-1';
+					echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[enable_switcher]', @$this->element['enable_switcher']);
+					?>
+				</dd>
+			</dl>
 			</dl>
 			<?php } ?>
 		</div>

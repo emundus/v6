@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -44,8 +44,14 @@ class hikashopCharacteristicClass extends hikashopClass{
 	public function save(&$element){
 		$translationHelper = hikashop_get('helper.translation');
 		$translationHelper->getTranslations($element);
+		if(!empty($element->characteristic_id))
+			$element->old = $this->get($element->characteristic_id);
 		$status = parent::save($element);
 		if($status){
+			if($translationHelper->isMulti()) {
+				$columns = array('characteristic_value');
+				$translationHelper->checkTranslations($element, $columns);
+			}
 			$translationHelper->handleTranslations('characteristic',$status,$element);
 		}
 		return $status;
@@ -150,7 +156,7 @@ class hikashopCharacteristicClass extends hikashopClass{
 		$characteristics = null;
 		if(isset($typeConfig['params']['value']) && $typeConfig['params']['value']) {
 			if((int)$options['url_params']['ID'] > 0) {
-				$query = 'SELECT characteristic_value, characteristic_alias, characteristic_id FROM ' . hikashop_table('characteristic').' WHERE characteristic_parent_id = ' . (int)$options['url_params']['ID'];
+				$query = 'SELECT characteristic_value, characteristic_alias, characteristic_id, characteristic_ordering FROM ' . hikashop_table('characteristic').' WHERE characteristic_parent_id = ' . (int)$options['url_params']['ID'];
 				if(!empty($options['vendor']))
 					$query .= ' AND characteristic_vendor_id IN (0, '.(int)$options['vendor'].')';
 				if(!empty($search))
@@ -164,7 +170,7 @@ class hikashopCharacteristicClass extends hikashopClass{
 			}
 		} else {
 
-			$query = 'SELECT characteristic_value, characteristic_alias, characteristic_id FROM ' . hikashop_table('characteristic').' WHERE characteristic_parent_id = 0';
+			$query = 'SELECT characteristic_value, characteristic_alias, characteristic_id, characteristic_ordering FROM ' . hikashop_table('characteristic').' WHERE characteristic_parent_id = 0';
 			if(!empty($options['vendor']))
 				$query .= ' AND characteristic_vendor_id IN (0, '.(int)$options['vendor'].')';
 			$this->database->setQuery($query);
@@ -176,14 +182,14 @@ class hikashopCharacteristicClass extends hikashopClass{
 		}
 
 		if(!empty($characteristics)) {
-			foreach($characteristics as $k => $v) {
-				$v->name = $v->characteristic_value;
+			$this->orderValues($characteristics);
+			foreach($characteristics as $v) {
+				$v->name = hikashop_translate($v->characteristic_value);
 				if( !empty($v->characteristic_alias) && $v->characteristic_value != $v->characteristic_alias ) {
 					$v->name .= ' ('.$v->characteristic_alias.')';
 				}
-				$ret[0][$k] = $v;
+				$ret[0][$v->characteristic_id] = $v;
 			}
-			asort($ret[0]);
 		} else {
 			JPluginHelper::importPlugin('hikashop');
 			$app = JFactory::getApplication();
@@ -192,5 +198,37 @@ class hikashopCharacteristicClass extends hikashopClass{
 		unset($characteristics);
 
 		return $ret;
+	}
+
+	public function orderValues(&$characteristics){
+		if(empty($characteristics))
+			return;
+
+		$sortedChars = array();
+		$config = hikashop_config();
+		$sort = $config->get('characteristics_values_sorting');
+		if($sort == 'old') {
+			$order = 'characteristic_id';
+		}elseif($sort == 'alias') {
+			$order = 'characteristic_alias';
+		}elseif($sort == 'ordering') {
+			$order = 'characteristic_ordering';
+		}else{
+			$order = 'characteristic_value';
+		}
+		foreach($characteristics as $k => $char) {
+			$key = '';
+
+			if(in_array($sort,array('old','ordering'))) {
+				$key = sprintf('%04d', $char->$order);
+			} else {
+				$key = $char->$order;
+			}
+
+			$key .= '+'.$char->characteristic_id;
+			$sortedChars[$key] =& $characteristics[$k];
+		}
+		ksort($sortedChars);
+		$characteristics = $sortedChars;
 	}
 }

@@ -1422,7 +1422,7 @@ $(document).ready(function() {
 
     $(document).on('keyup', 'input:text', function(e) {
 
-        if ($(this).closest('.modal').length === 0 && e.keyCode == 13 ) {
+        if ($(this).closest('.modal').length === 0 && $(this).closest('#em-message').length === 0 && e.keyCode == 13 ) {
             search();
         }
     });
@@ -2962,7 +2962,6 @@ $(document).ready(function() {
 
                 $('#em-export-opt').chosen({width:'80%'});
 
-
                 var checkInput = getUserCheck();
 
                 var prghtml = "";
@@ -3430,7 +3429,6 @@ $(document).ready(function() {
 
                 $('#em-export-opt').chosen({width:'80%'});
 
-
                 var checkInput = getUserCheck();
                 var prghtml = "";
                 var atthtml = "";
@@ -3897,7 +3895,6 @@ $(document).ready(function() {
 
             // Mail applicants
             case 9:
-
                 // Display the button on the top of the modal.
                 $('#can-val').empty();
                 $('#can-val').append('<a class="btn btn-success btn-large" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
@@ -3938,7 +3935,6 @@ $(document).ready(function() {
 
                 $('.modal-body').append(textArea);
                 break;
-
 
             // Access
             case 11:
@@ -4068,11 +4064,9 @@ $(document).ready(function() {
                 $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
                 break;
 
-
             // email custom
             case 17:
             case 18:
-
                 fnums = getUserCheckArray();
 
                 $('#can-val').empty();
@@ -4097,9 +4091,7 @@ $(document).ready(function() {
                         console.log(jqXHR.responseText);
                     }
                 });
-                //$('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
                 break;
-
 
             // generate DOCX
             case 27:
@@ -4199,24 +4191,6 @@ $(document).ready(function() {
         var attach_checked = [];
         var options = [];
 
-        if ($('#em-check-all-all').is(':checked')) {
-            var fnums = 'all';
-        } else {
-            var fnums = '{';
-            var i = 0;
-            $('.em-check:checked').each(function() {
-                fnums += '"'+i+'"'+':"'+$(this).attr('id').split('_')[0]+'",';
-                i++;
-            });
-            fnums = fnums.substr(0, fnums.length-1);
-            fnums += '}';
-
-            if (fnums.length == 2) {
-                alert('SELECT_FILES');
-                return;
-            }
-        }
-
         $('#felts input:checked').each(function() {
             form_checked.push($(this).val());
             forms = 0;
@@ -4261,7 +4235,7 @@ $(document).ready(function() {
             type:'get',
             url:url,
             data: {
-                fnums: fnums,
+                fnums: getUserCheck(),
                 forms: forms,
                 attachment: attachment,
                 assessment: assessment,
@@ -4299,7 +4273,6 @@ $(document).ready(function() {
         e.preventDefault();
         $.ajaxQ.abortAll();
 
-        //var checkInput = getUserCheck();
         var fnum = '';
         var fnums = '';
         var url = $(this).attr('href');

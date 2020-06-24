@@ -11,9 +11,10 @@ defined('_JEXEC') or die;
 
 use Akeeba\AdminTools\Admin\Controller\Mixin\CustomACL;
 use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
+use Exception;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
-use JText;
+use Joomla\CMS\Language\Text;
 
 class CheckTempAndLogDirectories extends Controller
 {
@@ -36,20 +37,20 @@ class CheckTempAndLogDirectories extends Controller
 
 		try
 		{
-			$folders = $model->checkFolders();
+			$folders        = $model->checkFolders();
 			$folderMessages = [
-				'<strong>' . JText::_('COM_ADMINTOOLS_LBL_CHECKTEMPANDLOGDIRECTORIES_TEMP_PATH') . '</strong>: ' . $folders['tmp'],
-				'<strong>' . JText::_('COM_ADMINTOOLS_MSG_CHECKTEMPANDLOGDIRECTORIES_LOG_PATH') . '</strong>: ' . $folders['log']
+				'<strong>' . Text::_('COM_ADMINTOOLS_LBL_CHECKTEMPANDLOGDIRECTORIES_TEMP_PATH') . '</strong>: ' . $folders['tmp'],
+				'<strong>' . Text::_('COM_ADMINTOOLS_MSG_CHECKTEMPANDLOGDIRECTORIES_LOG_PATH') . '</strong>: ' . $folders['log'],
 			];
-			$json['msg'] = implode('<br/>', $folderMessages);
+			$json['msg']    = implode('<br/>', $folderMessages);
 		}
-		catch(\Exception $e)
+		catch (Exception $e)
 		{
 			$json['result'] = false;
 			$json['msg']    = $e->getMessage();
 		}
 
-		echo '###'.json_encode($json).'###';
+		echo '###' . json_encode($json) . '###';
 
 		$this->container->platform->closeApplication();
 	}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -52,11 +52,9 @@ class hikashopItemType {
 			$this->values[] = JHTML::_('select.optgroup', $optGroup);
 			foreach($files as $file){
 				if(preg_match('#^listing_((?!div|list|price|table|vote).*)\.php$#',$file,$match)){
-					$val = strtoupper($match[1]);
-					$trans = JText::_($val);
-					if($trans==$val){
-						$trans=$match[1];
-					}
+					$trans = hikashop_translate('LAYOUT_'.$match[1]);
+					if($trans == 'LAYOUT_'.$match[1])
+						$trans = hikashop_translate($match[1]);
 					$this->values[$match[1]] = JHTML::_('select.option', $match[1], $trans);
 				}
 			}
@@ -67,11 +65,9 @@ class hikashopItemType {
 		$values = array();
 		foreach($files as $file){
 			if(preg_match('#^listing_((?!div|list|price|table|vote).*)\.php$#',$file,$match)){
-				$val = strtoupper($match[1]);
-				$trans = JText::_($val);
-				if($trans==$val){
-					$trans=$match[1];
-				}
+				$trans = hikashop_translate('LAYOUT_'.$match[1]);
+				if($trans == 'LAYOUT_'.$match[1])
+					$trans = hikashop_translate($match[1]);
 				$values[$match[1]] = JHTML::_('select.option', $match[1], $trans);
 			}
 		}

@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 use Akeeba\AdminTools\Admin\Model\FixPermissions;
 use FOF30\View\DataView\Html as BaseView;
+use Joomla\CMS\Toolbar\ToolbarHelper;
 
 class Html extends BaseView
 {
@@ -40,7 +41,7 @@ class Html extends BaseView
 		$percent = 100;
 		$more    = false;
 
-		\JToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools');
+		ToolbarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_admintools');
 
 		if ($state)
 		{

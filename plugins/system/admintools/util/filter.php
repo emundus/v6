@@ -5,6 +5,8 @@
  * @license   GNU General Public License version 3, or later
  */
 
+use FOF30\Utils\Ip;
+
 defined('_JEXEC') or die;
 
 class AtsystemUtilFilter
@@ -26,10 +28,10 @@ class AtsystemUtilFilter
 			// included and defined before attempting to use the Utils\Ip class
 			if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
 			{
-				throw new \RuntimeException('FOF is currently not installed');
+				throw new RuntimeException('FOF is currently not installed');
 			}
 
-			$ip = \FOF30\Utils\Ip::getIp();
+			$ip = Ip::getIp();
 
 			static::setIp($ip);
 		}
@@ -54,12 +56,12 @@ class AtsystemUtilFilter
 	 *
 	 * This code has been copied from FOF to lower the amount of dependencies required
 	 *
-	 * @param   array   $ipTable  The list of IP expressions
-	 * @param   string  $ip       The user's IP address, leave empty / null to get the current IP address
+	 * @param   array|string  $ipTable  The list of IP expressions
+	 * @param   string        $ip       The user's IP address, leave empty / null to get the current IP address
 	 *
 	 * @return  null|bool  True if it's in the list, null if the filtering can't proceed
 	 */
-	public static function IPinList($ipTable = array(), $ip = null)
+	public static function IPinList($ipTable = [], $ip = null)
 	{
 		// Get our IP address
 		if (empty($ip))
@@ -79,12 +81,14 @@ class AtsystemUtilFilter
 			if (strpos($ipTable, ',') !== false)
 			{
 				$ipTable = explode(',', $ipTable);
-				$ipTable = array_map(function($x) { return trim($x); }, $ipTable);
+				$ipTable = array_map(function ($x) {
+					return trim($x);
+				}, $ipTable);
 			}
 			else
 			{
 				$ipTable = trim($ipTable);
-				$ipTable = array($ipTable);
+				$ipTable = [$ipTable];
 			}
 		}
 
@@ -154,7 +158,7 @@ class AtsystemUtilFilter
 			}
 
 			$domain = substr($v, 1);
-			$dns   = dns_get_record($domain, DNS_AAAA);
+			$dns    = dns_get_record($domain, DNS_AAAA);
 
 			foreach ($dns as $record)
 			{
@@ -181,7 +185,7 @@ class AtsystemUtilFilter
 			// Inclusive IP range, i.e. 123.123.123.123-124.125.126.127
 			if (strstr($ipExpression, '-'))
 			{
-				list($from, $to) = explode('-', $ipExpression, 2);
+				[$from, $to] = explode('-', $ipExpression, 2);
 
 				if ($ipv6 && (!self::isIPv6($from) || !self::isIPv6($to)))
 				{
@@ -195,7 +199,7 @@ class AtsystemUtilFilter
 				}
 
 				$from = @inet_pton(trim($from));
-				$to = @inet_pton(trim($to));
+				$to   = @inet_pton(trim($to));
 
 				// Sanity check
 				if (($from === false) || ($to === false))
@@ -206,7 +210,7 @@ class AtsystemUtilFilter
 				// Swap from/to if they're in the wrong order
 				if ($from > $to)
 				{
-					list($from, $to) = array($to, $from);
+					[$from, $to] = [$to, $from];
 				}
 
 				if (($myIP >= $from) && ($myIP <= $to))
@@ -219,7 +223,7 @@ class AtsystemUtilFilter
 			{
 				$binaryip = self::inet_to_bits($myIP);
 
-				list($net, $maskbits) = explode('/', $ipExpression, 2);
+				[$net, $maskbits] = explode('/', $ipExpression, 2);
 				if ($ipv6 && !self::isIPv6($net))
 				{
 					// Do not apply IPv4 filtering on an IPv6 address
@@ -244,8 +248,8 @@ class AtsystemUtilFilter
 				elseif (!$ipv6 && strstr($maskbits, '.'))
 				{
 					// Convert IPv4 netmask to CIDR
-					$long = ip2long($maskbits);
-					$base = ip2long('255.255.255.255');
+					$long     = ip2long($maskbits);
+					$base     = ip2long('255.255.255.255');
 					$maskbits = 32 - log(($long ^ $base) + 1, 2);
 				}
 
@@ -259,13 +263,13 @@ class AtsystemUtilFilter
 				}
 
 				// Get the network's binary representation
-				$binarynet = self::inet_to_bits($net);
+				$binarynet            = self::inet_to_bits($net);
 				$expectedNumberOfBits = $ipv6 ? 128 : 24;
-				$binarynet = str_pad($binarynet, $expectedNumberOfBits, '0', STR_PAD_RIGHT);
+				$binarynet            = str_pad($binarynet, $expectedNumberOfBits, '0', STR_PAD_RIGHT);
 
 				// Check the corresponding bits of the IP and the network
 				$ip_net_bits = substr($binaryip, 0, $maskbits);
-				$net_bits = substr($binarynet, 0, $maskbits);
+				$net_bits    = substr($binarynet, 0, $maskbits);
 
 				if ($ip_net_bits == $net_bits)
 				{
@@ -315,17 +319,17 @@ class AtsystemUtilFilter
 						switch ($dots)
 						{
 							case 1:
-								$netmask = '255.0.0.0';
+								$netmask      = '255.0.0.0';
 								$ipExpression .= '0.0.0';
 								break;
 
 							case 2:
-								$netmask = '255.255.0.0';
+								$netmask      = '255.255.0.0';
 								$ipExpression .= '0.0';
 								break;
 
 							case 3:
-								$netmask = '255.255.255.0';
+								$netmask      = '255.255.255.0';
 								$ipExpression .= '0';
 								break;
 
@@ -338,8 +342,8 @@ class AtsystemUtilFilter
 							$binaryip = self::inet_to_bits($myIP);
 
 							// Convert netmask to CIDR
-							$long = ip2long($netmask);
-							$base = ip2long('255.255.255.255');
+							$long     = ip2long($netmask);
+							$base     = ip2long('255.255.255.255');
 							$maskbits = 32 - log(($long ^ $base) + 1, 2);
 
 							$net = @inet_pton($ipExpression);
@@ -351,13 +355,13 @@ class AtsystemUtilFilter
 							}
 
 							// Get the network's binary representation
-							$binarynet = self::inet_to_bits($net);
+							$binarynet            = self::inet_to_bits($net);
 							$expectedNumberOfBits = $ipv6 ? 128 : 24;
-							$binarynet = str_pad($binarynet, $expectedNumberOfBits, '0', STR_PAD_RIGHT);
+							$binarynet            = str_pad($binarynet, $expectedNumberOfBits, '0', STR_PAD_RIGHT);
 
 							// Check the corresponding bits of the IP and the network
 							$ip_net_bits = substr($binaryip, 0, $maskbits);
-							$net_bits = substr($binarynet, 0, $maskbits);
+							$net_bits    = substr($binarynet, 0, $maskbits);
 
 							if ($ip_net_bits == $net_bits)
 							{
@@ -384,7 +388,7 @@ class AtsystemUtilFilter
 	/**
 	 * Is it an IPv6 IP address?
 	 *
-	 * @param   string   $ip  An IPv4 or IPv6 address
+	 * @param   string  $ip  An IPv4 or IPv6 address
 	 *
 	 * @return  boolean  True if it's IPv6
 	 */
@@ -401,7 +405,7 @@ class AtsystemUtilFilter
 	/**
 	 * Converts inet_pton output to bits string
 	 *
-	 * @param   string $inet The in_addr representation of an IPv4 or IPv6 address
+	 * @param   string  $inet  The in_addr representation of an IPv4 or IPv6 address
 	 *
 	 * @return  string
 	 */
@@ -439,13 +443,13 @@ class AtsystemUtilFilter
 		$ip       = inet_pton($ip);
 		$binaryip = self::inet_to_bits($ip);
 
-		list($net, $maskbits) = explode('/',$cidrnet);
+		[$net, $maskbits] = explode('/', $cidrnet);
 
-		$net         = inet_pton($net);
-		$binarynet   = self::inet_to_bits($net);
+		$net       = inet_pton($net);
+		$binarynet = self::inet_to_bits($net);
 
-		$ip_net_bits = substr($binaryip,0,$maskbits);
-		$net_bits    = substr($binarynet,0,$maskbits);
+		$ip_net_bits = substr($binaryip, 0, $maskbits);
+		$net_bits    = substr($binarynet, 0, $maskbits);
 
 		return $ip_net_bits === $net_bits;
 	}

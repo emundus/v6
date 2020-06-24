@@ -10,7 +10,7 @@
                label="COM_FALANG_CONFIG_BASIC_DOWNLOADID_LABEL"
                description ="COM_FALANG_CONFIG_BASIC_DOWNLOADID_DESC" />
         
-        <!-- >>> [PAID_1] >>> -->
+        <!-- >>> [PAID] >>> -->
         <field
                 name="frontEndEdition"
                 type="radio"
@@ -52,7 +52,7 @@
                 <option value="1">JYES</option>
         </field>
 
-        <!-- <<< [PAID_1] <<< -->
+        <!-- <<< [PAID] <<< -->
         <field
                 name="show_list"
                 type="radio"
@@ -173,24 +173,6 @@
                label="COM_FALANG_CONFIG_TRANSLATOR_YANDEX_KEY"
                description="COM_FALANG_CONFIG_TRANSLATOR_YANDEX_KEY_DESC"
         />
-    </fieldset>
-    <fieldset name="import_export"
-              label="COM_FALANG_CONFIG_IE"
-              description="COM_FALANG_CONFIG_IE_DESC"
-        >
-        
-        <!-- >>> [PAID_2] >>> -->
-        <field
-                name="ie_list"
-                type="textarea"
-                class="input-xxlarge"
-                rows="10"
-                cols="60"
-                default="content,Articles&#13;&#10;menu,Menu&#13;&#10;modules,Modules"
-                label="COM_FALANG_IE_TABLE_LIST_LABEL"
-                description="COM_FALANG_IE_TABLE_LIST_DESC"
-        />
-        <!-- <<< [PAID_2] <<< -->
     </fieldset>
     <fieldset name="debug"
 		label="COM_FALANG_CONFIG_DEBUG_LABEL"

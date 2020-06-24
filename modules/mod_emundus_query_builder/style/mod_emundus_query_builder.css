@@ -1,0 +1,59 @@
+.queryBuilder {
+	text-align:left;
+	border:5px solid #de6339;
+	padding-left:5%;
+	padding-bottom:1%;
+}
+.swal2-select {
+	font-size:14px !important;
+}
+.btn {
+    background-image: none !important;
+    background: #de6339 !important;
+    border: 1px solid #de6339 !important;
+    color: #ffffff !important;
+    margin:0;
+}
+.btn:hover {
+    background: #ffffff !important;
+    color: #de6339 !important;
+}
+.input {
+	margin:1% 0%;
+}
+.createModule {
+	margin:1%;
+}
+.createModule select {
+	margin-right:1%;
+}
+.editModule, .editModule td {
+	border:none;
+}
+.order {
+	width:5%;
+	text-align:center;
+}
+.radioModule {
+	width:75%;
+}
+.exportModule, .exportModule td {
+	text-align:left;
+	border:none;
+}
+.exportModule .radioButton {
+	margin-right:1%;
+}
+.edit {
+	width:20%;
+}
+.move {
+	cursor:grab;
+	background: #de6339;
+	color:#ffffff;
+	border-radius:0.25rem;
+}
+#errorCreateModule {
+	color:red;
+	font-weight:bold;
+}

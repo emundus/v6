@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -20,8 +20,11 @@ class hikashopShippingClass extends hikashopClass {
 		$do = true;
 		if(empty($element->shipping_id))
 			$app->triggerEvent('onBeforeHikaPluginCreate', array('shipping', &$element, &$do));
-		else
+		else {
+			if(!isset($element->old))
+				$element->old = parent::get($element->shipping_id);
 			$app->triggerEvent('onBeforeHikaPluginUpdate', array('shipping', &$element, &$do));
+		}
 
 		if(!$do)
 			return false;
@@ -41,6 +44,12 @@ class hikashopShippingClass extends hikashopClass {
 			return $status;
 
 		$this->get('reset_cache');
+
+		$translationHelper = hikashop_get('helper.translation');
+		if($translationHelper->isMulti()) {
+			$columns = array('shipping_name', 'shipping_description');
+			$translationHelper->checkTranslations($element, $columns);
+		}
 
 		if(empty($element->shipping_id)) {
 			$element->shipping_id = $status;
@@ -101,6 +110,8 @@ class hikashopShippingClass extends hikashopClass {
 				$result->shipping_params = hikashop_unserialize($result->shipping_params);
 				if(!empty($result->shipping_name))
 					$result->shipping_name = hikashop_translate($result->shipping_name);
+				if(!empty($result->shipping_description))
+					$result->shipping_description = hikashop_translate($result->shipping_description);
 			} else if(is_array($id) && is_array($result)) {
 				foreach($result as &$r) {
 					if(!empty($r->shipping_params))
@@ -108,6 +119,9 @@ class hikashopShippingClass extends hikashopClass {
 
 					if(!empty($r->shipping_name))
 						$r->shipping_name = hikashop_translate($r->shipping_name);
+
+					if(!empty($r->shipping_description))
+						$r->shipping_description = hikashop_translate($r->shipping_description);
 				}
 			}
 			$cachedElements[$cache_id] = $result;
@@ -993,6 +1007,19 @@ class hikashopShippingClass extends hikashopClass {
 					}
 					$restrictions[] = JText::_('CURRENCY') . ': ' . implode(', ', $list);
 				}
+			}
+
+			if(!empty($row->plugin_params->shipping_warehouse_filter)) {
+				$warehouse_ids = explode(',', $row->plugin_params->shipping_warehouse_filter);
+				$list = array();
+				foreach($warehouse_ids as $warehouse_id) {
+					if(!empty($view->warehouses[$warehouse_id])){
+						$list[] = $view->warehouses[$warehouse_id]->warehouse_name;
+					} else {
+						$list[] = JText::_('WAREHOUSE').' ' .$warehouse_id;
+					}
+				}
+				$restrictions[] = JText::_('WAREHOUSE') . ': ' . implode(', ', $list);
 			}
 
 			$row->col_display_restriction = implode('<br/>', $restrictions);

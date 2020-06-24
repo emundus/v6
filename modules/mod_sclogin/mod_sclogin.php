@@ -3,8 +3,8 @@
  * @package         SCLogin
  * @copyright (c)   2009-2019 by SourceCoast - All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @version         Release v8.0.5
- * @build-date      2019/01/14
+ * @version         Release v8.4.3
+ * @build-date      2020/05/29
  */
 
 // no direct access
@@ -28,12 +28,32 @@ $showRegisterLink = $params->get('showRegisterLink');
 $showRegisterLinkInModal = $showRegisterLink == 2 || $showRegisterLink == 3;
 $showRegisterLinkInLogin = $showRegisterLink == 1 || $showRegisterLink == 3;
 
-
 // Setup our parameters
 $layout = $params->get('socialButtonsLayout', 'vertical'); //horizontal or vertical
 $orientation = $params->get('socialButtonsOrientation'); //bottom, side or top
 $alignment = $params->get('socialButtonsAlignment');
 $loginButtonType = $params->get('loginButtonType');
+
+$loginButtonClass = $params->get('loginbutton_class');
+$registerButtonClass = $params->get('registerbutton_class');
+
+if(empty($loginButtonClass))
+{
+    if($helper->isJFBConnectInstalled)
+        $loginButtonClass = JFBCFactory::config()->getSetting('registration_loginbutton_class');
+    else
+        $loginButtonClass = "btn-primary";
+}
+if(empty($registerButtonClass))
+{
+    if($helper->isJFBConnectInstalled)
+        $registerButtonClass = JFBCFactory::config()->getSetting('registration_registerbutton_class');
+    else
+        $registerButtonClass = "btn-secondary";
+}
+
+$loginButtonClass = "btn " . $loginButtonClass;
+$registerButtonClass = "btn validate " . $registerButtonClass;
 
 if ($layout == 'horizontal')
 {

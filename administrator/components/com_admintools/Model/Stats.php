@@ -11,9 +11,8 @@ defined('_JEXEC') or die;
 
 use AkeebaUsagestats;
 use Exception;
-use FOF30\Database\Installer;
 use FOF30\Model\Model;
-use JUri;
+use Joomla\CMS\Uri\Uri;
 
 class Stats extends Model
 {
@@ -25,19 +24,19 @@ class Stats extends Model
 	public function getSiteId()
 	{
 		// Can I load a site ID from the database?
-		$siteId  = $this->getCommonVariable('stats_siteid', null);
+		$siteId = $this->getCommonVariable('stats_siteid', null);
 		// Can I load the site Url from the database?
 		$siteUrl = $this->getCommonVariable('stats_siteurl', null);
 
 		// No id or the saved URL is not the same as the current one (ie site restored to a new url)?
 		// Create a new, random site ID and save it to the database
-		if (empty($siteId) || (md5(JUri::base()) != $siteUrl))
+		if (empty($siteId) || (md5(Uri::base()) != $siteUrl))
 		{
-			$siteUrl = md5(JUri::base());
+			$siteUrl = md5(Uri::base());
 			$this->setCommonVariable('stats_siteurl', $siteUrl);
 
 			$randomData = $this->getRandomData(120);
-			$siteId = sha1($randomData);
+			$siteId     = sha1($randomData);
 
 			$this->setCommonVariable('stats_siteid', $siteId);
 		}
@@ -48,7 +47,7 @@ class Stats extends Model
 	/**
 	 * Send site information to the remove collection service
 	 *
-	 * @param  bool  $useIframe  Should I use an IFRAME?
+	 * @param   bool  $useIframe  Should I use an IFRAME?
 	 *
 	 * @return bool
 	 */
@@ -90,35 +89,35 @@ class Stats extends Model
 
 		require_once JPATH_ROOT . '/administrator/components/com_admintools/version.php';
 
-		$db = $this->container->db;
+		$db    = $this->container->db;
 		$stats = new AkeebaUsagestats();
 
 		$stats->setSiteId($siteId);
 
 		// I can't use list since dev release don't have any dots
-		$at_parts = explode('.', ADMINTOOLS_VERSION);
-		$at_major = $at_parts[0];
-		$at_minor = isset($at_parts[1]) ? $at_parts[1] : '';
+		$at_parts    = explode('.', ADMINTOOLS_VERSION);
+		$at_major    = $at_parts[0];
+		$at_minor    = isset($at_parts[1]) ? $at_parts[1] : '';
 		$at_revision = isset($at_parts[2]) ? $at_parts[2] : '';
 
-		list($php_major, $php_minor, $php_revision) = explode('.', phpversion());
+		[$php_major, $php_minor, $php_revision] = explode('.', phpversion());
 		$php_qualifier = strpos($php_revision, '~') !== false ? substr($php_revision, strpos($php_revision, '~')) : '';
 
-		list($cms_major, $cms_minor, $cms_revision) = explode('.', JVERSION);
-		list($db_major, $db_minor, $db_revision) = explode('.', $db->getVersion());
+		[$cms_major, $cms_minor, $cms_revision] = explode('.', JVERSION);
+		[$db_major, $db_minor, $db_revision] = explode('.', $db->getVersion());
 		$db_qualifier = strpos($db_revision, '~') !== false ? substr($db_revision, strpos($db_revision, '~')) : '';
 
 		$db_driver = get_class($db);
 
-		if(stripos($db_driver, 'mysql') !== false)
+		if (stripos($db_driver, 'mysql') !== false)
 		{
 			$stats->setValue('dt', 1);
 		}
-		elseif(stripos($db_driver, 'sqlsrv') !== false || stripos($db_driver, 'sqlazure'))
+		elseif (stripos($db_driver, 'sqlsrv') !== false || stripos($db_driver, 'sqlazure'))
 		{
 			$stats->setValue('dt', 2);
 		}
-		elseif(stripos($db_driver, 'postgresql') !== false)
+		elseif (stripos($db_driver, 'postgresql') !== false)
 		{
 			$stats->setValue('dt', 3);
 		}
@@ -157,14 +156,14 @@ class Stats extends Model
 	/**
 	 * Load a variable from the common variables table. If it doesn't exist it returns $default
 	 *
-	 * @param  string  $key      The key to load
-	 * @param  mixed   $default  The default value if the key doesn't exist
+	 * @param   string  $key      The key to load
+	 * @param   mixed   $default  The default value if the key doesn't exist
 	 *
 	 * @return mixed The contents of the key or null if it's not present
 	 */
 	public function getCommonVariable($key, $default = null)
 	{
-		$db = $this->container->db;
+		$db    = $this->container->db;
 		$query = $db->getQuery(true)
 			->select($db->qn('value'))
 			->from($db->qn('#__akeeba_common'))
@@ -186,12 +185,12 @@ class Stats extends Model
 	/**
 	 * Set a variable to the common variables table.
 	 *
-	 * @param  string  $key    The key to save
-	 * @param  mixed   $value  The value to save
+	 * @param   string  $key    The key to save
+	 * @param   mixed   $value  The value to save
 	 */
 	public function setCommonVariable($key, $value)
 	{
-		$db = $this->container->db;
+		$db    = $this->container->db;
 		$query = $db->getQuery(true)
 			->select('COUNT(*)')
 			->from($db->qn('#__akeeba_common'))
@@ -211,7 +210,7 @@ class Stats extends Model
 		{
 			$query = $db->getQuery(true)
 				->insert($db->qn('#__akeeba_common'))
-				->columns(array($db->qn('key'), $db->qn('value')))
+				->columns([$db->qn('key'), $db->qn('value')])
 				->values($db->q($key) . ', ' . $db->q($value));
 		}
 		else
@@ -243,7 +242,7 @@ class Stats extends Model
 	{
 		if (extension_loaded('openssl') && (version_compare(PHP_VERSION, '5.3.4') >= 0 || IS_WIN))
 		{
-			$strong = false;
+			$strong    = false;
 			$randBytes = openssl_random_pseudo_bytes($bytes, $strong);
 
 			if ($strong)
@@ -276,15 +275,15 @@ class Stats extends Model
 		 * Collect any entropy available in the system along with a number
 		 * of time measurements of operating system randomness.
 		 */
-		$bitsPerRound = 2;
-		$maxTimeMicro = 400;
+		$bitsPerRound  = 2;
+		$maxTimeMicro  = 400;
 		$shaHashLength = 20;
-		$randomStr = '';
-		$total = $length;
+		$randomStr     = '';
+		$total         = $length;
 
 		// Check if we can use /dev/urandom.
 		$urandom = false;
-		$handle = null;
+		$handle  = null;
 
 		// This is PHP 5.3.3 and up
 		if (function_exists('stream_set_read_buffer') && @is_readable('/dev/urandom'))
@@ -299,7 +298,7 @@ class Stats extends Model
 
 		while ($length > strlen($randomStr))
 		{
-			$bytes = ($total > $shaHashLength)? $shaHashLength : $total;
+			$bytes = ($total > $shaHashLength) ? $shaHashLength : $total;
 			$total -= $bytes;
 
 			/*
@@ -309,7 +308,7 @@ class Stats extends Model
 			$entropy = rand() . uniqid(mt_rand(), true) . $sslStr;
 			$entropy .= implode('', @fstat(fopen(__FILE__, 'r')));
 			$entropy .= memory_get_usage();
-			$sslStr = '';
+			$sslStr  = '';
 
 			if ($urandom)
 			{
@@ -325,13 +324,13 @@ class Stats extends Model
 				 *
 				 * Measure the time that the operations will take on average.
 				 */
-				$samples = 3;
+				$samples  = 3;
 				$duration = 0;
 
 				for ($pass = 0; $pass < $samples; ++$pass)
 				{
 					$microStart = microtime(true) * 1000000;
-					$hash = sha1(mt_rand(), true);
+					$hash       = sha1(mt_rand(), true);
 
 					for ($count = 0; $count < 50; ++$count)
 					{
@@ -339,7 +338,7 @@ class Stats extends Model
 					}
 
 					$microEnd = microtime(true) * 1000000;
-					$entropy .= $microStart . $microEnd;
+					$entropy  .= $microStart . $microEnd;
 
 					if ($microStart >= $microEnd)
 					{
@@ -366,7 +365,7 @@ class Stats extends Model
 				for ($pass = 0; $pass < $iter; ++$pass)
 				{
 					$microStart = microtime(true);
-					$hash = sha1(mt_rand(), true);
+					$hash       = sha1(mt_rand(), true);
 
 					for ($count = 0; $count < $rounds; ++$count)
 					{

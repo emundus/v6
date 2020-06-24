@@ -12,11 +12,9 @@ defined('_JEXEC') or die;
 use Akeeba\AdminTools\Admin\Dispatcher\Dispatcher as AdminDispatcher;
 use Akeeba\AdminTools\Admin\Model\ConfigureWAF;
 use FOF30\Container\Container;
-use FOF30\Dispatcher\Mixin\ViewAliases;
 use FOF30\Utils\Ip;
-use JFactory;
-use JText;
-use JUri;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use RuntimeException;
 
 class Dispatcher extends AdminDispatcher
@@ -29,7 +27,7 @@ class Dispatcher extends AdminDispatcher
 	 *
 	 * @var  array
 	 */
-	protected $viewNameAliases = array();
+	protected $viewNameAliases = [];
 
 	/**
 	 * If set to true, any GET request to the alias view will result in an HTTP 301 permanent redirection to the real
@@ -59,7 +57,7 @@ class Dispatcher extends AdminDispatcher
 		// Not the Pro version, nothing for you to do in the front end of the component
 		if (!defined("ADMINTOOLS_PRO") || !ADMINTOOLS_PRO)
 		{
-			throw new RuntimeException(JText::_('JLIB_APPLICATION_ERROR_COMPONENT_NOT_FOUND'), 404);
+			throw new RuntimeException(Text::_('JLIB_APPLICATION_ERROR_COMPONENT_NOT_FOUND'), 404);
 		}
 
 		$this->onBeforeDispatchViewAliases();
@@ -81,7 +79,7 @@ class Dispatcher extends AdminDispatcher
 		// Work around non-transparent proxy and reverse proxy IP issues when the feature is enabled and the plugin
 		// has not done the same already.
 		/** @var ConfigureWAF $wafModel */
-		$wafModel = $this->container->factory->model('ConfigureWAF')->tmpInstance();
+		$wafModel  = $this->container->factory->model('ConfigureWAF')->tmpInstance();
 		$wafConfig = $wafModel->getConfig();
 
 		if ($wafConfig['ipworkarounds'] && !isset($_SERVER['FOF_REMOTE_ADDR']))
@@ -97,7 +95,7 @@ class Dispatcher extends AdminDispatcher
 			$this->container->platform->setSessionVar('block', false, 'com_admintools');
 
 			// We have to go through JFactory to alter the application's input!
-			$input = JFactory::getApplication()->input;
+			$input = Factory::getApplication()->input;
 			$input->set('option', 'com_admintools');
 			$input->set('view', 'Blocks');
 			$input->set('task', 'browse');
@@ -120,7 +118,7 @@ class Dispatcher extends AdminDispatcher
 		if ($inScannerView)
 		{
 			// We have to go through JFactory to alter the application's input!
-			$input = JFactory::getApplication()->input;
+			$input = Factory::getApplication()->input;
 			$input->set('view', 'FileScanner');
 			$input->set('task', $task);
 			$input->set('format', 'raw');
@@ -131,6 +129,6 @@ class Dispatcher extends AdminDispatcher
 		}
 
 		// In all other cases pretend we're not here
-		throw new RuntimeException(JText::_('JLIB_APPLICATION_ERROR_COMPONENT_NOT_FOUND'), 404);
+		throw new RuntimeException(Text::_('JLIB_APPLICATION_ERROR_COMPONENT_NOT_FOUND'), 404);
 	}
 }

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -172,10 +172,10 @@ if($carouselEffect=='slide'){
 		}
 		$this->row =& $row;
 		if($this->params->get('div_item_layout_type')=='fade' || $this->params->get('div_item_layout_type')=='slider_vertical' || $this->params->get('div_item_layout_type')=='slider_horizontal' || $this->params->get('div_item_layout_type')=='img_pane'){
-			?><li style="margin: <?php echo $margin; ?>px; height:<?php echo $height; ?>px; width:<?php echo $width; ?>px;float:left; list-style:none; position:relative;"><?php
+			?><li style="margin: <?php echo $margin; ?>px; height:<?php echo $height; ?>px; width:<?php echo $width; ?>px;float:left; list-style:none; position:relative;" itemprop="itemList" itemscope="" itemtype="http://schema.org/ItemList"><?php
 		}
 		else{
-			?><li style="margin: <?php echo $margin; ?>px; width:<?php echo $width; ?>px;float:left; list-style:none; text-align:center"><?php
+			?><li style="margin: <?php echo $margin; ?>px; width:<?php echo $width; ?>px;float:left; list-style:none; text-align:center" itemprop="itemList" itemscope="" itemtype="http://schema.org/ItemList"><?php
 		}
 		$this->setLayout('listing_'.$this->params->get('div_item_layout_type'));
 		echo $this->loadTemplate();
@@ -227,7 +227,7 @@ else if($carouselEffect=='fade'){
 			$nbSlide++;
 		}
 		$this->row =& $row;
-		?><div style="margin: <?php echo $margin; ?>px; height:<?php echo $height; ?>px; width:<?php echo $width; ?>px;float:left; "><?php
+		?><div style="margin: <?php echo $margin; ?>px; height:<?php echo $height; ?>px; width:<?php echo $width; ?>px;float:left; " itemprop="itemList" itemscope="" itemtype="http://schema.org/ItemList"><?php
 		$this->setLayout('listing_'.$this->params->get('div_item_layout_type'));
 		echo $this->loadTemplate();
 		?></div><?php

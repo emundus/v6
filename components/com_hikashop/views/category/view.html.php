@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -214,13 +214,31 @@ class CategoryViewCategory extends HikaShopView {
 		if(empty($oldValue))
 			$oldValue = $this->params->get('limit');
 
-		$pageInfo->limit->value = $app->getUserStateFromRequest($this->paramBase.'.list_limit_category', 'limit_category', $this->params->get('limit'), 'int');
+
+
+		if($config->get('redirect_post',0)){
+			if(isset($_REQUEST['limit_category'])){
+				$pageInfo->limit->value = hikaInput::get()->getInt('limit_category');
+			}else {
+				$pageInfo->limit->value = $this->params->get('limit');
+			}
+		} else {
+			$pageInfo->limit->value = $app->getUserStateFromRequest($this->paramBase.'.list_limit_category', 'limit_category', $this->params->get('limit'), 'int');
+		}
 
 		if($oldValue != $pageInfo->limit->value) {
 			hikaInput::get()->set('limitstart_category',0);
 		}
 
-		$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart_category', 'limitstart_category', 0, 'int' );
+
+		if($config->get('redirect_post',0)){
+			$pageInfo->limit->start = 0;
+			if(isset($_REQUEST['limitstart_category'])){
+				$pageInfo->limit->start = hikaInput::get()->getInt('limitstart_category');
+			}
+		} else {
+			$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart_category', 'limitstart_category', 0, 'int' );
+		}
 
 		if(empty($this->module)){
 			if($config->get('hikarss_format') != 'none'){
@@ -371,27 +389,37 @@ class CategoryViewCategory extends HikaShopView {
 				$title = $this->params->get('title');
 			}
 			if(empty($use_module) && !empty($element->category_name)) {
-				$title = $element->category_name;
+				$title = hikashop_translate($element->category_name);
 			}
 			if(!empty($element->category_page_title)) {
-				$page_title = $element->category_page_title;
+				$page_title = hikashop_translate($element->category_page_title);
 			} else {
 				$page_title = $title;
 			}
 			hikashop_setPageTitle($page_title);
 			$this->params->set('page_title', $title);
 
-			$document = JFactory::getDocument();
+			$doc = JFactory::getDocument();
 			if(!empty($element->category_keywords)) {
-				$document->setMetadata('keywords', $element->category_keywords);
+				$doc->setMetadata('keywords', hikashop_translate($element->category_keywords));
+			}
+			elseif ($this->params->get('menu-meta_keywords')) {
+				$doc->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
 			}
 			if(!empty($element->category_meta_description)) {
-				$document->setMetadata('description', $element->category_meta_description);
+				$doc->setMetadata('description', hikashop_translate($element->category_meta_description));
+			}elseif ($this->params->get('menu-meta_description')) {
+				$doc->setMetadata('description', $this->params->get('menu-meta_description'));
+			}
+
+			if ($this->params->get('robots')) {
+				$doc->setMetadata('robots', $this->params->get('robots'));
 			}
 
 			$pagination = hikashop_get('helper.pagination', $pageInfo->elements->total, $pageInfo->limit->start, $pageInfo->limit->value);
 			$pagination->hikaSuffix = '_category';
 			$this->assignRef('pagination',$pagination);
+			$pagination->addMetaLinks();
 			$this->params->set('show_limit',1);
 
 			$pathway = $app->getPathway();
@@ -411,7 +439,7 @@ class CategoryViewCategory extends HikaShopView {
 					}
 					$categoryClass->addAlias($category);
 					$alias = $category->alias;
-					$pathway->addItem($category->category_name,hikashop_completeLink('category&task=listing&cid='.(int)$category->category_id.'&name='.$alias.$menu_id));
+					$pathway->addItem(hikashop_translate($category->category_name),hikashop_completeLink('category&task=listing&cid='.(int)$category->category_id.'&name='.$alias.$menu_id));
 				}
 			}
 		} else {

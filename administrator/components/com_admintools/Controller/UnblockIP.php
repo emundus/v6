@@ -13,7 +13,7 @@ use Akeeba\AdminTools\Admin\Controller\Mixin\CustomACL;
 use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
-use JText;
+use Joomla\CMS\Language\Text;
 
 class UnblockIP extends Controller
 {
@@ -42,11 +42,11 @@ class UnblockIP extends Controller
 
 		if ($status)
 		{
-			$this->setRedirect($url, JText::_('COM_ADMINTOOLS_LBL_UNBLOCKIP_OK'));
+			$this->setRedirect($url, Text::_('COM_ADMINTOOLS_LBL_UNBLOCKIP_OK'));
 		}
 		else
 		{
-			$this->setRedirect($url, JText::_('COM_ADMINTOOLS_LBL_UNBLOCKIP_NOTFOUND'), 'warning');
+			$this->setRedirect($url, Text::_('COM_ADMINTOOLS_LBL_UNBLOCKIP_NOTFOUND'), 'warning');
 		}
 	}
 }

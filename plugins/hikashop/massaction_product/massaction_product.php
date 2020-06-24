@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -312,7 +312,7 @@ class plgHikashopMassaction_product extends JPlugin
 				$query->leftjoin['characteristic'.$num] = hikashop_table('characteristic').' AS hk_characteristic'.$num.' ON hk_characteristic'.$num.'.characteristic_id = hk_variant'.$num.'.variant_characteristic_id';
 				$query->leftjoin['characteristic_parent'.$num] = hikashop_table('characteristic').' AS hk_characteristic_parent'.$num.' ON hk_characteristic'.$num.'.characteristic_parent_id = hk_characteristic_parent'.$num.'.characteristic_id';
 				if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
-					$rquery = str_replace($filter['type'],'',$this->massaction->getRequest($filter));
+					$rquery = str_replace('`'.$filter['type'].'`','',$this->massaction->getRequest($filter));
 					$query->where[] = 'hk_characteristic'.$num.'.characteristic_value '.$rquery.' AND hk_characteristic_parent'.$num.'.characteristic_value = '.$db->quote($filter['type']).'';
 				}
 			}

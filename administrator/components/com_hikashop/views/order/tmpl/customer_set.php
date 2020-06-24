@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -26,7 +26,46 @@ defined('_JEXEC') or die('Restricted access');
 			</tr>
 			<tr>
 				<td class="key"><label><?php echo JText::_('SET_USER_ADDRESS'); ?></label></td>
-				<td><?php echo JHTML::_('hikaselect.booleanlist', 'set_user_address', '', 0); ?></td>
+				<td><?php echo JHTML::_('hikaselect.booleanlist', 'set_user_address', 'onchange="window.orderMgr.addressSwitch(this);"', 0); ?></td>
+			</tr>
+			<tr class="address_selector" style="display:none;">
+				<td class="key"><label><?php echo JText::_('HIKASHOP_BILLING_ADDRESS'); ?></label></td>
+				<td><?php
+$values = array();
+$default = 0;
+$values[] = JHTML::_('select.option', 0, JText::_('NO_ADDRESS'));
+foreach($this->addresses as $address) {
+	if(empty($address))
+		continue;
+	if(!empty($address->address_type) && !in_array($address->address_type, array('both', '', 'billing')))
+		continue;
+	if($address->address_default)
+		$default = $address->address_id;
+	$addr = $this->addressClass->miniFormat($address);
+	$values[] = JHTML::_('select.option', $address->address_id, $addr);
+}
+echo JHTML::_('select.genericlist', $values, 'billing_address', 'class="hikashop_field_dropdown"', 'value', 'text', $default);
+				?></td>
+			</tr>
+			<tr class="address_selector" style="display:none;">
+				<td class="key"><label><?php echo JText::_('HIKASHOP_SHIPPING_ADDRESS'); ?></label></td>
+				<td><?php
+$values = array();
+$default = 0;
+
+$values[] = JHTML::_('select.option', 0, JText::_('NO_ADDRESS'));
+foreach($this->addresses as $address) {
+	if(empty($address))
+		continue;
+	if(!empty($address->address_type) && !in_array($address->address_type, array('both', '', 'shipping')))
+		continue;
+	if($address->address_default)
+		$default = $address->address_id;
+	$addr = $this->addressClass->miniFormat($address);
+	$values[] = JHTML::_('select.option', $address->address_id, $addr);
+}
+echo JHTML::_('select.genericlist', $values, 'shipping_address', 'class="hikashop_field_dropdown"', 'value', 'text', $default);
+			 ?></td>
 			</tr>
 			<tr>
 				<td class="key"><label><?php echo JText::_('HISTORY'); ?></label></td>
@@ -59,5 +98,16 @@ window.orderMgr.orderadditional_history_changed = function(el) {
 	if(!el.checked) displayValue = 'none';
 	window.hikashop.setArrayDisplay(fields, displayValue);
 }
+window.orderMgr.addressSwitch = function(el) {
+	var elements = document.querySelectorAll('.address_selector');
+	var display = 'none';
+	if(parseInt(el.value) == 1) {
+		display = '';
+	}
+	for (var i = 0; i < elements.length; i++) {
+		elements[i].style.display = display;
+	}
+}
+
 </script>
 </form>

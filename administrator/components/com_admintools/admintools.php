@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 JDEBUG ? define('AKEEBADEBUG', 1) : null;
 
 define('AKEEBA_COMMON_WRONGPHP', 1);
-$minPHPVersion         = '5.6.0';
+$minPHPVersion         = '7.1.0';
 $recommendedPHPVersion = '7.3';
 $softwareName          = 'Admin Tools';
 
@@ -35,23 +35,8 @@ if (!@file_exists(JPATH_SITE . '/media/fef/fef.php'))
 	return;
 }
 
-/**
- * The following code is a neat trick to help us collect the maximum amount of relevant information when a user
- * encounters an unexpected exception (PHP 5.4+) or a PHP fatal error (PHP 7+). In both cases we capture the generated
- * exception and render an error page, making sure that the HTTP response code is set to an appropriate value (4xx or
- * 5xx).
- *
- * Why the two functions? In PHP 5 the base exception class is Exception. In PHP 7 there is a base interface called
- * Throwable which the two base classes Exception (user-defined exception) and Error (PHP fatal error) implement.
- * However, Throwable does not exist in PHP 5 so we can't have a try-catch expecting Throwable. At the same time, in
- * PHP 7 neither catching Exception will handle PHP fatal errors nor can you manually implement Throwable to create a
- * base class for use in try-catch. Therefore the only solution is to have two functions for the try and catch part,
- * a conditional for the PHP version and a slightly different catch block in each case.
- *
- * Now you know what we did and why we did it. Feel free to include this idea in your GPL projects :)
- */
-
-function mainLoopAdminToolsForJoomla()
+// PHP 7.0 or later; we can catch PHP Fatal Errors as well
+try
 {
 	if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
 	{
@@ -61,39 +46,14 @@ function mainLoopAdminToolsForJoomla()
 	}
 
 	FOF30\Container\Container::getInstance('com_admintools')->dispatcher->dispatch();
-};
-
-function errorHandlerAdminToolsForJoomla($e)
+}
+catch (Throwable $e)
 {
 	$title = 'Admin Tools';
 	$isPro = defined(ADMINTOOLS_PRO) ? ADMINTOOLS_PRO : file_exists(__DIR__ . '/View/HtaccessMaker/Html.php');
+
 	if (!(include_once __DIR__ . '/View/errorhandler.php'))
 	{
 		throw $e;
-	}
-}
-
-if (version_compare(PHP_VERSION, '7.0.0', 'lt'))
-{
-	// PHP 5.4, 5.5 and 5.6. Only user exceptions can be caught.
-	try
-	{
-		mainLoopAdminToolsForJoomla();
-	}
-	catch (Exception $e)
-	{
-		errorHandlerAdminToolsForJoomla($e);
-	}
-}
-else
-{
-	// PHP 7.0 or later; we can catch PHP Fatal Errors as well
-	try
-	{
-		mainLoopAdminToolsForJoomla();
-	}
-	catch (Throwable $e)
-	{
-		errorHandlerAdminToolsForJoomla($e);
 	}
 }

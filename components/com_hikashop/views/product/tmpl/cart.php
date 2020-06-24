@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -33,6 +33,7 @@ window.Oby.registerAjax(<?php echo $events; ?>, function(params) {
 
 $group = (int)$this->config->get('group_options', 0);
 $small_cart = (int)$this->params->get('small_cart', 0);
+$link_to_product = (int)$this->params->get('link_to_product_page', 1);
 $spinner_css="";
 if (!empty($small_cart)) $spinner_css="small_spinner small_cart";
 
@@ -450,7 +451,7 @@ foreach($this->element->products as $k => $product) {
 ?>
 				<td class="hikashop_cart_module_product_name_value hikashop_cart_value">
 <?php
-		if(!empty($this->default_params['link_to_product_page'])) {
+		if($link_to_product == 1) {
 			?><a href="<?php echo hikashop_contentLink('product&task=show&cid='.$product->product_id.'&name='.$product->alias.$this->url_itemid, $product);?>"><?php
 		}
 ?>
@@ -463,7 +464,7 @@ foreach($this->element->products as $k => $product) {
 		}
 ?>
 <?php
-		if(!empty($this->default_params['link_to_product_page'])) {
+		if($link_to_product == 1) {
 			?></a><?php
 		}
 ?>

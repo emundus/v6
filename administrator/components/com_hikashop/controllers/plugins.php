@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -84,6 +84,8 @@ class PluginsController extends hikashopController {
 				if($data){
 					$key = $type.'_id';
 					unset($data->$key);
+					$name = $type .'_name';
+					$data->$name = $data->$name.' ('.JText::_('HIKA_COPY').')';
 					if(!$pluginsClass->save($data)){
 						$result=false;
 					}
@@ -111,7 +113,7 @@ class PluginsController extends hikashopController {
 		$type = hikaInput::get()->getString('type');
 		$id_field = $type.'_id';
 		$pluginClass = hikashop_get('class.'.$type);
-		$element = $pluginClass->get($cid);
+		$element = $pluginClass->getRaw($cid);
 		if(!empty($element->$id_field)){
 			$translationHelper = hikashop_get('helper.translation');
 			$translationHelper->getTranslations($element);

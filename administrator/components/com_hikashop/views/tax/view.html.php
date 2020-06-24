@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -102,14 +102,14 @@ class TaxViewTax extends hikashopView{
 						$pageInfo->filter->filter_end = '';
 						break;
 					default:
-						$filter_end = hikashop_getTime($pageInfo->filter->filter_end, '%d %B %Y');
+						$filter_end = hikashop_getTime($pageInfo->filter->filter_end.' 23:59', '%d %B %Y %H:%M');
 						$filters[]='order_created <= '.(int)$filter_end;
 						$pageInfo->filter->filter_end=(int)$filter_end;
 						break;
 				}
 				break;
 			default:
-				$filter_start = hikashop_getTime($pageInfo->filter->filter_start, '%d %B %Y');
+				$filter_start = hikashop_getTime($pageInfo->filter->filter_start.' 00:00', '%d %B %Y %H:%M');
 				switch($pageInfo->filter->filter_end){
 					case '':
 					case '0000-00-00 00:00:00':
@@ -118,7 +118,7 @@ class TaxViewTax extends hikashopView{
 						$pageInfo->filter->filter_start=(int)$filter_start;
 						break;
 					default:
-						$filter_end = hikashop_getTime($pageInfo->filter->filter_end, '%d %B %Y');
+						$filter_end = hikashop_getTime($pageInfo->filter->filter_end.' 23:59', '%d %B %Y %H:%M');
 						$filters[]='order_created >= '.(int)$filter_start. ' AND order_created <= '.(int)$filter_end;
 						$pageInfo->filter->filter_start=(int)$filter_start;
 						$pageInfo->filter->filter_end=(int)$filter_end;
@@ -154,7 +154,7 @@ class TaxViewTax extends hikashopView{
 				$info =& $orders_taxes[$k]->order_tax_info;
 				if(!$info) continue;
 				foreach($info as $k2 => $taxes_info){
-					$tax_amount = $taxes_info->tax_amount + $v->order_discount_price - $v->order_discount_tax;
+					$tax_amount = $taxes_info->tax_amount + @$taxes_info->tax_amount_for_shipping - @$taxes_info->tax_amount_for_coupon;
 					if(!isset($taxes_info->tax_rate)) $taxes_info->tax_rate = $rows[$taxes_info->tax_namekey]->tax_rate;
 					if($taxes_info->tax_rate != 0)
 						$info[$k2]->amount = $currencyClass->round($tax_amount/$taxes_info->tax_rate,$currencyClass->getRounding($v->order_currency_id));

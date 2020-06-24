@@ -290,33 +290,31 @@ class EmundusController extends JControllerLegacy {
         $jinput = $app->input;
         $m_profile = new EmundusModelProfile;
 
-        $student_id    = $jinput->get->get('sid', null);
-        $fnum          = $jinput->get->getVar('fnum', null);
-        $status          = $jinput->get->get('status', null);
-        $redirect      = $jinput->get->getBase64('redirect', null);
+        $student_id = $jinput->get->get('sid', null);
+        $fnum = $jinput->get->getVar('fnum', null);
+        $status = $jinput->get->get('status', null);
+        $redirect = $jinput->get->getBase64('redirect', null);
         // Redirect URL is currently only used in Hesam template of mod_emundus_application, it allows for the module to be located on a page other than index.php.
-        if (empty($redirect) || empty($status))
-            $redirect = 'index.php';
-        else
-            $redirect = base64_decode($redirect);
+        if (empty($redirect) || empty($status)) {
+        	$redirect = 'index.php';
+        } else {
+        	$redirect = base64_decode($redirect);
+        }
 
-        if (empty($fnum))
-            $app->redirect($redirect);
+        if (empty($fnum)) {
+        	$app->redirect($redirect);
+        }
 
-        $current_user  = JFactory::getSession()->get('emundusUser');
+        $current_user = JFactory::getSession()->get('emundusUser');
         $m_files = $this->getModel('files');
-        if (EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum, array_keys($current_user->fnums))){
-            $user = $current_user;
-            $result = $m_files->updateState($fnum, $status);
-
-        } elseif(EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) ||
-            EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
+        if (EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum, array_keys($current_user->fnums))) {
+        	$user = $current_user;
+            $m_files->updateState($fnum, $status);
+        } elseif (EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = $m_profile->updateState($student_id);
-
         } else {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
             $app->redirect($redirect);
-
             return false;
         }
 
@@ -328,7 +326,6 @@ class EmundusController extends JControllerLegacy {
         }
 
         return true;
-
     }
 
     /* publish file */

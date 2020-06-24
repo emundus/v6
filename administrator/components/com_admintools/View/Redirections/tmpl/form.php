@@ -6,8 +6,11 @@
  */
 
 use Akeeba\AdminTools\Admin\Helper\Select;
+use Akeeba\AdminTools\Admin\View\Redirections\Html;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 
-/** @var $this \Akeeba\AdminTools\Admin\View\Redirections\Html */
+/** @var $this Html */
 
 defined('_JEXEC') or die;
 ?>
@@ -16,41 +19,42 @@ defined('_JEXEC') or die;
 		<div>
 			<div class="akeeba-form-group">
 				<label for="source">
-					<?php echo JText::_('COM_ADMINTOOLS_LBL_REDIRECTION_SOURCE'); ?>
+					<?php echo Text::_('COM_ADMINTOOLS_LBL_REDIRECTION_SOURCE'); ?>
 				</label>
-				<input type="text" name="source" id="source" value="<?php echo $this->escape($this->item->source); ?>" />
+				<input type="text" name="source" id="source"
+					   value="<?php echo $this->escape($this->item->source); ?>" />
 			</div>
 
 			<div class="akeeba-form-group">
 				<label for="dest">
-					<?php echo JText::_('COM_ADMINTOOLS_LBL_REDIRECTION_DEST'); ?>
+					<?php echo Text::_('COM_ADMINTOOLS_LBL_REDIRECTION_DEST'); ?>
 				</label>
 				<input type="text" name="dest" id="dest" value="<?php echo $this->escape($this->item->dest); ?>" />
 				<p>
-					<?php echo JText::_('COM_ADMINTOOLS_REDIRECTIONS_FIELD_DEST_DESC')?>
+					<?php echo Text::_('COM_ADMINTOOLS_REDIRECTIONS_FIELD_DEST_DESC') ?>
 				</p>
 			</div>
 
 			<div class="akeeba-form-group">
 				<label for="keepurlparams">
-					<?php echo JText::_('COM_ADMINTOOLS_REDIRECTIONS_FIELD_KEEPURLPARAMS'); ?>
+					<?php echo Text::_('COM_ADMINTOOLS_REDIRECTIONS_FIELD_KEEPURLPARAMS'); ?>
 				</label>
 
-				<?php echo Select::keepUrlParamsList('keepurlparams', null, $this->item->keepurlparams)?>
+				<?php echo Select::keepUrlParamsList('keepurlparams', null, $this->item->keepurlparams) ?>
 
 				<p>
-					<?php echo JText::_('COM_ADMINTOOLS_REDIRECTIONS_FIELD_KEEPURLPARAMS_DESC')?>
+					<?php echo Text::_('COM_ADMINTOOLS_REDIRECTIONS_FIELD_KEEPURLPARAMS_DESC') ?>
 				</p>
 			</div>
 
 			<div class="akeeba-form-group">
 				<label for="dest">
-					<?php echo JText::_('JPUBLISHED'); ?>
+					<?php echo Text::_('JPUBLISHED'); ?>
 				</label>
 
-				<?php echo \JHtml::_('FEFHelper.select.booleanswitch', 'published', $this->item->published)?>
+				<?php echo HTMLHelper::_('FEFHelper.select.booleanswitch', 'published', $this->item->published) ?>
 				<p>
-					<?php echo JText::_('COM_ADMINTOOLS_REDIRECTIONS_FIELD_PUBLISHED_DESC')?>
+					<?php echo Text::_('COM_ADMINTOOLS_REDIRECTIONS_FIELD_PUBLISHED_DESC') ?>
 				</p>
 			</div>
 		</div>
@@ -60,7 +64,7 @@ defined('_JEXEC') or die;
 		<input type="hidden" name="option" value="com_admintools" />
 		<input type="hidden" name="view" value="Redirection" />
 		<input type="hidden" name="task" value="" />
-		<input type="hidden" name="id" id="id" value="<?php echo (int)$this->item->id; ?>" />
+		<input type="hidden" name="id" id="id" value="<?php echo (int) $this->item->id; ?>" />
 		<input type="hidden" name="<?php echo $this->container->platform->getToken(true); ?>" value="1" />
 	</div>
 </form>

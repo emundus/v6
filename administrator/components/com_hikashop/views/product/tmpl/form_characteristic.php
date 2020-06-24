@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -79,7 +79,7 @@ foreach($this->product->characteristics as $characteristic) {
 		<tr class="row<?php echo $k ?>">
 			<td class="column_move"><img src="<?php echo HIKASHOP_IMAGES; ?>move.png"/></td>
 			<td><?php
-				echo $characteristic->characteristic_value;
+				echo hikashop_translate($characteristic->characteristic_value);
 				if(!empty($characteristic->characteristic_alias))
 					echo ' - ' . $characteristic->characteristic_alias;
 			?></td>

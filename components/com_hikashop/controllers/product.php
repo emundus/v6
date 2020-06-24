@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -82,7 +82,8 @@ class productController extends hikashopController {
 		$app->triggerEvent('onBeforeSendContactRequest', array(&$element, &$send));
 
 		jimport('joomla.mail.helper');
-		if(!empty($element->email) && method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($element->email)){
+		$mailer = JFactory::getMailer();
+		if(!empty($element->email) && ((method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($element->email)) || !$mailer->validateAddress($element->email))){
 			$app->enqueueMessage(JText::_('EMAIL_INVALID'), 'error');
 			$send = false;
 		}
@@ -189,7 +190,8 @@ class productController extends hikashopController {
 		}
 
 		jimport('joomla.mail.helper');
-		if($element->email && !JMailHelper::isEmailAddress($element->email)) {
+		$mailer = JFactory::getMailer();
+		if($element->email && (!JMailHelper::isEmailAddress($element->email) || !$mailer->validateAddress($element->email))) {
 			$app->enqueueMessage(JText::_('EMAIL_INVALID'), 'error');
 			return $this->waitlist();
 		}
@@ -559,9 +561,9 @@ class productController extends hikashopController {
 			return $ret;
 
 		$imageHelper = hikashop_get('helper.image');
+		$config = hikashop_config();
+		$imageSize = (int)$config->get('addtocart_popup_image_size', 50);
 		if(!empty($cart->products)) {
-			$config = hikashop_config();
-			$imageSize = (int)$config->get('addtocart_popup_image_size', 50);
 			foreach($cart->products as $product) {
 				if($product->product_id != $data['product'])
 					continue;
@@ -571,7 +573,7 @@ class productController extends hikashopController {
 
 				if($imageSize > 0) {
 					$image_path = (isset($product->images[0]->file_path) ? $product->images[0]->file_path : '');
-					$img = $imageHelper->getThumbnail($image_path, array(50,50), array('default' => true), true);
+					$img = $imageHelper->getThumbnail($image_path, array($imageSize,$imageSize), array('default' => true), true);
 					if($img->success)
 						$ret['image'] = $img->url;
 				}
@@ -581,12 +583,14 @@ class productController extends hikashopController {
 		if(!isset($ret['product_name'])) {
 			$productClass = hikashop_get('class.product');
 			$product = $productClass->getProduct($data['product']);
-			$ret['product_name'] = $product->product_name;
+			if(empty($product->product_name) && !empty($product->parent->product_name))
+				$product->product_name = $product->parent->product_name;
+			$ret['product_name'] = hikashop_translate($product->product_name);
 			$ret['quantity'] = 0;
 
 			$image_path = ((isset($product->parent) && isset($product->parent->images[0]->file_path)) ? $product->parent->images[0]->file_path : '');
 			$image_path = (isset($product->images[0]->file_path) ? $product->images[0]->file_path : $image_path);
-			$img = $imageHelper->getThumbnail($image_path, array(50,50), array('default' => true), true);
+			$img = $imageHelper->getThumbnail($image_path, array($imageSize,$imageSize), array('default' => true), true);
 			if($img->success)
 				$ret['image'] = $img->url;
 		}

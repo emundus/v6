@@ -10,7 +10,9 @@ namespace Akeeba\AdminTools\Admin\Controller;
 defined('_JEXEC') or die;
 
 use Akeeba\AdminTools\Admin\Controller\Mixin\CustomACL;
+use Exception;
 use FOF30\Controller\DataController;
+use Joomla\CMS\Language\Text;
 
 class Redirections extends DataController
 {
@@ -23,7 +25,7 @@ class Redirections extends DataController
 
 		/** @var \Akeeba\AdminTools\Admin\Model\Redirections $model */
 		$model = $this->getModel()->savestate(false);
-		$ids = $this->getIDsFromRequest($model, true);
+		$ids   = $this->getIDsFromRequest($model, true);
 
 		$error = null;
 
@@ -35,14 +37,14 @@ class Redirections extends DataController
 			{
 				$model->find($id);
 				$model->copy([
-					'published' => 0
+					'published' => 0,
 				]);
 			}
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			$status = false;
-			$error = $e->getMessage();
+			$error  = $e->getMessage();
 		}
 
 		// Redirect
@@ -60,7 +62,7 @@ class Redirections extends DataController
 		else
 		{
 			$textKey = strtoupper($this->container->componentName . '_LBL_' . $this->container->inflector->singularize($this->view) . '_COPIED');
-			$this->setRedirect($url, \JText::_($textKey));
+			$this->setRedirect($url, Text::_($textKey));
 		}
 	}
 
@@ -74,6 +76,6 @@ class Redirections extends DataController
 
 
 		$url = 'index.php?option=com_admintools&view=Redirections';
-		$this->setRedirect($url, \JText::_('COM_ADMINTOOLS_LBL_REDIRECTION_PREFERENCE_SAVED'));
+		$this->setRedirect($url, Text::_('COM_ADMINTOOLS_LBL_REDIRECTION_PREFERENCE_SAVED'));
 	}
 }

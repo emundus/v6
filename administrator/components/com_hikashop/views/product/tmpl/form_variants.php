@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -40,7 +40,7 @@ if(!hikashop_acl('product/edit/variants') || empty($this->product->product_id))
 		}
 		$characteristics[(int)$characteristic->characteristic_id] = (int)$characteristic->characteristic_id;
 
-?>			<th><?php echo $characteristic->characteristic_value; ?></th>
+?>			<th><?php echo hikashop_translate($characteristic->characteristic_value); ?></th>
 <?php
 	}
 ?>
@@ -75,7 +75,7 @@ if(!hikashop_acl('product/edit/variants') || empty($this->product->product_id))
 			$o = @$variant->characteristics[$characteristic->characteristic_id];
 			if(!empty($o) && isset($default_variants[ (int)$o->id ]))
 				$cpt++;
-?>			<td style="cursor:pointer" onclick="return window.productMgr.editVariant(<?php echo $variant->product_id; ?>);"><?php echo @$o->value; ?></td>
+?>			<td style="cursor:pointer" onclick="return window.productMgr.editVariant(<?php echo $variant->product_id; ?>);"><?php echo hikashop_translate(@$o->value); ?></td>
 <?php
 		}
 		$variant_default = ($cpt == count($default_variants)) ? 'icon-publish' : 'icon-unpublish';

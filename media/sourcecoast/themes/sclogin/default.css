@@ -51,6 +51,14 @@ a.forgot.btn i {
     margin-top: 6px;
 }
 
+.sclogin .field-icon {
+    margin-left: -25px;
+    margin-right: 11px;
+    position: relative;
+    z-index: 2;
+    font-size: 14px;
+}
+
 #form-sclogin-submitcreate a,
 .sclogin-modal-links a.btn,
 .scuser-menu a.dropdown-toggle {

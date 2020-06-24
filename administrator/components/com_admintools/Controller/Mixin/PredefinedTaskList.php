@@ -21,7 +21,7 @@ trait PredefinedTaskList
 	 *
 	 * @var array
 	 */
-	protected $predefinedTaskList = array();
+	protected $predefinedTaskList = [];
 
 	/**
 	 * Overrides the execute method to implement the predefined task list feature

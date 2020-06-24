@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,14 @@ defined('_JEXEC') or die('Restricted access');
 		<div class="hkc-md-6">
 		</div>
 	</div>
-	<table id="hikashop_orderstatus_listing" class="adminlist table table-striped table-hover" cellpadding="1">
+
+<?php
+	$classes = 'adminlist table';
+	if(empty($this->colors)) {
+		$classes .= ' table-striped table-hover';
+	}
+?>
+	<table id="hikashop_orderstatus_listing" class="<?php echo $classes; ?>" cellpadding="1">
 		<thead>
 			<tr>
 				<th class="title titlenum"><?php
@@ -70,8 +77,11 @@ defined('_JEXEC') or die('Restricted access');
 	$nbRows = count($this->rows);
 	foreach($this->rows as $row) {
 		$publishedid = 'orderstatus_published-'.$row->orderstatus_id;
+		$attributes = '';
+		if(!empty($this->orderStatuses[$row->orderstatus_namekey]->orderstatus_color))
+			$attributes .= ' style="background-color:'.$this->orderStatuses[$row->orderstatus_namekey]->orderstatus_color.';"';
 ?>
-			<tr class="row<?php echo $k; ?>">
+			<tr class="row<?php echo $k; ?>"<?php echo $attributes; ?>>
 				<td style="text-align:center"><?php
 					echo $this->pagination->getRowOffset($i);
 				?></td>
@@ -96,6 +106,7 @@ defined('_JEXEC') or die('Restricted access');
 				</td>
 <?php
 	foreach($this->orderstatus_columns as $key => $column) {
+		$publishedid = 'orderstatus_published-'.$row->orderstatus_id;
 ?>
 				<td style="text-align:center" id="<?php echo 'status-'.$key.'-'.$row->orderstatus_namekey; ?>"><?php
 					if($column['type'] == 'toggle')

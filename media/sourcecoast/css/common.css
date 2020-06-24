@@ -83,10 +83,12 @@
 .sourcecoast.twitter,
 .sourcecoast.google,
 .sourcecoast.pinterest,
+.sourcecoast.instagram,
 .sourcecoast .facebook,
 .sourcecoast .linkedin,
 .sourcecoast .twitter,
 .sourcecoast .google,
-.sourcecoast .pinterest {
+.sourcecoast .pinterest,
+.sourcecoast .instagram{
     background:none;
 }

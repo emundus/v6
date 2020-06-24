@@ -1047,6 +1047,14 @@ body.em-formRegistrationCenter  {
     color: #b94a48 !important;
 }
 
+/*** HIDE VALIDATION TITLE ***/
+.popover-title {
+  display: none !important;
+}
+
+
+/*** MEDIA QUERY SECTION ***/
+
 @media all and (max-width: 1239px) {
     #form_307.fabrikForm {
         width:60%;
