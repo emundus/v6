@@ -781,7 +781,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
      */
     function share(name, desc) {
 
-        const addressed = '\n une offre de sujet de thèse adressé' +
+        const addressed = ' - une offre de thèse financée, adressé' +
             '<?= ($application->profile_id !== '1006')?' aux futurs doctorants':''; ?>' +
             '<?= ($application->profile_id !== '1006' && $application->profile_id !== '1007')?' et':''; ?><?= ($application->profile_id !== '1007')?' aux cherchers(ses)':''; ?>' +
             '<?= ($application->profile_id !== '1008')?' et aux collectivités':''; ?>' +
@@ -789,18 +789,18 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
 
         const link = '<?= JUri::base(); ?>consultez-les-offres';
 
-        let offer = name+' '+desc;
+        let offer = name+' - '+desc;
         if (offer.length+addressed.length+link.length > 280) {
             offer = offer.substring(0, 260-(addressed.length+link.length))+'...';
         }
-        const text = offer+' '+addressed;
+        const text = offer+addressed;
 
         Swal.fire({
             customClass: {
                 title: "heading no-dash"
             },
             title: '<?= JText::_('SHARE_OFFER'); ?>',
-            html: '<a href="https://twitter.com/intent/tweet?url='+encodeURIComponent(link)+'&text='+text+'" class="twitter-button cta-offre w-inline-block" target="_blank">Twitter</a>' +
+            html: '<a href="https://twitter.com/intent/tweet?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(text)+'" class="twitter-button cta-offre w-inline-block" target="_blank">Twitter</a>' +
                 '<a href="https://www.facebook.com/sharer.php?u='+encodeURIComponent(link)+'" class="fb-button cta-offre w-inline-block" target="_blank">Facebook</a>' +
                 '<a href="https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(link)+'&summary='+text.replace(/ /g,"+")+'" class="linkedin-button cta-offre w-inline-block" target="_blank">LinkedIn</a>',
             showCloseButton: true,
