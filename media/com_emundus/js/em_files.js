@@ -1633,11 +1633,14 @@ $(document).ready(function() {
         $('.modal-lg').css({ width: '80%' });
         $('.modal-dialog').css({ width: '80%' });
 
-        var fnum = $(this).attr('id').split('_')[0];
-        var cid = parseInt(fnum.substr(14, 7));
-        var sid = parseInt(fnum.substr(21, 7));
+        var fnums = getUserCheckArray();
+        var fnums_json = JSON.parse(fnums);
+        if(fnums_json.length === 1) {
+            var fnum = fnums_json[0].fnum;
+            var cid = parseInt(fnum.substr(14, 7));
+            var sid = parseInt(fnum.substr(21, 7));
+        }
 
-        fnums = getUserCheckArray();
         fnums = encodeURIComponent(fnums);
 
         var view = $('#view').val();
