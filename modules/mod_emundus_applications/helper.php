@@ -40,7 +40,7 @@ class modemundusApplicationsHelper {
 
 		// Hesam layout needs to get the title from the information about the project.
 		if ($has_table) {
-			$query .= ', pro.titre ';
+			$query .= ', pro.titre, pro.id AS search_engine_page, pro.question ';
 		}
 
 		$query .= ' FROM #__emundus_campaign_candidature AS ecc
@@ -205,44 +205,61 @@ class modemundusApplicationsHelper {
 
 	}
 
+	/** Get all contact offers for the fnums.
+	 *  This also includes contact offers sent with this offer attached.
+	 *
+	 * @param $fnums
+	 *
+	 * @return array
+	 * @since version
+	 */
+    static function getContactOffers($fnums) {
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+		$m_cifre = new EmundusModelCifre();
+		$m_messages = new EmundusModelMessages();
+		
+		$fnums = $m_cifre->getContactsByFnums($fnums);
 
-	// HESAM Get ammount of demands for an offer
-	static function getNumberOfContactOffers($fnum) {
+		// Here we organize fnums by profile in order to have the split contact cards in HESAM.
+	    $return = [];
+	    foreach ($fnums as $fnum => $offers) {
 
-        $db = JFactory::getDbo();
+	    	foreach ($offers as $key => $data) {
+			    $data['unread'] = $m_messages->getUnread($data['applicant_id']);
+				
+			    if ($data['favorite'] === '1') {
+				    // Place favorite at the front of the array.
+				    $return[$fnum][$data['profile_id']][0] = $data;
+				    ksort($return[$fnum][$data['profile_id']]);
+			    } else {
+			    	// We use $key+1 to avoid the case where $key is 0, we need to ensure the favorite is first.
+				    $return[$fnum][$data['profile_id']][$key+1] = $data;
+			    }
+		    }
+	    }
 
-        $query = 'SELECT count(ec.id)
-					FROM #__emundus_cifre_links ec
-					WHERE ec.fnum_to LIKE "'.$fnum.'"
-					AND (ec.state = 2 OR ec.state = 1)';
-
-        try {
-            $db->setQuery($query);
-            return $db->loadResult();
-
-        } catch (Exception $e) {
-            JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
-            return false;
-        }
+	    return $return;
     }
 
-    static function getSearchEngineId($fnum) {
-        $db = JFactory::getDbo();
+	/** Get all chat requests for a user.
+	 *
+	 * @param $user
+	 *
+	 * @return array
+	 * @since version
+	 */
+	static function getChatRequests($user) {
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+		$m_cifre = new EmundusModelCifre();
+		$m_messages = new EmundusModelMessages();
 
-        $query = $db->getQuery('true');
+		$return = $m_cifre->getChatRequestsByUser($user);
 
-        $query
-            ->select($db->quoteName('id'))
-            ->from($db->quoteName('#__emundus_recherche'))
-            ->where($db->quoteName('fnum') . ' LIKE "' . $fnum . '"' );
-
-        try {
-            $db->setQuery($query);
-            return $db->loadResult();
-
-        } catch (Exception $e) {
-            JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
+		foreach ($return as $key => $data) {
+			$return[$key]['unread'] = $m_messages->getUnread($data['applicant_id']);
+		}
+		return $return;
+	}
 }

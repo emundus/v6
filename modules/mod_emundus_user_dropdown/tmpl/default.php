@@ -60,10 +60,12 @@ if($user != null) {
     }
 </style>
 
+<?= $intro; ?>
+
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown' id="userDropdown" style="float: right;">
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-        <i class="<?= $icon;?>" id="userDropdownIcon"></i>
+        <i class="<?= $icon; ?>" id="userDropdownIcon"></i>
     </div>
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
         <li class="dropdown-header"><?= $user->name; ?></li>
@@ -71,7 +73,7 @@ if($user != null) {
         <?php if (!empty($list)) :?>
             <li role="separator" class="divider"></li>
             <?php foreach ($list as $i => $item) :?>
-                <li class="<?= ($item->id == $active_id)?'active':''; ?>"><a href="<?= $item->flink ?>" <?= ($item->browserNav == 1)?'target="_blank"':''; ?>><?= $item->title; ?></a></li>
+                <li class="<?= ($item->id == $active_id)?'active':''; ?>"><a href="<?= $item->flink; ?>" <?= ($item->browserNav == 1)?'target="_blank"':''; ?>><?= $item->title; ?></a></li>
             <?php endforeach; ?>
         <?php endif; ?>
         <?php if ($show_logout == '1') :?>

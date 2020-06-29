@@ -6,6 +6,9 @@
  * Time: 14:04
  */
 
+?>
+
+<?= $intro; ?>
 // No direct access.
 defined('_JEXEC') or die;
 $document = JFactory::getDocument();

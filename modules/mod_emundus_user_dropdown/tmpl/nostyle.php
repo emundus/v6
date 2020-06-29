@@ -13,6 +13,8 @@ defined('_JEXEC') or die;
 if($user != null) {
 ?>
 
+<?= $intro; ?>
+
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown' id="userDropdown">
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">

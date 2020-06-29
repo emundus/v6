@@ -15,9 +15,11 @@ require_once dirname(__FILE__).'/helper.php';
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css");
 
-// Load list of contact requests to and from the user.
+$nb_suggestions = $params->get('nb_suggestions', 5);
+$intro = $params->get('intro', '');
+
 $helper = new modEmundusCifreSuggestionsHelper();
-$offers = $helper->getSuggestions();
+$offers = $helper->getSuggestions($nb_suggestions);
 
 require JModuleHelper::getLayoutPath('mod_emundus_cifre_suggestions', 'default');
 

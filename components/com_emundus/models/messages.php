@@ -26,6 +26,9 @@ class EmundusModelMessages extends JModelList {
 	 */
     public function __construct($config = array()) {
         $this->user = JFactory::getSession()->get('emundusUser');
+
+        JLog::addLogger(['text_file' => 'com_emundus.chatroom.error.php'], JLog::ERROR, 'com_emundus.chatroom');
+
 		parent::__construct($config);
 	}
 
@@ -662,12 +665,13 @@ class EmundusModelMessages extends JModelList {
 
 	/** gets all messages received after the message $lastID
 	 *
-	 * @param      $lastId
-	 * @param null $user
+	 * @param         $lastId
+	 * @param   null  $user
+	 * @param   null  $other_user
 	 *
 	 * @return bool|mixed
 	 */
-    public function updateMessages($lastId, $user = null) {
+    public function updateMessages($lastId, $user = null, $other_user = null) {
 
         if (empty($user)) {
 	        $user = $this->user->id;
@@ -675,19 +679,20 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
-        // Update message state to read
-        $query = $db->getQuery(true);
+        $where = $db->quoteName('message_id').' > '.$lastId.' AND '.$db->quoteName('user_id_to').' = '.$user.' AND ' . $db->quoteName('state') . ' = 1 AND '.$db->quoteName('folder_id').' = 2';
+        if (!empty($other_user)) {
+        	$where .= ' AND '.$db->quoteName('user_id_from').' = '.$other_user;
+        }
 
+        $query = $db->getQuery(true);
         $query->select('*')
             ->from($db->quoteName('#__messages'))
-            ->where($db->quoteName('message_id').' > '.$lastId.' AND '.$db->quoteName('user_id_to').' = '.$user.' AND ' . $db->quoteName('state') . ' = 1 AND '.$db->quoteName('folder_id').' = 2')
+            ->where($where)
             ->order('message_id DESC');
 
         try {
-
             $db->setQuery($query);
             return $db->loadObjectList();
-
         } catch (Exception $e) {
             JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
@@ -695,6 +700,36 @@ class EmundusModelMessages extends JModelList {
 
     }
 
+
+	/** Get number of unread messages between two users (messages with folder_id 2)
+	 *
+	 * @param         $sender
+	 * @param   null  $receiver
+	 *
+	 * @return bool|mixed
+	 */
+	public function getUnread($sender, $receiver = null) {
+
+		if (empty($receiver)) {
+			$receiver = $this->user->id;
+		}
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('COUNT(state)')
+			->from($db->quoteName('#__messages'))
+			->where($db->quoteName('state').' = 1 AND '.$db->quoteName('folder_id').' = 2 AND '.$db->quoteName('user_id_to').' = '.$receiver.' AND '.$db->quoteName('user_id_from').' = '.$sender);
+		try {
+			$db->setQuery($query);
+			return $db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('Error loading unread messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+	}
+
+	
 	/** load messages between two users ( messages with folder_id 2 )
 	 *
 	 * @param      $user1
@@ -717,10 +752,8 @@ class EmundusModelMessages extends JModelList {
 		    ->where('('.$db->quoteName('user_id_to').' = '.$user2.' AND '.$db->quoteName('user_id_from').' = '.$user1.') OR ('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.')');
 
         try {
-
             $db->setQuery($query);
             $db->execute();
-
         } catch (Exception $e) {
             JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
@@ -729,21 +762,20 @@ class EmundusModelMessages extends JModelList {
 	    $query = $db->getQuery(true);
         $query->select('*')
             ->from($db->quoteName('#__messages'))
-	        ->where('(('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.' AND '.$db->quoteName('folder_id').' = 2) OR ('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.' AND ('.$db->quoteName('folder_id').' = 2 OR '.$db->quoteName('folder_id').' = 3)))')
+	        ->where('('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.' AND '.$db->quoteName('folder_id').' = 2) OR ('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.' AND '.$db->quoteName('folder_id').' IN (2,3))')
 	        ->order($db->quoteName('date_time').' ASC')
             ->setLimit('100');
+        
         try {
-            
             $db->setQuery($query);
             return $db->loadObjectList();
-
         } catch (Exception $e) {
             JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
-
     }
 
+    
 	/** sends message folder_id=2 from user_from to user_to and sets stats to 1
 	 *
 	 * @param      $receiver
@@ -772,8 +804,7 @@ class EmundusModelMessages extends JModelList {
 
         $values = array($user, $receiver, $folder, $db->quote(date("Y-m-d H:i:s")), 1, 0, $db->quote($message));
 
-        $query
-            ->insert($db->quoteName('#__messages'))
+        $query->insert($db->quoteName('#__messages'))
             ->columns($db->quoteName($columns))
             ->values(implode(',', $values));
 
@@ -812,4 +843,305 @@ class EmundusModelMessages extends JModelList {
 
 
     }
+
+
+
+    /*
+    Chatroom system
+
+    Messages are put in folder ID 4.
+    The PAGE column of the jos_messages table is used to indicate which chatroom the messages are in.
+    Chatrooms are joined by adding user in jos_emundus_chatroom_users
+    Chatrooms may be linked to an fnum or not, by addding the fnum in jos_emundus_chatroom.
+    */
+
+
+	/**
+	 * @param   null  $fnum
+	 * @param   null  $id
+	 *
+	 * @return bool|mixed
+	 *
+	 * @since version
+	 */
+	public function createChatroom($fnum = null, $id = null) {
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$columns = [$db->quoteName('fnum')];
+		$values = [$db->quote($fnum)];
+
+		if (!empty($id)) {
+			$columns[] = $db->quoteName('id');
+			$values[] = $id;
+		}
+
+		$query->insert($db->quoteName('jos_emundus_chatroom'))
+			->columns($columns)
+			->values($values);
+		$db->setQuery($query);
+
+		try {
+
+			$db->execute();
+			return $db->insertid();
+
+		} catch (Exception $e) {
+			JLog::add('Error creating chatroom : '.$e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			return false;
+		}
+
+	}
+
+
+	/**
+	 * @param   int  $chatroom Chatroom id, if the room doesn't exist, it will be created.
+	 * @param   mixed  ...$users Function is called as such : joinChatroom(4, $user1, $user2, $user3);
+	 *
+	 * @return bool
+	 *
+	 * @since version
+	 */
+	public function joinChatroom($chatroom, ...$users) {
+
+		if (!$this->chatRoomExists($chatroom)) {
+			$chatroom = $this->createChatroom(null, $chatroom);
+		}
+
+		if (!$chatroom) {
+			return false;
+		}
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->insert($db->quoteName('jos_emundus_chatroom_users'))
+			->columns([$db->quoteName('chatroom_id'), $db->quoteName('user_id')]);
+		foreach ($users as $user) {
+			$query->values($chatroom.', '.$user);
+		}
+
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+			return true;
+		} catch (Exception $e) {
+			JLog::add('Error joining chatroom : '.$e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			return false;
+		}
+	}
+
+
+	/**
+	 * @param int $chatroom PAGE column in jos_messages is used to indicate that it's
+	 * @param String $message
+	 *
+	 * @return bool
+	 *
+	 * @since version
+	 */
+	public function sendChatroomMessage($chatroom, $message) {
+
+		if (!$this->chatRoomExists($chatroom)) {
+			JLog::add('Sending message to non-existant chatroom.', JLog::ERROR, 'com_emundus.chatroom');
+			return false;
+		}
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->insert($db->quoteName('#__messages'))
+			->columns($db->quoteName(['user_id_from', 'folder_id', 'date_time', 'state', 'priority', 'message', 'page']))
+			->values($this->user->id.', 4, '.$db->quote(date("Y-m-d H:i:s")).', 1, 0, '.$db->quote($message).', '.$chatroom);
+
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+			return true;
+		} catch (Exception $e) {
+			JLog::add('Error sending chatroom message : '.$e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			return false;
+		}
+	}
+
+
+	/**
+	 * @param int $chatroom
+	 *
+	 * @return array|bool|mixed
+	 *
+	 * @since version
+	 */
+	public function getChatroomMessages($chatroom) {
+
+		if (!$this->chatRoomExists($chatroom)) {
+			JLog::add('Getting messages from non-existant chatroom.', JLog::ERROR, 'com_emundus.chatroom');
+			return false;
+		}
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('*')
+			->from($db->quoteName('#__messages'))
+			->where($db->quoteName('folder_id').' = 4 AND '.$db->quoteName('page').' = '.$chatroom);
+		$db->setQuery($query);
+
+		try {
+			return $db->loadObjectList();
+		} catch (Exception $e) {
+			JLog::add('Error getting chatroom messages : '.$e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			return false;
+		}
+	}
+
+	/** gets all messages received after the message $lastID
+	 *
+	 * @param         $lastId
+	 * @param   int  $chatroom
+	 *
+	 * @return bool|mixed
+	 */
+	public function updateChatroomMessages($lastId, $chatroom) {
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select(['m.*', 'u.name as user_from'])
+			->from($db->quoteName('#__messages', 'm'))
+			->leftJoin($db->quoteName('#__users', 'u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('m.user_id_from'))
+			->where($db->quoteName('folder_id').' = 4 AND '.$db->quoteName('page').' = '.$chatroom.' AND '.$db->quoteName('user_id_from').' <> '.JFactory::getUser()->id.' AND '.$db->quoteName('message_id').' > '.$lastId)
+			->order('message_id DESC');
+
+		try {
+			$db->setQuery($query);
+			return $db->loadObjectList();
+		} catch (Exception $e) {
+			JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+	}
+
+	/**
+	 * @param $id
+	 *
+	 * @return bool|mixed|null
+	 *
+	 * @since version
+	 */
+	public function getChatroom($id) {
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('*')
+			->from($db->quoteName('jos_emundus_chatroom'))
+			->where($db->quoteName('id').' = '.$id);
+		$db->setQuery($query);
+
+		try {
+			return $db->loadObject();
+		} catch (Exception $e) {
+			JLog::add('Error getting chatroom : '.$e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			return false;
+		}
+	}
+
+	/**
+	 * @param int $chatroom_id
+	 *
+	 * @return bool|mixed|null
+	 *
+	 * @since version
+	 */
+	public function getChatroomUsersId($chatroom_id) {
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('cu.user_id')
+			->from($db->quoteName('jos_emundus_chatroom','c'))
+			->leftJoin($db->quoteName('jos_emundus_chatroom_users','cu').' ON '.$db->quoteName('cu.chatroom_id').' = '.$db->quoteName('c.id'))
+			->where($db->quoteName('c.id').' = '.$chatroom_id);
+		$db->setQuery($query);
+
+		try {
+			return $db->loadColumn();
+		} catch (Exception $e) {
+			JLog::add('Error getting chatroom users : '.$e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			return false;
+		}
+	}
+
+
+	/**
+	 * @param   mixed  ...$users
+	 *
+	 * @return bool|int
+	 *
+	 * @since version
+	 */
+	public function getChatroomByUsers(...$users) {
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		// Get all chatrooms containing at least one of our three users and that contain all memebers.
+		// We then will check for a chatroom having ONLY these three users using PHP.
+		$query->select('c.id, GROUP_CONCAT(cu.user_id) AS users, count(cu.user_id) as nbusers')
+			->from($db->quoteName('jos_emundus_chatroom', 'c'))
+			->leftJoin($db->quoteName('jos_emundus_chatroom_users', 'cu').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('cu.chatroom_id'))
+			->where($db->quoteName('cu.user_id').' IN ('.implode(',', $users).')')
+			->group($db->quoteName('c.id'))
+			->having($db->quoteName('nbusers').' = '.count($users));
+		$db->setQuery($query);
+
+		try {
+			$chatrooms = $db->loadObjectList();
+		} catch (Exception $e) {
+			JLog::add('Error getting chatroom by users : '.$e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			return false;
+		}
+
+		if (empty($chatrooms)) {
+			return false;
+		}
+
+		$return = false;
+		foreach ($chatrooms as $chatroom) {
+			if (!array_diff($users, explode(',', $chatroom->users))) {
+				$return = $chatroom->id;
+				break;
+			}
+		}
+
+		return $return;
+	}
+
+
+	private function chatRoomExists($chatroom) {
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('id'))
+			->from($db->quoteName('jos_emundus_chatroom'))
+			->where($db->quoteName('id').' = '.$chatroom);
+		$db->setQuery($query);
+
+		try {
+
+			return !empty($db->loadResult());
+
+		} catch (Exception $e) {
+			JLog::add('Error getting chatroom : '.$e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			return false;
+		}
+
+	}
+
 }

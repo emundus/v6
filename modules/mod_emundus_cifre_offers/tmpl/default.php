@@ -33,7 +33,7 @@ defined('_JEXEC') or die;
                                     <span class="em-contact-request-offer">
                                         <strong>
                                         <?php if (!empty($offer->titre)) :?>
-                                            "<a href="<?php echo JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offer->search_engine_page); ?>"><?php echo $offer->titre; ?></a>"
+                                            "<a href="<?php echo JRoute::_(JURI::base()."consultez-les-offres/details/299/".$offer->search_engine_page); ?>"><?php echo $offer->titre; ?></a>"
                                         <?php else: ?>
                                             <?php echo '"'.JText::_('NO_TITLE').'"'; ?>
                                         <?php endif; ?>
@@ -48,7 +48,7 @@ defined('_JEXEC') or die;
                                 </div>
                                 <?php if (!empty($offer->offer_from)) :?>
                                     <div class="em-contact-request-linked-offer"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_LINKED_OFFER'); ?></div>
-                                    <div class="em-contact-request-linked-offer-link"><a href="<?php echo JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offer->offer_from->search_engine_page); ?>"><?php echo $offer->offer_from->titre; ?></a></div>
+                                    <div class="em-contact-request-linked-offer-link"><a href="<?php echo JRoute::_(JURI::base()."consultez-les-offres/details/299/".$offer->offer_from->search_engine_page); ?>"><?php echo $offer->offer_from->titre; ?></a></div>
                                 <?php endif; ?>
                             </div>
 
@@ -103,7 +103,7 @@ defined('_JEXEC') or die;
                                 </div>
                                 <?php if (!empty($offer->offer_from)) :?>
                                     <div class="em-contact-request-linked-offer"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_YOUR_LINKED_OFFER'); ?></div>
-                                    <div class="em-contact-request-linked-offer-link"><a href="<?php echo JRoute::_(JURI::base()."les-offres/consultez-les-offres/details/299/".$offer->offer_from->search_engine_page); ?>"><?php echo $offer->offer_from->titre; ?></a></div>
+                                    <div class="em-contact-request-linked-offer-link"><a href="<?php echo JRoute::_(JURI::base()."consultez-les-offres/details/299/".$offer->offer_from->search_engine_page); ?>"><?php echo $offer->offer_from->titre; ?></a></div>
                                 <?php endif; ?>
                                 <div class="em-chat-link" id="em-chat-link-<?php echo $offer->link_id; ?>">
                                         <a href="/index.php?option=com_emundus&view=messages&chatid=<?php echo $offer->user_from ?>"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_TALK_TO'); ?></a>

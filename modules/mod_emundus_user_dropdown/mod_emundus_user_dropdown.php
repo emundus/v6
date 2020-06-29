@@ -22,6 +22,7 @@ $primary_color = $params->get('primary_color', 'ECF0F1');
 $secondary_color = $params->get('secondary_color', 'F89406');
 $icon = $params->get('icon', 'big circular user outline icon');
 $show_logout = $params->get('show_logout', '1');
+$intro = $params->get('intro', '');
 
 $link_login = $params->get('link_login');
 $link_register = $params->get('link_register');
