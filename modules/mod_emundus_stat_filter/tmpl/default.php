@@ -10,35 +10,45 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS
 $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-master'.DS.'semantic.min.css');
 ?>
 
+<p><?php echo JText::_('SORTABLE_GRAPHS'); ?><p>
 <center>
 	<div class="filter">
 		<form action="" method="" onsubmit="return false;">
-			<label><?php echo JText::_('PROGRAM'); ?></label>
-			<select name="prog" id="progFilter" onchange="progAction()">
-				<option value="-1"></option>
-				<?php
-				foreach ($tabProg as $prog) { 
-					echo "<option value=\"".$prog['code']."\" ".(($array["prog"]===$prog['code'])?"selected":"").">".$prog['label']."</option>";
-				} ?>
-			</select>
+			<div class="inputFilter">
+				<label><?php echo JText::_('PROGRAM'); ?> :</label>
+				<br />
+				<select name="prog" id="progFilter" onchange="progAction()">
+					<option value="-1"><?php echo JText::_('SELECT_ALL'); ?></option>
+					<?php
+					foreach ($tabProg as $prog) { 
+						echo "<option value=\"".$prog['code']."\" ".(($array["prog"]===$prog['code'])?"selected":"").">".$prog['label']."</option>";
+					} ?>
+				</select>
+			</div>
 			
-			<label><?php echo JText::_('YEARS_CAMPAIGN'); ?></label>
-			<select name="years" id="yearsFilter" onchange="yearAction()">
-				<option value="-1"></option>
-				<?php
-				foreach ($tabYear as $year) { 
-					echo "<option value=\"".$year['year']."\"".(($array["year"]===$year['year'])?"selected":"").">".$year['year']."</option>";
-				} ?>
-			</select>
+			<div class="inputFilter">
+				<label><?php echo JText::_('YEARS_CAMPAIGN'); ?> :</label>
+				<br />
+				<select name="years" id="yearsFilter" onchange="yearAction()">
+					<option value="-1"><?php echo JText::_('SELECT_ALL'); ?></option>
+					<?php
+					foreach ($tabYear as $year) { 
+						echo "<option value=\"".$year['year']."\"".(($array["year"]===$year['year'])?"selected":"").">".$year['year']."</option>";
+					} ?>
+				</select>
+			</div>
 			
-			<label><?php echo JText::_('CAMPAIGN'); ?></label>
-			<select name="campaign" id="campaignFilter" onchange="campaignAction()">
-				<option value="-1"></option>
-				<?php
-				foreach ($tabCampaign as $campaign) { 
-					echo "<option value=\"".$campaign['id']."\"".(($array["campaign"]===$campaign['id'])?"selected":"").">".$campaign['label']."</option>";
-				} ?>
-			</select>
+			<div class="inputFilter">
+				<label><?php echo JText::_('CAMPAIGN'); ?> :</label>
+				<br />
+				<select name="campaign" id="campaignFilter" onchange="campaignAction()">
+					<option value="-1"><?php echo JText::_('SELECT_ALL'); ?></option>
+					<?php
+					foreach ($tabCampaign as $campaign) { 
+						echo "<option value=\"".$campaign['id']."\"".(($array["campaign"]===$campaign['id'])?"selected":"").">".$campaign['label']."</option>";
+					} ?>
+				</select>
+			</div>
 		</form>
 	</div>
 </center>
