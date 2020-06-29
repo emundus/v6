@@ -31,9 +31,9 @@ if($user != null) {
     }
 
     #userDropdownIcon {
-        background-color: #<?php echo $primary_color; ?>;
+        background-color: #<?= $primary_color; ?>;
         border: solid 1px white;
-        color: #<?php echo $secondary_color; ?>;
+        color: #<?= $secondary_color; ?>;
     }
 
     #userDropdownIcon:hover,
@@ -42,7 +42,7 @@ if($user != null) {
         box-shadow: inset 0 0 20px rgba(255, 255, 255, .5), 0 0 20px rgba(255, 255, 255, .2);
         outline-color: rgba(255, 255, 255, 0);
         outline-offset: 15px;
-        background-color: #<?php echo $secondary_color; ?>;
+        background-color: #<?= $secondary_color; ?>;
         color: #fff;
     }
 
@@ -56,7 +56,7 @@ if($user != null) {
 
     #userDropdownMenu li>a:hover,
     #userDropdownMenu .active>a {
-        background: #<?php echo $secondary_color; ?>;
+        background: #<?= $secondary_color; ?>;
     }
 </style>
 
@@ -66,8 +66,8 @@ if($user != null) {
         <i class="<?= $icon;?>" id="userDropdownIcon"></i>
     </div>
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
-        <li class="dropdown-header"><?php echo $user->name; ?></li>
-        <li class="dropdown-header"><?php echo $user->email; ?></li>
+        <li class="dropdown-header"><?= $user->name; ?></li>
+        <li class="dropdown-header"><?= $user->email; ?></li>
         <?php if (!empty($list)) :?>
             <li role="separator" class="divider"></li>
             <?php foreach ($list as $i => $item) :?>
@@ -120,11 +120,11 @@ if($user != null) {
 </script>
 <?php } else { ?>
 <div class="header-right" style="text-align: right;">
-	<a class="btn btn-danger" href="<?php echo $link_login; ?>" data-toggle="sc-modal"><?php echo JText::_('CONNEXION_LABEL'); ?></a>
+	<a class="btn btn-danger" href="<?= $link_login; ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
 	<?php if($show_registration) { ?>
-		<a class="btn btn-danger btn-creer-compte" href="<?php echo $link_register; ?>" data-toggle="sc-modal"><?php echo JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
+		<a class="btn btn-danger btn-creer-compte" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
 	<?php } ?>
 	<br />
-	<a href="<?php echo $link_forgotten_password; ?>"><?php echo JText::_('FORGOTTEN_PASSWORD_LABEL'); ?></a>
+	<a href="<?= $link_forgotten_password; ?>"><?= JText::_('FORGOTTEN_PASSWORD_LABEL'); ?></a>
 </div>
 <?php } ?>

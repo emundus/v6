@@ -35,7 +35,7 @@ if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0') {
 	$list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);
 }
 
-if(!$show_registration && $user === null && modEmundusUserDropdownHelper::getCampaign()) {
+if (!$show_registration && $user === null && modEmundusUserDropdownHelper::isCampaignActive()) {
 	$show_registration = true;
 }
 

@@ -18,7 +18,7 @@ if($user != null) {
         <ul>
             <?php if (!empty($list)) :?>
                 <?php foreach ($list as $i => $item) :?>
-                    <li class="<?php echo ($item->id == $active_id)?'active':''; ?>"><a href="<?php echo $item->flink ?>" <?php echo ($item->browserNav == 1)?'target="_blank"':''; ?>><?php echo $item->title; ?></a></li>
+                    <li class="<?= ($item->id == $active_id)?'active':''; ?>"><a href="<?= $item->flink ?>" <?= ($item->browserNav == 1)?'target="_blank"':''; ?>><?= $item->title; ?></a></li>
                 <?php endforeach; ?>
                 <li role="separator" class="divider"></li>
             <?php endif; ?>
@@ -32,11 +32,11 @@ if($user != null) {
 <div class="user-list-menu">
     <div class="content">
 		<ul>
-			<li><a href="<?php echo $link_login; ?>"><?php echo JText::_('CONNEXION_LABEL'); ?></a></li>
+			<li><a href="<?= $link_login; ?>"><?= JText::_('CONNEXION_LABEL'); ?></a></li>
 			<?php if($show_registration) { ?>
-				<li><a href="<?php echo $link_register; ?>"><?php echo JText::_('CREATE_ACCOUNT_LABEL'); ?></a></li>
+				<li><a href="<?= $link_register; ?>"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a></li>
 			<?php } ?>
-			<li><a href="<?php echo $link_forgotten_password; ?>"><?php echo JText::_('FORGOTTEN_PASSWORD_LABEL'); ?></a></li>
+			<li><a href="<?= $link_forgotten_password; ?>"><?= JText::_('FORGOTTEN_PASSWORD_LABEL'); ?></a></li>
 		</ul>
     </div>
 </div>
