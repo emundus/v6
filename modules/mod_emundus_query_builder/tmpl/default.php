@@ -12,46 +12,52 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 
 
 <center>
-	<button id="buttonOpen" class="btn" onclick="openCloseGraphManager()"><?php if(isset($_GET['gOpen'])) { echo JText::_('CLOSE_QUERY_BUILDER'); } else { echo JText::_('OPEN_QUERY_BUILDER'); } ?></button>
+	<button id="buttonOpen" class="btnQueryBuilder" onclick="openCloseGraphManager()"><?php if(isset($_GET['gOpen'])) { echo "&#708; ".JText::_('CLOSE_QUERY_BUILDER'); } else { echo "&#709; ".JText::_('OPEN_QUERY_BUILDER'); } ?></button>
 	<br /><br />
 	<div class="queryBuilder" style="display:<?php if(isset($_GET['gOpen'])) { echo "block;"; } else { echo "none;"; } ?>" >
 		<form action="" method="POST" onsubmit="return false;">
-			<input type="button" id="createButton" class="btn" value="<?php echo JText::_('CREATE_MODULE'); ?>" onclick="buttonCreateModule()"/>
+			<?php echo $showModule; ?>
 			<div class="createModule" id="createModule" style="display:none;" >
 				<input type="text" id="titleModule" placeholder="<?php echo JText::_('TITLE_MODULE'); ?>*" />
-				<label><?php echo JText::_('TYPE_MODULE'); ?>*</label>
-				<select id="typeModule">
-					<option value=""><?php echo JText::_('PLEASE_SELECT'); ?></option>
-					<option value="timeseries"><?php echo JText::_("LINE_TIME_LABEL") ?></option>
-					<option value="column2d"><?php echo JText::_("COLUMN_LABEL") ?></option>
-					<option value="column3d"><?php echo JText::_("COLUMN_3D_LABEL") ?></option>
-					<option value="scrollcolumn2d"><?php echo JText::_("COLUMN_SCROLL_LABEL") ?></option>
-					<option value="line"><?php echo JText::_("LINE_LABEL") ?></option>
-					<option value="scrollline2d"><?php echo JText::_("LINE_SCROLL_LABEL") ?></option>
-					<option value="area2d"><?php echo JText::_("AREA_LABEL") ?></option>
-					<option value="scrollarea2d"><?php echo JText::_("AREA_SCROLL_LABEL") ?></option>
-					<option value="bar2d"><?php echo JText::_("BAR_LABEL") ?></option>
-					<option value="bar3d"><?php echo JText::_("BAR_3D_LABEL") ?></option>
-					<option value="scrollbar2d"><?php echo JText::_("BAR_SCROLL_LABEL") ?></option>
-					<option value="pie2d"><?php echo JText::_("PIE_LABEL") ?></option>
-					<option value="pie3d"><?php echo JText::_("PIE_3D_LABEL") ?></option>
-					<option value="doughnut2d"><?php echo JText::_("DOUGHNUT_LABEL") ?></option>
-					<option value="doughnut3d"><?php echo JText::_("DOUGHNUT_3D_LABEL") ?></option>
-					<option value="pareto2d"><?php echo JText::_("PARETO_LABEL") ?></option>
-					<option value="pareto3d"><?php echo JText::_("PARETO_3D_LABEL") ?></option>
-				</select>
-				<?php echo $selectIndicateur; ?>
-				<input type="text" id="axeXModule" placeholder="<?php echo JText::_('AXE_X_MODULE'); ?>*"  />
-				<input type="text" id="axeYModule" placeholder="<?php echo JText::_('AXE_Y_MODULE'); ?>*" />
+				<div class="flexS">
+					<label><?php echo JText::_('TYPE_MODULE'); ?>*</label>
+					<select id="typeModule">
+						<option value=""><?php echo JText::_('PLEASE_SELECT'); ?></option>
+						<option value="timeseries"><?php echo JText::_("LINE_TIME_LABEL") ?></option>
+						<option value="column2d"><?php echo JText::_("COLUMN_LABEL") ?></option>
+						<option value="column3d"><?php echo JText::_("COLUMN_3D_LABEL") ?></option>
+						<option value="scrollcolumn2d"><?php echo JText::_("COLUMN_SCROLL_LABEL") ?></option>
+						<option value="line"><?php echo JText::_("LINE_LABEL") ?></option>
+						<option value="scrollline2d"><?php echo JText::_("LINE_SCROLL_LABEL") ?></option>
+						<option value="area2d"><?php echo JText::_("AREA_LABEL") ?></option>
+						<option value="scrollarea2d"><?php echo JText::_("AREA_SCROLL_LABEL") ?></option>
+						<option value="bar2d"><?php echo JText::_("BAR_LABEL") ?></option>
+						<option value="bar3d"><?php echo JText::_("BAR_3D_LABEL") ?></option>
+						<option value="scrollbar2d"><?php echo JText::_("BAR_SCROLL_LABEL") ?></option>
+						<option value="pie2d"><?php echo JText::_("PIE_LABEL") ?></option>
+						<option value="pie3d"><?php echo JText::_("PIE_3D_LABEL") ?></option>
+						<option value="doughnut2d"><?php echo JText::_("DOUGHNUT_LABEL") ?></option>
+						<option value="doughnut3d"><?php echo JText::_("DOUGHNUT_3D_LABEL") ?></option>
+						<option value="pareto2d"><?php echo JText::_("PARETO_LABEL") ?></option>
+						<option value="pareto3d"><?php echo JText::_("PARETO_3D_LABEL") ?></option>
+					</select>
+					<?php echo $selectIndicateur; ?>
+				</div>
+				<div class="flexS">
+					<input type="text" id="axeXModule" placeholder="<?php echo JText::_('AXE_X_MODULE'); ?>*"  />
+					<input type="text" id="axeYModule" placeholder="<?php echo JText::_('AXE_Y_MODULE'); ?>*" />
+				</div>
 				<input type="text" id="progModule" placeholder="<?php echo JText::_('PROGRAM_LABEL'); ?>" />
-				<input type="text" id="yearModule" placeholder="<?php echo JText::_('YEAR_LABEL'); ?>" />
-				<input type="text" id="campaignModule" placeholder="<?php echo JText::_('CAMPAIGN_LABEL'); ?>" />
-				<input type="button" name="validation" class="btn" id="validation" value="<?php echo JText::_('VALIDATION'); ?>" onclick="createModule()"/>
+				<div class="flexS">
+					<input type="text" id="yearModule" placeholder="<?php echo JText::_('YEAR_LABEL'); ?>" />
+					<input type="text" id="campaignModule" placeholder="<?php echo JText::_('CAMPAIGN_LABEL'); ?>" />
+				</div>
 				<div id="errorCreateModule"></div>
 			</div>
-			<?php echo $showModule; ?>
+				<input type="button" name="validation" class="btnQueryBuilder" id="validation" style="float:right;display:none;" value="<?php echo JText::_('VALIDATION'); ?>" onclick="createModule()"/>
+			<input type="button" id="createButton" class="btnQueryBuilder" style="float:right;" value="+ <?php echo JText::_('CREATE_MODULE'); ?>" onclick="buttonCreateModule()"/>
+			<button onclick="getExport()" class="btnExport" style="float:left;">&#10515; <?php echo JText::_('EXPORT_MODULE'); ?></button>
 		</form>
-		<button onclick="getExport()" class="btn btnExport"><?php echo JText::_('EXPORT_MODULE'); ?></button>
 	</div>
 </center>
 
@@ -59,6 +65,79 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
+jQuery(document).ready(function(){
+	var element1 = document.getElementsByClassName('filter')[0].parentNode.parentNode.parentNode;
+	var element2 = document.getElementsByClassName('queryBuilder')[0].parentNode.parentNode.parentNode;
+	var parent = document.getElementsByClassName('g-content')[0];
+	var wrapper1 = document.createElement('div');
+	element1.replaceWith(wrapper1);
+	wrapper1.appendChild(element1);
+	wrapper1.appendChild(element2);
+	wrapper1.classList.add("etiquette");
+	
+	var wrapper2 = document.createElement('div');
+	wrapper1.parentNode.insertBefore(wrapper2, wrapper1);
+	wrapper2.classList.add("informationStatistique");
+	wrapper2.innerHTML = "<a class='closeButtonWelcomeStat' onclick='deleteWelcomeStat()'>&#10006;</a><?php echo JText::_('TEXT_WELCOME_STAT'); ?>";
+	
+	jQuery('.g-content').has('.etiquette').attr('style', 'margin:auto!important');
+	jQuery('.g-content').has('.etiquette').attr('style', 'display:grid;grid-column-gap:15px;grid-row-gap:15px;grid-template-columns:repeat(3, 1fr);margin-bottom:15px!important;');
+	jQuery('.platform-content').attr('style', 'width:100%!important');
+	jQuery('.platform-content').has('.container-stat').attr('style', 'margin:0!important;background-color:white;padding-bottom:1%;');
+	jQuery('.etiquette').attr('style', 'grid-column-end:span 3;');
+	jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;');
+	jQuery('#g-container-main').attr('style', 'padding-left:5%!important;padding-right:5%!important;background-color:#eeeeee');
+	
+	taillerEtiquette();
+});
+
+	function deleteWelcomeStat() {
+		document.getElementsByClassName('informationStatistique')[0].style.display = "none";
+	}
+
+	function taillerEtiquette() {
+		var u = 0;
+		var tab = jQuery('.platform-content').has(".container-stat");
+		var elt = null;
+		if (screen.width < 951) {
+			for(var i = 0; i < tab.length;i++)
+				tab[i].style.gridColumnEnd = "span 3";
+		} else {
+			for(var i = 0; i < tab.length;i++) {
+				elt = tab[i].children[0].children[1].children[0].className.split(' ');
+				if(elt[0] === "container-stat") {
+					if(u === 3)
+						u = 0;
+					
+					if(!elt[1].includes("doughnut") && !elt[1].includes("pie")) {
+						tab[i].style.gridColumnEnd = "span 2";
+						u = u + 2;
+						
+						if(i % 2)
+							o = -1;
+						else
+							o = 1;
+						
+						if(	(tab[i+o] != null &&
+							!tab[i+o].children[0].children[1].children[0].className.includes("container-stat doughnut") &&
+							!tab[i+o].children[0].children[1].children[0].className.includes("container-stat pie"))
+							|| (tab[i+o] === undefined)) {
+							tab[i].style.gridColumnEnd = "span 3";
+							u = 0;
+						}
+					}else{
+						tab[i].style.gridColumnEnd = "span 1";
+						u = u + 1;
+						if(u === 2) {
+							tab[i-(Math.floor(Math.random() * Math.floor(2)))].style.gridColumnEnd = "span 2";
+							u = 0;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	// Array which keeps the numbers of the chosen stats modules
 	var tabNum = [];
 	
@@ -73,12 +152,12 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	// Request the stats modules to export
 	function getExport() {
 		Swal.mixin({
-			confirmButtonText: '<?php echo JText::_("VALIDATION"); ?>',
+			confirmButtonText: '<?php echo JText::_("EXPORT_MODULE_2"); ?>',
 			cancelButtonText: '<?php echo JText::_("CANCEL"); ?>',
 			showCancelButton: true
 		}).queue([
 			{
-				title: "<?php echo JText::_('EXPORT_MODULE'); ?>",
+				title: "<?php echo JText::_('CHOOSE_EXPORT_MODULE'); ?>",
 				html: "<?php echo addslashes(str_replace(CHR(10),"",str_replace(CHR(13),"",$exportModule))) ?>"
 			}
 		]).then((result) => {
@@ -126,34 +205,13 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				src: s.outerHTML
 			},
 			success : function(data) {
-				console.log(data);
 				data = JSON.parse(data.data);
 				if (data.status != null) {
 					elem = document.createElement('a');
 					elem.href = "/tmp/Graph.pdf";
 					elem.download = "Graph.pdf";
-					evt = new MouseEvent("click", { bubbles: true,cancelable: true,view: window,});
+					evt = new MouseEvent("click", { bubbles: true,cancelable: true,view: window});
 					elem.dispatchEvent(evt);
-					deleteFile();
-				} else {
-					console.log(data.msg);
-				}
-			}
-		});
-	}
-	
-	// Delete pdf from temporary files
-	function deleteFile() {
-		jQuery.ajax({
-			type : "POST",
-			url : "index.php?option=com_ajax&module=emundus_query_builder&method=deleteFile&format=json",
-			async: true,
-			cache: false,
-			success : function(data) {
-				console.log(data);
-				data = JSON.parse(data.data);
-				if (data.status != null) {
-					console.log(data.msg);
 				} else {
 					console.log(data.msg);
 				}
@@ -200,11 +258,19 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	// Display or not the statistics module manager
 	function openCloseGraphManager() {
 		if(document.getElementsByClassName('queryBuilder')[0].style.display === 'none') {
-			document.getElementById('buttonOpen').innerHTML = "<?php echo JText::_('CLOSE_QUERY_BUILDER'); ?>";
+			document.getElementById('buttonOpen').innerHTML = "&#708; <?php echo JText::_('CLOSE_QUERY_BUILDER'); ?>";
 			document.getElementsByClassName('queryBuilder')[0].style.display = 'block';
 		} else {
-			document.getElementById('buttonOpen').innerHTML = "<?php echo JText::_('OPEN_QUERY_BUILDER'); ?>";
+			document.getElementById("createButton").value = "+ <?php echo JText::_('CREATE_MODULE'); ?>";
+			document.getElementById("createButton").classList.replace("btnExport", "btnQueryBuilder");
+			document.getElementById("createButton").style.float = "right";
+			document.getElementById('buttonOpen').innerHTML = "&#709; <?php echo JText::_('OPEN_QUERY_BUILDER'); ?>";
 			document.getElementsByClassName('queryBuilder')[0].style.display = 'none';
+			document.getElementById('createModule').style.display = "none";
+			document.getElementById('validation').style.display = "none";
+			document.getElementById('sortable').style.display = "block";
+			document.getElementsByClassName('filter')[0].parentNode.parentNode.style.display = "block";
+			document.getElementsByClassName('btnExport')[0].style.display = "block";
 		}
 	}
 	
@@ -246,6 +312,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 						
 						cpt0++;
 					}
+					taillerEtiquette();
 				} else {
 					console.log(msg.msg);
 				}
@@ -259,10 +326,22 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		var button = document.getElementById("createButton");
 		if(elt.style.display === "none") {
 			elt.style.display = "block";
+			document.getElementById('sortable').style.display = "none";
+			document.getElementById('validation').style.display = "block";
+			document.getElementsByClassName('filter')[0].parentNode.parentNode.style.display = "none";
+			document.getElementsByClassName('btnExport')[0].style.display = "none";
 			button.value = "<?php echo JText::_('CANCEL'); ?>";
+			button.classList.replace("btnQueryBuilder", "btnExport");
+			button.style.float = "left";
 		} else {
 			elt.style.display = "none";
-			button.value = "<?php echo JText::_('CREATE_MODULE'); ?>";
+			button.value = "+ <?php echo JText::_('CREATE_MODULE'); ?>";
+			button.classList.replace("btnExport", "btnQueryBuilder");
+			document.getElementById('sortable').style.display = "block";
+			document.getElementById('validation').style.display = "none";
+			document.getElementsByClassName('filter')[0].parentNode.parentNode.style.display = "block";
+			document.getElementsByClassName('btnExport')[0].style.display = "block";
+			button.style.float = "right";
 		}
 	}
 	
@@ -327,14 +406,14 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 	function modifyModule(idModule, titleModule, typeModule) {
 		Swal.mixin({
 			input: 'text',
-			confirmButtonText: '<?php echo JText::_("NEXT"); ?> &rarr;',
 			cancelButtonText: '<?php echo JText::_("CANCEL"); ?>',
 			showCancelButton: true,
 			progressSteps: ['1', '2']
 		}).queue([
 			{
 				title: "<?php echo JText::_('TITLE_MODULE'); ?>",
-				inputValue: ''+titleModule
+				inputValue: ''+titleModule,
+				confirmButtonText: '<?php echo JText::_("NEXT"); ?> &rarr;',
 			},
 			{
 				title: "<?php echo JText::_('TYPE_MODULE'); ?>",
@@ -358,7 +437,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 					pareto2d: '<?php echo JText::_("PARETO_LABEL") ?>',
 					pareto3d: '<?php echo JText::_("PARETO_3D_LABEL") ?>'
 				},
-				inputValue: typeModule
+				inputValue: typeModule,
+				confirmButtonText: '<?php echo JText::_("VALIDATION"); ?>',
 			}
 		]).then((result) => {
 			if (result.value) {

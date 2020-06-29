@@ -28,7 +28,7 @@ class modEmundusQueryBuilderHelper {
 		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		
-        try {
+		try {
 			$query = "SELECT id, title, published, params, ordering FROM jos_modules WHERE module = 'mod_emundus_stat' AND (published = 1 OR published = 0) AND position LIKE 'content-bottom-a' ORDER BY ordering";
 			$db->setQuery($query);
 			return $db->loadAssocList();
@@ -48,7 +48,7 @@ class modEmundusQueryBuilderHelper {
 		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		
-        try {
+		try {
 			$query = "SELECT id, title, published, params, ordering FROM jos_modules WHERE module = 'mod_emundus_stat' AND published = 1 AND position LIKE 'content-bottom-a' ORDER BY ordering";
 			$db->setQuery($query);
 			return $db->loadAssocList();
@@ -309,7 +309,7 @@ class modEmundusQueryBuilderHelper {
 					$tableDataBaseJoin = ($paramElt['join_val_column_concat']==="")?"`".$paramElt['join_db_name']."`.`".$paramElt['join_val_column']."` AS `elt`":"CONCAT(".$paramElt['join_val_column_concat'].") AS `elt`";
 					$tableDataBaseJoin = preg_replace('#{thistable}#', $paramElt['join_db_name'], $tableDataBaseJoin);
 					$tableDataBaseJoin = preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0 , 2), $tableDataBaseJoin);
-                    $tableDataBaseJoin  = preg_replace('#{my->id}#', $user->id, $tableDataBaseJoin);
+					$tableDataBaseJoin  = preg_replace('#{my->id}#', $user->id, $tableDataBaseJoin);
 					
 					if($paramsTableJoin['repeat_group_button'] === "1")
 					{
@@ -509,18 +509,18 @@ class modEmundusQueryBuilderHelper {
 	public function getCampaign()
 	{
 		$db = JFactory::getDbo();
-        $session = JFactory::getSession();
+		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		
-        try {
+		try {
 			$query = "SELECT id FROM `jos_emundus_setup_campaigns` ";
 			$db->setQuery($query);
-            return $db->loadColumn();
-        } catch(Exception $e) {
+			return $db->loadColumn();
+		} catch(Exception $e) {
 			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 			JLog::add($error, JLog::ERROR, 'com_emundus');
-            return 0;
-        }
+			return 0;
+		}
 	}
 	
 	/**
@@ -580,7 +580,7 @@ class modEmundusQueryBuilderHelper {
 		$renderer = $document->loadRenderer('module');
 		$contents = '';	
 		$database = JFactory::getDBO();
-        $session = JFactory::getSession();
+		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		try {
 			$query = "SELECT * FROM jos_modules WHERE module = 'mod_emundus_stat' AND published = 1 ORDER BY ordering";
@@ -622,15 +622,14 @@ class modEmundusQueryBuilderHelper {
 	public function convertPdfAjax()
 	{
 		$eMConfig = JComponentHelper::getParams('com_emundus');
-        $gotenberg_activation = $eMConfig->get('gotenberg_activation', 1);
-        $gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
+		$gotenberg_activation = $eMConfig->get('gotenberg_activation', 1);
+		$gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
 		
 		$fichier = JPATH_BASE;
 		$res = new stdClass();
 
 		$jinput = JFactory::getApplication()->input;
 		$src = $jinput->get('src', '','RAW');
-		// var_dump($src).die();
 		
 		$doc = new DOMDocument();
 		@$doc->loadHTML($src);
@@ -656,22 +655,7 @@ class modEmundusQueryBuilderHelper {
 		for($i = 0 ; $i < count($imgList) ; $i++) {
 			unlink($fichier.DS."tmp".DS.'image'.$i.".svg");
 		}
-
-		$res->status = true;
-		// $res->msg = '<a href="'.$dest.'" target="_blank">Recuperer</a>';
-		$res->msg = 'It\'s ok';
-		return json_encode($res);
-	}
-	
-	/**
-	  * Delete pdf in tmp folder
-	  */
-	public function deleteFileAjax()
-	{
-		unlink(JPATH_BASE.DS."tmp".DS."Graph.pdf");
 		
-		$res->status = true;
-		$res->msg = 'It\'s ok';
-		return json_encode($res);
+		return json_encode((object)['status' => true, 'msg' => 'It\'s ok']);
 	}
 }
