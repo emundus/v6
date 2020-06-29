@@ -14,13 +14,13 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 <div class="<?php echo $module->id; ?> moduleGraphe" style="display:none;"></div>
 
 <center>
-	<div class="container">
+	<div class="container-stat <?php echo $typeGraph; ?>">
 		<!-- Div containing the graph -->
 		<div id="chart-container-<?php echo $view; ?>"></div>
 	</div>
 	<br />
 	<!-- Button to consult the data of the graph -->
-	<div class="btn"><i class="search icon"></i><a href="/index.php?option=com_fabrik&task=list.view&listid=<?php echo $listId; ?>&Itemid=0<?php echo $urlFiltre; ?>" target="_blank"><?php echo JText::_('VIEW_DATA')?></a></div>
+	<div class="btnConsulter"><i class="search icon"></i><a href="/index.php?option=com_fabrik&task=list.view&listid=<?php echo $listId; ?>&Itemid=0<?php echo $urlFiltre; ?>" target="_blank"><?php echo JText::_('VIEW_DATA')?></a></div>
 </center>
 
 <script type="text/javascript" src="./plugins/fabrik_visualization/fusionchart/libs/fusioncharts-suite-xt/js/fusioncharts.js"></script>
@@ -37,7 +37,8 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		dataSource<?php echo $view; ?> = {
 			chart: {
 				yaxisname: "<?php echo JText::_($yAxeName); ?>",
-				theme: "fusion"
+				theme: "fusion",
+				showLegend: "0"
 			},
 			caption: {
 				text: "<?php echo JText::_($titleGraph); ?>"
@@ -63,7 +64,13 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				} else { ?>
 					yaxisname: "<?php echo JText::_($yAxeName); ?>",
 				<?php } ?>
-				theme: "fusion"
+				theme: "fusion",
+				plotHighlightEffect: "fadeout",
+				legendPosition: "left"
+				<?php if(substr_count($typeGraph, "pie") === 1 || substr_count($typeGraph, "doughnut") === 1 ) { ?>,
+					showValues:"0",
+					showLabels:"0"
+				<?php } ?>
 			},
 			<?php if(strrpos($typeGraph, "scroll") === 0) { 
 				echo substr($jsonGraph, 1, -1);
