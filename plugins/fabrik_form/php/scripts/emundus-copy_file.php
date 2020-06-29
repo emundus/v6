@@ -37,7 +37,7 @@ $copied 		= is_array($copied) ? $copied[0] : $copied;
 $applicant_id 	= $formModel->getElementData('jos_emundus_campaign_candidature___applicant_id', true);
 $status 		= $formModel->getElementData('jos_emundus_campaign_candidature___status', true);
 $status 		= is_array($status) ? $status[0] : $status;
-$can_delete 	= $formModel->getElementData('jos_emundus_campaign_candidature___can_delete', null);
+$can_delete 	= $formModel->getElementData('jos_emundus_campaign_candidature___can_be_deleted', null);
 
 // create new fnum
 $fnum_to = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($applicant_id, 7, '0', STR_PAD_LEFT);

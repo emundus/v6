@@ -870,7 +870,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             	
                                 $mailer = JFactory::getMailer();
 
-                                $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['campaign_label'], 'CAMPAIGN_END' => $file['end_date']);
+                                $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => $file['end_date']);
                                 $tags = $m_email->setTags($file['applicant_id'], $post);
 
                                 $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);

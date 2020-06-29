@@ -10,8 +10,7 @@ class modEmundusStatFilterHelper {
 	/** 
 	  * Retrieve the program codes to which the user has access 
 	  */
-	public function codeProgramUser()
-	{
+	public function codeProgramUser() {
 		$db = JFactory::getDBO();
         $session = JFactory::getSession();
 		$user = $session->get('emundusUser');
@@ -30,21 +29,23 @@ class modEmundusStatFilterHelper {
 	/** 
 	  * Retrieve the programs according to the current filter
 	  */
-	public function getProg($filter)
-	{
+	public function getProg($filter) {
 		$db = JFactory::getDbo();
         $session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		$query = "SELECT * FROM `jos_emundus_setup_programmes` INNER JOIN `jos_emundus_setup_campaigns` ON `jos_emundus_setup_programmes`.`code` = `jos_emundus_setup_campaigns`.`training` WHERE `jos_emundus_setup_programmes`.`code` IN (".implode(",", $db->quote((new modEmundusStatFilterHelper)->codeProgramUser())).")";
 		$array = json_decode($filter, true);
-		if($array["year"] != -1 || $array["campaign"] != -1) {
+		if ($array["year"] != -1 || $array["campaign"] != -1) {
 			$query .= " AND ";
-			if($array["year"] != -1)
+			if ($array["year"] != -1) {
 				$query .= "`jos_emundus_setup_campaigns`.`year` LIKE '".$array["year"]."'";
-			if($array["year"] != -1 && $array["campaign"] != -1)
+			}
+			if ($array["year"] != -1 && $array["campaign"] != -1) {
 				$query .= " AND ";
-			if($array["campaign"] != -1)
+			}
+			if ($array["campaign"] != -1) {
 				$query .= "`jos_emundus_setup_campaigns`.`id` = ".$array["campaign"];
+			}
 		}
 		$query .= " GROUP BY `jos_emundus_setup_programmes`.`code`";
 		
@@ -61,21 +62,25 @@ class modEmundusStatFilterHelper {
 	/** 
 	  * Retrieve the years according to the current filter
 	  */
-	public function getYear($filter)
-	{
+	public function getYear($filter) {
+
 		$db = JFactory::getDbo();
         $session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		$query = "SELECT * FROM `jos_emundus_setup_campaigns` WHERE `jos_emundus_setup_campaigns`.`training` IN (".implode(",", $db->quote((new modEmundusStatFilterHelper)->codeProgramUser())).")";
 		$array = json_decode($filter, true);
-		if($array["prog"] != -1 || $array["campaign"] != -1) {
+
+		if ($array["prog"] != -1 || $array["campaign"] != -1) {
 			$query .= " AND ";
-			if($array["prog"] != -1)
+			if ($array["prog"] != -1) {
 				$query .= "`jos_emundus_setup_campaigns`.`training` LIKE '".$array["prog"]."'";
-			if($array["prog"] != -1 && $array["campaign"] != -1)
+			}
+			if ($array["prog"] != -1 && $array["campaign"] != -1) {
 				$query .= " AND ";
-			if($array["campaign"] != -1)
+			}
+			if ($array["campaign"] != -1) {
 				$query .= "`jos_emundus_setup_campaigns`.`id` = ".$array["campaign"];
+			}
 		}
 		$query .= " GROUP BY `year`";
 		
@@ -92,21 +97,25 @@ class modEmundusStatFilterHelper {
 	/** 
 	  * Retrieve the campaigns according to the current filter
 	  */
-	public function getCampaign($filter)
-	{
+	public function getCampaign($filter) {
+
 		$db = JFactory::getDbo();
         $session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		$query = "SELECT * FROM `jos_emundus_setup_campaigns` WHERE `jos_emundus_setup_campaigns`.`training` IN (".implode(",", $db->quote((new modEmundusStatFilterHelper)->codeProgramUser())).")";
 		$array = json_decode($filter, true);
-		if($array["year"] != -1 || $array["prog"] != -1) {
+
+		if ($array["year"] != -1 || $array["prog"] != -1) {
 			$query .= "AND ";
-			if($array["year"] != -1)
+			if ($array["year"] != -1) {
 				$query .= "`jos_emundus_setup_campaigns`.`year` LIKE '".$array["year"]."'";
-			if($array["year"] != -1 && $array["prog"] != -1)
+			}
+			if ($array["year"] != -1 && $array["prog"] != -1) {
 				$query .= " AND ";
-			if($array["prog"] != -1)
+			}
+			if ($array["prog"] != -1) {
 				$query .= "`jos_emundus_setup_campaigns`.`training` LIKE '".$array["prog"]."'";
+			}
 		}
 		
         try {
@@ -122,8 +131,7 @@ class modEmundusStatFilterHelper {
 	/** 
 	  * Retrieve filter selects according to the current filter
 	  */
-	public function getAjax()
-	{
+	public function getAjax() {
 		$session = JFactory::getSession();
 		
 		$tabSession = json_decode($session->get('filterStat'), true);
@@ -134,54 +142,60 @@ class modEmundusStatFilterHelper {
 		
 		$helper = new modEmundusStatFilterHelper;
 		
-		$tabProg		= $helper->getProg($session->get('filterStat'));
-		$tabYear		= $helper->getYear($session->get('filterStat'));
-		$tabCampaign	= $helper->getCampaign($session->get('filterStat'));
-		
+		$tabProg = $helper->getProg($session->get('filterStat'));
+		$tabYear = $helper->getYear($session->get('filterStat'));
+		$tabCampaign = $helper->getCampaign($session->get('filterStat'));
 		
 		$output = "<option value=\"-1\"></option>";
-		if($tabProg != null)
-			foreach ($tabProg as $prog) { 
+		if ($tabProg != null) {
+			foreach ($tabProg as $prog) {
 				$output .= "<option value=\"".$prog['code']."\" ".(($array["prog"]===$prog['code'])?"selected":"").">".$prog['label']."</option>";
 			}
+		}
+
 		$output .= "////<option value=\"-1\"></option>";
-		if($tabYear != null)
-			foreach ($tabYear as $year) { 
+		if ($tabYear != null) {
+			foreach ($tabYear as $year) {
 				$output .= "<option value=\"".$year['year']."\" ".(($array["year"]===$year['year'])?"selected":"").">".$year['year']."</option>";
 			}
+		}
 		$output .= "////<option value=\"-1\"></option>";
-		if($tabCampaign != null)
+		if ($tabCampaign != null) {
 			foreach ($tabCampaign as $campaign) {
 				$output .= "<option value=\"".$campaign['id']."\" ".(($array["campaign"]===$campaign['id'])?"selected":"").">".$campaign['label']."</option>";
 			}
+		}
+
 		return json_encode((object)['status' => true, 'msg' => $output]);
 	}
 	
 	/** 
 	  * Retrieve the currents stats modules
 	  */
-	public function reloadModuleAjax()
-	{
-		jimport( 'joomla.application.module.helper' );
+	public function reloadModuleAjax() {
+
+		jimport('joomla.application.module.helper');
 		$document = JFactory::getDocument();
 		$renderer = $document->loadRenderer('module');
-		$contents = '';	
 		$database = JFactory::getDBO();
         $session = JFactory::getSession();
 		$user = $session->get('emundusUser');
+
 		try {
 			$query = "SELECT * FROM jos_modules WHERE module = 'mod_emundus_stat' AND published = 1 ORDER BY ordering";
 			$database->setQuery($query);
 			$modules = $database->loadObjectList();
 			$params = array('style'=>'xhtml');					
 			$modulesString = "";
-			if($modules != null)
+			if ($modules != null) {
 				for($cpt = 0; $cpt < count($modules); $cpt++) {
 					$contents = $renderer->render($modules[$cpt], $params);
 					$modulesString .= "////".$modules[$cpt]->id."////".JModuleHelper::renderModule($modules[$cpt]);
 				}
+			}
 			
 			return json_encode((object)['status' => true, 'msg' => $modulesString]);
+
 		} catch(Exception $e) {
 			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 			JLog::add($error, JLog::ERROR, 'com_emundus');
