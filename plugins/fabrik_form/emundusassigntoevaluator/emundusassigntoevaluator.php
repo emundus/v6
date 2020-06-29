@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 2: EmundusAssigntogroup 2020-02 Benjamin Rivalland
+ * @version 2: Emundusassigntoevaluator 2020-02 Benjamin Rivalland
  * @package Fabrik
  * @copyright Copyright (C) 2020 emundus.fr. All rights reserved.
  * @license GNU/GPL, see LICENSE.php
