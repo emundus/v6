@@ -10,6 +10,7 @@
 defined('_JEXEC') or die;
 
 // Note. It is important to remove spaces between elements.
+if($user != null) {
 ?>
 
 <!-- Button which opens up the dropdown menu. -->
@@ -70,4 +71,13 @@ defined('_JEXEC') or die;
         }
     });
 </script>
-
+<?php } else { ?>
+<div class="header-right" style="text-align: right;">
+	<a class="btn btn-danger" href="<?= $link_login; ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
+	<?php if($show_registration) { ?>
+		<a class="btn btn-danger btn-creer-compte" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
+	<?php } ?>
+	<br />
+	<a href="<?= $link_forgotten_password; ?>"><?= JText::_('FORGOTTEN_PASSWORD_LABEL'); ?></a>
+</div>
+<?php } ?>

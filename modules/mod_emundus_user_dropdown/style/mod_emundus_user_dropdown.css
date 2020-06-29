@@ -40,3 +40,7 @@
     background: #29d4ff;
     color: #ffffff;
 }
+
+li>a:hover {
+	text-decoration: underline;
+}
