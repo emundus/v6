@@ -22,8 +22,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Get the stats modules for the stats module manager
 	  */
-	public function getModuleStat()
-	{
+	public function getModuleStat() {
 		$db = JFactory::getDBO();
 		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
@@ -42,8 +41,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Retrieve the stats modules for the stats modules manager
 	  */
-	public function getExportModuleStat()
-	{
+	public function getExportModuleStat() {
 		$db = JFactory::getDBO();
 		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
@@ -62,8 +60,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Retrieve the stats modules for exporting stats modules
 	  */
-	public function getTypeStatModule($id)
-	{
+	public function getTypeStatModule($id) {
 		$db = JFactory::getDBO();
 		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
@@ -82,8 +79,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Display or not the stat module
 	  */
-	public function changePublishedModuleAjax()
-	{
+	public function changePublishedModuleAjax() {
 		$jinput = JFactory::getApplication()->input;
 		$id = $jinput->post->get('idChangePublishedModule');
 		$db = JFactory::getDBO();
@@ -109,8 +105,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Change the order of the stats modules
 	  */
-	public function changeOrderModuleAjax()
-	{
+	public function changeOrderModuleAjax() {
 		$jinput = JFactory::getApplication()->input;
 		$tabId = $jinput->post->get('id');
 		$order1 = $jinput->post->get('order1');
@@ -119,13 +114,13 @@ class modEmundusQueryBuilderHelper {
 		$user = $session->get('emundusUser');
 		
 		try {
-			for($i = $order1 ; $i < count($tabId)+$order1 ; $i++) {
+			for ($i = $order1 ; $i < count($tabId)+$order1 ; $i++) {
 				$query = "UPDATE `jos_modules` SET `ordering` = '".$i."' WHERE `jos_modules`.`module` = 'mod_emundus_stat' AND `jos_modules`.`id` = ".substr($tabId[$i-$order1], 3);
 				$db->setQuery($query);
 				$db->execute();
 			}
 			return json_encode((object)['status' => true, 'msg' => 'It\'s ok']);
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 			JLog::add($error, JLog::ERROR, 'com_emundus');
 			echo json_encode((object)['status' => false, 'msg' => "Error"]);
@@ -136,8 +131,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Remove the stat module
 	  */
-	public function deleteModuleAjax()
-	{
+	public function deleteModuleAjax() {
 		$jinput = JFactory::getApplication()->input;
 		$id = $jinput->post->get('idDeleteModule');
 		$db = JFactory::getDBO();
@@ -145,18 +139,22 @@ class modEmundusQueryBuilderHelper {
 		$user = $session->get('emundusUser');
 		
 		try {
+
 			$query = "SELECT published, params FROM jos_modules WHERE `jos_modules`.`id` = ".$id;
 			$db->setQuery($query);
 			$result = $db->loadAssoc();
-			$published = $result['published'];
+
 			$paramModule = json_decode($result['params'], true);
 			$query = "UPDATE `jos_modules` SET `published` = '-2' WHERE `jos_modules`.`id` = ".$id;
 			$db->setQuery($query);
 			$db->execute();
+
 			$query = "DROP VIEW ".$paramModule['view'];
 			$db->setQuery($query);
 			$db->execute();
+
 			return json_encode((object)['status' => true, 'msg' => 'It\'s ok']);
+
 		} catch(Exception $e) {
 			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 			JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -168,8 +166,8 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Modify the stat module
 	  */
-	public function changeModuleAjax()
-	{
+	public function changeModuleAjax() {
+
 		$jinput = JFactory::getApplication()->input;
 		$title = addslashes(str_replace("'", " ", $jinput->post->getString('titleModule')));
 		$type = $jinput->post->get('typeModule');
@@ -180,23 +178,30 @@ class modEmundusQueryBuilderHelper {
 		$user = $session->get('emundusUser');
 		
 		try {
+
 			$query = "SELECT params FROM jos_modules WHERE `jos_modules`.`id` = ".$id;
 			$db->setQuery($query);
 			$tabParams = explode("\",\"", $db->loadResult());
+
 			$paramsModif = "";
-			for($i = 0 ; $i < count($tabParams); $i++) {
-				if(strpos($tabParams[$i], "type_graph") === 0) {
+
+			for ($i = 0 ; $i < count($tabParams); $i++) {
+				if (strpos($tabParams[$i], "type_graph") === 0) {
 					$paramsModif .= "type_graph\":\"".$type;
 				} else {
 					$paramsModif .= $tabParams[$i];
 				}
-				if($i != count($tabParams)-1) $paramsModif .= "\",\"";
+				if ($i != count($tabParams)-1) {
+					$paramsModif .= "\",\"";
+				}
 			}
 			
 			$query = "UPDATE `jos_modules` SET `title` = '".$title."', params = '".$paramsModif."' WHERE `jos_modules`.`id` = ".$id;
 			$db->setQuery($query);
 			$db->execute();
+
 			return json_encode((object)['status' => true, 'msg' => 'It\'s ok']);
+
 		} catch(Exception $e) {
 			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 			JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -208,8 +213,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Create the stat module
 	  */
-	public function createModuleAjax()
-	{
+	public function createModuleAjax() {
 		$jinput = JFactory::getApplication()->input;
 		$nameGraph = str_replace("'", " ", str_replace("\"", " ", $jinput->post->getString('titleModule')));
 		$typeModule = $jinput->post->get('typeModule');
@@ -255,9 +259,8 @@ class modEmundusQueryBuilderHelper {
 			$db->setQuery($query);
 			$paramsJoinCheckbok = json_decode($db->loadResult(),true);
 			
-			if($paramsTableJoin['repeat_group_button'] === "1") {
-				if($paramsJoinCheckbok['database_join_display_type'] === 'checkbox')
-				{
+			if ($paramsTableJoin['repeat_group_button'] === "1") {
+				if ($paramsJoinCheckbok['database_join_display_type'] === 'checkbox') {
 					$repeatjoin = "left join (SELECT `".$dbTableName."`.`fnum`, `".$dbTableName."_".$tableJoin['id']."_repeat_repeat_".$elementName."`.`".$elementName."` FROM `".$dbTableName."` ";
 					$repeatjoin .= "left join `".$dbTableName."_".$tableJoin['id']."_repeat` on (`".$dbTableName."`.`id` = `".$dbTableName."_".$tableJoin['id']."_repeat`.`parent_id`) ";
 					$repeatjoin .= "left join `".$dbTableName."_".$tableJoin['id']."_repeat_repeat_".$elementName."` on (`".$dbTableName."_".$tableJoin['id']."_repeat`.`id` = `".$dbTableName."_".$tableJoin['id']."_repeat_repeat_".$elementName."`.`parent_id`) ";
@@ -270,9 +273,8 @@ class modEmundusQueryBuilderHelper {
 				$dbTableName = 'tableJoin';
 			}
 			
-			if($typeModule === "timeseries") {
-				if($paramsTableJoin['repeat_group_button'] === "1")
-				{
+			if ($typeModule === "timeseries") {
+				if ($paramsTableJoin['repeat_group_button'] === "1") {
 					$query = "CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, cast(`ecc`.`date_time` as date) AS date, `esc`.`label` AS `campaign`
 					from `jos_emundus_campaign_candidature` `ecc`
 					left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
@@ -292,12 +294,15 @@ class modEmundusQueryBuilderHelper {
 				$db->execute();
 				
 				$elementName = 'date';
+
 			} else {
+
 				$query = "SELECT plugin FROM jos_fabrik_elements WHERE id = ".$indicateur;
 				$db->setQuery($query);
 				$result = $db->loadAssoc();
 				$plugin = $result['plugin'];
-				if($plugin === "databasejoin") {
+
+				if ($plugin === "databasejoin") {
 					$query = "SELECT params FROM jos_fabrik_elements WHERE id = ".$indicateur;
 					$db->setQuery($query);
 					$result = $db->loadAssoc();
@@ -311,8 +316,7 @@ class modEmundusQueryBuilderHelper {
 					$tableDataBaseJoin = preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0 , 2), $tableDataBaseJoin);
                     $tableDataBaseJoin  = preg_replace('#{my->id}#', $user->id, $tableDataBaseJoin);
 					
-					if($paramsTableJoin['repeat_group_button'] === "1")
-					{
+					if ($paramsTableJoin['repeat_group_button'] === "1") {
 						$query = "CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, ".$tableDataBaseJoin.", `esc`.`label` AS `campaign`
 						from `jos_emundus_campaign_candidature` `ecc`
 						left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
@@ -331,23 +335,28 @@ class modEmundusQueryBuilderHelper {
 						group by `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`";
 						$db->setQuery($query);
 					}
+
 					$db->execute();
 					$elementName = 'elt';
+
 				} elseif($plugin === "dropdown" || $plugin === "radiobutton") {
+
 					$query = "SELECT params FROM jos_fabrik_elements WHERE id = ".$indicateur;
 					$db->setQuery($query);
 					$result = $db->loadAssoc();
 					$paramElt = json_decode($result['params'],true);
 					$join = "(CASE `".$dbTableName."`.`".$elementName."` ";
-					if($paramElt['sub_options']['sub_values'] != null)
-						for($i = 0 ; $i < count($paramElt['sub_options']['sub_values']);$i++) {
-							if($paramElt['sub_options']['sub_values'][$i] != '')
+
+					if ($paramElt['sub_options']['sub_values'] != null) {
+						for ($i = 0 ; $i < count($paramElt['sub_options']['sub_values']);$i++) {
+							if ($paramElt['sub_options']['sub_values'][$i] != '') {
 								$join .= "WHEN '".addslashes($paramElt['sub_options']['sub_values'][$i])."' THEN '".addslashes($paramElt['sub_options']['sub_labels'][$i])."' ";
+							}
 						}
+					}
 					$join .= "ELSE '' END)";
 					
-					if($paramsTableJoin['repeat_group_button'] === "1")
-					{
+					if ($paramsTableJoin['repeat_group_button'] === "1") {
 						$query = "CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, ".$join." AS `elt`, `esc`.`label` AS `campaign`
 						from `jos_emundus_campaign_candidature` `ecc`
 						left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
@@ -355,7 +364,9 @@ class modEmundusQueryBuilderHelper {
 						where `".$dbTableName."`.`".$elementName."` is not null and `ecc`.`submitted` = 1
 						group by `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`";
 						$db->setQuery($query);
+
 					} else {
+
 						$query = "CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, ".$join." AS `elt`, `esc`.`label` AS `campaign`
 						from `jos_emundus_campaign_candidature` `ecc`
 						left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
@@ -366,9 +377,10 @@ class modEmundusQueryBuilderHelper {
 					}
 					$db->execute();
 					$elementName = 'elt';
+
 				} else {
-					if($paramsTableJoin['repeat_group_button'] === "1")
-					{
+
+					if ($paramsTableJoin['repeat_group_button'] === "1") {
 						$query = "CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, `".$dbTableName."`.`".$elementName."`, `esc`.`label` AS `campaign`
 						from `jos_emundus_campaign_candidature` `ecc`
 						left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
@@ -376,7 +388,9 @@ class modEmundusQueryBuilderHelper {
 						where `".$dbTableName."`.`".$elementName."` is not null and `ecc`.`submitted` = 1
 						group by `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`";
 						$db->setQuery($query);
+
 					} else {
+
 						$query = "CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, `".$dbTableName."`.`".$elementName."`, `esc`.`label` AS `campaign`
 						from `jos_emundus_campaign_candidature` `ecc`
 						left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
@@ -384,12 +398,11 @@ class modEmundusQueryBuilderHelper {
 						where `".$dbTableName."`.`".$elementName."` is not null and `ecc`.`submitted` = 1
 						group by `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`";
 						$db->setQuery($query);
+
 					}
 					$db->execute();
 				}
 			}
-			
-			
 			
 			$query = "SHOW TABLE STATUS LIKE 'jos_modules'";
 			$db->setQuery($query);
@@ -460,7 +473,6 @@ class modEmundusQueryBuilderHelper {
 			$db->setQuery($query);
 			$db->execute();
 			
-			
 			$db->transactionCommit();
 			
 			$query = "SET autocommit = 1;";
@@ -468,10 +480,12 @@ class modEmundusQueryBuilderHelper {
 			$db->execute();
 			
 			return json_encode((object)['status' => true, 'msg' => 'It\'s ok']);
+
 		} catch(Exception $e) {
+
 			$db->transactionRollback();
 			
-			if(substr_count($query,"CREATE VIEW ") === 0 && substr_count($query,"FROM jos_fabrik_elements") === 0 && substr_count($query,"FROM (jos_fabrik_elements") === 0) {
+			if (substr_count($query,"CREATE VIEW ") === 0 && substr_count($query,"FROM jos_fabrik_elements") === 0 && substr_count($query,"FROM (jos_fabrik_elements") === 0) {
 				$db->setQuery("DROP VIEW ".$nameView);
 				$db->execute();
 			}
@@ -486,8 +500,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Retrieve program codes for indicators
 	  */
-	public function getProg()
-	{
+	public function getProg() {
 		$db = JFactory::getDbo();
         $session = JFactory::getSession();
 		$user = $session->get('emundusUser');
@@ -506,8 +519,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Retrieve campaigns for indicators
 	  */
-	public function getCampaign()
-	{
+	public function getCampaign() {
 		$db = JFactory::getDbo();
         $session = JFactory::getSession();
 		$user = $session->get('emundusUser');
@@ -526,8 +538,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Collect indicators
 	  */
-	public function getElements()
-	{
+	public function getElements() {
 		$tabCampaign = (new modEmundusQueryBuilderHelper)->getCampaign();
 		$tabProgram = (new modEmundusQueryBuilderHelper)->getProg();
 		
@@ -540,8 +551,7 @@ class modEmundusQueryBuilderHelper {
 		$groupe = "";
 		
 		foreach ($elements as $element) {
-			if($element->element_plugin === "databasejoin" || $element->element_plugin === "dropdown" || $element->element_plugin === "radiobutton")
-			{
+			if ($element->element_plugin === "databasejoin" || $element->element_plugin === "dropdown" || $element->element_plugin === "radiobutton") {
 				$menu_tmp = $element->title;
 
 				if ($menu != $menu_tmp) {
@@ -561,38 +571,35 @@ class modEmundusQueryBuilderHelper {
 				}
 
 				$output .= '<option value="'.$element->id.'"';
-				$table_name = (isset($element->table_join)?$element->table_join:$element->table_name);
 				$output .= '>'.$element->element_label.'</option>';
 			}
 		}
-		$output .= '</select> ';
 		
-		return $output;
+		return $output.'</select> ';
 	}
 	
 	/** 
 	  * Retrieve the currents stats modules
 	  */
-	public function reloadModuleAjax()
-	{
+	public function reloadModuleAjax() {
 		jimport( 'joomla.application.module.helper' );
 		$document = JFactory::getDocument();
 		$renderer = $document->loadRenderer('module');
-		$contents = '';	
 		$database = JFactory::getDBO();
         $session = JFactory::getSession();
 		$user = $session->get('emundusUser');
+
 		try {
 			$query = "SELECT * FROM jos_modules WHERE module = 'mod_emundus_stat' AND published = 1 ORDER BY ordering";
 			$database->setQuery($query);
 			$modules = $database->loadObjectList();
-			$params = array('style'=>'xhtml');					
 			$modulesString = "";
-			if($modules != null)
-				for($cpt = 0; $cpt < count($modules); $cpt++) {
-					$contents = $renderer->render($modules[$cpt], $params);
+
+			if ($modules != null) {
+				for ($cpt = 0; $cpt < count($modules); $cpt++) {
 					$modulesString .= "////".$modules[$cpt]->id."////".JModuleHelper::renderModule($modules[$cpt]);
 				}
+			}
 			
 			return json_encode((object)['status' => true, 'msg' => $modulesString]);
 		} catch(Exception $e) {
@@ -612,30 +619,33 @@ class modEmundusQueryBuilderHelper {
 		foreach ($children as $child) {
 			$innerHTML .= $child->ownerDocument->saveXML( $child );
 		}
-
 		return $innerHTML;
 	} 
 	
 	/**
 	  * Create pdf with images of selected graphs
 	  */
-	public function convertPdfAjax()
-	{
+	public function convertPdfAjax() {
 		$eMConfig = JComponentHelper::getParams('com_emundus');
         $gotenberg_activation = $eMConfig->get('gotenberg_activation', 1);
         $gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
+		$res = new stdClass();
+
+		if ($gotenberg_activation !== '1') {
+			$res->status = false;
+			$res->msg = 'Please activate Gotenberg in eMundus config.';
+			return json_encode($res);
+		}
 		
 		$fichier = JPATH_BASE;
-		$res = new stdClass();
 
 		$jinput = JFactory::getApplication()->input;
 		$src = $jinput->get('src', '','RAW');
-		// var_dump($src).die();
 		
 		$doc = new DOMDocument();
 		@$doc->loadHTML($src);
 		$imgList = $doc->getElementsBytagName('div');
-		for($i = 0 ; $i < count($imgList) ; $i++) {
+		for ($i = 0 ; $i < count($imgList) ; $i++) {
 			file_put_contents($fichier.DS."tmp".DS.'image'.$i.".svg", utf8_decode((new modEmundusQueryBuilderHelper)->getInnerHtml($imgList->item($i))));
 			$oldNode = $imgList->item($i)->firstChild;
 			$imgList->item($i)->removeChild($oldNode);
@@ -645,20 +655,19 @@ class modEmundusQueryBuilderHelper {
 		}
 		
 		$index = DocumentFactory::makeFromString("index.html", '<html><body style="width:10%;">'.$src.'</body></html>');
-		
-		$client = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
+
+		$client  = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
 		$request = new HTMLRequest($index);
 		$request->setPaperSize(Request::A4);
 		$request->setMargins(Request::NO_MARGINS);
 		$dest = $fichier.DS."tmp".DS.'Graph.pdf';
 		$client->store($request, $dest);
 		
-		for($i = 0 ; $i < count($imgList) ; $i++) {
+		for ($i = 0; $i < count($imgList); $i++) {
 			unlink($fichier.DS."tmp".DS.'image'.$i.".svg");
 		}
 
 		$res->status = true;
-		// $res->msg = '<a href="'.$dest.'" target="_blank">Recuperer</a>';
 		$res->msg = 'It\'s ok';
 		return json_encode($res);
 	}
@@ -666,9 +675,9 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Delete pdf in tmp folder
 	  */
-	public function deleteFileAjax()
-	{
+	public function deleteFileAjax() {
 		unlink(JPATH_BASE.DS."tmp".DS."Graph.pdf");
+		$res = new stdClass();
 		
 		$res->status = true;
 		$res->msg = 'It\'s ok';
