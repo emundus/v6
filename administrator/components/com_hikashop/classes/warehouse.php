@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -57,6 +57,10 @@ class hikashopWarehouseClass extends hikashopClass {
 
 		$db = JFactory::getDBO();
 
+		$start = (int)@$typeConfig['start'];
+		if(!empty($options['start']))
+			$start = (int)@$options['start'];
+
 		$limit = (int)@$typeConfig['limit'];
 		if(!empty($options['limit']))
 			$limit = (int)$options['limit'];
@@ -76,7 +80,7 @@ class hikashopWarehouseClass extends hikashopClass {
 				' ORDER BY warehouse_name';
 		}
 
-		$db->setQuery($query, 0, $limit);
+		$db->setQuery($query, $start, $limit);
 		$warehouses = $db->loadObjectList('warehouse_id');
 		foreach($warehouses as $warehouse) {
 			$ret[0][$warehouse->warehouse_id] = $warehouse;

@@ -7,18 +7,24 @@
 
 namespace FOF30\Input;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
-class Input extends \JInput
+use Exception;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\InputFilter;
+use Joomla\CMS\Input\Input as JInput;
+use ReflectionObject;
+
+class Input extends JInput
 {
 	/**
 	 * Public constructor. Overridden to allow specifying the global input array
 	 * to use as a string and instantiate from an object holding variables.
 	 *
-	 * @param   array|string|object|null  $source   Source data; set null to use $_REQUEST
+	 * @param   array|string|object|null  $source   Source data; set null to use the default Joomla input source
 	 * @param   array                     $options  Filter options
 	 */
-	public function __construct($source = null, array $options = array())
+	public function __construct($source = null, array $options = [])
 	{
 		$hash = null;
 
@@ -26,40 +32,21 @@ class Input extends \JInput
 		{
 			$hash = strtoupper($source);
 
-			switch ($hash)
+			if (!in_array($hash, ['GET', 'POST', 'FILES', 'COOKIE', 'ENV', 'SERVER', 'REQUEST']))
 			{
-				case 'GET':
-					$source = $_GET;
-					break;
-				case 'POST':
-					$source = $_POST;
-					break;
-				case 'FILES':
-					$source = $_FILES;
-					break;
-				case 'COOKIE':
-					$source = $_COOKIE;
-					break;
-				case 'ENV':
-					$source = $_ENV;
-					break;
-				case 'SERVER':
-					$source = $_SERVER;
-					break;
-				default:
-					$source = $_REQUEST;
-					$hash = 'REQUEST';
-					break;
+				$hash = 'REQUEST';
 			}
+
+			$source = $this->extractJoomlaSource($hash);
 		}
 		elseif (is_object($source) && ($source instanceof Input))
 		{
 			$source = $source->getData();
 		}
-		elseif (is_object($source) && ($source instanceof \JInput))
+		elseif (is_object($source) && ($source instanceof JInput))
 		{
 			$serialised = $source->serialize();
-			list ($xOptions, $xData, $xInput) = unserialize($serialised);
+			[$xOptions, $xData, $xInput] = unserialize($serialised);
 			unset ($xOptions);
 			unset ($xInput);
 			unset ($source);
@@ -72,7 +59,7 @@ class Input extends \JInput
 			{
 				$source = (array) $source;
 			}
-			catch (\Exception $exc)
+			catch (Exception $exc)
 			{
 				$source = null;
 			}
@@ -87,11 +74,12 @@ class Input extends \JInput
 			$source = null;
 		}
 
+		// TODO Joomla 4 -- get the data from the application input
+
 		// If we are not sure use the REQUEST array
 		if (empty($source))
 		{
-			$source = $_REQUEST;
-			$hash = 'REQUEST';
+			$source = $this->extractJoomlaSource('REQUEST');
 		}
 
 		parent::__construct($source, $options);
@@ -128,6 +116,11 @@ class Input extends \JInput
 		return $this->data;
 	}
 
+	public function setData(array $data)
+	{
+		$this->data = $data;
+	}
+
 	/**
 	 * Magic method to get filtered input data.
 	 *
@@ -143,7 +136,7 @@ class Input extends \JInput
 			$filter = substr($name, 3);
 
 			$default = null;
-			$mask = 0;
+			$mask    = 0;
 
 			if (isset($arguments[1]))
 			{
@@ -173,7 +166,7 @@ class Input extends \JInput
 	{
 		if (is_array($var))
 		{
-			$temp = array();
+			$temp = [];
 
 			foreach ($var as $k => $v)
 			{
@@ -197,7 +190,14 @@ class Input extends \JInput
 		elseif ($mask & 4)
 		{
 			// If the allow HTML flag is set, apply a safe HTML filter to the variable
-			$safeHtmlFilter = \JFilterInput::getInstance(null, null, 1, 1);
+			if (version_compare(JVERSION, '3.999.999', 'le'))
+			{
+				$safeHtmlFilter = InputFilter::getInstance(null, null, 1, 1);
+			}
+			else
+			{
+				$safeHtmlFilter = InputFilter::getInstance([], [], InputFilter::TAGS_BLACKLIST, InputFilter::ATTR_BLACKLIST);
+			}
 			$var = $safeHtmlFilter->clean($var, $type);
 		}
 		else
@@ -208,4 +208,33 @@ class Input extends \JInput
 		return $var;
 	}
 
+	protected function extractJoomlaSource($hash = 'REQUEST')
+	{
+		if (!in_array(strtoupper($hash), ['GET', 'POST', 'FILES', 'COOKIE', 'ENV', 'SERVER', 'REQUEST']))
+		{
+			$hash = 'REQUEST';
+		}
+
+		$hash = strtolower($hash);
+
+		try
+		{
+			$input = Factory::getApplication()->input;
+		}
+		catch (Exception $e)
+		{
+			$input = new \Joomla\Input\Input();
+		}
+
+		if ($hash !== 'request')
+		{
+			$input = $input->{$hash};
+		}
+
+		$refObject = new ReflectionObject($input);
+		$refProp   = $refObject->getProperty('data');
+		$refProp->setAccessible(true);
+
+		return $refProp->getValue($input);
+	}
 }

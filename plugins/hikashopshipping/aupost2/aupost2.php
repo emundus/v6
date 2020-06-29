@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,6 +25,7 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 			'AUS_PARCEL_EXPRESS_SATCHEL_500G' => 'Express Post Small Satchel',
 			'AUS_PARCEL_EXPRESS_SATCHEL_3KG' => 'Express Post Medium (3Kg) Satchel',
 			'AUS_PARCEL_EXPRESS_SATCHEL_5KG' => 'Express Post Large (5Kg) Satchel',
+			'INT_PARCEL_STD_OWN_PACKAGING' => 'International parcel standard (your own packaging)',
 			'INTL_SERVICE_ECI_PLATINUM' => 'Express Courier International Platinum',
 			'INTL_SERVICE_ECI_M' => 'Express Courier International Merchandise',
 			'INTL_SERVICE_ECI_D' => 'Express Courier International Documents',
@@ -53,7 +54,8 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 		'AUS_PARCEL_REGULAR_SATCHEL_3KG' => 13,
 		'AUS_PARCEL_REGULAR_SATCHEL_5KG' => 14,
 		'AUS_PARCEL_EXPRESS_SATCHEL_3KG' => 15,
-		'AUS_PARCEL_EXPRESS_SATCHEL_5KG' => 16
+		'AUS_PARCEL_EXPRESS_SATCHEL_5KG' => 16,
+		'INT_PARCEL_STD_OWN_PACKAGING' => 17
 		);
 
 	var $shipping_names = array(
@@ -65,6 +67,7 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 		'AUS_PARCEL_EXPRESS_SATCHEL_500G' => 'Express Post Small Satchel',
 		'AUS_PARCEL_EXPRESS_SATCHEL_3KG' => 'Express Post Medium (3Kg) Satchel',
 		'AUS_PARCEL_EXPRESS_SATCHEL_5KG' => 'Express Post Large (5Kg) Satchel',
+		'INT_PARCEL_STD_OWN_PACKAGING' => 'International parcel standard (your own packaging)',
 		'INTL_SERVICE_ECI_PLATINUM' => 'Express Courier International Platinum',
 		'INTL_SERVICE_ECI_M' => 'Express Courier International Merchandise',
 		'INTL_SERVICE_ECI_D' => 'Express Courier International Documents',
@@ -94,7 +97,8 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 		'INTL_SERVICE_PTI',
 		'INTL_SERVICE_RPI',
 		'INTL_SERVICE_AIR_MAIL',
-		'INTL_SERVICE_SEA_MAIL'
+		'INTL_SERVICE_SEA_MAIL',
+		'INT_PARCEL_STD_OWN_PACKAGING'
 	);
 
 	var $world_shipping_new_types = array(
@@ -399,9 +403,14 @@ class plgHikashopshippingAupost2 extends hikashopShippingPlugin {
 
 		if(isset($serviceTypesJSON->services->service) && !empty($serviceTypesJSON->services->service)) {
 			$data = array();
+			$available_service = array();
+			if(is_object($serviceTypesJSON->services->service))
+				$available_service[] = $serviceTypesJSON->services->service;
+			else
+				$available_service = $serviceTypesJSON->services->service;
 
-			foreach($serviceTypesJSON->services->service as $key => $service) {
-				if(in_array($service->code, $service_types) && isset($service->price)) {
+			foreach($available_service as $key => $service) {
+				if(isset($service->code) && in_array($service->code, $service_types) && isset($service->price)) {
 					$service_code = $service->code;
 					foreach($this->world_shipping_new_types as $old_type => $new_type){
 						if($service->code == $new_type && in_array($old_type, $service_types)){

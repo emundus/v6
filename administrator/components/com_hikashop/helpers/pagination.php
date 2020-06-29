@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -133,22 +133,41 @@ class hikashopBridgePaginationHelper extends JPagination {
 		return $html;
 	}
 
+	function addMetaLinks() {
+		$data = $this->_buildDataObject();
+		$doc = JFactory::getDocument();
+		$attribs = array();
+		if ($data->previous->base !== null) {
+			$href = $this->_link($data->previous->base);
+			$doc->addHeadLink( $href, 'prev', 'rel', $attribs );
+		}
+		if ($data->next->base !== null) {
+			$href = $this->_link($data->next->base);
+			$doc->addHeadLink( $href, 'next', 'rel', $attribs );
+		}
+	}
+
 	function _link($start){
 		$current_url = hikashop_currentURL();
-		$ret = false;
-		if(isset($_GET['limitstart'])){
-			$ret = true;
-			$old_start = hikaInput::get()->getInt('limitstart');
-			$current_url = str_replace(array('limitstart'.$this->hikaSuffix.'='.$old_start, 'limitstart'.$this->hikaSuffix.'-='.$old_start), array('limitstart'.$this->hikaSuffix.'='.$start, 'limitstart'.$this->hikaSuffix.'-'.$start), $current_url);
+		$ret_start = false;
+		$ret_limit = false;
+		if(isset($_GET['limitstart'.$this->hikaSuffix])){
+			$ret_start = true;
+			$old_start = hikaInput::get()->getInt('limitstart'.$this->hikaSuffix);
+			$current_url = preg_replace('#limitstart'.$this->hikaSuffix.'(=|-)[0-9]+#','limitstart'.$this->hikaSuffix.'${1}'.$start, $current_url);
 		}
 
-		if(isset($_POST['limit']) && isset($_GET['limit'])){
-			$ret = true;
-			$old_limit = (int)$_GET['limit'];
-			$current_url = str_replace(array('limit'.$this->hikaSuffix.'='.$old_limit, 'limit'.$this->hikaSuffix.'-='.$old_limit), array('limit'.$this->hikaSuffix.'='.$this->limit, 'limit'.$this->hikaSuffix.'-'.$this->limit), $current_url);
+		if(isset($_POST['limit'.$this->hikaSuffix]) || isset($_GET['limit'.$this->hikaSuffix])){
+			if(isset($_GET['limit'.$this->hikaSuffix])) $ret_limit = true;
+			$old_limit = hikaInput::get()->getInt('limit'.$this->hikaSuffix);
+			$current_url = preg_replace('#limit'.$this->hikaSuffix.'(=|-)[0-9]+#','limit'.$this->hikaSuffix.'${1}'.$this->limit, $current_url);
 		}
-		if($ret)
+
+		if($ret_start && $ret_limit)
 			return $current_url;
+		elseif($ret_start && !$ret_limit)
+			return $current_url . '&limit='.$this->limit;
+
 		$sep = '?';
 		if(strpos($current_url, '?'))
 			$sep = '&';

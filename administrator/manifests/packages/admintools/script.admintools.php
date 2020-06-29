@@ -6,6 +6,16 @@
  */
 
 // Protect from unauthorized access
+use Joomla\CMS\Application\ApplicationHelper;
+use Joomla\CMS\Cache\Cache;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Installer\Adapter\ComponentAdapter;
+use Joomla\CMS\Installer\Adapter\PackageAdapter;
+use Joomla\CMS\Installer\Installer;
+use Joomla\CMS\Installer\InstallerHelper as JInstallerHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die();
 
 class Pkg_AdmintoolsInstallerScript
@@ -29,14 +39,14 @@ class Pkg_AdmintoolsInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '5.6.0';
+	protected $minimumPHPVersion = '7.1.0';
 
 	/**
 	 * The minimum Joomla! version required to install this extension
 	 *
 	 * @var   string
 	 */
-	protected $minimumJoomlaVersion = '3.8.0';
+	protected $minimumJoomlaVersion = '3.9.0';
 
 	/**
 	 * The maximum Joomla! version this extension can be installed on
@@ -70,17 +80,18 @@ class Pkg_AdmintoolsInstallerScript
 	 * DO NOT EDIT BELOW THIS LINE
 	 * =================================================================================================================
 	 */
-
 	/**
 	 * Joomla! pre-flight event. This runs before Joomla! installs or updates the package. This is our last chance to
 	 * tell Joomla! if it should abort the installation.
 	 *
 	 * In here we'll try to install FOF. We have to do that before installing the component since it's using an
-	 * installation script extending FOF's InstallScript class. We can't use a <file> tag in the manifest to install FOF
+	 * installation script extending FOF's InstallScript class. We can't use a <file> tag in the manifest to install
+	 * FOF
 	 * since the FOF installation is expected to fail if a newer version of FOF is already installed on the site.
 	 *
-	 * @param   string                     $type    Installation type (install, update, discover_install)
-	 * @param   \JInstallerAdapterPackage  $parent  Parent object
+	 * @param   string                                        $type    Installation type (install, update,
+	 *                                                                 discover_install)
+	 * @param   PackageAdapter  $parent  Parent object
 	 *
 	 * @return  boolean  True to let the installation proceed, false to halt the installation
 	 */
@@ -90,7 +101,7 @@ class Pkg_AdmintoolsInstallerScript
 		if (!version_compare(PHP_VERSION, $this->minimumPHPVersion, 'ge'))
 		{
 			$msg = "<p>You need PHP $this->minimumPHPVersion or later to install this package</p>";
-			JLog::add($msg, JLog::WARNING, 'jerror');
+			Log::add($msg, Log::WARNING, 'jerror');
 
 			return false;
 		}
@@ -99,7 +110,7 @@ class Pkg_AdmintoolsInstallerScript
 		if (!version_compare(JVERSION, $this->minimumJoomlaVersion, 'ge'))
 		{
 			$msg = "<p>You need Joomla! $this->minimumJoomlaVersion or later to install this component</p>";
-			JLog::add($msg, JLog::WARNING, 'jerror');
+			Log::add($msg, Log::WARNING, 'jerror');
 
 			return false;
 		}
@@ -108,7 +119,7 @@ class Pkg_AdmintoolsInstallerScript
 		if (!version_compare(JVERSION, $this->maximumJoomlaVersion, 'le'))
 		{
 			$msg = "<p>You need Joomla! $this->maximumJoomlaVersion or earlier to install this component</p>";
-			JLog::add($msg, JLog::WARNING, 'jerror');
+			Log::add($msg, Log::WARNING, 'jerror');
 
 			return false;
 		}
@@ -117,7 +128,7 @@ class Pkg_AdmintoolsInstallerScript
 		if (defined('HHVM_VERSION'))
 		{
 			$msg = "<p>We have detected that you are running HHVM instead of PHP. This software WILL NOT WORK properly on HHVM. Please switch to PHP 7 instead.</p>";
-			JLog::add($msg, JLog::WARNING, 'jerror');
+			Log::add($msg, Log::WARNING, 'jerror');
 
 			return false;
 		}
@@ -139,8 +150,8 @@ class Pkg_AdmintoolsInstallerScript
 	 * or updating your component. This is the last chance you've got to perform any additional installations, clean-up,
 	 * database updates and similar housekeeping functions.
 	 *
-	 * @param   string                       $type   install, update or discover_update
-	 * @param   \JInstallerAdapterComponent  $parent Parent object
+	 * @param   string                                          $type    install, update or discover_update
+	 * @param   ComponentAdapter  $parent  Parent object
 	 */
 	public function postflight($type, $parent)
 	{
@@ -164,9 +175,9 @@ class Pkg_AdmintoolsInstallerScript
 		 *
 		 * See bug report https://github.com/joomla/joomla-cms/issues/16147
 		 */
-		$conf = \JFactory::getConfig();
-		$clearGroups = array('_system', 'com_modules', 'mod_menu', 'com_plugins', 'com_modules');
-		$cacheClients = array(0, 1);
+		$conf         = Factory::getConfig();
+		$clearGroups  = ['_system', 'com_modules', 'mod_menu', 'com_plugins', 'com_modules'];
+		$cacheClients = [0, 1];
 
 		foreach ($clearGroups as $group)
 		{
@@ -174,13 +185,13 @@ class Pkg_AdmintoolsInstallerScript
 			{
 				try
 				{
-					$options = array(
+					$options = [
 						'defaultgroup' => $group,
-						'cachebase' => ($client_id) ? JPATH_ADMINISTRATOR . '/cache' : $conf->get('cache_path', JPATH_SITE . '/cache')
-					);
+						'cachebase'    => ($client_id) ? JPATH_ADMINISTRATOR . '/cache' : $conf->get('cache_path', JPATH_SITE . '/cache'),
+					];
 
-					/** @var JCache $cache */
-					$cache = \JCache::getInstance('callback', $options);
+					/** @var Cache $cache */
+					$cache = Cache::getInstance('callback', $options);
 					$cache->clean();
 				}
 				catch (Exception $exception)
@@ -191,7 +202,7 @@ class Pkg_AdmintoolsInstallerScript
 				// Trigger the onContentCleanCache event.
 				try
 				{
-					JFactory::getApplication()->triggerEvent('onContentCleanCache', $options);
+					Factory::getApplication()->triggerEvent('onContentCleanCache', $options);
 				}
 				catch (Exception $e)
 				{
@@ -204,7 +215,7 @@ class Pkg_AdmintoolsInstallerScript
 	/**
 	 * Runs on installation (but not on upgrade). This happens in install and discover_install installation routes.
 	 *
-	 * @param   \JInstallerAdapterPackage  $parent  Parent object
+	 * @param   PackageAdapter  $parent  Parent object
 	 *
 	 * @return  bool
 	 */
@@ -219,7 +230,7 @@ class Pkg_AdmintoolsInstallerScript
 	/**
 	 * Runs on uninstallation
 	 *
-	 * @param   \JInstallerAdapterPackage  $parent  Parent object
+	 * @param   PackageAdapter  $parent  Parent object
 	 *
 	 * @return  bool
 	 */
@@ -266,27 +277,27 @@ class Pkg_AdmintoolsInstallerScript
 	 * not load FOF then we raise an error: this means that FOF installation really failed (e.g. unwritable folder) and
 	 * we can't install this package.
 	 *
-	 * @param   \JInstallerAdapterPackage  $parent
+	 * @param   PackageAdapter  $parent
 	 */
 	private function installOrUpdateFOF($parent)
 	{
 		// Get the path to the FOF package
-		$sourcePath = $parent->getParent()->getPath('source');
+		$sourcePath    = $parent->getParent()->getPath('source');
 		$sourcePackage = $sourcePath . '/lib_fof30.zip';
 
 		// Extract and install the package
-		$package = JInstallerHelper::unpack($sourcePackage);
-		$tmpInstaller  = new JInstaller;
-		$error = null;
+		$package      = JInstallerHelper::unpack($sourcePackage);
+		$tmpInstaller = new Installer;
+		$error        = null;
 
 		try
 		{
 			$installResult = $tmpInstaller->install($package['dir']);
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			$installResult = false;
-			$error = $e->getMessage();
+			$error         = $e->getMessage();
 		}
 
 		// Try to include FOF. If that fails then the FOF package isn't installed because its installation failed, not
@@ -296,9 +307,9 @@ class Pkg_AdmintoolsInstallerScript
 		{
 			if (empty($error))
 			{
-				$error = JText::sprintf(
+				$error = Text::sprintf(
 					'JLIB_INSTALLER_ABORT_PACK_INSTALL_ERROR_EXTENSION',
-					JText::_('JLIB_INSTALLER_' . strtoupper($parent->get('route'))),
+					Text::_('JLIB_INSTALLER_' . strtoupper($parent->get('route'))),
 					basename($sourcePackage)
 				);
 			}
@@ -311,7 +322,7 @@ class Pkg_AdmintoolsInstallerScript
 	 * Try to uninstall the FOF library. We don't go through the Joomla! package uninstallation since we can expect the
 	 * uninstallation of the FOF library to fail if other software depends on it.
 	 *
-	 * @param   JInstallerAdapterPackage  $parent
+	 * @param   PackageAdapter  $parent
 	 */
 	private function uninstallFOF($parent)
 	{
@@ -322,12 +333,12 @@ class Pkg_AdmintoolsInstallerScript
 		{
 			$msg = "<p>You have $dependencyCount extension(s) depending on this version of FOF. The package cannot be uninstalled unless these extensions are uninstalled first.</p>";
 
-			JLog::add($msg, JLog::WARNING, 'jerror');
+			Log::add($msg, Log::WARNING, 'jerror');
 
 			return;
 		}
 
-		$tmpInstaller = new JInstaller;
+		$tmpInstaller = new Installer;
 
 		$db = $parent->getParent()->getDbo();
 
@@ -349,7 +360,7 @@ class Pkg_AdmintoolsInstallerScript
 		{
 			$tmpInstaller->uninstall('library', $id, 0);
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			// We can expect the uninstallation to fail if there are other extensions depending on the FOF library.
 		}
@@ -359,27 +370,27 @@ class Pkg_AdmintoolsInstallerScript
 	 * Tries to install or update FEF. The FEF files package installation can fail if there's a newer version
 	 * installed.
 	 *
-	 * @param   \JInstallerAdapterPackage  $parent
+	 * @param   PackageAdapter  $parent
 	 */
 	private function installOrUpdateFEF($parent)
 	{
 		// Get the path to the FOF package
-		$sourcePath = $parent->getParent()->getPath('source');
+		$sourcePath    = $parent->getParent()->getPath('source');
 		$sourcePackage = $sourcePath . '/file_fef.zip';
 
 		// Extract and install the package
-		$package = JInstallerHelper::unpack($sourcePackage);
-		$tmpInstaller  = new JInstaller;
-		$error = null;
+		$package      = JInstallerHelper::unpack($sourcePackage);
+		$tmpInstaller = new Installer;
+		$error        = null;
 
 		try
 		{
 			$installResult = $tmpInstaller->install($package['dir']);
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			$installResult = false;
-			$error = $e->getMessage();
+			$error         = $e->getMessage();
 		}
 	}
 
@@ -387,7 +398,7 @@ class Pkg_AdmintoolsInstallerScript
 	 * Try to uninstall the FEF package. We don't go through the Joomla! package uninstallation since we can expect the
 	 * uninstallation of the FEF library to fail if other software depends on it.
 	 *
-	 * @param   JInstallerAdapterPackage  $parent
+	 * @param   PackageAdapter  $parent
 	 */
 	private function uninstallFEF($parent)
 	{
@@ -398,12 +409,12 @@ class Pkg_AdmintoolsInstallerScript
 		{
 			$msg = "<p>You have $dependencyCount extension(s) depending on this version of Akeeba FEF. The package cannot be uninstalled unless these extensions are uninstalled first.</p>";
 
-			JLog::add($msg, JLog::WARNING, 'jerror');
+			Log::add($msg, Log::WARNING, 'jerror');
 
 			return;
 		}
 
-		$tmpInstaller = new JInstaller;
+		$tmpInstaller = new Installer;
 
 		$db = $parent->getParent()->getDbo();
 
@@ -425,7 +436,7 @@ class Pkg_AdmintoolsInstallerScript
 		{
 			$tmpInstaller->uninstall('file', $id, 0);
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			// We can expect the uninstallation to fail if there are other extensions depending on the FOF library.
 		}
@@ -460,14 +471,14 @@ class Pkg_AdmintoolsInstallerScript
 	{
 		try
 		{
-			$db    = JFactory::getDbo();
+			$db    = Factory::getDbo();
 			$query = $db->getQuery(true)
 				->update('#__extensions')
 				->set($db->qn('enabled') . ' = ' . $db->q(1))
 				->where('type = ' . $db->quote($type))
 				->where('element = ' . $db->quote($name));
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			return;
 		}
@@ -484,7 +495,7 @@ class Pkg_AdmintoolsInstallerScript
 			case 'module':
 			case 'template':
 				// Languages, modules and templates have a client but not a folder
-				$client = JApplicationHelper::getClientInfo($client, true);
+				$client = ApplicationHelper::getClientInfo($client, true);
 				$query->where('client_id = ' . (int) $client->id);
 				break;
 
@@ -502,7 +513,7 @@ class Pkg_AdmintoolsInstallerScript
 			$db->setQuery($query);
 			$db->execute();
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 		}
 	}
@@ -516,7 +527,7 @@ class Pkg_AdmintoolsInstallerScript
 	 */
 	private function getDependencies($package)
 	{
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 
 		$query = $db->getQuery(true)
 			->select($db->qn('value'))
@@ -530,12 +541,12 @@ class Pkg_AdmintoolsInstallerScript
 
 			if (empty($dependencies))
 			{
-				$dependencies = array();
+				$dependencies = [];
 			}
 		}
 		catch (Exception $e)
 		{
-			$dependencies = array();
+			$dependencies = [];
 		}
 
 		return $dependencies;
@@ -549,7 +560,7 @@ class Pkg_AdmintoolsInstallerScript
 	 */
 	private function setDependencies($package, array $dependencies)
 	{
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 
 		$query = $db->getQuery(true)
 			->delete('#__akeeba_common')
@@ -564,10 +575,10 @@ class Pkg_AdmintoolsInstallerScript
 			// Do nothing if the old key wasn't found
 		}
 
-		$object = (object)array(
-			'key' => $package,
-			'value' => json_encode($dependencies)
-		);
+		$object = (object) [
+			'key'   => $package,
+			'value' => json_encode($dependencies),
+		];
 
 		try
 		{

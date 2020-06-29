@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -29,9 +29,9 @@ if(!function_exists('bccomp')) {
 		$num1 .= str_pad($dec1, $DLen, '0');
 		$num2 .= str_pad($dec2, $DLen, '0');
 		for($i = 0; $i < strlen($num1); $i++) {
-			if((int)$num1{$i} > (int)$num2{$i})
+			if((int)$num1[$i] > (int)$num2[$i])
 				return 1;
-			if((int)$num1{$i} < (int)$num2{$i})
+			if((int)$num1[$i] < (int)$num2[$i])
 				return -1;
 		}
 		return 0;

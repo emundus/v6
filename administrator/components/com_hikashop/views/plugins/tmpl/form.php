@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -347,6 +347,12 @@ function hika_payment_algorithm(el) {
 						<td>
 						<?php
 						$plugin_zone_namekey = $type.'_zone_namekey';
+						$key = 'ship';
+						$val = 'SHIPPING';
+						if($this->plugin_type == 'payment') {
+							$key = 'payment';
+							$val = 'PAYMENT_ZONES';
+						}
 						echo $this->nameboxType->display(
 							'data['.$type.']['.$type.'_zone_namekey]',
 							@$this->element->$plugin_zone_namekey,
@@ -355,7 +361,7 @@ function hika_payment_algorithm(el) {
 							array(
 								'delete' => true,
 								'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
-								'zone_types' => array('country' => 'COUNTRY', 'ship' => 'SHIPPING'),
+								'zone_types' => array('country' => 'COUNTRY', $key => $val),
 							)
 						);
 						?>

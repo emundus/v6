@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -197,7 +197,7 @@ class hikashopMassactionClass extends hikashopClass{
 									if($address->address_default != 1){
 										unset($element->address[$k]);
 									} else {
-										if(!count($element->shipping_address) && $address->address_type == 'shipping') {
+										if(!count($element->shipping_address) && in_array($address->address_type, array('shipping', '', 'both'))) {
 											$object = new stdClass();
 											foreach($address as $column=>$value){
 												if(!isset($action['address'][$column])){continue;}
@@ -209,7 +209,7 @@ class hikashopMassactionClass extends hikashopClass{
 											}
 											$element->shipping_address[] = $object;
 										}
-										if(!count($element->billing_address) && $address->address_type == 'billing') {
+										if(!count($element->billing_address) && in_array($address->address_type, array('billing', '', 'both'))) {
 											$object = new stdClass();
 											foreach($address as $column=>$value){
 												if(!isset($action['address'][$column])){continue;}
@@ -1458,6 +1458,12 @@ class hikashopMassactionClass extends hikashopClass{
 				return '1 = 2';
 			}
 		}
+		$parts = explode('.', $filter['type']);
+		$column = array();
+		foreach($parts as $part) {
+			$column[] = '`'.$part.'`';
+		}
+		$filter['type'] = implode('.', $column);
 		switch($filter['operator']){
 			case 'BEGINS':
 				return $prefix.$filter['type'].' LIKE '.$db->quote($filter['value'].'%');
@@ -2123,6 +2129,10 @@ class hikashopMassactionClass extends hikashopClass{
 									$shipping->shipping_name = $row->shipping_name;
 									$shipping->shipping_id = $row->shipping_id;
 
+									if(!isset($element->payment) || !is_array($element->payment))
+										$element->payment = array();
+									if(!isset($element->shipping) || !is_array($element->shipping))
+										$element->shipping = array();
 									$element->payment[] = $payment;
 									$element->shipping[] = $shipping;
 

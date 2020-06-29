@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -65,7 +65,27 @@ class hikashopImportHelper
 		$this->titlefont = ' style="font-size:1.2em;" ';
 		$this->copywarning = ' style="color:grey;font-size:0.8em" ';
 
-		$this->fields = array('product_weight','product_description','product_meta_description','product_tax_id','product_vendor_id','product_manufacturer_id','product_url','product_keywords','product_weight_unit','product_dimension_unit','product_width','product_length','product_height','product_max_per_order','product_min_per_order','product_warehouse_id');
+		$this->fields = array(
+			'product_layout',
+			'product_quantity_layout',
+			'product_weight',
+			'product_description',
+			'product_meta_description',
+			'product_tax_id',
+			'product_vendor_id',
+			'product_manufacturer_id',
+			'product_url',
+			'product_keywords',
+			'product_weight_unit',
+			'product_dimension_unit',
+			'product_width',
+			'product_length',
+			'product_height',
+			'product_max_per_order',
+			'product_min_per_order',
+			'product_warehouse_id',
+			'product_condition',
+		);
 		$fieldClass = hikashop_get('class.field');
 		$userFields = $fieldClass->getData('','product');
 
@@ -1471,10 +1491,12 @@ class hikashopImportHelper
 			if( !empty($p->translations) ) {
 				$product_translation = true;
 				$translation = reset($p->translations);
+				if(isset($translation->id)) unset($translation->id);
 				foreach( get_object_vars($translation) as $key => $field){
 					$value[] = $key;
 				}
-				$value[] = 'reference_id';
+				if(!in_array('reference_id', $value))
+					$value[] = 'reference_id';
 				break;
 			}
 		}
@@ -1496,49 +1518,95 @@ class hikashopImportHelper
 		$totalValid=0;
 
 		$translationHelper = hikashop_get('helper.translation');
-		if($translationHelper->isMulti(true,false)){
-			$trans_table = 'jf_content';
+		if($translationHelper->isMulti(true,false)) {
 			if($translationHelper->falang){
-				$trans_table = 'falang_content';
-			}
 
-			$insert = 'INSERT IGNORE INTO '.hikashop_table($trans_table,false).' ('.implode(',',$value).') VALUES (';
-			foreach($products as $product){
-				if($product_translation) {
-					unset($translations);
-					$translations =& $product->translations;
-				}
-				if(empty($translations) || !is_array($translations)) continue;
-				foreach($translations as $translation){
-					$translation->reference_id = $product->product_id;
-					if(isset($translation->id)) unset($translation->id);
-					$value = array();
-					foreach(get_object_vars($translation) as $field){
-						$value[] = $this->db->Quote($field);
-					}
-					$values[] = implode(',',$value);
-					$ids[] = 'language_id='.(int)$translation->language_id.' AND reference_id='.(int)$translation->reference_id.' AND reference_table='.$this->db->Quote($translation->reference_table).' AND reference_field='.$this->db->Quote($translation->reference_field);
-					$totalValid++;
-					if( $totalValid%$this->perBatch == 0){
-						if(!empty($ids)){
-							$this->db->setQuery('DELETE FROM '.hikashop_table($trans_table,false).' WHERE (' . implode(') OR (', $ids) . ')');
-							$this->db->execute();
-							$ids=array();
+				$trans_table = 'falang_content';
+				$insert = 'INSERT IGNORE INTO '.hikashop_table($trans_table,false).' ('.implode(',',$value).') VALUES (';
+				foreach($products as $product){
+					if($product->product_type == 'main') {
+						if($product_translation) {
+							unset($translations);
+							$translations =& $product->translations;
 						}
-						$this->db->setQuery($insert.implode('),(',$values).')');
-						$this->db->execute();
-						$totalValid=0;
-						$values=array();
+					} else {
+						$translations =& $product->translations;
+					}
+					if(empty($translations) || !is_array($translations)) continue;
+					foreach($translations as $translation){
+						$translation->reference_id = $product->product_id;
+						if(isset($translation->id)) unset($translation->id);
+						$value = array();
+						foreach(get_object_vars($translation) as $field){
+							$value[] = $this->db->Quote($field);
+						}
+						$values[] = implode(',',$value);
+						$ids[] = 'language_id='.(int)$translation->language_id.' AND reference_id='.(int)$translation->reference_id.' AND reference_table='.$this->db->Quote($translation->reference_table).' AND reference_field='.$this->db->Quote($translation->reference_field);
+						$totalValid++;
+						if( $totalValid%$this->perBatch == 0){
+							if(!empty($ids)){
+								$this->db->setQuery('DELETE FROM '.hikashop_table($trans_table,false).' WHERE (' . implode(') OR (', $ids) . ')');
+								$this->db->execute();
+								$ids=array();
+							}
+							$this->db->setQuery($insert.implode('),(',$values).')');
+							$this->db->execute();
+							$totalValid=0;
+							$values=array();
+						}
 					}
 				}
-			}
-			if(!empty($values)){
-				if(!empty($ids)){
-					$this->db->setQuery('DELETE FROM '.hikashop_table($trans_table,false).' WHERE (' . implode(') OR (', $ids) . ')');
+				if(!empty($values)){
+					if(!empty($ids)){
+						$this->db->setQuery('DELETE FROM '.hikashop_table($trans_table,false).' WHERE (' . implode(') OR (', $ids) . ')');
+						$this->db->execute();
+					}
+					$this->db->setQuery($insert.implode('),(',$values).')');
 					$this->db->execute();
 				}
-				$this->db->setQuery($insert.implode('),(',$values).')');
-				$this->db->execute();
+
+			} else {
+				$translationHelper->loadLanguages();
+				$languages =& $translationHelper->languages;
+				jimport('joomla.filesystem.folder');
+				$path = hikashop_getLanguagePath(JPATH_ROOT);
+				foreach($languages as $lang) {
+					$override_file_path = $path . '/overrides/'.$lang->code.'.override.ini';
+					$overrides = array();
+					if(file_exists($override_file_path)) {
+						$overrides = parse_ini_file($override_file_path);
+					}
+					foreach($products as $product){
+						if($product->product_type == 'main') {
+							if($product_translation) {
+								unset($translations);
+								$translations =& $product->translations;
+							}
+						} else {
+							$translations =& $product->translations;
+						}
+						if(empty($translations) || !is_array($translations)) continue;
+						foreach($translations as $translation){
+							$translation->reference_id = $product->product_id;
+							if(isset($translation->id)) unset($translation->id);
+
+							if($lang->id != $translation->language_id)
+								continue;
+							$field = $translation->reference_field;
+							$key =  preg_replace('#[^A-Z_0-9]#','',strtoupper($product->$field));
+
+							$overrides[$key] = $translation->value;
+							if(empty($overrides[$key]))
+								unset($overrides[$key]);
+						}
+					}
+
+					$data = '';
+					foreach($overrides as $k => $v) {
+						$data .= $k.'="'.$v.'"'."\r\n";
+					}
+					file_put_contents($override_file_path, $data);
+				}
 			}
 		}
 	}

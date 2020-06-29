@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -20,9 +20,10 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 		else
 			$product_id = (int)$product->product_id;
 
-		$extra_filters = '';
+			$extra_filters = '';
 		if($vendor !== null && $vendor > 1)
 			$extra_filters = ' AND a.shipping_vendor_id IN (-1, 0, ' . (int)$vendor . ') ';
+
 
 		$db = JFactory::getDBO();
 		$query = 'SELECT b.*, a.*, c.currency_symbol FROM ' . hikashop_table('shipping') . ' AS a '.
@@ -35,6 +36,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 
 		$db->setQuery($query);
 		$shippings = $db->loadObjectList();
+
 		$temp_shipping = new stdClass();
 		foreach($shippings as $key => $shipping) {
 			$temp_shipping = hikashop_unserialize($shipping->shipping_params);
@@ -78,6 +80,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 		ob_start();
 		include dirname(__FILE__).DS.'shippingprices_views'.DS.'backend_product.php';
 		$data = ob_get_clean();
+
 		$html[] = $data;
 	}
 
@@ -123,7 +126,11 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 	}
 
 	function onAfterProductUpdate(&$product, $create = false) {
-		$app = JFactory::getApplication();
+
+		$request_target = 'shipping_prices';
+		if($product->product_type == 'variant') {
+			$request_target = 'variant_shipping_prices';
+		}
 		$vendor = null;
 		if(!hikashop_isClient('administrator')) {
 			if(!defined('HIKAMARKET_COMPONENT'))
@@ -136,20 +143,22 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 			$vendor = hikamarket::loadVendor(false);
 		}
 
-		$formData = hikaInput::get()->get('shipping_prices', array(), 'array');
-		if(empty($formData))
-			return;
+		$formData = hikaInput::get()->get($request_target, array(), 'array');
 
-		if(!hikashop_isClient('administrator')) {
-			if(isset($formData[$product->product_id]))
-				$formData = $formData[$product->product_id];
-			else if(isset($formData[0]) && $create)
-				$formData = $formData[0];
-			else
-				$formData = array();
+		if(!empty($formData)) {
+			if(!hikashop_isClient('administrator')) {
+				if(isset($formData[$product->product_id]))
+					$formData = $formData[$product->product_id];
+				else if(isset($formData[0]) && $create)
+					$formData = $formData[0];
+				else
+					$formData = array();
+			}
 		}
 
-		if(empty($product->product_id))
+		if(!empty($product->product_id))
+			$product_id = $product->product_id;
+		else
 			return;
 
 		$extra_filters = '';
@@ -157,12 +166,12 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 			$extra_filters = ' AND a.shipping_vendor_id IN (-1, 0, ' . (int)$vendor . ') ';
 
 		$db = JFactory::getDBO();
-		$shipping_params_filter = '(a.shipping_params LIKE '. $db->Quote('%s:20:"shipping_per_product";s:1:"1"%') .' OR a.shipping_params LIKE '. $db->Quote('%s:20:"shipping_per_product";s:1:"1"%') .')';
+		$shipping_params_filter = '(a.shipping_params LIKE '. $db->Quote('%s:20:"shipping_per_product";i:1;%') .' OR a.shipping_params LIKE '. $db->Quote('%s:20:"shipping_per_product";s:1:"1"%') .')';
 
 		$query = 'SELECT b.*, a.*, c.currency_symbol FROM ' . hikashop_table('shipping') . ' AS a INNER JOIN '.
 			hikashop_table('shipping_price').' AS b ON a.shipping_id = b.shipping_id INNER JOIN '.
 			hikashop_table('currency').' AS c ON c.currency_id = a.shipping_currency_id '.
-			'WHERE '.$shipping_params_filter.' AND b.shipping_price_ref_id = ' . $product->product_id . ' AND b.shipping_price_ref_type = \'product\' '.
+			'WHERE '.$shipping_params_filter.' AND b.shipping_price_ref_id = ' . $product_id . ' AND b.shipping_price_ref_type = \'product\' '.
 			$extra_filters.
 			'ORDER BY a.shipping_id, b.shipping_price_min_quantity';
 
@@ -192,6 +201,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 			unset($data);
 		}
 		unset($checks);
+
 
 		foreach($formData as $data) {
 			if($data == null)
@@ -227,7 +237,6 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 				}
 			}
 		}
-
 		if(!empty($toRemove)) {
 			$db->setQuery('DELETE FROM ' . hikashop_table('shipping_price') . ' WHERE shipping_price_ref_id = ' . $product->product_id . ' AND shipping_price_ref_type = \'product\' AND shipping_price_id IN ('.implode(',',$toRemove).')');
 			$db->execute();
@@ -278,7 +287,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 				if ($v->shipping_published == 0)
 					continue;
 
-				$arrayKey = $v->shipping_name . ' ' . $v->shipping_price_id;
+				$arrayKey = $v->shipping_name . ' ' . $v->shipping_price_id . ' ' . $v->shipping_price_ref_id;
 				$shipData[$arrayKey] = array();
 
 				$shipParams = hikashop_unserialize($v->shipping_params);

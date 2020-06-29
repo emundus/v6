@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -104,14 +104,14 @@ class OrderViewOrder extends hikashopView{
 						$pageInfo->filter->filter_end = '';
 						break;
 					default:
-						$filter_end = hikashop_getTime($pageInfo->filter->filter_end, '%d %B %Y');
+						$filter_end = hikashop_getTime($pageInfo->filter->filter_end.' 23:59', '%d %B %Y %H:%M');
 						$filters[]='b.order_created < '.(int)$filter_end;
 						$pageInfo->filter->filter_end=(int)$filter_end;
 						break;
 				}
 				break;
 			default:
-				$filter_start = hikashop_getTime($pageInfo->filter->filter_start, '%d %B %Y');
+				$filter_start = hikashop_getTime($pageInfo->filter->filter_start.' 00:00', '%d %B %Y %H:%M');
 				switch($pageInfo->filter->filter_end){
 					case '':
 					case '0000-00-00 00:00:00':
@@ -120,7 +120,7 @@ class OrderViewOrder extends hikashopView{
 						$pageInfo->filter->filter_start=(int)$filter_start;
 						break;
 					default:
-						$filter_end = hikashop_getTime($pageInfo->filter->filter_end, '%d %B %Y');
+						$filter_end = hikashop_getTime($pageInfo->filter->filter_end.' 23:59', '%d %B %Y %H:%M');
 						$pageInfo->filter->filter_start=(int)$filter_start;
 						$pageInfo->filter->filter_end=(int)$filter_end;
 						$filters[] = 'b.order_created > '.(int)$filter_start. ' AND b.order_created < '.(int)$filter_end;
@@ -220,6 +220,18 @@ class OrderViewOrder extends hikashopView{
 
 		$this->assignRef('fields',$fields);
 		$this->assignRef('fieldsClass',$fieldsClass);
+
+
+
+		$orderstatusClass = hikashop_get('class.orderstatus');
+		$this->orderStatuses = $orderstatusClass->getList();
+		$this->colors = true;
+		foreach($this->orderStatuses as $status) {
+			if(!empty($status->orderstatus_color)) {
+				$this->colors = true;
+				break;
+			}
+		}
 
 		$fieldsClass->handleZoneListing($fields,$rows);
 		$pluginClass = hikashop_get('class.plugins');
@@ -581,19 +593,19 @@ class OrderViewOrder extends hikashopView{
 						case '':
 							break;
 						default:
-							$filter_end = hikashop_getTime($filter_end, '%d %B %Y');
+							$filter_end = hikashop_getTime($filter_end.' 23:59', '%d %B %Y %H:%M');
 							$filters['order_created'] = 'hk_order.order_created < '.(int)$filter_end;
 							break;
 					}
 					break;
 				default:
-					$filter_start = hikashop_getTime($filter_start, '%d %B %Y');
+					$filter_start = hikashop_getTime($filter_start.' 00:00', '%d %B %Y %H:%M');
 					switch($filter_end) {
 						case '':
 							$filters['order_created'] = 'hk_order.order_created > '.(int)$filter_start;
 							break;
 						default:
-							$filter_end = hikashop_getTime($filter_end, '%d %B %Y');
+							$filter_end = hikashop_getTime($filter_end.' 23:59', '%d %B %Y %H:%M');
 							$filters['order_created'] = 'hk_order.order_created > '.(int)$filter_start. ' AND hk_order.order_created < '.(int)$filter_end;
 							break;
 					}
@@ -1298,6 +1310,7 @@ class OrderViewOrder extends hikashopView{
 					$rows = array($product);
 					if($isVariant){
 						$rows[]=$allproducts[ (int)$product_id[1] ];
+						$rows[0]->product_tax_id = $rows[1]->product_tax_id;
 					}
 
 					$currencyClass->getPrices($rows, $product_id, $currency_id, $main_currency, $zone_id, $discount_before_tax,(int)$order->order_user_id);
@@ -1365,7 +1378,9 @@ class OrderViewOrder extends hikashopView{
 
 			if(!empty($rows)) {
 				$data = array();
+				$this->addressClass = hikashop_get('class.address');
 				foreach($rows as $v) {
+					$this->addresses = $this->addressClass->loadUserAddresses($v->user_id);
 					$d = '{id:'.$v->user_id;
 					foreach($elemStruct as $s) {
 						if($s == 'id')

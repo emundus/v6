@@ -12,8 +12,8 @@ defined('_JEXEC') or die;
 use DateTimeZone;
 use FOF30\Date\Date;
 use FOF30\Model\Model;
-use JFile;
-use JUserHelper;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\User\UserHelper;
 
 class AdminPassword extends Model
 {
@@ -48,8 +48,6 @@ class AdminPassword extends Model
 	 */
 	public function protect()
 	{
-		\JLoader::import('joomla.filesystem.file');
-
 		$cryptpw      = $this->apacheEncryptPassword();
 		$htpasswd     = $this->username . ':' . $cryptpw . "\n";
 		$htpasswdPath = JPATH_ADMINISTRATOR . '/.htpasswd';
@@ -57,7 +55,7 @@ class AdminPassword extends Model
 
 		if (!@file_put_contents($htpasswdPath, $htpasswd))
 		{
-			if (!JFile::write($htpasswdPath, $htpasswd))
+			if (!File::write($htpasswdPath, $htpasswd))
 			{
 				return false;
 			}
@@ -106,14 +104,14 @@ HTACCESS;
 
 		if (!$status)
 		{
-			$status = JFile::write($htaccessPath, $htaccess);
+			$status = File::write($htaccessPath, $htaccess);
 		}
 
 		if (!$status || !is_file($path . '/.htpasswd'))
 		{
 			if (!@unlink($htpasswdPath))
 			{
-				JFile::delete($htpasswdPath);
+				File::delete($htpasswdPath);
 			}
 
 			return false;
@@ -135,7 +133,7 @@ HTACCESS;
 
 		if (!@unlink($htaccessPath))
 		{
-			if (!JFile::delete($htaccessPath))
+			if (!File::delete($htaccessPath))
 			{
 				return false;
 			}
@@ -143,7 +141,7 @@ HTACCESS;
 
 		if (!@unlink($htpasswdPath))
 		{
-			if (!JFile::delete($htpasswdPath))
+			if (!File::delete($htpasswdPath))
 			{
 				return false;
 			}
@@ -167,7 +165,7 @@ HTACCESS;
 
 	protected function apacheEncryptPassword()
 	{
-		$os = strtoupper(PHP_OS);
+		$os        = strtoupper(PHP_OS);
 		$isWindows = substr($os, 0, 3) == 'WIN';
 
 		$encryptedPassword = null;
@@ -181,7 +179,7 @@ HTACCESS;
 		*/
 
 		// Iterated and salted MD5 (APR1)
-		$salt = JUserHelper::genRandomPassword(4);
+		$salt              = UserHelper::genRandomPassword(4);
 		$encryptedPassword = $this->apr1_hash($this->password, $salt, 1000);
 
 		// SHA-1 encrypted – should never run
@@ -193,7 +191,7 @@ HTACCESS;
 		// Traditional crypt(3) – should never run
 		if (empty($encryptedPassword) && function_exists('crypt') && !$isWindows)
 		{
-			$salt              = JUserHelper::genRandomPassword(2);
+			$salt              = UserHelper::genRandomPassword(2);
 			$encryptedPassword = crypt($this->password, $salt);
 		}
 
@@ -321,7 +319,7 @@ HTACCESS;
 		while (--$size >= 0)
 		{
 			$result .= $seed[$num & 0x3f];
-			$num >>= 6;
+			$num    >>= 6;
 		}
 
 		return $result;

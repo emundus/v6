@@ -10,11 +10,18 @@ namespace Akeeba\AdminTools\Admin\Model;
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use AtsystemFeatureNonewadmins;
+use DateInterval;
+use DateTimeZone;
+use Exception;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Encrypt\Randval;
 use FOF30\Model\DataModel;
-use JText;
+use JDatabaseQuery;
+use Joomla\CMS\Access\Access;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\User\UserHelper;
 use RuntimeException;
 
 /**
@@ -34,6 +41,12 @@ use RuntimeException;
  */
 class TempSuperUsers extends DataModel
 {
+	/**
+	 * Cache of user group IDs with Super User privileges
+	 *
+	 * @var   array
+	 * @since 5.3.0
+	 */
 	protected $superUserGroups = [];
 
 	public function __construct(Container $container, array $config = [])
@@ -53,12 +66,12 @@ class TempSuperUsers extends DataModel
 	/**
 	 * Build the SELECT query for returning records. Overridden to apply custom filters.
 	 *
-	 * @param   \JDatabaseQuery $query          The query being built
-	 * @param   bool            $overrideLimits Should I be overriding the limit state (limitstart & limit)?
+	 * @param   JDatabaseQuery  $query           The query being built
+	 * @param   bool             $overrideLimits  Should I be overriding the limit state (limitstart & limit)?
 	 *
 	 * @return  void
 	 */
-	public function onAfterBuildQuery(\JDatabaseQuery $query, $overrideLimits = false)
+	public function onAfterBuildQuery(JDatabaseQuery $query, $overrideLimits = false)
 	{
 		$db = $this->getDbo();
 
@@ -66,7 +79,7 @@ class TempSuperUsers extends DataModel
 
 		if ($username)
 		{
-			$this->whereHas('user', function (\JDatabaseQuery $subQuery) use ($username, $db) {
+			$this->whereHas('user', function (JDatabaseQuery $subQuery) use ($username, $db) {
 				$subQuery->where($db->qn('username') . ' LIKE ' . $db->q('%' . $username . '%'));
 			});
 		}
@@ -77,17 +90,55 @@ class TempSuperUsers extends DataModel
 		// Make sure I am not editing myself
 		if ($this->user_id == $this->container->platform->getUser()->id)
 		{
-			throw new \RuntimeException(JText::_('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_CANTEDITSELF'), 403);
+			throw new RuntimeException(Text::_('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_CANTEDITSELF'), 403);
 		}
 
 		// Make sure I am not setting an expiration time in the past
+		$timezone = $this->container->platform->getUser()->getParam('timezone', $this->container->platform->getConfig()->get('offset', 'GMT'));
+		try
+		{
+			$tz = new DateTimeZone($timezone);
+		}
+		catch (Exception $e)
+		{
+			$tz = new DateTimeZone('GMT');
+		}
+
 		$jNow  = new Date();
-		$jThen = new Date($this->expiration);
+		$jThen = new Date($this->expiration, $tz);
 
 		if ($jThen->toUnix() < $jNow->toUnix())
 		{
-			throw new RuntimeException(JText::_('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_EXPIRATIONINPAST'), 500);
+			throw new RuntimeException(Text::_('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_EXPIRATIONINPAST'), 500);
 		}
+
+		$this->expiration = $jThen->toSql();
+	}
+
+	public function onAfterDelete()
+	{
+		$userId = $this->user_id;
+
+		if (empty($userId))
+		{
+			return;
+		}
+
+		/** @var JoomlaUsers $user */
+		$user = $this->container->factory->model('JoomlaUsers');
+
+		try
+		{
+			$user->findOrFail($userId);
+		}
+		catch (Exception $e)
+		{
+			return;
+		}
+
+		$this->setNoCheckFlags(true);
+		$user->delete();
+		$this->setNoCheckFlags(false);
 	}
 
 	/**
@@ -117,8 +168,8 @@ class TempSuperUsers extends DataModel
 
 		if (empty($ret['expiration']) || ($ret['expiration'] == $this->getDbo()->getNullDate()))
 		{
-			$jDate = new Date();
-			$interval = new \DateInterval('P15D');
+			$jDate             = new Date();
+			$interval          = new DateInterval('P15D');
 			$ret['expiration'] = $jDate->add($interval)->toRFC822();
 		}
 
@@ -140,7 +191,7 @@ class TempSuperUsers extends DataModel
 
 		if (empty($ret['name']))
 		{
-			$ret['name'] = JText::_('COM_ADMINTOOLS_TEMPSUPERUSERS_LBL_DEFAULTNAME');
+			$ret['name'] = Text::_('COM_ADMINTOOLS_TEMPSUPERUSERS_LBL_DEFAULTNAME');
 		}
 
 		if (empty($ret['groups']))
@@ -164,7 +215,17 @@ class TempSuperUsers extends DataModel
 	 */
 	public function getUserIdFromInfo()
 	{
+		$this->setNoCheckFlags(true);
+
 		$info = $this->getNewUserData();
+
+		$info['block']         = 0;
+		$info['sendEmail']     = 0;
+		$info['lastvisitDate'] = (new Date())->toSql();
+		$info['activation']    = '';
+		$info['otpKey']        = '';
+		$info['otep']          = '';
+		$info['requireReset']  = 0;
 
 		// Do I have an eligible existing user?
 		$userId = $this->findExistingUser($info['username']);
@@ -177,18 +238,18 @@ class TempSuperUsers extends DataModel
 
 			if (empty($usedSUGroups))
 			{
-				throw new RuntimeException(JText::_('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_NOTASUPERUSER'), 500);
+				$this->setNoCheckFlags(false);
+
+				throw new RuntimeException(Text::_('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_NOTASUPERUSER'), 500);
 			}
 
 			// Create a new user
 			$user = $this->container->platform->getUser(0);
 
 			// Set the user's default language to whatever the site's current language is
-			$info['params']     = [
+			$info['params'] = [
 				'language' => self::getContainer()->platform->getConfig()->get('language'),
 			];
-			$info['block']      = 1;
-			$info['activation'] = '';
 
 			$user->bind($info);
 
@@ -196,6 +257,8 @@ class TempSuperUsers extends DataModel
 
 			if (!$saved)
 			{
+				$this->setNoCheckFlags(false);
+
 				throw new RuntimeException($user->getError());
 			}
 
@@ -205,7 +268,9 @@ class TempSuperUsers extends DataModel
 		// Make sure I am not trying to edit myself
 		if ($userId == $this->container->platform->getUser()->id)
 		{
-			throw new RuntimeException(JText::_('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_CANTEDITSELF'), 403);
+			$this->setNoCheckFlags(false);
+
+			throw new RuntimeException(Text::_('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_CANTEDITSELF'), 403);
 		}
 
 		// Apply changes to the existing user
@@ -217,12 +282,41 @@ class TempSuperUsers extends DataModel
 
 		$saved = $user->save();
 
+		$this->setNoCheckFlags(false);
+
 		if (!$saved)
 		{
 			throw new RuntimeException($user->getError());
 		}
 
 		return $userId;
+	}
+
+	/**
+	 * Temporarily disable Admin Tools security checks for creating / editing Super Users.
+	 *
+	 * * The "Backend Edit Admin User" feature will prevent creating / editing temporary Super Users. Before doing
+	 *   anything with the temporary user records we set a special flag to disable it for the next request.
+	 * * The "Monitor Super User accounts" will automatically disable our newly created temporary Super User. We work
+	 *   around it by setting the special session flag which tells this feature to replace the Super Users list.
+	 *
+	 * @param   bool  $noChecks
+	 */
+	public function setNoCheckFlags($noChecks = true)
+	{
+		// Workaround for "Backend Edit Admin User"
+		if (class_exists('AtsystemFeatureNonewadmins') && method_exists('AtsystemFeatureNonewadmins', 'setTempDisableFlag'))
+		{
+			AtsystemFeatureNonewadmins::setTempDisableFlag($noChecks);
+		}
+
+		// Workaround for "Monitor Super User accounts"
+		$this->container->platform->unsetSessionVar('superuserslist.createnew', 'com_admintools');
+
+		if ($noChecks)
+		{
+			$this->container->platform->setSessionVar('superuserslist.createnew', true, 'com_admintools');
+		}
 	}
 
 	/**
@@ -251,7 +345,7 @@ class TempSuperUsers extends DataModel
 			}
 
 			$this->superUserGroups = array_filter($this->superUserGroups, function ($group) {
-				return \JAccess::checkGroup($group, 'core.admin');
+				return Access::checkGroup($group, 'core.admin');
 			});
 		}
 
@@ -264,7 +358,7 @@ class TempSuperUsers extends DataModel
 		$model = $this->container->factory->model('JoomlaUsers')->tmpInstance();
 
 		// Make sure the user exists. Return 0 otherwise.
-		$id = \JUserHelper::getUserId($username);
+		$id = UserHelper::getUserId($username);
 
 		if (empty($id))
 		{
@@ -276,13 +370,13 @@ class TempSuperUsers extends DataModel
 		// Make sure the user is a Super User
 		if (!$user->authorise('core.admin'))
 		{
-			throw new RuntimeException(JText::_('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_NOTSUPER'), 500);
+			throw new RuntimeException(Text::_('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_NOTSUPER'), 500);
 		}
 
 		// Make sure the user was already blocked
 		if (!$user->block)
 		{
-			throw new RuntimeException(JText::_('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_NOTBLOCKED'), 500);
+			throw new RuntimeException(Text::_('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_NOTBLOCKED'), 500);
 		}
 
 		return $id;

@@ -5,7 +5,7 @@
   ~ @license   GNU General Public License version 3, or later
   -->
 
-<extension version="3.8.0" type="plugin" group="actionlog" method="upgrade">
+<extension version="3.9.0" type="plugin" group="actionlog" method="upgrade">
 	<name>PLG_ACTIONLOG_ADMINTOOLS</name>
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@dionysopoulos.me</authorEmail>

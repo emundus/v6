@@ -27,7 +27,7 @@ else
 	$version = '5.0.0'; // all bets are off!
 }
 
-if (!version_compare($version, '5.6.0', '>='))
+if (!version_compare($version, '7.1.0', '>='))
 {
 	return;
 }
@@ -52,7 +52,7 @@ if (!function_exists('fnmatch'))
 	{
 		return @preg_match(
 			'/^' . strtr(addcslashes($pattern, '/\\.+^$(){}=!<>|'),
-				array('*' => '.*', '?' => '.?')) . '$/i', $string
+				['*' => '.*', '?' => '.?']) . '$/i', $string
 		);
 	}
 }

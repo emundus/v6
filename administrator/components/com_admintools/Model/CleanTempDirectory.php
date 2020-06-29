@@ -10,157 +10,50 @@ namespace Akeeba\AdminTools\Admin\Model;
 defined('_JEXEC') or die;
 
 use FOF30\Model\Model;
-use JFactory;
-use JFolder;
-use JLoader;
+use Joomla\CMS\Client\ClientHelper;
+use Joomla\CMS\Client\FtpClient;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Filesystem\Path;
 
 class CleanTempDirectory extends Model
 {
-	/** @var float The time the process started */
-	private $startTime = null;
-
-	/** @var array The folders to process */
-	private $folderStack = array();
-
-	/** @var array The files to process */
-	private $filesStack = array();
-
 	/** @var int Total numbers of folders in this site */
 	public $totalFolders = 0;
 
 	/** @var int Numbers of folders already processed */
 	public $doneFolders = 0;
 
-	/**
-	 * Returns the current timestampt in decimal seconds
-	 */
-	private function microtime_float()
-	{
-		list($usec, $sec) = explode(" ", microtime());
+	/** @var float The time the process started */
+	private $startTime = null;
 
-		return ((float)$usec + (float)$sec);
-	}
+	/** @var array The folders to process */
+	private $folderStack = [];
 
-	/**
-	 * Starts or resets the internal timer
-	 */
-	private function resetTimer()
-	{
-		$this->startTime = $this->microtime_float();
-	}
-
-	/**
-	 * Makes sure that no more than 3 seconds since the start of the timer have
-	 * elapsed
-	 *
-	 * @return bool
-	 */
-	private function haveEnoughTime()
-	{
-		$now = $this->microtime_float();
-		$elapsed = abs($now - $this->startTime);
-
-		return $elapsed < 2;
-	}
-
-	/**
-	 * Saves the file/folder stack in the session
-	 */
-	private function saveStack()
-	{
-		$stack = array(
-			'folders' => $this->folderStack,
-			'files'   => $this->filesStack,
-			'total'   => $this->totalFolders,
-			'done'    => $this->doneFolders
-		);
-		$stack = json_encode($stack);
-		
-		if (function_exists('base64_encode') && function_exists('base64_decode'))
-		{
-			if (function_exists('gzdeflate') && function_exists('gzinflate'))
-			{
-				$stack = gzdeflate($stack, 9);
-			}
-			
-			$stack = base64_encode($stack);
-		}
-
-		$this->container->platform->setSessionVar('cleantmp_stack', $stack, 'admintools');
-	}
-
-	/**
-	 * Resets the file/folder stack saved in the session
-	 */
-	private function resetStack()
-	{
-		$this->container->platform->setSessionVar('cleantmp_stack', '', 'admintools');
-		
-		$this->folderStack = array();
-		$this->filesStack = array();
-		$this->totalFolders = 0;
-		$this->doneFolders = 0;
-	}
-
-	/**
-	 * Loads the file/folder stack from the session
-	 */
-	private function loadStack()
-	{
-		$stack = $this->container->platform->getSessionVar('cleantmp_stack', '', 'admintools');
-
-		if (empty($stack))
-		{
-			$this->folderStack = array();
-			$this->filesStack = array();
-			$this->totalFolders = 0;
-			$this->doneFolders = 0;
-
-			return;
-		}
-
-		if (function_exists('base64_encode') && function_exists('base64_decode'))
-		{
-			$stack = base64_decode($stack);
-			
-			if (function_exists('gzdeflate') && function_exists('gzinflate'))
-			{
-				$stack = gzinflate($stack);
-			}
-		}
-		
-		$stack = json_decode($stack, true);
-
-		$this->folderStack = $stack['folders'];
-		$this->filesStack = $stack['files'];
-		$this->totalFolders = $stack['total'];
-		$this->doneFolders = $stack['done'];
-	}
+	/** @var array The files to process */
+	private $filesStack = [];
 
 	/**
 	 * Scans $root for directories and updates $folderStack
 	 *
-	 * @param string $root The full path of the directory to scan
+	 * @param   string  $root  The full path of the directory to scan
 	 */
 	public function getDirectories($root = null)
 	{
-		$jreg = $this->container->platform->getConfig();
+		$jreg   = $this->container->platform->getConfig();
 		$tmpdir = $jreg->get('tmp_path');
 
 		if (empty($root))
 		{
 			$root = $tmpdir;
 		}
-		
-		JLoader::import('joomla.filesystem.folder');
 
-		$folders = JFolder::folders($root, '.', false, true, array());
-		
+		$folders = Folder::folders($root, '.', false, true, []);
+
 		if (empty($folders))
 		{
-			$folders = array();
+			$folders = [];
 		}
-		
+
 		$this->totalFolders += count($folders);
 
 		if (count($folders))
@@ -178,7 +71,7 @@ class CleanTempDirectory extends Model
 	/**
 	 * Scans $root for files and updates $filesStack
 	 *
-	 * @param string $root The full path of the directory to scan
+	 * @param   string  $root  The full path of the directory to scan
 	 */
 	public function getFiles($root = null)
 	{
@@ -198,13 +91,11 @@ class CleanTempDirectory extends Model
 		$root   = rtrim($root, '/');
 		$tmpdir = rtrim($tmpdir, '/');
 
-		JLoader::import('joomla.filesystem.folder');
+		$folders = Folder::files($root, '.', false, true, [], [], true);
 
-		$folders = JFolder::files($root, '.', false, true, array(), array(), true);
-		
 		if (empty($folders))
 		{
-			$folders = array();
+			$folders = [];
 		}
 
 		if ($root == $tmpdir)
@@ -221,7 +112,7 @@ class CleanTempDirectory extends Model
 					{
 						continue;
 					}
-					
+
 					$this->filesStack[] = $folder;
 				}
 			}
@@ -240,17 +131,17 @@ class CleanTempDirectory extends Model
 		$this->resetTimer();
 		$this->getDirectories();
 		$this->getFiles();
-		
+
 		if (empty($this->folderStack))
 		{
-			$this->folderStack = array();
+			$this->folderStack = [];
 		}
-		
+
 		if (empty($this->filesStack))
 		{
-			$this->filesStack = array();
+			$this->filesStack = [];
 		}
-		
+
 		asort($this->folderStack);
 		asort($this->filesStack);
 
@@ -264,52 +155,6 @@ class CleanTempDirectory extends Model
 		{
 			return $this->run(false);
 		}
-	}
-
-	private function deletePath($path)
-	{
-		// Initialize variables
-		JLoader::import('joomla.client.helper');
-		$ftpOptions = \JClientHelper::getCredentials('ftp');
-
-		// Check to make sure the path valid and clean
-		$n_path = @realpath($path);
-		$path   = empty($n_path) ? $path : $n_path;
-
-		if ($ftpOptions['enabled'] == 1)
-		{
-			// Connect the FTP client
-			$ftp = \JClientFtp::getInstance(
-				$ftpOptions['host'], $ftpOptions['port'], array(),
-				$ftpOptions['user'], $ftpOptions['pass']
-			);
-		}
-
-		if (@unlink($path))
-		{
-			$ret = true;
-		}
-		elseif (@rmdir($path))
-		{
-			$ret = true;
-		}
-		elseif ($ftpOptions['enabled'] == 1)
-		{
-			if (substr($path, 0, strlen(JPATH_ROOT)) !== JPATH_ROOT)
-			{
-				return false;
-			}
-			// Translate path and delete
-			$path = \JPath::clean(str_replace(JPATH_ROOT, $ftpOptions['root'], $path), '/');
-			// FTP connector throws an error
-			$ret = $ftp->delete($path);
-		}
-		else
-		{
-			return false;
-		}
-
-		return $ret;
 	}
 
 	public function run($resetTimer = true)
@@ -330,6 +175,157 @@ class CleanTempDirectory extends Model
 		$this->saveStack();
 
 		return $result;
+	}
+
+	/**
+	 * Returns the current timestampt in decimal seconds
+	 */
+	private function microtime_float()
+	{
+		[$usec, $sec] = explode(" ", microtime());
+
+		return ((float) $usec + (float) $sec);
+	}
+
+	/**
+	 * Starts or resets the internal timer
+	 */
+	private function resetTimer()
+	{
+		$this->startTime = $this->microtime_float();
+	}
+
+	/**
+	 * Makes sure that no more than 3 seconds since the start of the timer have
+	 * elapsed
+	 *
+	 * @return bool
+	 */
+	private function haveEnoughTime()
+	{
+		$now     = $this->microtime_float();
+		$elapsed = abs($now - $this->startTime);
+
+		return $elapsed < 2;
+	}
+
+	/**
+	 * Saves the file/folder stack in the session
+	 */
+	private function saveStack()
+	{
+		$stack = [
+			'folders' => $this->folderStack,
+			'files'   => $this->filesStack,
+			'total'   => $this->totalFolders,
+			'done'    => $this->doneFolders,
+		];
+		$stack = json_encode($stack);
+
+		if (function_exists('base64_encode') && function_exists('base64_decode'))
+		{
+			if (function_exists('gzdeflate') && function_exists('gzinflate'))
+			{
+				$stack = gzdeflate($stack, 9);
+			}
+
+			$stack = base64_encode($stack);
+		}
+
+		$this->container->platform->setSessionVar('cleantmp_stack', $stack, 'admintools');
+	}
+
+	/**
+	 * Resets the file/folder stack saved in the session
+	 */
+	private function resetStack()
+	{
+		$this->container->platform->setSessionVar('cleantmp_stack', '', 'admintools');
+
+		$this->folderStack  = [];
+		$this->filesStack   = [];
+		$this->totalFolders = 0;
+		$this->doneFolders  = 0;
+	}
+
+	/**
+	 * Loads the file/folder stack from the session
+	 */
+	private function loadStack()
+	{
+		$stack = $this->container->platform->getSessionVar('cleantmp_stack', '', 'admintools');
+
+		if (empty($stack))
+		{
+			$this->folderStack  = [];
+			$this->filesStack   = [];
+			$this->totalFolders = 0;
+			$this->doneFolders  = 0;
+
+			return;
+		}
+
+		if (function_exists('base64_encode') && function_exists('base64_decode'))
+		{
+			$stack = base64_decode($stack);
+
+			if (function_exists('gzdeflate') && function_exists('gzinflate'))
+			{
+				$stack = gzinflate($stack);
+			}
+		}
+
+		$stack = json_decode($stack, true);
+
+		$this->folderStack  = $stack['folders'];
+		$this->filesStack   = $stack['files'];
+		$this->totalFolders = $stack['total'];
+		$this->doneFolders  = $stack['done'];
+	}
+
+	private function deletePath($path)
+	{
+		// Initialize variables
+		$ftpOptions = ClientHelper::getCredentials('ftp');
+
+		// Check to make sure the path valid and clean
+		$n_path = @realpath($path);
+		$path   = empty($n_path) ? $path : $n_path;
+
+		if ($ftpOptions['enabled'] == 1)
+		{
+			// Connect the FTP client
+			$ftp = FtpClient::getInstance(
+				$ftpOptions['host'], $ftpOptions['port'], [],
+				$ftpOptions['user'], $ftpOptions['pass']
+			);
+		}
+
+		if (@unlink($path))
+		{
+			$ret = true;
+		}
+		elseif (@rmdir($path))
+		{
+			$ret = true;
+		}
+		elseif ($ftpOptions['enabled'] == 1)
+		{
+			if (substr($path, 0, strlen(JPATH_ROOT)) !== JPATH_ROOT)
+			{
+				return false;
+			}
+			// Translate path and delete
+			$path = Path::clean(str_replace(JPATH_ROOT, $ftpOptions['root'], $path), '/');
+			// FTP connector throws an error
+			$ret = $ftp->delete($path);
+		}
+		else
+		{
+			return false;
+		}
+
+		return $ret;
 	}
 
 	private function RealRun()

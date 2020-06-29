@@ -11,44 +11,15 @@ defined('_JEXEC') or die;
 
 use Exception;
 use FOF30\Model\Model;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Factory;
+use Joomla\Session\SessionInterface;
 use JSessionStorage;
 
 class DatabaseTools extends Model
 {
 	/** @var float The time the process started */
 	private $startTime = null;
-
-	/**
-	 * Returns the current timestampt in decimal seconds
-	 */
-	private function microtime_float()
-	{
-		list($usec, $sec) = explode(" ", microtime());
-
-		return ((float)$usec + (float)$sec);
-	}
-
-	/**
-	 * Starts or resets the internal timer
-	 */
-	private function resetTimer()
-	{
-		$this->startTime = $this->microtime_float();
-	}
-
-	/**
-	 * Makes sure that no more than 3 seconds since the start of the timer have
-	 * elapsed
-	 *
-	 * @return bool
-	 */
-	private function haveEnoughTime()
-	{
-		$now = $this->microtime_float();
-		$elapsed = abs($now - $this->startTime);
-
-		return $elapsed < 3;
-	}
 
 	/**
 	 * Finds all tables using the current site's prefix
@@ -61,9 +32,9 @@ class DatabaseTools extends Model
 
 		if (is_null($ret))
 		{
-			$db = $this->container->db;
-			$prefix = $db->getPrefix();
-			$plen = strlen($prefix);
+			$db        = $this->container->db;
+			$prefix    = $db->getPrefix();
+			$plen      = strlen($prefix);
 			$allTables = $db->getTableList();
 
 			if (empty($prefix))
@@ -72,7 +43,7 @@ class DatabaseTools extends Model
 			}
 			else
 			{
-				$ret = array();
+				$ret = [];
 				foreach ($allTables as $table)
 				{
 					if (substr($table, 0, $plen) == $prefix)
@@ -160,8 +131,7 @@ class DatabaseTools extends Model
 	}
 
 	/**
-	 * Asks the Joomla! session storage handler to garbage collect any open sessions. This SHOULD remove expired
-	 * sessions, as long as Joomla implements this feature for the given handler.
+	 * Ask Joomla! to garbage collect expired session.
 	 *
 	 * @return  void
 	 *
@@ -169,15 +139,14 @@ class DatabaseTools extends Model
 	 */
 	public function garbageCollectSessions()
 	{
-		$options = array();
-		$conf = $this->container->platform->getConfig();
-		$handler = $conf->get('session_handler', 'none');
+		if (version_compare(JVERSION, '3.999.999', 'lt'))
+		{
+			$this->gcSessionJoomla3();
 
-		// config time is in minutes
-		$options['expire'] = ($conf->get('lifetime')) ? $conf->get('lifetime') * 60 : 900;
+			return;
+		}
 
-		$storage = JSessionStorage::getInstance($handler, $options);
-		$storage->gc($options['expire']);
+		$this->gcSessionJoomla4();
 	}
 
 	/**
@@ -204,6 +173,93 @@ class DatabaseTools extends Model
 		catch (Exception $e)
 		{
 			return;
+		}
+	}
+
+	/**
+	 * Returns the current timestampt in decimal seconds
+	 */
+	private function microtime_float()
+	{
+		[$usec, $sec] = explode(" ", microtime());
+
+		return ((float) $usec + (float) $sec);
+	}
+
+	/**
+	 * Starts or resets the internal timer
+	 */
+	private function resetTimer()
+	{
+		$this->startTime = $this->microtime_float();
+	}
+
+	/**
+	 * Makes sure that no more than 3 seconds since the start of the timer have
+	 * elapsed
+	 *
+	 * @return bool
+	 */
+	private function haveEnoughTime()
+	{
+		$now     = $this->microtime_float();
+		$elapsed = abs($now - $this->startTime);
+
+		return $elapsed < 3;
+	}
+
+	/**
+	 * Asks the Joomla! 3 session storage handler to garbage collect any open sessions. This SHOULD remove expired
+	 * sessions, as long as Joomla implements this feature for the given handler.
+	 *
+	 * @return  void
+	 *
+	 * @since   5.7.0
+	 */
+	private function gcSessionJoomla3()
+	{
+		$options = [];
+		$conf    = $this->container->platform->getConfig();
+		$handler = $conf->get('session_handler', 'none');
+
+		// config time is in minutes
+		$options['expire'] = ($conf->get('lifetime')) ? $conf->get('lifetime') * 60 : 900;
+
+		$storage = JSessionStorage::getInstance($handler, $options);
+		$storage->gc($options['expire']);
+	}
+
+	/**
+	 * Asks the Joomla 4 session object to garbage collect any open sessions. This SHOULD remove expired sessions, as
+	 * long as Joomla implements this feature for the session handler used internally in the object.
+	 *
+	 * @return  void
+	 *
+	 * @since   5.7.0
+	 */
+	private function gcSessionJoomla4()
+	{
+		try
+		{
+			$app = Factory::getApplication();
+
+			if (!($app instanceof CMSApplication))
+			{
+				return;
+			}
+
+			$session = $app->getSession();
+
+			if (!($session instanceof SessionInterface))
+			{
+				return;
+			}
+
+			$session->gc();
+		}
+		catch (Exception $e)
+		{
+			// It's OK if we fail. No harm, no foul.
 		}
 	}
 }

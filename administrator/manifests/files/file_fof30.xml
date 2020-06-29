@@ -32,7 +32,7 @@ software which does not support your PHP and/or Joomla! versions is to deliver o
 is nonsensical, it is 100% architecturally wrong BUT it is also the only way we can apply pre-installation checks which
 fail gracefully instead of causing your site to crash and burn.
 -->
-<extension type="file" version="3.7" method="upgrade">
+<extension type="file" version="3.8" method="upgrade">
     <name>file_fof30</name>
 	<description>
 		<![CDATA[
@@ -40,13 +40,13 @@ fail gracefully instead of causing your site to crash and burn.
 		<b>WARNING</b>: This is NOT a duplicate of the FOF library already installed with Joomla!. It is a different version used by other extensions on your site. Do NOT uninstall either FOF package. If you do you will break your site.
 		]]>
 	</description>
-	<creationDate>2020-03-20</creationDate>
+	<creationDate>2020-06-17</creationDate>
 	<author>Nicholas K. Dionysopoulos / Akeeba Ltd</author>
 	<authorEmail>nicholas@akeebabackup.com</authorEmail>
 	<authorUrl>https://www.akeebabackup.com</authorUrl>
 	<copyright>(c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd</copyright>
 	<license>GNU GPLv2 or later</license>
-	<version>3.5.2</version>
+	<version>3.6.1</version>
 	<packager>Akeeba Ltd</packager>
 	<packagerurl>https://www.akeebabackup.com/download.html</packagerurl>
 
@@ -64,12 +64,9 @@ fail gracefully instead of causing your site to crash and burn.
 			<folder>Encrypt</folder>
 			<folder>Event</folder>
 			<folder>Factory</folder>
-			<folder>Form</folder>
-			<folder>Hal</folder>
 			<folder>Inflector</folder>
 			<folder>Input</folder>
 			<folder>Layout</folder>
-			<folder>Less</folder>
 			<folder>Model</folder>
 			<folder>Params</folder>
 			<folder>Pimple</folder>
@@ -82,6 +79,7 @@ fail gracefully instead of causing your site to crash and burn.
 			<folder>Update</folder>
 			<folder>Utils</folder>
 			<folder>View</folder>
+			<folder>ViewTemplates</folder>
 
 			<file>LICENSE.txt</file>
 			<file>include.php</file>

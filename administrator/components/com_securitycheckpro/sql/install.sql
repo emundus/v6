@@ -598,7 +598,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_storage` (
 `storage_key` varchar(255) NOT NULL,
 `storage_value` longtext NOT NULL,
 PRIMARY KEY (`storage_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `#__securitycheckpro_storage` (`storage_key`,`storage_value`) VALUES 
 ('locked','0');

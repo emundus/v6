@@ -96,7 +96,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	        if (!file_exists($ftp_path.DS.$vidName)) {
 	        	$error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> File not found: '.$ftp_path.DS.$vidName;
                 JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
-
+die($ftp_path.DS.$vidName);
                 return false;
 	        }
 

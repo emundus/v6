@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -230,7 +230,7 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 
 if(!empty($this->options['privacy'])) {
 ?>
-<fieldset>
+<fieldset id="hikashop_registration_privacy_area">
 	<legend>
 <?php
 	echo JText::_('PLG_SYSTEM_PRIVACYCONSENT_LABEL');
@@ -261,6 +261,35 @@ if(!empty($this->options['privacy'])) {
 <?php
 	echo JHTML::_('hikaselect.booleanlist', "data[register][privacy]" , '', 0, JText::_('PLG_SYSTEM_PRIVACYCONSENT_OPTION_AGREE'), JText::_('JNO')	);
 ?>
+		</div>
+	</div>
+</fieldset>
+<?php
+}
+if(!empty($this->options['privacy_guest'])) {
+?>
+	<div class="hkform-group control-group" id="hikashop_registration_privacy_guest_area">
+		<div class="<?php echo $labelcolumnclass;?> hkcontrol-label">
+<?php
+	$text = JText::_( 'PLG_CONTENT_CONFIRMCONSENT_CONSENTBOX_LABEL' ) . '<span class="hikashop_field_required_label">*</span>';
+	if(!empty($this->options['privacy_guest_id'])) {
+		$popupHelper = hikashop_get('helper.popup');
+		$text = $popupHelper->display(
+			$text,
+			'PLG_CONTENT_CONFIRMCONSENT_CONSENTBOX_LABEL',
+			JRoute::_('index.php?option=com_hikashop&ctrl=checkout&task=privacyconsent&type=contact&tmpl=component'),
+			'shop_privacyconsent',
+			800, 500, '', '', 'link'
+		);
+	}
+	echo $text;
+?>
+		</div>
+		<div class=" <?php echo $inputcolumnclass;?>">
+			<label class="checkbox">
+				<input type="checkbox" id="hikashop_privacy_consent_guest" name="data[register][privacy_guest]" value="1"/> <?php echo $this->options['privacy_guest_text']; ?>
+			</label>
+			<input type="hidden" name="data[register][privacy_guest_check]" value="1"/>
 		</div>
 	</div>
 </fieldset>

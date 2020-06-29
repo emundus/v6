@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.2.2
+ * @version    4.3.0
  * @author     hikashop.com
- * @copyright  (C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 (function() {
@@ -218,7 +218,7 @@ var hikashopCheckout = {
 			return true;
 
 		for(var idx = 0 ; idx < els.length ; idx++) {
-			if(els[idx].parentElement.className == 'chzn-search')
+			if(els[idx].parentElement.className == 'chzn-search' || els[idx].className == 'hk-no-submit')
 				continue;
 			els[idx].addEventListener('keydown', function(e) {
 				if(e.key === undefined && e.keyCode === undefined && e.which === undefined)

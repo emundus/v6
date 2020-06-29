@@ -14,18 +14,18 @@ use FOF30\Model\Model;
 
 class SEOAndLinkTools extends Model
 {
-	public $defaultConfig = array(
+	public $defaultConfig = [
 		'linkmigration' => 0,
 		'migratelist'   => '',
 		'httpsizer'     => 0,
-	);
+	];
 
 	public function getConfig()
 	{
 		$params = Storage::getInstance();
-		
-		$config = array();
-		
+
+		$config = [];
+
 		foreach ($this->defaultConfig as $k => $v)
 		{
 			$config[$k] = $params->getValue($k, $v);

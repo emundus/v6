@@ -37,6 +37,12 @@ class modEmundusUserDropdownHelper {
 					continue;
 				}
 
+				// Hide hidden menu items.
+				if ($item->params->get('menu_show', 0) !== 1) {
+					unset($items[$i]);
+					continue;
+				}
+
 				$item->flink = $item->link;
 
 				// Reverted back for CMS version 2.5.6
@@ -84,5 +90,22 @@ class modEmundusUserDropdownHelper {
 		}
 
 		return $items;
+	}
+
+
+	static function isCampaignActive() {
+		$db = JFactory::getDBO();
+		
+		try {
+
+			$query = "SELECT COUNT(*) FROM `jos_emundus_setup_campaigns` WHERE `published` = 1 AND NOW() BETWEEN `start_date` AND `end_date`";
+			$db->setQuery($query);
+			$result = $db->loadResult();
+
+			return $result > 0;
+
+		} catch(Exception $e) {
+			return false;
+		}
 	}
 }

@@ -1,15 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopshippingUSPS extends hikashopShippingPlugin
-{
+class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 	var $multiple = true;
 	var $name = 'usps';
 	var $doc_form = 'usps';
@@ -31,6 +30,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 			'PRIORITYINTMEDIUM' => 'Priority Mail International Medium Flat Rate Box (International)',
 			'PRIORITYINTLARGE' => 'Priority Mail International Large Flat Rate Box (International)',
 			'ENVELOPE' => 'USPS GXG Envelopes (International)',
+			'RETAIL GROUND' => 'Retail Ground',
 		)),
 		'weight_approximation' => array('Weight approximation (%)', 'input'),
 		'dim_approximation' => array('Dimension approximation (%)', 'input'),
@@ -84,6 +84,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 		'INTERNATIONAL' => 13,
 		'ENVELOPE' => 14,
 		'MEDIA' => 15,
+		'RETAIL GROUND' => 16,
 	);
 
 	var $use_cache = true;
@@ -349,7 +350,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 
 			$rates = array();
 			if($parcels[0]->Country == 'US') {
-				$modes = array('PRIORITY', 'MEDIA', 'EXPRESS', 'FIRST CLASS');
+				$modes = array('PRIORITY', 'MEDIA', 'EXPRESS', 'FIRST CLASS', 'RETAIL GROUND');
 				foreach($modes as $mode) {
 					if(!empty($rate->shipping_params->$mode))
 						$this->addRate($rates, $mode, $parcels, $rate, $currency, false);
@@ -424,8 +425,6 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 				$request .= '<Revision />';
 
 			foreach($parcels as $parcel){
-				if($parcel->Weight > 13 && $type =='FIRSTCLASSINT' && isset($rate->shipping_params->firstclass_mail_type) && $rate->shipping_params->firstclass_mail_type == 'PARCEL')
-					return;
 				$package_weight_arr = $this->getUSPSweightDimensions($parcel->Weight);
 				$package_weight_lb = $package_weight_arr['Pounds'];
 				$package_weight_oz = $package_weight_arr['Ounces'];
@@ -655,12 +654,15 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin
 		if(empty($element->shipping_params->post_code)){
 			$app->enqueueMessage(JText::sprintf('ENTER_INFO', 'USPS', JText::_('POST_CODE')));
 		}
-		if(isset($element->shipping_params->services)){
+
+		if(isset($element->shipping_params->services) && !empty($element->shipping_params->services)){
 			$element->shipping_params->PRIORITY=in_array('PRIORITY',$element->shipping_params->services);
 			$element->shipping_params->MEDIA=in_array('MEDIA',$element->shipping_params->services);
 			$element->shipping_params->EXPRESS=in_array('EXPRESS',$element->shipping_params->services);
 			$FIRSTCLASS = 'FIRST CLASS';
 			$element->shipping_params->$FIRSTCLASS=in_array('FIRST CLASS',$element->shipping_params->services);
+			$RETAILGROUND = 'RETAIL GROUND';
+			$element->shipping_params->$RETAILGROUND=in_array('RETAIL GROUND',$element->shipping_params->services);
 			$element->shipping_params->INTERNATIONAL=in_array('INTERNATIONAL',$element->shipping_params->services);
 			$element->shipping_params->PRIORITYINTSMALL=in_array('PRIORITYINTSMALL',$element->shipping_params->services);
 			$element->shipping_params->PRIORITYINTDVD=in_array('PRIORITYINTDVD',$element->shipping_params->services);

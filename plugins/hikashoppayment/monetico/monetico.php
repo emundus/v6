@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -34,6 +34,7 @@ class plgHikashoppaymentMonetico extends hikashopPaymentPlugin {
 			'challenge_mandated' => "Challenge requis",
 			'no_challenge_requested' => "Pas de challenge demandé",
 		)),
+		'notify_url' => array('NOTIFY_URL_DEFINE','input'),
 		'debug' => array('DEBUG', 'boolean','0'),
 		'sandbox' => array('SANDBOX', 'boolean','0'),
 		'cancel_url' => array('CANCEL_URL', 'input'),
@@ -41,6 +42,7 @@ class plgHikashoppaymentMonetico extends hikashopPaymentPlugin {
 		'invalid_status' => array('INVALID_STATUS', 'orderstatus', 'cancelled'),
 		'verified_status' => array('VERIFIED_STATUS', 'orderstatus', 'confirmed')
 	);
+
 
 	public function getPaymentDefaultValues(&$element) {
 		$element->payment_name = 'Monetico Paiement';
@@ -52,6 +54,8 @@ class plgHikashoppaymentMonetico extends hikashopPaymentPlugin {
 		$element->payment_params->verified_status = 'confirmed';
 		$element->payment_params->locale = 'fr';
 		$element->payment_params->ThreeDSecureChallenge = 'challenge_preferred';
+		$element->payment_params->notify_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=monetico&tmpl=component&';
+
 	}
 
 	public function onBeforeOrderCreate(&$order,&$do){
@@ -67,7 +71,7 @@ class plgHikashoppaymentMonetico extends hikashopPaymentPlugin {
 	public function onAfterOrderConfirm(&$order,&$methods,$method_id) {
 		parent::onAfterOrderConfirm($order, $methods, $method_id);
 
-		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=cmcic&tmpl=component&cmcic_return=1&orderId='.$order->order_id.'&lang='.$this->locale;
+		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=monetico&tmpl=component&monetico_return=1&orderId='.$order->order_id.'&lang='.$this->locale;
 
 		if(empty($this->payment_params->locale)) {
 			if( in_array($this->locale, array('fr','en','de','it','es','nl','pt')) ) {
@@ -200,6 +204,8 @@ class plgHikashoppaymentMonetico extends hikashopPaymentPlugin {
 			'reference' => $order->order_number,
 			'societe' => trim($this->payment_params->societe),
 			'texte-libre' => '',
+			'url_retour_err' => $return_url,
+			'url_retour_ok' => $return_url,
 			'version' => '3.0',
 		);
 
@@ -216,18 +222,31 @@ class plgHikashoppaymentMonetico extends hikashopPaymentPlugin {
 	}
 
 	public function onPaymentNotification(&$statuses) {
-		$finalReturn = isset($_GET['cmcic_return']);
+		if( @$this->payment_params->debug ) {
+			$this->writeToLog('data recieved in $_POST : ');
+			$this->writeToLog($_POST);
+			$this->writeToLog('data recieved in $_GET : ');
+			$this->writeToLog($_GET);
+		}
+
+
+
+		$finalReturn = isset($_GET['monetico_return']);
 		if($finalReturn) {
 			$order_id = (int)@$_GET['orderId'];
 		} else {
-			$reference = @$_POST['reference'];
+			if($_SERVER["REQUEST_METHOD"] == "GET")
+				$reference = @$_GET['reference'];
+
+			if($_SERVER["REQUEST_METHOD"] == "POST")
+				$reference = @$_POST['reference'];
 			$db = JFactory::getDBO();
 			$db->setQuery('SELECT order_id FROM '.hikashop_table('order').' WHERE order_number='.$db->Quote($reference).';');
 			$order_id = (int)$db->loadResult();
 		}
 
 		if(empty($order_id)) {
-			$this->sendNotifResponse(false);
+			$this->sendNotifResponse(false,'1');
 		}
 
 		$dbOrder = $this->getOrder($order_id);
@@ -259,19 +278,30 @@ class plgHikashoppaymentMonetico extends hikashopPaymentPlugin {
 			$this->sendNotifResponse(false, 'POST[MAC] not present');
 		}
 
-		if($vars['TPE'] != $this->payment_params->tpe) {
-			$this->sendNotifResponse(false, 'POST[TPE] invalid ("' . htmlentities($vars['TPE']) . '" != "' . $this->payment_params->tpe . '")');
+		$tpe = $vars['TPE'];
+		if(empty($tpe)) {$tpe = $vars['?TPE'];}
+
+		if($tpe != $this->payment_params->tpe ) {
+			$this->sendNotifResponse(false, 'POST[TPE] invalid ("' . htmlentities($tpe) . '" != "' . $this->payment_params->tpe . '")');
 		}
 
 		$mac = $vars['MAC'];
 		unset($vars['MAC']);
-		$tpe = $vars['TPE'];
 		unset($vars['TPE']);
+		unset($vars['?TPE']);
+		unset($vars['notif_payment']);
+		unset($vars['ctrl']);
+		unset($vars['task']);
+		unset($vars['option']);
+		unset($vars['tmpl']);
+
 		ksort($vars);
 		$vars = array_reverse($vars);
 		$vars['TPE'] = $tpe;
 		$vars = array_reverse($vars);
 
+		if( @$this->payment_params->debug )
+			$this->writeToLog($vars);
 		$processedHash = $this->generateHash($vars, $this->payment_params);
 
 		if(strtolower($mac) != $processedHash) {
@@ -283,13 +313,12 @@ class plgHikashoppaymentMonetico extends hikashopPaymentPlugin {
 		$history->amount = $vars['montant'];
 		$history->data = $vars['numauto'] . "\r\n" . ob_get_clean();
 
+		$var_name = 'paiement';
 		if( $this->payment_params->sandbox ) {
-			$completed = ($vars['code-retour'] == 'paytest');
-		} else {
-			$completed = ($vars['code-retour'] == 'paiement');
+			$var_name = 'payetest';
 		}
 
-		$completed = ($vars['code-retour']);
+		$completed = ($vars['code-retour'] == $var_name);
 
 		if(!$completed && substr($vars['code-retour'], 0, 11) == 'paiement_pf') {
 			$email = new stdClass();
@@ -300,7 +329,7 @@ class plgHikashoppaymentMonetico extends hikashopPaymentPlugin {
 			$o = false;
 			$this->modifyOrder($o, null, null, $email);
 
-			$this->sendNotifResponse(true, '', true);
+			$this->sendNotifResponse(true, '2', true);
 		}
 
 		if($completed) {
@@ -316,7 +345,7 @@ class plgHikashoppaymentMonetico extends hikashopPaymentPlugin {
 			$email = $order_text;
 		$this->modifyOrder($order_id, $order_status, $history, $email);
 
-		$this->sendNotifResponse(true);
+		$this->sendNotifResponse(true, '3');
 	}
 
 	protected function onPaymentUserReturn($dbOrder) {

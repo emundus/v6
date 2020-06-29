@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -136,7 +136,7 @@ class VoteViewVote extends hikashopView{
 	}
 
 	function form() {
-		$vote_id = hikashop_getCID('currency_id',false);
+		$vote_id = hikashop_getCID('vote_id');
 		$item = new stdClass();
 		$database	= JFactory::getDBO();
 
@@ -180,12 +180,25 @@ class VoteViewVote extends hikashopView{
 		if(!empty($vote_id)){
 			$element = $class->get($vote_id,true);
 			$task='edit';
+			$this->user_type = ($element->vote_pseudo == '0') ? 'registered' : 'anonymous';
 		}else{
 			$element = new stdClass();
 			$element->vote_url = HIKASHOP_LIVE;
 			$element->vote_published = 1;
+			$this->user_type = 'registered';
 			$task='add';
 		}
+		$this->display_anon = '';
+		$this->display_reg = '';
+		if($this->user_type == 'registered') {
+			$this->display_anon = ' style="display:none"';
+		} else {
+			$this->display_reg = ' style="display:none"';
+		}
+		if($element->vote_pseudo == '0')
+			$element->vote_pseudo = '';
+		if($element->vote_email == '0')
+			$element->vote_email = '';
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&vote_id='.$vote_id);
 		$this->toolbar = array(
 			array('name' => 'group', 'buttons' => array( 'apply', 'save')),
@@ -214,5 +227,6 @@ class VoteViewVote extends hikashopView{
 		$this->assignRef('nameboxType', $nameboxType);
 		$voteType = hikashop_get('type.vote');
 		$this->assignRef('voteType',$voteType);
+		$this->config = hikashop_config();
 	}
 }

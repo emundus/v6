@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -32,18 +32,14 @@ class hikashopTranslationHelper {
 			$multi[$key] = false;
 			$config =& hikashop_config();
 			if((hikashop_level(1) || !$level) && ($config->get('multi_language_edit',1) || $inConfig)){
+
+				$multi[$key] = true;
 				$oldQuery = $this->database->getQuery(false);
 				$query = 'SHOW TABLES LIKE '.$this->database->Quote($this->database->getPrefix().substr(hikashop_table('falang_content',false),3));
 				$this->database->setQuery($query);
 				$table = $this->database->loadResult();
 				if(!empty($table)){
 					$falang = true;
-					$multi[$key] = true;
-				}else{
-					$query='SHOW TABLES LIKE '.$this->database->Quote($this->database->getPrefix().substr(hikashop_table('jf_content',false),3));
-					$this->database->setQuery($query);
-					$table = $this->database->loadResult();
-					if(!empty($table)) $multi[$key] = true;
 				}
 				$this->database->setQuery($oldQuery);
 			}
@@ -97,31 +93,62 @@ class hikashopTranslationHelper {
 			$where=' AND language_id='.(int)$language_id;
 			$languages=array((int)$language_id=>$this->loadLanguage($language_id));
 		}
-		$trans_table = 'jf_content';
-		if($this->falang){
-			$trans_table = 'falang_content';
-		}
-		$query = 'SELECT * FROM '.hikashop_table($trans_table,false).' WHERE reference_id='.(int)$id.' AND reference_table='.$this->database->Quote($table).$where;
-		$this->database->setQuery($query);
-		$data = $this->database->loadObjectList();
 
 		if(is_null($element))
 			$element = new stdClass();
 		$element->translations=array();
 
-		if(!empty($data)){
-			foreach($data as $entry){
-				$field = $entry->reference_field;
-				$lg = (int)$entry->language_id;
-				if(!isset($element->translations[$lg])){
-					$obj = new stdClass();
-					$obj->$field = $entry;
-					$element->translations[$lg] = $obj;
-				}else{
-					$element->translations[$lg]->$field=$entry;
+		if($this->falang){
+			$trans_table = 'falang_content';
+			$query = 'SELECT * FROM '.hikashop_table($trans_table,false).' WHERE reference_id='.(int)$id.' AND reference_table='.$this->database->Quote($table).$where;
+			$this->database->setQuery($query);
+			$data = $this->database->loadObjectList();
+
+			if(!empty($data)){
+				foreach($data as $entry){
+					$field = $entry->reference_field;
+					$lg = (int)$entry->language_id;
+					if(!isset($element->translations[$lg])){
+						$obj = new stdClass();
+						$obj->$field = $entry;
+						$element->translations[$lg] = $obj;
+					}else{
+						$element->translations[$lg]->$field=$entry;
+					}
+				}
+
+			}
+		} else {
+			jimport('joomla.filesystem.folder');
+			$path = hikashop_getLanguagePath(JPATH_ROOT);
+			foreach($languages as $lang) {
+				$override_file_path = $path . '/overrides/'.$lang->code.'.override.ini';
+				if(file_exists($override_file_path)) {
+					$overrides = parse_ini_file($override_file_path);
+					foreach(get_object_vars($element) as $field => $var) {
+						if(is_array($var) || is_object($var))
+							continue;
+						$val = preg_replace('#[^A-Z_0-9]#','',strtoupper($var));
+						if(isset($overrides[$val])) {
+							$entry = new stdClass();
+							$entry->value = $overrides[$val];
+							$entry->id = uniqid();
+							$entry->published = 1;
+							$entry->reference_field = $field;
+							$entry->reference_table = $table;
+							$entry->reference_id = (int)$id;
+							$entry->language_id = (int)$lang->id;
+							if(!isset($element->translations[$entry->language_id])){
+								$obj = new stdClass();
+								$obj->$field = $entry;
+								$element->translations[$entry->language_id] = $obj;
+							}else{
+								$element->translations[$entry->language_id]->$field = $entry;
+							}
+						}
+					}
 				}
 			}
-
 		}
 		if(!empty($languages)){
 			foreach($languages as $lg){
@@ -183,8 +210,6 @@ class hikashopTranslationHelper {
 		$conditions = array();
 		foreach($transArray as $field => $trans) {
 			foreach($trans as $lg => $value) {
-				if(empty($value))
-					continue;
 
 				$lg = (int)$lg;
 				$field = hikashop_secureField($field);
@@ -203,8 +228,6 @@ class hikashopTranslationHelper {
 					continue;
 
 				$html_element = hikaInput::get()->getRaw($name, '');
-				if(empty($html_element))
-					continue;
 
 				$lg = (int)$match[2];
 				$field = hikashop_secureField($match[1]);
@@ -221,63 +244,192 @@ class hikashopTranslationHelper {
 		if(empty($arrayToSearch))
 			return;
 
+		$conf = hikashop_config();
+		$default_translation_publish = (int)$conf->get('default_translation_publish', 1);
 		$this->isMulti();
-		$trans_table = 'jf_content';
-		if($this->falang)
+		if($this->falang) {
 			$trans_table = 'falang_content';
 
-		$query = 'SELECT * FROM '.hikashop_table($trans_table,false).' WHERE ('.implode(') OR (',$conditions).');';
-		$this->database->setQuery($query);
-		$entries = $this->database->loadObjectList('id');
+			$query = 'SELECT * FROM '.hikashop_table($trans_table,false).' WHERE ('.implode(') OR (',$conditions).');';
+			$this->database->setQuery($query);
+			$entries = $this->database->loadObjectList('id');
 
-		$user = JFactory::getUser();
-		$userId = $user->get( 'id' );
-		$toInsert = array();
-		foreach($arrayToSearch as $item) {
-			$already = false;
-			if(!empty($entries)) {
-				foreach($entries as $entry_id => $entry){
-					if($item['language_id'] == $entry->language_id && $item['reference_field'] == $entry->reference_field) {
-						$query = 'UPDATE '.hikashop_table($trans_table, false) .
-							' SET value='.$this->database->Quote($item['value']).', modified_by=' . (int)$userId.', modified=NOW()'.
-							' WHERE id = ' . (int)$entry_id . ';';
-						$this->database->setQuery($query);
-						$this->database->execute();
-						$already = true;
-						break;
+			$user = JFactory::getUser();
+			$userId = $user->get( 'id' );
+			$toInsert = array();
+			foreach($arrayToSearch as $item) {
+				$already = false;
+				if(!empty($entries)) {
+					foreach($entries as $entry_id => $entry){
+						if($item['language_id'] == $entry->language_id && $item['reference_field'] == $entry->reference_field) {
+							if(empty($item['value'])) {
+								$query = 'DELETE FROM '.hikashop_table($trans_table, false) .
+									' WHERE id = ' . (int)$entry_id . ';';
+							} else {
+								$query = 'UPDATE '.hikashop_table($trans_table, false) .
+									' SET value='.$this->database->Quote($item['value']).', modified_by=' . (int)$userId.', modified=NOW()'.
+									' WHERE id = ' . (int)$entry_id . ';';
+							}
+							$this->database->setQuery($query);
+							$this->database->execute();
+							$already = true;
+							break;
+						}
+					}
+				}
+				if(!$already) {
+					$toInsert[] = $item;
+				}
+			}
+
+			if(empty($toInsert))
+				return;
+
+			$rows = array();
+			foreach($toInsert as $item) {
+				$field = $item['reference_field'];
+				$rows[] = (int)$id.','.(int)$item['language_id'].','.$this->database->Quote($table).','.$this->database->Quote($item['value']).','.$this->database->Quote($field).','.$this->database->Quote(md5($element->$field)).','.(int)$default_translation_publish.','.(int)$userId.',\'\',NOW()';
+			}
+			$query = 'INSERT IGNORE INTO '.hikashop_table($trans_table, false).' (reference_id,language_id,reference_table,value,reference_field,original_value,published,modified_by,original_text,modified) VALUES ('.implode('),(',$rows).');';
+			$this->database->setQuery($query);
+			$this->database->execute();
+		} else {
+			$this->loadLanguages();
+			$languages =& $this->languages;
+			jimport('joomla.filesystem.folder');
+			$path = hikashop_getLanguagePath(JPATH_ROOT);
+			foreach($languages as $lang) {
+				$override_file_path = $path . '/overrides/'.$lang->code.'.override.ini';
+				$overrides = array();
+				if(file_exists($override_file_path)) {
+					$overrides = parse_ini_file($override_file_path);
+					if($overrides === false) {
+						echo '<script>alert(\''.JText::sprintf('TRANSLATION_OVERRIDE_IS_INVALID', str_replace("'","\'",$override_file_path)).'\');</script>';
+						continue;
+					}
+				}
+				$done = array();
+				foreach($arrayToSearch as $entry) {
+					if($lang->id != $entry['language_id'])
+						continue;
+					$field = $entry['reference_field'];
+					$key =  preg_replace('#[^A-Z_0-9]#','',strtoupper($element->$field));
+
+					if(!empty($done[$key]))
+						continue;
+					if(empty($key)) {
+						if(!empty($entry['value']))
+							echo '<script>alert(\''.JText::sprintf('TRANSLATION_OVERRIDE_COULD_NOT_BE_SAVED', str_replace("'","\'",$entry['value'])).'\');</script>';
+						continue;
+					}
+					$overrides[$key] = $entry['value'];
+
+					if(empty($overrides[$key]))
+						unset($overrides[$key]);
+					else
+						$done[$key] = $entry['value'];
+				}
+
+				$data = '';
+				foreach($overrides as $k => $v) {
+					$data .= $k.'="'.str_replace('"','\"',$v).'"'."\r\n";
+				}
+				file_put_contents($override_file_path, $data);
+			}
+
+		}
+	}
+
+	function checkTranslations(&$element, $columns) {
+		if($this->isMulti()){
+			if(!$this->falang){
+				$toUpdate = array();
+				foreach($columns as $column) {
+					if(
+						isset($element->$column) && isset($element->old->$column) &&
+						!is_array($element->$column) && !is_object($element->$column) &&
+						!is_array($element->old->$column) && !is_object($element->old->$column) &&
+						$element->$column !== $element->old->$column
+					)
+						$toUpdate[$element->old->$column] = $element->$column;
+				}
+				if(count($toUpdate)) {
+					$this->loadLanguages();
+					$languages =& $this->languages;
+					jimport('joomla.filesystem.folder');
+					$path = hikashop_getLanguagePath(JPATH_ROOT);
+					foreach($languages as $lang) {
+						$override_file_path = $path . '/overrides/'.$lang->code.'.override.ini';
+						$overrides = array();
+						if(file_exists($override_file_path)) {
+							$overrides = parse_ini_file($override_file_path);
+							if($overrides === false) {
+								echo '<script>alert(\''.JText::sprintf('TRANSLATION_OVERRIDE_IS_INVALID', str_replace("'","\'",$override_file_path)).'\');</script>';
+								continue;
+							}
+						}
+						foreach($toUpdate as $old => $new) {
+							$oldKey = preg_replace('#[^A-Z_0-9]#','',strtoupper($old));
+							if(isset($overrides[$oldKey])) {
+								$newKey = preg_replace('#[^A-Z_0-9]#','',strtoupper($new));
+								$overrides[$newKey] = $overrides[$oldKey];
+								unset($overrides[$oldKey]);
+							}
+						}
+
+						$data = '';
+						foreach($overrides as $k => $v) {
+							$data .= $k.'="'.str_replace('"','\"',$v).'"'."\r\n";
+						}
+						file_put_contents($override_file_path, $data);
 					}
 				}
 			}
-			if(!$already) {
-				$toInsert[] = $item;
-			}
 		}
-
-		if(empty($toInsert))
-			return;
-
-		$conf =& hikashop_config();
-		$default_translation_publish = (int)$conf->get('default_translation_publish', 1);
-		$rows = array();
-		foreach($toInsert as $item) {
-			$field = $item['reference_field'];
-			$rows[] = (int)$id.','.(int)$item['language_id'].','.$this->database->Quote($table).','.$this->database->Quote($item['value']).','.$this->database->Quote($field).','.$this->database->Quote(md5($element->$field)).','.(int)$default_translation_publish.','.(int)$userId.',\'\',NOW()';
-		}
-		$query = 'INSERT IGNORE INTO '.hikashop_table($trans_table, false).' (reference_id,language_id,reference_table,value,reference_field,original_value,published,modified_by,original_text,modified) VALUES ('.implode('),(',$rows).');';
-		$this->database->setQuery($query);
-		$this->database->execute();
 	}
 
 	function deleteTranslations($table,$ids){
 		if($this->isMulti()){
 			if(!is_array($ids))$ids = array($ids);
-			$trans_table = 'jf_content';
+
 			if($this->falang){
 				$trans_table = 'falang_content';
+				$query = 'DELETE FROM '.hikashop_table($trans_table,false).' WHERE reference_table = '.$this->database->Quote('hikashop_'.$table).' AND reference_id IN ('.implode(',',$ids).')';
+				$this->database->setQuery($query);
+				$this->database->execute();
+			} else {
+				$query = 'SELECT * FROM #__hikashop_'.$table.' WHERE '.$table.'_id IN ('.implode(',',$ids).')';
+				$this->database->setQuery($query);
+				$elements = $this->database->loadObjectList($table.'_id');
+				$this->loadLanguages();
+				$languages =& $this->languages;
+				jimport('joomla.filesystem.folder');
+				$path = hikashop_getLanguagePath(JPATH_ROOT);
+				foreach($languages as $lang) {
+					$override_file_path = $path . '/overrides/'.$lang->code.'.override.ini';
+					$overrides = array();
+					if(file_exists($override_file_path)) {
+						$overrides = parse_ini_file($override_file_path);
+						if($overrides === false) {
+							echo '<script>alert(\''.JText::sprintf('TRANSLATION_OVERRIDE_IS_INVALID', str_replace("'","\'",$override_file_path)).'\');</script>';
+							continue;
+						}
+					}
+					foreach($elements as $element) {
+						foreach(get_object_vars($element) as $field => $val){
+							if(is_array($val) || is_object($val))
+								continue;
+							$key = preg_replace('#[^A-Z_0-9]#','',strtoupper($val));
+							unset($overrides[$key]);
+						}
+					}
+					$data = '';
+					foreach($overrides as $k => $v) {
+						$data .= $k.'="'.str_replace('"','\"',$v).'"'."\r\n";
+					}
+					file_put_contents($override_file_path, $data);
+				}
 			}
-			$query = 'DELETE FROM '.hikashop_table($trans_table,false).' WHERE reference_table = '.$this->database->Quote('hikashop_'.$table).' AND reference_id IN ('.implode(',',$ids).')';
-			$this->database->setQuery($query);
-			$this->database->execute();
 		}
 	}
 
@@ -302,12 +454,9 @@ class hikashopTranslationHelper {
 		}else{
 			$statuses = $database->loadObjectList('category_id');
 		}
-		if($this->isMulti(true, false)){
+		if($this->isMulti(true, false) && $this->falang){
 			$lgid = $this->getId($current_locale);
-			$trans_table = 'jf_content';
-			if($this->falang){
-				$trans_table = 'falang_content';
-			}
+			$trans_table = 'falang_content';
 			$query = 'SELECT value,reference_id FROM '.hikashop_table($trans_table,false).' WHERE reference_table=\'hikashop_category\' AND reference_field=\'category_name\' AND published=1 AND language_id='.$lgid.' AND reference_id IN('.implode(',',array_keys($statuses)).')';
 			$database->setQuery($query);
 			$trans = $database->loadObjectList('reference_id');

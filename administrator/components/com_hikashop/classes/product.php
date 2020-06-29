@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -281,21 +281,13 @@ class hikashopProductClass extends hikashopClass{
 		}
 
 		if($status){
-			$status = $this->save($element);
+			$status = $this->fullSave($element);
 		}else{
 			hikaInput::get()->set( 'fail', $element  );
 			return $status;
 		}
 
 		if($status){
-			$this->updateCategories($element,$status);
-			$this->updatePrices($element,$status);
-			$this->updateFiles($element,$status,'files');
-			$this->updateFiles($element,$status,'images',$element->imagesorder);
-			$this->updateRelated($element,$status,'related');
-			$this->updateRelated($element,$status,'options');
-			$this->updateRelated($element,$status,'bundle');
-			$this->updateCharacteristics($element,$status);
 			$translationHelper->handleTranslations('product',$status,$element);
 		}else{
 			hikaInput::get()->set( 'fail', $element  );
@@ -670,57 +662,12 @@ class hikashopProductClass extends hikashopClass{
 
 
 		if($status) {
-			$status = $this->save($product);
+			$status = $this->fullSave($product);
 		} else {
 			hikaInput::get()->set('fail', $product);
 			return $status;
 		}
-
 		if($status) {
-			if(hikashop_acl('product/edit/category') || $new)
-				$this->updateCategories($product, $status);
-			if(hikashop_acl('product/edit/price'))
-				$this->updatePrices($product, $status);
-			if(hikashop_acl('product/edit/files'))
-				$this->updateFiles($product, $status, 'files', $product->filesorder);
-			if(hikashop_acl('product/edit/images'))
-				$this->updateFiles($product, $status, 'images', $product->imagesorder);
-			if(hikashop_acl('product/edit/related'))
-				$this->updateRelated($product, $status, 'related');
-			if(hikashop_acl('product/edit/options'))
-				$this->updateRelated($product, $status, 'options');
-			if(hikashop_acl('product/edit/bundle') && hikashop_level(1))
-				$this->updateRelated($product, $status, 'bundle');
-
-			if(hikashop_acl('product/edit/characteristics') && !empty($product->characteristics)) {
-				if($new) {
-					$product->product_type = 'main';
-					$this->updateCharacteristics($product, $status, 0);
-				} else {
-					$query = 'UPDATE '. hikashop_table('variant') . ' SET ordering = CASE variant_characteristic_id';
-					foreach($product->characteristics as $key => $val) {
-						$query .= ' WHEN ' . (int)$val . ' THEN ' . ($key + 1);
-					}
-					$query .= ' ELSE ordering END WHERE variant_characteristic_id IN ('.implode(',', $product->characteristics).') AND variant_product_id = '.(int)$status;
-					$this->db->setQuery($query);
-					$this->db->execute();
-
-					if(!empty($product->product_code) && !empty($oldProduct->product_code) && $product->product_code != $oldProduct->product_code) {
-						if(HIKASHOP_J30)
-							$product_code = "'" . $this->db->escape($oldProduct->product_code, true) . "%'";
-						else
-							$product_code = "'" . $this->db->getEscaped($oldProduct->product_code, true) . "%'";
-
-						$query = 'UPDATE '.hikashop_table('product').
-								' SET `product_code` = REPLACE(`product_code`,' . $this->db->Quote($oldProduct->product_code) . ',' . $this->db->Quote($product->product_code) . ')'.
-								' WHERE `product_code` LIKE '.$product_code.' AND product_parent_id = '.(int)$product->product_id.' AND product_type = '.$this->db->Quote('variant');
-						$this->db->setQuery($query);
-						$this->db->execute();
-					}
-				}
-			}
-
-
 			if(hikashop_acl('product/variant') && !empty($formData['variant']))
 				$this->backSaveVariantForm();
 		} else {
@@ -1035,17 +982,8 @@ class hikashopProductClass extends hikashopClass{
 			}
 		}
 
-		$status = $this->save($product);
-		if($status) {
-			if(hikashop_acl('product/variant/price'))
-				$this->updatePrices($product, $status);
-			if(hikashop_acl('product/variant/files'))
-				$this->updateFiles($product, $status, 'files', $product->filesorder);
-			if(hikashop_acl('product/variant/images'))
-				$this->updateFiles($product, $status, 'images', $product->imagesorder);
-			if(hikashop_acl('product/variant/characteristics'))
-				$this->updateCharacteristics($product, $status);
-		} else {
+		$status = $this->fullSave($product);
+		if(!$status) {
 			hikaInput::get()->set('fail', $product);
 			if(empty($product->product_id) && empty($product->product_code) && empty($product->product_name)) {
 				$app->enqueueMessage(JText::_('SPECIFY_NAME_AND_CODE'), 'error');
@@ -1207,11 +1145,8 @@ class hikashopProductClass extends hikashopClass{
 		}
 
 		$translationHelper = hikashop_get('helper.translation');
-		if($translationHelper->isMulti(true)){
-			$trans_table = 'jf_content';
-			if($translationHelper->falang){
-				$trans_table = 'falang_content';
-			}
+		if($translationHelper->isMulti(true) && $translationHelper->falang){
+			$trans_table = 'falang_content';
 			$query = 'SELECT * FROM '.hikashop_table($trans_table,false).' WHERE reference_id IN ('.implode(',',$all_ids).')  AND reference_table=\'hikashop_product\' ORDER BY reference_id ASC';
 			$this->database->setQuery($query);
 			$translations = $this->database->loadObjectList();
@@ -1696,6 +1631,575 @@ class hikashopProductClass extends hikashopClass{
 		}
 	}
 
+	public function loadProductVariants(&$element, $options = array()) {
+
+		$user_id = 0;
+		if(!empty($options['user_id'])){
+			$user_id = (int)$options['user_id'];
+		}
+		$selected_variant_id = 0;
+		if(!empty($options['selected_variant_id'])){
+			$selected_variant_id = (int)$options['selected_variant_id'];
+		}
+
+		$product_id = (int)$element->product_id;
+		$ids = array($product_id);
+
+		$filters = array(
+			'product_parent_id IN ('.implode(',',$ids).')',
+			'product_published = 1'
+		);
+		hikashop_addACLFilters($filters,'product_access');
+		$database = Jfactory::getDBO();
+		$query = 'SELECT * FROM '.hikashop_table('product').' WHERE ('.implode(') AND (', $filters).')';
+		$database->setQuery($query);
+		$variants = $database->loadObjectList();
+		if(!empty($variants)) {
+			foreach($variants as $key => $variant) {
+				$ids[] = (int)$variant->product_id;
+
+				if(!empty($variant->product_name))
+					$variants[$key]->product_name = hikashop_translate($variant->product_name);
+				if(!empty($variant->product_description))
+					$variants[$key]->product_description = hikashop_translate($variant->product_description);
+
+				if($variant->product_parent_id == $product_id)
+					$element->variants[$variant->product_id] = $variant;
+			}
+		}
+
+		$config = hikashop_config();
+		$sort = $config->get('characteristics_values_sorting');
+		if($sort == 'old') {
+			$order = 'characteristic_id ASC';
+		} elseif($sort == 'alias') {
+			$order = 'characteristic_alias ASC';
+		} elseif($sort == 'ordering') {
+			$order = 'characteristic_ordering ASC';
+		} else {
+			$order = 'characteristic_value ASC';
+		}
+
+		$query = 'SELECT v.*, c.* '.
+			' FROM '.hikashop_table('variant').' AS v '.
+			' INNER JOIN '.hikashop_table('characteristic').' AS c ON v.variant_characteristic_id = c.characteristic_id '.
+			' WHERE v.variant_product_id IN ('.implode(',', $ids).') '.
+			' ORDER BY v.ordering ASC, c.'.$order;
+		$database->setQuery($query);
+		$characteristics = $database->loadObjectList();
+
+		if(!empty($characteristics)) {
+			$mainCharacteristics = array();
+			foreach($characteristics as $characteristic) {
+				if($product_id == $characteristic->variant_product_id) {
+					$mainCharacteristics[$product_id][$characteristic->characteristic_parent_id][$characteristic->characteristic_id] = $characteristic;
+				}
+			}
+
+			JPluginHelper::importPlugin('hikashop');
+			$app = JFactory::getApplication();
+			$app->triggerEvent('onAfterProductCharacteristicsLoad', array( &$element, &$mainCharacteristics, &$characteristics ));
+
+			if(!empty($element->variants)) {
+				$this->addCharacteristics($element, $mainCharacteristics, $characteristics, array('selected_variant_id'=>$selected_variant_id));
+				$this->orderVariants($element);
+			}
+			unset($element->characteristics[0]);
+		}
+
+		$query = 'SELECT * FROM '.hikashop_table('file').
+			' WHERE file_ref_id IN ('.implode(',', $ids).') AND file_type IN (\'product\',\'file\') '.
+			' ORDER BY file_ordering ASC, file_id ASC';
+		$database->setQuery($query);
+		$product_files = $database->loadObjectList();
+		if(!empty($product_files)) {
+			$this->generateDownloadLinks($product_files, $ids);
+			$this->addFiles($element,$product_files);
+		}
+
+		$currencyClass = hikashop_get('class.currency');
+		$currencyClass->getProductPrices($element, $ids, array('user_id' => $user_id));
+
+		$this->checkVariants($element);
+
+		$this->setDefault($element);
+
+		if(!empty($element->variants)) {
+			foreach($element->variants as $k => $variant) {
+				$variant->main =& $element->main;
+			}
+		}
+	}
+
+
+	public function generateDownloadLinks(&$files, &$ids) {
+		global $Itemid;
+		$url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
+		$orders = null;
+		$download_time_limit = 0;
+		$main_download_number_limit = 0;
+		$config = hikashop_config();
+
+		$display_paid_downloads = $config->get('display_downloads_on_product_page', 0);
+		$db = JFactory::getDBO();
+
+		if($display_paid_downloads) {
+			$order_status_for_download = $config->get('order_status_for_download','confirmed,shipped');
+			$order_status_for_download = explode(',', $order_status_for_download);
+
+			if(count($order_status_for_download)) {
+
+				$user = hikashop_loadUser(true);
+				if(!empty($user->user_cms_id)) {
+
+					$download_time_limit = $config->get('download_time_limit', 0);
+					$main_download_number_limit = $config->get('download_number_limit', 0);
+
+					$statuses = array();
+					foreach($order_status_for_download as $status) {
+						$statuses[] = $db->Quote($status);
+					}
+
+					$query = 'SELECT * FROM #__hikashop_order_product as op '.
+					'LEFT JOIN #__hikashop_order AS o ON op.order_id = o.order_id '.
+					'LEFT JOIN #__hikashop_product AS p ON op.product_id = p.product_id '.
+					'WHERE o.order_user_id = ' . $user->user_id . ' '.
+					'AND op.product_id IN (' . implode(',', $ids) . ') '.
+					'AND o.order_status IN (' . implode(',', $statuses) . ')';
+					$db->setQuery($query);
+					$orders = $db->loadObjectList('order_id');
+				}
+			}
+		}
+		foreach($files as $k => $file) {
+			if($file->file_type != 'file')
+					continue;
+
+			if(!empty($file->file_free_download)) {
+				$files[$k]->download_link = hikashop_completeLink('product&task=download&file_id=' . $file->file_id.$url_itemid);
+				continue;
+			}
+
+
+			if(!$display_paid_downloads)
+				continue;
+
+			if(empty($orders))
+				continue;
+			$files[$k]->orders = array();
+			foreach($orders as $order) {
+				if($file->file_ref_id != $order->product_id && $file->file_ref_id != $order->product_parent_id)
+					continue;
+				$files[$k]->orders[] = $order;
+			}
+			if(!count($files[$k]->orders))
+				continue;
+
+			if(!empty($file->file_limit) && (int)$file->file_limit != 0) {
+				$download_number_limit = $file->file_limit;
+				if($download_number_limit < 0)
+					$download_number_limit = 0;
+			} else {
+				$download_number_limit = $main_download_number_limit;
+			}
+			$downloads = array();
+			if(!empty($download_number_limit) && count($orders)) {
+				$db->setQuery('SELECT * FROM #__hikashop_download WHERE order_id IN ('.implode(',', array_keys($orders)).') AND file_id = '.(int)$file->file_id);
+				$downloads = $db->loadObjectList('order_id');
+			}
+
+			foreach($files[$k]->orders as $order) {
+				if(!empty($download_time_limit) && ($download_time_limit + (!empty($order->order_invoice_created) ? $order->order_invoice_created : $order->order_created)) < time()) {
+					continue;
+				}
+				if(!empty($download_number_limit) && $download_number_limit <= (int)@$downloads[$order->order_id]->download_number) {
+					continue;
+				}
+				$file_pos = '';
+				if(!empty($file->file_pos)) {
+					$file_pos = '&file_pos='.$file->file_pos;
+				}
+				$files[$k]->download_link = hikashop_completeLink('order&task=download&file_id='.$file->file_id.'&order_id='.$order->order_id.$file_pos.$url_itemid);
+				break;
+			}
+		}
+	}
+
+
+	public function loadProductOptions(&$element, $options = array()) {
+		if(!hikashop_level(1))
+			return false;
+
+		$user_id = 0;
+		if(!empty($options['user_id'])){
+			$user_id = (int)$options['user_id'];
+		}
+
+		$product_id = $element->product_id;
+
+		$database = JFactory::getDBO();
+		$filters = array(
+			'pr.product_id = ' . $product_id,
+			'pr.product_related_type = ' . $database->Quote('options'),
+			'p.product_published = 1',
+			'(p.product_sale_start = \'\' OR p.product_sale_start <= '.time().')',
+			'(p.product_sale_end = \'\' OR p.product_sale_end > '.time().')'
+		);
+		hikashop_addACLFilters($filters, 'product_access', 'p');
+		$query = 'SELECT p.* '.
+			' FROM '.hikashop_table('product_related').' AS pr '.
+			' LEFT JOIN '.hikashop_table('product').' AS p ON pr.product_related_id = p.product_id '.
+			' WHERE ('.implode(') AND (', $filters).') '.
+			' ORDER BY pr.product_related_ordering ASC, pr.product_related_id ASC';
+		$database->setQuery($query);
+		$options = $database->loadObjectList('product_id');
+
+		if(!empty($options) && count($options)) {
+
+			foreach($options as $k => $optionElement) {
+				if(!empty($optionElement->product_name))
+					$options[$k]->product_name = hikashop_translate($optionElement->product_name);
+				if(!empty($optionElement->product_description))
+					$options[$k]->product_description = hikashop_translate($optionElement->product_description);
+			}
+
+			$ids = array_keys($options);
+			$filters = array(
+				'product_parent_id IN ('.implode(',',$ids).')',
+				'product_published = 1'
+			);
+			hikashop_addACLFilters($filters,'product_access');
+			$query = 'SELECT * FROM '.hikashop_table('product').' WHERE ('.implode(') AND (', $filters).')';
+			$database->setQuery($query);
+			$variants = $database->loadObjectList();
+			if(!empty($variants)) {
+				foreach($variants as $key => $variant) {
+					$ids[] = (int)$variant->product_id;
+
+					if(!empty($variant->product_name))
+						$variants[$key]->product_name = hikashop_translate($variant->product_name);
+					if(!empty($variant->product_description))
+						$variants[$key]->product_description = hikashop_translate($variant->product_description);
+
+					if(!empty($options)) {
+						foreach($options as $k => $optionElement) {
+							if($variant->product_parent_id == $optionElement->product_id) {
+								$options[$k]->variants[$variant->product_id] = $variant;
+								break;
+							}
+						}
+					}
+				}
+			}
+			$config = hikashop_config();
+			$sort = $config->get('characteristics_values_sorting');
+			if($sort == 'old') {
+				$order = 'characteristic_id ASC';
+			} elseif($sort == 'alias') {
+				$order = 'characteristic_alias ASC';
+			} elseif($sort == 'ordering') {
+				$order = 'characteristic_ordering ASC';
+			} else {
+				$order = 'characteristic_value ASC';
+			}
+
+			$query = 'SELECT v.*, c.* '.
+				' FROM '.hikashop_table('variant').' AS v '.
+				' INNER JOIN '.hikashop_table('characteristic').' AS c ON v.variant_characteristic_id = c.characteristic_id '.
+				' WHERE v.variant_product_id IN ('.implode(',', $ids).') '.
+				' ORDER BY v.ordering ASC, c.'.$order;
+			$database->setQuery($query);
+			$characteristics = $database->loadObjectList();
+
+			if(!empty($characteristics)) {
+				$mainCharacteristics = array();
+				foreach($characteristics as $characteristic) {
+					if(!empty($options)) {
+						foreach($options as $k => $optionElement) {
+							if($optionElement->product_id == $characteristic->variant_product_id) {
+								$mainCharacteristics[$optionElement->product_id][$characteristic->characteristic_parent_id][$characteristic->characteristic_id] = $characteristic;
+							}
+						}
+					}
+				}
+
+				JPluginHelper::importPlugin('hikashop');
+				$app = JFactory::getApplication();
+				$app->triggerEvent('onAfterProductCharacteristicsLoad', array( &$element, &$mainCharacteristics, &$characteristics ));
+
+				foreach($options as $k => $optionElement) {
+					if(empty($optionElement->variants))
+						continue;
+
+					$this->addCharacteristics($options[$k], $mainCharacteristics, $characteristics);
+					if(count(@$mainCharacteristics[$optionElement->product_id][0]) > 0)
+						$this->orderVariants($options[$k]);
+				}
+			}
+			$element->options =& $options;
+
+			$currencyClass = hikashop_get('class.currency');
+			$currencyClass->getProductPrices($element, $ids, array('user_id' => $user_id));
+
+			foreach($options as $k => $optionElement) {
+				$this->checkVariants($options[$k]);
+				$this->setDefault($options[$k]);
+			}
+		}
+
+		return $options;
+	}
+
+	public function getAllValuesMatches($characteristics, $variants) {
+		$allMatches = array();
+		$length = count($characteristics);
+		if($length == 1)
+			return false;
+
+		foreach($variants as $k => $variant) {
+			if(!$variant->product_published || $variant->product_quantity == 0) {
+				continue;
+			}
+			$chars = array();
+			foreach($variant->characteristics as $variantCharacteristic) {
+				$chars[] = $variantCharacteristic->characteristic_id;
+			}
+			$allMatches[] = $chars;
+		}
+		return $allMatches;
+
+	}
+
+	public function addCharacteristics(&$element,&$mainCharacteristics,&$characteristics, $options=array()) {
+		$element->characteristics = @$mainCharacteristics[$element->product_id][0];
+		if(!empty($element->characteristics) && is_array($element->characteristics)) {
+			foreach($element->characteristics as $k => $characteristic) {
+				if(!empty($mainCharacteristics[$element->product_id][$k])) {
+					$element->characteristics[$k]->default = end($mainCharacteristics[$element->product_id][$k]);
+				} else {
+					$app = JFactory::getApplication();
+					$app->enqueueMessage('The default value of one of the characteristics of that product isn\'t available as a variant. Please check the characteristics and variants of that product');
+				}
+			}
+		}
+
+		if(empty($element->variants))
+			return;
+
+		$selected_variant_id = 0;
+		if(!empty($options['selected_variant_id']))
+			$selected_variant_id = $options['selected_variant_id'];
+
+		foreach($characteristics as $characteristic) {
+			foreach($element->variants as $k => $variant) {
+				if($variant->product_id != $characteristic->variant_product_id)
+					continue;
+
+				$element->variants[$k]->characteristics[$characteristic->characteristic_parent_id] = $characteristic;
+				$element->characteristics[$characteristic->characteristic_parent_id]->values[$characteristic->characteristic_id] = $characteristic;
+				if($selected_variant_id && $variant->product_id==$selected_variant_id)
+					$element->characteristics[$characteristic->characteristic_parent_id]->default = $characteristic;
+			}
+		}
+
+		if(isset($_REQUEST['hikashop_product_characteristic'])) {
+			if(is_array($_REQUEST['hikashop_product_characteristic'])) {
+				hikashop_toInteger($_REQUEST['hikashop_product_characteristic']);
+				$chars = $_REQUEST['hikashop_product_characteristic'];
+			} else {
+				$chars = hikaInput::get()->getCmd('hikashop_product_characteristic','');
+				$chars = explode('_',$chars);
+			}
+			if(!empty($chars)) {
+				foreach($element->variants as $k => $variant) {
+					$chars = array();
+					foreach($variant->characteristics as $val) {
+						$i = 0;
+						$ordering = @$element->characteristics[$val->characteristic_parent_id]->ordering;
+						while(isset($chars[$ordering])&& $i < 30) {
+							$i++;
+							$ordering++;
+						}
+						$chars[$ordering] = $val;
+					}
+					ksort($chars);
+					$element->variants[$k]->characteristics=$chars;
+					$variant->characteristics=$chars;
+
+					$choosed = true;
+					foreach($variant->characteristics as $characteristic) {
+						$ok = false;
+						foreach($chars as $k => $char) {
+							if(!empty($char)) {
+								if($characteristic->characteristic_id == $char) {
+									$ok = true;
+									break;
+								}
+							}
+						}
+						if(!$ok){
+							$choosed=false;
+						}else{
+							$element->characteristics[$characteristic->characteristic_parent_id]->default = $characteristic;
+						}
+					}
+					if($choosed)
+						break;
+				}
+			}
+		}
+		foreach($element->variants as $k => $variant) {
+			$temp = array();
+			if(!empty($element->characteristics)) {
+				foreach($element->characteristics as $k2 => $characteristic2) {
+					if(!empty($variant->characteristics)) {
+						foreach($variant->characteristics as $k3 => $characteristic3) {
+							if($k2 == $k3) {
+								$temp[$k3] = $characteristic3;
+								break;
+							}
+						}
+					}
+				}
+			}
+			$element->variants[$k]->characteristics = $temp;
+		}
+	}
+
+	public function setDefault(&$element) {
+		if(empty($element->characteristics) || empty($element->variants))
+			return;
+
+		$match = false;
+		if(!isset($element->main) || is_null($element->main))
+			$element->main = new stdClass();
+
+
+		foreach($element->variants as $k => $variant) {
+			$default = true;
+			foreach($element->characteristics as $characteristic) {
+				$found = false;
+				foreach($variant->characteristics as $k => $characteristic2) {
+					if(!empty($characteristic->default->characteristic_id) && $characteristic2->characteristic_id == $characteristic->default->characteristic_id) {
+						$found = true;
+						break;
+					}
+				}
+				if(!$found) {
+					$default = false;
+					break;
+				}
+			}
+			if($default) {
+				foreach(get_object_vars($variant) as $field => $value) {
+					if(isset($element->$field))
+						$element->main->$field = $element->$field;
+					else
+						$element->main->$field = '';
+					if(!in_array($field, array('product_keywords','product_meta_description','product_page_title','product_canonical','product_alias','product_url')))
+						$element->$field = $value;
+				}
+				$match = true;
+				break;
+			}
+		}
+		if(!$match) {
+			$variant = reset($element->variants);
+			foreach(get_object_vars($variant) as $field => $value) {
+				$element->main->$field = @$element->$field;
+				$element->$field = $value;
+			}
+		}
+	}
+
+	public function orderVariants(&$element){
+		if(empty($element->variants))
+			return;
+
+		$optionsVariants = array();
+		$config =& hikashop_config();
+		$sort = $config->get('characteristics_values_sorting');
+		if($sort == 'old') {
+			$order = 'characteristic_id';
+		}elseif($sort == 'alias') {
+			$order = 'characteristic_alias';
+		}elseif($sort == 'ordering') {
+			$order = 'characteristic_ordering';
+		}else{
+			$order = 'characteristic_value';
+		}
+		foreach($element->variants as $k2 => $variant) {
+			$key = '';
+			if($sort == 'price'){
+				$key .= sprintf('%020.5f', $variant->product_sort_price);
+			} else {
+				foreach($variant->characteristics as $char) {
+					if(in_array($sort,array('old','ordering'))) {
+						$key .= sprintf('%04d', $char->$order).'+';
+					} else {
+						$key .= $char->$order.'+';
+					}
+				}
+			}
+			$key .= $variant->product_id;
+			$optionsVariants[$key] = &$element->variants[$k2];
+		}
+		ksort($optionsVariants);
+		$element->variants = $optionsVariants;
+	}
+
+	public function checkVariants(&$element) {
+		if(empty($element->characteristics))
+			return;
+
+		$mapping = array();
+		foreach($element->characteristics as $characteristic) {
+			$tempmapping = array();
+			if(!empty($characteristic->values) && !empty($characteristic->characteristic_id)) {
+				foreach($characteristic->values as $k => $value) {
+					if(empty($mapping)) {
+						$tempmapping[] = array($characteristic->characteristic_id => $k);
+					} else {
+						foreach($mapping as $val) {
+							$val[$characteristic->characteristic_id] = $k;
+							$tempmapping[] = $val;
+						}
+					}
+				}
+			}
+			$mapping = $tempmapping;
+		}
+
+		if(empty($element->variants))
+			$element->variants = array();
+
+		foreach($mapping as $map) {
+			$found = false;
+			foreach($element->variants as $k2 => $variant) {
+				$ok = true;
+				foreach($map as $k => $id) {
+					if(empty($variant->characteristics[$k]->characteristic_id) || $variant->characteristics[$k]->characteristic_id != $id) {
+						$ok = false;
+						break;
+					}
+				}
+				if($ok) {
+					$found = true;
+					$this->checkVariant($element->variants[$k2], $element, $map);
+					break;
+				}
+			}
+
+			if(!$found) {
+				$new = new stdClass;
+				$new->product_published = 0;
+				$new->product_quantity = 0;
+				$this->checkVariant($new, $element, $map, true);
+				$element->variants[$new->map] = $new;
+			}
+		}
+	}
+
 	public function loadProductsListingData(&$rows, $options = array()){
 
 		if(empty($rows))
@@ -1745,8 +2249,11 @@ class hikashopProductClass extends hikashopClass{
 						}
 					}
 				}
-				if(!isset($rows[$k]->file_name)) {
+				if(empty($rows[$k]->file_name)) {
 					$rows[$k]->file_name = $rows[$k]->product_name;
+				}
+				if(empty($rows[$k]->file_description)) {
+					$rows[$k]->file_description = $rows[$k]->product_name;
 				}
 			}
 		}
@@ -1801,6 +2308,7 @@ class hikashopProductClass extends hikashopClass{
 
 			$categories = array();
 			foreach($product_categories as $product_category) {
+				$product_category->category_name = hikashop_translate($product_category->category_name);
 				if(empty($categories[$product_category->category_id])) {
 					$categories[$product_category->category_id] = array(
 						'category' => $product_category,
@@ -1903,7 +2411,7 @@ class hikashopProductClass extends hikashopClass{
 		}
 	}
 
-	function save(&$element, $stats = false) {
+	function fullSave(&$element, $stats = false) {
 		if(!$stats)
 			$element->product_modified = time();
 
@@ -1991,6 +2499,71 @@ class hikashopProductClass extends hikashopClass{
 		$this->get('reset_cache');
 		$element->product_id = $status;
 
+		$type = 'product';
+		if($element->product_type == 'variant')
+			$type = 'variant';
+
+		if($type == 'product') {
+			if(hikashop_acl($type.'/edit/category') || $new)
+				$this->updateCategories($element, $status);
+		}
+		if(hikashop_acl($type.'/edit/price'))
+			$this->updatePrices($element, $status);
+		if(hikashop_acl($type.'/edit/files'))
+			$this->updateFiles($element, $status, 'files', $element->filesorder);
+		if(hikashop_acl($type.'/edit/images'))
+			$this->updateFiles($element, $status, 'images', $element->imagesorder);
+		if($type == 'product') {
+			if(hikashop_acl($type.'/edit/related'))
+				$this->updateRelated($element, $status, 'related');
+			if(hikashop_acl($type.'/edit/options'))
+				$this->updateRelated($element, $status, 'options');
+			if(hikashop_acl($type.'/edit/bundle') && hikashop_level(1))
+				$this->updateRelated($element, $status, 'bundle');
+			if(hikashop_acl($type.'/edit/characteristics') && !empty($element->characteristics)) {
+				if($new) {
+					$element->product_type = 'main';
+					$this->updateCharacteristics($element, $status, 0);
+				} else {
+					$query = 'UPDATE '. hikashop_table('variant') . ' SET ordering = CASE variant_characteristic_id';
+					foreach($element->characteristics as $key => $val) {
+						$query .= ' WHEN ' . (int)$val . ' THEN ' . ($key + 1);
+					}
+					$query .= ' ELSE ordering END WHERE variant_characteristic_id IN ('.implode(',', $element->characteristics).') AND variant_product_id = '.(int)$status;
+					$this->db->setQuery($query);
+					$this->db->execute();
+
+					if(!empty($element->product_code) && !empty($element->old->product_code) && $element->product_code != $element->old->product_code) {
+						if(HIKASHOP_J30)
+							$product_code = "'" . $this->db->escape($element->old->product_code, true) . "%'";
+						else
+							$product_code = "'" . $this->db->getEscaped($element->old->product_code, true) . "%'";
+
+						$query = 'UPDATE '.hikashop_table('product').
+								' SET `product_code` = REPLACE(`product_code`,' . $this->db->Quote($element->old->product_code) . ',' . $this->db->Quote($element->product_code) . ')'.
+								' WHERE `product_code` LIKE '.$product_code.' AND product_parent_id = '.(int)$element->product_id.' AND product_type = '.$this->db->Quote('variant');
+						$this->db->setQuery($query);
+						$this->db->execute();
+					}
+				}
+			}
+		} else {
+			if(hikashop_acl('product/variant/characteristics'))
+				$this->updateCharacteristics($element, $status);
+		}
+
+		$translationHelper = hikashop_get('helper.translation');
+		if($translationHelper->isMulti()) {
+			$fieldsClass = hikashop_get('class.field');
+			$columns = array('product_name', 'product_description', 'product_page_title', 'product_url', 'product_meta_description', 'product_keywords', 'product_alias', 'product_canonical');
+			$fields = $fieldsClass->getFields('backend', $element, 'product', 'field&task=state');
+			foreach($fields as $key => $field) {
+				if(@$field->field_options['translatable'] == 1)
+					$columns[] = $key;
+			}
+			$translationHelper->checkTranslations($element, $columns);
+		}
+
 		if($new)
 			$app->triggerEvent( 'onAfterProductCreate', array( & $element ) );
 		else
@@ -2007,6 +2580,45 @@ class hikashopProductClass extends hikashopClass{
 			}
 			$tagsHelper->saveUCM('product', $fullElement, $tags);
 		}
+
+		return $status;
+	}
+
+	function save(&$element, $stats = false) {
+		if(!$stats)
+			$element->product_modified = time();
+
+		$new = false;
+		if(empty($element->product_id)) {
+			$element->product_created = @$element->product_modified;
+			$new = true;
+		} else {
+			$element->old = $this->get($element->product_id);
+		}
+
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$do = true;
+
+		if($new)
+			$app->triggerEvent('onBeforeProductCreate', array( & $element, & $do) );
+		else
+			$app->triggerEvent('onBeforeProductUpdate', array( & $element, & $do) );
+
+		if(!$do)
+			return false;
+		$status = parent::save($element);
+
+		if(!$status)
+			return $status;
+
+		$this->get('reset_cache');
+		$element->product_id = $status;
+
+		if($new)
+			$app->triggerEvent( 'onAfterProductCreate', array( & $element ) );
+		else
+			$app->triggerEvent( 'onAfterProductUpdate', array( & $element ) );
 
 		return $status;
 	}
@@ -3084,10 +3696,17 @@ class hikashopProductClass extends hikashopClass{
 			if($file->file_ref_id != $element->product_id)
 				continue;
 
-			if($file->file_type == 'file')
+			if($file->file_type == 'file') {
 				$element->files[] = $file;
-			else
+			} else {
+				if(empty($file->file_name)) {
+					$file->file_name = $element->product_name;
+				}
+				if(empty($file->file_description)) {
+					$file->file_description = $element->product_name;
+				}
 				$element->images[] = $file;
+			}
 
 		}
 	}
@@ -3198,7 +3817,7 @@ class hikashopProductClass extends hikashopClass{
 				$variant->characteristics_text = $variant->variant_name;
 			$variant->product_name = $variant->main_product_name.'<span class="hikashop_product_variant_subname">'.$separator.$variant->characteristics_text.'</span>';
 		}
-		if(!$variant->product_published)
+		if(empty($variant->product_published))
 			$variant->product_quantity = 0;
 		$variant->variant_checked = true;
 
@@ -3302,6 +3921,7 @@ class hikashopProductClass extends hikashopClass{
 
 		if($load_variants) {
 			$typeConfig['options']['tree_url'] .= '&variants='.$load_variants;
+			$typeConfig['url'] .= '&variants='.$load_variants;
 		}
 
 		if($depth <= 0)

@@ -29,9 +29,9 @@ class Html extends BaseView
 
 	protected function onBeforeBrowse()
 	{
-		$model         = $this->getModel();
-		$lastTable     = $model->getState('lasttable', '');
-		$percent       = $model->getState('percent', '');
+		$model     = $this->getModel();
+		$lastTable = $model->getState('lasttable', '');
+		$percent   = $model->getState('percent', '');
 
 		$this->table   = $lastTable;
 		$this->percent = $percent;

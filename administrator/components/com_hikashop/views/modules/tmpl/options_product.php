@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -195,17 +195,6 @@ defined('_JEXEC') or die('Restricted access');
 					<?php
 					if(!isset($this->element['display_custom_item_fields'])) $this->element['display_custom_item_fields'] = '-1';
 					echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[display_custom_item_fields]', @$this->element['display_custom_item_fields']);
-					?>
-				</dd>
-			</dl>
-			<dl class="hika_options">
-				<dt class="hikashop_option_name">
-					<?php echo JText::_('FILTERS');?>
-				</dt>
-				<dd class="hikashop_option_value">
-					<?php
-					if(!isset($this->element['display_filters'])) $this->element['display_filters'] = '-1';
-					echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[display_filters]', @$this->element['display_filters']);
 					?>
 				</dd>
 			</dl>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -240,6 +240,7 @@ class hikashopStatisticsClass extends hikashopClass {
 			'tile' => array(
 				'mode' => 'small',
 				'image' => 'product',
+				'translate' => true,
 			),
 			'vars' => array(
 				'DATE_RANGE' => 'this.month',
@@ -264,6 +265,7 @@ class hikashopStatisticsClass extends hikashopClass {
 						'hk_order.order_invoice_created >= {DATE_START} AND ({DATE_END} <= 0 OR hk_order.order_invoice_created <= {DATE_END})'),
 				),
 				'order' => 'value DESC',
+				'group' => 'hk_product.product_id',
 				'limit' => 1
 			)
 		);
@@ -278,6 +280,7 @@ class hikashopStatisticsClass extends hikashopClass {
 			'tile' => array(
 				'mode' => 'small',
 				'image' => 'category',
+				'translate' => true,
 			),
 			'vars' => array(
 				'DATE_RANGE' => 'this.month',
@@ -304,6 +307,7 @@ class hikashopStatisticsClass extends hikashopClass {
 						'hk_order.order_invoice_created >= {DATE_START} AND ({DATE_END} <= 0 OR hk_order.order_invoice_created <= {DATE_END})'),
 				),
 				'order' => 'value DESC',
+				'group' => 'hk_category.category_id',
 				'limit' => 1
 			)
 		);
@@ -347,6 +351,7 @@ class hikashopStatisticsClass extends hikashopClass {
 						'hk_order.order_invoice_created >= {DATE_START} AND ({DATE_END} <= 0 OR hk_order.order_invoice_created <= {DATE_END})'),
 				),
 				'order' => 'value DESC',
+				'group' => 'hk_order.order_user_id',
 				'limit' => 1
 			)
 		);
@@ -723,7 +728,7 @@ class hikashopStatisticsClass extends hikashopClass {
 						$dateformat_value = '%Y-%m';
 						break;
 					case 'week':
-						$dateformat_value = '%Y-%m (%u)';
+						$dateformat_value = '%Y %u';
 						break;
 					case 'day':
 					default:
@@ -1074,6 +1079,9 @@ jQuery(window).on("resize", function(){
 				unset($tmp);
 			}
 
+			if(!empty($data['tile']['translate']))
+				$value->name = hikashop_translate($value->name);
+
 			return '
 <div class="cpanel-smalltile-block">
 	<div class="cpanel-tile-background">'.$background.'</div>
@@ -1104,8 +1112,14 @@ jQuery(window).on("resize", function(){
 					$l = $data['tile']['view']['link'];
 				if(!empty($data['tile']['view']['process']) && !empty($data['tile']['view']['value'])) {
 					$l = $data['tile']['view']['value'];
-					foreach($value as $k => $v) {
-						$l = str_replace('{'.strtoupper($k).'}', $v, $l);
+					$array = $value;
+					if(is_object($value)) {
+						$array = get_object_vars($value);
+					}
+					if(is_array($array)){
+						foreach($array as $k => $v) {
+							$l = str_replace('{'.strtoupper($k).'}', $v, $l);
+						}
 					}
 					$l = hikashop_completeLink($l);
 				}
@@ -1293,7 +1307,7 @@ window.localPage.chartsInit[window.localPage.chartsInit.length] = function() {
 						$inc = 864000;
 						break;
 					case 'week':
-						$format = 'Y-m (W)';
+						$format = 'Y W';
 						$inc = 604800;
 						break;
 				}

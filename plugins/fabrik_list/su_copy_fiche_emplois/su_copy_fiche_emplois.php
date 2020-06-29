@@ -28,7 +28,7 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 	 * Button prefix
 	 *
 	 * @var string
-	 */
+	 */ 
 	protected $buttonPrefix = 'copy';
 
 	/**
@@ -147,10 +147,15 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 
 				$db->setQuery($query);
 				$res = $db->execute();
-			}
-		} else
-			$res = false;
 
+				if(count($ids) == 1) {
+					$url = JUri::base().'fiches-emplois/mes-fiches/form/124/'.$id;
+					JFactory::getApplication()->redirect($url, JText::sprintf('PLG_LIST_ROW_COPIED', count($ids)), 'INFO');
+				}
+			}
+		} else {
+			$res = false;
+		}
 		return $res;
 	}
 
@@ -165,7 +170,11 @@ class PlgFabrik_ListSu_copy_fiche_emplois extends PlgFabrik_List
 	public function process_result($c)
 	{
 		$ids = JRequest::getVar('ids', array(), 'method', 'array');
-		return JText::sprintf('PLG_LIST_ROWS_COPIED', count($ids));
+		$link = '';
+		//if(count($ids) == 1) {
+		//	$link = ' <a class="btn fabrik_view fabrik__rowlink btn-default" href="fiches-emplois/mes-fiches/form/124/'.array_key_first($ids).'" target="_blank">modifier</a>';
+		//}
+		return JText::sprintf('PLG_LIST_ROWS_COPIED', count($ids)).$link;
 	}
 
 

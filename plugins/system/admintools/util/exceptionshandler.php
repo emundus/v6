@@ -11,10 +11,15 @@ use Akeeba\AdminTools\Admin\Helper\Storage;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Utils\TimezoneWrangler;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\User;
+use Joomla\Registry\Registry;
 
 class AtsystemUtilExceptionshandler
 {
-	/** @var   JRegistry  Plugin parameters */
+	/** @var   Registry  Plugin parameters */
 	protected $params = null;
 
 	/** @var   Storage  Component parameters */
@@ -23,7 +28,7 @@ class AtsystemUtilExceptionshandler
 	/** @var   Container  The component's container */
 	protected $container;
 
-	public function __construct(JRegistry &$params, Storage &$cparams)
+	public function __construct(Registry &$params, Storage &$cparams)
 	{
 		$this->params    = $params;
 		$this->cparams   = $cparams;
@@ -33,9 +38,10 @@ class AtsystemUtilExceptionshandler
 	/**
 	 * Logs security exceptions and processes the IP auto-ban for this IP
 	 *
-	 * @param string $reason                   Block reason code
-	 * @param string $extraLogInformation      Extra information to be written to the text log file
-	 * @param string $extraLogTableInformation Extra information to be written to the extradata field of the log table (useful for JSON format)
+	 * @param   string  $reason                    Block reason code
+	 * @param   string  $extraLogInformation       Extra information to be written to the text log file
+	 * @param   string  $extraLogTableInformation  Extra information to be written to the extradata field of the log
+	 *                                             table (useful for JSON format)
 	 *
 	 * @return bool
 	 */
@@ -57,10 +63,11 @@ class AtsystemUtilExceptionshandler
 	 * Blocks the request in progress and, optionally, logs the details of the
 	 * blocked request for the admin to review later
 	 *
-	 * @param string $reason                   Block reason code
-	 * @param string $message                  The message to be shown to the user
-	 * @param string $extraLogInformation      Extra information to be written to the text log file
-	 * @param string $extraLogTableInformation Extra information to be written to the extradata field of the log table (useful for JSON format)
+	 * @param   string  $reason                    Block reason code
+	 * @param   string  $message                   The message to be shown to the user
+	 * @param   string  $extraLogInformation       Extra information to be written to the text log file
+	 * @param   string  $extraLogTableInformation  Extra information to be written to the extradata field of the log
+	 *                                             table (useful for JSON format)
 	 *
 	 * @throws Exception
 	 */
@@ -98,19 +105,19 @@ class AtsystemUtilExceptionshandler
 		}
 
 		// Merge the default translation with the current translation
-		$jlang = JFactory::getLanguage();
+		$jlang = Factory::getLanguage();
 		// Front-end translation
 		$jlang->load('plg_system_admintools', JPATH_ADMINISTRATOR, 'en-GB', true);
 		$jlang->load('plg_system_admintools', JPATH_ADMINISTRATOR, $jlang->getDefault(), true);
 		$jlang->load('plg_system_admintools', JPATH_ADMINISTRATOR, null, true);
 
-		if ((JText::_('ADMINTOOLS_BLOCKED_MESSAGE') == 'ADMINTOOLS_BLOCKED_MESSAGE') && ($message == 'ADMINTOOLS_BLOCKED_MESSAGE'))
+		if ((Text::_('ADMINTOOLS_BLOCKED_MESSAGE') == 'ADMINTOOLS_BLOCKED_MESSAGE') && ($message == 'ADMINTOOLS_BLOCKED_MESSAGE'))
 		{
 			$message = "Access Denied";
 		}
 		else
 		{
-			$message = JText::_($message);
+			$message = Text::_($message);
 		}
 
 		$message = AtsystemUtilRescueurl::processBlockMessage($message);
@@ -131,16 +138,16 @@ class AtsystemUtilExceptionshandler
 
 				if (!$this->container->platform->isCli())
 				{
-					JFactory::getSession()->close();
+					Factory::getSession()->close();
 				}
 
-				$this->container->platform->redirect(JUri::base());
+				$this->container->platform->redirect(Uri::base());
 			}
 		}
 		else
 		{
 			// Using Joomla!'s error page
-			JFactory::getApplication()->input->set('template', null);
+			Factory::getApplication()->input->set('template', null);
 
 			throw new Exception($message, 403);
 		}
@@ -149,9 +156,10 @@ class AtsystemUtilExceptionshandler
 	/**
 	 * Logs security exceptions
 	 *
-	 * @param string $reason                   Block reason code
-	 * @param string $extraLogInformation      Extra information to be written to the text log file
-	 * @param string $extraLogTableInformation Extra information to be written to the extradata field of the log table (useful for JSON format)
+	 * @param   string  $reason                    Block reason code
+	 * @param   string  $extraLogInformation       Extra information to be written to the text log file
+	 * @param   string  $extraLogTableInformation  Extra information to be written to the extradata field of the log
+	 *                                             table (useful for JSON format)
 	 *
 	 * @return bool
 	 */
@@ -205,7 +213,7 @@ class AtsystemUtilExceptionshandler
 	 * Checks if an IP address should be automatically banned for raising too many security exceptions over a predefined
 	 * time period.
 	 *
-	 * @param   string $reason The reason of the ban
+	 * @param   string  $reason  The reason of the ban
 	 *
 	 * @return  void
 	 */
@@ -227,10 +235,10 @@ class AtsystemUtilExceptionshandler
 		}
 
 		// Check for repeat offenses
-		$db = $this->container->db;
-		$strikes = $this->cparams->getValue('tsrstrikes', 3);
-		$numfreq = $this->cparams->getValue('tsrnumfreq', 1);
-		$frequency = $this->cparams->getValue('tsrfrequency', 'hour');
+		$db           = $this->container->db;
+		$strikes      = $this->cparams->getValue('tsrstrikes', 3);
+		$numfreq      = $this->cparams->getValue('tsrnumfreq', 1);
+		$frequency    = $this->cparams->getValue('tsrfrequency', 'hour');
 		$mindatestamp = 0;
 
 		switch ($frequency)
@@ -255,7 +263,6 @@ class AtsystemUtilExceptionshandler
 				break;
 		}
 
-		JLoader::import('joomla.utilities.date');
 		$jNow = new Date();
 
 		if ($mindatestamp == 0)
@@ -264,7 +271,7 @@ class AtsystemUtilExceptionshandler
 		}
 
 		$jMinDate = new Date($mindatestamp);
-		$minDate = $jMinDate->toSql();
+		$minDate  = $jMinDate->toSql();
 
 		$sql = $db->getQuery(true)
 			->select('COUNT(*)')
@@ -308,17 +315,17 @@ class AtsystemUtilExceptionshandler
 
 			case 'minute':
 				$numfreq *= 60;
-				$until += $numfreq;
+				$until   += $numfreq;
 				break;
 
 			case 'hour':
 				$numfreq *= 3600;
-				$until += $numfreq;
+				$until   += $numfreq;
 				break;
 
 			case 'day':
 				$numfreq *= 86400;
-				$until += $numfreq;
+				$until   += $numfreq;
 				break;
 
 			case 'ever':
@@ -326,16 +333,14 @@ class AtsystemUtilExceptionshandler
 				break;
 		}
 
-		JLoader::import('joomla.utilities.date');
-
 		$jMinDate = new Date($until);
-		$minDate = $jMinDate->toSql();
+		$minDate  = $jMinDate->toSql();
 
-		$record = (object)array(
+		$record = (object) [
 			'ip'     => $myIP,
 			'reason' => $reason,
-			'until'  => $minDate
-		);
+			'until'  => $minDate,
+		];
 
 		// If I'm here it means that we have to ban the user. Let's see if this is a simple autoban or
 		// we have to issue a permaban as a result of several attacks
@@ -356,14 +361,14 @@ class AtsystemUtilExceptionshandler
 				$bans = 0;
 			}
 
-			$limit = (int)$this->cparams->getValue('permabannum', 0);
+			$limit = (int) $this->cparams->getValue('permabannum', 0);
 
 			if ($limit && ($bans >= $limit))
 			{
-				$block = (object)array(
+				$block = (object) [
 					'ip'          => $myIP,
-					'description' => 'IP automatically blocked after being banned automatically ' . $bans . ' times'
-				);
+					'description' => 'IP automatically blocked after being banned automatically ' . $bans . ' times',
+				];
 
 				try
 				{
@@ -390,7 +395,7 @@ class AtsystemUtilExceptionshandler
 		if ($this->cparams->getValue('emailafteripautoban', ''))
 		{
 			// Load the component's administrator translation files
-			$jlang = JFactory::getLanguage();
+			$jlang = Factory::getLanguage();
 			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, 'en-GB', true);
 			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, $jlang->getDefault(), true);
 			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, null, true);
@@ -398,12 +403,12 @@ class AtsystemUtilExceptionshandler
 			// Get the site name
 			$config = $this->container->platform->getConfig();
 
-			$substitutions = $this->getEmailVariables(JText::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_IPAUTOBAN'), [
-				'[UNTIL]'     => $minDate
+			$substitutions = $this->getEmailVariables(Text::_('COM_ADMINTOOLS_WAFEMAILTEMPLATE_REASON_IPAUTOBAN'), [
+				'[UNTIL]' => $minDate,
 			]);
 
 			// Load the component's administrator translation files
-			$jlang = JFactory::getLanguage();
+			$jlang = Factory::getLanguage();
 			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, 'en-GB', true);
 			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, $jlang->getDefault(), true);
 			$jlang->load('com_admintools', JPATH_ADMINISTRATOR, null, true);
@@ -426,13 +431,13 @@ class AtsystemUtilExceptionshandler
 			foreach ($substitutions as $k => $v)
 			{
 				$subject = str_replace($k, $v, $subject);
-				$body = str_replace($k, $v, $body);
+				$body    = str_replace($k, $v, $body);
 			}
 
 			// Send the email
 			try
 			{
-				$mailer = JFactory::getMailer();
+				$mailer = Factory::getMailer();
 
 				$mailfrom = $config->get('mailfrom');
 				$fromname = $config->get('fromname');
@@ -451,7 +456,7 @@ class AtsystemUtilExceptionshandler
 					$mailer->Priority = 3;
 
 					$mailer->isHtml(true);
-					$mailer->setSender(array($mailfrom, $fromname));
+					$mailer->setSender([$mailfrom, $fromname]);
 
 					// Resets the recipients, otherwise they will pile up
 					$mailer->clearAllRecipients();
@@ -467,7 +472,7 @@ class AtsystemUtilExceptionshandler
 					$mailer->Send();
 				}
 			}
-			catch (\Exception $e)
+			catch (Exception $e)
 			{
 				// Joomla! 3.5 and later throw an exception when crap happens instead of suppressing it and returning false
 			}
@@ -485,10 +490,10 @@ class AtsystemUtilExceptionshandler
 	public function getEmailTemplate($reason, $exact = false)
 	{
 		// Let's get the subject and the body from email templates
-		$jlang = JFactory::getLanguage();
-		$db = $this->container->db;
-		$languages = array($db->q('*'), $db->q('en-GB'), $db->q($jlang->getDefault()));
-		$stack = array();
+		$jlang     = Factory::getLanguage();
+		$db        = $this->container->db;
+		$languages = [$db->q('*'), $db->q('en-GB'), $db->q($jlang->getDefault())];
+		$stack     = [];
 
 		$query = $db->getQuery(true)
 			->select('*')
@@ -508,7 +513,7 @@ class AtsystemUtilExceptionshandler
 		}
 		catch (Exception $e)
 		{
-			return array();
+			return [];
 		}
 
 		foreach ($templates as $template)
@@ -541,7 +546,7 @@ class AtsystemUtilExceptionshandler
 
 		if (!$best)
 		{
-			return array();
+			return [];
 		}
 
 		if ($this->cparams->getValue('email_throttle', 1))
@@ -574,7 +579,6 @@ class AtsystemUtilExceptionshandler
 					break;
 			}
 
-			JLoader::import('joomla.utilities.date');
 			$jNow = new Date();
 
 			if ($mindatestamp == 0)
@@ -583,7 +587,7 @@ class AtsystemUtilExceptionshandler
 			}
 
 			$jMinDate = new Date($mindatestamp);
-			$minDate = $jMinDate->toSql();
+			$minDate  = $jMinDate->toSql();
 
 			$sql = $db->getQuery(true)
 				->select('COUNT(*)')
@@ -602,12 +606,12 @@ class AtsystemUtilExceptionshandler
 
 			if ($numOffenses > $emails)
 			{
-				return array();
+				return [];
 			}
 		}
 
 		// Because SpamAssassin blacklists our domain when it misidentifies an email as spam.
-		$replaceThat = array(
+		$replaceThat = [
 			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
 			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
 			'https://www.akeebabackup.com',
@@ -616,7 +620,7 @@ class AtsystemUtilExceptionshandler
 			'https://akeebabackup.com',
 			'www.akeebabackup.com',
 			'akeebabackup.com',
-		);
+		];
 
 		foreach ($replaceThat as $find)
 		{
@@ -654,10 +658,107 @@ HTML;
 		}
 
 		// And now return the template
-		return array(
+		return [
 			$best->subject,
-			$best->template
-		);
+			$best->template,
+		];
+	}
+
+	public function getComponentParam($key, $default = null)
+	{
+		return $this->cparams->getValue($key, $default);
+	}
+
+	/**
+	 * Get the variables we can use in emails as an associative list (variable => value).
+	 *
+	 * @param   string  $reason           The value for the [REASON] variable
+	 * @param   array   $customVariables  An array of custom variables to add to the return.
+	 *
+	 * @return  array
+	 */
+	public function getEmailVariables($reason, $customVariables = [])
+	{
+		// Get our IP address
+		$ip = AtsystemUtilFilter::getIp();
+
+		if ((strpos($ip, '::') === 0) && (strstr($ip, '.') !== false))
+		{
+			$ip = substr($ip, strrpos($ip, ':') + 1);
+		}
+
+		// Get the site name
+		$config = $this->container->platform->getConfig();
+
+		$siteName = $config->get('sitename');
+
+		// Create a link to lookup the IP
+		$ipLookupURL = $this->cparams->getValue('iplookupscheme', 'http') . '://' . $this->cparams->getValue('iplookup', 'ip-lookup.net/index.php?ip={ip}');
+		$ipLookupURL = str_replace('{ip}', $ip, $ipLookupURL);
+
+		$uri = Uri::getInstance();
+		$url = $uri->toString(['scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment']);
+
+		$user = $this->container->platform->getUser();
+
+		if ($user->guest)
+		{
+			$username = 'Guest';
+		}
+		else
+		{
+			$username = $user->username . ' (' . $user->name . ' <' . $user->email . '>)';
+		}
+
+		$country   = '';
+		$continent = '';
+
+		if (empty($country))
+		{
+			$country = '(unknown country)';
+		}
+
+		if (empty($continent))
+		{
+			$continent = '(unknown continent)';
+		}
+
+		$tzWrangler     = new TimezoneWrangler($this->container);
+		$email_timezone = $this->container->params->get('email_timezone', 'AKEEBA/DEFAULT');
+
+		if (!empty($email_timezone) && ($email_timezone != 'AKEEBA/DEFAULT'))
+		{
+			try
+			{
+				$tzWrangler->setForcedTimezone($email_timezone);
+			}
+			catch (Exception $e)
+			{
+				// Just in case someone puts an invalid timezone in there (you can never be too paranoid).
+			}
+		}
+
+		$noUser = new User();
+
+		$ret = [
+			'[SITENAME]'  => $siteName,
+			'[REASON]'    => $reason,
+			'[DATE]'      => $tzWrangler->getLocalTimeStamp('Y-m-d H:i:s T', $noUser),
+			'[URL]'       => $url,
+			'[USER]'      => $username,
+			'[IP]'        => $ip,
+			'[LOOKUP]'    => '<a href="' . $ipLookupURL . '">IP Lookup</a>',
+			'[COUNTRY]'   => $country,
+			'[CONTINENT]' => $continent,
+			'[UA]'        => $_SERVER['HTTP_USER_AGENT'],
+		];
+
+		if (is_array($customVariables) && !empty($customVariables))
+		{
+			$ret = array_merge($ret, $customVariables);
+		}
+
+		return $ret;
 	}
 
 	/**
@@ -685,11 +786,11 @@ HTML;
 			return;
 		}
 
-		$privateNetwork = array(
+		$privateNetwork = [
 			'10.0.0.0-10.255.255.255',
 			'172.16.0.0-172.31.255.255',
-			'192.168.0.0-192.168.255.255'
-		);
+			'192.168.0.0-192.168.255.255',
+		];
 
 		if (!AtsystemUtilFilter::IPinList($privateNetwork))
 		{
@@ -709,105 +810,9 @@ HTML;
 		}
 	}
 
-	public function getComponentParam($key, $default = null)
-	{
-		return $this->cparams->getValue($key, $default);
-	}
-
 	/**
-	 * Get the variables we can use in emails as an associative list (variable => value).
-	 *
-	 * @param   string  $reason           The value for the [REASON] variable
-	 * @param   array   $customVariables  An array of custom variables to add to the return.
-	 *
-	 * @return  array
-	 */
-	public function getEmailVariables($reason, $customVariables = array())
-	{
-		// Get our IP address
-		$ip = AtsystemUtilFilter::getIp();
-
-		if ((strpos($ip, '::') === 0) && (strstr($ip, '.') !== false))
-		{
-			$ip = substr($ip, strrpos($ip, ':') + 1);
-		}
-
-		// Get the site name
-		$config = $this->container->platform->getConfig();
-
-		$siteName = $config->get('sitename');
-
-		// Create a link to lookup the IP
-		$ipLookupURL = $this->cparams->getValue('iplookupscheme', 'http') . '://' . $this->cparams->getValue('iplookup', 'ip-lookup.net/index.php?ip={ip}');
-		$ipLookupURL = str_replace('{ip}', $ip, $ipLookupURL);
-
-		$uri = JUri::getInstance();
-		$url = $uri->toString(['scheme', 'user', 'pass', 'host', 'port', 'path', 'query', 'fragment']);
-
-		$user = $this->container->platform->getUser();
-
-		if ($user->guest)
-		{
-			$username = 'Guest';
-		}
-		else
-		{
-			$username = $user->username . ' (' . $user->name . ' <' . $user->email . '>)';
-		}
-
-		$country   = '';
-		$continent = '';
-
-		if (empty($country))
-		{
-			$country = '(unknown country)';
-		}
-
-		if (empty($continent))
-		{
-			$continent = '(unknown continent)';
-		}
-
-		$tzWrangler = new TimezoneWrangler($this->container);
-		$email_timezone = $this->container->params->get('email_timezone', 'AKEEBA/DEFAULT');
-
-		if (!empty($email_timezone) && ($email_timezone != 'AKEEBA/DEFAULT'))
-		{
-			try
-			{
-				$tzWrangler->setForcedTimezone($email_timezone);
-			}
-			catch (Exception $e)
-			{
-				// Just in case someone puts an invalid timezone in there (you can never be too paranoid).
-			}
-		}
-
-		$noUser     = new JUser();
-
-		$ret = array(
-			'[SITENAME]'  => $siteName,
-			'[REASON]'    => $reason,
-			'[DATE]'      => $tzWrangler->getLocalTimeStamp('Y-m-d H:i:s T', $noUser),
-			'[URL]'       => $url,
-			'[USER]'      => $username,
-			'[IP]'        => $ip,
-			'[LOOKUP]'    => '<a href="' . $ipLookupURL . '">IP Lookup</a>',
-			'[COUNTRY]'   => $country,
-			'[CONTINENT]' => $continent,
-			'[UA]'        => $_SERVER['HTTP_USER_AGENT'],
-		);
-
-		if (is_array($customVariables) && !empty($customVariables))
-		{
-			$ret = array_merge($ret, $customVariables);
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * Get the visitor IP address. Return false if we cannot get an IP address or if we get 0.0.0.0 (broken IP forwarding).
+	 * Get the visitor IP address. Return false if we cannot get an IP address or if we get 0.0.0.0 (broken IP
+	 * forwarding).
 	 *
 	 * @return  bool|string
 	 */
@@ -866,9 +871,8 @@ HTML;
 		{
 			$db  = $this->container->db;
 			$sql = $db->getQuery(true)
-			          ->select($db->qn('ip'))
-			          ->from($db->qn('#__admintools_adminiplist'))
-			;
+				->select($db->qn('ip'))
+				->from($db->qn('#__admintools_adminiplist'));
 
 			$db->setQuery($sql);
 
@@ -942,13 +946,13 @@ HTML;
 	private function getBlockingReasonHumanReadable($reason, $extraLogTableInformation)
 	{
 		// Load the component's administrator translation files
-		$jlang = JFactory::getLanguage();
+		$jlang = Factory::getLanguage();
 		$jlang->load('com_admintools', JPATH_ADMINISTRATOR, 'en-GB', true);
 		$jlang->load('com_admintools', JPATH_ADMINISTRATOR, $jlang->getDefault(), true);
 		$jlang->load('com_admintools', JPATH_ADMINISTRATOR, null, true);
 
 		// Get the reason in human readable format
-		$txtReason = JText::_('COM_ADMINTOOLS_LBL_SECURITYEXCEPTION_REASON_' . strtoupper($reason));
+		$txtReason = Text::_('COM_ADMINTOOLS_LBL_SECURITYEXCEPTION_REASON_' . strtoupper($reason));
 
 		if (empty($extraLogTableInformation))
 		{
@@ -956,13 +960,14 @@ HTML;
 		}
 
 		// Get extra information
-		list($logReason,) = explode('|', $extraLogTableInformation);
+		[$logReason,] = explode('|', $extraLogTableInformation);
 
 		return $txtReason . " ($logReason)";
 	}
 
 	/**
-	 * Write a security exception to the log, as long as logging is enabled and the $reason is not one of the $reasons_nolog ones
+	 * Write a security exception to the log, as long as logging is enabled and the $reason is not one of the
+	 * $reasons_nolog ones
 	 *
 	 * @param   string  $reason
 	 * @param   string  $extraLogInformation
@@ -1006,9 +1011,9 @@ HTML;
 		}
 
 		// Get the log filename
-		$config = $this->container->platform->getConfig();
+		$config  = $this->container->platform->getConfig();
 		$logpath = $config->get('log_path');
-		$fname = $logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.php';
+		$fname   = $logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.php';
 
 		// -- Check the file size. If it's over 1Mb, archive and start a new log.
 		if (@file_exists($fname))
@@ -1104,22 +1109,22 @@ END;
 	{
 		try
 		{
-			$date     = new Date();
-			$db       = $this->container->db;
-			$url      = $tokens['[URL]'];
+			$date = new Date();
+			$db   = $this->container->db;
+			$url  = $tokens['[URL]'];
 
 			if (strlen($url) > 10240)
 			{
 				$url = substr($url, 0, 10240);
 			}
 
-			$logEntry = (object) array(
+			$logEntry = (object) [
 				'logdate'   => $date->toSql(),
 				'ip'        => $tokens['[IP]'],
 				'url'       => $url,
 				'reason'    => $reason,
 				'extradata' => $extraLogTableInformation,
-			);
+			];
 
 			$db->insertObject('#__admintools_log', $logEntry);
 		}
@@ -1154,7 +1159,7 @@ END;
 		// Send the email
 		try
 		{
-			$mailer = JFactory::getMailer();
+			$mailer = Factory::getMailer();
 
 			$mailfrom = $config->get('mailfrom');
 			$fromname = $config->get('fromname');
@@ -1191,7 +1196,7 @@ END;
 				$mailer->Priority = 3;
 
 				$mailer->isHtml(true);
-				$mailer->setSender(array($mailfrom, $fromname));
+				$mailer->setSender([$mailfrom, $fromname]);
 
 				// Resets the recipients, otherwise they will pile up
 				$mailer->clearAllRecipients();
@@ -1207,7 +1212,7 @@ END;
 				$mailer->Send();
 			}
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 		}
 

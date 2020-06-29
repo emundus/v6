@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -21,7 +21,6 @@ defined('_JEXEC') or die('Restricted access');
 		$row->vote_date = time();
 	}
 ?>
-<table class="admintable table"  width="100%">
 	<tr>
 		<td class="key">
 			<label for="data[vote][vote_ref_id]">
@@ -57,41 +56,7 @@ defined('_JEXEC') or die('Restricted access');
 		</td>
 	</tr>
 	<?php } ?>
-	<tr>
-		<td class="key">
-			<label for="data[vote][vote_pseudo]">
-				<?php echo JText::_( 'HIKA_USERNAME' ); ?>
-			</label>
-		</td>
-		<td>
-			<input type="text" size="100" name="data[vote][vote_pseudo]"
-			value="<?php if($newItem == true){echo "\"";}else if(!isset($row->vote_pseudo) || $row->vote_pseudo == '0'){echo "\" disabled=\"disabled\"";}else{echo $this->escape(@$row->vote_pseudo);} ?>" />
-
-		</td>
-	</tr>
-	<tr>
-		<td class="key">
-			<label for="data[vote][vote_ip]">
-				<?php echo JText::_( 'HIKA_IP' ); ?>
-			</label>
-		</td>
-		<td>
-			<input type="text" size="100" name="data[vote][vote_ip]" value="<?php if($newItem == true){echo "\"";}elseif(!isset($row->vote_ip)){echo hikashop_getIP()."\"";}else{ echo @$row->vote_ip."\" disabled=\"disabled\"";} ?>" />
-		</td>
-	</tr>
-	<tr>
-		<td class="key">
-			<label for="data[vote][vote_email]">
-				<?php echo JText::_( 'HIKA_EMAIL' ); ?>
-			</label>
-		</td>
-		<td>
-			<input type="text" size="100" name="data[vote][vote_email]"
-			value="<?php if($newItem == true){echo "\"";} else if(!isset($row->vote_email) || $row->vote_email == '0'){echo "\" disabled=\"disabled\"";}elseif($row->vote_email != '0'){echo $this->escape(@$row->vote_email)."\"";}else{echo "";}?> "/>
-
-		</td>
-	</tr>
-	<?php if(($this->item->enabled == 1 || $this->item->enabled == 3) && isset($row->vote_rating) && $row->vote_rating != '0'){ ?>
+	<?php if($this->item->enabled == 1 || $this->item->enabled == 3){ ?>
 	<tr>
 		<td class="key">
 			<label for="data[vote][vote_rating]">
@@ -105,7 +70,7 @@ defined('_JEXEC') or die('Restricted access');
 		</td>
 	</tr>
 	<?php }
-		if(($this->item->enabled == 2 || $this->item->enabled == 3) && isset($row->vote_comment) && $row->vote_comment != ''){
+		if($this->item->enabled == 2 || $this->item->enabled == 3){
 	?>
 	<tr>
 		<td class="key">
@@ -130,4 +95,3 @@ defined('_JEXEC') or die('Restricted access');
 			<input type="text" size="100" name="data[vote][vote_date]" value="<?php echo date('d/m/Y h:m:s', @$row->vote_date); ?>" disabled="disabled"/>
 		</td>
 	</tr>
-</table>

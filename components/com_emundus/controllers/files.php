@@ -870,7 +870,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             	
                                 $mailer = JFactory::getMailer();
 
-                                $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['campaign_label'], 'CAMPAIGN_END' => $file['end_date']);
+                                $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => $file['end_date']);
                                 $tags = $m_email->setTags($file['applicant_id'], $post);
 
                                 $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
@@ -1425,7 +1425,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $m_files = $this->getModel('Files');
         $m_application = $this->getModel('Application');
-        $m_profile = $this->getModel('Profile');
         $m_users = $this->getModel('Users');
 
         $session = JFactory::getSession();
@@ -1450,8 +1449,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $excel_file_name = $jinput->get('excelfilename', null);
 
         $opts = $this->getcolumn($opts);
-
-        $col    = $this->getcolumn($elts);
+        $col = $this->getcolumn($elts);
         $colsup = $this->getcolumn($objs);
         $colOpt = array();
 
@@ -1471,7 +1469,6 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         $fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
-
         // On met a jour la liste des fnums traités
         $fnums = array();
         foreach ($fnumsArray as $fnum) {
@@ -1553,7 +1550,17 @@ class EmundusControllerFiles extends JControllerLegacy
         $line = "";
         $element_csv = array();
         $i = $start;
-	    
+
+        // Here we filter elements which are already present but under a different name or ID, by looking at tablename___element_name.
+        $elts_present = [];
+        foreach ($ordered_elements as $elt_id => $o_elt) {
+        	$element = $o_elt->tab_name.'___'.$o_elt->element_name;
+        	if (in_array($element, $elts_present)) {
+        		unset($ordered_elements[$elt_id]);
+	        } else {
+        		$elts_present[] = $element;
+	        }
+        }
         
         // On traite les en-têtes
         if ($start == 0) {
@@ -1564,7 +1571,6 @@ class EmundusControllerFiles extends JControllerLegacy
 	        } else {
 		        $line = JText::_('F_NUM')."\t".JText::_('STATUS')."\t".JText::_('LAST_NAME')."\t".JText::_('FIRST_NAME')."\t".JText::_('EMAIL')."\t".JText::_('PROGRAMME')."\t";
 	        }
-            
             
             $nbcol = 6;
 	        $date_elements = [];

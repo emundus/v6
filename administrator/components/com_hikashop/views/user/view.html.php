@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,11 +11,15 @@ defined('_JEXEC') or die('Restricted access');
 
 class UserViewUser extends hikashopView {
 	var $ctrl = 'user';
-	var $nameListing = 'USERS';
-	var $nameForm = 'HIKA_USER';
+	var $nameListing = 'CUSTOMERS';
+	var $nameForm = 'CUSTOMER';
 	var $icon = 'user';
+	var $triggerView = true;
 
 	public function display($tpl = null) {
+
+		if(!empty($_REQUEST['filter_partner']))
+			$this->nameListing = 'PARTNERS';
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
 		$function = $this->getLayout();
 		if(method_exists($this, $function))

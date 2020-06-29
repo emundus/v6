@@ -10,8 +10,8 @@ namespace Akeeba\AdminTools\Admin\Controller\Mixin;
 defined('_JEXEC') or die();
 
 use FOF30\Inflector\Inflector;
+use Joomla\CMS\Language\Text;
 use RuntimeException;
-use JText;
 
 trait CustomACL
 {
@@ -90,7 +90,7 @@ trait CustomACL
 		{
 			if (array_key_exists($item, $viewACLMap))
 			{
-				$privilege = $viewACLMap[ $item ];
+				$privilege = $viewACLMap[$item];
 
 				break;
 			}
@@ -104,7 +104,7 @@ trait CustomACL
 
 		if (!$this->container->platform->authorise($privilege, 'com_admintools'))
 		{
-			throw new RuntimeException(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+			throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
 		}
 	}
 }

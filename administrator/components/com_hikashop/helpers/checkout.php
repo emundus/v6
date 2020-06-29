@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -360,6 +360,7 @@ class hikashopCheckoutHelper {
 
 		$this->redirect_url = $this->config->get('redirect_url_when_cart_is_empty', '');
 		if(!empty($this->redirect_url)) {
+			$this->redirect_url = hikashop_translate($this->redirect_url);
 			if(!preg_match('#^https?://#', $this->redirect_url))
 				$this->redirect_url = JURI::base() . ltrim($this->redirect_url, '/');
 			$this->redirect_url = JRoute::_($this->redirect_url, false);
@@ -409,6 +410,7 @@ class hikashopCheckoutHelper {
 		if(!empty($paymentMethods)) {
 			foreach($paymentMethods as &$paymentMethod ) {
 				unset($paymentMethod->total);
+				unset($paymentMethod->custom_html);
 			}
 		}
 		$payments = md5(serialize(@$paymentMethods));
@@ -416,6 +418,7 @@ class hikashopCheckoutHelper {
 		if(!empty($shippingMethods)) {
 			foreach($shippingMethods as &$shippingMethod ) {
 				unset($shippingMethod->taxes);
+				unset($shippingMethod->custom_html);
 			}
 		}
 		$shippings = md5(serialize(@$shippingMethods));

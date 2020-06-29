@@ -5,7 +5,9 @@
  * @license   GNU General Public License version 3, or later
  */
 
-/** @var  \Akeeba\AdminTools\Admin\View\ControlPanel\Html $this For type hinting in the IDE */
+use Akeeba\AdminTools\Admin\View\ControlPanel\Html;
+
+/** @var  Html $this For type hinting in the IDE */
 
 // Protect from unauthorized access
 defined('_JEXEC') or die;

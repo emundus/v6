@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -26,6 +26,8 @@ class hikashopPaymentClass extends hikashopClass {
 			}
 			if(!empty($result->payment_name))
 				$result->payment_name = hikashop_translate($result->payment_name);
+			if(!empty($result->payment_description))
+				$result->payment_description = hikashop_translate($result->payment_description);
 			$cachedElements[$id] = $result;
 		}
 
@@ -38,9 +40,11 @@ class hikashopPaymentClass extends hikashopClass {
 		$do = true;
 		if(empty($element->payment_id))
 			$app->triggerEvent('onBeforeHikaPluginCreate', array('payment', &$element, &$do));
-		else
+		else {
+			if(!isset($element->old))
+				$element->old = parent::get($element->payment_id);
 			$app->triggerEvent('onBeforeHikaPluginUpdate', array('payment', &$element, &$do));
-
+		}
 		if(!$do)
 			return false;
 
@@ -63,6 +67,11 @@ class hikashopPaymentClass extends hikashopClass {
 		$status = parent::save($element);
 		if($status){
 			$this->get('reset_cache');
+			$translationHelper = hikashop_get('helper.translation');
+			if($translationHelper->isMulti()) {
+				$columns = array('payment_name', 'payment_description');
+				$translationHelper->checkTranslations($element, $columns);
+			}
 		}
 		if($status && empty($element->payment_id)) {
 			$element->payment_id = $status;

@@ -13,7 +13,7 @@ use Akeeba\AdminTools\Admin\Controller\Mixin\CustomACL;
 use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
-use JText;
+use Joomla\CMS\Language\Text;
 
 class MasterPassword extends Controller
 {
@@ -32,9 +32,9 @@ class MasterPassword extends Controller
 		$this->csrfProtection();
 
 		$masterpw = $this->input->get('masterpw', '', 'raw', 2);
-		$views    = $this->input->get('views', array(), 'array', 2);
+		$views    = $this->input->get('views', [], 'array', 2);
 
-		$restrictedViews = array();
+		$restrictedViews = [];
 
 		foreach ($views as $view => $locked)
 		{
@@ -48,6 +48,6 @@ class MasterPassword extends Controller
 		$model = $this->getModel();
 		$model->saveSettings($masterpw, $restrictedViews);
 
-		$this->setRedirect('index.php?option=com_admintools', JText::_('COM_ADMINTOOLS_LBL_MASTERPASSWORD_SAVED'));
+		$this->setRedirect('index.php?option=com_admintools', Text::_('COM_ADMINTOOLS_LBL_MASTERPASSWORD_SAVED'));
 	}
 }

@@ -13,7 +13,7 @@ use Akeeba\AdminTools\Admin\Controller\Mixin\CustomACL;
 use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
-use JText;
+use Joomla\CMS\Language\Text;
 
 class SEOAndLinkTools extends Controller
 {
@@ -33,7 +33,7 @@ class SEOAndLinkTools extends Controller
 
 		/** @var \Akeeba\AdminTools\Admin\Model\SEOAndLinkTools $model */
 		$model = $this->getModel();
-		
+
 		if (is_array($this->input))
 		{
 			$data = $this->input;
@@ -45,12 +45,12 @@ class SEOAndLinkTools extends Controller
 
 		$model->saveConfig($data);
 
-		$this->setRedirect('index.php?option=com_admintools&view=ControlPanel', JText::_('COM_ADMINTOOLS_LBL_SEOANDLINKTOOLS_CONFIGSAVED'));
+		$this->setRedirect('index.php?option=com_admintools&view=ControlPanel', Text::_('COM_ADMINTOOLS_LBL_SEOANDLINKTOOLS_CONFIGSAVED'));
 	}
 
 	public function apply()
 	{
 		$this->save();
-		$this->setRedirect('index.php?option=com_admintools&view=SEOAndLinkTools', JText::_('COM_ADMINTOOLS_LBL_SEOANDLINKTOOLS_CONFIGSAVED'));
+		$this->setRedirect('index.php?option=com_admintools&view=SEOAndLinkTools', Text::_('COM_ADMINTOOLS_LBL_SEOANDLINKTOOLS_CONFIGSAVED'));
 	}
 }
