@@ -45,8 +45,9 @@ class PlgFabrik_FormEmundusassigntoevaluator extends plgFabrik_Form {
 	public function getFieldName($pname, $short = false) {
 		$params = $this->getParams();
 
-		if ($params->get($pname) == '')
+		if ($params->get($pname) == '') {
 			return '';
+		}
 
 		$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get($pname));
 
@@ -57,7 +58,6 @@ class PlgFabrik_FormEmundusassigntoevaluator extends plgFabrik_Form {
 	 * Get the fields value regardless of whether its in joined data or no
 	 *
 	 * @param   string  $pname    Params property name to get the value for
-	 * @param   array   $data     Posted form data
 	 * @param   mixed   $default  Default value
 	 *
 	 * @return  mixed  value
@@ -65,11 +65,13 @@ class PlgFabrik_FormEmundusassigntoevaluator extends plgFabrik_Form {
 	public function getParam($pname, $default = '') {
 		$params = $this->getParams();
 
-		if ($params->get($pname) == '')
+		if ($params->get($pname) == '') {
 			return $default;
+		}
 
 		return $params->get($pname);
 	}
+
 
 	/**
 	 * Main script.
@@ -88,8 +90,9 @@ class PlgFabrik_FormEmundusassigntoevaluator extends plgFabrik_Form {
 		$fabrik_elt = str_replace(' ', '', $this->getParam('fabrik_elt'));
 		$reset = $this->getParam('reset', 0);
 
-		if (empty($fabrik_elt))
+		if (empty($fabrik_elt)) {
 			return false;
+		}
 
 		$request = explode('___', $fabrik_elt);
 		$repeated_group = strpos($request[0], '_repeat');
@@ -99,11 +102,10 @@ class PlgFabrik_FormEmundusassigntoevaluator extends plgFabrik_Form {
 			// get value from application form
 			if ($repeated_group) {
 				$query = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join LIKE '.$db->Quote($request[0]);
-				try {
 
+				try {
 					$db->setQuery($query);
 					$table = $db->loadResult();
-
 				} catch (Exception $e) {
 					JLog::add('Error in script/assign-to-group getting parent table at query: '.$query, JLog::ERROR, 'com_emundus');
 				}
@@ -113,25 +115,21 @@ class PlgFabrik_FormEmundusassigntoevaluator extends plgFabrik_Form {
 							WHERE `t`.`fnum` LIKE '.$db->Quote($fnum);
 
 				try {
-
 					$db->setQuery($query);
 					$columns = $db->loadColumn();
-
 				} catch (Exception $e) {
 					JLog::add('Error in script/assign-to-evaluator getting application values from repeated_group at query: '.$query, JLog::ERROR, 'com_emundus');
 				}
 
 			} else {
 				$query = 'SELECT `'.$request[1].'` FROM `'.$request[0].'` WHERE `fnum` LIKE '.$db->Quote($fnum);
-			}
 
-			try {
-
-				$db->setQuery($query);
-				$column = $db->loadResult();
-
-			} catch (Exception $e) {
-				JLog::add('Error in script/assign-to-group getting application value at query: '.$query, JLog::ERROR, 'com_emundus');
+				try {
+					$db->setQuery($query);
+					$column = $db->loadResult();
+				} catch (Exception $e) {
+					JLog::add('Error in script/assign-to-group getting application value at query: '.$query, JLog::ERROR, 'com_emundus');
+				}
 			}
 
 			// reset previous associations
@@ -150,7 +148,7 @@ class PlgFabrik_FormEmundusassigntoevaluator extends plgFabrik_Form {
 		}
 
         if ($repeated_group) {
-            foreach($columns as $col){
+            foreach ($columns as $col) {
                 $query = 'SELECT COUNT(id) FROM #__emundus_users_assoc
                 WHERE user_id = '.$col.' AND action_id = 1 AND fnum LIKE '.$db->Quote($fnum);
 
@@ -163,13 +161,11 @@ class PlgFabrik_FormEmundusassigntoevaluator extends plgFabrik_Form {
                 }
                 if ($cpt == 0) {
                     $query = 'INSERT INTO #__emundus_users_assoc (`user_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`)
-                VALUES ('.$col.', 1, '.$db->Quote($fnum).', 0, 1, 0, 0)';
+                				VALUES ('.$col.', 1, '.$db->Quote($fnum).', 0, 1, 0, 0)';
 
                     try {
-
                         $db->setQuery($query);
                         $db->execute();
-
                     } catch (Exception $e) {
                         JLog::add('Error in script/assign-to-evaluator setting rights to groups at query: '.$query, JLog::ERROR, 'com_emundus');
                     }
@@ -181,13 +177,12 @@ class PlgFabrik_FormEmundusassigntoevaluator extends plgFabrik_Form {
                 WHERE user_id = '.$column.' AND action_id = 1 AND fnum LIKE '.$db->Quote($fnum);
 
             try {
-
                 $db->setQuery($query);
                 $cpt = $db->loadResult();
-
             } catch (Exception $e) {
                 JLog::add('Error in script/assign-to-group getting groups at query: '.$query, JLog::ERROR, 'com_emundus');
             }
+
             if ($cpt == 0) {
                 $query = 'INSERT INTO #__emundus_users_assoc (`user_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`)
                 VALUES ('.$column.', 1, '.$db->Quote($fnum).', 0, 1, 0, 0)';
@@ -204,9 +199,9 @@ class PlgFabrik_FormEmundusassigntoevaluator extends plgFabrik_Form {
         }
 
 		$this->syncAllActions();
-
 		return true;
 	}
+
 
 	public function syncAllActions() {
 		try {
@@ -217,20 +212,19 @@ class PlgFabrik_FormEmundusassigntoevaluator extends plgFabrik_Form {
 			$dbo->setQuery($queryActionID);
 			$actionsId = $dbo->loadColumn();
 
-
 			$dbo->setQuery($userAssocQuery);
 			$arrayUserAssoc = $dbo->loadAssocList();
 			$acl = array();
-			$aclGroupAssoc = array();
 			$aclUserAssoc = array();
-
 
 			foreach ($arrayUserAssoc as $aua) {
 				$aclUserAssoc[$aua['fnum']][$aua['user_id']][] = $aua['action_id'];
 			}
+
 			foreach ($acl as $gId => $groupAction) {
 				$acl[$gId] = array_diff($actionsId, $groupAction);
 			}
+
 			$queryActionID = "SELECT id FROM jos_emundus_setup_actions WHERE status = 1";
 			$dbo->setQuery($queryActionID);
 			$actionsId = $dbo->loadColumn();
@@ -279,17 +273,12 @@ class PlgFabrik_FormEmundusassigntoevaluator extends plgFabrik_Form {
 	 *
 	 * @return  void
 	 */
-
-	protected function raiseError(&$err, $field, $msg)
-	{
+	protected function raiseError(&$err, $field, $msg) {
 		$app = JFactory::getApplication();
 
-		if ($app->isAdmin())
-		{
+		if ($app->isAdmin()) {
 			$app->enqueueMessage($msg, 'notice');
-		}
-		else
-		{
+		} else {
 			$err[$field][0][] = $msg;
 		}
 	}
