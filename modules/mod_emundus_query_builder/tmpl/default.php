@@ -76,7 +76,7 @@ jQuery(document).ready(function(){
 	jQuery('.g-content').has('.etiquette').attr('style', 'margin:auto!important');
 	jQuery('.g-content').has('.etiquette').attr('style', 'display:grid;grid-column-gap:15px;grid-row-gap:15px;grid-template-columns:repeat(3, 1fr);margin-bottom:15px!important;');
 	jQuery('.platform-content').attr('style', 'width:100%!important');
-	jQuery('.platform-content').has('.container-stat').attr('style', 'margin:0!important;background-color:white;padding-bottom:1%;');
+	jQuery('.platform-content').has('.container-stat').attr('style', 'margin:0!important;background-color:white;padding-bottom:1%;box-shadow: 0px 0px 5px 0px lightgrey;');
 	jQuery('.etiquette').attr('style', 'grid-column-end:span 3;');
 	jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;');
 	jQuery('#g-container-main').attr('style', 'padding-left:5%!important;padding-right:5%!important;background-color:#eeeeee');
