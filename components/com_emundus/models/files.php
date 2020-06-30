@@ -214,7 +214,7 @@ class EmundusModelFiles extends JModelLegacy
                                         )
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                     } else {
-                        $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
+                        $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where."=".$def_elmt->element_name." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
                     }
                     
                     $query = preg_replace('#{thistable}#', $from, $query);
