@@ -24,12 +24,22 @@ $icon = $params->get('icon', 'big circular user outline icon');
 $show_logout = $params->get('show_logout', '1');
 $intro = $params->get('intro', '');
 
+$link_login = $params->get('link_login');
+$link_register = $params->get('link_register');
+$link_forgotten_password = $params->get('link_forgotten_password');
+$show_registration = !$params->get('show_registration');
+
 $document = JFactory::getDocument();
 $document->addStyleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');
 
 if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0') {
 	$list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);
 }
+
+if (!$show_registration && $user === null && modEmundusUserDropdownHelper::isCampaignActive()) {
+	$show_registration = true;
+}
+
 
 // used for getting the page we are currently on.
 $app = JFactory::getApplication();

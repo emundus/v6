@@ -41,7 +41,6 @@ class EmundusControllerJob extends EmundusController {
         $fnum = $model->apply($user->id, $jobId); 
         if ($fnum) {
             // Redirect to the edit screen.
-            //$this->setRedirect(JRoute::_('index.php?option=com_fabrik&view=form&formid=205&Itemid=1465&usekey=fnum&rowid='.$user->fnum, false));
             $this->setRedirect(JRoute::_('index.php?option=com_emundus&controller=job&task=display&fnum='.$fnum.'&id='.$jobId.'&Itemid='.$Itemid, false));
             
         } else {

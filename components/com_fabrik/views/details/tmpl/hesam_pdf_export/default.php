@@ -682,7 +682,7 @@ function getProjectThematics($fnum) {
 
                 <td class="em-pdf-element-value">
                     <p>
-                        <a target="_blank" href="<?= JURI::root().'images'.DS.'emundus'.DS.'files'.DS.$this->data["jos_emundus_campaign_candidature___applicant_id_raw"][0].DS.$file['filename']; ?>"><?= $file["value"]; ?></a>
+                        <a target="_blank" href="<?= JURI::root().'images'.DS.'emundus'.DS.'files'.DS.$this->data["jos_emundus_campaign_candidature___applicant_id_raw"].DS.$file['filename']; ?>"><?= $file["value"]; ?></a>
                     </p>
                 </td>
 

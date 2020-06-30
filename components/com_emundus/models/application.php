@@ -2960,7 +2960,7 @@ class EmundusModelApplication extends JModelList {
                     $dest = substr($row['filename'], 0, $cpt).'-'.$row['id'].'.'.$ext;
                     $row['filename'] = $dest;
                     $row['fnum'] = $fnum_to;
-                    $row['can_delete'] = empty($can_delete) ? 0 : 1;
+                    $row['can_be_deleted'] = empty($can_delete) ? 0 : 1;
                     unset($row['id']);
 
                     try {

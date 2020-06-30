@@ -13,7 +13,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 <center>
 	<div class="filter">
 		<form action="" method="" onsubmit="return false;">
-			<label><?php echo JText::_('PROGRAM'); ?></label>
+			<label for="progFilter"><?= JText::_('PROGRAM'); ?></label>
 			<select name="prog" id="progFilter" onchange="progAction()">
 				<option value="-1"></option>
 				<?php
@@ -22,7 +22,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				} ?>
 			</select>
 			
-			<label><?php echo JText::_('YEARS_CAMPAIGN'); ?></label>
+			<label for="yearsFilter"><?= JText::_('YEARS_CAMPAIGN'); ?></label>
 			<select name="years" id="yearsFilter" onchange="yearAction()">
 				<option value="-1"></option>
 				<?php
@@ -31,7 +31,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				} ?>
 			</select>
 			
-			<label><?php echo JText::_('CAMPAIGN'); ?></label>
+			<label for="campaignFilter"><?= JText::_('CAMPAIGN'); ?></label>
 			<select name="campaign" id="campaignFilter" onchange="campaignAction()">
 				<option value="-1"></option>
 				<?php
@@ -57,7 +57,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				campaign : -2
 			},
 			success: function(response){
-				msg = JSON.parse(response.data);
+				let msg = JSON.parse(response.data);
 				if (msg.status) {
 					document.getElementById("yearsFilter").innerHTML = msg.msg.split("////")[1];
 					document.getElementById("campaignFilter").innerHTML = msg.msg.split("////")[2];
@@ -83,7 +83,7 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 				campaign : -2
 			},
 			success: function(response){
-				msg = JSON.parse(response.data);
+				let msg = JSON.parse(response.data);
 				if (msg.status) {
 					document.getElementById("progFilter").innerHTML = msg.msg.split("////")[0];
 					document.getElementById("campaignFilter").innerHTML = msg.msg.split("////")[2];
@@ -102,15 +102,15 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 		jQuery.ajax({
 			url: "index.php?option=com_ajax&module=emundus_stat_filter&format=json", 
 			type: "POST",
-         cache:false,
-         async: false,
+            cache:false,
+            async: false,
 			data: {
 				prog : -2,
 				year : -2,
 				campaign : document.getElementById("campaignFilter").value
 			},
 			success: function(response){
-				msg = JSON.parse(response.data);
+				let msg = JSON.parse(response.data);
 				if (msg.status) {
 					document.getElementById("progFilter").innerHTML = msg.msg.split("////")[0];
 					document.getElementById("yearsFilter").innerHTML = msg.msg.split("////")[1];
@@ -130,42 +130,33 @@ $document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-m
 			url: 'index.php?option=com_ajax&module=emundus_stat_filter&method=reloadModule&format=json',
 			dataType: 'html',
 			success: function(response) {
-				msg = JSON.parse(JSON.parse(response).data);
+				let msg = JSON.parse(JSON.parse(response).data);
 				if (msg.status) {
-					if(fusioncharts != undefined) {
-						for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
-							fusioncharts[cpt].dispose();
+					if(typeof fusioncharts !== "undefined") {
+						for(var cpt = 0; cpt < fusioncharts.length; cpt++) {
+						    fusioncharts[cpt].dispose();
+                        }
 					}
 					fusioncharts = [];
 					var modulesString = msg.msg.split("////");
 					var cpt0 = 0;
 					for(var cpt = 1 ; cpt < modulesString.length ; cpt++) {
-						for(var i = 0 ; cpt0 < document.getElementsByClassName('moduletable').length &&
-						document.getElementsByClassName('moduletable')[cpt0].getElementsByClassName(modulesString[cpt]).length <= 0 ; i++) {
+						for(var i = 0 ; cpt0 < document.getElementsByClassName('moduletable').length && document.getElementsByClassName('moduletable')[cpt0].getElementsByClassName(modulesString[cpt]).length <= 0 ; i++) {
 							cpt0++;
 						}
 						cpt++;
 						document.getElementsByClassName('moduletable')[cpt0].innerHTML = modulesString[cpt];
 						var scripts = document.getElementsByClassName('moduletable')[cpt0].getElementsByTagName('script');
-						for(var i=0; i < scripts.length;i++)
-						{
-							if (window.execScript)
-							{
+						for (var i=0; i < scripts.length;i++) {
+							if (window.execScript) {
 								window.execScript(scripts[i].text.replace('<!--',''));
-							}
-							else
-							{
+							} else {
 								window.eval(scripts[i].text);
 							}
 						}
 						
 						cpt0++;
 					}
-					
-					// if(fusioncharts != undefined) {
-						// for(var cpt = 0 ; cpt < fusioncharts.length ; cpt++)
-							// fusioncharts[cpt].render();
-					// }
 				
 				} else {
 					console.log(msg.msg);

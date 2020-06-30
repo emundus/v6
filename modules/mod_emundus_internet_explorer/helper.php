@@ -1,9 +1,5 @@
 <?php
-defined('_JEXEC') or die('Access Deny');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
+defined('_JEXEC') or die('Access Denied');
 
 class modEmundusInternetExplorerHelper {
 	public function closeMessageAjax() {
