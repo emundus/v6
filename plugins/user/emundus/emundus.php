@@ -208,7 +208,7 @@ class plgUserEmundus extends JPlugin
                                                 WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) 
                                 WHERE id='.$user['id']);
                 try {
-                    $db->Query();
+                    $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
                 }
@@ -220,15 +220,14 @@ class plgUserEmundus extends JPlugin
 
                     $profile = $campaign[0]['profile_id'];
                 } else {
-                    $profile = 'NULL';
+	                $profile = 1000;
                 }
 
                 // Insert data in #__emundus_users
                 $query = $db->getQuery(true);
                 $columns = array('user_id', 'firstname', 'lastname', 'profile', 'registerDate');
                 $values = array($user['id'], $db->quote(ucfirst($firstname)), $db->quote(strtoupper($lastname)), $profile, $db->quote($user['registerDate']));
-                $query
-                    ->insert($db->quoteName('#__emundus_users'))
+                $query->insert($db->quoteName('#__emundus_users'))
                     ->columns($db->quoteName($columns))
                     ->values(implode(',', $values));
 
