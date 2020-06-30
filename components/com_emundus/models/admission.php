@@ -1077,6 +1077,7 @@ class EmundusModelAdmission extends JModelList
 									return strpos($e, '!') === 0;
 								});
 
+
 								if (is_array($not_in) && !empty($filt_menu_not)) {
 									$not_in = array_unique(array_merge($not_in, $filt_menu_not));
 								}
