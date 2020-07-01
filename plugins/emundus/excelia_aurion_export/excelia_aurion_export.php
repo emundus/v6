@@ -307,7 +307,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         //Only import skype_id if there is one
         if (!empty($user->skype_id)) {
-            $skype = "<coordonnee key='SKYPE_" . $user_key . "' libelle='" . $user->skype_id . "'>
+            $skype = "<coordonnee key='SKYPE_" . $user_key . "' libelle='" . htmlspecialchars($user->skype_id, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "'>
                             <type_coordonnee objet_id='86334' OnRelation='true' ForceImport='true' ForceReplace='true' />
                       </coordonnee>";
         } else {
@@ -349,9 +349,13 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         // Check if the the user has filled out their qualification form AND their scholarship form, don't import if one of them doesn't have a fnum
         if (!empty($user->es_fnum)) {
-
+            if (!empty($user->city)) {
+                $qualification_city  = htmlspecialchars($this->getOutputLabelFromInput($user->aurion_city, 'id_Ville', 'Nom', 'data_aurion_35584331'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+            } else {
+                $qualification_city  = htmlspecialchars($user->city_2, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+            }
             $inscription_module = "
-                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A37765709='" . $user->state. "' A37765733='" . ((!empty($user->city)) ? (is_numeric($user->city)) ? $user->aurion_city : htmlspecialchars($user->city, ENT_XML1 | ENT_QUOTES, 'UTF-8') : htmlspecialchars($user->city_2, ENT_XML1 | ENT_QUOTES, 'UTF-8')) . "' >
+                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
                     
                     <individu  key='" . $user_key . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
                         <module objet_id='" . $user->aurion_id . "' ForceSource='apprenant'/>
@@ -492,8 +496,13 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         // Check if the the user has filled out their qualification form AND their scholarship form, don't import if one of them doesn't have a fnum
         if (!empty($user->es_fnum)) {
+            if (!empty($user->city)) {
+                $qualification_city  = htmlspecialchars($this->getOutputLabelFromInput($user->aurion_city, 'id_Ville', 'Nom', 'data_aurion_35584331'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+            } else {
+                $qualification_city  = htmlspecialchars($user->city_2, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+            }
             $inscription_module = "
-                <inscription_module ForceImport='true' key='". $user->aurion_id ."_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A37765709='" . $user->state. "' A37765733='" . (!empty($user->city) ? $user->aurion_city : htmlspecialchars($user->city_2, ENT_XML1 | ENT_QUOTES, 'UTF-8')) . "' >
+                <inscription_module ForceImport='true' key='". $user->aurion_id ."_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
                     
                     <individu objet_id='" . $user_id . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
                         <module objet_id='" . $user->aurion_id . "' ForceSource='apprenant'/>
@@ -641,4 +650,23 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
         $newstr = str_replace("'", '', $newstr);
         return $newstr;
     }
+
+    public function getOutputLabelFromInput($input, $inputColumn, $outputColumn, $table) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select($db->quoteName($outputColumn))
+            ->from($db->quoteName($table))
+            ->where($db->quoteName($inputColumn) .' = ' . $db->quote($input));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadResult();
+        } catch(Exception $e) {
+            JLog::add('Query error '. $query->__toString(), JLog::ERROR, 'com_emundus');
+            return $input;
+        }
+    }
+
 }
