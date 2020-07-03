@@ -395,13 +395,22 @@ class modEmundusQueryBuilderHelper {
 			$db->setQuery($query);
 			$idModule = $db->loadAssoc()['Auto_increment'];
 			
-			$query = "SELECT rgt FROM jos_assets WHERE name LIKE 'com_modules.module.%' ORDER BY id DESC LIMIT 1";
-			$db->setQuery($query);
-			$incremente = $db->loadResult()+1;
 			
-			$query = "INSERT INTO `jos_assets` (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `title`, `rules`) VALUES (NULL, '18', '".$incremente."', '".($incremente+1)."', '2', 'com_module.modules.".$idModule."', '".$nameGraph."', '{}')";
-			$db->setQuery($query);
-			$db->execute();
+			$table = JTable::getInstance('asset');
+			$data = array();
+			$data['parent_id'] = 18;
+			$data['name'] = "com_module.modules.".$idModule;
+			$data['title'] = $nameGraph;
+			$data['level'] = 2;
+			$table->setLocation($data['parent_id'], 'last-child');
+			$table->bind($data);
+			if ($table->check()) {
+				$table->store();
+			} else {
+				JLog::add('Could not Insert data into jos_assets. -> ', JLog::ERROR, 'com_emundus');
+				return false;
+			}
+			
 			
 			$query = "SELECT id FROM jos_assets WHERE name LIKE 'com_modules.module.%' ORDER BY id DESC LIMIT 1";
 			$db->setQuery($query);
