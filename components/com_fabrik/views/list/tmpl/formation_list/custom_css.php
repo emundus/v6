@@ -130,7 +130,7 @@ margin-left:33px;
 .card{
 	width: 400px;
 	background: white;
-	height: 400px;
+	height: 450px;
 	position: relative;
 	display: flex;
 	flex-direction: column;
