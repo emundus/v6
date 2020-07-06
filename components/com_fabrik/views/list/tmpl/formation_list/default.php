@@ -15,7 +15,9 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'listeProgram.php');
 
-$m_listProgram = new EmundusModelListeProgram();
+require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+
+$m_campaign = new EmundusModelCampaign();
 
 
 $pageClass = $this->params->get('pageclass_sfx', '');
@@ -97,9 +99,11 @@ $form_id = $form->id;
     if($current_user->guest == 1){
         if ($lang->getTag() == 'en-GB') {
             $reset= "liste-des-formations?resetfilters=1";
+            $connexion = $connexionCandidater->alias;
         }
         else{
             $reset= "fr/liste-des-formations?resetfilters=1";
+            $connexion = "fr/".$connexionCandidater->alias;
         }
     }
     else{
@@ -198,7 +202,7 @@ $form_id = $form->id;
                         for ($i = 1; $i <= count($group); $i++) {
 
                             $training = $group[$i]->data->$training_code;
-                            $cid = $m_listProgram->getCampaign($training);
+                            $cid = $m_campaign->getCampaignsByCourse($training)['id'];
                             $fnum = $group[$i]->data->$fnum_element;
                             $id = $group[$i]->data->$id_projet;
 
@@ -219,7 +223,7 @@ $form_id = $form->id;
                                             <p class="em-domaine-container"><span class='intitule'><?= JText::_('POLE'); ?>:</span><span class="em-domaine-formation"><?= $group[$i]->data->$pole; ?></span></p>
                                         </div>
                                     </div>
-                                    <a class="btn btn-connexion" href="<?= $connexionCandidater->alias;?>"><?= JText::_('APPLY_NOW'); ?></a>
+                                    <a class="btn btn-connexion" href="<?= $connexion;?>"><?= JText::_('APPLY_NOW'); ?></a>
                                 </div>
 
                                 <?php
