@@ -21,3 +21,10 @@
 .btn a:hover {
     color: #de6339 !important;
 }
+.row-fluid:before {
+	color:blue;
+}
+
+.row-fluid:after {
+	color:blue;
+}

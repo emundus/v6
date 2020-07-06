@@ -146,21 +146,18 @@ class modEmundusStatFilterHelper {
 		$tabYear = $helper->getYear($session->get('filterStat'));
 		$tabCampaign = $helper->getCampaign($session->get('filterStat'));
 		
-		$output = "<option value=\"-1\"></option>";
-		if ($tabProg != null) {
-			foreach ($tabProg as $prog) {
+		$output = "<option value=\"-1\">".JText::_('SELECT_ALL')."</option>";
+		if($tabProg != null)
+			foreach ($tabProg as $prog) { 
 				$output .= "<option value=\"".$prog['code']."\" ".(($array["prog"]===$prog['code'])?"selected":"").">".$prog['label']."</option>";
 			}
-		}
-
-		$output .= "////<option value=\"-1\"></option>";
-		if ($tabYear != null) {
-			foreach ($tabYear as $year) {
+		$output .= "////<option value=\"-1\">".JText::_('SELECT_ALL')."</option>";
+		if($tabYear != null)
+			foreach ($tabYear as $year) { 
 				$output .= "<option value=\"".$year['year']."\" ".(($array["year"]===$year['year'])?"selected":"").">".$year['year']."</option>";
 			}
-		}
-		$output .= "////<option value=\"-1\"></option>";
-		if ($tabCampaign != null) {
+		$output .= "////<option value=\"-1\">".JText::_('SELECT_ALL')."</option>";
+		if($tabCampaign != null)
 			foreach ($tabCampaign as $campaign) {
 				$output .= "<option value=\"".$campaign['id']."\" ".(($array["campaign"]===$campaign['id'])?"selected":"").">".$campaign['label']."</option>";
 			}

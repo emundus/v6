@@ -42,7 +42,7 @@
 				<field name="link_login" type="text" default="/fr/connexion" size="5" label="COM_EMUNDUS_USERDROPDOWN_LINK_LOGIN" description="COM_EMUNDUS_USERDROPDOWN_LINK_LOGIN_DESC" />
 				<field name="link_register" type="text" default="/fr/inscription" size="5" label="COM_EMUNDUS_USERDROPDOWN_LINK_REGISTER" description="COM_EMUNDUS_USERDROPDOWN_LINK_REGISTER_DESC" />
 				<field name="link_forgotten_password" type="text" default="/fr/mot-de-passe-oublie" size="5" label="COM_EMUNDUS_USERDROPDOWN_LINK_FORGOTTEN_PASSWORD" description="COM_EMUNDUS_USERDROPDOWN_LINK_FORGOTTEN_PASSWORD_DESC" />
-				<field name="show_registration" type="radio" default="0" label="COM_EMUNDUS_USERDROPDOWN_SHOW_REGISTRATION" description="COM_EMUNDUS_USERDROPDOWN_SHOW_REGISTRATION_DESC" class="btn-group btn-group-yesno">
+				<field name="show_registration" type="radio" default="0" label="COM_EMUNDUS_USERDROPDOWN_SHOW_REGISTRATION" description="COM_EMUNDUS_USERDROPDOWN_SHOW_REGISTRATION_DESC">
 					<option value="0">JNo</option>
 					<option value="1">JYes</option>
 				</field>

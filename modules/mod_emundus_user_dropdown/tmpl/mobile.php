@@ -33,7 +33,7 @@ if($user != null) {
     <div class="content">
 		<ul>
 			<li><a href="<?= $link_login; ?>"><?= JText::_('CONNEXION_LABEL'); ?></a></li>
-			<?php if($show_registration) { ?>
+			<?php if ($show_registration) { ?>
 				<li><a href="<?= $link_register; ?>"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a></li>
 			<?php } ?>
 			<li><a href="<?= $link_forgotten_password; ?>"><?= JText::_('FORGOTTEN_PASSWORD_LABEL'); ?></a></li>

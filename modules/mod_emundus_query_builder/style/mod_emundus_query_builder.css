@@ -1,8 +1,84 @@
+.swal2-content .radioModule label {
+	color:black!important;
+	font-size:12px!important;
+}
+.swal2-content .showModule  {
+	padding:10% 0;
+}
+.swal2-content .exportModule td {
+	padding-left:5%;
+}
+.swal2-actions {
+	flex-direction: row-reverse;
+	justify-content:space-around!important;
+	font-size:12px!important;
+	margin-bottom:5%!important;
+}
+.swal2-confirm, .swal2-cancel {
+	float:right;
+	width:35%;
+}
+.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step {
+	background:transparent!important;
+	color:#de6339!important;
+	border:1px solid #de6339!important;
+}
+.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line {
+	background:transparent!important;
+	border-top:1px solid #de6339!important;
+	border-bottom:1px solid #de6339!important;
+}
+.swal2-progress-step, .swal2-progress-steps .swal2-progress-step-line, .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
+	background:#de6339!important;
+}
+.g-content h1 {
+	margin-top:4%!important;
+	margin-bottom:3%!important;
+}
+.swal2-popup {
+	border-radius:0!important;
+}
+.g-content h1::after, .swal2-title::after {
+	background:#de6339!important;
+}
 .queryBuilder {
 	text-align:left;
-	border:5px solid #de6339;
-	padding-left:5%;
+	padding-top:1%;
 	padding-bottom:1%;
+	margin:auto;
+	min-width:500px;
+	max-width:60%;
+}
+.queryBuilder input[type="checkbox"]:checked {
+	background-color:transparent!important;
+}
+.queryBuilder input[type="text"] {
+	width:96%;
+}
+.queryBuilder input[type="text"], .queryBuilder select, .queryBuilder .createModule label {
+	border-radius:0!important;
+	margin:2%!important;
+}
+.queryBuilder .createModule select {
+	width:26%!important;
+	margin:2%!important;
+}
+.queryBuilder .createModule .flexS {
+	display:flex;
+	width:100%;
+}
+.queryBuilder .createModule .flexS input[type="text"] {
+	width:50%;
+}
+.queryBuilder .createModule label {
+	margin: 2.5% 0 0 2%!important;
+	display:inline-block;
+	width:18%!important;
+	font-weight:bold!important;
+}
+.queryBuilder label {
+	color:black!important;
+	font-weight:bold!important;
 }
 .swal2-select {
 	font-size:14px !important;
@@ -20,6 +96,14 @@
 }
 .input {
 	margin:1% 0%;
+}
+.input input[type="checkbox"] {
+	vertical-align: text-top;
+}
+.input .modif, .input .delete {
+	color:#de6339!important;
+	background-color:transparent;
+	border:0px;
 }
 .createModule {
 	margin:1%;
@@ -44,16 +128,91 @@
 .exportModule .radioButton {
 	margin-right:1%;
 }
+.btnExport, .btnQueryBuilder:hover, .swal2-confirm:hover, .swal2-cancel {
+	border-radius:0px!important;
+	background:transparent!important;
+	color:#de6339!important;
+	border:1px solid #de6339!important;
+	padding:4px 12px!important;
+	white-space: normal;
+}
+.btnExport:hover, .btnQueryBuilder, .swal2-confirm, .swal2-cancel:hover {
+	border-radius:0px!important;
+	background:#de6339!important;
+	color:white!important;
+	border:1px solid #de6339!important;
+	padding:4px 12px!important;
+	white-space: normal;
+}
+.btnExport:focus, .btnQueryBuilder:focus, .queryBuilder input[type="button"]:focus, .queryBuilder input[type="submit"]:focus, .swal2-confirm:focus, .swal2-cancel:focus {
+	outline:none;
+}
 .edit {
 	width:20%;
 }
 .move {
 	cursor:grab;
-	background: #de6339;
-	color:#ffffff;
+	color:lightgray;
 	border-radius:0.25rem;
+	font-size:1.5rem;
 }
 #errorCreateModule {
 	color:red;
 	font-weight:bold;
+}
+.etiquette {
+	width:100%!important;
+	margin:0!important;
+	background-color:white;
+	padding:2%;
+	box-shadow: 0px 0px 5px 0px lightgrey;
+}
+.etiquette label {
+	color:#de6339!important;
+	font-weight:normal!important;
+}
+.etiquette p {
+	font-weight:bold;
+	color:#de6339!important;
+}
+.etiquette select {
+	border-radius:0px!important;
+}
+.etiquette select:focus {
+	outline: 2px solid -webkit-focus-ring-color;
+}
+.etiquette .filter .inputFilter {
+	display:inline-block;
+	text-align:left;
+	margin:3% 5% 0 5%;
+}
+.informationStatistique {
+	width:100%!important;
+	margin:0!important;
+	background-color:#de6339;
+	padding:2%;
+	padding-top:1%;
+	color:white!important;
+}
+.informationStatistique h4 {
+	color:white!important;
+}
+.closeButtonWelcomeStat {
+	float:right;
+	cursor:pointer;
+	color:white;
+	font-size:1.5rem;
+	margin-top:-1%;
+	margin-right:-1.5%;
+}
+
+@media (max-width: 600px) {
+	.queryBuilder {
+		text-align:left;
+		padding-top:1%;
+		padding-bottom:1%;
+		margin:auto;
+		min-width:100%;
+		font-size:12%;
+	}
 }
