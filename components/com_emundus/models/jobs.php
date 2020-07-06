@@ -233,7 +233,7 @@ class EmundusModelJobs extends JModelList
 
         if (!JFactory::getUser()->authorise('core.edit.state', 'com_emundus'))
         {
-            $query->where('a.valide_comite = 1');
+            //$query->where('a.valide_comite = 1');
             $query->where('a.published = 1');
             $query->where('a.state = 1');
             $query->where('a.date_limite >= "'.$now.'"');
@@ -275,8 +275,9 @@ class EmundusModelJobs extends JModelList
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering');
 		$orderDirn = $this->state->get('list.direction');
-		if ($orderCol && $orderDirn && ($orderCol!='step' && $user->guest))		
+		if ($orderCol && $orderDirn && ($orderCol!='step' && $user->guest))	{	
 			$query->order($db->escape($orderCol . ' ' . $orderDirn));
+		}
 
 		return $query;
 	}

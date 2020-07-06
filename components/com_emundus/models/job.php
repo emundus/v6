@@ -255,7 +255,7 @@ class EmundusModelJob extends JModelItem {
         $db->setQuery($query);
         $job = $db->loadObject();
 
-        if($job->campaign_id>0 && $job->state==1 && $job->published==1 && $job->valide_comite==1) {
+        if($job->campaign_id>0 && $job->state==1 && $job->published==1) {
             // 1. Check if a fnum exist without job
             $query = "SELECT ecc.fnum 
                         FROM #__emundus_campaign_candidature as ecc
@@ -278,6 +278,7 @@ class EmundusModelJob extends JModelItem {
                     $insertid = $db->insertid();
                
                 } catch(Exception $e) {
+                    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                     return false;
                 }
             }
@@ -311,6 +312,7 @@ class EmundusModelJob extends JModelItem {
                 $insertid = $db->insertid();
             }
             catch(Exception $e) {
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                 return false;
             }
             if ($insertid > 0) {
@@ -321,7 +323,10 @@ class EmundusModelJob extends JModelItem {
                 return $fnum;
             }
            // }
-        } else return false;
+        } else {
+            JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> cid=' . $job->campaign_id . ' Job state=' . $job->state . ' published=' . $job->published . ' valide_comite=' . $job->valide_comite, JLog::ERROR, 'com_emundus');
+            return false;
+        }
     }
 
 }

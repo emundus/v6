@@ -53,7 +53,7 @@ class modEmundusStatHelper {
 						$db->setQuery($query);
 						$labelCampaign = $db->loadResult();
 						if($cpt != 0) $query1 .= " OR";
-						$query1 .= " campaign LIKE '".$labelCampaign."'";
+						$query1 .= " campaign LIKE '".addslashes($labelCampaign)."'";
 					}
 				}
 			} else {
@@ -117,7 +117,7 @@ class modEmundusStatHelper {
 						$db->setQuery("SELECT `label` FROM `jos_emundus_setup_campaigns` WHERE `id` = ".$tabCampaign[$cpt]['id']);
 						$labelCampaign = $db->loadResult();
 						if($cpt != 0) $query1 .= " OR";
-						$query1 .= " campaign LIKE '".$labelCampaign."'";
+						$query1 .= " campaign LIKE '".addslashes($labelCampaign)."'";
 					}
 				}
 			} else {

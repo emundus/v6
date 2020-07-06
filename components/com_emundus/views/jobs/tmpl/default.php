@@ -14,6 +14,9 @@ JHTML::_('behavior.tooltip');
 JHTML::_('script', 'system/multiselect.js', false, true);
 // Import CSS
 $document = JFactory::getDocument();
+$app = JFactory::getApplication();
+$jinput = $app->input;
+$itemid = $jinput->get('Itemid', 0, 'int');
 $document->addStyleSheet('components/com_emundus/assets/css/list.css');
 
 $user = JFactory::getUser();
@@ -84,7 +87,7 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
                         <?php if (isset($item->checked_out) && $item->checked_out) : ?>
                             <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'jobs.', $canCheckin); ?>
                         <?php endif; ?>
-                        <a class="em-job" href="<?php echo JURI::base() . 'index.php?option=com_emundus&view=job&id=' . (int) $item->id; ?>&tmpl=">
+                        <a class="em-job-detail" target="_blank" href="<?php echo JURI::base() . 'index.php?option=com_emundus&view=job&id=' . (int) $item->id; ?>&Itemid=<?php echo $itemid; ?>">
                             <span class="glyphicon glyphicon-play"></span>
                             <?php echo $item->intitule_poste; ?>
                         </a>
@@ -106,8 +109,8 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
                                 <?php endif; ?>
                             <?php else: ?>
                                 <?php if ($item->student_id == $user->id): ?>
-                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php JURI::base().'index.php?option=com_emundus&controller=job&task=display&fnum='.$item->fnum.'&id=' . $item->id; ?>';" class="btn btn-success glyphicon glyphicon-eye-open" type="button"> <?php echo JText::_('COM_EMUNDUS_JOBS_DISPLAY'); ?></button>
-                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php JURI::base().'index.php?option=com_emundus&controller=job&task=cancel&fnum='.$item->fnum.'&id=' . $item->id; ?>';" class="btn-xs btn-danger glyphicon glyphicon-trash" type="button"></button>
+                                    <a href="<?php echo JURI::base().'index.php?option=com_emundus&controller=job&task=display&fnum='.$item->fnum.'&id=' . $item->id; ?>" class="btn btn-success glyphicon glyphicon-eye-open"> <?php echo JText::_('COM_EMUNDUS_JOBS_DISPLAY'); ?></a>
+                                    <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JURI::base().'index.php?option=com_emundus&controller=job&task=cancel&fnum='.$item->fnum.'&id=' . $item->id; ?>';" class="btn-xs btn-danger glyphicon glyphicon-trash" type="button"></button>
                                     <span class="label label-<?php echo $item->class; ?>"><?php echo $item->application_status; ?></span>
                                 <?php else: ?>
                                     <button onclick="$('.btn').attr('disabled', true); window.location.href = '<?php echo JURI::base().'index.php?option=com_emundus&controller=job&task=apply&id=' . $item->id; ?>';" class="btn btn-info glyphicon glyphicon-circle-arrow-right" type="button"> <?php echo JText::_('COM_EMUNDUS_JOBS_APPLY'); ?></button>

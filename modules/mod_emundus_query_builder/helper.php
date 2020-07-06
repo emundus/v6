@@ -22,13 +22,12 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Get the stats modules for the stats module manager
 	  */
-	public function getModuleStat()
-	{
+	public function getModuleStat() {
 		$db = JFactory::getDBO();
 		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		
-        try {
+		try {
 			$query = "SELECT id, title, published, params, ordering FROM jos_modules WHERE module = 'mod_emundus_stat' AND (published = 1 OR published = 0) AND position LIKE 'content-bottom-a' ORDER BY ordering";
 			$db->setQuery($query);
 			return $db->loadAssocList();
@@ -42,13 +41,12 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Retrieve the stats modules for the stats modules manager
 	  */
-	public function getExportModuleStat()
-	{
+	public function getExportModuleStat() {
 		$db = JFactory::getDBO();
 		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		
-        try {
+		try {
 			$query = "SELECT id, title, published, params, ordering FROM jos_modules WHERE module = 'mod_emundus_stat' AND published = 1 AND position LIKE 'content-bottom-a' ORDER BY ordering";
 			$db->setQuery($query);
 			return $db->loadAssocList();
@@ -62,8 +60,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Retrieve the stats modules for exporting stats modules
 	  */
-	public function getTypeStatModule($id)
-	{
+	public function getTypeStatModule($id) {
 		$db = JFactory::getDBO();
 		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
@@ -82,8 +79,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Display or not the stat module
 	  */
-	public function changePublishedModuleAjax()
-	{
+	public function changePublishedModuleAjax() {
 		$jinput = JFactory::getApplication()->input;
 		$id = $jinput->post->get('idChangePublishedModule');
 		$db = JFactory::getDBO();
@@ -109,8 +105,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Change the order of the stats modules
 	  */
-	public function changeOrderModuleAjax()
-	{
+	public function changeOrderModuleAjax() {
 		$jinput = JFactory::getApplication()->input;
 		$tabId = $jinput->post->get('id');
 		$order1 = $jinput->post->get('order1');
@@ -119,13 +114,13 @@ class modEmundusQueryBuilderHelper {
 		$user = $session->get('emundusUser');
 		
 		try {
-			for($i = $order1 ; $i < count($tabId)+$order1 ; $i++) {
+			for ($i = $order1 ; $i < count($tabId)+$order1 ; $i++) {
 				$query = "UPDATE `jos_modules` SET `ordering` = '".$i."' WHERE `jos_modules`.`module` = 'mod_emundus_stat' AND `jos_modules`.`id` = ".substr($tabId[$i-$order1], 3);
 				$db->setQuery($query);
 				$db->execute();
 			}
 			return json_encode((object)['status' => true, 'msg' => 'It\'s ok']);
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 			JLog::add($error, JLog::ERROR, 'com_emundus');
 			echo json_encode((object)['status' => false, 'msg' => "Error"]);
@@ -136,8 +131,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Remove the stat module
 	  */
-	public function deleteModuleAjax()
-	{
+	public function deleteModuleAjax() {
 		$jinput = JFactory::getApplication()->input;
 		$id = $jinput->post->get('idDeleteModule');
 		$db = JFactory::getDBO();
@@ -145,18 +139,22 @@ class modEmundusQueryBuilderHelper {
 		$user = $session->get('emundusUser');
 		
 		try {
+
 			$query = "SELECT published, params FROM jos_modules WHERE `jos_modules`.`id` = ".$id;
 			$db->setQuery($query);
 			$result = $db->loadAssoc();
-			$published = $result['published'];
+
 			$paramModule = json_decode($result['params'], true);
 			$query = "UPDATE `jos_modules` SET `published` = '-2' WHERE `jos_modules`.`id` = ".$id;
 			$db->setQuery($query);
 			$db->execute();
+
 			$query = "DROP VIEW ".$paramModule['view'];
 			$db->setQuery($query);
 			$db->execute();
+
 			return json_encode((object)['status' => true, 'msg' => 'It\'s ok']);
+
 		} catch(Exception $e) {
 			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 			JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -168,8 +166,8 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Modify the stat module
 	  */
-	public function changeModuleAjax()
-	{
+	public function changeModuleAjax() {
+
 		$jinput = JFactory::getApplication()->input;
 		$title = addslashes(str_replace("'", " ", $jinput->post->getString('titleModule')));
 		$type = $jinput->post->get('typeModule');
@@ -180,23 +178,30 @@ class modEmundusQueryBuilderHelper {
 		$user = $session->get('emundusUser');
 		
 		try {
+
 			$query = "SELECT params FROM jos_modules WHERE `jos_modules`.`id` = ".$id;
 			$db->setQuery($query);
 			$tabParams = explode("\",\"", $db->loadResult());
+
 			$paramsModif = "";
-			for($i = 0 ; $i < count($tabParams); $i++) {
-				if(strpos($tabParams[$i], "type_graph") === 0) {
+
+			for ($i = 0 ; $i < count($tabParams); $i++) {
+				if (strpos($tabParams[$i], "type_graph") === 0) {
 					$paramsModif .= "type_graph\":\"".$type;
 				} else {
 					$paramsModif .= $tabParams[$i];
 				}
-				if($i != count($tabParams)-1) $paramsModif .= "\",\"";
+				if ($i != count($tabParams)-1) {
+					$paramsModif .= "\",\"";
+				}
 			}
 			
 			$query = "UPDATE `jos_modules` SET `title` = '".$title."', params = '".$paramsModif."' WHERE `jos_modules`.`id` = ".$id;
 			$db->setQuery($query);
 			$db->execute();
+
 			return json_encode((object)['status' => true, 'msg' => 'It\'s ok']);
+
 		} catch(Exception $e) {
 			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 			JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -208,8 +213,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Create the stat module
 	  */
-	public function createModuleAjax()
-	{
+	public function createModuleAjax() {
 		$jinput = JFactory::getApplication()->input;
 		$nameGraph = str_replace("'", " ", str_replace("\"", " ", $jinput->post->getString('titleModule')));
 		$typeModule = $jinput->post->get('typeModule');
@@ -255,9 +259,8 @@ class modEmundusQueryBuilderHelper {
 			$db->setQuery($query);
 			$paramsJoinCheckbok = json_decode($db->loadResult(),true);
 			
-			if($paramsTableJoin['repeat_group_button'] === "1") {
-				if($paramsJoinCheckbok['database_join_display_type'] === 'checkbox')
-				{
+			if ($paramsTableJoin['repeat_group_button'] === "1") {
+				if ($paramsJoinCheckbok['database_join_display_type'] === 'checkbox') {
 					$repeatjoin = "left join (SELECT `".$dbTableName."`.`fnum`, `".$dbTableName."_".$tableJoin['id']."_repeat_repeat_".$elementName."`.`".$elementName."` FROM `".$dbTableName."` ";
 					$repeatjoin .= "left join `".$dbTableName."_".$tableJoin['id']."_repeat` on (`".$dbTableName."`.`id` = `".$dbTableName."_".$tableJoin['id']."_repeat`.`parent_id`) ";
 					$repeatjoin .= "left join `".$dbTableName."_".$tableJoin['id']."_repeat_repeat_".$elementName."` on (`".$dbTableName."_".$tableJoin['id']."_repeat`.`id` = `".$dbTableName."_".$tableJoin['id']."_repeat_repeat_".$elementName."`.`parent_id`) ";
@@ -270,9 +273,8 @@ class modEmundusQueryBuilderHelper {
 				$dbTableName = 'tableJoin';
 			}
 			
-			if($typeModule === "timeseries") {
-				if($paramsTableJoin['repeat_group_button'] === "1")
-				{
+			if ($typeModule === "timeseries") {
+				if ($paramsTableJoin['repeat_group_button'] === "1") {
 					$query = "CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, cast(`ecc`.`date_time` as date) AS date, `esc`.`label` AS `campaign`
 					from `jos_emundus_campaign_candidature` `ecc`
 					left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
@@ -292,12 +294,15 @@ class modEmundusQueryBuilderHelper {
 				$db->execute();
 				
 				$elementName = 'date';
+
 			} else {
+
 				$query = "SELECT plugin FROM jos_fabrik_elements WHERE id = ".$indicateur;
 				$db->setQuery($query);
 				$result = $db->loadAssoc();
 				$plugin = $result['plugin'];
-				if($plugin === "databasejoin") {
+
+				if ($plugin === "databasejoin") {
 					$query = "SELECT params FROM jos_fabrik_elements WHERE id = ".$indicateur;
 					$db->setQuery($query);
 					$result = $db->loadAssoc();
@@ -309,10 +314,9 @@ class modEmundusQueryBuilderHelper {
 					$tableDataBaseJoin = ($paramElt['join_val_column_concat']==="")?"`".$paramElt['join_db_name']."`.`".$paramElt['join_val_column']."` AS `elt`":"CONCAT(".$paramElt['join_val_column_concat'].") AS `elt`";
 					$tableDataBaseJoin = preg_replace('#{thistable}#', $paramElt['join_db_name'], $tableDataBaseJoin);
 					$tableDataBaseJoin = preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0 , 2), $tableDataBaseJoin);
-                    $tableDataBaseJoin  = preg_replace('#{my->id}#', $user->id, $tableDataBaseJoin);
+					$tableDataBaseJoin  = preg_replace('#{my->id}#', $user->id, $tableDataBaseJoin);
 					
-					if($paramsTableJoin['repeat_group_button'] === "1")
-					{
+					if ($paramsTableJoin['repeat_group_button'] === "1") {
 						$query = "CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, ".$tableDataBaseJoin.", `esc`.`label` AS `campaign`
 						from `jos_emundus_campaign_candidature` `ecc`
 						left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
@@ -331,23 +335,28 @@ class modEmundusQueryBuilderHelper {
 						group by `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`";
 						$db->setQuery($query);
 					}
+
 					$db->execute();
 					$elementName = 'elt';
+
 				} elseif($plugin === "dropdown" || $plugin === "radiobutton") {
+
 					$query = "SELECT params FROM jos_fabrik_elements WHERE id = ".$indicateur;
 					$db->setQuery($query);
 					$result = $db->loadAssoc();
 					$paramElt = json_decode($result['params'],true);
 					$join = "(CASE `".$dbTableName."`.`".$elementName."` ";
-					if($paramElt['sub_options']['sub_values'] != null)
-						for($i = 0 ; $i < count($paramElt['sub_options']['sub_values']);$i++) {
-							if($paramElt['sub_options']['sub_values'][$i] != '')
+
+					if ($paramElt['sub_options']['sub_values'] != null) {
+						for ($i = 0 ; $i < count($paramElt['sub_options']['sub_values']);$i++) {
+							if ($paramElt['sub_options']['sub_values'][$i] != '') {
 								$join .= "WHEN '".addslashes($paramElt['sub_options']['sub_values'][$i])."' THEN '".addslashes($paramElt['sub_options']['sub_labels'][$i])."' ";
+							}
 						}
+					}
 					$join .= "ELSE '' END)";
 					
-					if($paramsTableJoin['repeat_group_button'] === "1")
-					{
+					if ($paramsTableJoin['repeat_group_button'] === "1") {
 						$query = "CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, ".$join." AS `elt`, `esc`.`label` AS `campaign`
 						from `jos_emundus_campaign_candidature` `ecc`
 						left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
@@ -355,7 +364,9 @@ class modEmundusQueryBuilderHelper {
 						where `".$dbTableName."`.`".$elementName."` is not null and `ecc`.`submitted` = 1
 						group by `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`";
 						$db->setQuery($query);
+
 					} else {
+
 						$query = "CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, ".$join." AS `elt`, `esc`.`label` AS `campaign`
 						from `jos_emundus_campaign_candidature` `ecc`
 						left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
@@ -366,9 +377,10 @@ class modEmundusQueryBuilderHelper {
 					}
 					$db->execute();
 					$elementName = 'elt';
+
 				} else {
-					if($paramsTableJoin['repeat_group_button'] === "1")
-					{
+
+					if ($paramsTableJoin['repeat_group_button'] === "1") {
 						$query = "CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, `".$dbTableName."`.`".$elementName."`, `esc`.`label` AS `campaign`
 						from `jos_emundus_campaign_candidature` `ecc`
 						left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
@@ -376,7 +388,9 @@ class modEmundusQueryBuilderHelper {
 						where `".$dbTableName."`.`".$elementName."` is not null and `ecc`.`submitted` = 1
 						group by `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`";
 						$db->setQuery($query);
+
 					} else {
+
 						$query = "CREATE VIEW ".$nameView." AS select count(distinct `ecc`.`fnum`) AS `nb`, `".$dbTableName."`.`".$elementName."`, `esc`.`label` AS `campaign`
 						from `jos_emundus_campaign_candidature` `ecc`
 						left join `jos_emundus_setup_campaigns` `esc` on(`esc`.`id` = `ecc`.`campaign_id`)
@@ -384,24 +398,32 @@ class modEmundusQueryBuilderHelper {
 						where `".$dbTableName."`.`".$elementName."` is not null and `ecc`.`submitted` = 1
 						group by `".$dbTableName."`.`".$elementName."`, `ecc`.`campaign_id`";
 						$db->setQuery($query);
+
 					}
 					$db->execute();
 				}
 			}
 			
-			
-			
 			$query = "SHOW TABLE STATUS LIKE 'jos_modules'";
 			$db->setQuery($query);
 			$idModule = $db->loadAssoc()['Auto_increment'];
 			
-			$query = "SELECT rgt FROM jos_assets WHERE name LIKE 'com_modules.module.%' ORDER BY id DESC LIMIT 1";
-			$db->setQuery($query);
-			$incremente = $db->loadResult()+1;
 			
-			$query = "INSERT INTO `jos_assets` (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `title`, `rules`) VALUES (NULL, '18', '".$incremente."', '".($incremente+1)."', '2', 'com_module.modules.".$idModule."', '".$nameGraph."', '{}')";
-			$db->setQuery($query);
-			$db->execute();
+			$table = JTable::getInstance('asset');
+			$data = array();
+			$data['parent_id'] = 18;
+			$data['name'] = "com_module.modules.".$idModule;
+			$data['title'] = $nameGraph;
+			$data['level'] = 2;
+			$table->setLocation($data['parent_id'], 'last-child');
+			$table->bind($data);
+			if ($table->check()) {
+				$table->store();
+			} else {
+				JLog::add('Could not Insert data into jos_assets. -> ', JLog::ERROR, 'com_emundus');
+				return false;
+			}
+			
 			
 			$query = "SELECT id FROM jos_assets WHERE name LIKE 'com_modules.module.%' ORDER BY id DESC LIMIT 1";
 			$db->setQuery($query);
@@ -432,15 +454,15 @@ class modEmundusQueryBuilderHelper {
 			$db->setQuery($query);
 			$db->execute();
 			
-			$query = "INSERT INTO `jos_fabrik_elements` (`id`, `name`, `group_id`, `plugin`, `label`, `checked_out`, `checked_out_time`, `created`, `created_by`, `created_by_alias`, `modified`, `modified_by`, `width`, `height`, `default`, `hidden`, `eval`, `ordering`, `show_in_list_summary`, `filter_type`, `filter_exact_match`, `published`, `link_to_detail`, `primary_key`, `auto_increment`, `access`, `use_in_page_title`, `parent_id`, `params`) VALUES (NULL, '".$elementName."', '".$idGroup."', 'textarea', '".strtoupper($elementName)."', '0', '0000-00-00 00:00:00', '".$date."', '62', '', '0000-00-00 00:00:00', '0', '40', '6', '', '0', '0', '1', '1', NULL, NULL, '1', '0', '0', '0', '6', '0', '0', '{\"rollover\":\"\",\"comment\":\"\",\"sub_default_value\":\"\",\"sub_default_label\":\"\",\"element_before_label\":1,\"allow_frontend_addtocheckbox\":0,\"database_join_display_type\":\"dropdown\",\"joinType\":\"simple\",\"join_conn_id\":-1,\"date_table_format\":\"Y-m-d\",\"date_form_format\":\"Y-m-d H:i:s\",\"date_showtime\":0,\"date_time_format\":\"H:i\",\"date_defaulttotoday\":1,\"date_firstday\":0,\"multiple\":0,\"allow_frontend_addtodropdown\":0,\"password\":0,\"maxlength\":255,\"text_format\":\"text\",\"integer_length\":6,\"decimal_length\":2,\"guess_linktype\":0,\"disable\":0,\"readonly\":0,\"ul_max_file_size\":16000,\"ul_email_file\":0,\"ul_file_increment\":0,\"upload_allow_folderselect\":1,\"fu_fancy_upload\":0,\"upload_delete_image\":1,\"make_link\":0,\"fu_show_image_in_table\":0,\"image_library\":\"gd2\",\"make_thumbnail\":0,\"imagepath\":\"\\/\",\"selectImage_root_folder\":\"\\/\",\"image_front_end_select\":0,\"show_image_in_table\":0,\"image_float\":\"none\",\"link_target\":\"_self\",\"radio_element_before_label\":0,\"options_per_row\":4,\"ck_options_per_row\":4,\"allow_frontend_addtoradio\":0,\"use_wysiwyg\":0,\"my_table_data\":\"id\",\"update_on_edit\":0,\"view_access\":1,\"show_in_rss_feed\":0,\"show_label_in_rss_feed\":0,\"icon_folder\":-1,\"use_as_row_class\":0,\"filter_access\":1,\"full_words_only\":0,\"inc_in_adv_search\":1,\"sum_on\":0,\"sum_access\":0,\"avg_on\":0,\"avg_access\":0,\"median_on\":0,\"median_access\":0,\"count_on\":0,\"count_access\":0}')";
+			$query = "INSERT INTO `jos_fabrik_elements` (`id`, `name`, `group_id`, `plugin`, `label`, `checked_out`, `checked_out_time`, `created`, `created_by`, `created_by_alias`, `modified`, `modified_by`, `width`, `height`, `default`, `hidden`, `eval`, `ordering`, `show_in_list_summary`, `filter_type`, `filter_exact_match`, `published`, `link_to_detail`, `primary_key`, `auto_increment`, `access`, `use_in_page_title`, `parent_id`, `params`) VALUES (NULL, '".$elementName."', '".$idGroup."', 'textarea', '".strtoupper($elementName)."', '0', '0000-00-00 00:00:00', '".$date."', '62', '', '0000-00-00 00:00:00', '0', '40', '6', '', '0', '0', '1', '1', NULL, NULL, '1', '0', '0', '0', '6', '0', '0', '{\"placeholder\":\"\",\"password\":\"0\",\"maxlength\":\"255\",\"disable\":\"0\",\"readonly\":\"0\",\"autocomplete\":\"1\",\"speech\":\"0\",\"advanced_behavior\":\"0\",\"bootstrap_class\":\"input-medium\",\"text_format\":\"text\",\"integer_length\":\"6\",\"decimal_length\":\"2\",\"field_use_number_format\":\"0\",\"field_thousand_sep\":\",\",\"field_decimal_sep\":\".\",\"text_format_string\":\"\",\"field_format_string_blank\":\"1\",\"text_input_mask\":\"\",\"text_input_mask_autoclear\":\"0\",\"text_input_mask_definitions\":\"\",\"render_as_qrcode\":\"0\",\"scan_qrcode\":\"0\",\"guess_linktype\":\"0\",\"link_target_options\":\"default\",\"rel\":\"\",\"link_title\":\"\",\"link_attributes\":\"\",\"show_in_rss_feed\":\"0\",\"show_label_in_rss_feed\":\"0\",\"use_as_rss_enclosure\":\"0\",\"rollover\":\"\",\"tipseval\":\"0\",\"tiplocation\":\"top-left\",\"labelindetails\":\"0\",\"labelinlist\":\"0\",\"comment\":\"\",\"edit_access\":\"1\",\"edit_access_user\":\"\",\"view_access\":\"1\",\"view_access_user\":\"\",\"list_view_access\":\"1\",\"encrypt\":\"0\",\"store_in_db\":\"1\",\"default_on_copy\":\"0\",\"can_order\":\"1\",\"alt_list_heading\":\"\",\"custom_link\":\"\",\"custom_link_target\":\"\",\"custom_link_indetails\":\"1\",\"use_as_row_class\":\"0\",\"include_in_list_query\":\"1\",\"always_render\":\"0\",\"icon_hovertext\":\"1\",\"icon_file\":\"\",\"icon_subdir\":\"\",\"filter_length\":\"20\",\"filter_access\":\"1\",\"full_words_only\":\"0\",\"filter_required\":\"0\",\"filter_build_method\":\"0\",\"filter_groupby\":\"text\",\"inc_in_adv_search\":\"1\",\"filter_class\":\"input-medium\",\"filter_responsive_class\":\"\",\"tablecss_header_class\":\"\",\"tablecss_header\":\"\",\"tablecss_cell_class\":\"\",\"tablecss_cell\":\"\",\"sum_on\":\"0\",\"sum_label\":\"Sum\",\"sum_access\":\"8\",\"sum_split\":\"\",\"avg_on\":\"0\",\"avg_label\":\"Average\",\"avg_access\":\"8\",\"avg_round\":\"0\",\"avg_split\":\"\",\"median_on\":\"0\",\"median_label\":\"Median\",\"median_access\":\"8\",\"median_split\":\"\",\"count_on\":\"0\",\"count_label\":\"Count\",\"count_condition\":\"\",\"count_access\":\"8\",\"count_split\":\"\",\"custom_calc_on\":\"0\",\"custom_calc_label\":\"Custom\",\"custom_calc_query\":\"\",\"custom_calc_access\":\"1\",\"custom_calc_split\":\"\",\"custom_calc_php\":\"\",\"validations\":[]}')";
 			$db->setQuery($query);
 			$db->execute();
 			
-			$query = "INSERT INTO `jos_fabrik_elements` (`id`, `name`, `group_id`, `plugin`, `label`, `checked_out`, `checked_out_time`, `created`, `created_by`, `created_by_alias`, `modified`, `modified_by`, `width`, `height`, `default`, `hidden`, `eval`, `ordering`, `show_in_list_summary`, `filter_type`, `filter_exact_match`, `published`, `link_to_detail`, `primary_key`, `auto_increment`, `access`, `use_in_page_title`, `parent_id`, `params`) VALUES (NULL, 'nb', '".$idGroup."', 'field', 'NB', '0', '0000-00-00 00:00:00', '".$date."', '62', '', '0000-00-00 00:00:00', '0', '40', '6', '', '0', '0', '2', '1', NULL, NULL, '1', '0', '0', '0', '6', '0', '0', '{\"rollover\":\"\",\"comment\":\"\",\"sub_default_value\":\"\",\"sub_default_label\":\"\",\"element_before_label\":1,\"allow_frontend_addtocheckbox\":0,\"database_join_display_type\":\"dropdown\",\"joinType\":\"simple\",\"join_conn_id\":-1,\"date_table_format\":\"Y-m-d\",\"date_form_format\":\"Y-m-d H:i:s\",\"date_showtime\":0,\"date_time_format\":\"H:i\",\"date_defaulttotoday\":1,\"date_firstday\":0,\"multiple\":0,\"allow_frontend_addtodropdown\":0,\"password\":0,\"maxlength\":255,\"text_format\":\"text\",\"integer_length\":6,\"decimal_length\":2,\"guess_linktype\":0,\"disable\":0,\"readonly\":0,\"ul_max_file_size\":16000,\"ul_email_file\":0,\"ul_file_increment\":0,\"upload_allow_folderselect\":1,\"fu_fancy_upload\":0,\"upload_delete_image\":1,\"make_link\":0,\"fu_show_image_in_table\":0,\"image_library\":\"gd2\",\"make_thumbnail\":0,\"imagepath\":\"\\/\",\"selectImage_root_folder\":\"\\/\",\"image_front_end_select\":0,\"show_image_in_table\":0,\"image_float\":\"none\",\"link_target\":\"_self\",\"radio_element_before_label\":0,\"options_per_row\":4,\"ck_options_per_row\":4,\"allow_frontend_addtoradio\":0,\"use_wysiwyg\":0,\"my_table_data\":\"id\",\"update_on_edit\":0,\"view_access\":1,\"show_in_rss_feed\":0,\"show_label_in_rss_feed\":0,\"icon_folder\":-1,\"use_as_row_class\":0,\"filter_access\":1,\"full_words_only\":0,\"inc_in_adv_search\":1,\"sum_on\":0,\"sum_access\":0,\"avg_on\":0,\"avg_access\":0,\"median_on\":0,\"median_access\":0,\"count_on\":0,\"count_access\":0}')";
+			$query = "INSERT INTO `jos_fabrik_elements` (`id`, `name`, `group_id`, `plugin`, `label`, `checked_out`, `checked_out_time`, `created`, `created_by`, `created_by_alias`, `modified`, `modified_by`, `width`, `height`, `default`, `hidden`, `eval`, `ordering`, `show_in_list_summary`, `filter_type`, `filter_exact_match`, `published`, `link_to_detail`, `primary_key`, `auto_increment`, `access`, `use_in_page_title`, `parent_id`, `params`) VALUES (NULL, 'nb', '".$idGroup."', 'field', 'NB', '0', '0000-00-00 00:00:00', '".$date."', '62', '', '0000-00-00 00:00:00', '0', '40', '6', '', '0', '0', '2', '1', NULL, NULL, '1', '0', '0', '0', '6', '0', '0', '{\"placeholder\":\"\",\"password\":\"0\",\"maxlength\":\"255\",\"disable\":\"0\",\"readonly\":\"0\",\"autocomplete\":\"1\",\"speech\":\"0\",\"advanced_behavior\":\"0\",\"bootstrap_class\":\"input-medium\",\"text_format\":\"text\",\"integer_length\":\"6\",\"decimal_length\":\"2\",\"field_use_number_format\":\"0\",\"field_thousand_sep\":\",\",\"field_decimal_sep\":\".\",\"text_format_string\":\"\",\"field_format_string_blank\":\"1\",\"text_input_mask\":\"\",\"text_input_mask_autoclear\":\"0\",\"text_input_mask_definitions\":\"\",\"render_as_qrcode\":\"0\",\"scan_qrcode\":\"0\",\"guess_linktype\":\"0\",\"link_target_options\":\"default\",\"rel\":\"\",\"link_title\":\"\",\"link_attributes\":\"\",\"show_in_rss_feed\":\"0\",\"show_label_in_rss_feed\":\"0\",\"use_as_rss_enclosure\":\"0\",\"rollover\":\"\",\"tipseval\":\"0\",\"tiplocation\":\"top-left\",\"labelindetails\":\"0\",\"labelinlist\":\"0\",\"comment\":\"\",\"edit_access\":\"1\",\"edit_access_user\":\"\",\"view_access\":\"1\",\"view_access_user\":\"\",\"list_view_access\":\"1\",\"encrypt\":\"0\",\"store_in_db\":\"1\",\"default_on_copy\":\"0\",\"can_order\":\"1\",\"alt_list_heading\":\"\",\"custom_link\":\"\",\"custom_link_target\":\"\",\"custom_link_indetails\":\"1\",\"use_as_row_class\":\"0\",\"include_in_list_query\":\"1\",\"always_render\":\"0\",\"icon_hovertext\":\"1\",\"icon_file\":\"\",\"icon_subdir\":\"\",\"filter_length\":\"20\",\"filter_access\":\"1\",\"full_words_only\":\"0\",\"filter_required\":\"0\",\"filter_build_method\":\"0\",\"filter_groupby\":\"text\",\"inc_in_adv_search\":\"1\",\"filter_class\":\"input-medium\",\"filter_responsive_class\":\"\",\"tablecss_header_class\":\"\",\"tablecss_header\":\"\",\"tablecss_cell_class\":\"\",\"tablecss_cell\":\"\",\"sum_on\":\"0\",\"sum_label\":\"Sum\",\"sum_access\":\"8\",\"sum_split\":\"\",\"avg_on\":\"0\",\"avg_label\":\"Average\",\"avg_access\":\"8\",\"avg_round\":\"0\",\"avg_split\":\"\",\"median_on\":\"0\",\"median_label\":\"Median\",\"median_access\":\"8\",\"median_split\":\"\",\"count_on\":\"0\",\"count_label\":\"Count\",\"count_condition\":\"\",\"count_access\":\"8\",\"count_split\":\"\",\"custom_calc_on\":\"0\",\"custom_calc_label\":\"Custom\",\"custom_calc_query\":\"\",\"custom_calc_access\":\"1\",\"custom_calc_split\":\"\",\"custom_calc_php\":\"\",\"validations\":[]}')";
 			$db->setQuery($query);
 			$db->execute();
 			
-			$query = "INSERT INTO `jos_fabrik_elements` (`id`, `name`, `group_id`, `plugin`, `label`, `checked_out`, `checked_out_time`, `created`, `created_by`, `created_by_alias`, `modified`, `modified_by`, `width`, `height`, `default`, `hidden`, `eval`, `ordering`, `show_in_list_summary`, `filter_type`, `filter_exact_match`, `published`, `link_to_detail`, `primary_key`, `auto_increment`, `access`, `use_in_page_title`, `parent_id`, `params`) VALUES (NULL, 'campaign', '".$idGroup."', 'field', 'CAMPAIGN', '0', '0000-00-00 00:00:00', '".$date."', '62', '', '0000-00-00 00:00:00', '0', '40', '6', '', '0', '0', '3', '1', 'multiselect', '1', '1', '0', '0', '0', '6', '0', '0', '{\"rollover\":\"\",\"comment\":\"\",\"sub_default_value\":\"\",\"sub_default_label\":\"\",\"element_before_label\":1,\"allow_frontend_addtocheckbox\":0,\"database_join_display_type\":\"dropdown\",\"joinType\":\"simple\",\"join_conn_id\":-1,\"date_table_format\":\"Y-m-d\",\"date_form_format\":\"Y-m-d H:i:s\",\"date_showtime\":0,\"date_time_format\":\"H:i\",\"date_defaulttotoday\":1,\"date_firstday\":0,\"multiple\":0,\"allow_frontend_addtodropdown\":0,\"password\":0,\"maxlength\":255,\"text_format\":\"text\",\"integer_length\":6,\"decimal_length\":2,\"guess_linktype\":0,\"disable\":0,\"readonly\":0,\"ul_max_file_size\":16000,\"ul_email_file\":0,\"ul_file_increment\":0,\"upload_allow_folderselect\":1,\"fu_fancy_upload\":0,\"upload_delete_image\":1,\"make_link\":0,\"fu_show_image_in_table\":0,\"image_library\":\"gd2\",\"make_thumbnail\":0,\"imagepath\":\"\\/\",\"selectImage_root_folder\":\"\\/\",\"image_front_end_select\":0,\"show_image_in_table\":0,\"image_float\":\"none\",\"link_target\":\"_self\",\"radio_element_before_label\":0,\"options_per_row\":4,\"ck_options_per_row\":4,\"allow_frontend_addtoradio\":0,\"use_wysiwyg\":0,\"my_table_data\":\"id\",\"update_on_edit\":0,\"view_access\":1,\"show_in_rss_feed\":0,\"show_label_in_rss_feed\":0,\"icon_folder\":-1,\"use_as_row_class\":0,\"filter_access\":1,\"full_words_only\":0,\"inc_in_adv_search\":1,\"sum_on\":0,\"sum_access\":0,\"avg_on\":0,\"avg_access\":0,\"median_on\":0,\"median_access\":0,\"count_on\":0,\"count_access\":0}')";
+			$query = "INSERT INTO `jos_fabrik_elements` (`id`, `name`, `group_id`, `plugin`, `label`, `checked_out`, `checked_out_time`, `created`, `created_by`, `created_by_alias`, `modified`, `modified_by`, `width`, `height`, `default`, `hidden`, `eval`, `ordering`, `show_in_list_summary`, `filter_type`, `filter_exact_match`, `published`, `link_to_detail`, `primary_key`, `auto_increment`, `access`, `use_in_page_title`, `parent_id`, `params`) VALUES (NULL, 'campaign', '".$idGroup."', 'field', 'CAMPAIGN', '0', '0000-00-00 00:00:00', '".$date."', '62', '', '0000-00-00 00:00:00', '0', '40', '6', '', '0', '0', '3', '1', 'multiselect', '1', '1', '0', '0', '0', '6', '0', '0', '{\"placeholder\":\"\",\"password\":\"0\",\"maxlength\":\"255\",\"disable\":\"0\",\"readonly\":\"0\",\"autocomplete\":\"1\",\"speech\":\"0\",\"advanced_behavior\":\"0\",\"bootstrap_class\":\"input-medium\",\"text_format\":\"text\",\"integer_length\":\"6\",\"decimal_length\":\"2\",\"field_use_number_format\":\"0\",\"field_thousand_sep\":\",\",\"field_decimal_sep\":\".\",\"text_format_string\":\"\",\"field_format_string_blank\":\"1\",\"text_input_mask\":\"\",\"text_input_mask_autoclear\":\"0\",\"text_input_mask_definitions\":\"\",\"render_as_qrcode\":\"0\",\"scan_qrcode\":\"0\",\"guess_linktype\":\"0\",\"link_target_options\":\"default\",\"rel\":\"\",\"link_title\":\"\",\"link_attributes\":\"\",\"show_in_rss_feed\":\"0\",\"show_label_in_rss_feed\":\"0\",\"use_as_rss_enclosure\":\"0\",\"rollover\":\"\",\"tipseval\":\"0\",\"tiplocation\":\"top-left\",\"labelindetails\":\"0\",\"labelinlist\":\"0\",\"comment\":\"\",\"edit_access\":\"1\",\"edit_access_user\":\"\",\"view_access\":\"1\",\"view_access_user\":\"\",\"list_view_access\":\"1\",\"encrypt\":\"0\",\"store_in_db\":\"1\",\"default_on_copy\":\"0\",\"can_order\":\"1\",\"alt_list_heading\":\"\",\"custom_link\":\"\",\"custom_link_target\":\"\",\"custom_link_indetails\":\"1\",\"use_as_row_class\":\"0\",\"include_in_list_query\":\"1\",\"always_render\":\"0\",\"icon_hovertext\":\"1\",\"icon_file\":\"\",\"icon_subdir\":\"\",\"filter_length\":\"20\",\"filter_access\":\"1\",\"full_words_only\":\"0\",\"filter_required\":\"0\",\"filter_build_method\":\"0\",\"filter_groupby\":\"text\",\"inc_in_adv_search\":\"1\",\"filter_class\":\"input-medium\",\"filter_responsive_class\":\"\",\"tablecss_header_class\":\"\",\"tablecss_header\":\"\",\"tablecss_cell_class\":\"\",\"tablecss_cell\":\"\",\"sum_on\":\"0\",\"sum_label\":\"Sum\",\"sum_access\":\"8\",\"sum_split\":\"\",\"avg_on\":\"0\",\"avg_label\":\"Average\",\"avg_access\":\"8\",\"avg_round\":\"0\",\"avg_split\":\"\",\"median_on\":\"0\",\"median_label\":\"Median\",\"median_access\":\"8\",\"median_split\":\"\",\"count_on\":\"0\",\"count_label\":\"Count\",\"count_condition\":\"\",\"count_access\":\"8\",\"count_split\":\"\",\"custom_calc_on\":\"0\",\"custom_calc_label\":\"Custom\",\"custom_calc_query\":\"\",\"custom_calc_access\":\"1\",\"custom_calc_split\":\"\",\"custom_calc_php\":\"\",\"validations\":[]}')";
 			$db->setQuery($query);
 			$db->execute();
 			
@@ -448,7 +470,7 @@ class modEmundusQueryBuilderHelper {
 			$db->setQuery($query);
 			$idList = $db->loadAssoc()['Auto_increment'];
 			
-			$query = "INSERT INTO `jos_fabrik_lists` (`id`, `label`, `introduction`, `form_id`, `db_table_name`, `db_primary_key`, `auto_inc`, `connection_id`, `created`, `created_by`, `created_by_alias`, `modified`, `modified_by`, `checked_out`, `checked_out_time`, `published`, `publish_up`, `publish_down`, `access`, `hits`, `rows_per_page`, `template`, `order_by`, `order_dir`, `filter_action`, `group_by`, `private`, `params`) VALUES ('".$idList."', '".$nameGraph."', '', '".$idForm."', '".$nameView."', '".$nameView.".nb', '0', '1', '".$date."', '0', '', '".$date."', '62', '0', NULL, '1', '0000-00-00 00:00:00', '	0000-00-00 00:00:00', '6', '6', '10', 'bootstrap', '[\"\"]', '[\"ASC\"]', 'onchange', '', '0', '{\"show-table-filters\":\"1\",\"advanced-filter\":\"0\",\"advanced-filter-default-statement\":\"=\",\"search-mode\":\"0\",\"search-mode-advanced\":\"0\",\"search-mode-advanced-default\":\"all\",\"search_elements\":\"\",\"list_search_elements\":\"null\",\"search-all-label\":\"All\",\"require-filter\":\"0\",\"require-filter-msg\":\"\",\"filter-dropdown-method\":\"0\",\"toggle_cols\":\"0\",\"list_filter_cols\":\"1\",\"empty_data_msg\":\"\",\"outro\":\"\",\"list_ajax\":\"0\",\"show-table-add\":\"1\",\"show-table-nav\":\"1\",\"show_displaynum\":\"1\",\"showall-records\":\"0\",\"show-total\":\"0\",\"sef-slug\":\"\",\"show-table-picker\":\"1\",\"admin_template\":\"\",\"show-title\":\"1\",\"pdf\":\"\",\"pdf_template\":\"\",\"pdf_orientation\":\"portrait\",\"pdf_size\":\"a4\",\"pdf_include_bootstrap\":\"1\",\"bootstrap_stripped_class\":\"1\",\"bootstrap_bordered_class\":\"0\",\"bootstrap_condensed_class\":\"0\",\"bootstrap_hover_class\":\"1\",\"responsive_elements\":\"\",\"responsive_class\":\"\",\"list_responsive_elements\":\"null\",\"tabs_field\":\"\",\"tabs_max\":\"10\",\"tabs_all\":\"1\",\"list_ajax_links\":\"0\",\"actionMethod\":\"default\",\"detailurl\":\"\",\"detaillabel\":\"\",\"list_detail_link_icon\":\"search\",\"list_detail_link_target\":\"_self\",\"editurl\":\"\",\"editlabel\":\"\",\"list_edit_link_icon\":\"edit\",\"checkboxLocation\":\"end\",\"addurl\":\"\",\"addlabel\":\"\",\"list_add_icon\":\"plus\",\"list_delete_icon\":\"delete\",\"popup_width\":\"\",\"popup_height\":\"\",\"popup_offset_x\":\"\",\"popup_offset_y\":\"\",\"note\":\"\",\"alter_existing_db_cols\":\"0\",\"process-jplugins\":\"1\",\"cloak_emails\":\"0\",\"enable_single_sorting\":\"default\",\"collation\":\"latin1_swedish_ci\",\"force_collate\":\"\",\"list_disable_caching\":\"0\",\"distinct\":\"1\",\"group_by_raw\":\"1\",\"group_by_access\":\"1\",\"group_by_order\":\"\",\"group_by_template\":\"\",\"group_by_template_extra\":\"\",\"group_by_order_dir\":\"ASC\",\"group_by_start_collapsed\":\"0\",\"group_by_collapse_others\":\"0\",\"group_by_show_count\":\"1\",\"filter-join\":[\"\"],\"filter-fields\":[\"".$nameView.".campaign\"],\"filter-conditions\":[\"in\"],\"filter-value\":[\"SELECT `jos_emundus_setup_campaigns`.`label` FROM `jos_emundus_setup_groups_repeat_course` LEFT JOIN `jos_emundus_setup_campaigns` ON (`jos_emundus_setup_campaigns`.`training` = `jos_emundus_setup_groups_repeat_course`.`course`) LEFT JOIN `jos_emundus_groups` ON (`jos_emundus_setup_groups_repeat_course`.`parent_id` = `jos_emundus_groups`.`group_id`) WHERE `jos_emundus_groups`.`user_id` = \{\$my->id\}\"],\"filter-eval\":[\"2\"],\"filter-access\":[\"1\"],\"filter-grouped\":[\"0\"],\"menu_module_prefilters_override\":\"1\",\"prefilter_query\":\"\",\"join-display\":\"default\",\"delete-joined-rows\":\"0\",\"show_related_add\":\"0\",\"show_related_info\":\"0\",\"rss\":\"0\",\"feed_title\":\"\",\"feed_date\":\"\",\"feed_image_src\":\"\",\"rsslimit\":\"150\",\"rsslimitmax\":\"2500\",\"csv_import_frontend\":\"10\",\"csv_export_frontend\":\"7\",\"csvfullname\":\"0\",\"csv_export_step\":\"100\",\"newline_csv_export\":\"nl2br\",\"csv_clean_html\":\"leave\",\"csv_multi_join_split\":\",\",\"csv_custom_qs\":\"\",\"csv_frontend_selection\":\"0\",\"incfilters\":\"0\",\"csv_format\":\"0\",\"csv_which_elements\":\"selected\",\"show_in_csv\":\"\",\"csv_elements\":\"null\",\"csv_include_data\":\"1\",\"csv_include_raw_data\":\"0\",\"csv_include_calculations\":\"0\",\"csv_filename\":\"\",\"csv_encoding\":\"\",\"csv_double_quote\":\"1\",\"csv_local_delimiter\":\"\",\"csv_end_of_line\":\"n\",\"open_archive_active\":\"0\",\"open_archive_set_spec\":\"\",\"open_archive_timestamp\":\"\",\"open_archive_license\":\"http:\\/\\/creativecommons.org\\/licenses\\/by-nd\\/2.0\\/rdf\",\"dublin_core_element\":\"\",\"dublin_core_type\":\"dc:description.abstract\",\"raw\":\"0\",\"open_archive_elements\":\"null\",\"search_use\":\"0\",\"search_title\":\"\",\"search_description\":\"\",\"search_date\":\"\",\"search_link_type\":\"details\",\"dashboard\":\"0\",\"dashboard_icon\":\"\",\"allow_view_details\":\"10\",\"allow_edit_details\":\"10\",\"allow_edit_details2\":\"\",\"allow_add\":\"10\",\"allow_delete\":\"10\",\"allow_delete2\":\"\",\"allow_drop\":\"10\",\"menu_access_only\":\"0\",\"isview\":\"1\"}')";
+			$query = "INSERT INTO `jos_fabrik_lists` (`id`, `label`, `introduction`, `form_id`, `db_table_name`, `db_primary_key`, `auto_inc`, `connection_id`, `created`, `created_by`, `created_by_alias`, `modified`, `modified_by`, `checked_out`, `checked_out_time`, `published`, `publish_up`, `publish_down`, `access`, `hits`, `rows_per_page`, `template`, `order_by`, `order_dir`, `filter_action`, `group_by`, `private`, `params`) VALUES ('".$idList."', '".$nameGraph."', '', '".$idForm."', '".$nameView."', '".$nameView.".nb', '0', '1', '".$date."', '0', '', '".$date."', '62', '0', NULL, '1', '0000-00-00 00:00:00', '	0000-00-00 00:00:00', '6', '6', '10', 'bootstrap_bordered', '[\"\"]', '[\"ASC\"]', 'onchange', '', '0', '{\"show-table-filters\":\"1\",\"advanced-filter\":\"0\",\"advanced-filter-default-statement\":\"=\",\"search-mode\":\"0\",\"search-mode-advanced\":\"0\",\"search-mode-advanced-default\":\"all\",\"search_elements\":\"\",\"list_search_elements\":\"null\",\"search-all-label\":\"All\",\"require-filter\":\"0\",\"require-filter-msg\":\"\",\"filter-dropdown-method\":\"0\",\"toggle_cols\":\"0\",\"list_filter_cols\":\"1\",\"empty_data_msg\":\"\",\"outro\":\"\",\"list_ajax\":\"0\",\"show-table-add\":\"1\",\"show-table-nav\":\"1\",\"show_displaynum\":\"1\",\"showall-records\":\"0\",\"show-total\":\"0\",\"sef-slug\":\"\",\"show-table-picker\":\"1\",\"admin_template\":\"\",\"show-title\":\"1\",\"pdf\":\"\",\"pdf_template\":\"\",\"pdf_orientation\":\"portrait\",\"pdf_size\":\"a4\",\"pdf_include_bootstrap\":\"1\",\"bootstrap_stripped_class\":\"1\",\"bootstrap_bordered_class\":\"0\",\"bootstrap_condensed_class\":\"0\",\"bootstrap_hover_class\":\"1\",\"responsive_elements\":\"\",\"responsive_class\":\"\",\"list_responsive_elements\":\"null\",\"tabs_field\":\"\",\"tabs_max\":\"10\",\"tabs_all\":\"1\",\"list_ajax_links\":\"0\",\"actionMethod\":\"default\",\"detailurl\":\"\",\"detaillabel\":\"\",\"list_detail_link_icon\":\"search\",\"list_detail_link_target\":\"_self\",\"editurl\":\"\",\"editlabel\":\"\",\"list_edit_link_icon\":\"edit\",\"checkboxLocation\":\"end\",\"addurl\":\"\",\"addlabel\":\"\",\"list_add_icon\":\"plus\",\"list_delete_icon\":\"delete\",\"popup_width\":\"\",\"popup_height\":\"\",\"popup_offset_x\":\"\",\"popup_offset_y\":\"\",\"note\":\"\",\"alter_existing_db_cols\":\"0\",\"process-jplugins\":\"1\",\"cloak_emails\":\"0\",\"enable_single_sorting\":\"default\",\"collation\":\"latin1_swedish_ci\",\"force_collate\":\"\",\"list_disable_caching\":\"0\",\"distinct\":\"1\",\"group_by_raw\":\"1\",\"group_by_access\":\"1\",\"group_by_order\":\"\",\"group_by_template\":\"\",\"group_by_template_extra\":\"\",\"group_by_order_dir\":\"ASC\",\"group_by_start_collapsed\":\"0\",\"group_by_collapse_others\":\"0\",\"group_by_show_count\":\"1\",\"filter-join\":[\"\"],\"filter-fields\":[\"".$nameView.".campaign\"],\"filter-conditions\":[\"in\"],\"filter-value\":[\"SELECT `jos_emundus_setup_campaigns`.`label` FROM `jos_emundus_setup_groups_repeat_course` LEFT JOIN `jos_emundus_setup_campaigns` ON (`jos_emundus_setup_campaigns`.`training` = `jos_emundus_setup_groups_repeat_course`.`course`) LEFT JOIN `jos_emundus_groups` ON (`jos_emundus_setup_groups_repeat_course`.`parent_id` = `jos_emundus_groups`.`group_id`) WHERE `jos_emundus_groups`.`user_id` = \{\$my->id\}\"],\"filter-eval\":[\"2\"],\"filter-access\":[\"1\"],\"filter-grouped\":[\"0\"],\"menu_module_prefilters_override\":\"1\",\"prefilter_query\":\"\",\"join-display\":\"default\",\"delete-joined-rows\":\"0\",\"show_related_add\":\"0\",\"show_related_info\":\"0\",\"rss\":\"0\",\"feed_title\":\"\",\"feed_date\":\"\",\"feed_image_src\":\"\",\"rsslimit\":\"150\",\"rsslimitmax\":\"2500\",\"csv_import_frontend\":\"10\",\"csv_export_frontend\":\"7\",\"csvfullname\":\"0\",\"csv_export_step\":\"100\",\"newline_csv_export\":\"nl2br\",\"csv_clean_html\":\"leave\",\"csv_multi_join_split\":\",\",\"csv_custom_qs\":\"\",\"csv_frontend_selection\":\"0\",\"incfilters\":\"0\",\"csv_format\":\"0\",\"csv_which_elements\":\"selected\",\"show_in_csv\":\"\",\"csv_elements\":\"null\",\"csv_include_data\":\"1\",\"csv_include_raw_data\":\"0\",\"csv_include_calculations\":\"0\",\"csv_filename\":\"\",\"csv_encoding\":\"\",\"csv_double_quote\":\"1\",\"csv_local_delimiter\":\"\",\"csv_end_of_line\":\"n\",\"open_archive_active\":\"0\",\"open_archive_set_spec\":\"\",\"open_archive_timestamp\":\"\",\"open_archive_license\":\"http:\\/\\/creativecommons.org\\/licenses\\/by-nd\\/2.0\\/rdf\",\"dublin_core_element\":\"\",\"dublin_core_type\":\"dc:description.abstract\",\"raw\":\"0\",\"open_archive_elements\":\"null\",\"search_use\":\"0\",\"search_title\":\"\",\"search_description\":\"\",\"search_date\":\"\",\"search_link_type\":\"details\",\"dashboard\":\"0\",\"dashboard_icon\":\"\",\"allow_view_details\":\"10\",\"allow_edit_details\":\"10\",\"allow_edit_details2\":\"\",\"allow_add\":\"10\",\"allow_delete\":\"10\",\"allow_delete2\":\"\",\"allow_drop\":\"10\",\"menu_access_only\":\"0\",\"isview\":\"1\"}')";
 			$db->setQuery($query);
 			$db->execute();
 			
@@ -460,7 +482,6 @@ class modEmundusQueryBuilderHelper {
 			$db->setQuery($query);
 			$db->execute();
 			
-			
 			$db->transactionCommit();
 			
 			$query = "SET autocommit = 1;";
@@ -468,10 +489,12 @@ class modEmundusQueryBuilderHelper {
 			$db->execute();
 			
 			return json_encode((object)['status' => true, 'msg' => 'It\'s ok']);
+
 		} catch(Exception $e) {
+
 			$db->transactionRollback();
 			
-			if(substr_count($query,"CREATE VIEW ") === 0 && substr_count($query,"FROM jos_fabrik_elements") === 0 && substr_count($query,"FROM (jos_fabrik_elements") === 0) {
+			if (substr_count($query,"CREATE VIEW ") === 0 && substr_count($query,"FROM jos_fabrik_elements") === 0 && substr_count($query,"FROM (jos_fabrik_elements") === 0) {
 				$db->setQuery("DROP VIEW ".$nameView);
 				$db->execute();
 			}
@@ -486,8 +509,7 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Retrieve program codes for indicators
 	  */
-	public function getProg()
-	{
+	public function getProg() {
 		$db = JFactory::getDbo();
         $session = JFactory::getSession();
 		$user = $session->get('emundusUser');
@@ -506,28 +528,26 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Retrieve campaigns for indicators
 	  */
-	public function getCampaign()
-	{
+	public function getCampaign() {
 		$db = JFactory::getDbo();
-        $session = JFactory::getSession();
+		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
 		
-        try {
+		try {
 			$query = "SELECT id FROM `jos_emundus_setup_campaigns` ";
 			$db->setQuery($query);
-            return $db->loadColumn();
-        } catch(Exception $e) {
+			return $db->loadColumn();
+		} catch(Exception $e) {
 			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 			JLog::add($error, JLog::ERROR, 'com_emundus');
-            return 0;
-        }
+			return 0;
+		}
 	}
 	
 	/**
 	  * Collect indicators
 	  */
-	public function getElements()
-	{
+	public function getElements() {
 		$tabCampaign = (new modEmundusQueryBuilderHelper)->getCampaign();
 		$tabProgram = (new modEmundusQueryBuilderHelper)->getProg();
 		
@@ -540,8 +560,7 @@ class modEmundusQueryBuilderHelper {
 		$groupe = "";
 		
 		foreach ($elements as $element) {
-			if($element->element_plugin === "databasejoin" || $element->element_plugin === "dropdown" || $element->element_plugin === "radiobutton")
-			{
+			if ($element->element_plugin === "databasejoin" || $element->element_plugin === "dropdown" || $element->element_plugin === "radiobutton") {
 				$menu_tmp = $element->title;
 
 				if ($menu != $menu_tmp) {
@@ -561,38 +580,35 @@ class modEmundusQueryBuilderHelper {
 				}
 
 				$output .= '<option value="'.$element->id.'"';
-				$table_name = (isset($element->table_join)?$element->table_join:$element->table_name);
 				$output .= '>'.$element->element_label.'</option>';
 			}
 		}
-		$output .= '</select> ';
 		
-		return $output;
+		return $output.'</select> ';
 	}
 	
 	/** 
 	  * Retrieve the currents stats modules
 	  */
-	public function reloadModuleAjax()
-	{
+	public function reloadModuleAjax() {
 		jimport( 'joomla.application.module.helper' );
 		$document = JFactory::getDocument();
 		$renderer = $document->loadRenderer('module');
-		$contents = '';	
 		$database = JFactory::getDBO();
-        $session = JFactory::getSession();
+		$session = JFactory::getSession();
 		$user = $session->get('emundusUser');
+
 		try {
 			$query = "SELECT * FROM jos_modules WHERE module = 'mod_emundus_stat' AND published = 1 ORDER BY ordering";
 			$database->setQuery($query);
 			$modules = $database->loadObjectList();
-			$params = array('style'=>'xhtml');					
 			$modulesString = "";
-			if($modules != null)
-				for($cpt = 0; $cpt < count($modules); $cpt++) {
-					$contents = $renderer->render($modules[$cpt], $params);
+
+			if ($modules != null) {
+				for ($cpt = 0; $cpt < count($modules); $cpt++) {
 					$modulesString .= "////".$modules[$cpt]->id."////".JModuleHelper::renderModule($modules[$cpt]);
 				}
+			}
 			
 			return json_encode((object)['status' => true, 'msg' => $modulesString]);
 		} catch(Exception $e) {
@@ -612,30 +628,33 @@ class modEmundusQueryBuilderHelper {
 		foreach ($children as $child) {
 			$innerHTML .= $child->ownerDocument->saveXML( $child );
 		}
-
 		return $innerHTML;
 	} 
 	
 	/**
 	  * Create pdf with images of selected graphs
 	  */
-	public function convertPdfAjax()
-	{
+	public function convertPdfAjax() {
 		$eMConfig = JComponentHelper::getParams('com_emundus');
         $gotenberg_activation = $eMConfig->get('gotenberg_activation', 1);
         $gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
+		$res = new stdClass();
+
+		if ($gotenberg_activation !== '1') {
+			$res->status = false;
+			$res->msg = 'Please activate Gotenberg in eMundus config.';
+			return json_encode($res);
+		}
 		
 		$fichier = JPATH_BASE;
-		$res = new stdClass();
 
 		$jinput = JFactory::getApplication()->input;
 		$src = $jinput->get('src', '','RAW');
-		// var_dump($src).die();
 		
 		$doc = new DOMDocument();
 		@$doc->loadHTML($src);
 		$imgList = $doc->getElementsBytagName('div');
-		for($i = 0 ; $i < count($imgList) ; $i++) {
+		for ($i = 0 ; $i < count($imgList) ; $i++) {
 			file_put_contents($fichier.DS."tmp".DS.'image'.$i.".svg", utf8_decode((new modEmundusQueryBuilderHelper)->getInnerHtml($imgList->item($i))));
 			$oldNode = $imgList->item($i)->firstChild;
 			$imgList->item($i)->removeChild($oldNode);
@@ -645,20 +664,19 @@ class modEmundusQueryBuilderHelper {
 		}
 		
 		$index = DocumentFactory::makeFromString("index.html", '<html><body style="width:10%;">'.$src.'</body></html>');
-		
-		$client = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
+
+		$client  = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
 		$request = new HTMLRequest($index);
 		$request->setPaperSize(Request::A4);
 		$request->setMargins(Request::NO_MARGINS);
 		$dest = $fichier.DS."tmp".DS.'Graph.pdf';
 		$client->store($request, $dest);
 		
-		for($i = 0 ; $i < count($imgList) ; $i++) {
+		for ($i = 0; $i < count($imgList); $i++) {
 			unlink($fichier.DS."tmp".DS.'image'.$i.".svg");
 		}
 
 		$res->status = true;
-		// $res->msg = '<a href="'.$dest.'" target="_blank">Recuperer</a>';
 		$res->msg = 'It\'s ok';
 		return json_encode($res);
 	}
@@ -666,12 +684,9 @@ class modEmundusQueryBuilderHelper {
 	/**
 	  * Delete pdf in tmp folder
 	  */
-	public function deleteFileAjax()
-	{
+	public function deleteFileAjax() {
 		unlink(JPATH_BASE.DS."tmp".DS."Graph.pdf");
 		
-		$res->status = true;
-		$res->msg = 'It\'s ok';
-		return json_encode($res);
+		return json_encode((object)['status' => true, 'msg' => 'It\'s ok']);
 	}
 }
