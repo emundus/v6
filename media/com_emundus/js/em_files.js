@@ -591,19 +591,21 @@ function getUserCheckArray() {
     } else {
         var fnums = [];
         
-        if($('.em-check:checked').length === 0) {
+        if ($('.em-check:checked').length === 0) {
             var hash = $(location).attr('hash');
             var fnum = hash.replace("#", "");
-            var fnum = fnum.replace("|open", "");
+            fnum = fnum.replace("|open", "");
                     
-            if(fnum == "") {
+            if (fnum == "") {
                  return null;
             } else {
-                cid = parseInt(fnum.substr(14, 7));
-                sid = parseInt(fnum.substr(21, 7));
+                let cid = parseInt(fnum.substr(14, 7));
+                let sid = parseInt(fnum.substr(21, 7));
                 fnums.push({fnum: fnum, cid: cid, sid:sid});
             }
-        } else {    
+        } else {
+            let cid = ''
+            let sid = ''
             $('.em-check:checked').each(function() {
                 fnum = $(this).attr('id').split('_')[0];
                 cid = parseInt(fnum.substr(14, 7));
@@ -613,7 +615,7 @@ function getUserCheckArray() {
         }   
     }
 
-    return JSON.stringify(fnums);;
+    return JSON.stringify(fnums);
 }
 
 maxcsv = 65000;
@@ -1634,11 +1636,14 @@ $(document).ready(function() {
         $('.modal-dialog').css({ width: '80%' });
 
         var fnums = getUserCheckArray();
-        var fnums_json = JSON.parse(fnums);
-        if(fnums_json.length === 1) {
-            var fnum = fnums_json[0].fnum;
-            var cid = parseInt(fnum.substr(14, 7));
-            var sid = parseInt(fnum.substr(21, 7));
+
+        if (fnums !== 'all') {
+            var fnums_json = JSON.parse(fnums);
+            if (fnums_json.length === 1) {
+                var fnum = fnums_json[0].fnum;
+                var cid = fnums_json[0].cid;
+                var sid = fnums_json[0].sid;
+            }
         }
 
         fnums = encodeURIComponent(fnums);

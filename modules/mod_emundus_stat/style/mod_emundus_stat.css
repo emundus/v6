@@ -21,3 +21,39 @@
 .btn a:hover {
     color: #de6339 !important;
 }
+.container-stat {
+	margin-left:5%;
+	margin-right:5%;
+	padding-right:1%;
+	padding-left:1%;
+}
+
+.btnConsulter {
+	border-radius:0px!important;
+	background:#de6339!important;
+	color:white!important;
+	border:1px solid #de6339!important;
+	padding:4px 12px!important;
+	white-space: normal;
+	display:inline-block;
+}
+.btnConsulter:hover {
+	border-radius:0px!important;
+	background:transparent!important;
+	color:#de6339!important;
+	border:1px solid #de6339!important;
+	padding:4px 12px!important;
+	white-space: normal;
+	display:inline-block;
+}
+.btnConsulter:focus {
+	outline:none;
+}
+.btnConsulter a {
+	text-decoration:none;
+	color:white!important;
+	font-size:12px;
+}
+.btnConsulter:hover a {
+	color:#de6339!important;
+}

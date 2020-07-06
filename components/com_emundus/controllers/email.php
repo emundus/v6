@@ -24,11 +24,8 @@ class EmundusControllerEmail extends JControllerLegacy {
 	var $_db = null;
 	
 	function __construct($config = array()){
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		//require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 		
 		$this->_user = JFactory::getSession()->get('emundusUser');
@@ -56,7 +53,6 @@ class EmundusControllerEmail extends JControllerLegacy {
 	function clear() {
 		EmundusHelperFilters::clear();
 		
-		//$itemid = JRequest::getVar('Itemid', null, 'POST', 'none',0);
 		$itemid=JFactory::getApplication()->getMenu()->getActive()->id;
 		$limitstart = JRequest::getVar('limitstart', null, 'POST', 'none',0);
 		$filter_order = JRequest::getVar('filter_order', null, 'POST', null, 0);

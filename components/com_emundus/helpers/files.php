@@ -843,10 +843,9 @@ class EmundusHelperFiles
     }
 
     public function buildOptions($element_name, $params) {
+        $db = JFactory::getDBO();
 
         if (!empty($params->join_key_column)) {
-            $db = JFactory::getDBO();
-
             $join_val = $params->join_val_column;
             if (!empty($params->join_val_column_concat)) {
                 $join_val = '( SELECT CONCAT('.str_replace('{thistable}', $params->join_db_name, preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0 , 2), $params->join_val_column_concat)).'))';
@@ -866,10 +865,19 @@ class EmundusHelperFiles
             $result = $db->loadObjectList();
 
         } else {
-            $i = 0;
-            foreach ($params->sub_options->sub_values as $value) {
-                $result[] = (object) array('elt_key'=>$value, 'elt_val'=>$params->sub_options->sub_labels[$i]);
-                $i++;
+            if(!empty($params->cascadingdropdown_id)) {
+                $r1 = explode('___', $params->cascadingdropdown_id);
+                $r2 = explode('___', $params->cascadingdropdown_label);
+                $where = (isset($params->cascadingdropdown_filter) && !empty($params->cascadingdropdown_filter)) ? ' WHERE '.$params->cascadingdropdown_filter :'';
+                $query = 'SELECT '.$r1[1].' AS elt_key, '.$r2[1].' AS elt_val FROM '.$r1[0].$where;
+                $db->setQuery($query);
+                $result = $db->loadObjectList();
+            } else {
+                $i = 0;
+                foreach ($params->sub_options->sub_values as $value) {
+                    $result[] = (object)array('elt_key' => $value, 'elt_val' => $params->sub_options->sub_labels[$i]);
+                    $i++;
+                }
             }
         }
         return $result;
@@ -917,7 +925,7 @@ class EmundusHelperFiles
 
         $current_filter = "";
         if (!empty($selected)) {
-            if ($selected->element_plugin == "databasejoin") {
+            if ($selected->element_plugin == "databasejoin" || $selected->element_plugin == "cascadingdropdown") {
                 $query_params = json_decode($selected->element_attribs);
                 $option_list =  $h_files->buildOptions($selected->element_name, $query_params);
                 $current_filter .= '<br/><select class="chzn-select em-filt-select" id="em-adv-fil-'.$i.'"  name="'.$elements_values.'" id="'.$elements_values.'">
