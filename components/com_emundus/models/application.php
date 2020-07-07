@@ -299,7 +299,7 @@ class EmundusModelApplication extends JModelList {
         }
 
         return $res;
-       
+
     }
 
     public function deleteTag($id_tag, $fnum) {
@@ -507,52 +507,104 @@ class EmundusModelApplication extends JModelList {
             return false;
         }
 
+        // Check if column campaign_id exist in emundus_setup_attachment_profiles
+        $config = new JConfig();
+        $db_name = $config->db;
+
+        $query = $this->_db->getQuery(true);
+        $query
+            ->select('COUNT(*)')
+            ->from($this->_db->quoteName('information_schema.columns'))
+            ->where($this->_db->quoteName('table_schema') . ' = ' . $this->_db->quote($db_name))
+            ->andWhere($this->_db->quoteName('table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_attachment_profiles'))
+            ->andWhere($this->_db->quoteName('column_name') . ' = ' . $this->_db->quote('campaign_id'));
+        $this->_db->setQuery($query);
+        $exist = $this->_db->loadResult();
+        //
+
         if (!is_array($fnum)) {
 
-            $query = 'SELECT ess.profile
+            $query = 'SELECT ess.profile AS profile_id,ecc.campaign_id AS campaign_id
                     FROM #__emundus_setup_status AS ess
                     LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
                     WHERE ecc.fnum like '.$this->_db->Quote($fnum);
             $this->_db->setQuery($query);
 
-            if (empty($this->_db->loadResult())) {
-                $query = 'SELECT esc.profile_id
+            if (empty($this->_db->loadObject()->profile_id)) {
+                $query = 'SELECT esc.profile_id AS profile_id,ecc.campaign_id AS campaign_id
                 FROM #__emundus_setup_campaigns AS esc
                 LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
                 WHERE ecc.fnum like '.$this->_db->Quote($fnum);
                 $this->_db->setQuery($query);
             }
 
-            $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
+            $profile_id = $this->_db->loadObject()->profile_id;
+            $campaign_id = $this->_db->loadObject()->campaign_id;
+
+            if(intval($exist) > 0){
+                $query = 'SELECT COUNT(profiles.id)
+                    FROM #__emundus_setup_attachment_profiles AS profiles
+                    WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
+                $this->_db->setQuery($query);
+                $attachments = $this->_db->loadResult();
+            }
+
+            if(intval($exist) == 0 || intval($attachments) == 0) {
+                $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
-                WHERE profiles.profile_id = ' .$this->_db->loadResult(). ' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
-            $this->_db->setQuery($query);
+                WHERE profiles.profile_id = ' .$profile_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+            } else {
+                $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
+                FROM #__emundus_setup_attachment_profiles AS profiles
+                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
+                WHERE profiles.campaign_id = ' .$campaign_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+            }
 
+            $this->_db->setQuery($query);
             return floor($this->_db->loadResult());
 
         } else {
 
             $result = array();
             foreach ($fnum as $f) {
-                $query = 'SELECT ess.profile
+                $query = 'SELECT ess.profile AS profile_id,ecc.campaign_id AS campaign_id
                     FROM #__emundus_setup_status AS ess
                     LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
                     WHERE ecc.fnum like '.$this->_db->Quote($f);
                 $this->_db->setQuery($query);
 
-                if (empty($this->_db->loadResult())) {
-                    $query = 'SELECT esc.profile_id
+                if (empty($this->_db->loadObject()->profile_id)) {
+                    $query = 'SELECT esc.profile_id AS profile_id,ecc.campaign_id AS campaign_id
                         FROM #__emundus_setup_campaigns AS esc
                         LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
                         WHERE ecc.fnum like '.$this->_db->Quote($f);
                     $this->_db->setQuery($query);
                 }
 
-                $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
-                FROM #__emundus_setup_attachment_profiles AS profiles
-                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($f).'
-                WHERE profiles.profile_id = ' .$this->_db->loadResult(). ' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+                $profile_id = $this->_db->loadObject()->profile_id;
+                $campaign_id = $this->_db->loadObject()->campaign_id;
+
+                if(intval($exist) > 0){
+                    $query = 'SELECT COUNT(profiles.id)
+                    FROM #__emundus_setup_attachment_profiles AS profiles
+                    WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
+                    $this->_db->setQuery($query);
+                    $attachments = $this->_db->loadResult();
+                }
+
+                if(intval($exist) == 0 || intval($attachments) == 0) {
+                    $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
+                    FROM #__emundus_setup_attachment_profiles AS profiles
+                    LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($f) . '
+                    WHERE profiles.profile_id = ' . $profile_id . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
+                } else {
+                    $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
+                    FROM #__emundus_setup_attachment_profiles AS profiles
+                    LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($f).'
+                    WHERE profiles.campaign_id = ' .$campaign_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
+                }
+
                 $this->_db->setQuery($query);
                 $result[$f] = floor($this->_db->loadResult());
             }
@@ -596,7 +648,7 @@ class EmundusModelApplication extends JModelList {
         return $results;
     }
 
-    
+
 	/**
 	 * @param        $formID
 	 * @param        $aid
@@ -624,7 +676,7 @@ class EmundusModelApplication extends JModelList {
             return null;
         }
 
-        
+
         for ($i = 0; $i < sizeof($table); $i++) {
             $form .= '<br><hr><div class="TitleAdmission"><h2>';
 
@@ -1050,7 +1102,6 @@ class EmundusModelApplication extends JModelList {
 
 	                /*-- Liste des groupes -- */
 	                foreach ($groupes as $itemg) {
-
 	                	if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
 			                $forms .= '<fieldset class="em-personalDetail">
 											<legend class="legend">'.JText::_($itemg->label).'</legend>
@@ -1400,11 +1451,11 @@ class EmundusModelApplication extends JModelList {
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
 	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
     	$em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
-      
-        $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25');
-     
 
-        
+        $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25');
+
+
+
     	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list = new EmundusHelperList;
 
@@ -1874,7 +1925,7 @@ class EmundusModelApplication extends JModelList {
                                                 $from = $params->join_db_name;
                                                 $where = $params->join_key_column.'='.$this->_db->Quote($element->content);
                                                 $query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
-                                                
+
                                                 $query = preg_replace('#{thistable}#', $from, $query);
                                                 $query = preg_replace('#{my->id}#', $aid, $query);
                                                 $query  = preg_replace('#{shortlang}#', $this->locales, $query);
@@ -2621,8 +2672,8 @@ class EmundusModelApplication extends JModelList {
         $em_application_payment = $eMConfig->get('application_payment', 'user');
 
         switch ($em_application_payment) {
-            
-            
+
+
             case 'user' :
                 if ($sent) {
 
@@ -3101,13 +3152,13 @@ class EmundusModelApplication extends JModelList {
 		        JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
 		        return $redirect;
 	        }
-		        
+
         } else {
 
 	        if (empty($user->menutype)) {
 		        return $redirect;
 	        }
-	        
+
 	        $query->select(['id','link'])
 		        ->from($db->quoteName('#__menu'))
 		        ->where($db->quoteName('published').'=1 AND '.$db->quoteName('menutype').' LIKE '.$db->quote($user->menutype).' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"');

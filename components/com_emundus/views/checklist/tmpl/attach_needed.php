@@ -1,5 +1,5 @@
-<?php 
-defined('_JEXEC') or die('Restricted access'); 
+<?php
+defined('_JEXEC') or die('Restricted access');
 JHTML::stylesheet( 'media/com_emundus/css/emundus.css' );
 
 $document = JFactory::getDocument();
@@ -12,17 +12,54 @@ $query='SELECT id, link FROM #__menu WHERE alias like "checklist%" AND menutype 
 $_db->setQuery( $query );
 $itemid = $_db->loadAssoc();
 
-$query='SELECT esa.value, esap.id, esa.id as _id
+// Check if column campaign_id exist in emundus_setup_attachment_profiles
+$config = new JConfig();
+$db_name = $config->db;
+
+$query = $_db->getQuery(true);
+$query
+    ->select('COUNT(*)')
+    ->from($_db->quoteName('information_schema.columns'))
+    ->where($_db->quoteName('table_schema') . ' = ' . $_db->quote($db_name))
+    ->andWhere($_db->quoteName('table_name') . ' = ' . $_db->quote('jos_emundus_setup_attachment_profiles'))
+    ->andWhere($_db->quoteName('column_name') . ' = ' . $_db->quote('campaign_id'));
+$_db->setQuery($query);
+$exist = $_db->loadResult();
+//
+
+if(intval($exist) > 0){
+    $query='SELECT esa.value, esap.id, esa.id as _id
 	FROM #__emundus_setup_attachment_profiles esap
 	JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
-	WHERE esap.displayed = 1 AND esap.mandatory = 1 AND esap.profile_id ='.$user->profile.' 
+    WHERE esap.displayed = 1 AND esap.campaign_id ='.$user->campaign_id.'
+	ORDER BY esap.ordering';
+
+    $_db->setQuery( $query );
+    $all_forms = $_db->loadObjectList();
+
+    $query='SELECT esa.value, esap.id, esa.id as _id
+	FROM #__emundus_setup_attachment_profiles esap
+	JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
+    WHERE esap.displayed = 1 AND esap.mandatory = 1 AND esap.campaign_id ='.$user->campaign_id.'
+	ORDER BY esap.ordering';
+
+    $_db->setQuery( $query );
+    $forms = $_db->loadObjectList();
+}
+
+if (intval($exist) == 0 || empty($all_forms)) {
+    $query='SELECT esa.value, esap.id, esa.id as _id
+	FROM #__emundus_setup_attachment_profiles esap
+	JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
+	WHERE esap.displayed = 1 AND esap.mandatory = 1 AND esap.profile_id ='.$user->profile.' AND esap.campaign_id IS NULL  
 	ORDER BY esa.ordering';
 
-$_db->setQuery( $query );
-$forms = $_db->loadObjectList();
+    $_db->setQuery( $query );
+    $forms = $_db->loadObjectList();
+}
 ?>
 </ul>
-<?php 
+<?php
 if (count($forms) > 0) {
 	foreach ($forms as $form) {
 		$query = 'SELECT count(id) FROM #__emundus_uploads up
@@ -37,7 +74,7 @@ if (count($forms) > 0) {
 		$endlink= '</a>';
 	?>
 	    <li class="em_module <?php echo $class; ?>"><div class="em_form em-checklist"><?php echo $link.$form->value.$endlink; ?></div></li>
-	<?php 
+	<?php
 	}
 }
  ?>
