@@ -19,7 +19,7 @@
           </div>
           <div class="column-inner-block-2 w-clearfix w-col w-col-4">
             <div class="container-gerer-modifier-visualiser">
-              <a :href="'forms/index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid='"
+              <a :href="path + '/index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid='"
                 class="cta-block"
                 :title="Modify">
                 <em class="fas fa-edit"></em>
@@ -44,6 +44,7 @@ export default {
   data() {
     return {
       selectedData: [],
+      path: window.location.pathname,
       publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
       unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
       passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
@@ -97,4 +98,9 @@ a.button-programme:hover {
   .w-row{
     margin-bottom: 0;
   }
+
+.description-block{
+  max-height: 160px;
+  overflow: hidden;
+}
 </style>

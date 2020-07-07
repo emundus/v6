@@ -42,7 +42,7 @@
               </div>
               <div style="width: max-content" v-show="updateGroup && indexGroup == group.group_id">
                 <div class="input-can-translate">
-                  <input v-model="group.label_fr" class="form-control" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
+                  <input v-model="group.label_fr" class="form-control" style="width: 400px;" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
                   <button class="translate-icon" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="translate.label_group = !translate.label_group"></button>
                   <div class="d-flex actions-update-label" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
                     <a @click="deleteAGroup(group,index_group)" style="margin-left: 1em;color: black">
@@ -670,9 +670,11 @@ export default {
       this.indexGroup = group;
     },
     disableGroupHover() {
-      this.hoverGroup = false;
-      this.updateGroup = false;
-      this.indexGroup = -1;
+      if(!this.updateGroup) {
+        this.hoverGroup = false;
+        this.updateGroup = false;
+        this.indexGroup = -1;
+      }
     },
     //
 

@@ -22,7 +22,7 @@
           <div class="column-inner-block-2 w-clearfix w-col w-col-4" style="min-height: 150px !important">
             <a href="#" class="button-programme">{{ type[langue][data.type - 1] }}</a>
             <div class="container-gerer-modifier-visualiser">
-              <a :href="'emails/index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id"
+              <a :href="path + '/index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id"
                 class="cta-block"
                 :title="Modify">
                 <em class="fas fa-edit"></em>
@@ -50,6 +50,7 @@ export default {
       langue: 0,
 
       selectedData: [],
+      path: window.location.pathname,
       publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
       unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
       passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),

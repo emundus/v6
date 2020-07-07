@@ -140,7 +140,7 @@ input::placeholder {
 }
 
 input.placeholder::placeholder {
-  color: #393939;
+  color: #9b9b9b;
   font-weight: 300;
 }
 

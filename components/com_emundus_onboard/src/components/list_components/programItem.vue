@@ -29,12 +29,12 @@
               </div>
             </div>
             <div class="container-gerer-modifier-visualiser">
-              <a :href="'programs/index.php?option=com_emundus_onboard&view=program&layout=advancedsettings&pid=' + data.id"
+              <a :href="path + '/index.php?option=com_emundus_onboard&view=program&layout=advancedsettings&pid=' + data.id"
                  class="cta-block"
                  :title="AdvancedSettings">
                 <em class="fas fa-cog"></em>
               </a>
-              <a :href="'programs/index.php?option=com_emundus_onboard&view=program&layout=add&pid=' + data.id"
+              <a :href="path + '/index.php?option=com_emundus_onboard&view=program&layout=add&pid=' + data.id"
                 class="cta-block ml-10px"
                 :title="Modify">
                 <em class="fas fa-edit"></em>
@@ -60,6 +60,7 @@ export default {
   data() {
     return {
       selectedData: [],
+      path: window.location.pathname,
       publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
       unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
       passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
@@ -114,4 +115,9 @@ a.button-programme:hover {
   .w-row{
     margin-bottom: 0;
   }
+
+.description-block{
+  max-height: 160px;
+  overflow: hidden;
+}
 </style>

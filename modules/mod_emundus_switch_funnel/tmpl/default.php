@@ -10,13 +10,7 @@ $document->addStyleSheet("modules/mod_emundus_switch_funnel/style/mod_emundus_sw
     </a>
 <?php endif; ?>
 <?php if (!$path) :?>
-    <?php if ($lang == 'fr') :?>
-        <a class="switch-link-setting" href="<?php echo JRoute::_('fr/configuration/campaigns') ?>">
+        <a class="switch-link-setting" href="<?php echo $lang . '/' . $route->alias ?>">
             <i class="setting-switch setting open icon"></i>
         </a>
-    <?php else :?>
-        <a class="switch-link-setting" href="<?php echo JRoute::_('configuration/campaigns') ?>">
-            <i class="setting-switch setting open icon"></i>
-        </a>
-    <?php endif; ?>
 <?php endif; ?>

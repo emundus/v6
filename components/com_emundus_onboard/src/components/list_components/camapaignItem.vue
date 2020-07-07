@@ -33,7 +33,7 @@
             <div class="stats-block mb-1">
               <label class="mb-0">{{Program}} : </label>
               <a class="button-programme ml-10px"
-                 :href="'programs/index.php?option=com_emundus_onboard&view=program&layout=advancedsettings&pid=' + data.program_id">
+                 :href="path + '/index.php?option=com_emundus_onboard&view=program&layout=advancedsettings&pid=' + data.program_id">
                 {{ data.program_label }}
               </a>
             </div>
@@ -44,12 +44,12 @@
               </div>
             </div>
             <div class="container-gerer-modifier-visualiser">
-              <a :href="'campaigns/index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + data.id + '&index=0'"
+              <a :href="path + '/index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + data.id + '&index=0'"
                  class="cta-block"
                  :title="AdvancedSettings">
                 <em class="fas fa-cog"></em>
               </a>
-              <a :href="'campaigns/index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=' + data.id"
+              <a :href="path + '/index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=' + data.id"
                  class="cta-block ml-10px"
                  :title="Modify">
                 <em class="fas fa-edit"></em>
@@ -75,6 +75,7 @@ export default {
   data() {
     return {
       selectedData: [],
+      path: window.location.pathname,
       publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
       unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
       passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
@@ -162,5 +163,10 @@ div.nb-dossier div:hover {
 }
   .w-row{
     margin-bottom: 0 !important;
+  }
+
+  .description-block{
+    max-height: 160px;
+    overflow: hidden;
   }
 </style>

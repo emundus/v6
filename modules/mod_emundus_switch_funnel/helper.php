@@ -28,4 +28,15 @@ class ModEmundusSwitchFunnel
         return strpos($uri->getPath(), 'configuration');
     }
 
+    public static function getCampaignsRoute(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('*')
+            ->from($db->quoteName('#__menu'))
+            ->where($db->quoteName('link').' LIKE '.$db->quote('index.php?option=com_emundus_onboard&view=campaign'));
+        $db->setQuery($query);
+        return $db->loadObject();
+    }
+
 }

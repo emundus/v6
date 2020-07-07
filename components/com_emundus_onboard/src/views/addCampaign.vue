@@ -122,6 +122,8 @@
               class="form__input field-general w-input"
               placeholder=" "
               v-model="form.short_description"
+              @keyup="checkMaxlength('campResume')"
+              @focusout="removeBorderFocus('campResume')"
             />
           </div>
           <p v-if="errors.short_description" class="error col-md-12 mb-2">
@@ -137,6 +139,8 @@
               class="form__input field-general w-input"
               placeholder=" "
               v-model="form.description"
+              @keyup="checkMaxlength('campDescription')"
+              @focusout="removeBorderFocus('campDescription')"
             />
           </div>
         </div>
@@ -196,7 +200,7 @@
                   <span class="error">{{ProgLabelRequired}}</span>
                 </p>
 
-                <div class="form-group prog-code">
+                <!--<div class="form-group prog-code">
                   <label for="prog_code" style="top: 10.7em">{{ProgCode}} *</label>
                   <input
                     type="text"
@@ -210,10 +214,10 @@
                 </div>
                 <p v-if="errors.progCode" class="error col-md-12 mb-2">
                   <span class="error">{{CodeRequired}}</span>
-                </p>
+                </p>-->
 
                 <div class="form-group campaign-label">
-                  <label for="prog_code" style="top: 10.7em">{{ChooseCategory}} *</label>
+                  <label style="top: 10.7em">{{ChooseCategory}}</label>
                   <autocomplete
                     @searched="onSearchCategory"
                     :items="this.categories"
@@ -756,6 +760,19 @@ export default {
         this.enableTip = true;
         this.tip();
       }
+    },
+
+    checkMaxlength(id) {
+      var maxLength = document.getElementById(id).getAttribute('maxlength');
+      if(maxLength == this.form.short_description.length) {
+        document.getElementById(id).style.borderColor = 'red';
+      } else {
+        document.getElementById(id).style.borderColor = '#3898ec';
+      }
+    },
+
+    removeBorderFocus(id){
+      document.getElementById(id).style.borderColor = '#cccccc';
     },
 
 

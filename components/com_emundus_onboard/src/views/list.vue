@@ -208,7 +208,7 @@ export default {
       this.type = "formulaire";
     }
     if (this.typeForAdd != "files") {
-      this.actions.add_url = this.typeForAdd + 's/index.php?option=com_emundus_onboard&view=' + this.typeForAdd + '&layout=add'
+      this.actions.add_url =  window.location.pathname + '/index.php?option=com_emundus_onboard&view=' + this.typeForAdd + '&layout=add'
     }
     this.validateFilters();
   },

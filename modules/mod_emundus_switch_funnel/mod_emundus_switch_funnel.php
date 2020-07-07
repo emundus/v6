@@ -18,11 +18,13 @@ $id = JFactory::getUser()->id;
 $coordinatoraccess = EmundusHelperAccess::asCoordinatorAccessLevel($id);
 $path = ModEmundusSwitchFunnel::getRoute($params);
 
-$locallang = JFactory::getLanguage()->getTag();
-$lang = '';
-
-if($locallang == 'fr-FR'){
+$lang = JFactory::getLanguage()->getTag();
+if($lang == 'fr-FR'){
     $lang = 'fr';
+} else {
+    $lang = '';
 }
+
+$route = ModEmundusSwitchFunnel::getCampaignsRoute();
 
 require JModuleHelper::getLayoutPath('mod_emundus_switch_funnel');

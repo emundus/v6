@@ -877,12 +877,12 @@ li.g-menu-item:hover ul.g-dropdown {
   border-right: solid 1px #cecece;
 }
 
-  .campaigns-current-link, .programs-current-link, .emails-current-link, .settings-current-link, .forms-current-link{
+  .menu-current-link{
     color: #de6339 !important;
   }
 
 @media (min-width: 992px) {
-  .campaigns-current-link:after,.programs-current-link:after,.forms-current-link:after,.emails-current-link:after,.settings-current-link:after{
+  .menu-current-link:after{
     width: 0;
     height: 0;
     border-left: 25px solid transparent;

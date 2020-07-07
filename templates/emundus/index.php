@@ -114,18 +114,13 @@ $doc = JFactory::getDocument();
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script>
     let path = window.location.pathname.split('/');
-    let route = '';
-    if(path[path.length - 1] != 'index.php'){
-        route = path[path.length - 1];
-    } else {
-        route = path[path.length - 2];
-    }
+    let route = path[path.length - 1];
     let menu = document.getElementById('moduletable-b');
     menu.childNodes[1].childNodes.forEach((element) => {
         if(element.firstChild != null) {
             let find = element.firstChild.attributes.href.nodeValue.search(route);
             if(find !== -1){
-                element.firstChild.className = route + '-current-link';
+                element.firstChild.className = 'menu-current-link';
             }
         }
     });
