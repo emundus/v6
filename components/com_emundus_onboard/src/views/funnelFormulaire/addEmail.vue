@@ -14,7 +14,7 @@
     />
     <div class="choices-buttons">
       <h2 style="margin-bottom: 0">{{ TheCandidate }}</h2>
-      <a @click="$modal.show('modalAddTriggercandidate')" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
+      <a @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
     </div>
     <p>{{ TheCandidateDescription }}</p>
     <div v-for="(trigger, index) in triggers" :key="index" class="trigger-item" v-if="trigger.candidate == 1">
@@ -33,12 +33,12 @@
       </div>
       <div>
         <button type="button" @click="removeTrigger(trigger.trigger_id)" class="remove-user"><em class="fas fa-times"></em></button>
-        <button type="button" @click="editTrigger(trigger.trigger_id)"><em class="fas fa-edit"></em></button>
+        <button type="button" @click="editTrigger(trigger)"><em class="fas fa-edit"></em></button>
       </div>
     </div>
     <div class="choices-buttons">
       <h2 style="margin-bottom: 0">{{ Manual }}</h2>
-      <a @click="$modal.show('modalAddTriggermanual')" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
+      <a @click="$modal.show('modalAddTriggermanual'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
     </div>
     <p>{{ ManualDescription }}</p>
     <div v-for="(trigger, index) in triggers" :key="index" class="trigger-item" v-if="trigger.manual == 1">
@@ -57,7 +57,7 @@
       </div>
       <div>
         <button type="button" @click="removeTrigger(trigger.trigger_id)" class="remove-user"><em class="fas fa-times"></em></button>
-        <button type="button" @click="editTrigger(trigger.trigger_id)"><em class="fas fa-edit"></em></button>
+        <button type="button" @click="editTrigger(trigger)"><em class="fas fa-edit"></em></button>
       </div>
     </div>
   </div>
@@ -94,9 +94,13 @@ export default {
   },
 
   methods: {
-    editTrigger(id) {
-      this.triggerSelected = id;
-      this.$modal.show('modalAddTrigger');
+    editTrigger(trigger) {
+      this.triggerSelected = trigger.trigger_id;
+      if(trigger.candidate == 1){
+        this.$modal.show('modalAddTriggercandidate');
+      } else {
+        this.$modal.show('modalAddTriggermanual');
+      }
     },
     removeTrigger(trigger) {
       axios({

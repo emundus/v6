@@ -163,6 +163,14 @@ export default {
   },
   methods: {
     beforeClose(event) {
+      this.trigger = null;
+      this.form = {
+        model: -1,
+        status: null,
+        action_status: null,
+        target: null,
+        program: this.prog
+      };
     },
     beforeOpen(event) {
       this.searchTerm = '';
@@ -240,7 +248,7 @@ export default {
         }).then((rep) => {
           this.selectedUsers = [];
           this.$emit("UpdateTriggers");
-          this.$modal.hide('modalAddTrigger')
+          this.$modal.hide('modalAddTrigger' + this.triggerAction)
         });
       }
     },
