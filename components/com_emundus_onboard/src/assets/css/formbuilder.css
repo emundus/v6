@@ -1,4 +1,4 @@
-.fabrikgrid_radio {
+.fabrikgrid_radio, .fabrikgrid_checkbox{
   display: flex !important;
   align-items: center !important;
   vertical-align: middle !important;

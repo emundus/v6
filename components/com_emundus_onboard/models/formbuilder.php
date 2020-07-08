@@ -26,6 +26,106 @@ class EmundusonboardModelformbuilder extends JModelList {
         return array('=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%');
     }
 
+    function prepareElementParameters($plugin){
+        $params = array(
+            'bootstrap_class' => 'input-xlarge',
+            'show_in_rss_feed' => 0,
+            'show_label_in_rss_feed' => 0,
+            'use_as_rss_enclosure' => 0,
+            'rollover' => '',
+            'validations' => array(),
+            'tipseval' => 0,
+            'tiplocation' => 'top-left',
+            'labelindetails' => 0,
+            'labelinlist' => '0',
+            'comment' => '',
+            'edit_access' => 1,
+            'edit_access_user' => '',
+            'view_access' => 1,
+            'view_access_user' => '',
+            'list_view_access' => 1,
+            'encrypt' => 0,
+            'store_in_db' => 1,
+            'default_on_copy' => 0,
+            'can_order' => 0,
+        );
+
+        if($plugin == 'field'){
+            $params['placeholder'] = '';
+            $params['password'] = 0;
+            $params['maxlength'] = 255;
+            $params['disable'] = 0;
+            $params['readonly'] = 0;
+            $params['autocomplete'] = 0;
+            $params['speech'] = 0;
+            $params['advanced_behavior'] = 0;
+            $params['text_format'] = 'text';
+            $params['integer_length'] = 11;
+            $params['decimal_length'] = 2;
+            $params['field_use_number_format'] = 0;
+            $params['field_thousand_sep'] = ',';
+            $params['field_decimal_sep'] = '.';
+            $params['text_format_string'] = '';
+            $params['field_format_string_blank'] = 1;
+            $params['text_input_mask'] = '';
+            $params['text_input_mask_autoclear'] = 0;
+        } elseif ($plugin == 'textarea'){
+            $params['textarea_placeholder'] = '';
+            $params['width'] = 60;
+            $params['height'] = 6;
+            $params['use_wysiwyg'] = 0;
+            $params['maxlength'] = 255;
+            $params['wysiwyg_extra_buttons'] = 1;
+            $params['textarea_field_type'] = 'TEXT';
+            $params['textarea-showmax'] = 0;
+            $params['textarea_limit_type'] = 'char';
+            $params['textarea-tagify'] = 0;
+            $params['textarea_tagifyurl'] = '';
+            $params['textarea-truncate-where'] = 0;
+            $params['textarea-truncate-html'] = 0;
+            $params['textarea-truncate'] = 0;
+            $params['textarea-hover'] = 1;
+            $params['textarea_hover_location'] = 'top';
+        } elseif ($plugin === 'dropdown'){
+            $params['multiple'] = 0;
+            $params['dropdown_multisize'] = 3;
+            $params['allow_frontend_addtodropdown'] = 0;
+            $params['dd-allowadd-onlylabel'] = 0;
+            $params['dd-savenewadditions'] = 0;
+            $params['options_split_str'] = '';
+            $params['dropdown_populate'] = '';
+        } elseif ($plugin === 'checkbox'){
+            $params['ck_options_per_row'] = 3;
+            $params['allow_frontend_addtocheckbox'] = 0;
+            $params['chk-allowadd-onlylabel'] = 0;
+            $params['chk-savenewadditions'] = 0;
+            $params['options_split_str'] = '';
+            $params['dropdown_populate'] = '';
+        } elseif ($plugin === 'radiobutton'){
+            $params['options_per_row'] = 3;
+            $params['btnGroup'] = 0;
+            $params['rad-allowadd-onlylabel'] = 0;
+            $params['rad-savenewadditions'] = 0;
+            $params['options_split_str'] = '';
+            $params['dropdown_populate'] = '';
+        } elseif ($plugin === 'birthday'){
+            $params['birthday_daylabel'] = '';
+            $params['birthday_monthlabel'] = '';
+            $params['birthday_yearlabel'] = '';
+            $params['birthday_yearopt'] = '';
+            $params['birthday_yearstart'] = 1950;
+            $params['birthday_forward'] = 0;
+            $params['details_date_format'] = 'd.m.Y';
+            $params['details_dateandage'] = 0;
+            $params['list_date_format'] = 'd.m.Y';
+            $params['list_age_format'] = 'no';
+            $params['empty_is_null'] = 1;
+            unset($params['bootstrap_class']);
+        }
+
+        return $params;
+    }
+
     /**
      * Get translation of an array
      *
@@ -253,375 +353,6 @@ class EmundusonboardModelformbuilder extends JModelList {
     }
 
     /**
-     * Update orders of a group's elements
-     *
-     * @param $elements
-     * @param $group_id
-     * @param $user
-     * @return array
-     */
-    function updateOrder($elements, $group_id, $user) {
-        if (empty($user)) {
-            $user = JFactory::getUser()->id;
-        }
-
-        $date = new Date();
-        $results= [];
-
-        for($i = 0; $i < count($elements); $i++){
-
-            $db = $this->getDbo();
-            $query = $db->getQuery(true);
-            $fields = array(
-                $db->quoteName('ordering'). ' = '.  $db->quote(htmlspecialchars($elements[$i]['order'])),
-                $db->quoteName('modified_by'). ' = '. $db->quote($user),
-                $db->quoteName('modified'). ' = '. $db->quote($date),
-                $db->quoteName('group_id'). ' = '. $db->quote($group_id),
-            );
-
-            $query->update($db->quoteName('#__fabrik_elements'))
-                ->set($fields)
-                ->where($db->quoteName('id'). ' = '. $db->quote(htmlspecialchars($elements[$i]['id'])));
-            try {
-                $db->setQuery($query);
-                $results[] = $db->execute();
-            }
-            catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                return $e->getMessage();
-            }
-        }
-
-        return $results;
-
-    }
-
-    /**
-     * Update require params of an element
-     *
-     * @param $element
-     * @param $user
-     * @return mixed|string
-     */
-    function ChangeRequire($element, $user) {
-        if (empty($user)) {
-            $user = JFactory::getUser()->id;
-        }
-
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        $date = new Date();
-        $eval = 0;
-
-        if($element['FRequire'] === 'true'){
-            $element['params']['notempty-message'] = array("");
-            $element['params']['notempty-validation_condition'] = array("");
-            $element['params']['validations']= array("plugin"=>"notempty","plugin_published"=>"1","validate_in"=>"both","validation_on"=>"both","must_validate"=>"1","show_icon"=>"1");
-            $eval = 1;
-        } else {
-            unset($element['params']['notempty-message']);
-            unset($element['params']['notempty-validation_condition']);
-            $element['params']['validations']= array();
-        }
-
-        foreach ($element['params'] as $key => $value) {
-            if(!is_array($element['params'][$key])) {
-                $element['params'][$key] = htmlspecialchars($element['params'][$key]);
-            }
-        }
-
-        $fields = array(
-            $db->quoteName('eval'). ' = '.  $db->quote($eval),
-            $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
-            $db->quoteName('modified_by'). ' = '. $db->quote($user),
-            $db->quoteName('modified'). ' = '. $db->quote($date),
-        );
-        $query->update($db->quoteName('#__fabrik_elements'))
-            ->set($fields)
-            ->where($db->quoteName('id'). '  ='. $element['id']);
-
-        try {
-            $db->setQuery($query);
-            return $db->execute();
-        } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-            return $e->getMessage();
-        }
-
-    }
-
-
-    function UpdateParams($element, $user) {
-        if (empty($user)) {
-            $user = JFactory::getUser()->id;
-        }
-        $date = new Date();
-
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        // Update column type
-        $query
-            ->select([
-                'el.name AS name',
-                'fl.db_table_name AS dbtable',
-                'el.params AS params'
-            ])
-            ->from($db->quoteName('#__fabrik_elements','el'))
-            ->leftJoin(
-                $db->quoteName('#__fabrik_formgroup','fg') .
-                ' ON ' .
-                $db->quoteName('fg.group_id') .
-                ' = ' .
-                $db->quoteName('el.group_id')
-            )
-            ->leftJoin(
-                $db->quoteName('#__fabrik_lists','fl') .
-                ' ON ' .
-                $db->quoteName('fl.form_id') .
-                ' = ' .
-                $db->quoteName('fg.form_id')
-            )
-            ->where($db->quoteName('el.id') . ' = ' . $db->quote($element['id']));
-        $db->setQuery($query);
-        $db_element = $db->loadObject();
-        //
-
-        // Require
-        if($element['FRequire'] === 'true'){
-            $element['params']['notempty-message'] = array("");
-            $element['params']['notempty-validation_condition'] = array("");
-            $element['params']['validations']= array("plugin"=>"notempty","plugin_published"=>"1","validate_in"=>"both","validation_on"=>"both","must_validate"=>"1","show_icon"=>"1");
-        }else {
-            unset($element['params']['notempty-message']);
-            unset($element['params']['notempty-validation_condition']);
-            $element['params']['validations']= array();
-        }
-        $element['params']['filter_class'] = $element['params']['bootstrap_class'];
-        //
-
-        // Filter by plugin
-        if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown'){
-            $old_params = json_decode($db_element->params,true);
-            $sub_values = [];
-            $sub_labels = [];
-
-            foreach ($element['params']['sub_options']['sub_values'] as $index=>$sub_value){
-                if($old_params['sub_options']){
-                    $new_label = array(
-                        'fr' => $sub_value,
-                        'en' => $sub_value,
-                    );
-                    if($old_params['sub_options']['sub_labels'][$index]){
-                        $this->formsTrad($old_params['sub_options']['sub_labels'][$index],$new_label);
-                        $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
-                    } else {
-                        $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
-                        $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
-                        $this->addTransationFr($contentToAdd);
-                        $this->addTransationEn($contentToAdd);
-                        $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
-                    }
-                    $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
-                } else {
-                    $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
-                    $this->addTransationFr($contentToAdd);
-                    $this->addTransationEn($contentToAdd);
-                    $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
-                    $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
-                }
-            }
-
-            $element['params']['sub_options'] = array(
-                'sub_values' => $sub_values,
-                'sub_labels' =>  $sub_labels
-            );
-
-            $query = "ALTER TABLE " . $db_element->dbtable .
-                " MODIFY COLUMN " . $db_element->name . " VARCHAR(255) NOT NULL";
-            $db->setQuery($query);
-            $db->execute();
-        } elseif ($element['plugin'] === 'birthday'){
-            $element['params']['birthday_yearstart'] = 1950;
-            $dbtype = 'DATE';
-
-            foreach ($element['params']['sub_options']['sub_labels'] as $index=>$sub_label){
-                $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
-            }
-
-            unset($element['params']['sub_options']);
-
-            $query = "ALTER TABLE " . $db_element->dbtable .
-                " MODIFY COLUMN " . $db_element->name . " " . $dbtype . " NOT NULL";
-            $db->setQuery($query);
-            $db->execute();
-        } else {
-            if($element['params']['password'] != 6){
-                $dbtype = 'VARCHAR(' . $element['params']['maxlength'] . ')';
-            } else {
-                $dbtype = 'INT(' . $element['params']['maxlength'] . ')';
-            }
-
-            if($element['params']['sub_options']){
-                foreach ($element['params']['sub_options']['sub_labels'] as $index=>$sub_label){
-                    $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
-                }
-            }
-
-            unset($element['params']['sub_options']);
-            unset($element['params']['birthday_yearstart']);
-
-            $query = "ALTER TABLE " . $db_element->dbtable .
-                " MODIFY COLUMN " . $db_element->name . " " . $dbtype . " NOT NULL";
-            $db->setQuery($query);
-            $db->execute();
-        }
-
-        // Update the element
-        $query = $db->getQuery(true);
-
-        $fields = array(
-            $db->quoteName('plugin'). ' = '.  $db->quote($element['plugin']),
-            $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
-            $db->quoteName('modified_by'). ' = '. $db->quote($user),
-            $db->quoteName('modified'). ' = '. $db->quote($date),
-        );
-        $query->update($db->quoteName('#__fabrik_elements'))
-            ->set($fields)
-            ->where($db->quoteName('id'). ' = '. $db->quote($element['id']));
-        //
-        try {
-            $db->setQuery($query);
-            return $db->execute();
-        }
-        catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-            return $e->getMessage();
-        }
-    }
-
-    function htmlspecial_array(&$variable) {
-        foreach ($variable as &$value) {
-            if (!is_array($value)) { $value = htmlspecialchars($value); }
-            else { $this->htmlspecial_array($value); }
-        }
-    }
-
-    function SubLabelsxValues($element, $locallang, $NewSubLabel, $user){
-
-        error_reporting(0);
-        if (empty($user)) {
-            $user = JFactory::getUser()->id;
-        }
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_file .= $locallang . '.override.ini' ;
-        $Content_Folder = file_get_contents($path_to_file);
-
-
-        if(array_key_exists('sub_options.sub_labels', $element['params'])){
-            if(count($NewSubLabel) < count($element['params']['sub_options']['sub_labels'])){
-                $dif = count($element['params']['sub_options']['sub_labels']) - count($NewSubLabel);
-                for($d = 0; $d < $dif; $d++){
-                    array_pop($element['params']['sub_options']['sub_labels']);
-                    array_pop($element['params']['sub_options']['sub_values']);
-                }
-                $db = $this->getDbo();
-                $query = $db->getQuery(true);
-
-                foreach ($element['params'] as $key => $value) {
-                    $element['params'][$key] = htmlspecialchars($element['params'][$key]);
-                }
-
-                $fields = array(
-                    $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
-                );
-                $query->update($db->quoteName('#__fabrik_elements'))
-                    ->set($fields)
-                    ->where($db->quoteName('id'). '  ='. $element['id']);
-                try {
-                    $db->setQuery($query);
-                    $db->execute();
-                }
-                catch(Exception $e) {
-                    JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                    return $e->getMessage();
-                }
-            }
-        }
-
-        for($i = 0; $i < count($NewSubLabel); $i++){
-            if(array_key_exists('sub_options.sub_labels', $element['params'])){
-                $labelTofind= $element['params']['sub_options']['sub_labels'][$i] . '=';
-            }else{
-                $labelTofind = "undefinied";
-            }
-            $trad = $NewSubLabel[$i];
-            $re1 = '/["]+/';
-            preg_match_all($re1, $trad, $matches1, PREG_SET_ORDER, 0);
-            for($tr = 0; $tr<count($matches1);$tr++){
-                $trad = str_replace($matches1[$tr], "''", $trad);
-            }
-            $re = '/[\x00-\x1F\x7F-\xFF\W+]/    ';
-            preg_match_all($re, $NewSubLabel[$i], $matches, PREG_SET_ORDER, 0);
-            for($m = 0; $m < count($matches);$m++){
-                $NewSubLabel[$i] = str_replace($matches[$m], "", $NewSubLabel[$i]);
-            }
-            $NewSubLabel[$i] = strtoupper($NewSubLabel[$i]);
-
-            if (strpos($Content_Folder,$labelTofind) === false || $labelTofind === "="){
-
-
-                $sublabel = 'SL_' . $NewSubLabel[$i] . $element['id'] .$i;
-                $element['params']['sub_options']['sub_labels'][$i] = $sublabel;
-                $element['params']['sub_options']['sub_values'][$i] = $sublabel;
-
-
-                if(strpos($labelTofind,$sublabel) !== false){
-
-                    $labelToset= "\n".$sublabel. "=\"" . $trad . "\"";
-                    file_put_contents($path_to_file, $labelToset , FILE_APPEND);
-                }else{
-
-                    $labelToset= "\n".$sublabel . "=\"" .$trad."\"" ;
-                    file_put_contents($path_to_file, $labelToset , FILE_APPEND);
-
-                    $db = $this->getDbo();
-                    $query = $db->getQuery(true);
-
-                    $this->htmlspecial_array($element['params']);
-
-
-                    $fields = array(
-                        $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
-                    );
-                    $query->update($db->quoteName('#__fabrik_elements'))
-                        ->set($fields)
-                        ->where($db->quoteName('id'). '  ='. $element['id']);
-                    try {
-                        $db->setQuery($query);
-                        $db->execute();
-                    }
-                    catch(Exception $e) {
-                        JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                        return $e->getMessage();
-                    }
-                }
-            }else{
-
-                $labelToset= $labelTofind . "\"" .$trad."\"" ;
-                $labelTofind = "/^".$labelTofind.".*/mi";
-                preg_match_all($labelTofind, $Content_Folder, $matches, PREG_SET_ORDER, 0);
-                $Content_Folder = str_replace($matches[0], $labelToset,$Content_Folder);
-                file_put_contents($path_to_file, $Content_Folder);
-            }
-
-        }
-        return $element['params'];
-
-    }
-
-    /**
      * Update translation of a menu label
      *
      * @param $labelTofind
@@ -653,7 +384,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $query = $db->getQuery(true);
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
-        $modules = [93,102,168];
+        $modules = [93,102,168,170];
 
         $query
             ->select('*')
@@ -967,7 +698,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $query = $db->getQuery(true);
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
-        $modules = [93,102,103,104,168];
+        $modules = [93,102,103,104,168,170];
 
         $query
             ->clear()
@@ -1355,32 +1086,14 @@ class EmundusonboardModelformbuilder extends JModelList {
         $dbnull = 'NULL';
         //
 
-        // Prepare parameters
-        if($plugin === 'field') {
-            $params = array(
-                'placeholder' => '',
-                'password' => 0,
-                'maxlength' => 255,
-                'rollover' => '',
-                'disable' => 0,
-                'readonly' => 0,
-                'autocomplete' => 0,
-                'speech' => 0,
-                'advanced_behavior' => 0,
-                'bootstrap_class' => 'input-medium',
-                'text_format' => 'text',
-            );
-        } elseif ($plugin === 'birthday'){
-            $params = array(
-                'birthday_yearstart' => 1950,
-                'rollover' => '',
-            );
+        if ($plugin === 'birthday'){
             $dbtype = 'DATE';
-        } else {
-            $params = array();
+        } elseif ($plugin === 'textarea') {
+            $dbtype = 'TEXT';
         }
 
-        $params['validations']= array();
+        // Prepare parameters
+        $params = $this->prepareElementParameters($plugin);
         //
 
         $query
@@ -1439,6 +1152,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db->setQuery($query);
         $db->execute();
 
+        // Add element to table
         $query
             ->clear()
             ->select([
@@ -1469,11 +1183,13 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->execute();
             $name = 'e_' . $formid . '_' . $elementId;
         }
+        //
 
 
         $query = $db->getQuery(true);
         $query->update($db->quoteName('#__fabrik_elements'));
 
+        // Init a default subvalue
         if ($plugin === 'checkbox' || $plugin === 'radiobutton' || $plugin === 'dropdown'){
             $sub_values = [];
             $sub_labels = [];
@@ -1491,6 +1207,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             $query->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
         }
+        //
 
         $query
             ->set($db->quoteName('name') . ' = ' . $db->quote($name))
@@ -1499,6 +1216,367 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db->execute();
         return $elementId;
         //
+    }
+
+    /**
+     * Update orders of a group's elements
+     *
+     * @param $elements
+     * @param $group_id
+     * @param $user
+     * @return array
+     */
+    function updateOrder($elements, $group_id, $user) {
+        if (empty($user)) {
+            $user = JFactory::getUser()->id;
+        }
+
+        $date = new Date();
+        $results= [];
+
+        for($i = 0; $i < count($elements); $i++){
+
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+            $fields = array(
+                $db->quoteName('ordering'). ' = '.  $db->quote(htmlspecialchars($elements[$i]['order'])),
+                $db->quoteName('modified_by'). ' = '. $db->quote($user),
+                $db->quoteName('modified'). ' = '. $db->quote($date),
+                $db->quoteName('group_id'). ' = '. $db->quote($group_id),
+            );
+
+            $query->update($db->quoteName('#__fabrik_elements'))
+                ->set($fields)
+                ->where($db->quoteName('id'). ' = '. $db->quote(htmlspecialchars($elements[$i]['id'])));
+            try {
+                $db->setQuery($query);
+                $results[] = $db->execute();
+            }
+            catch(Exception $e) {
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                return $e->getMessage();
+            }
+        }
+
+        return $results;
+
+    }
+
+    /**
+     * Update require params of an element
+     *
+     * @param $element
+     * @param $user
+     * @return mixed|string
+     */
+    function ChangeRequire($element, $user) {
+        if (empty($user)) {
+            $user = JFactory::getUser()->id;
+        }
+
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $date = new Date();
+        $eval = 0;
+
+        if($element['FRequire'] === 'true'){
+            $element['params']['notempty-message'] = array("");
+            $element['params']['notempty-validation_condition'] = array("");
+            $element['params']['validations']= array("plugin"=>"notempty","plugin_published"=>"1","validate_in"=>"both","validation_on"=>"both","validate_hidden"=>"0","must_validate"=>"0","show_icon"=>"1");
+            $eval = 1;
+        } else {
+            unset($element['params']['notempty-message']);
+            unset($element['params']['notempty-validation_condition']);
+            $element['params']['validations']= array();
+        }
+
+        foreach ($element['params'] as $key => $value) {
+            if(!is_array($element['params'][$key])) {
+                $element['params'][$key] = htmlspecialchars($element['params'][$key]);
+            }
+        }
+
+        $fields = array(
+            $db->quoteName('eval'). ' = '.  $db->quote($eval),
+            $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
+            $db->quoteName('modified_by'). ' = '. $db->quote($user),
+            $db->quoteName('modified'). ' = '. $db->quote($date),
+        );
+        $query->update($db->quoteName('#__fabrik_elements'))
+            ->set($fields)
+            ->where($db->quoteName('id'). '  ='. $element['id']);
+
+        try {
+            $db->setQuery($query);
+            return $db->execute();
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return $e->getMessage();
+        }
+
+    }
+
+
+    function UpdateParams($element, $user) {
+        if (empty($user)) {
+            $user = JFactory::getUser()->id;
+        }
+        $date = new Date();
+
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Update column type
+        $query
+            ->select([
+                'el.name AS name',
+                'fl.db_table_name AS dbtable',
+                'el.params AS params'
+            ])
+            ->from($db->quoteName('#__fabrik_elements','el'))
+            ->leftJoin(
+                $db->quoteName('#__fabrik_formgroup','fg') .
+                ' ON ' .
+                $db->quoteName('fg.group_id') .
+                ' = ' .
+                $db->quoteName('el.group_id')
+            )
+            ->leftJoin(
+                $db->quoteName('#__fabrik_lists','fl') .
+                ' ON ' .
+                $db->quoteName('fl.form_id') .
+                ' = ' .
+                $db->quoteName('fg.form_id')
+            )
+            ->where($db->quoteName('el.id') . ' = ' . $db->quote($element['id']));
+        $db->setQuery($query);
+        $db_element = $db->loadObject();
+        //
+
+        // Filter by plugin
+        if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown'){
+            $old_params = json_decode($db_element->params,true);
+            $sub_values = [];
+            $sub_labels = [];
+
+            foreach ($element['params']['sub_options']['sub_values'] as $index=>$sub_value){
+                if($old_params['sub_options']){
+                    $new_label = array(
+                        'fr' => $sub_value,
+                        'en' => $sub_value,
+                    );
+                    if($old_params['sub_options']['sub_labels'][$index]){
+                        $this->formsTrad($old_params['sub_options']['sub_labels'][$index],$new_label);
+                        $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
+                    } else {
+                        $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
+                        $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
+                        $this->addTransationFr($contentToAdd);
+                        $this->addTransationEn($contentToAdd);
+                        $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
+                    }
+                    $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
+                } else {
+                    $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
+                    $this->addTransationFr($contentToAdd);
+                    $this->addTransationEn($contentToAdd);
+                    $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
+                    $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
+                }
+            }
+
+            $element['params']['sub_options'] = array(
+                'sub_values' => $sub_values,
+                'sub_labels' =>  $sub_labels
+            );
+
+            $query = "ALTER TABLE " . $db_element->dbtable .
+                " MODIFY COLUMN " . $db_element->name . " VARCHAR(255) NOT NULL";
+            $db->setQuery($query);
+            $db->execute();
+        } elseif ($element['plugin'] === 'birthday'){
+            $element['params']['birthday_yearstart'] = 1950;
+            $dbtype = 'DATE';
+
+            foreach ($element['params']['sub_options']['sub_labels'] as $index=>$sub_label){
+                $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
+            }
+
+            unset($element['params']['sub_options']);
+
+            $query = "ALTER TABLE " . $db_element->dbtable .
+                " MODIFY COLUMN " . $db_element->name . " " . $dbtype . " NOT NULL";
+            $db->setQuery($query);
+            $db->execute();
+        } else {
+            if($element['params']['password'] != 6){
+                $dbtype = 'VARCHAR(' . $element['params']['maxlength'] . ')';
+            } else {
+                $dbtype = 'INT(' . $element['params']['maxlength'] . ')';
+            }
+
+            if($element['plugin'] === 'textarea'){
+                $element['params']['width'] = 60;
+                $dbtype = 'TEXT';
+            }
+
+            if($element['params']['sub_options']){
+                foreach ($element['params']['sub_options']['sub_labels'] as $index=>$sub_label){
+                    $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
+                }
+            }
+
+            unset($element['params']['sub_options']);
+            unset($element['params']['birthday_yearstart']);
+
+            $query = "ALTER TABLE " . $db_element->dbtable .
+                " MODIFY COLUMN " . $db_element->name . " " . $dbtype . " NOT NULL";
+            $db->setQuery($query);
+            $db->execute();
+        }
+
+        // Update the element
+        $query = $db->getQuery(true);
+
+        $fields = array(
+            $db->quoteName('plugin'). ' = '.  $db->quote($element['plugin']),
+            $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
+            $db->quoteName('modified_by'). ' = '. $db->quote($user),
+            $db->quoteName('modified'). ' = '. $db->quote($date),
+        );
+        $query->update($db->quoteName('#__fabrik_elements'))
+            ->set($fields)
+            ->where($db->quoteName('id'). ' = '. $db->quote($element['id']));
+        //
+        try {
+            $db->setQuery($query);
+            return $db->execute();
+        }
+        catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return $e->getMessage();
+        }
+    }
+
+    function htmlspecial_array(&$variable) {
+        foreach ($variable as &$value) {
+            if (!is_array($value)) { $value = htmlspecialchars($value); }
+            else { $this->htmlspecial_array($value); }
+        }
+    }
+
+    function SubLabelsxValues($element, $locallang, $NewSubLabel, $user){
+
+        error_reporting(0);
+        if (empty($user)) {
+            $user = JFactory::getUser()->id;
+        }
+        $path_to_file = basename(__FILE__) . '/../language/overrides/';
+        $path_to_file .= $locallang . '.override.ini' ;
+        $Content_Folder = file_get_contents($path_to_file);
+
+
+        if(array_key_exists('sub_options.sub_labels', $element['params'])){
+            if(count($NewSubLabel) < count($element['params']['sub_options']['sub_labels'])){
+                $dif = count($element['params']['sub_options']['sub_labels']) - count($NewSubLabel);
+                for($d = 0; $d < $dif; $d++){
+                    array_pop($element['params']['sub_options']['sub_labels']);
+                    array_pop($element['params']['sub_options']['sub_values']);
+                }
+                $db = $this->getDbo();
+                $query = $db->getQuery(true);
+
+                foreach ($element['params'] as $key => $value) {
+                    $element['params'][$key] = htmlspecialchars($element['params'][$key]);
+                }
+
+                $fields = array(
+                    $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
+                );
+                $query->update($db->quoteName('#__fabrik_elements'))
+                    ->set($fields)
+                    ->where($db->quoteName('id'). '  ='. $element['id']);
+                try {
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+                catch(Exception $e) {
+                    JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                    return $e->getMessage();
+                }
+            }
+        }
+
+        for($i = 0; $i < count($NewSubLabel); $i++){
+            if(array_key_exists('sub_options.sub_labels', $element['params'])){
+                $labelTofind= $element['params']['sub_options']['sub_labels'][$i] . '=';
+            }else{
+                $labelTofind = "undefinied";
+            }
+            $trad = $NewSubLabel[$i];
+            $re1 = '/["]+/';
+            preg_match_all($re1, $trad, $matches1, PREG_SET_ORDER, 0);
+            for($tr = 0; $tr<count($matches1);$tr++){
+                $trad = str_replace($matches1[$tr], "''", $trad);
+            }
+            $re = '/[\x00-\x1F\x7F-\xFF\W+]/    ';
+            preg_match_all($re, $NewSubLabel[$i], $matches, PREG_SET_ORDER, 0);
+            for($m = 0; $m < count($matches);$m++){
+                $NewSubLabel[$i] = str_replace($matches[$m], "", $NewSubLabel[$i]);
+            }
+            $NewSubLabel[$i] = strtoupper($NewSubLabel[$i]);
+
+            if (strpos($Content_Folder,$labelTofind) === false || $labelTofind === "="){
+
+
+                $sublabel = 'SL_' . $NewSubLabel[$i] . $element['id'] .$i;
+                $element['params']['sub_options']['sub_labels'][$i] = $sublabel;
+                $element['params']['sub_options']['sub_values'][$i] = $sublabel;
+
+
+                if(strpos($labelTofind,$sublabel) !== false){
+
+                    $labelToset= "\n".$sublabel. "=\"" . $trad . "\"";
+                    file_put_contents($path_to_file, $labelToset , FILE_APPEND);
+                }else{
+
+                    $labelToset= "\n".$sublabel . "=\"" .$trad."\"" ;
+                    file_put_contents($path_to_file, $labelToset , FILE_APPEND);
+
+                    $db = $this->getDbo();
+                    $query = $db->getQuery(true);
+
+                    $this->htmlspecial_array($element['params']);
+
+
+                    $fields = array(
+                        $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
+                    );
+                    $query->update($db->quoteName('#__fabrik_elements'))
+                        ->set($fields)
+                        ->where($db->quoteName('id'). '  ='. $element['id']);
+                    try {
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                    catch(Exception $e) {
+                        JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                        return $e->getMessage();
+                    }
+                }
+            }else{
+
+                $labelToset= $labelTofind . "\"" .$trad."\"" ;
+                $labelTofind = "/^".$labelTofind.".*/mi";
+                preg_match_all($labelTofind, $Content_Folder, $matches, PREG_SET_ORDER, 0);
+                $Content_Folder = str_replace($matches[0], $labelToset,$Content_Folder);
+                file_put_contents($path_to_file, $Content_Folder);
+            }
+
+        }
+        return $element['params'];
+
     }
 
     /**
@@ -1790,7 +1868,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $Content_Folder_EN = file_get_contents($path_to_file_en);
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
-        $modules = [93,102,168];
+        $modules = [93,102,168,170];
         //
 
         $db = $this->getDbo();

@@ -182,7 +182,7 @@ class EmundusonboardModelform extends JModelList
 
         $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
-        $modules = [93,102,103,104,168];
+        $modules = [93,102,103,104,168,170];
 
         if (count($data) > 0) {
 			$sp_conditions = array(
@@ -859,7 +859,7 @@ class EmundusonboardModelform extends JModelList
 
         $settings = JModelLegacy::getInstance('settings', 'EmundusonboardModel');
 
-        $modules = [93,102,168];
+        $modules = [93,102,168,170];
 
         $query
             ->select('id')
@@ -1366,7 +1366,7 @@ class EmundusonboardModelform extends JModelList
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $modules = [93,102,103,104,168];
+        $modules = [93,102,103,104,168,170];
 
         $query
             ->clear()
@@ -1440,7 +1440,7 @@ class EmundusonboardModelform extends JModelList
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $modules = [93,102,103,104,168];
+        $modules = [93,102,103,104,168,170];
 
         $query
             ->clear()

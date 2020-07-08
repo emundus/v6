@@ -413,6 +413,10 @@ export default {
         fr: element.label_fr,
         en: element.label_en
       }
+      if(labels.en === 'Unnamed item'){
+        labels.en = labels.fr;
+        element.label_en = labels.fr;
+      }
       axios({
         method: "post",
         url:

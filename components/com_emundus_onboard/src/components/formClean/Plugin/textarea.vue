@@ -2,12 +2,8 @@
   <div id="textareaF">
     <div class="row rowmodal">
       <div class="form-group">
-        <label>{{widthtext}} :</label>
-        <input type="text" class="form__input field-general w-input" v-model="element.params.width" />
-      </div>
-      <div class="form-group">
         <label>{{heightext}} :</label>
-        <input type="text" class="form__input field-general w-input" v-model="element.params.height" />
+        <input type="number" class="form__input field-general w-input" v-model="element.params.height" max="15" min="3"/>
       </div>
       <div class="form-group">
         <label>{{placeholdertext}}

@@ -63,6 +63,8 @@
         </draggable>
       </ul>
 
+      <hr>
+
       <ul style="padding-left: 0">
         <draggable
           v-model="undocuments"

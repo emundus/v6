@@ -215,7 +215,7 @@ INSERT INTO jos_falang_content (language_id, reference_id, reference_table, refe
 INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published) VALUES (2, @campaign_menu, 'menu', 'title', 'Campagne d''appel', '861e6c312de8af97a967093720af57a8', '', '2020-07-07 13:00:32', 62, 1);
 #
 
-# Disable old coordinator menu
+# Disable old coordinator menu (DANGER IN OLD PLATFORMS)
 UPDATE jos_menu SET published = 0
 WHERE alias IN ('administration','parametres','parametrage-des-profils-utilisateurs','types-documents','setup-tags','periode-depot-dossier','liste-des-programmes-par-annee','configuration-des-courriers','emails-parametrage','groupes','declarer-un-nouveau-programme','ajouter-une-annee-pour-un-programme','programmes','parametrage-des-statuts','creer-campagne','solicitations-des-referents','declencheurs');
 #
