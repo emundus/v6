@@ -1,0 +1,42 @@
+.em-infoComp {
+    box-shadow: 0px 0px 30px -20px rgba(0, 0, 0, 0.75);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    background: white;
+	font-weight: 300;
+    font-style: normal;
+    line-height: normal;
+}
+
+.em-infoComp ul {
+	margin-left:0;
+}
+
+.em-infoComp li {
+    padding: 10px 1.5rem !important;
+}
+
+.em-infoComp li i {
+    margin-left: 10px;
+	color:#de6339 !important;
+}
+
+.em-infoComp li {
+    align-self: center;
+}
+
+.em-infoComp .g-title {
+	border:none!important;
+	position:relative;
+}
+
+.em-infoComp .g-title::after {
+    content: '';
+    position: absolute;
+    margin-top: 35px;
+    left: 0;
+    width: 2.7rem;
+    height: 0.2rem;
+    background: #de6339 !important;
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+	<extension type="module" version ="2.5.0" method="upgrade">
+		<name>Informations complementaires</name>
+        <creationDate>JULY 2020</creationDate>
+        <authorUrl>www.emundus.fr</authorUrl>
+        <version>6.0</version>
+		<description>MOD_EMUNDUS_INFORMATION_COMPLEMENTAIRE_XML_DESCRIPTION</description>
+		<files>
+			<filename module="mod_emundus_information_complementaire">helper.php</filename>
+			<filename module="mod_emundus_information_complementaire">mod_emundus_information_complementaire.xml</filename>
+			<filename module="mod_emundus_information_complementaire">mod_emundus_information_complementaire.php</filename>
+			<filename module="mod_emundus_information_complementaire">index.html</filename>
+			<folder>tmpl</folder>
+			<folder>language</folder>
+			<folder>style</folder>
+		</files>
+		<config>
+			<fields name="params">
+				<fieldset name="basic" addfieldpath="/modules/mod_emundus_information_complementaire/tmpl" >
+					
+				</fieldset>
+			</fields>
+		</config>
+	</extension>
