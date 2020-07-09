@@ -278,16 +278,15 @@
       getDataObject: _.debounce(function() {
         this.loading = true;
         let ellink = this.link.link.replace("fabrik","emundus_onboard");
-        axios
-                .get(ellink + "&format=vue_jsonclean")
-                .then(response => {
-                  this.object_json = response.data;
-                  this.convertGroupElementsToArray();
-                  this.loading = false;
-                })
-                .catch(e => {
-                  console.log(e);
-                });
+        axios.get(ellink + "&format=vue_jsonclean")
+              .then(response => {
+                this.object_json = response.data;
+                this.convertGroupElementsToArray();
+                this.loading = false;
+              }).catch(e => {
+                this.loading = false;
+                console.log(e);
+              });
       }, 150),
 
       /**

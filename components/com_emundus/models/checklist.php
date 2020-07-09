@@ -76,24 +76,22 @@ class EmundusModelChecklist extends JModelList
 		return $forms;
 	}
 
-	function getAttachmentsList()
-	{
+	function getAttachmentsList() {
+
         // Check if column campaign_id exist in emundus_setup_attachment_profiles
         $config = new JConfig();
         $db_name = $config->db;
 
         $query = $this->_db->getQuery(true);
-        $query
-            ->select('COUNT(*)')
+        $query->select('COUNT(*)')
             ->from($this->_db->quoteName('information_schema.columns'))
             ->where($this->_db->quoteName('table_schema') . ' = ' . $this->_db->quote($db_name))
             ->andWhere($this->_db->quoteName('table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_attachment_profiles'))
             ->andWhere($this->_db->quoteName('column_name') . ' = ' . $this->_db->quote('campaign_id'));
         $this->_db->setQuery($query);
         $exist = $this->_db->loadResult();
-        //
 
-        if(intval($exist) > 0){
+        if (intval($exist) > 0) {
             $query = 'SELECT attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate
 					FROM #__emundus_setup_attachments AS attachments
 						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
@@ -101,9 +99,9 @@ class EmundusModelChecklist extends JModelList
 					WHERE profiles.campaign_id = '.$this->_user->campaign_id.' AND profiles.displayed = 1
 					GROUP BY attachments.id
 					ORDER BY profiles.mandatory DESC, profiles.ordering ASC';
-            $this->_db->setQuery( $query );
+            $this->_db->setQuery($query);
             $attachments = $this->_db->loadObjectList();
-        } 
+        }
 
         if (intval($exist) == 0 || empty($attachments)) {
             $query = 'SELECT attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate
@@ -113,17 +111,18 @@ class EmundusModelChecklist extends JModelList
 					WHERE profiles.profile_id = '.$this->_user->profile.' AND profiles.displayed = 1 AND profiles.campaign_id IS NULL
 					GROUP BY attachments.id
 					ORDER BY profiles.mandatory DESC, attachments.ordering ASC';
-            $this->_db->setQuery( $query );
+            $this->_db->setQuery($query);
             $attachments = $this->_db->loadObjectList();
         }
-	//die(str_replace('#_','jos',$query));
-		 /*or die($this->_db->getErrorMsg());*/
-		foreach($attachments as $attachment) {
-			if($attachment->nb>0) {
+
+		foreach ($attachments as $attachment) {
+			if ($attachment->nb > 0) {
+
 				$query = 'SELECT * FROM #__emundus_uploads WHERE user_id = '.$this->_user->id.' AND attachment_id = '.$attachment->id. ' AND fnum like '.$this->_db->Quote($this->_user->fnum);
 				$this->_db->setQuery($query);
-				$attachment->liste = $this->_db->loadObjectList(); // or die($this->_db->getErrorMsg());
-			} elseif($attachment->mandatory==1) {
+				$attachment->liste = $this->_db->loadObjectList();
+
+			} elseif ($attachment->mandatory == 1) {
 				$this->_attachments = 1;
 				$this->_need = $this->_forms=1?1:0;
 			}

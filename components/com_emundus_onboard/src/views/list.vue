@@ -280,8 +280,7 @@ export default {
             this.total = response.data.data;
           })
           .then(() => {
-            axios
-              .get(
+            axios.get(
                 "index.php?option=com_emundus_onboard&controller=" +
                   this.typeForAdd +
                   "&task=getall" +

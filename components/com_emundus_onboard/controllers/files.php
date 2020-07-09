@@ -32,12 +32,12 @@ class EmundusonboardControllerfiles extends JControllerLegacy {
 
     public function getfilescount() {
         $user = JFactory::getUser();
-        $m_camp = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+	        $m_camp = $this->model;
             $campaigns = $m_camp->getFilesCount();
 
             if ($campaigns > 0) {
@@ -52,17 +52,20 @@ class EmundusonboardControllerfiles extends JControllerLegacy {
 
     public function getallfiles() {
         $user = JFactory::getUser();
-        $m_camp = $this->model;
-
-        $prog = $_GET['prog'];
-        $camp = $_GET['camp'];
-        $session = $_GET['session'];
-        $status = $_GET['status'];
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $m_camp = $this->model;
+
+	        $jinput = JFactory::getApplication()->input;
+	        $prog = $jinput->get->get('prog');
+	        $camp = $jinput->get->get('camp');
+	        $session = $jinput->get->get('session');
+	        $status = $jinput->get->get('status');
+
             $files = $m_camp->getAssociatedFiles($prog, $camp, $session, $status);
 
             if (count($files) > 0) {
@@ -77,14 +80,16 @@ class EmundusonboardControllerfiles extends JControllerLegacy {
     
     public function getdistincts() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $ids = $jinput->getRaw('ids');
-        $m_camp = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $ids = $jinput->get->getRaw('ids');
+	        $m_camp = $this->model;
+
             $files = $m_camp->getDistincts($ids);
 
             if (count($files) > 0) {

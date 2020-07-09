@@ -15,8 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
 
-class EmundusonboardModelfalang extends JModelList
-{
+class EmundusonboardModelfalang extends JModelList {
 
   function insertFalang($textfr,$texten,$reference_id,$reference_table,$reference_field){
       $db = $this->getDbo();
@@ -26,9 +25,7 @@ class EmundusonboardModelfalang extends JModelList
       $user = JFactory::getUser()->id;
 
       // Insert english text
-      $query
-          ->insert('#__falang_content');
-      $query
+      $query->insert('#__falang_content')
           ->set($db->quoteName('language_id') . ' = 1')
           ->set($db->quoteName('value') . ' = ' . $db->quote($texten))
           ->set($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
@@ -40,13 +37,10 @@ class EmundusonboardModelfalang extends JModelList
           ->set($db->quoteName('published') . ' = 1');
       $db->setQuery($query);
       $db->execute();
-      //
 
       // Insert french text
-      $query
-          ->clear()
-          ->insert('#__falang_content');
-      $query
+      $query->clear()
+          ->insert('#__falang_content')
           ->set($db->quoteName('language_id') . ' = 2')
           ->set($db->quoteName('value') . ' = ' . $db->quote($textfr))
           ->set($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
@@ -58,15 +52,13 @@ class EmundusonboardModelfalang extends JModelList
           ->set($db->quoteName('published') . ' = 1');
       $db->setQuery($query);
       $db->execute();
-      //
   }
 
   function deleteFalang($reference_id,$reference_table,$reference_field){
       $db = $this->getDbo();
       $query = $db->getQuery(true);
 
-      $query
-          ->delete('#__falang_content')
+      $query->delete('#__falang_content')
           ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
           ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
           ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field));
@@ -78,8 +70,7 @@ class EmundusonboardModelfalang extends JModelList
       $db = $this->getDbo();
       $query = $db->getQuery(true);
 
-      $query
-          ->update('#__falang_content')
+      $query->update('#__falang_content')
           ->set($db->quoteName('value') . ' = ' . $db->quote($texten))
           ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
           ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
@@ -88,8 +79,7 @@ class EmundusonboardModelfalang extends JModelList
       $db->setQuery($query);
       $db->execute();
 
-      $query
-          ->clear()
+      $query->clear()
           ->update('#__falang_content')
           ->set($db->quoteName('value') . ' = ' . $db->quote($textfr))
           ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
@@ -106,8 +96,7 @@ class EmundusonboardModelfalang extends JModelList
       $db = $this->getDbo();
       $query = $db->getQuery(true);
 
-      $query
-          ->select('value')
+      $query->select('value')
           ->from($db->quoteName('#__falang_content'))
           ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
           ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
@@ -116,8 +105,7 @@ class EmundusonboardModelfalang extends JModelList
       $db->setQuery($query);
       $labels->en = $db->loadObject();
 
-      $query
-          ->clear()
+      $query->clear()
           ->select('value')
           ->from($db->quoteName('#__falang_content'))
           ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))

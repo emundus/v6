@@ -22,11 +22,11 @@ class EmundusonboardModelformbuilder extends JModelList {
      *
      * @return string[]
      */
-    function getSpecialCharacters(){
+    function getSpecialCharacters() {
         return array('=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%');
     }
 
-    function prepareElementParameters($plugin){
+    function prepareElementParameters($plugin) {
         $params = array(
             'bootstrap_class' => 'input-xlarge',
             'show_in_rss_feed' => 0,
@@ -50,7 +50,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             'can_order' => 0,
         );
 
-        if($plugin == 'field'){
+        if ($plugin == 'field') {
             $params['placeholder'] = '';
             $params['password'] = 0;
             $params['maxlength'] = 255;
@@ -69,7 +69,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $params['field_format_string_blank'] = 1;
             $params['text_input_mask'] = '';
             $params['text_input_mask_autoclear'] = 0;
-        } elseif ($plugin == 'textarea'){
+        } elseif ($plugin == 'textarea') {
             $params['textarea_placeholder'] = '';
             $params['width'] = 60;
             $params['height'] = 6;
@@ -86,7 +86,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $params['textarea-truncate'] = 0;
             $params['textarea-hover'] = 1;
             $params['textarea_hover_location'] = 'top';
-        } elseif ($plugin === 'dropdown'){
+        } elseif ($plugin === 'dropdown') {
             $params['multiple'] = 0;
             $params['dropdown_multisize'] = 3;
             $params['allow_frontend_addtodropdown'] = 0;
@@ -94,21 +94,21 @@ class EmundusonboardModelformbuilder extends JModelList {
             $params['dd-savenewadditions'] = 0;
             $params['options_split_str'] = '';
             $params['dropdown_populate'] = '';
-        } elseif ($plugin === 'checkbox'){
+        } elseif ($plugin === 'checkbox') {
             $params['ck_options_per_row'] = 3;
             $params['allow_frontend_addtocheckbox'] = 0;
             $params['chk-allowadd-onlylabel'] = 0;
             $params['chk-savenewadditions'] = 0;
             $params['options_split_str'] = '';
             $params['dropdown_populate'] = '';
-        } elseif ($plugin === 'radiobutton'){
+        } elseif ($plugin === 'radiobutton') {
             $params['options_per_row'] = 3;
             $params['btnGroup'] = 0;
             $params['rad-allowadd-onlylabel'] = 0;
             $params['rad-savenewadditions'] = 0;
             $params['options_split_str'] = '';
             $params['dropdown_populate'] = '';
-        } elseif ($plugin === 'birthday'){
+        } elseif ($plugin === 'birthday') {
             $params['birthday_daylabel'] = '';
             $params['birthday_monthlabel'] = '';
             $params['birthday_yearlabel'] = '';
@@ -132,8 +132,8 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $toJTEXT
      * @return array
      */
-    function getJTEXTA($toJTEXT){
-        if($toJTEXT != null) {
+    function getJTEXTA($toJTEXT) {
+        if ($toJTEXT != null) {
             for ($i = 0; $i < count($toJTEXT); $i++) {
                 $toJTEXT[$i] = JText::_($toJTEXT[$i]);
             }
@@ -149,12 +149,12 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $toJTEXT
      * @return mixed
      */
-    function getJTEXT($toJTEXT){
+    function getJTEXT($toJTEXT) {
         $toJTEXT =  JText::_($toJTEXT);
         return JText::_($toJTEXT);
     }
 
-    function removeEmptyLinesFr(){
+    function removeEmptyLinesFr() {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
         $Content_Folder_FR = file_get_contents($path_to_file_fr);
@@ -163,7 +163,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         file_put_contents($path_to_file_fr, $Content_Folder_FR);
     }
 
-    function removeEmptyLinesEn(){
+    function removeEmptyLinesEn() {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_en = $path_to_file . 'en-GB.override.ini' ;
         $Content_Folder_EN = file_get_contents($path_to_file_en);
@@ -178,7 +178,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $text
      * @return string|string[]
      */
-    function getTranslationFr($text){
+    function getTranslationFr($text) {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
         $Content_Folder_FR = file_get_contents($path_to_file_fr);
@@ -192,7 +192,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         // FR
         preg_match_all($textTofind, $Content_Folder_FR, $matches_fr, PREG_SET_ORDER, 0);
         return str_replace("\"",'',explode('=',$matches_fr[0][0])[1]);
-        //
     }
 
     /**
@@ -201,7 +200,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $text
      * @return string|string[]
      */
-    function getTranslationEn($text){
+    function getTranslationEn($text) {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_en = $path_to_file . 'en-GB.override.ini' ;
         $Content_Folder_EN = file_get_contents($path_to_file_en);
@@ -228,7 +227,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $en_pathfile
      * @param $newtag
      */
-    function duplicateTranslation($text,$fr_content,$en_content,$fr_pathfile,$en_pathfile,$newtag){
+    function duplicateTranslation($text,$fr_content,$en_content,$fr_pathfile,$en_pathfile,$newtag) {
         $matches_fr = [];
         $matches_en = [];
         $textWithoutTags = str_replace('\'', '', strip_tags($text));
@@ -257,7 +256,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $en_pathfile
      * @param $newtext
      */
-    function updateTranslation($oldtext,$fr_content,$en_content,$fr_pathfile,$en_pathfile,$newtext){
+    function updateTranslation($oldtext,$fr_content,$en_content,$fr_pathfile,$en_pathfile,$newtext) {
         $matches_fr = [];
         $matches_en = [];
 
@@ -287,7 +286,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      *
      * @param $text
      */
-    function deleteTranslation($text){
+    function deleteTranslation($text) {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
         $Content_Folder_FR = file_get_contents($path_to_file_fr);
@@ -317,14 +316,14 @@ class EmundusonboardModelformbuilder extends JModelList {
      *
      * @param $text
      */
-    function addTransationFr($text){
+    function addTransationFr($text) {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
 
         $lines = file($path_to_file_fr);
         $last_line = $lines[count($lines)-1];
 
-        if (strpos($last_line,'COM_USERS_RESET_REQUEST_LABEL') === 0){
+        if (strpos($last_line,'COM_USERS_RESET_REQUEST_LABEL') === 0) {
             file_put_contents($path_to_file_fr,"\r\n" . $text . PHP_EOL, FILE_APPEND | LOCK_EX);
         } else {
             file_put_contents($path_to_file_fr,$text . PHP_EOL, FILE_APPEND | LOCK_EX);
@@ -337,14 +336,14 @@ class EmundusonboardModelformbuilder extends JModelList {
      *
      * @param $text
      */
-    function addTransationEn($text){
+    function addTransationEn($text) {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_en = $path_to_file . 'en-GB.override.ini' ;
 
         $lines = file($path_to_file_en);
         $last_line = $lines[count($lines)-1];
 
-        if (strpos($last_line,'INSTITUTION_NAME') === 0){
+        if (strpos($last_line,'INSTITUTION_NAME') === 0) {
             file_put_contents($path_to_file_en,"\r\n" . $text . PHP_EOL, FILE_APPEND | LOCK_EX);
         } else {
             file_put_contents($path_to_file_en,$text . PHP_EOL, FILE_APPEND | LOCK_EX);
@@ -359,7 +358,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $locallang
      * @param $NewSubLabel
      */
-    function formsTrad($labelTofind, $NewSubLabel){
+    function formsTrad($labelTofind, $NewSubLabel) {
         // Prepare languages
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
@@ -379,15 +378,14 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $prid
      * @return array
      */
-    function createMenu($label, $intro, $prid, $template){
+    function createMenu($label, $intro, $prid, $template) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
         $modules = [93,102,168,170];
 
-        $query
-            ->select('*')
+        $query->select('*')
             ->from($db->quoteName('#__emundus_setup_profiles'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($prid));
         $db->setQuery($query);
@@ -396,8 +394,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $profileid= $profile->id;
 
         // INSERT FABRIK_FORMS
-        $query
-            ->clear()
+        $query->clear()
             ->select('*')
             ->from('#__fabrik_forms')
             ->where($db->quoteName('id') . ' = 287');
@@ -406,13 +403,12 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         $query->clear();
         $query->insert($db->quoteName('#__fabrik_forms'));
-        foreach ($form_model as $key => $val)
-        {
-            if($key != 'id')
-            {
+        foreach ($form_model as $key => $val) {
+            if ($key != 'id') {
                 $query->set($key . ' = ' . $db->quote($val));
             }
         }
+
         try {
             $db->setQuery($query);
             $db->execute();
@@ -426,7 +422,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $query->where($db->quoteName('id') . ' = ' . $db->quote($formid));
             $db->setQuery($query);
             $db->execute();
-        } catch (Exception $e){
+        } catch (Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
         }
 
@@ -436,20 +432,18 @@ class EmundusonboardModelformbuilder extends JModelList {
         $this->addTransationEn('FORM_' . $profileid. '_' . $formid . '=' . "\"" . $label['en'] . "\"");
         $this->addTransationEn('FORM_' . $profileid. '_INTRO_' . $formid . '=' . "\"" . $intro['en'] . "\"");
         //
-        //
 
         // CREATE TABLE
-        $query
-            ->clear()
+        $query->clear()
             ->select('COUNT(*)')
             ->from($db->quoteName('information_schema.tables'))
             ->where($db->quoteName('table_name') . ' LIKE ' . $db->quote('%jos_emundus_' . $prid . '%'));
         $db->setQuery($query);
         $result = $db->loadResult();
 
-        if($result < 10){
+        if ($result < 10) {
             $increment = '0' . strval($result);
-        } elseif ($result > 10){
+        } elseif ($result > 10) {
             $increment = strval($result);
         }
 
@@ -482,12 +476,10 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db->setQuery($query);
         $db->execute();
         //
-        //
 
         // INSERT FABRIK LIST
         $query = $db->getQuery(true);
-        $query
-            ->select('*')
+        $query->select('*')
             ->from('#__fabrik_lists')
             ->where($db->quoteName('id') . ' = 297');
         $db->setQuery($query);
@@ -519,7 +511,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $query->where($db->quoteName('id') . ' = ' . $db->quote($listid));
             $db->setQuery($query);
             $db->execute();
-        } catch (Exception $e){
+        } catch (Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
         }
         //
@@ -547,7 +539,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $results = $db->loadObjectList();
         $rgts = [];
         $lfts = [];
-        foreach (array_values($results) as $result){
+        foreach (array_values($results) as $result) {
             if (!in_array($result->rgt, $rgts)) {
                 $rgts[] = intval($result->rgt);
             }
@@ -609,8 +601,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             0
         );
 
-        $query
-            ->clear()
+        $query->clear()
             ->insert($db->quoteName('#__menu'))
             ->columns($db->quoteName($columns))
             ->values(implode(',', $db->quote($values)));
@@ -626,19 +617,16 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             // Affect modules to this menu
             foreach ($modules as $module) {
-                $query
-                    ->clear()
-                    ->insert($db->quoteName('#__modules_menu'));
-                $query
+                $query->clear()
+                    ->insert($db->quoteName('#__modules_menu'))
                     ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
                     ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
                 $db->setQuery($query);
                 $db->execute();
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
         }
-        //
         //
 
         // JOIN LIST AND PROFILE_ID
@@ -654,8 +642,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             date('Y-m-d H:i:s')
         );
 
-        $query
-            ->clear()
+        $query->clear()
             ->insert($db->quoteName('#__emundus_setup_formlist'))
             ->columns($db->quoteName($columns))
             ->values(implode(',', $db->quote($values)));
@@ -668,11 +655,9 @@ class EmundusonboardModelformbuilder extends JModelList {
         //
 
         // Save as template
-        if($template == 'true'){
-            $query
-                ->clear()
-                ->insert($db->quoteName('#__emundus_form_template'));
-            $query
+        if ($template == 'true') {
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_form_template'))
                 ->set($db->quoteName('form_id') . ' = ' . $db->quote($formid))
                 ->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $profileid. '_' . $formid))
                 ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')));
@@ -693,23 +678,21 @@ class EmundusonboardModelformbuilder extends JModelList {
      *
      * @param $menu
      */
-    function deleteMenu($menu){
+    function deleteMenu($menu) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
         $modules = [93,102,103,104,168,170];
 
-        $query
-            ->clear()
+        $query->clear()
             ->select('*')
             ->from($db->quoteName('#__fabrik_formgroup'))
             ->where($db->quoteName('form_id') . ' = ' . $db->quote($menu));
         $db->setQuery($query);
         $groups = $db->loadObjectList();
 
-        $query
-            ->clear()
+        $query->clear()
             ->select('*')
             ->from($db->quoteName('#__fabrik_lists'))
             ->where($db->quoteName('form_id') . ' = ' . $db->quote($menu));
@@ -735,7 +718,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
         }
 
-        foreach (array_values($groups) as $group){
+        foreach (array_values($groups) as $group) {
             $this->deleteGroup($group->group_id);
         }
 
@@ -752,8 +735,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         $query = $db->getQuery(true);
 
-        $query
-            ->clear()
+        $query->clear()
             ->delete($db->quoteName('#__fabrik_lists'))
             ->where($db->quoteName('form_id') . ' = ' . $db->quote($menu));
         try {
@@ -763,8 +745,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
         }
 
-        $query
-            ->clear()
+        $query->clear()
             ->select('*')
             ->from($db->quoteName('#__menu'))
             ->where($db->quoteName('link') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $menu));
@@ -773,9 +754,8 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         $falang->deleteFalang($jos_menu->id,'menu','title');
 
-        foreach ($modules as $module){
-            $query
-                ->clear()
+        foreach ($modules as $module) {
+            $query->clear()
                 ->delete($db->quoteName('#__modules_menu'))
                 ->where($db->quoteName('moduleid') . ' = ' . $db->quote($module))
                 ->andWhere($db->quoteName('menuid') . ' = ' . $db->quote($jos_menu->id));
@@ -787,8 +767,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             }
         }
 
-        $query
-            ->clear()
+        $query->clear()
             ->delete($db->quoteName('#__menu'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($jos_menu->id));
         try {
@@ -798,8 +777,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
         }
 
-        $query
-            ->clear()
+        $query->clear()
             ->delete($db->quoteName('#__fabrik_forms'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($menu));
         try {
@@ -810,23 +788,20 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
     }
 
-    function saveAsTemplate($menu,$template){
+    function saveAsTemplate($menu,$template) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->select('*')
+        $query->select('*')
             ->from($db->quoteName('#__emundus_form_template'))
             ->where($db->quoteName('form_id') . ' = ' . $db->quote($menu['id']));
         $db->setQuery($query);
         $existing_template = $db->loadObject();
 
-        if($template != 'false'){
-            if($existing_template == null){
-                $query
-                    ->clear()
-                    ->insert('#__emundus_form_template');
-                $query
+        if ($template != 'false') {
+            if ($existing_template == null) {
+                $query->clear()
+                    ->insert('#__emundus_form_template')
                     ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
                     ->set($db->quoteName('form_id') . ' = ' . $db->quote($menu['id']))
                     ->set($db->quoteName('label') . ' = ' . $db->quote($menu['show_title']['titleraw']))
@@ -835,9 +810,8 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $db->execute();
             }
         } else {
-            if($existing_template != null){
-                $query
-                    ->clear()
+            if ($existing_template != null) {
+                $query->clear()
                     ->delete('#__emundus_form_template')
                     ->where($db->quoteName('form_id') . ' = ' . $db->quote($menu['id']));
                 $db->setQuery($query);
@@ -856,7 +830,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         );
 
         JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
-        $form         = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+        $form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
         $form->setId(287);
         $groups	= $form->getGroups();
 
@@ -868,9 +842,9 @@ class EmundusonboardModelformbuilder extends JModelList {
             $properties = $group->getGroupProperties($group->getFormModel());
             $elements = $group->getMyElements();
 
-            if($properties->id == 683){
+            if ($properties->id == 683) {
                 foreach ($elements as $element) {
-                    if(in_array($element->element->id,$elementstoduplicate)) {
+                    if (in_array($element->element->id,$elementstoduplicate)) {
                         $newelement = $element->copyRow($element->element->id, $element->element->name, $hiddengroup['group_id']);
 
                         // Update to publish element
@@ -886,7 +860,6 @@ class EmundusonboardModelformbuilder extends JModelList {
                 }
             }
         }
-        //
     }
 
     /**
@@ -896,7 +869,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $fid
      * @return array
      */
-    function createGroup($label, $fid, $repeat_group_show_first = 1){
+    function createGroup($label, $fid, $repeat_group_show_first = 1) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -936,8 +909,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             "{\"split_page\":\"0\",\"list_view_and_query\":\"1\",\"access\":\"1\",\"intro\":\"\",\"outro\":\"\",\"repeat_group_button\":\"0\",\"repeat_template\":\"repeatgroup\",\"repeat_max\":\"\",\"repeat_min\":\"\",\"repeat_num_element\":\"\",\"repeat_error_message\":\"\",\"repeat_no_data_message\":\"\",\"repeat_intro\":\"\",\"repeat_add_access\":\"1\",\"repeat_delete_access\":\"1\",\"repeat_delete_access_user\":\"\",\"repeat_copy_element_values\":\"0\",\"group_columns\":\"1\",\"group_column_widths\":\"\",\"repeat_group_show_first\":\"" . $repeat_group_show_first . "\",\"random\":\"0\",\"labels_above\":\"-1\",\"labels_above_details\":\"-1\"}"
         );
 
-        $query
-            ->clear()
+        $query->clear()
             ->insert($db->quoteName('#__fabrik_groups'))
             ->columns($db->quoteName($columns))
             ->values(implode(',', $db->Quote($values)));
@@ -951,8 +923,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $this->addTransationFr($tag . '=' . "\"" . $label['fr'] . "\"");
         $this->addTransationEn($tag . '=' . "\"" . $label['en'] . "\"");
 
-        $query
-            ->clear()
+        $query->clear()
             ->update($db->quoteName('#__fabrik_groups'))
             ->set($db->quoteName('name') . ' = ' . $db->quote('GROUP_' . $fid . '_' . $groupid))
             ->set($db->quoteName('label') . ' = ' . $db->quote('GROUP_' . $fid . '_' . $groupid))
@@ -962,8 +933,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         //
 
         // INSERT FORMGROUP
-        $query
-            ->clear()
+        $query->clear()
             ->select('*')
             ->from($db->quoteName('#__fabrik_formgroup'))
             ->where($db->quoteName('form_id') . ' = ' . $db->quote($fid))
@@ -972,7 +942,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db->setQuery($query);
         $results = $db->loadObjectList();
         $orderings = [];
-        foreach (array_values($results) as $result){
+        foreach (array_values($results) as $result) {
             if (!in_array($result->ordering, $orderings)) {
                 $orderings[] = intval($result->ordering);
             }
@@ -992,8 +962,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $order,
         );
 
-        $query
-            ->clear()
+        $query->clear()
             ->insert($db->quoteName('#__fabrik_formgroup'))
             ->columns($db->quoteName($columns))
             ->values(implode(',', $db->Quote($values)));
@@ -1019,24 +988,22 @@ class EmundusonboardModelformbuilder extends JModelList {
      *
      * @param $group
      */
-    function deleteGroup($group){
+    function deleteGroup($group) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->clear()
+        $query->clear()
             ->select('*')
             ->from($db->quoteName('#__fabrik_elements'))
             ->where($db->quoteName('group_id') . ' = ' . $db->quote($group));
         $db->setQuery($query);
         $elements = $db->loadObjectList();
 
-        foreach (array_values($elements) as $element){
+        foreach (array_values($elements) as $element) {
             $this->deleteElement($element->id);
         }
 
-        $query
-            ->clear()
+        $query->clear()
             ->select('*')
             ->from($db->quoteName('#__fabrik_groups'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($group));
@@ -1046,8 +1013,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         $this->deleteTranslation($label);
 
-        $query
-            ->clear()
+        $query->clear()
             ->delete($db->quoteName('#__fabrik_formgroup'))
             ->where($db->quoteName('group_id') . ' = ' . $db->quote($group));
         try {
@@ -1057,8 +1023,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
         }
 
-        $query
-            ->clear()
+        $query->clear()
             ->delete($db->quoteName('#__fabrik_groups'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($group));
         try {
@@ -1077,7 +1042,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param int $evaluation
      * @return mixed
      */
-    function createSimpleElement($gid,$plugin,$evaluation = 0){
+    function createSimpleElement($gid,$plugin,$evaluation = 0) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -1086,7 +1051,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $dbnull = 'NULL';
         //
 
-        if ($plugin === 'birthday'){
+        if ($plugin === 'birthday') {
             $dbtype = 'DATE';
         } elseif ($plugin === 'textarea') {
             $dbtype = 'TEXT';
@@ -1096,8 +1061,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $params = $this->prepareElementParameters($plugin);
         //
 
-        $query
-            ->clear()
+        $query->clear()
             ->select('*')
             ->from($db->quoteName('#__fabrik_elements'))
             ->where($db->quoteName('group_id') . ' = ' . $db->quote($gid))
@@ -1105,16 +1069,14 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db->setQuery($query);
         $results = $db->loadObjectList();
         $orderings = [];
-        foreach (array_values($results) as $result){
+        foreach (array_values($results) as $result) {
             if (!in_array($result->ordering, $orderings)) {
                 $orderings[] = intval($result->ordering);
             }
         }
 
-        $query
-            ->clear()
-            ->insert($db->quoteName('#__fabrik_elements'));
-        $query
+        $query->clear()
+            ->insert($db->quoteName('#__fabrik_elements'))
             ->set($db->quoteName('name') . ' = ' . $db->quote('element'))
             ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
             ->set($db->quoteName('plugin') . ' = ' . $db->quote($plugin))
@@ -1142,11 +1104,8 @@ class EmundusonboardModelformbuilder extends JModelList {
         $this->addTransationFr('ELEMENT_' . $gid . '_' . $elementId . '=' . "\"" . 'Element sans titre' . "\"");
         $this->addTransationEn('ELEMENT_' . $gid . '_' . $elementId . '=' . "\"" . 'Unnamed item' . "\"");
 
-        $query
-            ->clear()
-            ->update($db->quoteName('#__fabrik_elements'));
-
-        $query
+        $query->clear()
+            ->update($db->quoteName('#__fabrik_elements'))
             ->set($db->quoteName('label') . ' = ' . $db->quote(strtoupper('element_' . $gid . '_' . $elementId)))
             ->where($db->quoteName('id') . '= ' . $db->quote($elementId));
         $db->setQuery($query);
@@ -1160,19 +1119,13 @@ class EmundusonboardModelformbuilder extends JModelList {
                 'fl.form_id AS formid',
             ])
             ->from($db->quoteName('#__fabrik_formgroup', 'fg'))
-            ->leftJoin(
-                $db->quoteName('#__fabrik_lists', 'fl') .
-                ' ON ' .
-                $db->quoteName('fl.form_id') .
-                ' = ' .
-                $db->quoteName('fg.form_id')
-            )
+            ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
             ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
         $db->setQuery($query);
         $dbtable = $db->loadObject()->dbtable;
         $formid = $db->loadObject()->formid;
 
-        if($evaluation){
+        if ($evaluation) {
             $query = "ALTER TABLE jos_emundus_evaluations" . " ADD criteria_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
             $db->setQuery($query);
             $db->execute();
@@ -1185,12 +1138,11 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
         //
 
-
         $query = $db->getQuery(true);
         $query->update($db->quoteName('#__fabrik_elements'));
 
         // Init a default subvalue
-        if ($plugin === 'checkbox' || $plugin === 'radiobutton' || $plugin === 'dropdown'){
+        if ($plugin === 'checkbox' || $plugin === 'radiobutton' || $plugin === 'dropdown') {
             $sub_values = [];
             $sub_labels = [];
 
@@ -1209,13 +1161,11 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
         //
 
-        $query
-            ->set($db->quoteName('name') . ' = ' . $db->quote($name))
+        $query->set($db->quoteName('name') . ' = ' . $db->quote($name))
             ->where($db->quoteName('id') . '= ' . $db->quote($elementId));
         $db->setQuery($query);
         $db->execute();
         return $elementId;
-        //
     }
 
     /**
@@ -1224,7 +1174,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $elements
      * @param $group_id
      * @param $user
-     * @return array
+     * @return array|string
      */
     function updateOrder($elements, $group_id, $user) {
         if (empty($user)) {
@@ -1234,7 +1184,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $date = new Date();
         $results= [];
 
-        for($i = 0; $i < count($elements); $i++){
+        for ($i = 0; $i < count($elements); $i++) {
 
             $db = $this->getDbo();
             $query = $db->getQuery(true);
@@ -1259,7 +1209,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
 
         return $results;
-
     }
 
     /**
@@ -1280,7 +1229,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $date = new Date();
         $eval = 0;
 
-        if($element['FRequire'] === 'true'){
+        if ($element['FRequire'] === 'true') {
             $element['params']['notempty-message'] = array("");
             $element['params']['notempty-validation_condition'] = array("");
             $element['params']['validations']= array("plugin"=>"notempty","plugin_published"=>"1","validate_in"=>"both","validation_on"=>"both","validate_hidden"=>"0","must_validate"=>"0","show_icon"=>"1");
@@ -1292,7 +1241,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
 
         foreach ($element['params'] as $key => $value) {
-            if(!is_array($element['params'][$key])) {
+            if (!is_array($element['params'][$key])) {
                 $element['params'][$key] = htmlspecialchars($element['params'][$key]);
             }
         }
@@ -1328,45 +1277,32 @@ class EmundusonboardModelformbuilder extends JModelList {
         $query = $db->getQuery(true);
 
         // Update column type
-        $query
-            ->select([
+        $query->select([
                 'el.name AS name',
                 'fl.db_table_name AS dbtable',
                 'el.params AS params'
             ])
             ->from($db->quoteName('#__fabrik_elements','el'))
-            ->leftJoin(
-                $db->quoteName('#__fabrik_formgroup','fg') .
-                ' ON ' .
-                $db->quoteName('fg.group_id') .
-                ' = ' .
-                $db->quoteName('el.group_id')
-            )
-            ->leftJoin(
-                $db->quoteName('#__fabrik_lists','fl') .
-                ' ON ' .
-                $db->quoteName('fl.form_id') .
-                ' = ' .
-                $db->quoteName('fg.form_id')
-            )
+            ->leftJoin($db->quoteName('#__fabrik_formgroup','fg') . ' ON ' . $db->quoteName('fg.group_id') . ' = ' . $db->quoteName('el.group_id'))
+            ->leftJoin($db->quoteName('#__fabrik_lists','fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
             ->where($db->quoteName('el.id') . ' = ' . $db->quote($element['id']));
         $db->setQuery($query);
         $db_element = $db->loadObject();
         //
 
         // Filter by plugin
-        if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown'){
+        if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown') {
             $old_params = json_decode($db_element->params,true);
             $sub_values = [];
             $sub_labels = [];
 
-            foreach ($element['params']['sub_options']['sub_values'] as $index=>$sub_value){
-                if($old_params['sub_options']){
+            foreach ($element['params']['sub_options']['sub_values'] as $index=>$sub_value) {
+                if ($old_params['sub_options']) {
                     $new_label = array(
                         'fr' => $sub_value,
                         'en' => $sub_value,
                     );
-                    if($old_params['sub_options']['sub_labels'][$index]){
+                    if ($old_params['sub_options']['sub_labels'][$index]) {
                         $this->formsTrad($old_params['sub_options']['sub_labels'][$index],$new_label);
                         $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
                     } else {
@@ -1395,11 +1331,11 @@ class EmundusonboardModelformbuilder extends JModelList {
                 " MODIFY COLUMN " . $db_element->name . " VARCHAR(255) NOT NULL";
             $db->setQuery($query);
             $db->execute();
-        } elseif ($element['plugin'] === 'birthday'){
+        } elseif ($element['plugin'] === 'birthday') {
             $element['params']['birthday_yearstart'] = 1950;
             $dbtype = 'DATE';
 
-            foreach ($element['params']['sub_options']['sub_labels'] as $index=>$sub_label){
+            foreach ($element['params']['sub_options']['sub_labels'] as $index=>$sub_label) {
                 $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
             }
 
@@ -1410,19 +1346,19 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->setQuery($query);
             $db->execute();
         } else {
-            if($element['params']['password'] != 6){
+            if ($element['params']['password'] != 6) {
                 $dbtype = 'VARCHAR(' . $element['params']['maxlength'] . ')';
             } else {
                 $dbtype = 'INT(' . $element['params']['maxlength'] . ')';
             }
 
-            if($element['plugin'] === 'textarea'){
+            if ($element['plugin'] === 'textarea') {
                 $element['params']['width'] = 60;
                 $dbtype = 'TEXT';
             }
 
-            if($element['params']['sub_options']){
-                foreach ($element['params']['sub_options']['sub_labels'] as $index=>$sub_label){
+            if ($element['params']['sub_options']) {
+                foreach ($element['params']['sub_options']['sub_labels'] as $index=>$sub_label) {
                     $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
                 }
             }
@@ -1466,7 +1402,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
     }
 
-    function SubLabelsxValues($element, $locallang, $NewSubLabel, $user){
+    function SubLabelsxValues($element, $locallang, $NewSubLabel, $user) {
 
         error_reporting(0);
         if (empty($user)) {
@@ -1477,57 +1413,54 @@ class EmundusonboardModelformbuilder extends JModelList {
         $Content_Folder = file_get_contents($path_to_file);
 
 
-        if(array_key_exists('sub_options.sub_labels', $element['params'])){
-            if(count($NewSubLabel) < count($element['params']['sub_options']['sub_labels'])){
-                $dif = count($element['params']['sub_options']['sub_labels']) - count($NewSubLabel);
-                for($d = 0; $d < $dif; $d++){
-                    array_pop($element['params']['sub_options']['sub_labels']);
-                    array_pop($element['params']['sub_options']['sub_values']);
-                }
-                $db = $this->getDbo();
-                $query = $db->getQuery(true);
+        if (array_key_exists('sub_options.sub_labels', $element['params']) && count($NewSubLabel) < count($element['params']['sub_options']['sub_labels'])) {
+            $dif = count($element['params']['sub_options']['sub_labels']) - count($NewSubLabel);
+            for ($d = 0; $d < $dif; $d++) {
+                array_pop($element['params']['sub_options']['sub_labels']);
+                array_pop($element['params']['sub_options']['sub_values']);
+            }
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
 
-                foreach ($element['params'] as $key => $value) {
-                    $element['params'][$key] = htmlspecialchars($element['params'][$key]);
-                }
+            foreach ($element['params'] as $key => $value) {
+                $element['params'][$key] = htmlspecialchars($element['params'][$key]);
+            }
 
-                $fields = array(
-                    $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
-                );
-                $query->update($db->quoteName('#__fabrik_elements'))
-                    ->set($fields)
-                    ->where($db->quoteName('id'). '  ='. $element['id']);
-                try {
-                    $db->setQuery($query);
-                    $db->execute();
-                }
-                catch(Exception $e) {
-                    JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                    return $e->getMessage();
-                }
+            $fields = array(
+                $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
+            );
+            $query->update($db->quoteName('#__fabrik_elements'))
+                ->set($fields)
+                ->where($db->quoteName('id'). '  ='. $element['id']);
+            try {
+                $db->setQuery($query);
+                $db->execute();
+            } catch(Exception $e) {
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                return $e->getMessage();
             }
         }
 
-        for($i = 0; $i < count($NewSubLabel); $i++){
-            if(array_key_exists('sub_options.sub_labels', $element['params'])){
+        for ($i = 0; $i < count($NewSubLabel); $i++) {
+            if (array_key_exists('sub_options.sub_labels', $element['params'])) {
                 $labelTofind= $element['params']['sub_options']['sub_labels'][$i] . '=';
-            }else{
+            } else {
                 $labelTofind = "undefinied";
             }
             $trad = $NewSubLabel[$i];
             $re1 = '/["]+/';
             preg_match_all($re1, $trad, $matches1, PREG_SET_ORDER, 0);
-            for($tr = 0; $tr<count($matches1);$tr++){
+            for ($tr = 0; $tr<count($matches1);$tr++) {
                 $trad = str_replace($matches1[$tr], "''", $trad);
             }
             $re = '/[\x00-\x1F\x7F-\xFF\W+]/    ';
             preg_match_all($re, $NewSubLabel[$i], $matches, PREG_SET_ORDER, 0);
-            for($m = 0; $m < count($matches);$m++){
+            for ($m = 0; $m < count($matches);$m++) {
                 $NewSubLabel[$i] = str_replace($matches[$m], "", $NewSubLabel[$i]);
             }
             $NewSubLabel[$i] = strtoupper($NewSubLabel[$i]);
 
-            if (strpos($Content_Folder,$labelTofind) === false || $labelTofind === "="){
+            if (strpos($Content_Folder,$labelTofind) === false || $labelTofind === "=") {
 
 
                 $sublabel = 'SL_' . $NewSubLabel[$i] . $element['id'] .$i;
@@ -1535,11 +1468,11 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $element['params']['sub_options']['sub_values'][$i] = $sublabel;
 
 
-                if(strpos($labelTofind,$sublabel) !== false){
+                if (strpos($labelTofind,$sublabel) !== false) {
 
                     $labelToset= "\n".$sublabel. "=\"" . $trad . "\"";
                     file_put_contents($path_to_file, $labelToset , FILE_APPEND);
-                }else{
+                } else {
 
                     $labelToset= "\n".$sublabel . "=\"" .$trad."\"" ;
                     file_put_contents($path_to_file, $labelToset , FILE_APPEND);
@@ -1559,14 +1492,12 @@ class EmundusonboardModelformbuilder extends JModelList {
                     try {
                         $db->setQuery($query);
                         $db->execute();
-                    }
-                    catch(Exception $e) {
+                    } catch(Exception $e) {
                         JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                         return $e->getMessage();
                     }
                 }
-            }else{
-
+            } else {
                 $labelToset= $labelTofind . "\"" .$trad."\"" ;
                 $labelTofind = "/^".$labelTofind.".*/mi";
                 preg_match_all($labelTofind, $Content_Folder, $matches, PREG_SET_ORDER, 0);
@@ -1594,8 +1525,8 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         ${"element".$element} = new stdClass();
 
-        foreach ($elements as $group_elt){
-            if($group_elt->element->id == $element){
+        foreach ($elements as $group_elt) {
+            if ($group_elt->element->id == $element) {
                 $o_element = $group_elt->element;
                 $el_params = json_decode($o_element->params);
                 $content_element = $group_elt->preRender('0','1','bootstrap');
@@ -1607,17 +1538,17 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ${"element".$o_element->id}->hidden = $content_element->hidden;
                 ${"element".$o_element->id}->labelsAbove=$labelsAbove;
                 ${"element".$o_element->id}->plugin=$o_element->plugin;
-                if(empty($el_params->validations)){
+                if (empty($el_params->validations)) {
                     $FRequire = false;
-                }else{
+                } else {
                     $FRequire = true;
                 }
-                if($el_params->sub_options){
-                    foreach ($el_params->sub_options->sub_labels as $key => $sub_label){
+
+                if ($el_params->sub_options) {
+                    foreach ($el_params->sub_options->sub_labels as $key => $sub_label) {
                         $el_params->sub_options->sub_labels[$key] = $this->getTranslationFr($sub_label);
                     }
                 }
-
 
                 ${"element".$o_element->id}->FRequire=$FRequire;
                 ${"element".$o_element->id}->params=$el_params;
@@ -1628,9 +1559,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ${"element".$o_element->id}->publish=$group_elt->isPublished();
 
 
-
-                if ($labelsAbove == 2)
-                {
+                if ($labelsAbove == 2) {
                     if ($el_params->tipLocation == 'above') :
                         ${"element".$o_element->id}->tipAbove=$content_element->tipAbove;
                     endif;
@@ -1647,8 +1576,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     if ($el_params->tipLocation == 'below') :
                         ${"element".$o_element->id}->tipBelow=$content_element->tipBelow;
                     endif;
-                }else
-                {
+                } else {
                     ${"element".$o_element->id}->label=$content_element->label;
 
                     if ($el_params->tipLocation == 'above') :
@@ -1679,12 +1607,11 @@ class EmundusonboardModelformbuilder extends JModelList {
      *
      * @param $elt
      */
-    function deleteElement($elt){
+    function deleteElement($elt) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->clear()
+        $query->clear()
             ->select('*')
             ->from($db->quoteName('#__fabrik_elements'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($elt));
@@ -1694,30 +1621,22 @@ class EmundusonboardModelformbuilder extends JModelList {
         $label = $fabrik_element->label;
         $name = $fabrik_element->name;
         $params = json_decode($fabrik_element->params, true);
-        if($params['sub_options']){
+        if ($params['sub_options']) {
             $sub_labels = json_decode($fabrik_element->params, true)['sub_options']['sub_labels'];
-            foreach ($sub_labels as $sub_label){
+            foreach ($sub_labels as $sub_label) {
                 $this->deleteTranslation($sub_label);
             }
         }
 
         $this->deleteTranslation($label);
 
-
-        $query
-            ->clear()
+        $query->clear()
             ->select([
                 'fl.db_table_name AS dbtable',
                 'fl.form_id AS formid',
             ])
             ->from($db->quoteName('#__fabrik_formgroup', 'fg'))
-            ->leftJoin(
-                $db->quoteName('#__fabrik_lists', 'fl') .
-                ' ON ' .
-                $db->quoteName('fl.form_id') .
-                ' = ' .
-                $db->quoteName('fg.form_id')
-            )
+            ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
             ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
         $db->setQuery($query);
         $dbtable = $db->loadObject()->dbtable;
@@ -1729,16 +1648,12 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->execute();
 
             $query = $db->getQuery(true);
-            $query
-                ->clear()
+            $query->clear()
                 ->delete($db->quoteName('#__fabrik_elements'))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($elt));
-            try{
-                $db->setQuery($query);
-                $db->execute();
-            } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-            }
+
+            $db->setQuery($query);
+            $db->execute();
         } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
         }
@@ -1751,12 +1666,11 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $rgt
      * @return mixed
      */
-    function reorderMenu($link, $rgt){
+    function reorderMenu($link, $rgt) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->clear()
+        $query->clear()
             ->update($db->quoteName('#__menu'))
             ->set('rgt = ' . $db->quote($rgt))
             ->set('lft = ' . $db->quote($rgt-1))
@@ -1772,12 +1686,11 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $fid
      * @return mixed|null
      */
-    function getGroupOrdering($gid,$fid){
+    function getGroupOrdering($gid,$fid) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->select('ordering')
+        $query->select('ordering')
             ->from($db->quoteName('#__fabrik_formgroup'))
             ->where($db->quoteName('group_id') . ' = ' . $db->quote($gid))
             ->andWhere($db->quoteName('form_id') . ' = ' . $db->quote($fid));
@@ -1794,16 +1707,16 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $order
      * @return mixed
      */
-    function reorderGroup($gid, $fid, $order){
+    function reorderGroup($gid, $fid, $order) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->clear()
+        $query->clear()
             ->update($db->quoteName('#__fabrik_formgroup'))
             ->set('ordering = ' . $db->quote($order))
             ->where($db->quoteName('group_id') . ' = ' . $db->quote($gid))
             ->andWhere($db->quoteName('form_id') . ' = ' . $db->quote($fid));
+
         $db->setQuery($query);
         return $db->execute();
     }
@@ -1817,8 +1730,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->select('*')
+        $query->select('*')
             ->from($db->quoteName('#__emundus_form_template'))
             ->order('form_id');
 
@@ -1838,8 +1750,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             }
 
             return $models;
-        }
-        catch(Exception $e) {
+        } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return [];
         }
@@ -1852,10 +1763,10 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $prid
      * @return array
      */
-    function createMenuFromTemplate($label, $intro, $formid, $prid){
+    function createMenuFromTemplate($label, $intro, $formid, $prid) {
         // Prepare Fabrik API
         JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
-        $form         = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+        $form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
         $form->setId(intval($formid));
         $groups	= $form->getGroups();
         //
@@ -1875,8 +1786,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $query = $db->getQuery(true);
 
         // Get the profile
-        $query
-            ->select('*')
+        $query->select('*')
             ->from($db->quoteName('#__emundus_setup_profiles'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($prid));
         $db->setQuery($query);
@@ -1884,8 +1794,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         //
 
         // Get the header menu
-        $query
-            ->clear()
+        $query->clear()
             ->select('*')
             ->from('#__menu')
             ->where($db->quoteName('menutype') . ' = ' . $db->quote($profile->menutype))
@@ -1895,8 +1804,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         //
 
         // Duplicate the form
-        $query
-            ->clear()
+        $query->clear()
             ->select('*')
             ->from('#__fabrik_forms')
             ->where($db->quoteName('id') . ' = ' . $db->quote($formid));
@@ -1905,10 +1813,8 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         $query->clear();
         $query->insert($db->quoteName('#__fabrik_forms'));
-        foreach ($form_model as $key => $val)
-        {
-            if($key != 'id')
-            {
+        foreach ($form_model as $key => $val) {
+            if ($key != 'id') {
                 $query->set($key . ' = ' . $db->quote($val));
             }
         }
@@ -1935,8 +1841,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             //
 
             // Duplicate fabrik list
-            $query
-                ->clear()
+            $query->clear()
                 ->select('*')
                 ->from('#__fabrik_lists')
                 ->where($db->quoteName('form_id') . ' = ' . $db->quote($formid));
@@ -1944,8 +1849,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $list_model = $db->loadObject();
 
             // Create table
-            $query
-                ->clear()
+            $query->clear()
                 ->select('COUNT(*)')
                 ->from($db->quoteName('information_schema.tables'))
                 ->where($db->quoteName('table_name') . ' LIKE ' . $db->quote('%jos_emundus_' . $prid . '%'));
@@ -2003,8 +1907,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 date('Y-m-d H:i:s')
             );
 
-            $query
-                ->clear()
+            $query->clear()
                 ->insert($db->quoteName('#__emundus_setup_formlist'))
                 ->columns($db->quoteName($columns))
                 ->values(implode(',', $db->quote($values)));
@@ -2020,8 +1923,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $properties = $group->getGroupProperties($group->getFormModel());
                 $elements = $group->getMyElements();
 
-                $query
-                    ->clear()
+                $query->clear()
                     ->select('*')
                     ->from('#__fabrik_groups')
                     ->where($db->quoteName('id') . ' = ' . $db->quote($properties->id));
@@ -2051,9 +1953,8 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
 
-                $query->clear();
-                $query->insert($db->quoteName('#__fabrik_formgroup'));
-                $query
+                $query->clear()
+	                ->insert($db->quoteName('#__fabrik_formgroup'))
                     ->set('form_id = ' . $db->quote($newformid))
                     ->set('group_id = ' . $db->quote($newgroupid))
                     ->set('ordering = ' . $db->quote($ordering));
@@ -2084,8 +1985,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             //
 
             // Duplicate the form-menu
-            $query
-                ->clear()
+            $query->clear()
                 ->select('*')
                 ->from('#__menu')
                 ->where($db->quoteName('menutype') . ' = ' . $db->quote($profile->menutype))
@@ -2095,7 +1995,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $menus = $db->loadObjectList();
             $rgts = [];
             $lfts = [];
-            foreach (array_values($menus) as $menu){
+            foreach (array_values($menus) as $menu) {
                 if (!in_array($menu->rgt, $rgts)) {
                     $rgts[] = intval($menu->rgt);
                 }
@@ -2104,8 +2004,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 }
             }
 
-            $query
-                ->clear()
+            $query->clear()
                 ->select(['id AS id', 'link AS link'])
                 ->from($db->quoteName('#__menu'));
 
@@ -2121,8 +2020,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 }
             }
 
-            $query
-                ->clear()
+            $query->clear()
                 ->select('*')
                 ->from('#__menu')
                 ->where($db->quoteName('id') . ' = ' . $menu_id);
@@ -2160,18 +2058,16 @@ class EmundusonboardModelformbuilder extends JModelList {
             //
 
             // Affect modules to this menu
-            foreach ($modules as $module){
-                $query
-                    ->clear()
-                    ->insert($db->quoteBinary('#__modules_menu'));
-                $query
+            foreach ($modules as $module) {
+                $query->clear()
+                    ->insert($db->quoteBinary('#__modules_menu'))
                     ->set($db->quote('moduleid') . ' = ' . $db->quote($module))
                     ->set($db->quote('menuid') . ' = ' . $db->quote($newmenuid));
                 $db->setQuery($query);
                 $db->execute();
             }
             //
-        } catch(Exception $e){
+        } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
         }
         //
@@ -2187,15 +2083,10 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->select('sg.id')
+        $query->select('sg.id')
             ->from($db->quoteName('#__emundus_setup_campaigns','c'))
-            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'gc').
-                ' ON '.
-                $db->quoteName('c.training') . ' LIKE ' . $db->quoteName('gc.course'))
-            ->leftJoin($db->quoteName('#__emundus_setup_groups', 'sg').
-                ' ON '.
-                $db->quoteName('gc.parent_id') . ' = ' . $db->quoteName('sg.id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'gc'). ' ON '. $db->quoteName('c.training') . ' LIKE ' . $db->quoteName('gc.course'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups', 'sg'). ' ON '. $db->quoteName('gc.parent_id') . ' = ' . $db->quoteName('sg.id'))
             ->where($db->quoteName('c.id') . ' = ' . $db->quote($cid))
             ->andWhere($db->quoteName('sg.description') . ' LIKE ' . $db->quote('constraint_group'));
         $db->setQuery($query);
@@ -2206,18 +2097,11 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->select('COUNT(gf.id)')
+        $query->select('COUNT(gf.id)')
             ->from($db->quoteName('#__emundus_setup_campaigns','c'))
-            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'gc').
-                ' ON '.
-                $db->quoteName('c.training') . ' LIKE ' . $db->quoteName('gc.course'))
-            ->leftJoin($db->quoteName('#__emundus_setup_groups', 'sg').
-                ' ON '.
-                $db->quoteName('gc.parent_id') . ' = ' . $db->quoteName('sg.id'))
-            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_fabrik_group_link', 'gf').
-                ' ON '.
-                $db->quoteName('gf.parent_id') . ' = ' . $db->quoteName('sg.id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'gc'). ' ON '. $db->quoteName('c.training') . ' LIKE ' . $db->quoteName('gc.course'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups', 'sg'). ' ON '. $db->quoteName('gc.parent_id') . ' = ' . $db->quoteName('sg.id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_fabrik_group_link', 'gf'). ' ON '. $db->quoteName('gf.parent_id') . ' = ' . $db->quoteName('sg.id'))
             ->where($db->quoteName('c.id') . ' = ' . $db->quote($cid))
             ->andWhere($db->quoteName('sg.description') . ' LIKE ' . $db->quote('constraint_group'))
             ->andWhere($db->quoteName('gf.fabrik_group_link') . ' = ' . $db->quote($group));
@@ -2229,20 +2113,18 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->select('published')
+        $query->select('published')
             ->from($db->quoteName('#__fabrik_elements'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($element));
         $db->setQuery($query);
         $old_publish = $db->loadResult();
 
         $publish = 1;
-        if ($old_publish == 1){
+        if ($old_publish == 1) {
             $publish = 0;
         }
 
-        $query
-            ->clear()
+        $query->clear()
             ->update($db->quoteName('#__fabrik_elements'))
             ->set($db->quoteName('published') . ' = ' . $db->quote($publish))
             ->where($db->quoteName('id') . ' = ' . $db->quote($element));

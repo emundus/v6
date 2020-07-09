@@ -36,15 +36,18 @@ class EmundusonboardControlleremail extends JControllerLegacy {
      */
     public function getemailcount() {
         $user = JFactory::getUser();
-        $m_emails = $this->model;
-        $filterCount = $_GET['filterCount'];
-        $rechercheCount = $_GET['rechercheCount'];
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $emails = $m_emails->getEmailCount($user->id, $filterCount, $rechercheCount);
+
+	        $m_emails = $this->model;
+	        $jinput = JFactory::getApplication()->input;
+	        $filterCount = $jinput->get->get('filterCount');
+	        $rechercheCount = $jinput->get->get('rechercheCount');
+
+            $emails = $m_emails->getEmailCount($filterCount, $rechercheCount);
 
             if ($emails > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $emails);
@@ -61,19 +64,22 @@ class EmundusonboardControlleremail extends JControllerLegacy {
      */
     public function getallemail() {
         $user = JFactory::getUser();
-        $m_emails = $this->model;
-
-        $filter = $_GET['filter'];
-        $sort = $_GET['sort'];
-        $recherche = $_GET['recherche'];
-        $lim = $_GET['lim'];
-        $page = $_GET['page'];
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $emails = $m_emails->getAllEmails($user->id, $lim, $page, $filter, $sort, $recherche);
+
+	        $m_emails = $this->model;
+
+	        $jinput = JFactory::getApplication()->input;
+	        $filter = $jinput->get->get('filter');
+	        $sort = $jinput->get->get('sort');
+	        $recherche = $jinput->get->get('recherche');
+	        $lim = $jinput->get->get('lim');
+	        $page = $jinput->get->get('page');
+
+            $emails = $m_emails->getAllEmails($lim, $page, $filter, $sort, $recherche);
 
             if (count($emails) > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $emails);
@@ -87,14 +93,16 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function deleteemail() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('id');
-        $m_email = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('id');
+	        $m_email = $this->model;
+
             $emails = $m_email->deleteEmail($data);
 
             if ($emails) {
@@ -109,14 +117,16 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function unpublishemail() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('id');
-        $m_email = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('id');
+	        $m_email = $this->model;
+
             $emails = $m_email->unpublishEmail($data);
 
             if ($emails) {
@@ -131,14 +141,16 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function publishemail() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('id');
-        $m_email = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('id');
+	        $m_email = $this->model;
+
             $emails = $m_email->publishEmail($data);
 
             if ($emails) {
@@ -153,14 +165,16 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function duplicateemail() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('id');
-        $m_email = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('id');
+	        $m_email = $this->model;
+
             $email = $m_email->duplicateEmail($data);
 
             if ($email) {
@@ -176,14 +190,16 @@ class EmundusonboardControlleremail extends JControllerLegacy {
     public function createemail() {
 
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('body');
-        $m_email = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('body');
+	        $m_email = $this->model;
+
             $result = $m_email->createEmail($data);
 
             if ($result) {
@@ -200,15 +216,17 @@ class EmundusonboardControlleremail extends JControllerLegacy {
     public function updateemail() {
 
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('body');
-        $code = $jinput->getRaw('code');
-        $m_email = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('body');
+	        $code = $jinput->post->getRaw('code');
+	        $m_email = $this->model;
+
             $result = $m_email->updateEmail($code, $data);
 
             if ($result) {
@@ -223,14 +241,16 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function getemailbyid() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $id = $jinput->get->get('id');
-        $m_email = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $id = $jinput->get->getInt('id');
+	        $m_email = $this->model;
+
             $email = $m_email->getEmailById($id);
             if (!empty($email)) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $email);
@@ -244,12 +264,14 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function getemailcategories() {
         $user = JFactory::getUser();
-        $m_email = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $m_email = $this->model;
+
             $email = $m_email->getEmailCategories();
             if (!empty($email)) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $email);
@@ -263,13 +285,15 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function getemailtypes() {
         $user = JFactory::getUser();
-        $m_email = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $m_email = $this->model;
             $email = $m_email->getEmailTypes();
+
             if (!empty($email)) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $email);
             } else {
@@ -282,13 +306,15 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function getstatus() {
         $user = JFactory::getUser();
-        $m_email = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $m_email = $this->model;
             $status = $m_email->getStatus();
+
             if (!empty($status)) {
                 $tab = array('status' => 1, 'msg' => JText::_('STATUS_RETRIEVED'), 'data' => $status);
             } else {
@@ -301,14 +327,16 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function gettriggersbyprogram() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $pid = $jinput->get->get('pid');
-        $m_email = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $pid = $jinput->get->getInt('pid');
+	        $m_email = $this->model;
+
             $triggers = $m_email->getTriggersByProgramId($pid);
             if (!empty($triggers)) {
                 $tab = array('status' => 1, 'msg' => JText::_('TRIGGERS_RETRIEVED'), 'data' => $triggers);
@@ -322,14 +350,16 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function gettriggerbyid() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $tid = $jinput->get->get('tid');
-        $m_email = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $tid = $jinput->get->getInt('tid');
+	        $m_email = $this->model;
+
             $trigger = $m_email->getTriggerById($tid);
             if (!empty($trigger)) {
                 $tab = array('status' => 1, 'msg' => JText::_('TRIGGER_RETRIEVED'), 'data' => $trigger);
@@ -343,15 +373,17 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function createtrigger() {
         $user = JFactory::getUser();
-        $m_email = $this->model;
-        $jinput = JFactory::getApplication()->input;
-        $trigger = $jinput->getRaw('trigger');
-        $users = $jinput->getRaw('users');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $m_email = $this->model;
+	        $jinput = JFactory::getApplication()->input;
+	        $trigger = $jinput->post->getRaw('trigger');
+	        $users = $jinput->post->getRaw('users');
+
             $status = $m_email->createTrigger($trigger, $users, $user);
             if (!empty($status)) {
                 $tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);
@@ -365,16 +397,18 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function updatetrigger() {
         $user = JFactory::getUser();
-        $m_email = $this->model;
-        $jinput = JFactory::getApplication()->input;
-        $tid = $jinput->getRaw('tid');
-        $trigger = $jinput->getRaw('trigger');
-        $users = $jinput->getRaw('users');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $m_email = $this->model;
+	        $jinput = JFactory::getApplication()->input;
+	        $tid = $jinput->post->getInt('tid');
+	        $trigger = $jinput->post->getRaw('trigger');
+	        $users = $jinput->post->getRaw('users');
+
             $status = $m_email->updateTrigger($tid, $trigger, $users);
             if (!empty($status)) {
                 $tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);
@@ -388,14 +422,16 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
     public function removetrigger() {
         $user = JFactory::getUser();
-        $m_email = $this->model;
-        $jinput = JFactory::getApplication()->input;
-        $tid = $jinput->getRaw('tid');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $m_email = $this->model;
+	        $jinput = JFactory::getApplication()->input;
+	        $tid = $jinput->post->getInt('tid');
+
             $status = $m_email->removeTrigger($tid);
             if (!empty($status)) {
                 $tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);

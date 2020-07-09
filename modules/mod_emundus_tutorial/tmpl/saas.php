@@ -46,65 +46,85 @@ if (!empty($articles)) :?>
             let queue = []
 
             <?php foreach ($articles as $key => $article) :?>
-            <?php $view = json_encode(json_decode($article['note'],true)['view']) ?>
-            <?php $layout = json_encode(json_decode($article['note'],true)['layout']) ?>
-            <?php $link = json_encode(json_decode($article['note'],true)['link']) ?>
-            <?php if ($view != 'null') :?>
-            if(view == <?php echo $view ?>){
-                <?php if ($layout != 'null') :?>
-                if(layout == <?php echo $layout ?>){
-                    <?php if ($link != 'null') :?>
-                        let link = <?php echo $link; ?>;
-                    <?php if (strpos($link,'cid') != false) :?>
-                        link = link + cid;
-                    <?php endif; ?>
-                        queue.push({
-                            title: <?= json_encode($article['title']); ?>,
-                            html: <?= json_encode($article['introtext']); ?>,
-                            confirmButtonText: '<a href="' + link + '" class="tutorial-link">' + '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>' + '</a>',
-                        })
+                <?php
+                    $article_params = json_decode($article['note'],true);
+
+                    if (!empty($article_params['view'])) {
+	                    $view = json_encode($article_params['view']);
+                    } else {
+                        $view = "null";
+                    }
+
+                    if (!empty($article_params['layout'])) {
+	                    $layout = json_encode($article_params['layout']);
+                    } else {
+                        $layout = "null";
+                    }
+
+                    if (!empty($article_params['link'])) {
+	                    $link = json_encode($article_params['link']);
+                    } else {
+	                    $link = "null";
+                    }
+                ?>
+
+
+                <?php if ($view != 'null') :?>
+                    if(view == <?= $view ?>){
+                        <?php if ($layout != 'null') :?>
+                        if(layout == <?= $layout ?>){
+                            <?php if ($link != 'null') :?>
+                                let link = <?= $link; ?>;
+                            <?php if (strpos($link,'cid') != false) :?>
+                                link = link + cid;
+                            <?php endif; ?>
+                                queue.push({
+                                    title: <?= json_encode($article['title']); ?>,
+                                    html: <?= json_encode($article['introtext']); ?>,
+                                    confirmButtonText: '<a href="' + link + '" class="tutorial-link">' + '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>' + '</a>',
+                                })
+                            <?php else :?>
+                                queue.push({
+                                    title: <?= json_encode($article['title']); ?>,
+                                    html: <?= json_encode($article['introtext']); ?>,
+                                    confirmButtonText: '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>',
+                                })
+                            <?php endif; ?>
+                        }
+                        <?php else :?>
+                        <?php if ($link != 'null') :?>
+                            let link = <?= $link; ?>;
+                            queue.push({
+                                title: <?= json_encode($article['title']); ?>,
+                                html: <?= json_encode($article['introtext']); ?>,
+                                confirmButtonText: '<a href="' + link + '" class="tutorial-link">' + '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>' + '</a>',
+                            })
+                        <?php else :?>
+                            queue.push({
+                                title: <?= json_encode($article['title']); ?>,
+                                html: <?= json_encode($article['introtext']); ?>,
+                                confirmButtonText: '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>',
+                            })
+                        <?php endif; ?>
+                        <?php endif; ?>
+                    }
                     <?php else :?>
-                        queue.push({
-                            title: <?= json_encode($article['title']); ?>,
-                            html: <?= json_encode($article['introtext']); ?>,
-                            confirmButtonText: '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>',
-                        })
+                        <?php if ($link != 'null') :?>
+                            let link = <?= $link; ?>;
+                            queue.push({
+                                title: <?= json_encode($article['title']); ?>,
+                                html: <?= json_encode($article['introtext']); ?>,
+                                confirmButtonText: '<a href="' + link + '" class="tutorial-link">' + '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>' + '</a>',
+                            })
+                        <?php else :?>
+                            queue.push({
+                                title: <?= json_encode($article['title']); ?>,
+                                html: <?= json_encode($article['introtext']); ?>,
+                                confirmButtonText: '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>',
+                            })
+                        <?php endif; ?>
                     <?php endif; ?>
-                }
-                <?php else :?>
-                <?php if ($link != 'null') :?>
-                    let link = <?php echo $link; ?>;
-                    queue.push({
-                        title: <?= json_encode($article['title']); ?>,
-                        html: <?= json_encode($article['introtext']); ?>,
-                        confirmButtonText: '<a href="' + link + '" class="tutorial-link">' + '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>' + '</a>',
-                    })
-                <?php else :?>
-                    queue.push({
-                        title: <?= json_encode($article['title']); ?>,
-                        html: <?= json_encode($article['introtext']); ?>,
-                        confirmButtonText: '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>',
-                    })
-                <?php endif; ?>
-                <?php endif; ?>
-            }
-            <?php else :?>
-                <?php if ($link != 'null') :?>
-                    let link = <?php echo $link; ?>;
-                    queue.push({
-                        title: <?= json_encode($article['title']); ?>,
-                        html: <?= json_encode($article['introtext']); ?>,
-                        confirmButtonText: '<a href="' + link + '" class="tutorial-link">' + '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>' + '</a>',
-                    })
-                <?php else :?>
-                    queue.push({
-                        title: <?= json_encode($article['title']); ?>,
-                        html: <?= json_encode($article['introtext']); ?>,
-                        confirmButtonText: '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>',
-                    })
-                <?php endif; ?>
-            <?php endif; ?>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
 
             Swal.mixin({
                 confirmButtonColor: '#de6339',

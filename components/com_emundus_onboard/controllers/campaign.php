@@ -35,15 +35,19 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function getcampaigncount() {
         $user = JFactory::getUser();
-        $m_camp = $this->model;
-
-        $filterCount = $_GET['filterCount'];
-        $rechercheCount = $_GET['rechercheCount'];
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $m_camp = $this->model;
+
+	        $jinput = JFactory::getApplication()->input;
+
+	        $filterCount = $jinput->get->get('filterCount');
+	        $rechercheCount = $jinput->get->get('rechercheCount');
+
             $campaigns = $m_camp->getCampaignCount($filterCount, $rechercheCount);
 
             if ($campaigns > 0) {
@@ -61,18 +65,22 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function getallcampaign() {
         $user = JFactory::getUser();
-        $m_camp = $this->model;
-
-        $filter = $_GET['filter'];
-        $sort = $_GET['sort'];
-        $recherche = $_GET['recherche'];
-        $lim = $_GET['lim'];
-        $page = $_GET['page'];
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $m_camp = $this->model;
+
+	        $jinput = JFactory::getApplication()->input;
+
+	        $filter = $jinput->get->get('filter');
+	        $sort = $jinput->get->get('sort');
+	        $recherche = $jinput->get->get('recherche');
+	        $lim = $jinput->get->get('lim');
+	        $page = $jinput->get->get('page');
+
             $campaigns = $m_camp->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page);
 
             if (count($campaigns) > 0) {
@@ -90,14 +98,17 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function getcampaignsbyprogram() {
         $user = JFactory::getUser();
-        $m_camp = $this->model;
-
-        $program = $_GET['pid'];
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $m_camp = $this->model;
+
+	        $jinput = JFactory::getApplication()->input;
+	        $program = $jinput->get->getInt('pid');
+
             $campaigns = $m_camp->getCampaignsByProgram($program);
 
             if (count($campaigns) > 0) {
@@ -117,14 +128,16 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function deletecampaign() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('id');
-        $m_camp = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('id');
+	        $m_camp = $this->model;
+
             $result = $m_camp->deleteCampaign($data);
 
             if ($result) {
@@ -144,14 +157,16 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function unpublishcampaign() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('id');
-        $m_camp = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('id');
+	        $m_camp = $this->model;
+
             $result = $m_camp->unpublishCampaign($data);
 
             if ($result) {
@@ -171,14 +186,16 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function publishcampaign() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('id');
-        $m_camp = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('id');
+	        $m_camp = $this->model;
+
             $result = $m_camp->publishCampaign($data);
 
             if ($result) {
@@ -198,14 +215,16 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function duplicatecampaign() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('id');
-        $m_camp = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('id');
+	        $m_camp = $this->model;
+
             $result = $m_camp->duplicateCampaign($data);
 
             if ($result) {
@@ -221,13 +240,13 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
     //TODO Throw in the years controller
     public function getyears() {
         $user = JFactory::getUser();
-        $m_camp = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $years = $m_camp->getYears($user->id);
+	        $m_camp = $this->model;
+            $years = $m_camp->getYears();
 
             if ($years > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $years);
@@ -246,14 +265,16 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function createcampaign() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('body');
-        $m_camp = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('body');
+	        $m_camp = $this->model;
+
             $data['user'] = $user->id;
 
             $result = $m_camp->createCampaign($data);
@@ -275,16 +296,17 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function updatecampaign() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('body');
-        $cid = $jinput->getRaw('cid');
-        $m_camp = $this->model;
-
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('body');
+	        $cid = $jinput->post->getInt('cid');
+	        $m_camp = $this->model;
+
             $data['user'] = $user->id;
 
             $result = $m_camp->updateCampaign($data, $cid);
@@ -304,15 +326,15 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
     public function createyear() {
 
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $data = $jinput->getRaw('body');
-        $m_camp = $this->model;
-
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $data = $jinput->post->getRaw('body');
+	        $m_camp = $this->model;
 
             $result = $m_camp->createYear($data);
 
@@ -333,14 +355,16 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function getcampaignbyid() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $id = $jinput->get->get('id');
-        $m_camp = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $id = $jinput->get->getInt('id');
+	        $m_camp = $this->model;
+
             $campaign = $m_camp->getCampaignById($id);
             if (!empty($campaign)) {
                 $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_RETRIEVED'), 'data' => $campaign);
@@ -357,13 +381,15 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function getcreatedcampaign() {
         $user = JFactory::getUser();
-        $m_camp = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $m_camp = $this->model;
             $campaign = $m_camp->getCreatedCampaign();
+
             if (!empty($campaign)) {
                 $tab = array('status' => 1, 'msg' => JText::_('CREATED_CAMPAIGN_RETRIEVED'), 'data' => $campaign);
             } else {
@@ -380,12 +406,13 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      * @throws Exception
      */
     public function updateprofile() {
-        $jinput = JFactory::getApplication()->input;
-        $profile = $jinput->get('profile');
-        $campaign = $jinput->get('campaign');
+
+    	$jinput = JFactory::getApplication()->input;
+        $profile = $jinput->post->get('profile');
+        $campaign = $jinput->post->get('campaign');
         $m_camp = $this->model;
 
-        $result = $m_camp->updateProfile($profile,$campaign);
+        $result = $m_camp->updateProfile($profile, $campaign);
 
         if ($result) {
             $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_UPDATED'), 'data' => $result);
@@ -402,13 +429,15 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function getcampaignstoaffect() {
         $user = JFactory::getUser();
-        $m_camp = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $m_camp = $this->model;
             $campaigns = $m_camp->getCampaignsToAffect();
+
             if (!empty($campaigns)) {
                 $tab = array('status' => 1, 'msg' => JText::_('USERS_RETRIEVED'), 'data' => $campaigns);
             } else {
@@ -426,14 +455,16 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
      */
     public function getcampaignstoaffectbyterm() {
         $user = JFactory::getUser();
-        $jinput = JFactory::getApplication()->input;
-        $term = $jinput->get->get('term');
-        $m_camp = $this->model;
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+
+	        $jinput = JFactory::getApplication()->input;
+	        $term = $jinput->get->get('term');
+	        $m_camp = $this->model;
+
             $campaigns = $m_camp->getCampaignsToAffectByTerm($term);
             if (!empty($campaigns)) {
                 $tab = array('status' => 1, 'msg' => JText::_('USERS_RETRIEVED'), 'data' => $campaigns);

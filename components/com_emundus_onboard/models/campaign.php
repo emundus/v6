@@ -268,8 +268,7 @@ class EmundusonboardModelcampaign extends JModelList
      * @return boolean
      * Delete campaign(s) in DB
      */
-    public function deleteCampaign($data)
-    {
+    public function deleteCampaign($data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -277,38 +276,31 @@ class EmundusonboardModelcampaign extends JModelList
 
         if (count($data) > 0) {
             try {
-                foreach (array_values($data) as $id){
+                foreach (array_values($data) as $id) {
                     $falang->deleteFalang($id,'emundus_setup_campaigns','label');
                 }
 
-                $cc_conditions = array(
-                    $db->quoteName('campaign_id') .
-                    ' IN (' .
-                    implode(", ", array_values($data)) .
-                    ')'
-                );
+                $cc_conditions = [
+                    $db->quoteName('campaign_id').' IN ('.implode(", ", array_values($data)).')'
+                ];
 
-                $query
-                    ->delete($db->quoteName('#__emundus_campaign_candidature'))
+                $query->delete($db->quoteName('#__emundus_campaign_candidature'))
                     ->where($cc_conditions);
 
                 $db->setQuery($query);
                 $db->execute();
 
-                $sc_conditions = array(
-                    $db->quoteName('id') .
-                    ' IN (' .
-                    implode(", ", array_values($data)) .
-                    ')'
-                );
+                $sc_conditions = [
+                    $db->quoteName('id').' IN ('.implode(", ", array_values($data)).')'
+                ];
 
-                $query
-                    ->clear()
+                $query->clear()
                     ->delete($db->quoteName('#__emundus_setup_campaigns'))
                     ->where($sc_conditions);
 
                 $db->setQuery($query);
                 return $db->execute();
+
             } catch (Exception $e) {
                 JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
@@ -324,28 +316,25 @@ class EmundusonboardModelcampaign extends JModelList
      * @return boolean
      * Unpublish campaign(s) in DB
      */
-    public function unpublishCampaign($data)
-    {
+    public function unpublishCampaign($data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        if (count($data) > 0) {
+        if (!empty($data)) {
 
             foreach ($data as $key => $val) {
                 $data[$key] = htmlspecialchars($data[$key]);
             }
 
             try {
-                $fields = array($db->quoteName('published') . ' = 0');
-                $sc_conditions = array(
-                    $db->quoteName('id') .
-                    ' IN (' .
-                    implode(", ", array_values($data)) .
-                    ')'
-                );
+                $fields = [
+                	$db->quoteName('published').' = 0'
+                ];
+                $sc_conditions = [
+                	$db->quoteName('id').' IN ('.implode(", ", array_values($data)).')'
+                ];
 
-                $query
-                    ->update($db->quoteName('#__emundus_setup_campaigns'))
+                $query->update($db->quoteName('#__emundus_setup_campaigns'))
                     ->set($fields)
                     ->where($sc_conditions);
 
@@ -366,27 +355,20 @@ class EmundusonboardModelcampaign extends JModelList
      * @return boolean
      * Publish campaign(s) in DB
      */
-    public function publishCampaign($data)
-    {
+    public function publishCampaign($data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        if (count($data) > 0) {
+        if (!empty($data)) {
             foreach ($data as $key => $val) {
                 $data[$key] = htmlspecialchars($data[$key]);
             }
 
             try {
-                $fields = array($db->quoteName('published') . ' = 1');
-                $sc_conditions = array(
-                    $db->quoteName('id') .
-                    ' IN (' .
-                    implode(", ", array_values($data)) .
-                    ')'
-                );
+                $fields = [$db->quoteName('published') . ' = 1'];
+                $sc_conditions = [$db->quoteName('id').' IN ('.implode(", ", array_values($data)).')'];
 
-                $query
-                    ->update($db->quoteName('#__emundus_setup_campaigns'))
+                $query->update($db->quoteName('#__emundus_setup_campaigns'))
                     ->set($fields)
                     ->where($sc_conditions);
 
@@ -407,12 +389,11 @@ class EmundusonboardModelcampaign extends JModelList
      * @return boolean
      * Copy campaign(s) in DB
      */
-    public function duplicateCampaign($data)
-    {
+    public function duplicateCampaign($data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        if (count($data) > 0) {
+        if (!empty($data)) {
             try {
                 $columns = array_keys(
                     $db->getTableColumns('#__emundus_setup_campaigns')
@@ -423,8 +404,7 @@ class EmundusonboardModelcampaign extends JModelList
                 });
 
                 foreach ($data as $id) {
-                    $query
-                        ->clear()
+                    $query->clear()
                         ->select(implode(',', $db->qn($columns)))
                         ->from($db->quoteName('#__emundus_setup_campaigns'))
                         ->where($db->quoteName('id') . ' = ' . $id);
@@ -433,8 +413,7 @@ class EmundusonboardModelcampaign extends JModelList
                     $values[] = implode(', ', $db->quote($db->loadRow()));
                 }
 
-                $query
-                    ->clear()
+                $query->clear()
                     ->insert($db->quoteName('#__emundus_setup_campaigns'))
                     ->columns(implode(',', $db->quoteName($columns)))
                     ->values($values);
@@ -453,21 +432,15 @@ class EmundusonboardModelcampaign extends JModelList
     /**
      * @param $user int
      * get list of all campaigns associated to the user
-     * @param int $offset
-     * @return Array
+     * @return array
      */
     //TODO Throw in the years model
-    function getYears($user)
-    {
-        if (empty($user)) {
-            $user = JFactory::getUser()->id;
-        }
+    function getYears() {
 
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->select('DISTINCT(tu.schoolyear)')
+        $query->select('DISTINCT(tu.schoolyear)')
             ->from($db->quoteName('#__emundus_setup_teaching_unity', 'tu'))
             ->order('tu.id DESC');
 
@@ -486,8 +459,7 @@ class EmundusonboardModelcampaign extends JModelList
      * @return boolean
      * Add new campaign in DB
      */
-    public function createCampaign($data)
-    {
+    public function createCampaign($data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -499,7 +471,7 @@ class EmundusonboardModelcampaign extends JModelList
         $label_fr = '';
         $label_en = '';
 
-        if (count($data) > 0) {
+        if (!empty($data)) {
             foreach ($data as $key => $val) {
                 if ($key == 'profileLabel') {
                     array_splice($data, $i, 1);
@@ -512,8 +484,7 @@ class EmundusonboardModelcampaign extends JModelList
                 $i++;
             }
 
-            $query
-                ->insert($db->quoteName('#__emundus_setup_campaigns'))
+            $query->insert($db->quoteName('#__emundus_setup_campaigns'))
                 ->columns($db->quoteName(array_keys($data)))
                 ->values(implode(',', $db->Quote(array_values($data))));
 
@@ -537,15 +508,14 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    /**
-     * @param   String $code the campaign to update
-     * @param   array $data the row to add in table.
-     *
-     * @return boolean
-     * Update campaign in DB
-     */
-    public function updateCampaign($data, $cid)
-    {
+	/**
+	 * @param array $data the row to add in table.
+	 * @param       $cid
+	 *
+	 * @return boolean
+	 * Update campaign in DB
+	 */
+    public function updateCampaign($data, $cid) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -554,7 +524,7 @@ class EmundusonboardModelcampaign extends JModelList
         $label_fr = '';
         $label_en = '';
 
-        if (count($data) > 0) {
+        if (!empty($data)) {
             $fields = [];
 
             foreach ($data as $key => $val) {
@@ -571,8 +541,7 @@ class EmundusonboardModelcampaign extends JModelList
 
             $falang->updateFalang($label_fr,$label_en,$cid,'emundus_setup_campaigns','label');
 
-            $query
-                ->update($db->quoteName('#__emundus_setup_campaigns'))
+            $query->update($db->quoteName('#__emundus_setup_campaigns'))
                 ->set($fields)
                 ->where($db->quoteName('id') . ' = ' . $db->quote($cid));
 
@@ -594,19 +563,17 @@ class EmundusonboardModelcampaign extends JModelList
      * @return boolean
      * Add new Year in DB
      */
-    public function createYear($data)
-    {
+    public function createYear($data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        if (count($data) > 0) {
+        if (!empty($data)) {
 
             foreach ($data as $key => $val) {
                 $data[$key] = htmlspecialchars($data[$key]);
             }
 
-            $query
-                ->insert($db->quoteName('#__emundus_setup_teaching_unity'))
+            $query->insert($db->quoteName('#__emundus_setup_teaching_unity'))
                 ->columns($db->quoteName(array_keys($data)))
                 ->values(implode(',', $db->Quote(array_values($data))));
 
@@ -625,11 +592,10 @@ class EmundusonboardModelcampaign extends JModelList
     /**
      * @param $id
      *
-     * @return array
+     * @return stdClass|boolean
      * get list of declared campaigns
      */
-    public function getCampaignById($id)
-    {
+    public function getCampaignById($id) {
         if (empty($id)) {
             return false;
         }
@@ -641,16 +607,9 @@ class EmundusonboardModelcampaign extends JModelList
 
         $results = new stdClass();
 
-        $query
-            ->select(['sc.*', 'spr.label AS profileLabel'])
+        $query->select(['sc.*', 'spr.label AS profileLabel'])
             ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
-            ->leftJoin(
-                $db->quoteName('#__emundus_setup_profiles', 'spr') .
-                ' ON ' .
-                $db->quoteName('spr.id') .
-                ' = ' .
-                $db->quoteName('sc.profile_id')
-            )
+            ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'spr').' ON '.$db->quoteName('spr.id').' = '.$db->quoteName('sc.profile_id'))
             ->where($db->quoteName('sc.id') . ' = ' . $id);
 
         try {
@@ -670,20 +629,17 @@ class EmundusonboardModelcampaign extends JModelList
     }
 
     /**
-     * @param $id
      *
-     * @return array
+     * @return stdClass|boolean
      * get list of declared campaigns
      */
-    public function getCreatedCampaign()
-    {
+    public function getCreatedCampaign() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         $currentDate = date('Y-m-d H:i:s');
 
-        $query
-            ->select('*')
+        $query->select('*')
             ->from($db->quoteName('#__emundus_setup_campaigns'))
             ->where($db->quoteName('date_time') . ' = ' . $db->quote($currentDate));
 
@@ -698,19 +654,17 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    public function updateProfile($profile, $campaign){
+    public function updateProfile($profile, $campaign) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->select('year')
+        $query->select('year')
             ->from($db->quoteName('#__emundus_setup_campaigns'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
         $db->setQuery($query);
         $schoolyear = $db->loadResult();
 
-        $query
-            ->clear()
+        $query->clear()
             ->update($db->quoteName('#__emundus_setup_campaigns'))
             ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
             ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
@@ -719,8 +673,7 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             $db->execute();
 
-            $query
-                ->clear()
+            $query->clear()
                 ->update($db->quoteName('#__emundus_setup_teaching_unity'))
                 ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
                 ->where($db->quoteName('schoolyear') . ' = ' . $db->quote($schoolyear));
@@ -738,14 +691,13 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    public function getCampaignsToAffect(){
+    public function getCampaignsToAffect() {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $date = new Date();
 
-        $query
-            ->select('id,label')
+        $query->select('id,label')
             ->from($db->quoteName('#__emundus_setup_campaigns'))
             ->where($db->quoteName('profile_id') . ' IS NULL')
             ->andWhere($db->quoteName('end_date') . ' >= ' . $db->quote($date));
@@ -765,13 +717,9 @@ class EmundusonboardModelcampaign extends JModelList
 
         $date = new Date();
 
-        $searchName =
-            $db->quoteName('label') .
-            ' LIKE ' .
-            $db->quote('%' . $term . '%');
+        $searchName = $db->quoteName('label').' LIKE '.$db->quote('%' . $term . '%');
 
-        $query
-            ->select('id,label')
+        $query->select('id,label')
             ->from($db->quoteName('#__emundus_setup_campaigns'))
             ->where($db->quoteName('profile_id') . ' IS NULL')
             ->andWhere($db->quoteName('end_date') . ' >= ' . $db->quote($date))

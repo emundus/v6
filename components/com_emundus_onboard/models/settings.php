@@ -15,8 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
 
-class EmundusonboardModelsettings extends JModelList
-{
+class EmundusonboardModelsettings extends JModelList {
     function getColorClasses(){
         return array(
             'lightpurple' => '#DCC6E0',
@@ -59,8 +58,7 @@ class EmundusonboardModelsettings extends JModelList
                 $statu->value_en = '';
                 $statu->value_fr = '';
 
-                $query
-                    ->clear()
+                $query->clear()
                     ->select('value')
                     ->from($db->quoteName('#__falang_content'))
                     ->where(array(
@@ -72,8 +70,7 @@ class EmundusonboardModelsettings extends JModelList
                 $db->setQuery($query);
                 $en_value = $db->loadResult();
 
-                $query
-                    ->clear()
+                $query->clear()
                     ->select('value')
                     ->from($db->quoteName('#__falang_content'))
                     ->where(array(
@@ -85,10 +82,10 @@ class EmundusonboardModelsettings extends JModelList
                 $db->setQuery($query);
                 $fr_value = $db->loadResult();
 
-                if($en_value != null) {
+                if ($en_value != null) {
                     $statu->value_en = $en_value;
                 }
-                if($fr_value != null) {
+                if ($fr_value != null) {
                     $statu->value_fr = $fr_value;
                 }
             }
@@ -105,7 +102,7 @@ class EmundusonboardModelsettings extends JModelList
         $query = $db->getQuery(true);
 
         $query->select('*')
-            ->from ($db->quoteName('#__emundus_setup_action_tag'));
+            ->from($db->quoteName('#__emundus_setup_action_tag'));
 
         try {
             $db->setQuery($query);
@@ -120,8 +117,7 @@ class EmundusonboardModelsettings extends JModelList
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->delete($db->quoteName('#__emundus_setup_action_tag'))
+        $query->delete($db->quoteName('#__emundus_setup_action_tag'))
             ->where($db->quoteName('id') . ' = ' . $id);
 
         try {
@@ -137,9 +133,7 @@ class EmundusonboardModelsettings extends JModelList
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->insert('#__emundus_setup_action_tag');
-        $query
+        $query->insert('#__emundus_setup_action_tag')
             ->set($db->quoteName('label') . ' = ' . $db->quote('Nouvelle étiquette'))
             ->set($db->quoteName('class') . ' = ' . $db->quote('label-default'));
 
@@ -148,18 +142,14 @@ class EmundusonboardModelsettings extends JModelList
             $db->execute();
             $newtagid = $db->insertid();
 
-            $query
-                ->clear()
+            $query->clear()
                 ->select('*')
                 ->from ($db->quoteName('#__emundus_setup_action_tag'))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($newtagid));
-            try {
-                $db->setQuery($query);
-                return $db->loadObject();
-            } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                return false;
-            }
+
+            $db->setQuery($query);
+            return $db->loadObject();
+
         } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;
@@ -175,16 +165,14 @@ class EmundusonboardModelsettings extends JModelList
 
         foreach($status as $statu) {
             $class = array_search($statu['class'], $classes);
-            $query
-                ->clear()
+            $query->clear()
                 ->update('#__emundus_setup_status')
                 ->set($db->quoteName('class') . ' = ' . $db->quote($class))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
             $db->setQuery($query);
             $results[] = $db->execute();
 
-            $query
-                ->clear()
+            $query->clear()
                 ->update('#__falang_content')
                 ->set($db->quoteName('value') . ' = ' . $db->quote($class))
                 ->where(array(
@@ -196,8 +184,7 @@ class EmundusonboardModelsettings extends JModelList
             $db->setQuery($query);
             $results[] = $db->execute();
 
-            $query
-                ->clear()
+            $query->clear()
                 ->update('#__falang_content')
                 ->set($db->quoteName('value') . ' = ' . $db->quote($statu['value_fr']))
                 ->where(array(
@@ -209,8 +196,7 @@ class EmundusonboardModelsettings extends JModelList
             $db->setQuery($query);
             $results[] = $db->execute();
 
-            $query
-                ->clear()
+            $query->clear()
                 ->update('#__falang_content')
                 ->set($db->quoteName('value') . ' = ' . $db->quote($statu['value_en']))
                 ->where(array(
@@ -235,8 +221,7 @@ class EmundusonboardModelsettings extends JModelList
 
         foreach($tags as $tag) {
             $class = array_search($tag['class'], $classes);
-            $query
-                ->clear()
+            $query->clear()
                 ->update('#__emundus_setup_action_tag')
                 ->set($db->quoteName('label') . ' = ' . $db->quote($tag['label']))
                 ->set($db->quoteName('class') . ' = ' . $db->quote('label-' . $class))
@@ -253,7 +238,7 @@ class EmundusonboardModelsettings extends JModelList
         $query = $db->getQuery(true);
 
         $query->select('*')
-            ->from ($db->quoteName('#__content'))
+            ->from($db->quoteName('#__content'))
             ->where($db->quoteName('id') . ' = 52');
 
         try {
@@ -263,8 +248,7 @@ class EmundusonboardModelsettings extends JModelList
             $homepage->title_en = '';
             $homepage->introtext_en = '';
 
-            $query
-                ->clear()
+            $query->clear()
                 ->select('value')
                 ->from($db->quoteName('#__falang_content'))
                 ->where(array(
@@ -276,8 +260,7 @@ class EmundusonboardModelsettings extends JModelList
             $db->setQuery($query);
             $en_title = $db->loadResult();
 
-            $query
-                ->clear()
+            $query->clear()
                 ->select('value')
                 ->from($db->quoteName('#__falang_content'))
                 ->where(array(
@@ -289,10 +272,10 @@ class EmundusonboardModelsettings extends JModelList
             $db->setQuery($query);
             $en_introtext = $db->loadResult();
 
-            if($en_title != null) {
+            if ($en_title != null) {
                 $homepage->title_en = $en_title;
             }
-            if($en_introtext != null) {
+            if ($en_introtext != null) {
                 $homepage->introtext_en = $en_introtext;
             }
 
@@ -309,8 +292,7 @@ class EmundusonboardModelsettings extends JModelList
 
         $results = [];
 
-        $query
-            ->update($db->quoteName('#__content'))
+        $query->update($db->quoteName('#__content'))
             ->set($db->quoteName('introtext') . ' = ' . $db->quote($content['fr']))
             ->where($db->quoteName('id') . ' = ' . 52);
 
@@ -318,8 +300,7 @@ class EmundusonboardModelsettings extends JModelList
             $db->setQuery($query);
             $results[] = $db->execute();
 
-            $query
-                ->clear()
+            $query->clear()
                 ->update('#__falang_content')
                 ->set($db->quoteName('value') . ' = ' . $db->quote($content['en']))
                 ->where(array(
@@ -341,8 +322,7 @@ class EmundusonboardModelsettings extends JModelList
     function onAfterCreateCampaign($user_id) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
-        $query
-            ->select('count(id)')
+        $query->select('count(id)')
             ->from($db->quoteName('#__emundus_setup_campaigns'));
         $db->setQuery($query);
 
