@@ -464,7 +464,6 @@ export default {
           `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaign}`
         )
         .then(response => {
-          console.log(response.data.data);
           this.form.label.fr = response.data.data.label.fr.value;
           this.form.label.en = response.data.data.label.en.value;
           this.form.published = response.data.data.campaign.published;

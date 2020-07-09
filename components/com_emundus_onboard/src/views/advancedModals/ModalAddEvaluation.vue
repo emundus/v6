@@ -183,7 +183,6 @@ export default {
     model_id: function (value) {
       if(value != -1){
         this.models.forEach(model => {
-          console.log(model.form_id)
           if(model.form_id == this.model_id){
             this.label.fr = model.label;
             this.intro.fr = model.intro;

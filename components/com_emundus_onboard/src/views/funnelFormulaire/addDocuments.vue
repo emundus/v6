@@ -246,7 +246,6 @@ export default {
     },
 
     removeDocument(id) {
-      console.log(id);
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=form&task=removedocument",

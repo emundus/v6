@@ -105,7 +105,7 @@ class EmundusonboardModelform extends JModelList
             $filterDate = $db->quoteName('sp.published') . ' = 1';
 		}
 
-		$filterId = $db->quoteName('sp.id') . ' > 999';
+		$filterId = $db->quoteName('sp.id') . ' > 1000';
 
 		if (empty($recherche)) {
 			$fullRecherche = 1;
