@@ -716,6 +716,61 @@ class EmundusControllerFiles extends JControllerLegacy
             'select_publish' => JText::_('PLEASE_SELECT_PUBLISH'))));
         exit;
     }
+	
+	/**
+     *
+     */
+	public function getExistEmailTrigger() {
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+		
+		$app    = JFactory::getApplication();
+        $jinput = $app->input;
+        $state  = $jinput->getInt('state', null);
+        $code  = $jinput->getString('code', null);
+        $fnums  = $jinput->getString('fnums', null);
+		
+		
+		$m_email = new EmundusModelEmails();
+        $m_messages = new EmundusModelMessages();
+        $m_files = $this->getModel('Files');
+		
+		if($fnums == "all") {
+            $fnums = $m_files->getAllFnums();
+        }
+        
+        if (!is_array($fnums)) {
+            $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+        }
+
+        if (count($fnums) == 0 || !is_array($fnums)) {
+            $res = false;
+            $msg = JText::_('STATE_ERROR');
+
+            echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+            exit;
+        }
+
+        $validFnums = array();
+
+        foreach ($fnums as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)) {
+	            $validFnums[] = $fnum;
+            }
+        }
+		
+		$fnumsInfos = $m_files->getFnumsInfos($validFnums);
+		
+		$code = array();
+		foreach ($fnumsInfos as $fnum) {
+			$code[] = $fnum['training'];
+		}
+
+		$trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
+		
+		echo json_encode((object)(array('status' => $res, 'msg' => !empty($trigger_emails))));
+        exit;
+	}
 
     /**
      *

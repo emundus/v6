@@ -167,6 +167,13 @@ JText::script('COM_EMUNDUS_FILE');
 JText::script('COM_EMUNDUS_FILES');
 JText::script('COM_EMUNDUS_SELECT_USER');
 JText::script('COM_EMUNDUS_SELECT_USERS');
+JText::script('CHANGE_STATUT_SURE_1');
+JText::script('CHANGE_STATUT_SURE_3');
+JText::script('CHANGE_STATUT_SURE_2');
+JText::script('MAIL_CHANGE_STATUT_INFO');
+JText::script('VALIDATE_CHANGE_STATUT');
+JText::script('CANCEL_CHANGE_STATUT');
+JText::script('NO_CHANGE_STATUT');
 
 
 // view user
