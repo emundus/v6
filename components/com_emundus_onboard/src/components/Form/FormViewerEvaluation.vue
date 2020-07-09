@@ -15,7 +15,7 @@
             v-html="object_json.show_page_heading.page_heading"
     />
 
-    <form method="post" object_json.attribs>
+    <form method="post" v-on:submit.prevent object_json.attribs>
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
       <draggable
               handle=".handle"
@@ -41,9 +41,7 @@
                         handle=".handle"
                         @start="dragging = true;draggingIndex = index"
                         @end="addingNewElement($event)"
-                        drag-class="plugin-drag"
-                        chosen-class="plugin-chosen"
-                        ghost-class="plugin-ghost"
+                        class="draggable-span"
                         style="padding-bottom: 5px">
                   <div class="d-flex plugin-link handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value">
                     <em :class="plugin.icon"></em>
@@ -780,9 +778,11 @@
         this.lastIndex = index;
       },
       disableActionBar() {
-        this.hoverUpdating = false;
-        this.clickUpdatingLabel = false;
-        this.indexHighlight = 0;
+        if(!this.clickUpdatingLabel) {
+          this.hoverUpdating = false;
+          this.clickUpdatingLabel = false;
+          this.indexHighlight = 0;
+        }
       },
       enableLabelInput() {
         this.clickUpdatingLabel = true;
@@ -799,9 +799,11 @@
         this.indexGroup = group;
       },
       disableGroupHover() {
-        this.hoverGroup = false;
-        this.updateGroup = false;
-        this.indexGroup = -1;
+        if(!this.updateGroup) {
+          this.hoverGroup = false;
+          this.updateGroup = false;
+          this.indexGroup = -1;
+        }
       },
       //
 
