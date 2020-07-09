@@ -514,9 +514,11 @@ class EmundusModelGroups extends JModelList
 
 		$result = [];
 		foreach ($group_ids as $group_id) {
-			$query->select($db->quoteName('fabrik_group_link'))
+			$query
+                ->clear()
+                ->select($db->quoteName('fabrik_group_link'))
 				->from($db->quoteName('#__emundus_setup_groups_repeat_fabrik_group_link'))
-				->where($db->quoteName('parent_id').' = '.$group_id);
+				->where($db->quoteName('parent_id').' = '.$db->quote($group_id));
 			$db->setQuery($query);
 
 			try {

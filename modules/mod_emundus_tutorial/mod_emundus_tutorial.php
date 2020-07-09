@@ -29,6 +29,13 @@ if (!$user->guest) {
 			$run = false;
 		}
 
+        $locallang = JFactory::getLanguage()->getTag();
+        $lang = '';
+
+        if($locallang == 'fr-FR'){
+            $lang = 'fr/';
+        }
+
 		$articles = $helper->getArticles($artids);
 		require JModuleHelper::getLayoutPath('mod_emundus_tutorial', $params->get('layout', 'default'));
 	}

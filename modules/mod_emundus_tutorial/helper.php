@@ -24,7 +24,6 @@ class modEmundusTutorialHelper {
 
 		jimport('joomla.log.log');
 		JLog::addLogger(array('text_file' => 'mod_emundus_tutorial.php'), JLog::ALL, array('mod_emundus_tutorial'));
-
 	}
 
 	/**
@@ -70,7 +69,7 @@ class modEmundusTutorialHelper {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$query->select($db->quoteName(['id', 'title', 'introtext']))
+		$query->select($db->quoteName(['id', 'title', 'introtext', 'note']))
 			->from($db->quoteName('#__content'))
 			->where($db->quoteName('id').' IN ('.$artids.')');
 		$db->setQuery($query);
