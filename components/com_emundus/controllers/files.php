@@ -727,7 +727,6 @@ class EmundusControllerFiles extends JControllerLegacy
 		$app    = JFactory::getApplication();
         $jinput = $app->input;
         $state  = $jinput->getInt('state', null);
-        $code  = $jinput->getString('code', null);
         $fnums  = $jinput->getString('fnums', null);
 		
 		
