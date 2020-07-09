@@ -1,5 +1,9 @@
 <template>
   <div class="container-evaluation">
+    <ModalAddDocuments
+            :cid="this.campaignId"
+            @UpdateDocuments="updateList"
+    />
     <div class="w-form">
       <ul style="padding-left: 0">
         <draggable
@@ -100,14 +104,17 @@
           </transition-group>
         </draggable>
       </ul>
+      <div class="text-center">
+        <button class="bouton-sauvergarder-et-continuer-3" style="float: none" type="button" @click="$modal.show('modalAddDocuments')">{{createDocument}}</button>
+      </div>
     </div>
 
     <div class="section-sauvegarder-et-continuer-funnel">
       <div class="w-container">
         <div class="container-evaluation w-clearfix">
-          <a @click="$parent.next()" class="bouton-sauvergarder-et-continuer-3">{{
-            Continuer
-          }}</a>
+          <a @click="$parent.next()" class="bouton-sauvergarder-et-continuer-3">
+            {{Continuer }}
+          </a>
           <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previousMenu()">
             {{ Retour }}
           </a>
@@ -120,6 +127,7 @@
 <script>
 import axios from "axios";
 import draggable from "vuedraggable";
+import ModalAddDocuments from "../advancedModals/ModalAddDocuments";
 
 const qs = require("qs");
 
@@ -128,6 +136,7 @@ export default {
   display: "Handle",
 
   components: {
+    ModalAddDocuments,
     draggable
   },
 
@@ -161,11 +170,60 @@ export default {
       unid: [],
 
       Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER")
+      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+      createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT")
     };
   },
 
   methods: {
+    updateList() {
+      this.documents = [];
+      this.undocuments = [];
+      this.attachments = [];
+      this.attachmentsId = [];
+      this.unattachments = [];
+      this.unid = [];
+
+      this.getDocuments();
+    },
+
+    getDocuments() {
+      axios.get("index.php?option=com_emundus_onboard&controller=form&task=getalldocuments&prid=" + this.profileId + "&cid=" + this.campaignId)
+              .then(response => {
+                for (let i = 0; i < response.data.data.length; i++) {
+                  this.unid.push(response.data.data[i].id);
+                  this.documents.push(response.data.data[i]);
+                }
+              }).then(() => {
+                axios.get("index.php?option=com_emundus_onboard&controller=form&task=getundocuments")
+                        .then(response => {
+                          var currentId = 0;
+
+                          for (let i = 0; i < response.data.data.length; i++) {
+                            currentId = response.data.data[i].id;
+
+                            if (!this.unid.includes(currentId)) {
+                              this.unattachments.push(response.data.data[i]);
+                            }
+                          }
+
+                          this.undocuments = this.unattachments.map(function(unattachment) {
+                            var infos = {
+                              id: unattachment.id,
+                              value: unattachment.value,
+                              ordering: unattachment.ordering,
+                              need: -1
+                            };
+                            return infos;
+                          });
+                        }).catch(e => {
+                          console.log(e);
+                        });
+              }).catch(e => {
+                console.log(e);
+              });
+    },
+
     updateDocuments() {
       for (let j = 0; j < this.documents.length; j++) {
         this.documents[j].ordering = j;
@@ -253,48 +311,7 @@ export default {
   mounted() {},
 
   created() {
-    axios
-      .get(
-        "index.php?option=com_emundus_onboard&controller=form&task=getalldocuments&prid=" +
-          this.profileId + "&cid=" + this.campaignId
-      )
-      .then(response => {
-        for (let i = 0; i < response.data.data.length; i++) {
-          this.unid.push(response.data.data[i].id);
-          this.documents.push(response.data.data[i]);
-        }
-      })
-      .then(() => {
-        axios
-          .get("index.php?option=com_emundus_onboard&controller=form&task=getundocuments")
-          .then(response => {
-            var currentId = 0;
-
-            for (let i = 0; i < response.data.data.length; i++) {
-              currentId = response.data.data[i].id;
-
-              if (!this.unid.includes(currentId)) {
-                this.unattachments.push(response.data.data[i]);
-              }
-            }
-
-            this.undocuments = this.unattachments.map(function(unattachment) {
-              var infos = {
-                id: unattachment.id,
-                value: unattachment.value,
-                ordering: unattachment.ordering,
-                need: -1
-              };
-              return infos;
-            });
-          })
-          .catch(e => {
-            console.log(e);
-          });
-      })
-      .catch(e => {
-        console.log(e);
-      });
+    this.getDocuments();
   }
 };
 </script>

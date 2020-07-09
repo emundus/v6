@@ -785,4 +785,37 @@ class EmundusonboardModelcampaign extends JModelList
             return false;
         }
     }
+
+    public function createDocument($document,$types) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $types = implode(";", array_values($types));
+
+        $query
+            ->insert($db->quoteName('#__emundus_setup_attachments'));
+        $query
+            ->set($db->quoteName('lbl') . ' = ' . $db->quote('_em'))
+            ->set($db->quoteName('value') . ' = ' . $db->quote($document[0]))
+            ->set($db->quoteName('description') . ' = ' . $db->quote($document[1]))
+            ->set($db->quoteName('allowed_types') . ' = ' . $db->quote($types))
+            ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document[2]));
+
+        try{
+            $db->setQuery($query);
+            $db->execute();
+            $newdocument = $db->insertid();
+
+            $query
+                ->clear()
+                ->update($db->quoteName('#__emundus_setup_attachments'))
+                ->set($db->quoteName('lbl') . ' = ' . $db->quote('_em' . $newdocument))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($newdocument));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return $e->getMessage();
+        }
+    }
 }

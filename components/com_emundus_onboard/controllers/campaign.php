@@ -445,5 +445,30 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         exit;
     }
 
+    public function createdocument() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $document = $jinput->get('document');
+            $types = $jinput->get('types');
+            $cid = $jinput->get('cid');
+            $m_camp = $this->model;
+
+            $result = $m_camp->createDocument($document,$types,$cid);
+
+            if ($result) {
+                $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_ADDED'), 'data' => $result);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_DOCUMENT'), 'data' => $result);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
 }
 

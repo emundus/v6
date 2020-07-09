@@ -319,7 +319,6 @@
         ).then(profiles => {
           this.profiles = profiles.data.data;
           if(this.form.profile_id == null) {
-            console.log(this.profiles.length)
             this.profiles.length != 0 ? this.profileId = this.profiles[0].id : this.profileId = null;
             if(this.profileId != null){
               this.formReload += 1;
