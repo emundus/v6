@@ -88,7 +88,7 @@ $form_id = $form->id;
     $app       = JFactory::getApplication();
     $menu      = $app->getMenu();
     $connexionCandidater    = $menu->getItem(2700);
-    $apply    = $menu->getItem(2879);
+    $applyProgram   = $menu->getItem(2879);
 
     $lang = JFactory::getLanguage();
 
@@ -105,9 +105,11 @@ $form_id = $form->id;
     }
     else{
         if ($lang->getTag() == 'en-GB') {
+            $apply = $applyProgram->alias;
             $reset= "liste-des-formations-connecte?resetfilters=1";
         }
         else{
+            $apply = "fr/".$applyProgram->alias;
             $reset= "fr/liste-des-formations-connecte?resetfilters=1";
         }
     }
@@ -261,7 +263,7 @@ $form_id = $form->id;
                                     </div>
                                     <?php $link = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course=<?= $training;?>&cid=<?=$cid;?>'); ?>
                                     <a class="btn btn-connexion"
-                                       href="<?= $apply->alias ?>?course=<?= $training; ?>&cid=<?= $cid; ?>&itemId=2879"><?= JText::_('SUBMIT_APPLICATION_FILE'); ?></a>
+                                       href="<?= $apply ?>?course=<?= $training; ?>&cid=<?= $cid; ?>&itemId=2879"><?= JText::_('SUBMIT_APPLICATION_FILE'); ?></a>
                                 </div>
                             <?php }
                         }
@@ -292,3 +294,5 @@ $form_id = $form->id;
 
 </form>
 
+
+}
