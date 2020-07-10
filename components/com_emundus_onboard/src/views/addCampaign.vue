@@ -319,8 +319,6 @@ import { DateTime as LuxonDateTime, Settings } from "luxon";
 import Editor from "../components/editor";
 import Autocomplete from "../components/autocomplete";
 
-require('vue-tour/dist/vue-tour.css');
-
 const qs = require("qs");
 
 export default {

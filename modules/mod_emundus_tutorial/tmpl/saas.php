@@ -82,6 +82,9 @@ if (!empty($articles)) :?>
                                     title: <?= json_encode($article['title']); ?>,
                                     html: <?= json_encode($article['introtext']); ?>,
                                     confirmButtonText: '<a href="' + link + '" class="tutorial-link">' + '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>' + '</a>',
+                                    customClass: {
+                                        confirmButton: 'swal-button-link',
+                                    }
                                 })
                             <?php else :?>
                                 queue.push({
@@ -98,6 +101,9 @@ if (!empty($articles)) :?>
                                 title: <?= json_encode($article['title']); ?>,
                                 html: <?= json_encode($article['introtext']); ?>,
                                 confirmButtonText: '<a href="' + link + '" class="tutorial-link">' + '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>' + '</a>',
+                                customClass: {
+                                    confirmButton: 'swal-button-link',
+                                }
                             })
                         <?php else :?>
                             queue.push({
@@ -115,6 +121,9 @@ if (!empty($articles)) :?>
                                 title: <?= json_encode($article['title']); ?>,
                                 html: <?= json_encode($article['introtext']); ?>,
                                 confirmButtonText: '<a href="' + link + '" class="tutorial-link">' + '<?= JText::_(json_decode($article['note'], true)['confirm_text']) ?>' + '</a>',
+                                customClass: {
+                                    confirmButton: 'swal-button-link',
+                                }
                             })
                         <?php else :?>
                             queue.push({

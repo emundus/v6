@@ -46,9 +46,9 @@
           <label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes}">{{FileType}}* :</label>
           <div class="users-block" :class="{ 'is-invalid': errors.selectedUsers}">
             <div v-for="(type, index) in types" :key="index" class="user-item">
-              <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type]">
+              <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]">
               <div class="ml-10px">
-                  <p>{{type}}</p>
+                  <p>{{type.title}}</p>
               </div>
             </div>
           </div>
@@ -86,11 +86,8 @@
           nbmax: 1,
           selectedTypes: {
             pdf: false,
-            jpg: false,
-            png: false,
-            gif: false,
-            doc: false,
-            xls: false
+            'jpg;png;gif': false,
+            'doc;docx;odt;xls;xlsx;odf': false
           },
         },
         errors: {
@@ -99,12 +96,18 @@
           selectedTypes: false
         },
         types: [
-          'pdf',
-          'jpg',
-          'png',
-          'gif',
-          'doc',
-          'xls'
+          {
+            title: 'Documents PDF',
+            value: 'pdf'
+          },
+          {
+            title: 'Images',
+            value: 'jpg;png;gif'
+          },
+          {
+            title: 'Documents Office',
+            value: 'doc;docx;odt;xls;xlsx;odf'
+          },
         ],
         selectedTypes: [],
         createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),

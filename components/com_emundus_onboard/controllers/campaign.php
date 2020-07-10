@@ -485,7 +485,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
             $document = $jinput->get('document');
-            $types = $jinput->get('types');
+            $types = $jinput->getRaw('types');
             $cid = $jinput->get('cid');
             $m_camp = $this->model;
 
