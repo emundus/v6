@@ -329,7 +329,7 @@ function tableOrder(order) {
 }
 
 // Open Application file
-function openFiles(fnum) {
+function openFiles(fnum, page = 0) {
 
     jQuery("html, body").animate({scrollTop : 0}, 300);
     // Run the reload actions function without waiting for return.
@@ -356,7 +356,23 @@ function openFiles(fnum) {
             $('#em-appli-menu .list-group').empty();
             if (result.status) {
                 var menus = result.menus;
-                var firstMenu = menus[0].link;
+				var numMenu = 0;
+				var stop = 0;
+				menus.forEach(
+					function(menu) {
+						if(stop === 0) {
+							if(menu.link.indexOf("layout="+page) != -1) {
+								stop = 1;
+							}
+							if(stop === 0 && numMenu < menus.length)
+								numMenu++;
+						}
+					}
+				);
+				if(numMenu >= menus.length)
+					numMenu = 0;
+				
+                var firstMenu = menus[numMenu].link;
                 var menuList = '';
 
                 for (var m in menus) {
@@ -1158,7 +1174,13 @@ $(document).ready(function() {
                     addDimmer();
                     fnum.sid = parseInt(fnum.fnum.substr(21, 7));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
-
+					
+					page = Array.from(document.querySelector('#em-appli-block .panel[class*="em-container-"]').classList).filter(
+						function x (p) {
+							return p.startsWith('em-container');
+						}
+					)[0].split('-')[2];
+					
                     $.ajax({
                         type: 'get',
                         url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
@@ -1171,7 +1193,7 @@ $(document).ready(function() {
                                 var fnumInfos = result.fnumInfos;
                                 fnum.name = fnumInfos.name;
                                 fnum.label = fnumInfos.label;
-                                openFiles(fnum);
+                                openFiles(fnum, page);
                             }
                         },
                         error: function (jqXHR) {
@@ -1209,7 +1231,13 @@ $(document).ready(function() {
                     addDimmer();
                     fnum.sid = parseInt(fnum.fnum.substr(21, 7));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
-
+					
+					page = Array.from(document.querySelector('#em-appli-block .panel[class*="em-container-"]').classList).filter(
+						function x (p) {
+							return p.startsWith('em-container');
+						}
+					)[0].split('-')[2];
+					
                     $.ajax({
                         type: 'get',
                         url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
@@ -1222,7 +1250,7 @@ $(document).ready(function() {
                                 var fnumInfos = result.fnumInfos;
                                 fnum.name = fnumInfos.name;
                                 fnum.label = fnumInfos.label;
-                                openFiles(fnum);
+                                openFiles(fnum, page);
                             }
                         },
                         error: function (jqXHR) {
@@ -4975,51 +5003,101 @@ $(document).ready(function() {
             // Validating status changes for files
             case 13:
                 var state = $("#em-action-state").val();
+				var sel = document.getElementById("em-action-state");
+				var oldState = ($('.em-check:checked').length === 1)?document.getElementById(JSON.parse(checkInput)[1]+'_check').parentNode.parentNode.parentNode.parentNode.childNodes[5].childNodes[1].childNodes[1].innerHTML:-1;
+				var newState = sel.options[sel.selectedIndex].text;
 
-                $('.modal-body').empty();
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
-                url = 'index.php?option=com_emundus&controller=files&task=updatestate';
+				if(oldState != newState) {
+					url = 'index.php?option=com_emundus&controller=files&task=getExistEmailTrigger';
+					$.ajax({
+						type:'POST',
+						url:url,
+						dataType:'json',
+						data:({fnums:checkInput, state: state}),
+						success: function(result) {
+							console.log(result.msg);
+							$('.modal-body').empty();
+							$('.modal-body').append('<div>' +
+								'<img src="'+loadingLine+'" alt="loading"/>' +
+								'</div>');
+							url = 'index.php?option=com_emundus&controller=files&task=updatestate';
+							
+							Swal.fire({
+								title: (oldState === -1)?Joomla.JText._('CHANGE_STATUT_SURE_3') + Joomla.JText._('CHANGE_STATUT_SURE_2') + sel.options[sel.selectedIndex].text:Joomla.JText._('CHANGE_STATUT_SURE_1') + oldState + Joomla.JText._('CHANGE_STATUT_SURE_2') + newState,
+								text: (result.msg)?Joomla.JText._('MAIL_CHANGE_STATUT_INFO'):"",
+								type: "warning",
+								showCancelButton: true,
+								confirmButtonText: Joomla.JText._('VALIDATE_CHANGE_STATUT'),
+								cancelButtonText: Joomla.JText._('CANCEL_CHANGE_STATUT'),
+								dangerMode: true
+							}).then(function(result) {
+								if (result.value) {
+									$.ajax({
+										type:'POST',
+										url:url,
+										dataType:'json',
+										data:({fnums:checkInput, state: state}),
+										success: function(result) {
 
-                $.ajax({
-                    type:'POST',
-                    url:url,
-                    dataType:'json',
-                    data:({fnums:checkInput, state: state}),
-                    success: function(result) {
+											$('.modal-footer').hide();
+											if (result.status) {
+												$('.modal-body').empty();
+												Swal.fire({
+													position: 'center',
+													type: 'success',
+													title: result.msg,
+													showConfirmButton: false,
+													timer: 1500
+												});
+											} else {
+												$('.modal-body').empty();
+												Swal.fire({
+													position: 'center',
+													type: 'warning',
+													title: result.msg
+												});
+											}
 
-                        $('.modal-footer').hide();
-                        if (result.status) {
-                            $('.modal-body').empty();
-                            Swal.fire({
-                                position: 'center',
-                                type: 'success',
-                                title: result.msg,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                        } else {
-                            $('.modal-body').empty();
-                            Swal.fire({
-                                position: 'center',
-                                type: 'warning',
-                                title: result.msg
-                            });
-                        }
+											
+											$('#em-modal-actions').modal('hide');
 
-
-                        $('#em-modal-actions').modal('hide');
-
-                        reloadData();
-                        reloadActions($('#view').val(), undefined, false);
-                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-                        $('body').removeClass('modal-open');
-                    },
-                    error: function (jqXHR) {
-                        console.log(jqXHR.responseText);
-                    }
-                });
+											reloadData();
+											reloadActions($('#view').val(), undefined, false);
+											$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+											$('body').removeClass('modal-open');
+										},
+										error: function (jqXHR) {
+											console.log(jqXHR.responseText);
+										}
+									});
+								} else {
+									$('.modal-body').empty();
+									$('#em-modal-actions').modal('hide');
+									$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+									$('body').removeClass('modal-open');
+									Swal.fire({
+										position: 'center',
+										type: 'error',
+										title: Joomla.JText._('NO_CHANGE_STATUT')
+									});
+								}
+							})
+						},
+						error: function (jqXHR) {
+							document.getElementsByClassName('modal-body')[0].innerHTML =jqXHR.responseText;
+						}
+					});
+				} else {
+					$('.modal-body').empty();
+					$('#em-modal-actions').modal('hide');
+					$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+					$('body').removeClass('modal-open');
+					Swal.fire({
+						position: 'center',
+						type: 'error',
+						title: Joomla.JText._('NO_CHANGE_STATUT')
+					});
+				}
             break;
 
             // Validating tags
