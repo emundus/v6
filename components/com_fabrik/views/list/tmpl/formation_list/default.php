@@ -13,8 +13,6 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'listeProgram.php');
-
 require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
 $m_campaign = new EmundusModelCampaign();
@@ -33,7 +31,6 @@ $menu_id = $menu->getActive();
 
 
 $current_user = JFactory::getUser();
-
 $model = $this->getModel();
 $nav  = $model->getPagination();
 
@@ -206,8 +203,6 @@ $form_id = $form->id;
                             $fnum = $group[$i]->data->$fnum_element;
                             $id = $group[$i]->data->$id_projet;
 
-
-
                             $url_detail = 'index.php?option=com_fabrik&view=details&formid=' . $form_id . '&Itemid=' . $menu_id->id . '&usekey=id&rowid=' . $id;
 
                             if($current_user->guest == 1){ ?>
@@ -228,25 +223,45 @@ $form_id = $form->id;
 
                                 <?php
                             }
-                            else{ ?>
+                            else {
+                                ?>
                                 <div class="card">
                                     <div class="cardContainer">
                                         <div class="cardContainerHeader">
                                             <h4><?= $group[$i]->data->$label; ?></h4>
-                                            <a class="em-dowload" target="_blank" href="<?= $group[$i]->data->$brochure; ?>" data-toggle="tooltip" data-placement="top" title="<?= JText::_('DOWNLOAD_DOC'); ?>"><img src="images/custom/francediploma/cloud-computing.png"></a>
+                                            <a class="em-dowload" target="_blank"
+                                               href="<?= $group[$i]->data->$brochure; ?>" data-toggle="tooltip"
+                                               data-placement="top" title="<?= JText::_('DOWNLOAD_DOC'); ?>"><img
+                                                        src="images/custom/francediploma/cloud-computing.png"></a>
                                         </div>
                                         <div class="cardContainerContent">
-                                            <p><span class='intitule'><?= JText::_('LEVEL'); ?>:</span> <?= $group[$i]->data->$level; ?></p>
-                                            <p><span class='intitule'><?= JText::_('CAMPUS'); ?>:</span> <?= $group[$i]->data->$campus; ?></p>
-                                            <p><span class='intitule'><?= JText::_('LANGUAGE'); ?>:</span> <?= $group[$i]->data->$language; ?></p>
-                                            <p class="em-domaine-container"><span class='intitule'><?= JText::_('POLE'); ?>:</span><span class="em-domaine-formation"> <?= $group[$i]->data->$pole; ?></span></p>
-                                            <p><span class='intitule'><?= JText::_('SCHOOL'); ?>:</span><a href="<?= $group[$i]->data->$brochureEcole;?>" target="_blank"> <?= $group[$i]->data->$school; ?></a></p>
-                                            <p><span class='intitule'><?= JText::_('RENTREE'); ?>:</span> <?= $group[$i]->data->$rentree; ?></p>
-                                            <p><span class='intitule'><?= JText::_('PRICE'); ?>:</span> <?= $group[$i]->data->$price; ?>€</p>
+                                            <p><span
+                                                        class='intitule'><?= JText::_('LEVEL'); ?>:</span> <?= $group[$i]->data->$level; ?>
+                                            </p>
+                                            <p><span
+                                                        class='intitule'><?= JText::_('CAMPUS'); ?>:</span> <?= $group[$i]->data->$campus; ?>
+                                            </p>
+                                            <p><span
+                                                        class='intitule'><?= JText::_('LANGUAGE'); ?>:</span> <?= $group[$i]->data->$language; ?>
+                                            </p>
+                                            <p class="em-domaine-container"><span
+                                                        class='intitule'><?= JText::_('POLE'); ?>:</span><span
+                                                        class="em-domaine-formation"> <?= $group[$i]->data->$pole; ?></span>
+                                            </p>
+                                            <p><span class='intitule'><?= JText::_('SCHOOL'); ?>:</span><a
+                                                        href="<?= $group[$i]->data->$brochureEcole; ?>"
+                                                        target="_blank"> <?= $group[$i]->data->$school; ?></a></p>
+                                            <p><span
+                                                        class='intitule'><?= JText::_('RENTREE'); ?>:</span> <?= $group[$i]->data->$rentree; ?>
+                                            </p>
+                                            <p><span
+                                                        class='intitule'><?= JText::_('PRICE'); ?>:</span> <?= $group[$i]->data->$price; ?>
+                                                €</p>
                                         </div>
                                     </div>
                                     <?php $link = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course=<?= $training;?>&cid=<?=$cid;?>'); ?>
-                                    <a class="btn btn-connexion" href="<?=$apply->alias?>?course=<?= $training;?>&cid=<?=$cid;?>&itemId=2879"><?= JText::_('SUBMIT_APPLICATION_FILE'); ?></a>
+                                    <a class="btn btn-connexion"
+                                       href="<?= $apply->alias ?>?course=<?= $training; ?>&cid=<?= $cid; ?>&itemId=2879"><?= JText::_('SUBMIT_APPLICATION_FILE'); ?></a>
                                 </div>
                             <?php }
                         }

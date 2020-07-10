@@ -12,52 +12,42 @@
 a.text {
     opacity: 1;
 }
-
-/*Accueil connecté*/
+    /*Accueil connecté*/
 .select select {
     border: 1px solid #999;
     color: #666;
 }
-
 .select select:hover, .select select:focus {
     background: #ddd;
 }
-
 .form-control:focus {
     border-color: #000;
     -webkit-box-shadow: none;
     box-shadow: none;
 }
-
-/* Accueil Coordinateur */
-
+    /* Accueil Coordinateur */
 .update {
     text-align: right;
     margin-top: 3rem;
 }
-
 #content-bottom-a .list-group a.btn.btn-success span::before {
     content: "\f067";
     font-family: FontAwesome;
     margin-right: 8px;
     font-weight: 400;
 }
-
 div#em-panel legend {
     color: #4E5B6D;
     font-size: 22px;
 }
-
 .candidacy-files-list h2::before {
     content: "\f07b";
     font-family: FontAwesome;
     margin-right: 10px;
 }
-
 div#em-panel legend a {
     display: none;
 }
-
 /* 3 Cercles Accueil Coordinateur */
 div#em-panel .ui.grid {
     text-align: center;
@@ -70,7 +60,6 @@ div#em-panel .ui.grid {
     justify-content: flex-end;
     right: 20px;
 }
-
 .emundus_home_page select#profile.form-control.form-control-sm {
     border: none;
     border-radius: 0px !important;
@@ -78,6 +67,4 @@ div#em-panel .ui.grid {
 #em-panel.emundus_home_page p {
     text-align: left;
     width: 90%;
-    margin-left: auto !important;
-    margin-right: auto !important;
 }
