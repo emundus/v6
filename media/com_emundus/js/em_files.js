@@ -339,95 +339,7 @@ function openFiles(fnum, page = 0) {
     var cid = parseInt(fnum.fnum.substr(14, 7));
     var sid = parseInt(fnum.fnum.substr(21, 7));
 
-    $.ajax({
-        type:'get',
-        url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&fnum='+fnum.fnum,
-        dataType:'json',
-        success: function(result) {
-
-            String.prototype.fmt = function (hash) {
-                var string = this, key;
-                for (key in hash) {
-                    string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
-                    return string;
-                }
-            };
-
-            $('#em-appli-menu .list-group').empty();
-            if (result.status) {
-                var menus = result.menus;
-				var numMenu = 0;
-				var stop = 0;
-				menus.forEach(
-					function(menu) {
-						if(stop === 0) {
-							if(menu.link.indexOf("layout="+page) != -1) {
-								stop = 1;
-							}
-							if(stop === 0 && numMenu < menus.length)
-								numMenu++;
-						}
-					}
-				);
-				if(numMenu >= menus.length)
-					numMenu = 0;
-				
-                var firstMenu = menus[numMenu].link;
-                var menuList = '';
-
-                for (var m in menus) {
-                    if (isNaN(parseInt(m)) || isNaN(menus[m].id) || typeof(menus[m].title) == 'undefined') {
-                        break;
-                    }
-
-                    url = menus[m].link.fmt({ fnum: fnum.fnum, applicant_id: sid, campaign_id: cid });
-                    url += '&fnum='+fnum.fnum;
-                    url += '&Itemid='+itemId;
-                    menuList += '<a href="'+url+'" class="list-group-item" title="'+menus[m].title+'" id="'+menus[m].id+'">';
-
-                    if (menus[m].hasSons) {
-                        menuList += '<span class="glyphicon glyphicon-plus" id="'+menus[m].id+'"></span>';
-                    }
-
-                    menuList +=  '<strong>'+menus[m].title+'</strong></a>';
-                }
-                $('#em-appli-menu .list-group').append(menuList);
-
-                $.ajax({
-                    type:'get',
-                    url:firstMenu,
-                    dataType:'html',
-                    data:({fnum:fnum.fnum}),
-                    success: function(result) {
-                        $('.em-dimmer').remove();
-                        $('#em-files-filters').hide();
-                        $(".main-panel .panel.panel-default").hide();
-                        $('#em-appli-block').empty();
-                        $('#em-appli-block').append(result);
-                        $('#accordion .panel.panel-default').show();
-                        $('#em-appli-menu, #em-last-open, #em-assoc-files, #em-synthesis, .em-open-files > div[id="'+fnum.fnum+'"]').show();
-                        menuBar1();
-
-                        $('#em-close-multi-file').hide();
-                        $('#em-close-multi-file button').hide();
-                    },
-                    error: function (jqXHR) {
-                        console.log(jqXHR.responseText);
-                        if (jqXHR.status === 302) {
-                            window.location.replace('/user');
-                        }
-                    }
-                });
-
-            } else {
-                $('#em-appli-menu .list-group').append(result.msg);
-            }
-        },
-        error: function (jqXHR) {
-            console.log(jqXHR.responseText);
-        }
-    });
-
+    
     $('#em-assoc-files .panel-body').empty();
 
     $.ajax({
@@ -466,6 +378,96 @@ function openFiles(fnum, page = 0) {
             $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
             $('#em-synthesis .panel-body').empty();
             $('#em-synthesis .panel-body').append(panel);
+			
+			$.ajax({
+				type:'get',
+				url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&fnum='+fnum.fnum,
+				dataType:'json',
+				success: function(result) {
+
+					String.prototype.fmt = function (hash) {
+						var string = this, key;
+						for (key in hash) {
+							string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
+							return string;
+						}
+					};
+
+					$('#em-appli-menu .list-group').empty();
+					if (result.status) {
+						var menus = result.menus;
+						var numMenu = 0;
+						var stop = 0;
+						menus.forEach(
+							function(menu) {
+								if(stop === 0) {
+									if(menu.link.indexOf("layout="+page) != -1) {
+										stop = 1;
+									}
+									if(stop === 0 && numMenu < menus.length)
+										numMenu++;
+								}
+							}
+						);
+						if(numMenu >= menus.length)
+							numMenu = 0;
+						
+						var firstMenu = menus[numMenu].link;
+						var menuList = '';
+
+						for (var m in menus) {
+							if (isNaN(parseInt(m)) || isNaN(menus[m].id) || typeof(menus[m].title) == 'undefined') {
+								break;
+							}
+
+							url = menus[m].link.fmt({ fnum: fnum.fnum, applicant_id: sid, campaign_id: cid });
+							url += '&fnum='+fnum.fnum;
+							url += '&Itemid='+itemId;
+							menuList += '<a href="'+url+'" class="list-group-item" title="'+menus[m].title+'" id="'+menus[m].id+'">';
+
+							if (menus[m].hasSons) {
+								menuList += '<span class="glyphicon glyphicon-plus" id="'+menus[m].id+'"></span>';
+							}
+
+							menuList +=  '<strong>'+menus[m].title+'</strong></a>';
+						}
+						$('#em-appli-menu .list-group').append(menuList);
+
+						$.ajax({
+							type:'get',
+							url:firstMenu,
+							dataType:'html',
+							data:({fnum:fnum.fnum}),
+							success: function(result) {
+								$('.em-dimmer').remove();
+								$('#em-files-filters').hide();
+								$(".main-panel .panel.panel-default").hide();
+								
+								$('#em-appli-block').empty();
+								$('#em-appli-block').append(result);
+								$('#accordion .panel.panel-default').show();
+								$('#em-appli-menu, #em-last-open, #em-assoc-files, #em-synthesis, .em-open-files > div[id="'+fnum.fnum+'"]').show();
+								menuBar1();
+
+								$('#em-close-multi-file').hide();
+								$('#em-close-multi-file button').hide();
+							},
+							error: function (jqXHR) {
+								console.log(jqXHR.responseText);
+								if (jqXHR.status === 302) {
+									window.location.replace('/user');
+								}
+							}
+						});
+
+					} else {
+						$('#em-appli-menu .list-group').append(result.msg);
+					}
+				},
+				error: function (jqXHR) {
+					console.log(jqXHR.responseText);
+				}
+			});
         },
         error: function(jqXHR) {
             console.log(jqXHR.responseText);
