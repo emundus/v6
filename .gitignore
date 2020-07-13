@@ -55,5 +55,5 @@ administrator/templates/isis/images/logo.png
 ### NodeJS ###
 *~
 /components/com_emundus_onboard/node_modules/
-/media/com_emundus_onboard/app.*
-/media/com_emundus_onboard/chunk-vendors.*
+media/com_emundus_onboard/app.*
+media/com_emundus_onboard/chunk-vendors.*

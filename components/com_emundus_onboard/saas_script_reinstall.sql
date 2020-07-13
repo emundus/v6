@@ -34,7 +34,7 @@ WHERE alias LIKE 'onboarding';
 #
 
 # Disable old coordinator menu
-UPDATE jos_menu SET published = 0
+UPDATE jos_menu SET menutype = 'adminmenu'
 WHERE alias IN ('administration','parametres','parametrage-des-profils-utilisateurs','types-documents','setup-tags','periode-depot-dossier','liste-des-programmes-par-annee','configuration-des-courriers','emails-parametrage','groupes','declarer-un-nouveau-programme','ajouter-une-annee-pour-un-programme','programmes','parametrage-des-statuts','creer-campagne','solicitations-des-referents','declencheurs');
 #
 
