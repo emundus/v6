@@ -116,13 +116,17 @@ $doc = JFactory::getDocument();
     let path = window.location.pathname.split('/');
     let route = path[path.length - 1];
     let menu = document.getElementById('moduletable-b');
+    let found = false;
     menu.childNodes[1].childNodes.forEach((element) => {
-        if(element.firstChild != null) {
-            let find = element.firstChild.attributes.href.nodeValue.search(route);
-            if(find !== -1){
-                element.firstChild.className = 'menu-current-link';
+        element.childNodes.forEach((link) => {
+            if(link.tagName == 'A' && !found) {
+                let find = link.attributes.href.nodeValue.search(route);
+                if(find !== -1){
+                    link.className = 'menu-current-link';
+                    found = true;
+                }
             }
-        }
+        });
     });
 </script>
 </body>

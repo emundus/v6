@@ -10,9 +10,7 @@ import AddFormNextCampaign from "./views/addFormNextCampaign.vue";
 import GlobalSettings from "./views/globalSettings.vue";
 import formBuilder from "./views/formBuilder.vue";
 import VueJsModal from "vue-js-modal";
-import VueDraggable from "vue-draggable";
 import { VTooltip, VPopover, VClosePopover } from 'v-tooltip';
-import VueTour from 'vue-tour'
 import * as VueSpinnersCss from "vue-spinners-css";
 
 Vue.directive('tooltip', VTooltip)
@@ -25,8 +23,6 @@ import velocity from "velocity-animate";
 Vue.use(Notifications, { velocity });
 Vue.use(Vuelidate);
 Vue.use(VueJsModal);
-Vue.use(VueDraggable);
-Vue.use(VueTour);
 Vue.use(VueSpinnersCss);
 
 Vue.config.productionTip = false;
