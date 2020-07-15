@@ -161,6 +161,10 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 				$file->codTypEtablissement = "";
 			}
 
+			preg_match('/^\d+/', $file->numVoieAF, $matches);
+			$file->voieAF = trim(preg_replace('/^\d+/', '', $file->numVoieAF));
+			$file->numVoieAF = $matches[0];
+
 			$response = $http->post($api_url.$api_route, json_encode($file), ['X-Auth-Token' => $token, 'Content-Type' => 'application/json']);
 			
 			if ($response->code === 200) {
