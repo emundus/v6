@@ -52,5 +52,8 @@ administrator/templates/isis/images/logo.png
 !.vscode/extensions.json
 .history
 
-### Linux ###
+### NodeJS ###
 *~
+/components/com_emundus_onboard/node_modules/
+media/com_emundus_onboard/app.*
+media/com_emundus_onboard/chunk-vendors.*

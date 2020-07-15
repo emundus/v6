@@ -86,9 +86,7 @@ if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->
             </tr>
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_RESPONSABLE_EMAIL'); ?></th>
-                <td><?php 
-                    $value = $user->id > 0 ? $this->item->adresse_correspondance : JText::_('COM_EMUNDUS_HIDE_FOR_GUEST');
-                    echo $value; ?>
+                <td><?php echo $this->item->adresse_correspondance; ?>
                 </td>
             </tr>
 
