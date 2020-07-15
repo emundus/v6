@@ -141,7 +141,11 @@ h3 {
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
-/* IE11 hide native button (thanks Matt!) */
+.dropdown-toggle[disabled] {
+  filter: grayscale(1) contrast(0.8);
+}
+
+/* IE11 hide native button */
 .dropdown-toggle::-ms-expand {
   display: none;
 }
@@ -3246,7 +3250,7 @@ label.label__placeholder{
   list-style: none;
   text-decoration: none;
   margin: 10px 10px 30px 10px;
-  width: 100%;
+  width: auto;
 }
 
 .MenuFormItem {
@@ -3486,6 +3490,11 @@ label.label__placeholder{
   background: #de6339;
   color: white;
   cursor: grab;
+}
+
+.logo-settings{
+  width: 20vw;
+  margin: 20px;
 }
 
 

@@ -79,7 +79,7 @@
           >{{Continuer}}</a>
           <a class="bouton-sauvergarder-et-continuer-3 w-delete"
              @click.prevent="deleteMenu()"
-             v-if="menus.length > 1">
+             v-if="menus.length > 1 && files == 0">
             {{Delete}}
           </a>
           <a
@@ -100,7 +100,7 @@ const qs = require("qs");
 
 export default {
   name: "modalSide",
-  props: { ID: Number, element: Object, index: Number, menus: Array },
+  props: { ID: Number, element: Object, index: Number, menus: Array, files: Number },
   components: {},
   data() {
     return {

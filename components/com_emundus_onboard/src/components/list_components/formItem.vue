@@ -18,7 +18,7 @@
             </div>
           </div>
           <div class="column-inner-block-2 w-clearfix w-col w-col-4">
-            <div class="container-gerer-modifier-visualiser">
+            <div v-if="updateAccess" class="container-gerer-modifier-visualiser">
               <a :href="path + '/index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid='"
                 class="cta-block"
                 :title="Modify">
@@ -34,6 +34,7 @@
 
 <script>
 import { list } from "../../store";
+import axios from "axios";
 
 export default {
   name: "formItem",
@@ -44,6 +45,7 @@ export default {
   data() {
     return {
       selectedData: [],
+      updateAccess: false,
       path: window.location.pathname,
       publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
       unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
@@ -51,6 +53,14 @@ export default {
       Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
       Visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE")
     };
+  },
+
+  created() {
+    list.getters.formsAccess.forEach(element => {
+      if(element === this.data.id){
+        this.updateAccess = true;
+      }
+    });
   },
 
   computed: {

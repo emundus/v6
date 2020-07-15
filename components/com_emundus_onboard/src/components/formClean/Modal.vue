@@ -26,14 +26,14 @@
         </div>
         <div class="form-group mb-2">
           <label>{{fieldType}} :</label>
-          <select id="select_type" class="dropdown-toggle" v-model="element.plugin" @change="checkPlugin">
+          <select id="select_type" class="dropdown-toggle" v-model="element.plugin" @change="checkPlugin" :disabled="(files != 0 && element.plugin == 'birthday') || (files != 0 && element.params.password == 6)">
             <option v-for="(plugin, index) in plugins" :key="index" :value="plugin.value">
               {{plugin.name}}
             </option>
           </select>
         </div>
         <div class="col-md-12 separator-top top-responsive">
-          <fieldF v-if="plugin == 'field'" :element="element"></fieldF>
+          <fieldF v-if="plugin == 'field'" :files="files" :element="element"></fieldF>
           <birthdayF v-if="plugin =='birthday'" :element="element"></birthdayF>
           <checkboxF v-if="plugin =='checkbox'" :element="element"  @subOptions="subOptions"></checkboxF>
           <dropdownF v-if="plugin =='dropdown'" :element="element" @subOptions="subOptions"></dropdownF>
@@ -67,7 +67,7 @@
 
   export default {
     name: "modalEditElement",
-    props: { ID: Number, element: Object },
+    props: { ID: Number, element: Object, files: Number },
     components: {
       fieldF,
       birthdayF,
@@ -225,7 +225,11 @@
         this.tempEl = JSON.parse(JSON.stringify(this.element));
       },
     },
-    created: function() {}
+    created: function() {
+      if(this.files != 0 && this.element.plugin != 'birthday'){
+        delete this.plugins.birthday;
+      }
+    }
   };
 </script>
 

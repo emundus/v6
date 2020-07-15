@@ -55,15 +55,14 @@ export default {
   },
 
   mounted() {
-    var getUrl = window.location;
-    var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+    var baseUrl = window.location.protocol + '//' + window.location.host + '/media/com_emundus_onboard/';
 
     let options = {
       selector: '#tiny_' + this.selector_id,
       plugins: 'paste link media preview image code anchor advlist hr emoticons lists searchreplace charmap quickbars imagetools pagebreak autolink print',
       toolbar: 'undo redo | forecolor bold italic underline strikethrough | fontselect fontsizeselect formatselect | preview | alignleft aligncenter alignright alignjustify hr pagebreak | bullist numlist | outdent indent | link image insertfile media anchor| charmap emoticons backcolor | searchreplace print',
       fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
-      content_css: baseUrl + '/media/com_emundus_onboard/skins/ui/oxide/content.min.css',
+      content_css: baseUrl + 'skins/ui/oxide/content.min.css',
       height: '30em',
       branding: false,
       elementpath: false,
@@ -85,7 +84,7 @@ export default {
     };
     if(this.lang == 'fr'){
       options.language = 'fr_FR';
-      options.language_url = baseUrl + '/media/com_emundus_onboard/languages/fr_FR.js';
+      options.language_url = baseUrl + 'languages/fr_FR.js';
       tinymce.init(options);
     } else {
       tinymce.init(options);

@@ -16,11 +16,11 @@ jimport('joomla.application.component.model');
 
 class EmundusonboardModelprogram extends JModelList {
 
-    function getAllPrograms($user, $lim, $page, $filter, $sort, $recherche) {
-
-        if (empty($user)) {
-            $user = JFactory::getUser()->id;
-        }
+    function getAllPrograms($lim, $page, $filter, $sort, $recherche) {
+        // Get affected programs
+        $user = JFactory::getUser();
+        $programs = $this->getUserPrograms($user->id);
+        //
 
         if (empty($lim)) {
             $limit = 25;
@@ -65,6 +65,7 @@ class EmundusonboardModelprogram extends JModelList {
             ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $db->quoteName('sc.training') . ' LIKE ' . $db->quoteName('p.code'))
             ->where($filterDate)
             ->where($fullRecherche)
+            ->andWhere($db->quoteName('p.code') . ' IN (' . implode(',',$db->quote($programs)) . ')')
             ->group($sortDb)
             ->order($sortDb.$sort);
 
@@ -77,15 +78,11 @@ class EmundusonboardModelprogram extends JModelList {
         }
     }
 
-    /**
-     * @return array
-     * get list of declared programmes
-     */
-    function getProgramCount($user, $filter, $recherche) {
-
-        if (empty($user)) {
-            $user = JFactory::getUser()->id;
-        }
+    function getProgramCount($filter, $recherche) {
+        // Get affected programs
+        $user = JFactory::getUser();
+        $programs = $this->getUserPrograms($user->id);
+        //
 
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -110,7 +107,8 @@ class EmundusonboardModelprogram extends JModelList {
         $query->select('COUNT(p.id)')
             ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
             ->where($filterCount)
-            ->where($fullRecherche);
+            ->where($fullRecherche)
+            ->andWhere($db->quoteName('p.code') . ' IN (' . implode(',',$db->quote($programs)) . ')');
         try {
             $db->setQuery($query);
             return $db->loadResult();
@@ -120,13 +118,6 @@ class EmundusonboardModelprogram extends JModelList {
         }
     }
 
-
-    /**
-     * @param $id
-     *
-     * @return array
-     * get list of declared programmes
-     */
     public function getProgramById($id) {
 
         if (empty($id)) {
@@ -161,13 +152,6 @@ class EmundusonboardModelprogram extends JModelList {
         }
     }
 
-
-    /**
-     * @param   array $data the row to add in table.
-     *
-     * @return boolean
-     * Add new program in DB
-     */
     public function addProgram($data) {
 
         $db = $this->getDbo();
@@ -542,7 +526,7 @@ class EmundusonboardModelprogram extends JModelList {
         $query->select(['us.id as id','us.name as name','us.email as email'])
             ->from($db->quoteName('#__emundus_groups', 'g'))
             ->leftJoin($db->quoteName('#__users', 'us'). ' ON '. $db->quoteName('g.user_id').' = '.$db->quoteName('us.id'))
-            ->where($db->quoteName('g.group_id').' = 3')
+            ->where($db->quoteName('g.group_id').' = 5')
             ->orWhere($db->quoteName('g.group_id').' = ' . $db->quote($group))
             ->andWhere($db->quoteName('us.id').' != 95')
             ->group('us.id')
@@ -600,7 +584,7 @@ class EmundusonboardModelprogram extends JModelList {
         $query->clear()
             ->insert($db->quoteName('#__emundus_groups'))
             ->set($db->quoteName('user_id') . ' = ' . $uid)
-            ->set($db->quoteName('group_id') . ' = 3');
+            ->set($db->quoteName('group_id') . ' = 5');
 
         try {
             $db->setQuery($query);
@@ -659,7 +643,7 @@ class EmundusonboardModelprogram extends JModelList {
             $query->clear()
                 ->insert($db->quoteName('#__emundus_groups'))
                 ->set($db->quoteName('user_id') . ' = ' . $user)
-                ->set($db->quoteName('group_id') . ' = 3');
+                ->set($db->quoteName('group_id') . ' = 5');
 
             try {
                 $db->setQuery($query);
@@ -713,8 +697,8 @@ class EmundusonboardModelprogram extends JModelList {
             $query->clear()
                 ->delete($db->quoteName('#__emundus_groups'))
                 ->where($db->quoteName('user_id') . ' = ' . $db->quote($userid))
-                ->andWhere($db->quoteName('group_id') . ' = 3');
-            
+                ->andWhere($db->quoteName('group_id') . ' = 5');
+
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
@@ -738,7 +722,7 @@ class EmundusonboardModelprogram extends JModelList {
             $query->clear()
                 ->delete($db->quoteName('#__emundus_groups'))
                 ->where($db->quoteName('user_id') . ' = ' . $db->quote($userid))
-                ->andWhere($db->quoteName('group_id') . ' = 4');
+                ->andWhere($db->quoteName('group_id') . ' = 5');
 
             try {
                 $db->setQuery($query);
@@ -1366,6 +1350,36 @@ class EmundusonboardModelprogram extends JModelList {
         //
 
         return true;
+    }
+
+    function getUserPrograms($user_id){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('sp.code')
+            ->from($db->quoteName('#__emundus_groups','g'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups', 'sg'). ' ON '. $db->quoteName('g.group_id').' = '.$db->quoteName('sg.id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'sgr'). ' ON '. $db->quoteName('sg.id').' = '.$db->quoteName('sgr.parent_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'sp'). ' ON '. $db->quoteName('sgr.course').' = '.$db->quoteName('sp.code'))
+            ->where($db->quoteName('g.user_id') . ' = ' . $db->quote($user_id));
+        $db->setQuery($query);
+
+        try {
+            $programs = $db->loadObjectList();
+
+            $progs = [];
+            foreach ($programs as $program){
+                if($program->code != null){
+                    $progs[] = $program->code;
+                }
+            }
+
+            return $progs;
+        }  catch (Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
     }
 
 }

@@ -2,9 +2,10 @@
   <div class="container-fluid">
     <notifications
             group="foo-velocity"
-            position="top right"
             animation-type="velocity"
             :speed="500"
+            position="bottom left"
+            :classes="'vue-notification-custom'"
     />
     <ModalAffectCampaign
             :prid="prid"
@@ -21,6 +22,7 @@
             :element="value.object"
             :menus="formObjectArray"
             :index="index"
+            :files="files"
             @show="show"
             @UpdateUx="UpdateUXT"
             @UpdateName="UpdateName"
@@ -105,6 +107,7 @@
                   @removeGroup="removeGroup"
                   :key="builderKey"
                   :rgt="rgt"
+                  :files="files"
                   ref="builder"
           />
         </div>
@@ -153,18 +156,10 @@
     },
     data() {
       return {
+        // UX variables
         UpdateUx: false,
-        showModal: false,
         indexHighlight: "0",
         indexGrab: "0",
-        formObjectArray: [],
-        thevalue: "",
-        formList: "",
-        profileLabel: "",
-        id: 0,
-        grab: 0,
-        rgt: 0,
-        builderKey: 0,
         animation: {
           enter: {
             opacity: [1, 0],
@@ -177,7 +172,22 @@
           }
         },
         loading: false,
+        //
+
+        // Forms variables
+        formObjectArray: [],
+        formList: "",
+        profileLabel: "",
+        id: 0,
+        grab: 0,
+        rgt: 0,
+        builderKey: 0,
+        files: 0,
+        //
+
         link: '',
+
+        // Draggabbles variables
         dragging: false,
         draggingIndex: -1,
         elementDisabled: false,
@@ -220,8 +230,6 @@
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
           },
         },
-        buildmenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDMENU"),
-        preview: Joomla.JText._("COM_EMUNDUS_ONBOARD_PREVIEW"),
         addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
         addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
@@ -229,6 +237,7 @@
         sendFormButton: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEND_FORM"),
       };
     },
+
     methods: {
       createElement(gid,plugin,order) {
         if(!_.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups)){
@@ -301,6 +310,7 @@
           });
         });
       },
+
       // Update component dynamically
       UpdateName(index, label) {
         this.formObjectArray[index].object.show_title.value = label;
@@ -388,6 +398,14 @@
       /**
        * ** Methods for notify
        */
+      tip(){
+        this.showTip(
+                "foo-velocity",
+                Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP") + '<br/>' + Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP1") + '<br/>' + Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP2"),
+                Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+        );
+      },
+
       show(group, type = "", text = "", title = "Information") {
         this.$notify({
           group,
@@ -396,47 +414,60 @@
           type
         });
       },
+      showTip(group, text = "", title = "Information") {
+        this.$notify({
+          group,
+          title: `${title}`,
+          text: text,
+          duration: 20000
+        });
+      },
       clean(group) {
         this.$notify({ group, clean: true });
       },
 
-      //TODOS a refaire
       getDataObject() {
         this.indexHighlight = this.index;
         this.formList.forEach(element => {
           let ellink = element.link.replace("fabrik","emundus_onboard");
-          axios
-                  .get(ellink + "&format=vue_jsonclean")
+          axios.get(ellink + "&format=vue_jsonclean")
                   .then(response => {
                     this.formObjectArray.push({
                       object: response.data,
                       rgt: element.rgt,
                       link: element.link
                     });
-                  })
-                  .then(r => {
+                  }).then(r => {
                     this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
                     this.rgt = this.formObjectArray[0].rgt;
                     this.loading = false;
                     this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
-                  })
-                  .catch(e => {
+                  }).catch(e => {
                     console.log(e);
                   });
+        });
+      },
+
+      getFilesByForm() {
+        axios.get("index.php?option=com_emundus_onboard&controller=form&task=getfilesbyform&pid=" + this.prid).then(response => {
+          this.files = response.data.data;
+          if(this.files != 0){
+            this.tip();
+          }
         });
       },
 
       /**
        *  ** Récupère toute les formes du profile ID
        */
-      getForms(profile_id) {
+      getForms() {
         this.loading = true;
         axios({
           method: "get",
           url:
                   "index.php?option=com_emundus_onboard&controller=form&task=getFormsByProfileId",
           params: {
-            profile_id: profile_id
+            profile_id: this.prid
           },
           paramsSerializer: params => {
             return qs.stringify(params);
@@ -445,7 +476,7 @@
           this.formList = response.data.data;
           setTimeout(() => {
             this.getDataObject();
-            this.getProfileLabel(profile_id);
+            this.getProfileLabel(this.prid);
           },100);
         }).catch(e => {
           console.log(e);
@@ -558,7 +589,8 @@
       //
     },
     created() {
-      this.getForms(this.prid);
+      this.getForms();
+      this.getFilesByForm();
     },
 
     computed: {
@@ -685,7 +717,6 @@
 
   .draggables-list{
     display: flex;
-    flex-wrap: wrap;
     flex-direction: row;
     align-self: baseline;
   }

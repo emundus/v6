@@ -39,11 +39,10 @@
               </label>
               <em class="fas fa-sort-down"></em>
             </div>
-            <input
-                    v-if="translate.label"
-                    type="text"
-                    class="form__input field-general w-input"
-                    v-model="form.label.en"
+            <input v-if="translate.label"
+                   type="text"
+                   class="form__input field-general w-input"
+                   v-model="form.label.en"
             />
           </div>
           <p v-if="errors.label" class="error col-md-12 mb-2">
@@ -88,14 +87,13 @@
           </div>
           <div class="form-group d-flex">
             <div class="toggle">
-              <input
-                      type="checkbox"
-                      true-value="1"
-                      false-value="0"
-                      class="check"
-                      id="published"
-                      name="published"
-                      v-model="form.published"
+              <input type="checkbox"
+                     true-value="1"
+                     false-value="0"
+                     class="check"
+                     id="published"
+                     name="published"
+                     v-model="form.published"
               />
               <strong class="b switch"></strong>
               <strong class="b track"></strong>
@@ -165,15 +163,14 @@
                 v-for="(item, index) in this.programs"
                 v-bind:value="item.code"
                 v-bind:data-category="item.programmes"
-                :key="index"
-                >{{ item.label }}</option
-              >
+                :key="index">
+                {{ item.label }}
+              </option>
             </select>
-            <div
+            <div v-if="coordinatorAccess != 0"
               @click="displayProgram"
               id="add-program"
-              class="addCampProgEmail"
-            >
+              class="addCampProgEmail">
             </div>
           </div>
 
@@ -200,22 +197,6 @@
                   <span class="error">{{ProgLabelRequired}}</span>
                 </p>
 
-                <!--<div class="form-group prog-code">
-                  <label for="prog_code" style="top: 10.7em">{{ProgCode}} *</label>
-                  <input
-                    type="text"
-                    id="prog_code"
-                    class="form__input field-general w-input"
-                    placeholder=" "
-                    v-model="programForm.code"
-                    @keyup="checkCode"
-                    :class="{ 'is-invalid': errors.progCode }"
-                  />
-                </div>
-                <p v-if="errors.progCode" class="error col-md-12 mb-2">
-                  <span class="error">{{CodeRequired}}</span>
-                </p>-->
-
                 <div class="form-group campaign-label">
                   <label style="top: 10.7em">{{ChooseCategory}}</label>
                   <autocomplete
@@ -226,7 +207,6 @@
                 </div>
 
                 <input
-                  v-if="isHiddenCategory"
                   type="text"
                   class="form__input field-general w-input"
                   :placeholder="NameCategory"
@@ -239,14 +219,13 @@
 
                 <div class="form-group d-flex">
                   <div class="toggle">
-                    <input
-                            type="checkbox"
-                            true-value="1"
-                            false-value="0"
-                            class="check"
-                            id="published"
-                            name="published"
-                            v-model="programForm.published"
+                    <input type="checkbox"
+                           true-value="1"
+                           false-value="0"
+                           class="check"
+                           id="published"
+                           name="published"
+                           v-model="programForm.published"
                     />
                     <strong class="b switch"></strong>
                     <strong class="b track"></strong>
@@ -256,14 +235,13 @@
 
                 <div class="form-group d-flex">
                   <div class="toggle">
-                    <input
-                            type="checkbox"
-                            true-value="1"
-                            false-value="0"
-                            class="check"
-                            id="apply"
-                            name="apply"
-                            v-model="programForm.apply_online"
+                    <input type="checkbox"
+                           true-value="1"
+                           false-value="0"
+                           class="check"
+                           id="apply"
+                           name="apply"
+                           v-model="programForm.apply_online"
                     />
                     <strong class="b switch"></strong>
                     <strong class="b track"></strong>
@@ -281,22 +259,19 @@
               <button
                 type="button"
                 class="bouton-sauvergarder-et-continuer w-button"
-                @click="quit = 1; submit()"
-              >
+                @click="quit = 1; submit()">
                 {{ Continuer }}
               </button>
               <button
                 type="button"
                 class="bouton-sauvergarder-et-continuer w-quitter w-button"
-                @click="quit = 0; submit()"
-              >
+                @click="quit = 0; submit()">
                 {{ Quitter }}
               </button>
               <button
                 type="button"
                 class="bouton-sauvergarder-et-continuer w-retour w-button"
-                onclick="history.go(-1)"
-              >
+                onclick="history.go(-1)">
                 {{ Retour }}
               </button>
             </div>
@@ -304,7 +279,6 @@
         </div>
       </form>
     </div>
-    <v-tour name="myTour" :steps="steps" :options="tourOptions"></v-tour>
     <div class="loading-form" v-if="submitted">
       <RingLoader :color="'#de6339'" />
     </div>
@@ -341,29 +315,22 @@ export default {
 
   props: {
     campaign: Number,
-    actualLanguage: String
+    actualLanguage: String,
+    coordinatorAccess: Number,
   },
 
   data: () => ({
-    isHiddenYear: false,
     isHiddenProgram: false,
-    isHiddenCategory: false,
 
-    endDateCheckbox: false,
     olderDate: "",
 
     programs: [],
     years: [],
     categories: [],
 
-    allProfiles: [],
-
     new_category: "",
-    new_program: "",
 
     session: [],
-    cats: [],
-    search: "",
 
     form: {
       label: {
@@ -414,7 +381,6 @@ export default {
     CampName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME"),
     StartDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE"),
     EndDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE"),
-    PasDeFin: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PASDEFIN"),
     Information: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
     Resume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME"),
     Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
@@ -422,7 +388,6 @@ export default {
     AddProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDPROGRAM"),
     ChooseProg: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG"),
     PickYear: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR"),
-    ChooseProfile: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROFILE"),
     Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
     Quitter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_QUITTER"),
     Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
@@ -435,7 +400,6 @@ export default {
     LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
     RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
     ProgramResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_RESUME"),
-    CodeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_CODE"),
     ProgLabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),
     ResumeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME"),
     OK: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
@@ -457,11 +421,9 @@ export default {
   created() {
     Settings.defaultLocale = this.actualLanguage;
     if (this.campaign !== "") {
-      axios
-        .get(
+      axios.get(
           `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaign}`
-        )
-        .then(response => {
+        ).then(response => {
           this.form.label.fr = response.data.data.label.fr.value;
           this.form.label.en = response.data.data.label.en.value;
           this.form.published = response.data.data.campaign.published;
@@ -478,44 +440,33 @@ export default {
           } else {
             this.olderDate = this.form.end_date;
           }
-        })
-        .catch(e => {
+        }).catch(e => {
           console.log(e);
         });
     }
-    axios
-      .get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
+    axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
       .then(response => {
         this.programs = response.data.data;
         this.programs.sort((a, b) => a.id - b.id);
-      })
-      .catch(e => {
+      }).catch(e => {
         console.log(e);
       });
 
-    axios
-      .get("index.php?option=com_emundus_onboard&controller=campaign&task=getyears")
+    axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getyears")
       .then(response => {
         this.years = response.data.data;
 
         for (var i = 0; i < this.years.length; i++) {
           this.session.push(this.years[i].schoolyear);
         }
-      })
-      .catch(e => {
+      }).catch(e => {
         console.log(e);
       });
 
-    axios
-      .get("index.php?option=com_emundus_onboard&controller=program&task=getprogramcategories")
+    axios.get("index.php?option=com_emundus_onboard&controller=program&task=getprogramcategories")
       .then(response => {
         this.categories = response.data.data;
-
-        for (var i = 0; i < this.categories.length; i++) {
-          this.cats.push(this.categories[i]);
-        }
-      })
-      .catch(e => {
+      }).catch(e => {
         console.log(e);
       });
   },
@@ -570,12 +521,10 @@ export default {
          return 0;
       }
 
-      if (!this.endDateCheckbox ) {
-        if (this.form.end_date == "") {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          document.getElementById('end_date').focus();
-          return 0;
-        }
+      if (this.form.end_date == "") {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('end_date').focus();
+        return 0;
       }
 
       if (this.form.year == "") {
@@ -636,8 +585,7 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({ body: this.programForm })
-      })
-        .then(() => {
+      }).then(() => {
           if (this.campaign !== "") {
             axios({
               method: "post",
@@ -646,11 +594,9 @@ export default {
                 "Content-Type": "application/x-www-form-urlencoded"
               },
               data: qs.stringify({ body: this.form, cid: this.campaign })
-            })
-              .then(response => {
+            }).then(response => {
                 this.quitFunnelOrContinue(this.quit);
-              })
-              .catch(error => {
+              }).catch(error => {
                 console.log(error);
               });
           } else {
@@ -661,12 +607,10 @@ export default {
                 "Content-Type": "application/x-www-form-urlencoded"
               },
               data: qs.stringify({ body: this.form })
-            })
-              .then(response => {
+            }).then(response => {
                 this.campaign = response.data.data;
                 this.quitFunnelOrContinue(this.quit);
-              })
-              .catch(error => {
+              }).catch(error => {
                 console.log(error);
               });
           }
@@ -681,8 +625,7 @@ export default {
             .catch(error => {
               console.log(error);
             });
-        })
-        .catch(error => {
+        }).catch(error => {
           console.log(error);
         });
     },
@@ -784,9 +727,6 @@ export default {
       );
     },
 
-    /**
-     * ** Methods for notify
-     */
     show(group, text = "", title = "Information") {
       this.$notify({
         group,

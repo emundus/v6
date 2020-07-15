@@ -46,7 +46,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 	        $recherche = $jinput->get->get('recherche');
 	        $lim = $jinput->get->get('lim');
 	        $page = $jinput->get->get('page');
-            $programs = $m_prog->getAllPrograms($user->id, $lim, $page, $filter, $sort, $recherche);
+            $programs = $m_prog->getAllPrograms($lim, $page, $filter, $sort, $recherche);
 
             if (count($programs) > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $programs);
@@ -71,7 +71,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 	        $filterCount = $jinput->get->get('filterCount');
 	        $rechercheCount = $jinput->get->get('rechercheCount');
 
-            $programs = $m_prog->getProgramCount($user->id, $filterCount, $rechercheCount);
+            $programs = $m_prog->getProgramCount($filterCount, $rechercheCount);
 
             $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $programs);
         }
@@ -105,7 +105,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
     public function createprogram() {
         $user = JFactory::getUser();
 
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusonboardHelperAccess::isCoordinator($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {

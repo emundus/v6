@@ -34,7 +34,8 @@ if (document.getElementById("em-list-vue")) {
     render(h) {
       return h(List, {
         props: {
-          type: this.$el.attributes.type.value
+          type: this.$el.attributes.type.value,
+          coordinatorAccess: this.$el.attributes.coordinatorAccess.value,
         }
       });
     }
@@ -62,7 +63,8 @@ if (document.getElementById("em-addProgramAdvancedSettings-vue")) {
       return h(AddProgramAdvancedSettings, {
         props: {
           prog: this.$el.attributes.prog.value,
-          actualLanguage: this.$el.attributes.actualLanguage.value
+          actualLanguage: this.$el.attributes.actualLanguage.value,
+          coordinatorAccess: this.$el.attributes.coordinatorAccess.value,
         }
       });
     }
@@ -76,7 +78,8 @@ if (document.getElementById("em-addCampaign-vue")) {
       return h(AddCampaign, {
         props: {
           campaign: this.$el.attributes.campaign.value,
-          actualLanguage: this.$el.attributes.actualLanguage.value
+          actualLanguage: this.$el.attributes.actualLanguage.value,
+          coordinatorAccess: this.$el.attributes.coordinatorAccess.value,
         }
       });
     }
@@ -147,7 +150,8 @@ if (document.getElementById("em-globalSettings-vue")) {
     render(h) {
       return h(GlobalSettings, {
         props: {
-          actualLanguage: this.$el.attributes.actualLanguage.value
+          actualLanguage: this.$el.attributes.actualLanguage.value,
+          coordinatorAccess: this.$el.attributes.coordinatorAccess.value,
         }
       });
     }

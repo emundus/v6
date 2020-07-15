@@ -246,7 +246,7 @@
         if (this.menuHighlight > 0) {
           this.menuHighlight--;
         } else {
-          window.location.href = '/' + this.actualLanguage + '/configuration/campaigns';
+          window.location.href = '/fr/configuration-campagne';
         }
       },
 

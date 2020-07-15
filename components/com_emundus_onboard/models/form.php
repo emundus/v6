@@ -17,15 +17,12 @@ jimport('joomla.database.table');
 
 class EmundusonboardModelform extends JModelList {
 
-	/**
-	 * Get the amount of forms
-	 *
-	 * @param $user
-	 * @param $filter
-	 * @param $recherche
-	 *
-	 * @return int|mixed|null
-	 */
+    var $model_campaign = null;
+    public function __construct($config = array()) {
+        parent::__construct($config);
+        $this->model_campaign = JModelLegacy::getInstance('campaign', 'EmundusonboardModel');
+    }
+
 	function getFormCount($filter, $recherche) {
 
 		$db = $this->getDbo();
@@ -120,6 +117,53 @@ class EmundusonboardModelform extends JModelList {
 			return new stdClass();
 		}
 	}
+
+	function getFormsUpdated() {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $access_profiles = [];
+        $query
+            ->select('id')
+            ->from($db->quoteName('#__emundus_setup_profiles'))
+            ->where($db->quoteName('id') . ' > 1000');
+        $db->setQuery($query);
+        foreach ($db->loadRowList() as $profile){
+            $access_profiles[] = $profile[0];
+        }
+
+        $profiles_campaign_associated = [];
+
+	    $campaigns = $this->model_campaign->getAssociatedCampaigns('','','',100,'');
+	    $campaigns_id = [];
+        $profiles_campaign_associated = [];
+	    foreach ($campaigns as $campaign){
+	        if($campaign->profile_id != null){
+                $profiles_campaign_associated[] = $campaign->profile_id;
+            }
+            $campaigns_id[] = $campaign->id;
+        }
+
+        $query
+            ->clear()
+            ->select('*')
+            ->from($db->quoteName('#__emundus_setup_campaigns'))
+            ->where($db->quoteName('id') . ' NOT IN (' . implode(',',$db->quote($campaigns_id)) . ')');
+        $db->setQuery($query);
+        $campaigns_not_user = $db->loadObjectList();
+
+        foreach ($campaigns_not_user as $campaign){
+            if($campaign->profile_id != null){
+                if(!in_array($campaign->profile_id,$profiles_campaign_associated)) {
+                    array_splice($access_profiles, array_search($campaign->profile_id, $access_profiles), 1);
+                }
+            }
+        }
+
+        sort($access_profiles);
+
+	    return $access_profiles;
+    }
 
     function getAllFormsPublished() {
         $db = $this->getDbo();

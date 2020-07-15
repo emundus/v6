@@ -41,10 +41,10 @@ $doc = JFactory::getDocument();
                         <div id="platform-content" class="platform-content">
                             <div id="moduletable" class="moduletable">
                                 <?php
-                                $showcolumn = $this->countModules('header-a');
+                                $showcolumn = $this->countModules('header-a-saas');
                                 ?>
                                 <?php if($showcolumn): ?>
-                                    <jdoc:include type="modules" name="header-a" style="<?php if(($this->params->get('header-a') == 'block') || ($this->params->get('header-a') == Null)): echo "block"; else: echo "xhtml"; endif;?>"/>
+                                    <jdoc:include type="modules" name="header-a-saas" style="<?php if(($this->params->get('header-a-saas') == 'block') || ($this->params->get('header-a-saas') == Null)): echo "block"; else: echo "xhtml"; endif;?>"/>
                                 <?php endif; ?>
                             </div>
                         </div>

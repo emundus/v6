@@ -75,9 +75,10 @@ class EmundusonboardControllerform extends JControllerLegacy {
 	        $recherche = $jinput->get->get('recherche');
 
             $forms = $m_forms->getAllForms($filter, $sort, $recherche, $lim, $page);
+            $formscanbeupdated = $m_forms->getFormsUpdated();
 
             if (count($forms) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
+                $tab = array('status' => 1, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms, 'forms_updating' => $formscanbeupdated);
             } else {
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_FORM'), 'data' => $forms);
             }

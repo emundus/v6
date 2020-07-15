@@ -19,17 +19,22 @@ JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/model
 
 class EmundusonboardModelcampaign extends JModelList
 {
-    /**
-     * @param $user int
-     * gets the amount of camapaigns
-     * @param int $offset
-     * @return integer
-     */
+    var $model_program = null;
+    public function __construct($config = array()) {
+        parent::__construct($config);
+        $this->model_program = JModelLegacy::getInstance('program', 'EmundusonboardModel');
+    }
+
     function getCampaignCount($filter, $recherche)
     {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $date = new Date();
+
+        // Get affected programs
+        $user = JFactory::getUser();
+        $programs = $this->model_program->getUserPrograms($user->id);
+        //
 
         if ($filter == 'notTerminated') {
             $filterCount =
@@ -96,7 +101,8 @@ class EmundusonboardModelcampaign extends JModelList
             ->select('COUNT(sc.id)')
             ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
             ->where($filterCount)
-            ->andWhere($fullRecherche);
+            ->andWhere($fullRecherche)
+            ->andWhere($db->quoteName('sc.training') . ' IN (' . implode(',',$db->quote($programs)) . ')');
 
         try {
             $db->setQuery($query);
@@ -107,12 +113,6 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    /**
-     * @param $user int
-     * Get list of all campaigns
-     * @param int $offset
-     * @return object
-     */
     function getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page) {
         if (empty($lim)) {
             $limit = 25;
@@ -135,6 +135,11 @@ class EmundusonboardModelcampaign extends JModelList
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $date = new Date();
+
+        // Get affected programs
+        $user = JFactory::getUser();
+        $programs = $this->model_program->getUserPrograms($user->id);
+        //
 
         if ($filter == 'notTerminated') {
             $filterDate =
@@ -222,6 +227,7 @@ class EmundusonboardModelcampaign extends JModelList
             )
             ->where($filterDate)
             ->andWhere($fullRecherche)
+            ->andWhere($db->quoteName('sc.training') . ' IN (' . implode(',',$db->quote($programs)) . ')')
             ->group($sortDb)
             ->order($sortDb . $sort);
 
@@ -262,12 +268,6 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    /**
-     * @param   array $data the row to delete in table.
-     *
-     * @return boolean
-     * Delete campaign(s) in DB
-     */
     public function deleteCampaign($data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -310,12 +310,6 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    /**
-     * @param   array $data the row to unpublish in table.
-     *
-     * @return boolean
-     * Unpublish campaign(s) in DB
-     */
     public function unpublishCampaign($data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -349,12 +343,6 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    /**
-     * @param   array $data the row to publish in table.
-     *
-     * @return boolean
-     * Publish campaign(s) in DB
-     */
     public function publishCampaign($data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -383,12 +371,6 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    /**
-     * @param   array $data the row to copy in table.
-     *
-     * @return boolean
-     * Copy campaign(s) in DB
-     */
     public function duplicateCampaign($data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -429,11 +411,6 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    /**
-     * @param $user int
-     * get list of all campaigns associated to the user
-     * @return array
-     */
     //TODO Throw in the years model
     function getYears() {
 
@@ -453,12 +430,6 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    /**
-     * @param   array $data the row to add in table.
-     *
-     * @return boolean
-     * Add new campaign in DB
-     */
     public function createCampaign($data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -508,13 +479,6 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-	/**
-	 * @param array $data the row to add in table.
-	 * @param       $cid
-	 *
-	 * @return boolean
-	 * Update campaign in DB
-	 */
     public function updateCampaign($data, $cid) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -557,12 +521,6 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    /**
-     * @param   array $data the row to add in table.
-     *
-     * @return boolean
-     * Add new Year in DB
-     */
     public function createYear($data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -589,12 +547,6 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    /**
-     * @param $id
-     *
-     * @return stdClass|boolean
-     * get list of declared campaigns
-     */
     public function getCampaignById($id) {
         if (empty($id)) {
             return false;
@@ -628,11 +580,6 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    /**
-     *
-     * @return stdClass|boolean
-     * get list of declared campaigns
-     */
     public function getCreatedCampaign() {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -697,10 +644,16 @@ class EmundusonboardModelcampaign extends JModelList
 
         $date = new Date();
 
+        // Get affected programs
+        $user = JFactory::getUser();
+        $programs = $this->model_program->getUserPrograms($user->id);
+        //
+
         $query->select('id,label')
             ->from($db->quoteName('#__emundus_setup_campaigns'))
             ->where($db->quoteName('profile_id') . ' IS NULL')
-            ->andWhere($db->quoteName('end_date') . ' >= ' . $db->quote($date));
+            ->andWhere($db->quoteName('end_date') . ' >= ' . $db->quote($date))
+            ->andWhere($db->quoteName('training') . ' IN (' . implode(',',$db->quote($programs)) . ')');
 
         try {
             $db->setQuery($query);
@@ -717,13 +670,19 @@ class EmundusonboardModelcampaign extends JModelList
 
         $date = new Date();
 
+        // Get affected programs
+        $user = JFactory::getUser();
+        $programs = $this->model_program->getUserPrograms($user->id);
+        //
+
         $searchName = $db->quoteName('label').' LIKE '.$db->quote('%' . $term . '%');
 
         $query->select('id,label')
             ->from($db->quoteName('#__emundus_setup_campaigns'))
             ->where($db->quoteName('profile_id') . ' IS NULL')
             ->andWhere($db->quoteName('end_date') . ' >= ' . $db->quote($date))
-            ->andWhere($searchName);
+            ->andWhere($searchName)
+            ->andWhere($db->quoteName('training') . ' IN (' . implode(',',$db->quote($programs)) . ')');
 
         try {
             $db->setQuery($query);

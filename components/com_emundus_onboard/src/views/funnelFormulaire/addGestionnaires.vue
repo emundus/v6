@@ -2,10 +2,12 @@
     <div class="container-evaluation">
         <ModalAddUser
                 :group="this.group"
+                :coordinatorAccess="coordinatorAccess"
                 @Updatemanager="getManagersInGroup()"
                 @Updateevaluator="getEvaluatorsInGroup()"
         />
         <ModalAffect
+                v-if="coordinatorAccess != 0"
                 :group="this.group"
                 :groupProfile="'manager'"
                 @Updatemanager="getManagersInGroup()"
@@ -16,11 +18,11 @@
                 @Updateevaluator="getEvaluatorsInGroup()"
         />
         <a @click="$modal.show('modalAddUser')" class="bouton-sauvergarder-et-continuer-3 create-user">{{ addUser }}</a>
-        <div class="choices-buttons">
+        <div class="choices-buttons" v-if="coordinatorAccess != 0">
             <h2 style="margin-bottom: 0">{{ Administrators }}</h2>
             <a @click="$modal.show('modalAffectmanager')" class="bouton-sauvergarder-et-continuer-3">{{ affectUsers }}</a>
         </div>
-        <div v-for="(manager, index) in managers" :key="index" class="manager-item">
+        <div v-for="(manager, index) in managers" :key="index" class="manager-item" v-if="coordinatorAccess != 0">
             <div>
                 <p>{{manager.name}}</p>
                 <p>{{manager.email}}</p>
@@ -58,7 +60,8 @@
 
         props: {
             funnelCategorie: String,
-            group: Number
+            group: Number,
+            coordinatorAccess: Number
         },
 
         data() {

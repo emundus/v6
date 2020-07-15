@@ -38,7 +38,7 @@
           </div>
 
           <div>
-            <a :href="data.add_url" class="bouton-ajouter w-inline-block">
+            <a :href="data.add_url" class="bouton-ajouter w-inline-block" v-if="!addHidden">
               <div v-if="data.type === 'program'" class="add-button-div">
                 {{ AddProgram }}
                 <div class="addCampProgEmail"></div>
@@ -215,7 +215,8 @@
       chercheGo: Function,
       validateFilters: Function,
       nbresults: Function,
-      isEmpty: Boolean
+      isEmpty: Boolean,
+      coordinatorAccess: Number
     },
 
     computed: {
@@ -252,14 +253,14 @@
         AddProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_PROGRAM"),
         AddEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
         AddForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FORM"),
-        AddFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FILES"),
         Rechercher: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH"),
         Archive: Joomla.JText._("COM_EMUNDUS_ONBOARD_ARCHIVE"),
         Archived: Joomla.JText._("COM_EMUNDUS_ONBOARD_ARCHIVED"),
         Restore: Joomla.JText._("COM_EMUNDUS_ONBOARD_RESTORE"),
         filtre: "all",
         tri: "DESC",
-        afficher: 25
+        afficher: 25,
+        addHidden: false
       };
     },
 
@@ -295,30 +296,25 @@
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=program&task=deleteprogram",
                   data: qs.stringify({ id })
-                })
-                        .then(response => {
-                          this.loading = false;
-                          list.commit("deleteSelected", id);
-                          Swal.fire({
-                            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGDELETED"),
-                            type: "success",
-                            showConfirmButton: false,
-                            timer: 2000
-                          });
-                        })
-                        .then(() => {
-                          axios
-                                  .get(
-                                          "index.php?option=com_emundus_onboard&controller=program&task=getprogramcount"
-                                  )
-                                  .then(response => {
-                                    this.total = response.data.data;
-                                    this.updateTotal(this.total);
-                                  });
-                        })
-                        .catch(error => {
-                          console.log(error);
-                        });
+                }).then(response => {
+                  this.loading = false;
+                  list.commit("deleteSelected", id);
+                  Swal.fire({
+                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGDELETED"),
+                    type: "success",
+                    showConfirmButton: false,
+                    timer: 2000
+                  });
+                }).then(() => {
+                  axios.get(
+                          "index.php?option=com_emundus_onboard&controller=program&task=getprogramcount"
+                  ).then(response => {
+                    this.total = response.data.data;
+                    this.updateTotal(this.total);
+                  });
+                }).catch(error => {
+                  console.log(error);
+                });
               }
             });
             break;
@@ -340,33 +336,28 @@
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=campaign&task=deletecampaign",
                   data: qs.stringify({ id })
-                })
-                        .then(response => {
-                          this.loading = false;
-                          list.dispatch("deleteSelected", id).then(() => {
-                            list.commit("resetSelectedItemsList");
-                          });
-                          Swal.fire({
-                            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPDELETED"),
-                            type: "success",
-                            showConfirmButton: false,
-                            timer: 2000
-                          });
-                        })
-                        .then(() => {
-                          axios
-                                  .get(
-                                          "index.php?option=com_emundus_onboard&controller=campaign&task=getcampaigncount"
-                                  )
-                                  .then(response => {
-                                    this.total = response.data.data;
-                                    this.updateTotal(this.total);
-                                    this.$parent.validateFilters();
-                                  });
-                        })
-                        .catch(error => {
-                          console.log(error);
-                        });
+                }).then(response => {
+                  this.loading = false;
+                  list.dispatch("deleteSelected", id).then(() => {
+                    list.commit("resetSelectedItemsList");
+                  });
+                  Swal.fire({
+                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPDELETED"),
+                    type: "success",
+                    showConfirmButton: false,
+                    timer: 2000
+                  });
+                }).then(() => {
+                  axios.get(
+                          "index.php?option=com_emundus_onboard&controller=campaign&task=getcampaigncount"
+                  ).then(response => {
+                    this.total = response.data.data;
+                    this.updateTotal(this.total);
+                    this.$parent.validateFilters();
+                  });
+                }).catch(error => {
+                  console.log(error);
+                });
               }
             });
 
@@ -389,31 +380,27 @@
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=email&task=deleteemail",
                   data: qs.stringify({ id })
-                })
-                        .then(response => {
-                          this.loading = false;
-                          list.dispatch("deleteSelected", id).then(() => {
-                            list.commit("resetSelectedItemsList");
+                }).then(response => {
+                  this.loading = false;
+                  list.dispatch("deleteSelected", id).then(() => {
+                    list.commit("resetSelectedItemsList");
+                  });
+                  Swal.fire({
+                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILDELETED"),
+                    type: "success",
+                    showConfirmButton: false,
+                    timer: 2000
+                  });
+                }).then(() => {
+                  axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcount")
+                          .then(response => {
+                            this.total = response.data.data;
+                            this.updateTotal(this.total);
+                            this.$parent.validateFilters();
                           });
-                          Swal.fire({
-                            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILDELETED"),
-                            type: "success",
-                            showConfirmButton: false,
-                            timer: 2000
-                          });
-                        })
-                        .then(() => {
-                          axios
-                                  .get("index.php?option=com_emundus_onboard&controller=email&task=getemailcount")
-                                  .then(response => {
-                                    this.total = response.data.data;
-                                    this.updateTotal(this.total);
-                                    this.$parent.validateFilters();
-                                  });
-                        })
-                        .catch(error => {
-                          console.log(error);
-                        });
+                }).catch(error => {
+                  console.log(error);
+                });
               }
             });
 
@@ -436,31 +423,27 @@
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=form&task=deleteform",
                   data: qs.stringify({ id })
-                })
-                        .then(response => {
-                          this.loading = false;
-                          list.dispatch("deleteSelected", id).then(() => {
-                            list.commit("resetSelectedItemsList");
+                }).then(response => {
+                  this.loading = false;
+                  list.dispatch("deleteSelected", id).then(() => {
+                    list.commit("resetSelectedItemsList");
+                  });
+                  Swal.fire({
+                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDELETED"),
+                    type: "success",
+                    showConfirmButton: false,
+                    timer: 2000
+                  });
+                }).then(() => {
+                  axios.get("index.php?option=com_emundus_onboard&controller=form&task=getformcount")
+                          .then(response => {
+                            this.total = response.data.data;
+                            this.updateTotal(this.total);
+                            this.$parent.validateFilters();
                           });
-                          Swal.fire({
-                            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDELETED"),
-                            type: "success",
-                            showConfirmButton: false,
-                            timer: 2000
-                          });
-                        })
-                        .then(() => {
-                          axios
-                                  .get("index.php?option=com_emundus_onboard&controller=form&task=getformcount")
-                                  .then(response => {
-                                    this.total = response.data.data;
-                                    this.updateTotal(this.total);
-                                    this.$parent.validateFilters();
-                                  });
-                        })
-                        .catch(error => {
-                          console.log(error);
-                        });
+                }).catch(error => {
+                  console.log(error);
+                });
               }
             });
 
@@ -487,21 +470,19 @@
                   url:
                           "index.php?option=com_emundus_onboard&controller=program&task=unpublishprogram",
                   data: qs.stringify({ id })
-                })
-                        .then(response => {
-                          this.loading = false;
-                          list.commit("unpublish", id);
-                          Swal.fire({
-                            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGUNPUBLISHED"),
-                            type: "success",
-                            showConfirmButton: false,
-                            timer: 2000
-                          });
-                          this.$parent.validateFilters();
-                        })
-                        .catch(error => {
-                          console.log(error);
-                        });
+                }).then(response => {
+                  this.loading = false;
+                  list.commit("unpublish", id);
+                  Swal.fire({
+                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGUNPUBLISHED"),
+                    type: "success",
+                    showConfirmButton: false,
+                    timer: 2000
+                  });
+                  this.$parent.validateFilters();
+                }).catch(error => {
+                  console.log(error);
+                });
               }
             });
             break;
@@ -522,21 +503,19 @@
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=campaign&task=unpublishcampaign",
                   data: qs.stringify({id})
-                })
-                        .then(response => {
-                          this.loading = false;
-                          list.commit("unpublish", id);
-                          Swal.fire({
-                            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNUNPUBLISHED"),
-                            type: "success",
-                            showConfirmButton: false,
-                            timer: 2000
-                          });
-                          this.$parent.validateFilters();
-                        })
-                        .catch(error => {
-                          console.log(error);
-                        });
+                }).then(response => {
+                  this.loading = false;
+                  list.commit("unpublish", id);
+                  Swal.fire({
+                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNUNPUBLISHED"),
+                    type: "success",
+                    showConfirmButton: false,
+                    timer: 2000
+                  });
+                  this.$parent.validateFilters();
+                }).catch(error => {
+                  console.log(error);
+                });
               }
             });
             break;
@@ -546,20 +525,18 @@
               method: "post",
               url: "index.php?option=com_emundus_onboard&controller=email&task=unpublishemail",
               data: qs.stringify({ id })
-            })
-                    .then(response => {
-                      list.commit("unpublish", id);
-                      Swal.fire({
-                        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILUNPUBLISHED"),
-                        type: "success",
-                        showConfirmButton: false,
-                        timer: 2000
-                      });
-                      this.$parent.validateFilters();
-                    })
-                    .catch(error => {
-                      console.log(error);
-                    });
+            }).then(response => {
+              list.commit("unpublish", id);
+              Swal.fire({
+                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILUNPUBLISHED"),
+                type: "success",
+                showConfirmButton: false,
+                timer: 2000
+              });
+              this.$parent.validateFilters();
+            }).catch(error => {
+              console.log(error);
+            });
             break;
 
           case "form":
@@ -578,21 +555,19 @@
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=form&task=unpublishform",
                   data: qs.stringify({id})
-                })
-                        .then(response => {
-                          this.loading = false;
-                          list.commit("unpublish", id);
-                          Swal.fire({
-                            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMUNPUBLISHED"),
-                            type: "success",
-                            showConfirmButton: false,
-                            timer: 2000
-                          });
-                          this.$parent.validateFilters();
-                        })
-                        .catch(error => {
-                          console.log(error);
-                        });
+                }).then(response => {
+                  this.loading = false;
+                  list.commit("unpublish", id);
+                  Swal.fire({
+                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMUNPUBLISHED"),
+                    type: "success",
+                    showConfirmButton: false,
+                    timer: 2000
+                  });
+                  this.$parent.validateFilters();
+                }).catch(error => {
+                  console.log(error);
+                });
               }
             });
             break;
@@ -606,20 +581,18 @@
               method: "post",
               url: "index.php?option=com_emundus_onboard&controller=program&task=publishprogram",
               data: qs.stringify({ id })
-            })
-                    .then(response => {
-                      list.commit("publish", id);
-                      Swal.fire({
-                        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGPUBLISHED"),
-                        type: "success",
-                        showConfirmButton: false,
-                        timer: 2000
-                      });
-                      this.$parent.validateFilters();
-                    })
-                    .catch(error => {
-                      console.log(error);
-                    });
+            }).then(response => {
+              list.commit("publish", id);
+              Swal.fire({
+                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGPUBLISHED"),
+                type: "success",
+                showConfirmButton: false,
+                timer: 2000
+              });
+              this.$parent.validateFilters();
+            }).catch(error => {
+              console.log(error);
+            });
             break;
 
           case "campaign":
@@ -627,20 +600,18 @@
               method: "post",
               url: "index.php?option=com_emundus_onboard&controller=campaign&task=publishcampaign",
               data: qs.stringify({ id })
-            })
-                    .then(response => {
-                      list.commit("publish", id);
-                      Swal.fire({
-                        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNPUBLISHED"),
-                        type: "success",
-                        showConfirmButton: false,
-                        timer: 2000
-                      });
-                      this.$parent.validateFilters();
-                    })
-                    .catch(error => {
-                      console.log(error);
-                    });
+            }).then(response => {
+              list.commit("publish", id);
+              Swal.fire({
+                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNPUBLISHED"),
+                type: "success",
+                showConfirmButton: false,
+                timer: 2000
+              });
+              this.$parent.validateFilters();
+            }).catch(error => {
+              console.log(error);
+            });
             break;
 
           case "email":
@@ -648,20 +619,18 @@
               method: "post",
               url: "index.php?option=com_emundus_onboard&controller=email&task=publishemail",
               data: qs.stringify({ id })
-            })
-                    .then(response => {
-                      list.commit("publish", id);
-                      Swal.fire({
-                        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILPUBLISHED"),
-                        type: "success",
-                        showConfirmButton: false,
-                        timer: 2000
-                      });
-                      this.$parent.validateFilters();
-                    })
-                    .catch(error => {
-                      console.log(error);
-                    });
+            }).then(response => {
+              list.commit("publish", id);
+              Swal.fire({
+                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILPUBLISHED"),
+                type: "success",
+                showConfirmButton: false,
+                timer: 2000
+              });
+              this.$parent.validateFilters();
+            }).catch(error => {
+              console.log(error);
+            });
             break;
 
           case "form":
@@ -669,20 +638,18 @@
               method: "post",
               url: "index.php?option=com_emundus_onboard&controller=form&task=publishform",
               data: qs.stringify({ id })
-            })
-                    .then(response => {
-                      list.commit("publish", id);
-                      Swal.fire({
-                        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMPUBLISHED"),
-                        type: "success",
-                        showConfirmButton: false,
-                        timer: 2000
-                      });
-                      this.$parent.validateFilters();
-                    })
-                    .catch(error => {
-                      console.log(error);
-                    });
+            }).then(response => {
+              list.commit("publish", id);
+              Swal.fire({
+                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMPUBLISHED"),
+                type: "success",
+                showConfirmButton: false,
+                timer: 2000
+              });
+              this.$parent.validateFilters();
+            }).catch(error => {
+              console.log(error);
+            });
             break;
         }
       },
@@ -705,31 +672,26 @@
                   method: "post",
                   url: "index.php?option=com_emundus_onboard&controller=campaign&task=duplicatecampaign",
                   data: qs.stringify({id})
-                })
-                        .then(response => {
-                          this.loading = false;
-                          list.commit("listUpdate", response.data.data);
-                          Swal.fire({
-                            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNDUPLICATED"),
-                            type: "success",
-                            showConfirmButton: false,
-                            timer: 2000
-                          });
-                        })
-                        .then(() => {
-                          axios
-                                  .get(
-                                          "index.php?option=com_emundus_onboard&controller=campaign&task=getcampaigncount"
-                                  )
-                                  .then(response => {
-                                    this.total = response.data.data;
-                                    this.updateTotal(this.total);
-                                    this.$parent.validateFilters();
-                                  });
-                        })
-                        .catch(error => {
-                          console.log(error);
-                        });
+                }).then(response => {
+                  this.loading = false;
+                  list.commit("listUpdate", response.data.data);
+                  Swal.fire({
+                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNDUPLICATED"),
+                    type: "success",
+                    showConfirmButton: false,
+                    timer: 2000
+                  });
+                }).then(() => {
+                  axios.get(
+                          "index.php?option=com_emundus_onboard&controller=campaign&task=getcampaigncount"
+                  ).then(response => {
+                    this.total = response.data.data;
+                    this.updateTotal(this.total);
+                    this.$parent.validateFilters();
+                  });
+                }).catch(error => {
+                  console.log(error);
+                });
               }
             });
             break;
@@ -756,6 +718,14 @@
               }
             });
             break;
+        }
+      }
+    },
+
+    created() {
+      if(this.data.type === 'program'){
+        if(this.coordinatorAccess == 0){
+          this.addHidden = true;
         }
       }
     }

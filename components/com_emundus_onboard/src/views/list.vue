@@ -12,6 +12,7 @@
       :validateFilters="validateFilters"
       :nbresults="nbresults"
       :isEmpty="isEmpty"
+      :coordinatorAccess="coordinatorAccess"
     ></actions>
     <h2 v-show="total > 0">{{ Total }} : {{ total }}</h2>
 
@@ -154,7 +155,8 @@ export default {
   name: "list",
   props: {
     type: String,
-    actualLanguage: String
+    actualLanguage: String,
+    coordinatorAccess: Number
   },
   data: () => ({
     selecedItems: [],
@@ -171,9 +173,7 @@ export default {
     noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
     noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
     noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
-    isActionsAvailable: false,
     total: 0,
-    isActiveAll: false,
     filtersCount: "",
     filters: "",
     filtersCountFilter: "&filterCount=",
@@ -289,6 +289,9 @@ export default {
               )
               .then(response => {
                 list.commit("listUpdate", response.data.data);
+                if(typeof response.data.forms_updating != 'undefined') {
+                  list.commit("formsAccessUpdate", response.data.forms_updating);
+                }
                 this.countPages = Math.ceil(this.total / this.limit);
               })
               .catch(e => {

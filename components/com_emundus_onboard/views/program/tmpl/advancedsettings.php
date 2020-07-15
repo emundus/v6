@@ -13,6 +13,8 @@ $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_onboard/chunk-vendors.js');
 $document->addStyleSheet('media/com_emundus_onboard/app.css');
 
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+
 ## GLOBAL ##
 JText::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
 JText::script('COM_EMUNDUS_ONBOARD_ADD_CONTINUER');
@@ -163,8 +165,11 @@ JText::script('COM_EMUNDUS_ONBOARD_TYPE_COMMENT');
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0, 2);
+
+$user = JFactory::getUser();
+$coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
-<div id="em-addProgramAdvancedSettings-vue" prog="<?= $this->id ;?>" actualLanguage="<?= $actualLanguage ?>"></div>
+<div id="em-addProgramAdvancedSettings-vue" prog="<?= $this->id ;?>" actualLanguage="<?= $actualLanguage ?>" coordinatorAccess="<?= $coordinator_access ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>

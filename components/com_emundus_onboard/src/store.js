@@ -36,6 +36,10 @@ export const ListMutations = {
     state.list = insert;
   },
 
+  formsAccessUpdate(state, insert) {
+    state.formsAccess = insert;
+  },
+
   /**
    * Insert new data into list
    * @param state
@@ -91,11 +95,13 @@ export const ListMutations = {
 export const list = new Vuex.Store({
   state: {
     list: [],
-    selectedItems: []
+    selectedItems: [],
+    formsAccess: [],
   },
 
   getters: {
     list: state => state.list,
+    formsAccess: state => state.formsAccess,
     selectedItems: state => state.selectedItems,
     isSelected: state => id => state.selectedItems.includes(id),
     isSomething: state => Array.isArray(state.selectedItems) && state.selectedItems.length

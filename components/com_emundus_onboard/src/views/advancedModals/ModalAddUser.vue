@@ -48,7 +48,7 @@
         <div class="form-group">
           <label>{{Role}}* :</label>
           <select v-model="form.profile" class="dropdown-toggle" :class="{ 'is-invalid': errors.profile}">
-            <option value="5">{{Administrator}}</option>
+            <option value="5" v-if="coordinatorAccess != 0">{{Administrator}}</option>
             <option value="6">{{Evaluator}}</option>
           </select>
           <p v-if="errors.profile" class="error">
@@ -76,7 +76,10 @@ const qs = require("qs");
 
 export default {
   name: "modalAddUser",
-  props: { group: Number },
+  props: {
+    group: Number,
+    coordinatorAccess: Number
+  },
   data() {
     return {
       errors: {
