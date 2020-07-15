@@ -7,6 +7,7 @@
 			<field name="token" type="text" label="X-Auth-Token" size="30" />
             <field name="status" type="text" label="Status of files to push" size="30" />
 			<field name="tag" type="text" label="Tag to apply to files once pushed" size="30" />
+			<field name="profile" type="text" label="Profile of applicants to be pushed" size="30" />
 		</fieldset>
 	</fields>
 </form>

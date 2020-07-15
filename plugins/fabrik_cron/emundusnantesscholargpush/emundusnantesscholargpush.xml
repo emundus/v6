@@ -8,7 +8,7 @@
 	<authorEmail>dev@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
 	<version>6.9.19</version>
-	<description>A plugin used for pushing every cimplete file on Nantes each night to their ScholarG tool.</description>
+	<description>A plugin used for pushing every complete file on Nantes each night to their ScholarG tool.</description>
 	<files>
 		<filename plugin="emundusnantesscholargpush">emundusnantesscholargpush.php</filename>
 		<folder>forms</folder>
