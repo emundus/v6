@@ -1,6 +1,6 @@
-ALTER TABLE jos_emundus_setup_attachment_profiles ADD ordering TINYINT(1) NOT NULL AFTER mandatory;
-ALTER TABLE jos_emundus_setup_attachment_profiles ADD published TINYINT(1) NOT NULL DEFAULT '1' AFTER ordering;
-ALTER TABLE jos_emundus_setup_attachment_profiles ADD campaign_id int(11) NULL AFTER profile_id;
+ALTER TABLE jos_emundus_setup_attachment_profiles ADD IF NOT EXISTS ordering TINYINT(1) NOT NULL AFTER mandatory;
+ALTER TABLE jos_emundus_setup_attachment_profiles ADD IF NOT EXISTS published TINYINT(1) NOT NULL DEFAULT '1' AFTER ordering;
+ALTER TABLE jos_emundus_setup_attachment_profiles ADD IF NOT EXISTS campaign_id int(11) NULL AFTER profile_id;
 
 # Create the new template
 INSERT INTO jos_template_styles(template, client_id, home, title, params)
@@ -17,7 +17,7 @@ INSERT INTO jos_extensions(package_id, name, type, element, folder, client_id, e
 VALUES(0,'emundus','template','emundus','',0,1,1,0,'{""name"":""emundus"",""type"":""template"",""creationDate"":""01\/08\/2020 00:00:00"",""author"":""eMundus"",""copyright"":""Copyright 2020 emundus.fr. All Rights Reserved."",""authorEmail"":"""",""authorUrl"":""https:\/\/www.emundus.fr"",""version"":""1.0"",""description"":"""",""group"":"""",""filename"":""templateDetails""}","{""sidebar_menu_font_size"":""14"",""sidebar_menu_heading_tag"":""h3"",""block_heading_font_size"":""14"",""heading_tag_block"":""h3"",""custom_css"":"""",""enable_read_more_button"":""1"",""header-a"":""block"",""header-onboarding"":""block"",""footer-a"":""block"",""camoduleposition02"":""block"",""camoduleposition03"":""block"",""cbmoduleposition00"":""block"",""cbmoduleposition01"":""block"",""cbmoduleposition02"":""block"",""cbmoduleposition03"":""block"",""leftfooterarea"":""block"",""centerfooterarea"":""block"",""rightfooterarea"":""block"",""debug"":""block"",""enable_click_on_menu"":""h_menu_hover"",""enable_click_on_sidebar_menu"":""v_menu_hover"",""header-ams"":""h_menu"",""footer-ams"":""h_menu"",""camoduleposition02ms"":""h_menu"",""camoduleposition03ms"":""h_menu"",""cbmoduleposition00ms"":""h_menu"",""cbmoduleposition01ms"":""h_menu"",""cbmoduleposition02ms"":""h_menu"",""cbmoduleposition03ms"":""h_menu"",""leftfooterareams"":""h_menu"",""centerfooterareams"":""h_menu"",""rightfooterareams"":""h_menu""}','{}','','',0,'2020-04-07 18:36:12',0,0);
 #
 
-# Insert new module
+# Insert new module to display the button in coordinator menu
 INSERT INTO jos_extensions (package_id, name, type, element, folder, client_id, enabled, access, protected, manifest_cache, params, custom_data, system_data, checked_out, checked_out_time, ordering, state)
 VALUES (0, 'mod_emundus_switch_funnel', 'module', 'mod_emundus_switch_funnel', '', 0, 1, 0, 0, '{"name":"mod_emundus_switch_funnel","type":"module","creationDate":"June 2020","author":"Brice Hubinet","copyright":"Copyright (C) 2020 eMundus. All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"Display an icon to switch of funnel in coordinator menu. Only coordinator have access to this","group":"","filename":"mod_emundus_switch_funnel"}', '{}', '', '', 0, '2020-06-08 15:26:47', 0, 0);
 
@@ -29,7 +29,7 @@ INSERT INTO jos_modules_menu(moduleid, menuid)
 VALUES(@module_switch_id, 0);
 #
 
-# Insert onboarding articles
+# Insert tutorial articles
 INSERT INTO jos_categories (asset_id, parent_id, lft, rgt, level, path, extension, title, alias, note, description, published, checked_out, checked_out_time, access, params, metadesc, metakey, metadata, created_user_id, created_time, modified_user_id, modified_time, hits, language, version)
 VALUES (301, 1, 35, 36, 1, 'saas-onboarding', 'com_content', 'SaaS Onboarding', 'saas-onboarding', '', '', 1, 0, '2020-06-25 15:56:04', 1, '{"category_layout":"","image":"","image_alt":""}', '', '', '{"author":"","robots":""}', 62, '2020-07-02 14:06:41', 0, '2020-07-02 14:06:41', 0, '*', 1);
 SET @articles_category := LAST_INSERT_ID();
@@ -67,7 +67,7 @@ INSERT INTO jos_content (id, asset_id, title, alias, introtext, `fulltext`, stat
 <p><img src="/images/emundus/saas_tutorial/formbuilder2.gif" alt="" /></p>', '', 1, @articles_category, '2020-07-03 09:04:45', 62, '', '2020-07-03 09:25:26', 62, 0, '2020-06-25 14:37:14', '2020-07-03 09:04:45', '2099-06-25 18:11:14', '{}', '{}', '{"article_layout":"","show_title":"","link_titles":"","show_intro":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","alternative_readmore":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 8, 0, '', '', 1, 0, '{}', 0, '*', '', '{"confirm_text":"MOD_EMUNDUS_TUTORIAL_NEXT","view":"form","layout":"formbuilder"}');
 #
 
-# Insert onboarding module
+# Insert tutorial module
 INSERT INTO jos_extensions (package_id, name, type, element, folder, client_id, enabled, access, protected, manifest_cache, params, custom_data, system_data, checked_out, checked_out_time, ordering, state)
 VALUES (0, 'mod_emundus_tutorial', 'module', 'mod_emundus_tutorial', '', 0, 1, 0, 0, '{"name":"mod_emundus_tutorial","type":"module","creationDate":"June 2020","author":"Brice Hubinet","copyright":"Copyright (C) 2020 eMundus. All rights reserved.","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"1.0.0","description":"Display the onboarding on first use","group":"","filename":"mod_emundus_tutorial"}', '{}', '', '', 0, '2020-06-08 15:26:47', 0, 0);
 
@@ -103,14 +103,8 @@ UPDATE jos_menu SET lft = lft + 2 WHERE lft > @myRight;
 #
 
 # Create the campaign item to display in onboarding menu
-SELECT @myRight := rgt FROM jos_menu
-WHERE menutype = 'main' AND alias = 'emundus-onboard';
-
-UPDATE jos_menu SET rgt = rgt + 2 WHERE rgt > @myRight;
-UPDATE jos_menu SET lft = lft + 2 WHERE lft > @myRight;
-
 INSERT INTO jos_menu(menutype, title, alias, note, path, link, type, published, parent_id, level, component_id, checked_out_time, access, img, template_style_id, params, lft, rgt, language)
-VALUES('onboardingmenu', 'Campagne d\'appel', 'campaigns', '', 'configuration/campaigns', 'index.php?option=com_emundus_onboard&view=campaign', 'component', 1, 1, 1,@component_id, '2020-04-07 18:36:12', 7, '',@template_id,'{\"menu-anchor_title\":\"\",\"menu-anchor_css\":\"\",\"menu_image\":\"\",\"menu_image_css\":\"\",\"menu_text\":1,\"menu_show\":1,\"page_title\":\"\",\"show_page_heading\":\"\",\"page_heading\":\"\",\"pageclass_sfx\":\"\",\"menu-meta_description\":\"\",\"menu-meta_keywords\":\"\",\"robots\":\"\",\"secure\":0}',@myRight + 1,@myRight + 2, '*');
+VALUES('onboardingmenu', 'Campagne d\'appel', 'campaigns', '', 'configuration/campaigns', 'index.php?option=com_emundus_onboard&view=campaign', 'component', 1, 1, 1,@component_id, '2020-04-07 18:36:12', 7, '',@template_id,'{\"menu-anchor_title\":\"\",\"menu-anchor_css\":\"\",\"menu_image\":\"\",\"menu_image_css\":\"\",\"menu_text\":1,\"menu_show\":1,\"page_title\":\"\",\"show_page_heading\":\"\",\"page_heading\":\"\",\"pageclass_sfx\":\"\",\"menu-meta_description\":\"\",\"menu-meta_keywords\":\"\",\"robots\":\"\",\"secure\":0}',0,1, '*');
 SET @campaign_menu := LAST_INSERT_ID();
 #
 
@@ -220,12 +214,12 @@ DELETE FROM jos_menu
 WHERE menutype = 'adminmenu';
 #
 
-# Disable old coordinator menu (DANGER IN OLD PLATFORMS)
+# Disable old coordinator menu and give access to sysadmin (DANGER IN OLD PLATFORMS)
 UPDATE jos_menu SET menutype = 'adminmenu'
 WHERE alias IN ('administration','parametres','parametrage-des-profils-utilisateurs','types-documents','setup-tags','periode-depot-dossier','liste-des-programmes-par-annee','configuration-des-courriers','emails-parametrage','groupes','declarer-un-nouveau-programme','ajouter-une-annee-pour-un-programme','programmes','parametrage-des-statuts','creer-campagne','solicitations-des-referents','declencheurs');
 #
 
-# Create a new menu module
+# Create a new menu module to display the onboarding menu
 INSERT INTO jos_modules(asset_id, title, note, content, ordering, position, checked_out, checked_out_time, publish_up, publish_down, published, module, access, showtitle, params, client_id, language)
 VALUES(253, 'Menu-onboarding', '', '', 1, 'header-onboarding', 0, '2020-04-07 18:36:12', '2020-04-07 18:36:12', '2099-01-01 00:00:00', 1, 'mod_menu', 7, 0, '{\"menutype\":\"onboardingmenu\",\"base\":\"\",\"startLevel\":1,\"endLevel\":0,\"showAllChildren\":1,\"tag_id\":\"\",\"class_sfx\":\"\",\"window_open\":\"\",\"layout\":\"_:default\",\"moduleclass_sfx\":\"\",\"cache\":1,\"cache_time\":900,\"cachemode\":\"itemid\",\"module_tag\":\"div\",\"bootstrap_size\":\"0\",\"header_tag\":\"h3\",\"header_class\":\"\",\"style\":\"0\"}', 0, '*');
 SET @module_id := LAST_INSERT_ID();
