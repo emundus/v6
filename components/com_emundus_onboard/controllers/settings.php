@@ -234,7 +234,6 @@ class EmundusonboardControllersettings extends JControllerLegacy {
                 $yaml['accent']['color-1'] = $color;
             } else {
                 $yaml['accent']['color-2'] = $color;
-                $yaml['link']['regular'] = $color;
             }
 
             $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 5);
