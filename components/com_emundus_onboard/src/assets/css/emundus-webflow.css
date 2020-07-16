@@ -3497,6 +3497,72 @@ label.label__placeholder{
   margin: 20px;
 }
 
+/**** DROPZONE ****/
+#customdropzone {
+  letter-spacing: 0.2px;
+  background: #ececec;
+  color: #777;
+  transition: background-color .2s linear;
+  height: 200px;
+  padding: 40px;
+  border: dashed;
+  border-radius: 5px;
+  margin: 10px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.dz-default.dz-message{
+  text-align: center !important;
+}
+
+#customdropzone .dz-preview {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+}
+#customdropzone .dz-preview .dz-image {
+  width: auto;
+  height: 100px;
+}
+#customdropzone .dz-preview .dz-image > div {
+  width: inherit;
+  height: inherit;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+#customdropzone .dz-preview .dz-image > img {
+  width: 100%;
+}
+
+#customdropzone .dz-preview .dz-details {
+  color: black;
+  transition: opacity .2s linear;
+  text-align: center;
+}
+#customdropzone .dz-success-mark, .dz-error-mark {
+  display: none;
+}
+
+.color-picker{
+  width: 40px;
+  border-radius: 50%;
+  height: 40px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.color-input{
+  padding: 0;
+  border: none;
+  display: inline-block;
+  opacity: 0;
+  cursor: pointer;
+}
+
 
 
 

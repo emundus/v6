@@ -12,6 +12,7 @@ import formBuilder from "./views/formBuilder.vue";
 import VueJsModal from "vue-js-modal";
 import { VTooltip, VPopover, VClosePopover } from 'v-tooltip';
 import * as VueSpinnersCss from "vue-spinners-css";
+import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 
 Vue.directive('tooltip', VTooltip)
 Vue.directive('close-popover', VClosePopover)
