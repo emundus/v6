@@ -240,13 +240,28 @@ class EmundusonboardControllersettings extends JControllerLegacy {
 
             file_put_contents('templates/g5_helium/custom/config/default/styles.yaml', $new_yaml);
 
-            if (is_dir('templates/g5_helium/custom/css-compiled')) {
-                rmdir('templates/g5_helium/custom/css-compiled');
-            }
-
             $tab = array('status' => '1', 'msg' => JText::_("SUCCESS"));
         }
         echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getdatasfromtable() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $dbtable = $jinput->getString('db');
+
+            $datas = $m_settings->getDatasFromTable($dbtable);
+            $response = array('status' => '1', 'msg' => 'SUCCESS', 'data' => $datas);
+        }
+        echo json_encode((object)$response);
         exit;
     }
 }

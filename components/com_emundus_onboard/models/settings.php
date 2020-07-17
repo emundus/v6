@@ -417,4 +417,25 @@ class EmundusonboardModelsettings extends JModelList {
         }
         return true;
     }
+
+    function getDatasFromTable($table){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        if(strpos($table, 'data_') !== false){
+
+            $query->select('*')
+                ->from($db->quoteName($table));
+            $db->setQuery($query);
+
+            try {
+                return $db->loadAssocList();
+            } catch (Exception $e) {
+                JLog::add('Error : '.$e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 }

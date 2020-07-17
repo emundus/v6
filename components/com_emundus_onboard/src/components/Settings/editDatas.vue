@@ -1,0 +1,139 @@
+<template>
+    <div class="container-evaluation">
+        <notifications
+                group="foo-velocity"
+                animation-type="velocity"
+                :speed="500"
+                position="bottom left"
+                :classes="'vue-notification-custom'"
+        />
+        <ModalAddDatas
+        />
+        <div class="d-flex">
+            <a class="bouton-sauvergarder-et-continuer-3 mr-1" @click="$modal.show('modalAddDatas')">
+                {{CreateDatas}}
+            </a>
+            <a class="bouton-sauvergarder-et-continuer-3">
+                {{ImportDatas}}
+            </a>
+        </div>
+        <div class="mt-1">
+            <div v-for="(database,index) in databases" class="db-table">
+                <h3 :class="[index == indexOpen ? 'down-arrow' : 'right-arrow']" @click="getDatas(database.database_name,index)">{{database.label}}</h3>
+                <div v-if="index == indexOpen">
+                    <table class="db-description">
+                        <tr class="db-columns">
+                            <th v-for="(data,i) in datas.columns" :id="'column_' + data">{{data}}</th>
+                        </tr>
+                        <tr v-for="(data, i) in datas.datas" class="db-values">
+                            <th v-for="value in data">{{value}}</th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="loading-form" v-if="loading">
+            <Ring-Loader :color="'#de6339'" />
+        </div>
+    </div>
+</template>
+
+<script>
+    import axios from "axios";
+    import ModalAddDatas from "../../views/advancedModals/ModalAddDatas";
+
+    const qs = require("qs");
+
+    export default {
+        name: "editDatas",
+
+        components: {
+            ModalAddDatas
+        },
+
+        props: {
+            actualLanguage: String
+        },
+
+        data() {
+            return {
+                databases: [],
+                datas: {
+                    columns: [],
+                    datas: []
+                },
+                indexOpen: -1,
+                loading: false,
+                CreateDatas: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DATAS"),
+                ImportDatas: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMPORT_DATAS"),
+            };
+        },
+
+        methods: {
+            getDatabases(){
+                axios({
+                    method: "get",
+                    url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getdatabasesjoin",
+                }).then(response => {
+                    this.databases = response.data.data;
+                });
+            },
+            getDatas(db_name,index){
+                if(index == this.indexOpen){
+                    this.indexOpen = -1;
+                } else {
+                    this.loading = true;
+                    this.indexOpen = index;
+                    this.datas = {
+                        columns: [],
+                        datas: []
+                    };
+                    axios({
+                        method: "get",
+                        url: "index.php?option=com_emundus_onboard&controller=settings&task=getdatasfromtable",
+                        params: {
+                            db: db_name,
+                        },
+                        paramsSerializer: params => {
+                            return qs.stringify(params);
+                        }
+                    }).then(response => {
+                        this.loading = false;
+                        this.datas.datas = response.data.data;
+                        this.datas.columns = Object.keys(this.datas.datas[0]);
+                    });
+                }
+            },
+            /**
+             * ** Methods for notify
+             */
+            tip(){
+                this.show(
+                    "foo-velocity",
+                    Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+                    Joomla.JText._("COM_EMUNDUS_ONBOARD_COLOR_SUCCESS"),
+                );
+            },
+            show(group, text = "", title = "Information") {
+                this.$notify({
+                    group,
+                    title: `${title}`,
+                    text: text,
+                    duration: 3000
+                });
+            },
+            clean(group) {
+                this.$notify({ group, clean: true });
+            },
+        },
+
+        created() {
+            this.getDatabases();
+        },
+
+        watch: {
+        }
+    };
+</script>
+<style>
+</style>

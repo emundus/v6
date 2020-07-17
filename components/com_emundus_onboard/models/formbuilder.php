@@ -126,6 +126,71 @@ class EmundusonboardModelformbuilder extends JModelList {
         return $params;
     }
 
+    function addDatabaseJoinParameters($params){
+        unset($params['allow_frontend_addtodropdown']);
+        unset($params['dd-allowadd-onlylabel']);
+        unset($params['dd-savenewadditions']);
+        unset($params['dropdown_multisize']);
+        unset($params['dropdown_populate']);
+        unset($params['multiple']);
+        unset($params['sub_options']);
+
+        $params['join_conn_id'] = 1;
+        $params['join_val_column_concat'] = '';
+        $params['database_join_where_sql'] = '';
+        $params['database_join_where_access'] = 1;
+        $params['database_join_where_when'] = 3;
+        $params['databasejoin_where_ajax'] = 0;
+        $params['database_join_filter_where_sql'] = '';
+        $params['database_join_show_please_select'] = 1;
+        $params['database_join_noselectionvalue'] = '';
+        $params['database_join_noselectionlabel'] = '';
+        $params['databasejoin_popupform'] = 41;
+        $params['fabrikdatabasejoin_frontend_add'] = 0;
+        $params['join_popupwidth'] = '';
+        $params['databasejoin_readonly_link'] = 0;
+        $params['fabrikdatabasejoin_frontend_select'] = 0;
+        $params['dbjoin_options_per_row'] = 4;
+        $params['dbjoin_multiselect_max'] = 0;
+        $params['dbjoin_multilist_size'] = 6;
+        $params['dbjoin_autocomplete_size'] = 20;
+        $params['dbjoin_autocomplete_rows'] = 10;
+        $params['dabase_join_label_eval'] = '';
+        $params['join_desc_column'] = '';
+        $params['dbjoin_autocomplete_how'] = 'contains';
+
+
+        return $params;
+    }
+
+    function deleteDatabaseJoinParams($params){
+        unset($params['join_conn_id']);
+        unset($params['join_val_column_concat']);
+        unset($params['database_join_where_sql']);
+        unset($params['database_join_where_access']);
+        unset($params['database_join_where_when']);
+        unset($params['databasejoin_where_ajax']);
+        unset($params['database_join_filter_where_sql']);
+        unset($params['database_join_show_please_select']);
+        unset($params['database_join_noselectionvalue']);
+        unset($params['database_join_noselectionlabel']);
+        unset($params['databasejoin_popupform']);
+        unset($params['fabrikdatabasejoin_frontend_add']);
+        unset($params['join_popupwidth']);
+        unset($params['databasejoin_readonly_link']);
+        unset($params['fabrikdatabasejoin_frontend_select']);
+        unset($params['dbjoin_options_per_row']);
+        unset($params['dbjoin_multiselect_max']);
+        unset($params['dbjoin_multilist_size']);
+        unset($params['dbjoin_autocomplete_size']);
+        unset($params['dbjoin_autocomplete_rows']);
+        unset($params['dabase_join_label_eval']);
+        unset($params['join_desc_column']);
+        unset($params['dbjoin_autocomplete_how']);
+
+        return $params;
+    }
+
     /**
      * Get translation of an array
      *
@@ -1292,40 +1357,54 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         // Filter by plugin
         if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown') {
-            $old_params = json_decode($db_element->params,true);
-            $sub_values = [];
-            $sub_labels = [];
+            $old_params = json_decode($db_element->params, true);
 
-            foreach ($element['params']['sub_options']['sub_values'] as $index=>$sub_value) {
+            if(isset($element['params']['join_db_name'])){
                 if ($old_params['sub_options']) {
-                    $new_label = array(
-                        'fr' => $sub_value,
-                        'en' => $sub_value,
-                    );
-                    if ($old_params['sub_options']['sub_labels'][$index]) {
-                        $this->formsTrad($old_params['sub_options']['sub_labels'][$index],$new_label);
-                        $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
+                    foreach ($old_params['sub_options']['sub_values'] as $index => $sub_value) {
+                        $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
+                    }
+                }
+
+                $element['params'] = $this->addDatabaseJoinParameters($element['params']);
+
+                $element['plugin'] = 'databasejoin';
+            } else {
+                $element['params'] = $this->deleteDatabaseJoinParams($element['params']);
+                $sub_values = [];
+                $sub_labels = [];
+
+                foreach ($element['params']['sub_options']['sub_values'] as $index => $sub_value) {
+                    if ($old_params['sub_options']) {
+                        $new_label = array(
+                            'fr' => $sub_value,
+                            'en' => $sub_value,
+                        );
+                        if ($old_params['sub_options']['sub_labels'][$index]) {
+                            $this->formsTrad($old_params['sub_options']['sub_labels'][$index], $new_label);
+                            $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
+                        } else {
+                            $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
+                            $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
+                            $this->addTransationFr($contentToAdd);
+                            $this->addTransationEn($contentToAdd);
+                            $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
+                        }
+                        $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
                     } else {
                         $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
-                        $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
                         $this->addTransationFr($contentToAdd);
                         $this->addTransationEn($contentToAdd);
                         $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
+                        $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
                     }
-                    $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
-                } else {
-                    $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
-                    $this->addTransationFr($contentToAdd);
-                    $this->addTransationEn($contentToAdd);
-                    $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
-                    $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
                 }
-            }
 
-            $element['params']['sub_options'] = array(
-                'sub_values' => $sub_values,
-                'sub_labels' =>  $sub_labels
-            );
+                $element['params']['sub_options'] = array(
+                    'sub_values' => $sub_values,
+                    'sub_labels' => $sub_labels
+                );
+            }
 
             $query = "ALTER TABLE " . $db_element->dbtable .
                 " MODIFY COLUMN " . $db_element->name . " VARCHAR(255) NOT NULL";
@@ -2130,6 +2209,20 @@ class EmundusonboardModelformbuilder extends JModelList {
             ->where($db->quoteName('id') . ' = ' . $db->quote($element));
         $db->setQuery($query);
         return $db->execute();
+    }
+
+    function getDatabasesJoin() {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('*')
+            ->from($db->quoteName('#__emundus_datas_library'));
+        $db->setQuery($query);
+        try {
+            return $db->loadObjectList();
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+        }
     }
 
 }

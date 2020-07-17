@@ -136,6 +136,7 @@
   import _ from 'lodash';
   import ModalElement from "../components/formClean/ModalElement";
   import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
+  import List from "./list";
 
   const qs = require("qs");
 
@@ -147,6 +148,7 @@
       cid: Number
     },
     components: {
+      List,
       ModalAffectCampaign,
       ModalElement,
       Builder,

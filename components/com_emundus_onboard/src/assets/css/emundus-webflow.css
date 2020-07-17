@@ -3225,7 +3225,7 @@ label.label__placeholder{
   height: 30px;
   width: 30px;
   border-radius: 50%;
-  background: #de6339;
+  background: #1b1f3c;
   color: white;
 }
 .vue-notification-custom{
@@ -3561,6 +3561,48 @@ label.label__placeholder{
   display: inline-block;
   opacity: 0;
   cursor: pointer;
+}
+
+.add-databasejoin{
+  width: 30px;
+  height: 30px;
+  background: #1b1f3c;
+  border-radius: 50%;
+  color: white;
+  margin-left: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.databasejoin-active{
+  background: #de6339;
+}
+
+.db-table{
+  padding: 20px;
+  overflow: scroll;
+}
+.db-table h3{
+  cursor: pointer;
+}
+
+.db-description{
+  border: solid 1px #ececec;
+}
+.db-description th{
+  padding: 10px;
+  border: solid 1px #fff;
+}
+.db-columns{
+  background: #1b1f3c;
+  color: white;
+  border: solid 2px #1b1f3c;
+}
+.db-values {
+  border-bottom: solid 2px #cecece;
+  border-right: solid 2px #cecece;
+  border-left: solid 2px #cecece;
 }
 
 

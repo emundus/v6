@@ -26,7 +26,7 @@
         </div>
         <div class="form-group mb-2">
           <label>{{fieldType}} :</label>
-          <select id="select_type" class="dropdown-toggle" v-model="element.plugin" @change="checkPlugin" :disabled="(files != 0 && element.plugin == 'birthday') || (files != 0 && element.params.password == 6)">
+          <select id="select_type" class="dropdown-toggle" v-model="plugin" @change="checkPlugin" :disabled="(files != 0 && element.plugin == 'birthday') || (files != 0 && element.params.password == 6)">
             <option v-for="(plugin, index) in plugins" :key="index" :value="plugin.value">
               {{plugin.name}}
             </option>
@@ -35,9 +35,9 @@
         <div class="col-md-12 separator-top top-responsive">
           <fieldF v-if="plugin == 'field'" :files="files" :element="element"></fieldF>
           <birthdayF v-if="plugin =='birthday'" :element="element"></birthdayF>
-          <checkboxF v-if="plugin =='checkbox'" :element="element"  @subOptions="subOptions"></checkboxF>
-          <dropdownF v-if="plugin =='dropdown'" :element="element" @subOptions="subOptions"></dropdownF>
-          <radiobtnF v-if="plugin == 'radiobutton'" :element="element"  @subOptions="subOptions"></radiobtnF>
+          <checkboxF v-if="plugin =='checkbox'" :element="element" :databases="databases"  @subOptions="subOptions"></checkboxF>
+          <dropdownF v-if="plugin =='dropdown'" :element="element" :databases="databases" @subOptions="subOptions"></dropdownF>
+          <radiobtnF v-if="plugin == 'radiobutton'" :element="element" @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
         </div>
       </div>
@@ -116,6 +116,7 @@
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
           },
         },
+        databases: [],
         // Translations
         Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
         Require: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_REQUIRED"),
@@ -182,7 +183,19 @@
           }
         }).then(response => {
           this.element = response.data;
-          this.plugin = this.element.plugin;
+          if(this.element.plugin == 'databasejoin'){
+            this.plugin = this.element.params.database_join_display_type;
+          } else {
+            this.plugin = this.element.plugin;
+          }
+        });
+      },
+      getDatabases(){
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getdatabasesjoin",
+        }).then(response => {
+          this.databases = response.data.data;
         });
       },
       beforeClose(event) {
@@ -201,6 +214,7 @@
         this.initialisation();
       },
       initialisation() {
+        this.getElement();
         this.axiostrad(this.element.label_tag)
                 .then(response => {
                   this.label.fr = response.data.fr;
@@ -209,10 +223,14 @@
                 .catch(function(response) {
                   console.log(response);
                 });
-        this.getElement();
+        this.getDatabases();
       },
       checkPlugin(){
-        this.plugin = this.element.plugin;
+        if(this.element.plugin === 'databasejoin'){
+          this.plugin = this.element.params.database_join_display_type;
+        } else {
+          this.plugin = this.element.plugin;
+        }
       }
     },
     computed: {
@@ -224,6 +242,11 @@
       element: function() {
         this.tempEl = JSON.parse(JSON.stringify(this.element));
       },
+      plugin: function(value) {
+        if (this.element.plugin !== 'databasejoin') {
+          this.element.plugin = value;
+        }
+      }
     },
     created: function() {
       if(this.files != 0 && this.element.plugin != 'birthday'){

@@ -635,5 +635,21 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function getdatabasesjoin() {
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $databases = $m_form->getDatabasesJoin();
+
+            $tab = array('status' => 1, 'msg' => 'worked', 'data' => $databases);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }
 

@@ -29,10 +29,10 @@
         </div>
       </div>
       <div class="col-md-12 mb-1">
-        <a class="bouton-sauvergarder-et-continuer-3"
+<!--        <a class="bouton-sauvergarder-et-continuer-3"
            @click.prevent="duplicateProfile()">
           {{ Duplicate }}
-        </a>
+        </a>-->
         <a class="bouton-sauvergarder-et-continuer-3 mr-1"
            @click.prevent="formbuilder()">
           {{ Update }}
@@ -69,7 +69,7 @@ export default {
     beforeClose(event) {
     },
     beforeOpen(event) {},
-    duplicateProfile() {
+    /*duplicateProfile() {
       axios({
         method: "post",
         url:
@@ -100,7 +100,7 @@ export default {
           );
         });
       });
-    },
+    },*/
 
     formbuilder(){
       window.location.replace(

@@ -83,9 +83,6 @@
                         color: color
                     })
                 }).then((rep) => {
-                    if(rep.status == 1){
-                        this.tip();
-                    }
                 });
             },
             /**

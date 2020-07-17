@@ -8,12 +8,18 @@
       <div class="col-md-8 flex">
         <label class="require col-md-3">{{suboptions}} :</label>
         <button @click.prevent="add" class="add-option">+</button>
+        <button class="add-databasejoin" :class="{'databasejoin-active':databasejoin}" @click="databasejoin = !databasejoin">
+          <i class="fas fa-table"></i>
+        </button>
       </div>
       <div class="col-md-10">
-        <div v-for="(sub_values, i) in arraySubValues" :key="i" class="dpflex">
+        <div v-for="(sub_values, i) in arraySubValues" :key="i" class="dpflex" v-if="!databasejoin">
           <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input" :id="'suboption_' + i" @keyup.enter="add" />
           <button @click.prevent="leave(i)" class="remove-option">-</button>
         </div>
+        <select v-if="databasejoin" class="dropdown-toggle" v-model="databasejoin_data" style="margin: 20px 0 30px 0;">
+          <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
+        </select>
       </div>
     </div>
   </div>
@@ -26,10 +32,12 @@ const qs = require("qs");
 
 export default {
   name: "checkboxF",
-  props: { element: Object },
+  props: { element: Object, databases: Array },
   data() {
     return {
       arraySubValues: [],
+      databasejoin: false,
+      databasejoin_data: 0,
       helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
       suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
     };
@@ -49,28 +57,38 @@ export default {
       this.needtoemit();
     },
     initialised: function() {
-      if(typeof this.element.params.sub_options !== 'undefined') {
-        Axios({
-          method: "post",
-          url:
-                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXTA",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            toJTEXT: this.element.params.sub_options.sub_labels
-          })
-        }).then(r => {
-          this.arraySubValues = r.data;
-        }).catch(e => {
-          console.log(e);
-        });
+      if(this.element.plugin === 'databasejoin'){
+        this.databasejoin = true;
+        this.databases.forEach((db,index) => {
+          if(db.database_name == this.element.params.join_db_name){
+            this.databasejoin_data = index;
+          }
+        })
+        this.element.plugin = this.element.params.database_join_display_type;
       } else {
-        this.element.params.sub_options = {
-          'sub_values': [],
-          'sub_labels': [],
+        if (typeof this.element.params.sub_options !== 'undefined') {
+          Axios({
+            method: "post",
+            url:
+                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXTA",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              toJTEXT: this.element.params.sub_options.sub_labels
+            })
+          }).then(r => {
+            this.arraySubValues = r.data;
+          }).catch(e => {
+            console.log(e);
+          });
+        } else {
+          this.element.params.sub_options = {
+            'sub_values': [],
+            'sub_labels': [],
+          }
+          this.arraySubValues = this.element.params.sub_options.sub_labels;
         }
-        this.arraySubValues = this.element.params.sub_options.sub_labels;
       }
     },
     needtoemit: _.debounce(function() {
@@ -79,6 +97,34 @@ export default {
   },
   created: function() {
     this.initialised();
+  },
+  watch: {
+    databasejoin: function(value){
+      if(value) {
+        this.element.params.join_db_name = this.databases[this.databasejoin_data].database_name;
+        this.element.params.database_join_display_type = 'checkbox';
+        this.element.params.join_key_column = this.databases[this.databasejoin_data].join_column_id;
+        this.element.params.join_val_column = this.databases[this.databasejoin_data].join_column_val;
+      } else {
+        delete this.element.params.join_db_name;
+        delete this.element.params.database_join_display_type;
+        delete this.element.params.join_key_column;
+        delete this.element.params.join_val_column;
+        if(typeof this.element.params.sub_options === 'undefined') {
+          this.element.params.sub_options = {
+            'sub_values': [],
+            'sub_labels': [],
+          }
+          this.arraySubValues = this.element.params.sub_options.sub_labels;
+        }
+      }
+    },
+    databasejoin_data: function(value){
+      this.element.params.join_db_name = this.databases[value].database_name;
+      this.element.params.join_key_column = this.databases[value].join_column_id;
+      this.element.params.join_val_column = this.databases[value].join_column_val;
+      this.element.params.database_join_display_type = 'checkbox';
+    }
   }
 };
 </script>

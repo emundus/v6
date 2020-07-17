@@ -40,6 +40,11 @@
                   v-if="menuHighlight == 3"
                   ref="tags"
           ></editTags>
+
+          <editDatas
+                  v-if="menuHighlight == 4 && coordinatorAccess != 0"
+                  ref="datas"
+          ></editDatas>
         </transition>
       </div>
     </div>
@@ -65,6 +70,7 @@ import editStatus from "../components/Settings/editStatus";
 import editTags from "../components/Settings/editTags";
 import editHomepage from "../components/Settings/editHomepage";
 import editStyle from "../components/Settings/editStyle";
+import editDatas from "../components/Settings/editDatas";
 
 const qs = require("qs");
 
@@ -75,7 +81,8 @@ export default {
     editStatus,
     editTags,
     editHomepage,
-    editStyle
+    editStyle,
+    editDatas,
   },
 
   props: {
@@ -107,13 +114,15 @@ export default {
         "Page d'accueil",
         "Personnalisation",
         "Statuts",
-        "Etiquettes"
+        "Etiquettes",
+        "Référentiels de données",
       ],
       [
         "Home page",
         "Styling",
         "Status",
-        "Tags"
+        "Tags",
+        "Data repository",
       ]
     ],
 
