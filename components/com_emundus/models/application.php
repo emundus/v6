@@ -2831,14 +2831,17 @@ class EmundusModelApplication extends JModelList {
     }
 
 
-    /**
-     * Move an application file from one programme to another
-     * @param $fnum_from String the fnum of the source
-     * @param $fnum_to String the fnum of the moved application
-     * @param $campaign String the programme id to move the file to
-     * @return bool
-     */
-    public function moveApplication($fnum_from, $fnum_to, $campaign) {
+	/**
+	 * Move an application file from one programme to another
+	 *
+	 * @param      $fnum_from String the fnum of the source
+	 * @param      $fnum_to   String the fnum of the moved application
+	 * @param      $campaign  String the programme id to move the file to
+	 * @param null $status
+	 *
+	 * @return bool
+	 */
+    public function moveApplication($fnum_from, $fnum_to, $campaign, $status = null) {
         $db = JFactory::getDbo();
 
         try {
@@ -2847,9 +2850,12 @@ class EmundusModelApplication extends JModelList {
             $db->setQuery($query);
             $cc_line = $db->loadAssoc();
 
-            if (count($cc_line) > 0) {
+            if (!empty($cc_line)) {
 
                 $query = 'UPDATE #__emundus_campaign_candidature SET `fnum` = '. $db->Quote($fnum_to) .', `campaign_id` = '. $db->Quote($campaign) .', `copied` = 2 WHERE `id` = ' . $db->Quote($cc_line['id']);
+                if (!empty($status)) {
+                	$query .= ' `status` = '.$db->Quote($status);
+                }
                 $db->setQuery($query);
                 $db->execute();
 
