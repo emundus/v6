@@ -84,7 +84,6 @@ export default {
       }
     },
     showmax: function(value) {
-      console.log(value)
       if(value){
         this.element.params['textarea-showmax'] = '1'
       } else {

@@ -65,7 +65,7 @@
                       chosen-class="plugin-chosen"
                       ghost-class="plugin-ghost"
                       style="padding-bottom: 2em">
-                  <div class="d-flex plugin-link col-md-offset-3 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value">
+                  <div class="d-flex plugin-link col-md-offset-3 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)">
                     <em :class="plugin.icon"></em>
                     <span class="ml-10px">{{plugin.name}}</span>
                   </div>
@@ -284,6 +284,13 @@
           this.createElement(gid,plugin,evt.newIndex)
         }
       },
+      addingNewElementByDblClick: _.debounce(function(plugin) {
+        let gid = Object.keys(this.formObjectArray[this.indexHighlight].object.Groups)[Object.keys(this.formObjectArray[this.indexHighlight].object.Groups).length-1].split('_')[1];
+        let index = this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.length;
+        if(typeof gid != 'undefined'){
+          this.createElement(gid,plugin,index)
+        }
+      }, 250, { 'maxWait': 1000 }),
       createGroup() {
         this.loading = true;
         axios({
