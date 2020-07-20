@@ -766,8 +766,8 @@ class EmundusControllerFiles extends JControllerLegacy
 		}
 
 		$trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
-		
-		echo json_encode((object)(array('status' => $res, 'msg' => !empty($trigger_emails))));
+
+		echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => JText::_('MAIL_CHANGE_STATUT_INFO'))));
         exit;
 	}
 
