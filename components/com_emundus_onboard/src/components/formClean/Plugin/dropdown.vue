@@ -105,12 +105,19 @@ export default {
         this.element.params.join_db_name = this.databases[this.databasejoin_data].database_name;
         this.element.params.database_join_display_type = 'dropdown';
         this.element.params.join_key_column = this.databases[this.databasejoin_data].join_column_id;
-        this.element.params.join_val_column = this.databases[this.databasejoin_data].join_column_val;
+        if(this.databases[this.databasejoin_data].translation == '1') {
+          this.element.params.join_val_column = this.databases[this.databasejoin_data].join_column_val + '_fr';
+          this.element.params.join_val_column_concat = '{thistable}.' + this.databases[this.databasejoin_data].join_column_val + '_{shortlang}';
+        } else {
+          this.element.params.join_val_column = this.databases[this.databasejoin_data].join_column_val;
+          this.element.params.join_val_column_concat = '';
+        }
       } else {
         delete this.element.params.join_db_name;
         delete this.element.params.database_join_display_type;
         delete this.element.params.join_key_column;
         delete this.element.params.join_val_column;
+        delete this.element.params.join_val_column_concat;
         if(typeof this.element.params.sub_options === 'undefined') {
           this.element.params.sub_options = {
             'sub_values': [],
@@ -123,8 +130,14 @@ export default {
     databasejoin_data: function(value){
       this.element.params.join_db_name = this.databases[value].database_name;
       this.element.params.join_key_column = this.databases[value].join_column_id;
-      this.element.params.join_val_column = this.databases[value].join_column_val;
       this.element.params.database_join_display_type = 'dropdown';
+      if(this.databases[value].translation == '1') {
+        this.element.params.join_val_column = this.databases[value].join_column_val + '_fr';
+        this.element.params.join_val_column_concat = '{thistable}.' + this.databases[value].join_column_val + '_{shortlang}';
+      } else {
+        this.element.params.join_val_column = this.databases[value].join_column_val;
+        this.element.params.join_val_column_concat = '';
+      }
     }
   }
 };

@@ -1,6 +1,10 @@
 <template>
   <div id="textareaF">
     <div class="row rowmodal">
+      <div class="form-group dpflex">
+        <input type="checkbox" class="form__input field-general w-input" value="1" v-model="wysiwyg" />
+        <label class="ml-10px">{{UseAdvancedEditor}}</label>
+      </div>
       <div class="form-group">
         <label>{{heightext}} :</label>
         <input type="number" class="form__input field-general w-input" v-model="element.params.height" max="15" min="3"/>
@@ -28,7 +32,11 @@
       </div>
       <div class="form-group">
         <label>{{maxlength}} :</label>
-        <input type="number" max="255" min="1" class="form__input field-general w-input" v-model="element.params.maxlength" />
+        <input type="number" max="255" min="1" class="form__input field-general w-input" v-model="element.params['textarea-maxlength']" />
+      </div>
+      <div class="form-group dpflex">
+        <input type="checkbox" class="form__input field-general w-input" value="1" v-model="showmax" />
+        <label class="ml-10px">{{DisplayMaxLength}}</label>
       </div>
     </div>
   </div>
@@ -43,22 +51,46 @@ export default {
       msg: '',
       path: window.location.protocol + '//' + window.location.host + '/media/com_emundus_onboard/',
       arraySubValues: [],
+      wysiwyg: false,
+      showmax: false,
       widthtext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_WIDTH"),
       heightext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HEIGHT"),
       helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
       placeholdertext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER"),
       sizetext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_SIZE"),
       maxlength: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_MAXLENGTH"),
+      DisplayMaxLength: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_MAXLENGTH"),
+      UseAdvancedEditor: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_USE_ADVANCED_EDITOR"),
       placeholderHelp: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER_HELP"),
     };
   },
   methods: {},
   created(){
-    if(window.location.host == 'localhost:8888'){
-      this.path = window.location.protocol + '//' + window.location.host + '/v6/media/com_emundus_onboard/'
-    }
     this.msg = '<p style="color: black">' + this.placeholderHelp + '</p>' +
             '<img src="' + this.path + 'placeholder.gif" />'
+    if(this.element.params.use_wysiwyg == '1'){
+      this.wysiwyg = true;
+    }
+    if(this.element.params['textarea-showmax'] == '1'){
+      this.showmax = true;
+    }
+  },
+  watch: {
+    wysiwyg: function(value) {
+      if(value){
+        this.element.params.use_wysiwyg = '1'
+      } else {
+        this.element.params.use_wysiwyg = '0'
+      }
+    },
+    showmax: function(value) {
+      console.log(value)
+      if(value){
+        this.element.params['textarea-showmax'] = '1'
+      } else {
+        this.element.params['textarea-showmax'] = '0'
+      }
+    },
   }
 };
 </script>

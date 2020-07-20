@@ -136,7 +136,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         unset($params['sub_options']);
 
         $params['join_conn_id'] = 1;
-        $params['join_val_column_concat'] = '';
         $params['database_join_where_sql'] = '';
         $params['database_join_where_access'] = 1;
         $params['database_join_where_when'] = 3;
@@ -1424,17 +1423,29 @@ class EmundusonboardModelformbuilder extends JModelList {
                 " MODIFY COLUMN " . $db_element->name . " " . $dbtype . " NOT NULL";
             $db->setQuery($query);
             $db->execute();
-        } else {
+        } elseif ($element['plugin'] === 'field'){
             if ($element['params']['password'] != 6) {
                 $dbtype = 'VARCHAR(' . $element['params']['maxlength'] . ')';
             } else {
                 $dbtype = 'INT(' . $element['params']['maxlength'] . ')';
             }
 
-            if ($element['plugin'] === 'textarea') {
-                $element['params']['width'] = 60;
-                $dbtype = 'TEXT';
+            if ($element['params']['sub_options']) {
+                foreach ($element['params']['sub_options']['sub_labels'] as $index=>$sub_label) {
+                    $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
+                }
             }
+
+            unset($element['params']['sub_options']);
+            unset($element['params']['birthday_yearstart']);
+
+            $query = "ALTER TABLE " . $db_element->dbtable .
+                " MODIFY COLUMN " . $db_element->name . " " . $dbtype . " NOT NULL";
+            $db->setQuery($query);
+            $db->execute();
+        } elseif ($element['plugin'] === 'textarea') {
+            $element['params']['width'] = 60;
+            $dbtype = 'TEXT';
 
             if ($element['params']['sub_options']) {
                 foreach ($element['params']['sub_options']['sub_labels'] as $index=>$sub_label) {

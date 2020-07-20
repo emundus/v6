@@ -287,3 +287,18 @@ select.fabrikinput.form-control{
 .draggable-span span{
   display: block;
 }
+
+.fabrik_characters_left{
+  display: flex;
+  margin-top: 5px;
+}
+
+.fabrik_characters_left .badge{
+  width: max-content;
+  background: #de6339;
+  margin-right: 10px;
+}
+
+.toggle-editor.btn-toolbar.pull-right.clearfix{
+  float: left !important;
+}

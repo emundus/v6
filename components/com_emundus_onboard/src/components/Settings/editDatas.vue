@@ -8,18 +8,22 @@
                 :classes="'vue-notification-custom'"
         />
         <ModalAddDatas
+                @updateDatabases="getDatabases"
         />
         <div class="d-flex">
             <a class="bouton-sauvergarder-et-continuer-3 mr-1" @click="$modal.show('modalAddDatas')">
                 {{CreateDatas}}
             </a>
-            <a class="bouton-sauvergarder-et-continuer-3">
+<!--            <a class="bouton-sauvergarder-et-continuer-3">
                 {{ImportDatas}}
-            </a>
+            </a>-->
         </div>
         <div class="mt-1">
             <div v-for="(database,index) in databases" class="db-table">
-                <h3 :class="[index == indexOpen ? 'down-arrow' : 'right-arrow']" @click="getDatas(database.database_name,index)">{{database.label}}</h3>
+                <div :class="[index == indexOpen ? 'down-arrow' : 'right-arrow']" class="db-item" @click="getDatas(database.database_name,index)">
+                    <h3>{{database.label}}</h3>
+                    <p>{{database.description}}</p>
+                </div>
                 <div v-if="index == indexOpen">
                     <table class="db-description">
                         <tr class="db-columns">
@@ -136,4 +140,8 @@
     };
 </script>
 <style>
+    .db-item{
+        background-size: 20px;
+        cursor: pointer;
+    }
 </style>

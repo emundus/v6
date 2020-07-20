@@ -264,5 +264,23 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
+    public function savedatas() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $form = $jinput->getRaw('form');
+
+            $state = $m_settings->saveDatas($form);
+            $response = array('status' => $state, 'msg' => 'SUCCESS');
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
 }
 

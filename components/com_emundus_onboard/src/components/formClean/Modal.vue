@@ -228,8 +228,6 @@
       checkPlugin(){
         if(this.element.plugin === 'databasejoin'){
           this.plugin = this.element.params.database_join_display_type;
-        } else {
-          this.plugin = this.element.plugin;
         }
       }
     },
