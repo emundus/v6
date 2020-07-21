@@ -519,4 +519,44 @@ class EmundusonboardModelsettings extends JModelList {
             return false;
         }
     }
+
+    function unlockUser($user_id){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update('#__users')
+            ->set($db->quoteName('block') . ' = 0')
+            ->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
+
+        try {
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Error : '.$e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function lockUser($user_id){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $user = JFactory::getUser();
+
+        if($user_id != 62 && $user_id != $user->id) {
+            $query->update('#__users')
+                ->set($db->quoteName('block') . ' = 1')
+                ->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
+
+            try {
+                $db->setQuery($query);
+                return $db->execute();
+            } catch (Exception $e) {
+                JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 }

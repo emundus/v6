@@ -41,8 +41,13 @@
                   ref="tags"
           ></editTags>
 
-          <editDatas
+          <editUsers
                   v-if="menuHighlight == 4 && coordinatorAccess != 0"
+                  ref="users"
+          ></editUsers>
+
+          <editDatas
+                  v-if="menuHighlight == 5 && coordinatorAccess != 0"
                   ref="datas"
           ></editDatas>
         </transition>
@@ -71,6 +76,7 @@ import editTags from "../components/Settings/editTags";
 import editHomepage from "../components/Settings/editHomepage";
 import editStyle from "../components/Settings/editStyle";
 import editDatas from "../components/Settings/editDatas";
+import editUsers from "../components/Settings/editUsers";
 
 const qs = require("qs");
 
@@ -83,6 +89,7 @@ export default {
     editHomepage,
     editStyle,
     editDatas,
+    editUsers
   },
 
   props: {
@@ -100,12 +107,14 @@ export default {
         Joomla.JText._("COM_EMUNDUS_ONBOARD_STYLINGDESCRIPTION"),
         Joomla.JText._("COM_EMUNDUS_ONBOARD_STATUSDESCRIPTION"),
         Joomla.JText._("COM_EMUNDUS_ONBOARD_TAGSDESCRIPTION"),
+        Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTIONSETTINGS"),
       ],
       [
         Joomla.JText._("COM_EMUNDUS_ONBOARD_HOMEDESCRIPTION"),
         Joomla.JText._("COM_EMUNDUS_ONBOARD_STYLINGDESCRIPTION"),
         Joomla.JText._("COM_EMUNDUS_ONBOARD_STATUSDESCRIPTION"),
         Joomla.JText._("COM_EMUNDUS_ONBOARD_TAGSDESCRIPTION"),
+        Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTIONSETTINGS"),
       ]
     ],
 
@@ -115,6 +124,7 @@ export default {
         "Personnalisation",
         "Statuts",
         "Etiquettes",
+        "Utilisateurs",
         "Référentiels de données",
       ],
       [
@@ -122,6 +132,7 @@ export default {
         "Styling",
         "Status",
         "Tags",
+        "Users",
         "Data repository",
       ]
     ],

@@ -3276,6 +3276,11 @@ label.label__placeholder{
   width: 50% !important;
 }
 
+.MenuFormItem.MenuFormItem_current:hover {
+  text-decoration: none;
+  color: #de6339;
+}
+
 .menus-row{
   display: flex;
   flex-direction: row;
@@ -3603,6 +3608,127 @@ label.label__placeholder{
   border-bottom: solid 2px #cecece;
   border-right: solid 2px #cecece;
   border-left: solid 2px #cecece;
+}
+
+.table-component {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.table-component__filter {
+  align-self: flex-start;
+}
+
+.table-component__filter__field {
+  padding: 0 1.25em 0 .75em;
+  height: 2.5em;
+  border: solid 2px #e0e0e0;
+  border-radius: 2em;
+  font-size: inherit;
+}
+
+.table-component__filter__clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2em;
+  color: #007593;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.table-component__filter__field:focus {
+  outline: 0;
+  border-color: #007593;
+}
+
+.table-component__table-wrapper {
+  overflow-x: auto;
+  margin: 1em 0;
+  width: 100%;
+  border-bottom: none;
+}
+
+.table-component__table {
+  min-width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.table-component__table__caption {
+  position: absolute;
+  top: auto;
+  left: -10000px;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+}
+
+.table-component__table th,
+.table-component__table td {
+  padding: 1.5em 1.5em;
+  vertical-align: top;
+  text-align: left;
+}
+
+.table-component__table th {
+  color: #1b1f3c;
+  text-transform: uppercase;
+  white-space: nowrap;
+  font-size: .85em;
+}
+
+.table-component__table a {
+  color: #007593;
+}
+
+.table-component__message {
+  color: #999;
+  font-style: italic;
+}
+
+.table-component__th--sort,
+.table-component__th--sort-asc,
+.table-component__th--sort-desc {
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.table-component__th--sort-asc:after,
+.table-component__th--sort-desc:after {
+  position: relative;
+  left: .25em;
+  display: inline-block;
+  color: #1b1f3c;
+  margin-top: -.25em;
+}
+
+.table-component__th--sort-asc:after {
+  content: '↑';
+}
+
+.table-component__th--sort-desc:after {
+  content: '↓';
+}
+
+.table-component__table__head{
+  -webkit-box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 5px 10px 0px rgba(238, 238, 238, 0.75);
+}
+
+.create-user-admin__button{
+  float: right;
+  position: relative;
+  top: 35px;
 }
 
 

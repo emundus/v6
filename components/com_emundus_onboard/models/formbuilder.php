@@ -26,6 +26,13 @@ class EmundusonboardModelformbuilder extends JModelList {
         return array('=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%');
     }
 
+    function htmlspecial_array(&$variable) {
+        foreach ($variable as &$value) {
+            if (!is_array($value)) { $value = htmlspecialchars($value); }
+            else { $this->htmlspecial_array($value); }
+        }
+    }
+
     function prepareElementParameters($plugin) {
         $params = array(
             'bootstrap_class' => 'input-xlarge',
@@ -281,16 +288,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         //
     }
 
-    /**
-     * Duplicate translation, useful when duplicate form, menu, group or element
-     *
-     * @param $text
-     * @param $fr_content
-     * @param $en_content
-     * @param $fr_pathfile
-     * @param $en_pathfile
-     * @param $newtag
-     */
     function duplicateTranslation($text,$fr_content,$en_content,$fr_pathfile,$en_pathfile,$newtag) {
         $matches_fr = [];
         $matches_en = [];
@@ -310,16 +307,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         //
     }
 
-    /**
-     * Update a translation
-     *
-     * @param $oldtext
-     * @param $fr_content
-     * @param $en_content
-     * @param $fr_pathfile
-     * @param $en_pathfile
-     * @param $newtext
-     */
     function updateTranslation($oldtext,$fr_content,$en_content,$fr_pathfile,$en_pathfile,$newtext) {
         $matches_fr = [];
         $matches_en = [];
@@ -345,11 +332,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         //
     }
 
-    /**
-     * Delete translation from english and french file
-     *
-     * @param $text
-     */
     function deleteTranslation($text) {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
@@ -375,11 +357,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         //
     }
 
-    /**
-     * Add translation to french file
-     *
-     * @param $text
-     */
     function addTransationFr($text) {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
@@ -395,11 +372,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         $this->removeEmptyLinesFr();
     }
 
-    /**
-     * Add translation to english file
-     *
-     * @param $text
-     */
     function addTransationEn($text) {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_en = $path_to_file . 'en-GB.override.ini' ;
@@ -737,11 +709,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         );
     }
 
-    /**
-     * Delete a menu (page)
-     *
-     * @param $menu
-     */
     function deleteMenu($menu) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -926,13 +893,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
     }
 
-    /**
-     * Create a new group into the form
-     *
-     * @param $label
-     * @param $fid
-     * @return array
-     */
     function createGroup($label, $fid, $repeat_group_show_first = 1) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -1047,11 +1007,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         //
     }
 
-    /**
-     * Delete a group
-     *
-     * @param $group
-     */
     function deleteGroup($group) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -1275,13 +1230,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         return $results;
     }
 
-    /**
-     * Update require params of an element
-     *
-     * @param $element
-     * @param $user
-     * @return mixed|string
-     */
     function ChangeRequire($element, $user) {
         if (empty($user)) {
             $user = JFactory::getUser()->id;
@@ -1485,13 +1433,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
     }
 
-    function htmlspecial_array(&$variable) {
-        foreach ($variable as &$value) {
-            if (!is_array($value)) { $value = htmlspecialchars($value); }
-            else { $this->htmlspecial_array($value); }
-        }
-    }
-
     function SubLabelsxValues($element, $locallang, $NewSubLabel, $user) {
 
         error_reporting(0);
@@ -1692,11 +1633,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         return ${"element".$element};
     }
 
-    /**
-     * Delete an element
-     *
-     * @param $elt
-     */
     function deleteElement($elt) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -1749,13 +1685,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
     }
 
-    /**
-     * Reordering a link menu
-     *
-     * @param $link
-     * @param $rgt
-     * @return mixed
-     */
     function reorderMenu($link, $rgt) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -1769,13 +1698,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         return $db->execute();
     }
 
-    /**
-     * Get the group ordering
-     *
-     * @param $gid
-     * @param $fid
-     * @return mixed|null
-     */
     function getGroupOrdering($gid,$fid) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -1789,14 +1711,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         return $db->loadResult();
     }
 
-    /**
-     * Reorder a group item
-     *
-     * @param $gid
-     * @param $fid
-     * @param $order
-     * @return mixed
-     */
     function reorderGroup($gid, $fid, $order) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);

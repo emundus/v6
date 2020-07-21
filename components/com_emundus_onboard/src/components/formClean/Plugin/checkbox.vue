@@ -64,7 +64,6 @@ export default {
             this.databasejoin_data = index;
           }
         })
-        this.element.plugin = this.element.params.database_join_display_type;
       } else {
         if (typeof this.element.params.sub_options !== 'undefined') {
           Axios({
@@ -112,6 +111,7 @@ export default {
           this.element.params.join_val_column_concat = '';
         }
       } else {
+        this.element.plugin = 'checkbox';
         delete this.element.params.join_db_name;
         delete this.element.params.database_join_display_type;
         delete this.element.params.join_key_column;

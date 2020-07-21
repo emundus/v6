@@ -741,9 +741,12 @@ class EmundusonboardModelprogram extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('id, name, email')
+        $user = JFactory::getUser()->id;
+
+        $query->select('id, name, email, registerDate, lastvisitDate, block')
             ->from($db->quoteName('#__users'))
-            ->where($db->quoteName('id') . ' != 62');
+            ->where($db->quoteName('id') . ' != ' . $db->quote($user))
+            ->andWhere($db->quoteName('id') . ' != 62');
 
         try {
             $db->setQuery($query);
@@ -1237,7 +1240,7 @@ class EmundusonboardModelprogram extends JModelList {
         $query = $db->getQuery(true);
 
         $query->select('*')
-            ->from($db->quoteName('#__emundus_evaluation_template'))
+            ->from($db->quoteName('#__emundus_template_evaluation'))
             ->order('form_id');
 
         try {
@@ -1340,7 +1343,7 @@ class EmundusonboardModelprogram extends JModelList {
         // Save as template
         if ($template == 'true') {
             $query->clear()
-                ->insert($db->quoteName('#__emundus_evaluation_template'))
+                ->insert($db->quoteName('#__emundus_template_evaluation'))
                 ->set($db->quoteName('form_id') . ' = ' . $db->quote($formid))
                 ->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $pid. '_' . $formid))
                 ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')));

@@ -3,6 +3,7 @@
         <ModalAddUser
                 :group="this.group"
                 :coordinatorAccess="coordinatorAccess"
+                :userManage="0"
                 @Updatemanager="getManagersInGroup()"
                 @Updateevaluator="getEvaluatorsInGroup()"
         />

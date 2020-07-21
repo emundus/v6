@@ -45,7 +45,7 @@
             <span class="error">{{EmailRequired}}</span>
           </p>
         </div>
-        <div class="form-group">
+        <div class="form-group" v-if="userManage == 0">
           <label>{{Role}}* :</label>
           <select v-model="form.profile" class="dropdown-toggle" :class="{ 'is-invalid': errors.profile}">
             <option value="5" v-if="coordinatorAccess != 0">{{Administrator}}</option>
@@ -66,6 +66,9 @@
           @click.prevent="$modal.hide('modalAddUser')"
         >{{Retour}}</a>
       </div>
+      <div class="loading-form" v-if="loading">
+        <Ring-Loader :color="'#de6339'" />
+      </div>
     </modal>
   </span>
 </template>
@@ -78,7 +81,8 @@ export default {
   name: "modalAddUser",
   props: {
     group: Number,
-    coordinatorAccess: Number
+    coordinatorAccess: Number,
+    userManage: Number
   },
   data() {
     return {
@@ -103,6 +107,7 @@ export default {
         ldap: 0
       },
       changes: false,
+      loading: false,
       addUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER"),
       Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
       Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
@@ -147,7 +152,7 @@ export default {
       }
 
       this.form.login = this.form.email;
-
+      this.loading = true;
       axios({
         method: "post",
         url: 'index.php?option=com_emundus&controller=users&task=adduser',
@@ -157,25 +162,32 @@ export default {
         data: qs.stringify(this.form)
       }).then((response) => {
         if(response.data.status == true){
-          axios({
-            method: "post",
-            url: 'index.php?option=com_emundus_onboard&controller=program&task=affectusertogroup',
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              profile: this.form.profile,
-              group: this.group,
-              email: this.form.email
-            })
-          }).then((rep) => {
-            if(this.form.profile == 5) {
-              this.$emit("Updatemanager");
-            } else {
-              this.$emit("Updateevaluator");
-            }
-            this.$modal.hide('modalAddUser')
-          });
+          if(this.userManage == 0) {
+            axios({
+              method: "post",
+              url: 'index.php?option=com_emundus_onboard&controller=program&task=affectusertogroup',
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                profile: this.form.profile,
+                group: this.group,
+                email: this.form.email
+              })
+            }).then((rep) => {
+              this.loading = false;
+              if (this.form.profile == 5) {
+                this.$emit("Updatemanager");
+              } else {
+                this.$emit("Updateevaluator");
+              }
+              this.$modal.hide('modalAddUser')
+            });
+          } else {
+            this.loading = false;
+            this.$modal.hide('modalAddUser');
+            this.$emit("UpdateUsers",this.form);
+          }
         }
       }).catch((error) =>  {
         console.log(error);

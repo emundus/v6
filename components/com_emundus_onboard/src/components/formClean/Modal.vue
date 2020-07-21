@@ -151,7 +151,9 @@
             element: this.element,
           })
         }).then((response) => {
-          this.$emit("reloadElement");
+          setTimeout(() => {
+            this.$emit("reloadElement")
+          },200);
           this.$modal.hide('modalEditElement' + this.ID);
         }).catch(e => {
           console.log(e);

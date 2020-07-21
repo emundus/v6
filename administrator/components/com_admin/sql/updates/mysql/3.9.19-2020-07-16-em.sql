@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS jos_emundus_datas_library (
                                                          label varchar(255) NULL,
                                                          description varchar(255) NULL,
                                                          created datetime NOT NULL,
+                                                         translation tinyint DEFAULT 1 NOT NULL,
                                                          PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='Bibliothèques des tables de databasejoin';
 
@@ -23,4 +24,28 @@ VALUES('data_departements','Départements français','Liste des départements fr
 
 INSERT INTO jos_emundus_datas_library (database_name, label, description,created)
 VALUES('data_nationality','Nationalités','Liste des nationalités','2020-07-17 10:00:00');
+#
+
+# Rename templates databases and add DELETE CASCADE
+RENAME TABLE jos_emundus_evaluation_template TO jos_emundus_template_evaluation;
+RENAME TABLE jos_emundus_profile_template TO jos_emundus_template_profile;
+RENAME TABLE jos_emundus_form_template TO jos_emundus_template_form;
+
+ALTER TABLE jos_emundus_template_evaluation
+ADD CONSTRAINT `fk_form_evaluation_id`
+    FOREIGN KEY (form_id) REFERENCES jos_fabrik_forms (id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
+ALTER TABLE jos_emundus_template_profile
+ADD CONSTRAINT `fk_profile_id`
+    FOREIGN KEY (profile_id) REFERENCES jos_emundus_setup_profiles (id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
+ALTER TABLE jos_emundus_template_form
+ADD CONSTRAINT `fk_form_template_id`
+    FOREIGN KEY (form_id) REFERENCES jos_fabrik_forms (id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
 #

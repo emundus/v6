@@ -153,7 +153,7 @@
                         </div>
                         <span class="ml-10px">{{Required}}</span>
                       </a>
-                      <a class="d-flex mr-2 text-orange" @click="$modal.show('modalEditElement' + element.id)">
+                      <a class="d-flex mr-2 text-orange" @click="repeat = false;$modal.show('modalEditElement' + element.id)">
                         <em class="fas fa-cog"></em>
                         <span class="ml-10px">{{Settings}}</span>
                       </a>
@@ -218,6 +218,7 @@ export default {
       updateGroup: false,
       draggable: false,
       fieldChanges: false,
+      repeat: false,
       date: new Date(),
       options: {
         format: "DD/MM/YYYY",
@@ -477,8 +478,13 @@ export default {
             return qs.stringify(params);
           }
         }).then(response => {
-          element.element = response.data.element;
-          element = response.data;
+          if(response.data.plugin === 'databasejoin' && this.repeat === false){
+            this.repeat = true;
+            this.reloadElement(element)
+          } else{
+            element.element = response.data.element;
+            element = response.data;
+          }
         }).catch(e => {
           this.$emit(
                   "show",
