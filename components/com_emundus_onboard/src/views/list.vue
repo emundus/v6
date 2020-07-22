@@ -14,8 +14,12 @@
       :isEmpty="isEmpty"
       :coordinatorAccess="coordinatorAccess"
     ></actions>
-    <h2 v-show="total > 0">{{ Total }} : {{ total }}</h2>
 
+    <transition :name="'slide-down'" type="transition">
+      <h2 v-show="total > 0">{{ Total }} : {{ total }}</h2>
+    </transition>
+
+    <transition :name="'slide-down'" type="transition">
     <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'">
       <ul class="pagination" v-if="total > 0">
         <a @click="nbpages(pages - 1)" class="pagination-arrow arrow-left">
@@ -44,22 +48,27 @@
         </a>
       </ul>
     </div>
+    </transition>
 
     <div v-show="total > 0 || type == 'files'">
-      <div v-show="total > 0" class="buttonSelectDeselect">
-        <button @click="!isEmpty ? selectAllItem() : deselectItem()"
-          class="btn-selectAll"
-          :class="[isEmpty ? 'active' : '']">
-        </button>
-        <div v-show="!isEmpty" id="buttonLabelSelect">
-          {{ Select }} ({{ pages < countPages ? limit : total - limit * countPages + limit }})
+      <transition :name="'slide-down'" type="transition">
+        <div v-show="total > 0" class="buttonSelectDeselect">
+          <button @click="!isEmpty ? selectAllItem() : deselectItem()"
+            class="btn-selectAll"
+            :class="[isEmpty ? 'active' : '']">
+          </button>
+          <div v-show="!isEmpty" id="buttonLabelSelect">
+            {{ Select }} ({{ pages < countPages ? limit : total - limit * countPages + limit }})
+          </div>
+          <div v-show="isEmpty" id="buttonLabelDeselect">{{ Deselect }}</div>
         </div>
-        <div v-show="isEmpty" id="buttonLabelDeselect">{{ Deselect }}</div>
-      </div>
+      </transition>
 
-      <div v-if="type != 'files'" v-for="(data, index) in list" :key="index">
-        <component v-bind:is="type" :data="data" :selectItem="selectItem" />
-      </div>
+      <transition-group :name="'slide-down'" type="transition">
+        <div v-if="type != 'files'" v-for="(data, index) in list" :key="index">
+          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+        </div>
+      </transition-group>
 
       <div v-if="type == 'files'">
         <component v-bind:is="type" />
@@ -267,38 +276,30 @@ export default {
 
     allFilters(filtersCount, filters) {
       if (this.type != "files") {
-        axios
-          .get(
-            "index.php?option=com_emundus_onboard&controller=" +
+        axios.get("index.php?option=com_emundus_onboard&controller=" +
               this.typeForAdd +
               "&task=get" +
               this.typeForAdd +
               "count" +
               filtersCount
-          )
-          .then(response => {
-            this.total = response.data.data;
-          })
-          .then(() => {
+          ).then(response => {
             axios.get(
                 "index.php?option=com_emundus_onboard&controller=" +
                   this.typeForAdd +
                   "&task=getall" +
                   this.typeForAdd +
                   filters
-              )
-              .then(response => {
-                list.commit("listUpdate", response.data.data);
-                if(typeof response.data.forms_updating != 'undefined') {
-                  list.commit("formsAccessUpdate", response.data.forms_updating);
+              ).then(rep => {
+                this.total = response.data.data;
+                list.commit("listUpdate", rep.data.data);
+                if(typeof rep.data.forms_updating != 'undefined') {
+                  list.commit("formsAccessUpdate", rep.data.forms_updating);
                 }
                 this.countPages = Math.ceil(this.total / this.limit);
-              })
-              .catch(e => {
+              }).catch(e => {
                 console.log(e);
               });
-          })
-          .catch(e => {
+          }).catch(e => {
             console.log(e);
           });
       }

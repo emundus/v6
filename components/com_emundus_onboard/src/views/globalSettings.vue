@@ -20,16 +20,16 @@
         <h2>{{settingsCategories[langue][menuHighlight]}}</h2>
         <p class="paragraphe-sous-titre">{{funnelDescription[langue][menuHighlight]}}</p>
         <transition name="slide-right">
-          <editHomepage
+          <editStyle
                   v-if="menuHighlight == 0 && coordinatorAccess != 0"
+                  ref="styling"
+          ></editStyle>
+
+          <editHomepage
+                  v-if="menuHighlight == 1 && coordinatorAccess != 0"
                   ref="homepage"
                   :actualLanguage="actualLanguage"
           ></editHomepage>
-
-          <editStyle
-                  v-if="menuHighlight == 1 && coordinatorAccess != 0"
-                  ref="styling"
-          ></editStyle>
 
           <editStatus
                   v-if="menuHighlight == 2 && coordinatorAccess != 0"
@@ -103,15 +103,15 @@ export default {
 
     funnelDescription: [
       [
+        '',
         Joomla.JText._("COM_EMUNDUS_ONBOARD_HOMEDESCRIPTION"),
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_STYLINGDESCRIPTION"),
         Joomla.JText._("COM_EMUNDUS_ONBOARD_STATUSDESCRIPTION"),
         Joomla.JText._("COM_EMUNDUS_ONBOARD_TAGSDESCRIPTION"),
         Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTIONSETTINGS"),
       ],
       [
+        '',
         Joomla.JText._("COM_EMUNDUS_ONBOARD_HOMEDESCRIPTION"),
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_STYLINGDESCRIPTION"),
         Joomla.JText._("COM_EMUNDUS_ONBOARD_STATUSDESCRIPTION"),
         Joomla.JText._("COM_EMUNDUS_ONBOARD_TAGSDESCRIPTION"),
         Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTIONSETTINGS"),
@@ -120,16 +120,16 @@ export default {
 
     settingsCategories: [
       [
-        "Page d'accueil",
         "Personnalisation",
+        "Page d'accueil",
         "Statuts",
         "Etiquettes",
         "Utilisateurs",
         "Référentiels de données",
       ],
       [
-        "Home page",
         "Styling",
+        "Home page",
         "Status",
         "Tags",
         "Users",

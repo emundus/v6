@@ -24,7 +24,11 @@
                     <h3>{{database.label}}</h3>
                     <p>{{database.description}}</p>
                 </div>
-                <div v-if="index == indexOpen">
+                <transition :name="'slide-down'" type="transition">
+                <div v-if="index == indexOpen" class="mt-1">
+<!--                    <a class="bouton-sauvergarder-et-continuer-3 mr-1" style="float: left" @click="$modal.show('modalAddDatas')">
+                        {{UpdateDatas}}
+                    </a>-->
                     <table class="db-description">
                         <tr class="db-columns">
                             <th v-for="(data,i) in datas.columns" :id="'column_' + data">{{data}}</th>
@@ -34,6 +38,7 @@
                         </tr>
                     </table>
                 </div>
+                </transition>
             </div>
         </div>
         <div class="loading-form" v-if="loading">
@@ -70,6 +75,7 @@
                 loading: false,
                 CreateDatas: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DATAS"),
                 ImportDatas: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMPORT_DATAS"),
+                UpdateDatas: Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATE_DATAS"),
             };
         },
 

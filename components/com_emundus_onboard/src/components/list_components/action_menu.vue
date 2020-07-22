@@ -1,6 +1,7 @@
 <template>
   <div class="section-sub-menu">
     <div class="container-2 w-container" style="max-width: unset">
+      <transition :name="'slide-down'" type="transition">
       <div class="w-row">
         <div class="actions-add-block">
           <div data-hover="1"
@@ -186,6 +187,7 @@
         </div>
 
       </div>
+      </transition>
     </div>
     <div class="loading-form" style="top: 10vh" v-if="loading">
       <Ring-Loader :color="'#de6339'" />

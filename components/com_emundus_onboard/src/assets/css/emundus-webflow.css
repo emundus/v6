@@ -2709,6 +2709,10 @@ input:focus{
   margin-bottom: 1em;
 }
 
+.mr-20px{
+  margin-right: 20px;
+}
+
 .mr-1{
   margin-right: 1em !important;
 }
@@ -3264,7 +3268,8 @@ label.label__placeholder{
   font-size: 18px;
 }
 .MenuFormItem:not(.MenuFormItem_current):hover {
-  color: grey;
+  color: #de6339;
+  text-decoration: none;
 }
 .MenuFormItem_current {
   color: white;
@@ -3278,7 +3283,7 @@ label.label__placeholder{
 
 .MenuFormItem.MenuFormItem_current:hover {
   text-decoration: none;
-  color: #de6339;
+  color: white;
 }
 
 .menus-row{
@@ -3316,11 +3321,6 @@ label.label__placeholder{
 }
 .menus-row a:after {
   right: 0;
-}
-.menus-row a:not(.MenuFormItem_current):hover:after {
-  opacity: 1;
-  width: 50%;
-  text-decoration: none;
 }
 .menu-block{
   margin-top: 2em;
@@ -3594,6 +3594,9 @@ label.label__placeholder{
 
 .db-description{
   border: solid 1px #ececec;
+  margin-top: 10px;
+  display: inline-table;
+  width: 100%;
 }
 .db-description th{
   padding: 10px;

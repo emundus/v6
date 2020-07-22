@@ -37,15 +37,19 @@
             <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" @click="translate.label = !translate.label"></button>
           </div>
         </div>
+        <transition :name="'slide-down'" type="transition">
         <div class="inlineflex" v-if="translate.label">
           <label class="translate-label">
             {{TranslateEnglish}}
           </label>
           <em class="fas fa-sort-down"></em>
         </div>
+        </transition>
+        <transition :name="'slide-down'" type="transition">
         <div class="form-group mb-1" v-if="translate.label">
           <input v-model="label.en" type="text" maxlength="40" class="form__input field-general w-input"/>
         </div>
+        </transition>
         <p v-if="errors" class="error col-md-12 mb-2">
           <span class="error">{{LabelRequired}}</span>
         </p>
@@ -57,15 +61,19 @@
             <button class="translate-icon" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
           </div>
         </div>
+        <transition :name="'slide-down'" type="transition">
         <div class="inlineflex" v-if="translate.intro">
           <label class="translate-label">
             {{TranslateEnglish}}
           </label>
           <em class="fas fa-sort-down"></em>
         </div>
+        </transition>
+        <transition :name="'slide-down'" type="transition">
         <div class="form-group mb-1" v-if="translate.intro">
           <textarea v-model="intro.en" rows="3" class="form__input field-general w-input" maxlength="300"></textarea>
         </div>
+        </transition>
 
         <div class="col-md-12 d-flex mb-1" style="align-items: center">
           <input type="checkbox" v-model="template">

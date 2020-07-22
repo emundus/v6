@@ -4,6 +4,7 @@
             :cid="this.campaignId"
             @UpdateDocuments="updateList"
     />
+    <transition :name="'slide-down'" type="transition">
     <div class="w-form">
       <ul style="padding-left: 0">
         <draggable
@@ -108,6 +109,7 @@
         <button class="bouton-sauvergarder-et-continuer-3" style="float: none" type="button" @click="$modal.show('modalAddDocuments')">{{createDocument}}</button>
       </div>
     </div>
+    </transition>
 
     <div class="section-sauvegarder-et-continuer-funnel">
       <div class="w-container">

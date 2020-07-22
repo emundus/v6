@@ -22,10 +22,10 @@
             <table-column show="block" :label="Status" :filterable="false" :formatter="statusFormatter"></table-column>
             <table-column :label="Actions" :sortable="false" :filterable="false" cell-class="user-list__actions">
                 <template slot-scope="row">
-                    <a @click="lockUser(row.id)" v-if="row.block == 0"><i class="fas fa-unlock user-unlock__icon"></i></a>
-                    <a @click="unlockUser(row.id)" v-if="row.block == 1"><i class="fas fa-lock user-lock__icon"></i></a>
-                    <a @click="resetPassword(row.id, row.name)"><i class="fas fa-redo"></i></a>
-                    <a @click="showInfos(row.id)"><i class="fas fa-info-circle user-infos__icon"></i></a>
+                    <a @click="lockUser(row.id)" v-if="row.block == 0" :title="LockUser"><i class="fas fa-unlock user-unlock__icon"></i></a>
+                    <a @click="unlockUser(row.id)" v-if="row.block == 1" :title="UnlockUser"><i class="fas fa-lock user-lock__icon"></i></a>
+                    <a @click="resetPassword(row.id, row.name)" :title="ResetPassword"><i class="fas fa-redo"></i></a>
+                    <!--<a @click="showInfos(row.id)" :title="ShowInformations"><i class="fas fa-info-circle user-infos__icon"></i></a>-->
                 </template>
             </table-column>
         </table-component>
@@ -69,6 +69,9 @@
                 NoResultsFound: Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_RESULTS_FOUND"),
                 Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
                 addUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER"),
+                LockUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_LOCK_USER"),
+                UnlockUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_UNLOCK_USER"),
+                ResetPassword: Joomla.JText._("COM_EMUNDUS_ONBOARD_RESET_PASSWORD"),
             };
         },
 

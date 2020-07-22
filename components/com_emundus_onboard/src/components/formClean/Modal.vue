@@ -40,6 +40,9 @@
           <radiobtnF v-if="plugin == 'radiobutton'" :element="element" @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
         </div>
+        <div class="loading-form" v-if="loading">
+          <Ring-Loader :color="'#de6339'" />
+        </div>
       </div>
       <div class="col-md-12 mb-1">
         <a
@@ -84,6 +87,7 @@
         },
         done: false,
         changes: false,
+        loading: false,
         sublabel: "",
         plugin: '',
         translate: {
@@ -216,6 +220,7 @@
         this.initialisation();
       },
       initialisation() {
+        this.loading = true;
         this.getElement();
         this.axiostrad(this.element.label_tag)
                 .then(response => {
@@ -226,6 +231,7 @@
                   console.log(response);
                 });
         this.getDatabases();
+        this.loading = false;
       },
       checkPlugin(){
         if(this.element.plugin === 'databasejoin'){

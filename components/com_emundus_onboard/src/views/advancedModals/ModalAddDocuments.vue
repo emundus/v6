@@ -126,6 +126,13 @@
       beforeClose(event) {
         this.form = {
           name: '',
+          description: '',
+          nbmax: 1,
+          selectedTypes: {
+            pdf: false,
+            'jpg;png;gif': false,
+            'doc;docx;odt;xls;xlsx;odf': false
+          },
         };
       },
       beforeOpen(event) {

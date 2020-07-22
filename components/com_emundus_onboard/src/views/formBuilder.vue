@@ -32,7 +32,7 @@
     <div class="row form-builder">
       <div class="heading-block col-md-offset-4">
         <h1 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h1>
-        <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em">
+        <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit">
           <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
         </a>
       </div>
@@ -54,6 +54,7 @@
                 <em class="add-element-icon col-md-offset-1"></em>
                 <label class="action-label col-md-offset-2" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
               </a>
+            <transition :name="'slide-down'" type="transition">
               <draggable
                       v-model="plugins"
                       v-bind="dragOptions"
@@ -70,6 +71,7 @@
                     <span class="ml-10px">{{plugin.name}}</span>
                   </div>
               </draggable>
+            </transition>
           </div>
         </div>
         <a class="send-form-button" @click="sendForm">
@@ -237,6 +239,7 @@
         addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
         Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
         sendFormButton: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEND_FORM"),
+        Edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
       };
     },
 

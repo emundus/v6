@@ -59,6 +59,7 @@
                     .then(response => {
                         this.form.content.fr = response.data.data.introtext;
                         this.form.content.en = response.data.data.introtext_en;
+                        this.dynamicComponent++;
                     });
             },
 

@@ -33,17 +33,21 @@
                 />
               <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" @click="translate.label = !translate.label"></button>
             </div>
+            <transition :name="'slide-down'" type="transition">
             <div class="inlineflex" v-if="translate.label" style="margin: 10px">
               <label class="translate-label">
                 {{TranslateEnglish}}
               </label>
               <em class="fas fa-sort-down"></em>
             </div>
+            </transition>
+            <transition :name="'slide-down'" type="transition">
             <input v-if="translate.label"
                    type="text"
                    class="form__input field-general w-input"
                    v-model="form.label.en"
             />
+            </transition>
           </div>
           <p v-if="errors.label" class="error col-md-12 mb-2">
             <span class="error">{{LabelRequired}}</span>

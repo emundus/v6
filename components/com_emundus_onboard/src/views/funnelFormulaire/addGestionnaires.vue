@@ -23,6 +23,7 @@
             <h2 style="margin-bottom: 0">{{ Administrators }}</h2>
             <a @click="$modal.show('modalAffectmanager')" class="bouton-sauvergarder-et-continuer-3">{{ affectUsers }}</a>
         </div>
+        <transition :name="'slide-down'" type="transition">
         <div v-for="(manager, index) in managers" :key="index" class="manager-item" v-if="coordinatorAccess != 0">
             <div>
                 <p>{{manager.name}}</p>
@@ -30,10 +31,12 @@
             </div>
             <button type="button" @click="removeManager(manager,index)" class="remove-user"><em class="fas fa-minus"></em></button>
         </div>
+        </transition>
         <div class="choices-buttons">
             <h2 style="margin-bottom: 0">{{ Evaluators }}</h2>
             <a @click="$modal.show('modalAffectevaluator')" class="bouton-sauvergarder-et-continuer-3">{{ affectUsers }}</a>
         </div>
+        <transition :name="'slide-down'" type="transition">
         <div v-for="(evaluator, index) in evaluators" :key="index" class="manager-item">
             <div>
                 <p>{{evaluator.name}}</p>
@@ -41,6 +44,7 @@
             </div>
             <button type="button" @click="removeEvaluator(evaluator,index)" class="remove-user"><em class="fas fa-minus"></em></button>
         </div>
+        </transition>
     </div>
 </template>
 

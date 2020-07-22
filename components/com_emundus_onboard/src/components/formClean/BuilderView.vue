@@ -9,8 +9,8 @@
     />
     <div class="d-flex">
       <h2 v-if="object_json.show_title" class="page_header" v-html="object_json.show_title.value" />
-      <span @click="$modal.show('modalSide' + object.rgt)">
-        <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+      <span @click="$modal.show('modalSide' + object.rgt)" :title="Edit">
+        <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
       </span>
     </div>
     <p v-if="object_json.intro" class="introP" v-html="object_json.intro" />
@@ -36,8 +36,8 @@
                   class="legend ViewerLegend">
                   {{group.group_showLegend}}
                 </legend>
-                <a @click="enableUpdatingGroup(group)" style="margin-left: 1em">
-                  <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+                <a @click="enableUpdatingGroup(group)" style="margin-left: 1em" :title="Edit">
+                  <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
                 </a>
               </div>
               <div style="width: max-content" v-show="updateGroup && indexGroup == group.group_id">
@@ -45,14 +45,17 @@
                   <input v-model="group.label_fr" class="form-control" style="width: 400px;" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
                   <button class="translate-icon" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="translate.label_group = !translate.label_group"></button>
                   <div class="d-flex actions-update-label" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
-                    <a @click="deleteAGroup(group,index_group)" style="margin-left: 1em;color: black" v-if="files == 0">
-                      <em class="fas fa-trash-alt" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+                    <a @click="updateGroup = false;translate.label_group = false" :title="Cancel">
+                      <em class="fas fa-times ml-10px" data-toggle="tooltip" data-placement="top"></em>
                     </a>
-                    <a @click="updateGroup = false;translate.label_group = false">
-                      <em class="fas fa-times ml-20px" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+                    <a @click="updateLabelGroup(group)" :title="Validate">
+                      <em class="fas fa-check ml-20px mr-1" data-toggle="tooltip" data-placement="top"></em>
                     </a>
-                    <a @click="updateLabelGroup(group)">
-                      <em class="fas fa-check ml-20px" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+                    <a @click="enableRepatedGroup(group)" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon" :title="RepeatGroup">
+                      <em class="fas fa-retweet" data-toggle="tooltip" data-placement="top"></em>
+                    </a>
+                    <a @click="deleteAGroup(group,index_group)" style="margin-left: 1em;color: black" v-if="files == 0" :title="Delete">
+                      <em class="fas fa-trash-alt" data-toggle="tooltip" data-placement="top"></em>
                     </a>
                   </div>
                 </div>
@@ -98,19 +101,19 @@
                       <div class="w-100">
                         <div class="d-flex" style="align-items: baseline">
                           <span v-if="element.label" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''" v-html="element.label" v-show="element.labelsAbove != 2"></span>
-                          <a @click="enableLabelInput" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'">
-                            <em class="fas fa-pencil-alt ml-10px" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+                          <a @click="enableLabelInput" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'" :title="Edit">
+                            <em class="fas fa-pencil-alt ml-10px" data-toggle="tooltip" data-placement="top"></em>
                           </a>
                         </div>
                         <div class="input-can-translate" v-show="clickUpdatingLabel && indexHighlight == element.id">
                           <input v-model="element.label_fr" class="form-control" :class="translate.label ? '' : 'mb-1'" @keyup.enter="updateLabelElement(element)"/>
                           <button class="translate-icon" :class="translate.label ? 'translate-icon-selected': ' translate-builder'" type="button" @click="translate.label = !translate.label"></button>
                           <div class="d-flex actions-update-label" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
-                            <a @click="clickUpdatingLabel = false;translate.label = false">
-                              <em class="fas fa-times ml-20px" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+                            <a @click="clickUpdatingLabel = false;translate.label = false" :title="Cancel">
+                              <em class="fas fa-times ml-20px" data-toggle="tooltip" data-placement="top"></em>
                             </a>
-                            <a @click="updateLabelElement(element)">
-                              <em class="fas fa-check ml-20px" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+                            <a @click="updateLabelElement(element)" :title="Validate">
+                              <em class="fas fa-check ml-20px" data-toggle="tooltip" data-placement="top"></em>
                             </a>
                           </div>
                         </div>
@@ -241,6 +244,10 @@ export default {
       Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
       Settings: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_SETTINGS"),
       Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
+      Edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
+      Cancel: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+      Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+      RepeatGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
     };
   },
   methods: {
@@ -615,6 +622,66 @@ export default {
         console.log(e);
       });
     },
+
+    enableRepatedGroup(group){
+      if(!group.repeat_group) {
+        Swal.fire({
+          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
+          text: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE"),
+          type: "info",
+          showCancelButton: true,
+          confirmButtonColor: '#de6339',
+          confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+          cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+          reverseButtons: true
+        }).then(result => {
+          if(result.value) {
+            axios({
+              method: "POST",
+              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=enablegrouprepeat",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                gid: group.group_id,
+              })
+            }).then((result) => {
+              if(result.data.status == true){
+                group.repeat_group = 1;
+              }
+            });
+          }
+        });
+      } else {
+        Swal.fire({
+          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_DISABLE"),
+          text: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE_DISABLE"),
+          type: "info",
+          showCancelButton: true,
+          confirmButtonColor: '#de6339',
+          confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+          cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+          reverseButtons: true
+        }).then(result => {
+          if(result.value) {
+            axios({
+              method: "POST",
+              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=disablegrouprepeat",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                gid: group.group_id,
+              })
+            }).then((result) => {
+              if(result.data.status == true){
+                group.repeat_group = 0;
+              }
+            });
+          }
+        });
+      }
+    },
     //
 
     getDataObject: _.debounce(function() {
@@ -787,6 +854,15 @@ export default {
   }
   .hidden{
     display: none;
+  }
+  .active-repeat{
+    background: #de6339;
+    color: white !important;
+  }
+  .group-repeat-icon{
+    padding: 2px;
+    border-radius: 5px;
+    color: #1b1f3c;
   }
 </style>
 
