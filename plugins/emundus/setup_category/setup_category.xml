@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="system">
-	<name>Emundus - Create new category</name>
+	<name>Emundus - Create new dropfiles category</name>
 	<creationDate>July 2020</creationDate>
 	<version>6.9.10</version>
 	<author>eMundus</author>

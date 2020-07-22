@@ -4,22 +4,22 @@
     display: flex;
     flex-direction: column;
     background: white;
-	font-weight: 300;
+    font-weight: 300;
     font-style: normal;
     line-height: normal;
 }
 
 .em-infoComp ul {
-	margin-left:0;
+    margin-left:0;
 }
 
 .em-infoComp li {
-    padding: 10px 1.5rem !important;
+    padding: 10px 1.5rem;
 }
 
 .em-infoComp li i {
     margin-left: 10px;
-	color:#de6339 !important;
+    color:#de6339;
 }
 
 .em-infoComp li {
@@ -27,8 +27,8 @@
 }
 
 .em-infoComp .g-title {
-	border:none!important;
-	position:relative;
+    border:none !important;
+    position:relative;
 }
 
 .em-infoComp .g-title::after {
@@ -38,5 +38,5 @@
     left: 0;
     width: 2.7rem;
     height: 0.2rem;
-    background: #de6339 !important;
+    background: #de6339;
 }
