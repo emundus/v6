@@ -1,4 +1,4 @@
-CREATE TABLE `jos_dropfiles` (
+CREATE TABLE IF NOT EXISTS `jos_dropfiles` (
  `id` int(11) NOT NULL,
  `type` varchar(20) NOT NULL,
  `cloud_id` varchar(200) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE `jos_dropfiles` (
  UNIQUE KEY `id` (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-	CREATE TABLE `jos_dropfiles_dropbox_files` (
+	CREATE TABLE IF NOT EXISTS `jos_dropfiles_dropbox_files` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `file_id` varchar(220) NOT NULL,
  `state` int(11) NOT NULL DEFAULT 1,
@@ -32,7 +32,7 @@ CREATE TABLE `jos_dropfiles` (
  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-	CREATE TABLE `jos_dropfiles_files` (
+	CREATE TABLE IF NOT EXISTS `jos_dropfiles_files` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `catid` int(11) NOT NULL,
  `file` varchar(100) NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE `jos_dropfiles` (
  KEY `id_gallery` (`catid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-	CREATE TABLE `jos_dropfiles_google_files` (
+	CREATE TABLE IF NOT EXISTS `jos_dropfiles_google_files` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `file_id` varchar(220) NOT NULL,
  `state` int(11) NOT NULL DEFAULT 1,
@@ -81,7 +81,7 @@ CREATE TABLE `jos_dropfiles` (
  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-	CREATE TABLE `jos_dropfiles_onedrive_files` (
+	CREATE TABLE IF NOT EXISTS `jos_dropfiles_onedrive_files` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `file_id` varchar(220) NOT NULL,
  `state` int(11) NOT NULL DEFAULT 1,
@@ -105,7 +105,7 @@ CREATE TABLE `jos_dropfiles` (
  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-	CREATE TABLE `jos_dropfiles_statistics` (
+	CREATE TABLE IF NOT EXISTS `jos_dropfiles_statistics` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `related_id` varchar(200) NOT NULL,
  `type` varchar(200) NOT NULL,
@@ -114,7 +114,7 @@ CREATE TABLE `jos_dropfiles` (
  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-	CREATE TABLE `jos_dropfiles_tokens` (
+	CREATE TABLE IF NOT EXISTS `jos_dropfiles_tokens` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `id_user` int(11) NOT NULL,
  `time` varchar(15) NOT NULL,
@@ -122,7 +122,7 @@ CREATE TABLE `jos_dropfiles` (
  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE TABLE `jos_dropfiles_versions` (
+CREATE TABLE IF NOT EXISTS `jos_dropfiles_versions` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `id_file` int(11) NOT NULL,
  `file` varchar(100) NOT NULL,
@@ -133,7 +133,7 @@ CREATE TABLE `jos_dropfiles_versions` (
  KEY `id_file` (`id_file`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE TABLE `jos_joomunited_config` (
+CREATE TABLE IF NOT EXISTS `jos_joomunited_config` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `value` varchar(100) NOT NULL,
