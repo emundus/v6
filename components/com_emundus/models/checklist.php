@@ -91,7 +91,7 @@ class EmundusModelChecklist extends JModelList
         $this->_db->setQuery($query);
         $exist = $this->_db->loadResult();
 
-        if (intval($exist) > 0) {
+        if (intval($exist) > 0 && !empty($this->_user->campaign_id)) {
             $query = 'SELECT attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate
 					FROM #__emundus_setup_attachments AS attachments
 						INNER JOIN #__emundus_setup_attachment_profiles AS profiles ON attachments.id = profiles.attachment_id
