@@ -397,20 +397,17 @@ function openFiles(fnum, page = 0) {
 					if (result.status) {
 						var menus = result.menus;
 						var numMenu = 0;
-						var stop = 0;
-						menus.forEach(
-							function(menu) {
-								if(stop === 0) {
-									if(menu.link.indexOf("layout="+page) != -1) {
-										stop = 1;
-									}
-									if(stop === 0 && numMenu < menus.length)
-										numMenu++;
-								}
-							}
-						);
-						if(numMenu >= menus.length)
-							numMenu = 0;
+
+                        while (numMenu <= menus.length) {
+                            if (menus[numMenu].link.indexOf("layout="+page) != -1) {
+                                break;
+                            }
+                            numMenu++;
+                            if(numMenu >= menus.length){
+                                numMenu = 0;
+                                break;
+                            }
+                        }
 						
 						var firstMenu = menus[numMenu].link;
 						var menuList = '';
@@ -1233,12 +1230,14 @@ $(document).ready(function() {
                     addDimmer();
                     fnum.sid = parseInt(fnum.fnum.substr(21, 7));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
-					
-					page = Array.from(document.querySelector('#em-appli-block .panel[class*="em-container-"]').classList).filter(
-						function x (p) {
-							return p.startsWith('em-container');
-						}
-					)[0].split('-')[2];
+
+                    if (document.querySelector('#em-appli-block .panel[class*="em-container-"]')) {
+                        var page = Array.from(document.querySelector('#em-appli-block .panel[class*="em-container-"]').classList).filter(
+                            function x (p) {
+                                return p.startsWith('em-container');
+                            }
+                        )[0].split('-')[2];
+                    }
 					
                     $.ajax({
                         type: 'get',
