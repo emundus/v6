@@ -24,7 +24,7 @@ $applicants = explode(',',$id_applicants);
 
 $fnum = $jinput->get('rowid', null);
 
-if (EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
+if (EmundusHelperAccess::asApplicantAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	if (($user->fnum != $fnum && $fnum != -1) && !empty($fnum)) {
 		JError::raiseNotice('ERROR', JText::_('ERROR...'));
 		$mainframe->redirect("index.php");
