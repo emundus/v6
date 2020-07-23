@@ -28,7 +28,8 @@
 
 <script>
 import _ from "lodash";
-import Axios from "axios";
+import axios from "axios";
+import Swal from "sweetalert2";
 const qs = require("qs");
 
 export default {
@@ -67,7 +68,7 @@ export default {
         })
       } else  {
         if(typeof this.element.params.sub_options !== 'undefined') {
-          Axios({
+          axios({
             method: "post",
             url:
                     "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXTA",
@@ -93,7 +94,40 @@ export default {
     },
     needtoemit: _.debounce(function() {
       this.$emit("subOptions", this.arraySubValues);
-    })
+    }),
+
+    checkOnboarding(){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=checkfirstdatabasejoin",
+      }).then(response => {
+        if(response.data.status) {
+          Swal.fire({
+            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
+            text: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN_TEXT"),
+            type: "info",
+            showCancelButton: false,
+            showCloseButton: true,
+            allowOutsideClick: false,
+            confirmButtonColor: '#de6339',
+            confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+          }).then(result => {
+            if (result.value) {
+              axios({
+                method: "post",
+                url: "index.php?option=com_emundus_onboard&controller=settings&task=removeparam",
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                },
+                data: qs.stringify({
+                  param: 'first_databasejoin',
+                })
+              });
+            }
+          });
+        }
+      });
+    }
   },
   created: function() {
     this.initialised();
@@ -101,6 +135,7 @@ export default {
   watch: {
     databasejoin: function(value){
       if(value) {
+        this.checkOnboarding();
         this.element.params.join_db_name = this.databases[this.databasejoin_data].database_name;
         this.element.params.database_join_display_type = 'dropdown';
         this.element.params.join_key_column = this.databases[this.databasejoin_data].join_column_id;

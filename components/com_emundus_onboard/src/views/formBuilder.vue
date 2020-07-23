@@ -66,7 +66,7 @@
                       chosen-class="plugin-chosen"
                       ghost-class="plugin-ghost"
                       style="padding-bottom: 2em">
-                  <div class="d-flex plugin-link col-md-offset-3 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)">
+                  <div class="d-flex plugin-link col-md-offset-3 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
                     <em :class="plugin.icon"></em>
                     <span class="ml-10px">{{plugin.name}}</span>
                   </div>

@@ -45,8 +45,8 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
 
 	        $jinput = JFactory::getApplication()->input;
 
-	        $filterCount = $jinput->get->get('filterCount');
-	        $rechercheCount = $jinput->get->get('rechercheCount');
+	        $filterCount = $jinput->getString('filterCount');
+	        $rechercheCount = $jinput->getString('rechercheCount');
 
             $campaigns = $m_camp->getCampaignCount($filterCount, $rechercheCount);
 
@@ -75,11 +75,11 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
 
 	        $jinput = JFactory::getApplication()->input;
 
-	        $filter = $jinput->get->get('filter');
-	        $sort = $jinput->get->get('sort');
-	        $recherche = $jinput->get->get('recherche');
-	        $lim = $jinput->get->get('lim');
-	        $page = $jinput->get->get('page');
+	        $filter = $jinput->getString('filter');
+	        $sort = $jinput->getString('sort');
+	        $recherche = $jinput->getString('recherche');
+	        $lim = $jinput->getInt('lim');
+	        $page = $jinput->getInt('page');
 
             $campaigns = $m_camp->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page);
 
@@ -135,7 +135,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('id');
+	        $data = $jinput->getInt('id');
 	        $m_camp = $this->model;
 
             $result = $m_camp->deleteCampaign($data);
@@ -164,7 +164,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('id');
+	        $data = $jinput->getInt('id');
 	        $m_camp = $this->model;
 
             $result = $m_camp->unpublishCampaign($data);
@@ -193,7 +193,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('id');
+	        $data = $jinput->getInt('id');
 	        $m_camp = $this->model;
 
             $result = $m_camp->publishCampaign($data);
@@ -222,7 +222,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('id');
+	        $data = $jinput->getInt('id');
 	        $m_camp = $this->model;
 
             $result = $m_camp->duplicateCampaign($data);
@@ -272,7 +272,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('body');
+	        $data = $jinput->getRaw('body');
 	        $m_camp = $this->model;
 
             $data['user'] = $user->id;
@@ -303,8 +303,8 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('body');
-	        $cid = $jinput->post->getInt('cid');
+	        $data = $jinput->getRaw('body');
+	        $cid = $jinput->getInt('cid');
 	        $m_camp = $this->model;
 
             $data['user'] = $user->id;
@@ -333,7 +333,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('body');
+	        $data = $jinput->getRaw('body');
 	        $m_camp = $this->model;
 
             $result = $m_camp->createYear($data);
@@ -362,7 +362,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $id = $jinput->get->getInt('id');
+	        $id = $jinput->getInt('id');
 	        $m_camp = $this->model;
 
             $campaign = $m_camp->getCampaignById($id);
@@ -408,8 +408,8 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
     public function updateprofile() {
 
     	$jinput = JFactory::getApplication()->input;
-        $profile = $jinput->post->get('profile');
-        $campaign = $jinput->post->get('campaign');
+        $profile = $jinput->getInt('profile');
+        $campaign = $jinput->getInt('campaign');
         $m_camp = $this->model;
 
         $result = $m_camp->updateProfile($profile, $campaign);
@@ -462,7 +462,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $term = $jinput->get->get('term');
+	        $term = $jinput->getString('term');
 	        $m_camp = $this->model;
 
             $campaigns = $m_camp->getCampaignsToAffectByTerm($term);
@@ -484,9 +484,9 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $document = $jinput->get('document');
+            $document = $jinput->getRaw('document');
             $types = $jinput->getRaw('types');
-            $cid = $jinput->get('cid');
+            $cid = $jinput->getInt('cid');
             $m_camp = $this->model;
 
             $result = $m_camp->createDocument($document,$types,$cid);

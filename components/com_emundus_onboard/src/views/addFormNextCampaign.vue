@@ -113,7 +113,6 @@
   import addEvaluation from "../views/funnelFormulaire/addEvaluation";
   import addEvalVisi from "../views/funnelFormulaire/addEvalVisi";
   import addEvalEval from "../views/funnelFormulaire/addEvalEval";
-  import addMenu from "../views/funnelFormulaire/addMenu";
   import ModalWarningFormBuilder from "./advancedModals/ModalWarningFormBuilder";
 
   const qs = require("qs");
@@ -130,8 +129,7 @@
       addEmail,
       addEvaluation,
       addEvalVisi,
-      addEvalEval,
-      addMenu
+      addEvalEval
     },
 
     props: {

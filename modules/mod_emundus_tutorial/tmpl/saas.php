@@ -138,7 +138,10 @@ if (!empty($articles)) :?>
             Swal.mixin({
                 confirmButtonColor: '#de6339',
                 showCloseButton: true,
-                allowOutsideClick: false
+                allowOutsideClick: false,
+                customClass: {
+                    popup: 'swal-popup-custom',
+                }
             }).queue(queue).then((result) => {
                 <?php if ($run) :?>
                 if(result.value) {

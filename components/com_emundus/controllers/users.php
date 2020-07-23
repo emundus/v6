@@ -345,10 +345,10 @@ class EmundusControllerUsers extends JControllerLegacy {
 				$filterval = $jinput->get('val', array(), 'ARRAY');
 			else
 				$filterval = $jinput->getString('val', null);
-			
+
 			$session = JFactory::getSession();
 			$params = $session->get('filt_params');
-			
+
 			if ($elements == 'false') {
 				$params[$filterName] = $filterval;
 			} else {
@@ -364,7 +364,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 				} else $params['elements'][$filterName] = $filterval;
 			}
 			$session->set('filt_params', $params);
-			
+
 			$session->set('limitstart', 0);
 			echo json_encode((object)(array('status' => true)));
 			exit();
@@ -620,7 +620,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$newuser['em_campaigns'] 	= JRequest::getVar('campaigns', null, 'POST', '', 0);
 		$newuser['em_groups'] 		= JRequest::getVar('groups', null, 'POST', '', 0);
 		$newuser['news'] 			= JRequest::getVar('newsletter', null, 'POST', 'string',0);
-		
+
 		if (preg_match('/^[0-9a-zA-Z\_\@\-\.\+]+$/', $newuser['username']) !== 1) {
 			echo json_encode((object)array('status' => false, 'msg' => 'LOGIN_NOT_GOOD'));
 			exit;
@@ -694,7 +694,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		if ($users_id != "") {
 			$msg = JText::sprintf('THIS_USER_CAN_NOT_BE_DELETED', $users_id);
-		} 
+		}
 		echo json_encode((object) array('status' => $res, 'msg' => $msg));
 
 		exit;
@@ -735,7 +735,7 @@ class EmundusControllerUsers extends JControllerLegacy {
                 $c_messages = new EmundusControllerMessages();
                 $lbl = 'regenerate_password';
 
-                $c_messages->sendEmailNoFnum($selectUser->email, $lbl, $post);
+                $c_messages->sendEmailNoFnum($selectUser->email, $lbl, $post, $id);
 
                 if ($c_messages != true) {
                     $msg = JText::_('EMAIL_NOT_SENT');

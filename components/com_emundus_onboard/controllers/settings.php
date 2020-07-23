@@ -318,5 +318,39 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
+    public function checkfirstdatabasejoin() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+
+            $state = $m_settings->checkFirstDatabaseJoin($user->id);
+            $response = array('status' => $state, 'msg' => 'SUCCESS');
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function removeparam() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $param = $jinput->getString('param');
+
+            $state = $m_settings->removeParam($param, $user->id);
+            $response = array('status' => $state, 'msg' => 'SUCCESS');
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
 }
 

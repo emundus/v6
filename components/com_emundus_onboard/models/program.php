@@ -799,16 +799,22 @@ class EmundusonboardModelprogram extends JModelList {
         }
     }
 
-    function getusers() {
+    function getusers($filters) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+
+        $block_conditions = $db->quoteName('block') . ' = ' . $db->quote(0);
+        if($filters['block'] == 'true'){
+            $block_conditions = $db->quoteName('block') . ' = ' . $db->quote(0) . ' OR ' . $db->quote(1);
+        }
 
         $user = JFactory::getUser()->id;
 
         $query->select('id, name, email, registerDate, lastvisitDate, block')
             ->from($db->quoteName('#__users'))
             ->where($db->quoteName('id') . ' != ' . $db->quote($user))
-            ->andWhere($db->quoteName('id') . ' != 62');
+            ->andWhere($db->quoteName('id') . ' != 62')
+            ->andWhere($block_conditions);
 
         try {
             $db->setQuery($query);

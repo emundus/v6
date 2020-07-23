@@ -7,13 +7,19 @@
                 @UpdateUsers="getUsers"
         />
         <button class="create-user-admin__button bouton-sauvergarder-et-continuer-3" @click="$modal.show('modalAddUser')">{{ addUser }}</button>
+        <div class="d-flex mt-1" id="blocked_filter">
+            <input type="checkbox" class="mr-1" v-model="block" />
+            <p>{{BlockedUsers}}</p>
+        </div>
         <table-component
                 :data="users"
                 sort-by="name"
                 sort-order="asc"
+                show-caption="false"
                 :filter-placeholder="Search"
                 :filter-no-results="NoResultsFound"
                 ref="table"
+                :key="table_users"
         >
             <table-column show="id" label="ID" data-type="numeric" hidden></table-column>
             <table-column show="name" :label="Name"></table-column>
@@ -59,6 +65,11 @@
                 loading: false,
                 tableUsers: 0,
                 users: [],
+                filters: {
+                  block: false,
+                },
+                block: false,
+                table_users: 0,
                 Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),
                 Email: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL"),
                 LastConnected: Joomla.JText._("COM_EMUNDUS_ONBOARD_LAST_CONNECTED"),
@@ -72,6 +83,7 @@
                 LockUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_LOCK_USER"),
                 UnlockUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_UNLOCK_USER"),
                 ResetPassword: Joomla.JText._("COM_EMUNDUS_ONBOARD_RESET_PASSWORD"),
+                BlockedUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_BLOCKED_USERS"),
             };
         },
 
@@ -80,11 +92,19 @@
                 axios({
                     method: "get",
                     url: "index.php?option=com_emundus_onboard&controller=program&task=getusers",
-                }).then(response => {
+                    params: {
+                       filters : this.filters,
+                    },
+                    paramsSerializer: params => {
+                        return qs.stringify(params);
+                    }
+                    }).then(response => {
                     this.users = response.data.data;
-                    this.users.forEach((user) => {
+                    this.users.forEach((user,key) => {
                         user.lastvisitDate = new Date(user.lastvisitDate).toLocaleDateString(this.actualLanguage, this.options);
-                    })
+                    });
+                    document.getElementsByClassName('table-component__filter')[0].append(document.getElementById('blocked_filter'));
+                    this.$refs.table.refresh();
                 });
             },
             unlockUser(id){
@@ -183,9 +203,14 @@
 
         created() {
             this.getUsers();
+            //document.getElementsByClassName('table-component__filter')[0].append(document.getElementById('blocked_filter'));
         },
 
         watch: {
+            block: function(value) {
+                this.filters.block = value;
+                this.getUsers();
+            }
         }
     };
 </script>

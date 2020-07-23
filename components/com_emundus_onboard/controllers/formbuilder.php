@@ -15,7 +15,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport('joomla.application.component.controller');
 
 /**
- * formuairez Controller
+ * FormBuilder Controller
  *
  * @package    Joomla
  * @subpackage eMundus
@@ -76,11 +76,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Update the publish status of an element
-     *
-     * @throws Exception
-     */
+
     public function publishunpublishelement() {
         $user = JFactory::getUser();
         $m_form = $this->model;
@@ -98,11 +94,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Update global params of an element
-     *
-     * @throws Exception
-     */
+
     public function updateparams() {
         $user = JFactory::getUser();
         $m_form = $this->model;
@@ -120,11 +112,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Update sublabels of an element
-     *
-     * @throws Exception
-     */
+
      public function SubLabelsxValues() {
         $user = JFactory::getUser();
         $m_form = $this->model;
@@ -242,11 +230,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Create a new page in a form
-     *
-     * @throws Exception
-     */
+
      public function createMenu() {
          $user = JFactory::getUser();
          $m_form = $this->model;
@@ -272,11 +256,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
          exit;
      }
 
-    /**
-     * Delete a menu
-     *
-     * @throws Exception
-     */
+
     public function deletemenu() {
         $user = JFactory::getUser();
         $m_form = $this->model;
@@ -294,6 +274,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         echo json_encode((object)$changeresponse);
         exit;
     }
+
 
     public function savemenuastemplate() {
         $user = JFactory::getUser();
@@ -313,34 +294,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Create a group
-     *
-     * @throws Exception
-     */
-    public function createGroup(){
-        $user = JFactory::getUser();
-        $m_form = $this->model;
 
-        $jinput = JFactory::getApplication()->input;
-        $label = $jinput->getString('label');
-        $fid = $jinput->getInt('fid');
-
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $changeresponse = $m_form->createGroup($label, $fid);
-        }
-        echo json_encode((object)$changeresponse);
-        exit;
-    }
-
-    /**
-     * Create a simple group with a default label
-     *
-     * @throws Exception
-     */
     public function createsimplegroup(){
         $user = JFactory::getUser();
         $m_form = $this->model;
@@ -362,11 +316,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Delete a group
-     *
-     * @throws Exception
-     */
+
     public function deleteGroup() {
         $user = JFactory::getUser();
         $m_form = $this->model;
@@ -407,11 +357,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Create an element with default parameters
-     *
-     * @throws Exception
-     */
+
     public function createsimpleelement() {
         $user = JFactory::getUser();
         $m_form = $this->model;
@@ -453,11 +399,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Delete an element
-     *
-     * @throws Exception
-     */
+
     public function deleteElement() {
         $user = JFactory::getUser();
         $m_form = $this->model;
@@ -475,11 +417,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Reorder pages
-     *
-     * @throws Exception
-     */
+
     public function reordermenu() {
         $user = JFactory::getUser();
         $m_form = $this->model;
@@ -498,11 +436,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Return the group ordering of a page
-     *
-     * @throws Exception
-     */
+
     public function getGroupOrdering() {
         $user = JFactory::getUser();
         $m_form = $this->model;

@@ -394,7 +394,7 @@ class EmundusonboardModelsettings extends JModelList {
         return true;
     }
 
-    private function removeParam($param, $user_id) {
+    function removeParam($param, $user_id) {
 
         $user = JFactory::getUser($user_id);
 
@@ -558,5 +558,16 @@ class EmundusonboardModelsettings extends JModelList {
         } else {
             return false;
         }
+    }
+
+    function checkFirstDatabaseJoin($user_id) {
+        $user = JFactory::getUser($user_id);
+
+        $table = JTable::getInstance('user', 'JTable');
+        $table->load($user->id);
+
+        // Check if the param exists but is false, this avoids accidetally resetting a param.
+        $params = $user->getParameters();
+        return $params->get('first_databasejoin', true);
     }
 }

@@ -34,6 +34,7 @@
               <a class="edit-group" :class="{ 'disable-element': elementDisabled}" @click="addingElement = !addingElement" :title="addItem">
                 <em class="add-element-icon" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow-evaluation' : '']"></em>
               </a>
+              <transition :name="'slide-down'" type="transition">
                 <draggable
                         v-model="plugins"
                         v-bind="dragOptions"
@@ -43,10 +44,11 @@
                         @end="addingNewElement($event)"
                         class="draggable-span"
                         style="padding-bottom: 5px">
-                  <div class="d-flex plugin-link handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value">
+                  <div class="d-flex plugin-link handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
                     <em :class="plugin.icon"></em>
                   </div>
                 </draggable>
+              </transition>
             </div>
           </div>
           <fieldset :class="group.group_class" :id="'group_'+group.group_id" :style="group.group_css">
@@ -536,6 +538,13 @@
           this.createElement(gid,plugin,evt.newIndex)
         }
       },
+      addingNewElementByDblClick: _.debounce(function(plugin) {
+        let gid = Object.keys(this.object_json.Groups)[Object.keys(this.object_json.Groups).length-1].split('_')[1];
+        let index = this.object_json.Groups['group_' + gid].elts.length;
+        if(typeof gid != 'undefined'){
+          this.createElement(gid,plugin,index)
+        }
+      }, 250, { 'maxWait': 1000 }),
       updateLabelElement(element) {
         let labels = {
           fr: element.label_fr,

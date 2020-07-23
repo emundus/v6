@@ -101,7 +101,6 @@
   import addEmail from "../views/funnelFormulaire/addEmail";
   import addEvalVisi from "../views/funnelFormulaire/addEvalVisi";
   import addEvalEval from "../views/funnelFormulaire/addEvalEval";
-  import addMenu from "../views/funnelFormulaire/addMenu";
   import addEvaluationGrid from "./funnelFormulaire/addEvaluationGrid";
 
   import ModalAddUser from "./advancedModals/ModalAddUser";
@@ -117,7 +116,6 @@
       addEmail,
       addEvalVisi,
       addEvalEval,
-      addMenu,
       addEvaluationGrid,
       ModalAddUser
     },

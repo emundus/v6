@@ -474,12 +474,7 @@ class EmundusonboardModelform extends JModelList {
 		}
 	}
 
-	/**
-	 * @param   array $data the row to unpublish in table.
-	 *
-	 * @return boolean
-	 * Unpublish form(s) in DB
-	 */
+
 	public function unpublishForm($data) {
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -508,12 +503,7 @@ class EmundusonboardModelform extends JModelList {
 		}
 	}
 
-	/**
-	 * @param   array $data the row to publish in table.
-	 *
-	 * @return boolean
-	 * Publish form(s) in DB
-	 */
+
 	public function publishForm($data) {
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -542,12 +532,7 @@ class EmundusonboardModelform extends JModelList {
 		}
 	}
 
-	/**
-	 * @param   array $data the row to copy in table.
-	 *
-	 * @return boolean
-	 * Copy form(s) in DB
-	 */
+
 	public function duplicateForm($data) {
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -679,12 +664,7 @@ class EmundusonboardModelform extends JModelList {
         }
 	}
 
-	/**
-	 * @param $id
-	 *
-	 * @return array|boolean
-	 * Retrieve one form by id
-	 */
+
 	public function getFormById($id) {
 
 		if (empty($id)) {
@@ -709,16 +689,7 @@ class EmundusonboardModelform extends JModelList {
 		}
 	}
 
-	/**
-	 * @param $data
-	 * @param $userId
-	 * @param $userName
-	 *
-	 * @return bool|mixed|string
-	 *
-	 * @since version
-	 * Create a new form page
-	 */
+
 	public function createProfile($data, $userId, $userName) {
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -881,12 +852,7 @@ class EmundusonboardModelform extends JModelList {
 		}
 	}
 
-    /**
-     * @param $menutype
-     * @param $title
-     * @return mixed|string
-     * Create the menutype of form
-     */
+
 	public function createMenuType($menutype, $title) {
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -922,12 +888,7 @@ class EmundusonboardModelform extends JModelList {
 		}
 	}
 
-    /**
-     * @param $menu
-     * @param $menutype
-     * @return mixed|string
-     * Create a menulink
-     */
+
 	public function createMenu($menu, $menutype) {
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -1034,14 +995,7 @@ class EmundusonboardModelform extends JModelList {
 		}
 	}
 
-	/**
-	 *
-	 * @param $prid
-	 * @param $cid
-	 *
-	 * @return array
-	 * get list of declared documents
-	 */
+
 	public function getAllDocuments($prid, $cid)
 	{
 		$db = JFactory::getDbo();
@@ -1069,11 +1023,7 @@ class EmundusonboardModelform extends JModelList {
 		}
 	}
 
-	/**
-	 *
-	 * @return array
-	 * get list of declared documents
-	 */
+
 	public function getUnDocuments() {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -1308,320 +1258,6 @@ class EmundusonboardModelform extends JModelList {
         return $db->execute();
     }
 
-	public function deleteRemainingDocuments($prid, $allDocumentsIds) {
-		$db = $this->getDbo();
-
-		$values = [];
-
-		foreach ($allDocumentsIds as $document) {
-			array_push($values, '(' . $document . ',' . $prid . ',0,0)');
-		}
-
-		$query =
-			'INSERT INTO jos_emundus_setup_attachment_profiles 
-        (attachment_id, profile_id, displayed, published)
-        VALUES 
-        ' .
-			implode(',', $values) .
-			'
-        ON DUPLICATE KEY UPDATE 
-        displayed = VALUES(displayed),
-        published = VALUES(published),
-        profile_id = VALUES(profile_id)
-        ;';
-
-		try {
-			$db->setQuery($query);
-			return $db->execute();
-		} catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-			return $e->getMessage();
-		}
-	}
-
-	public function getMenu($prid) {
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$menu = 'menu-profile' . $prid;
-
-		$query->select('*')
-			->from($db->quoteName('#__menu_types'))
-			->where($db->quoteName('menutype') . ' = ' . $db->quote($menu));
-
-		$db->setQuery($query);
-
-		try {
-			$db->setQuery($query);
-			return $db->loadObject();
-		} catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-			return false;
-		}
-	}
-
-	public function getMenuItems($menutype) {
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select([
-				'id AS itemid',
-				'title',
-				'alias',
-				'type',
-				'link',
-				'published',
-				'parent_id',
-				'component_id',
-				'published'
-			])
-			->from($db->quoteName('#__menu'))
-			->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
-			->where($db->quoteName('published') . '!= -2');
-
-		$db->setQuery($query);
-
-		try {
-			$db->setQuery($query);
-			return $db->loadObjectList();
-		} catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-			return false;
-		}
-	}
-
-	public function getAliases() {
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select('alias')->from($db->quoteName('#__menu'));
-		$db->setQuery($query);
-
-		try {
-			$db->setQuery($query);
-			return $db->loadObjectList();
-		} catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-			return false;
-		}
-	}
-
-	public function getGroupRights($groupId) {
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select('*')
-			->from($db->quoteName('#__emundus_acl'))
-			->where($db->quoteName('group_id') . ' = ' . $db->quote($groupId));
-
-		$db->setQuery($query);
-
-		try {
-			$db->setQuery($query);
-			return $db->loadObjectList();
-		} catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-			return false;
-		}
-	}
-
-	public function getActionsLabels($actionIds) {
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$bigWhere = 'id = -1';
-
-		foreach ($actionIds as $actionId) {
-			$bigWhere .= ' OR id = ' . $actionId;
-		}
-
-		$query->select('label')
-			->from($db->quoteName('#__emundus_setup_actions'))
-			->where($bigWhere);
-
-		$db->setQuery($query);
-
-		$labels = $db->loadObjectList();
-
-		$newLabels = [];
-		$newLabel = "";
-
-		foreach ($labels as $label) {
-			$label = get_object_vars($label);
-			$label = $label['label'];
-
-			JText::script($label);
-			$newLabel = JText::_($label);
-
-			array_push($newLabels, $newLabel);
-		}
-
-		try {
-			$db->setQuery($query);
-			return $newLabels;
-		} catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-			return false;
-		}
-	}
-
-	public function updateGroupRights($datas, $group_id) {
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
-
-		if (count($datas) > 0) {
-			$values = [];
-
-			foreach ($datas as $data) {
-				foreach ($data as $value) {
-					$id = $data['id'];
-					$action_id = $data['action_id'];
-					$c = $data['c'];
-					$r = $data['r'];
-					$u = $data['u'];
-					$d = $data['d'];
-					$time_date = $data['time_date'];
-				}
-				array_push(
-					$values,
-					'(' .
-					$id .
-					', ' .
-					$group_id .
-					', ' .
-					$action_id .
-					', ' .
-					$c .
-					', ' .
-					$r .
-					', ' .
-					$u .
-					', ' .
-					$d .
-					', ' .
-					$db->quote($time_date) .
-					')'
-				);
-			}
-
-			$query =
-				'INSERT INTO jos_emundus_acl 
-            (id, group_id, action_id, c, r, u, d, time_date)
-            VALUES 
-            ' .
-				implode(',', $values) .
-				'
-            ON DUPLICATE KEY UPDATE 
-            group_id = VALUES(group_id),
-            action_id = VALUES(action_id),
-            c = VALUES(c),
-            r = VALUES(r),
-            u = VALUES(u),
-            d = VALUES(d),
-            time_date = VALUES(time_date)
-            ;';
-
-			try {
-				$db->setQuery($query);
-				return $db->execute();
-			} catch (Exception $e) {
-				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-				return $e->getMessage();
-			}
-		} else {
-			return false;
-		}
-	}
-
-	public function getGroupsIds() {
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select('DISTINCT(group_id)')
-			->from($db->quoteName('#__emundus_acl'));
-		$db->setQuery($query);
-
-		try {
-			$db->setQuery($query);
-			return $db->loadObjectList();
-		} catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-			return false;
-		}
-	}
-
-	public function deleteGroup($group_id) {
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query->clear()
-			->delete($db->quoteName('#__emundus_setup_groups_repeat_campaign'))
-			->where($db->quoteName('parent_id') . ' = ' . $group_id);
-
-		try {
-			$db->setQuery($query);
-			return $db->execute();
-		} catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-			return false;
-		}
-	}
-
-	public function addGroup($group_id, $campaign_id) {
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
-
-		$data = array(
-			"parent_id" => $group_id,
-			"campaign_id" => $campaign_id,
-			"params" => ""
-		);
-
-		$query->insert($db->quoteName('#__emundus_setup_groups_repeat_campaign'))
-			->columns($db->quoteName(array_keys($data)))
-			->values(implode(',', $db->Quote(array_values($data))));
-
-		try {
-			$db->setQuery($query);
-			return $db->execute();
-		} catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-			return $e->getMessage();
-		}
-	}
-
-	public function maxGroup() {
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select('MAX(group_id) AS maxParent')
-			->from($db->quoteName('#__emundus_acl'));
-
-		try {
-			$db->setQuery($query);
-			return $db->loadObject();
-		} catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-			return $e->getMessage();
-		}
-	}
-
-	public function getGroupsCampaign($campaign_id) {
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select('parent_id')
-			->from($db->quoteName('#__emundus_setup_groups_repeat_campaign'))
-			->where($db->quoteName('campaign_id') . ' = ' . $campaign_id);
-
-		try {
-			$db->setQuery($query);
-			return $db->loadObjectList();
-		} catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-			return $e->getMessage();
-		}
-	}
 
 	/**
 	 * @param $profile_id
