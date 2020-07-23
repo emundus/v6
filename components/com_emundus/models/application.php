@@ -3169,7 +3169,7 @@ class EmundusModelApplication extends JModelList {
 	        $query->select(['id','link'])
 		        ->from($db->quoteName('#__menu'))
 		        ->where($db->quoteName('published').'=1 AND '.$db->quoteName('menutype').' LIKE '.$db->quote($user->menutype).' AND '.$db->quoteName('link').' <> "" AND '.$db->quoteName('link').' <> "#"')
-		        ->order($db->quoteName('m.lft').' ASC');
+		        ->order($db->quoteName('lft').' ASC');
 
 	        try {
 		        $db->setQuery($query);
