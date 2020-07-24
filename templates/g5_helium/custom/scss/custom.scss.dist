@@ -3556,3 +3556,40 @@ footer#g-footer {
 .applicant-form input[type='radio']:checked  {
     background: $base-secondary-color;
 }
+
+/* BTNS - GESTIONNAIRE - ADMINISTRATION - JCRM */
+.g-back-office-emundus-tableau.view-contacts .app-container.ng-scope  {
+    .col-md-7.ct-view.contact .panel-heading {
+        .btn.btn-default.btn.xs.pull-right {
+            background: $base-secondary-color !important;
+        }
+    }
+}
+
+/* BTNS - GESTIONNAIRE - ADMINISTRATION - DROPFILES */
+.com_dropfiles.view-manage {
+    #g-main-mainbody {
+        padding-top: 10px;
+
+        a {
+            color: $base-primary-color !important;
+        }
+
+        #newcategory.btn-group.button-primary.btn-categories.centpc {
+            background: $base-primary-color !important;
+            border-color:  $base-primary-color  !important;
+            margin-top: 0;
+            box-shadow: none;
+            text-shadow: none;
+
+            a.btn.btn-default {
+                padding-bottom: 35px !important;
+                color: white !important;
+
+                &:hover, &:active, &:focus {
+                    color: white !important;
+                }
+            }
+        }
+    }
+}

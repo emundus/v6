@@ -260,9 +260,13 @@ tr.selected   {background:#FBC399;}
 	background: -moz-linear-gradient(center right , #FFFFFF, #09F); 
 	background:-webkit-linear-gradient(#FFFFFF, #09F);
 }
-.delete{
+.delete {
 	background-color:#FC0;
     background: -moz-linear-gradient(center left , #FFFFFF, #FC0);
 	background:-webkit-linear-gradient(#FFFFFF, #FC0);
 }
 
+/* BTNS - GESTIONNAIRE - ADMINISTRATION - USERS */
+.app-container.ng-scope .col-md-3.ct-list.contact .panel-heading .btn.btn-primary.btn-xs.pull-right[ng-click="switchSearch()"] {
+	padding: 5.5px 12px !important;
+}
