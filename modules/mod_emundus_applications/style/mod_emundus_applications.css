@@ -137,4 +137,14 @@ button#back:hover, button#back:active, button#back:focus,
 .list-group.candidacy-files-list i.icon-print, .list-group.candidacy-files-list i.icon-trash {
     padding-left: 3px !important;
 }
+
+.list-group .col-xs-6.col-md-4 a {
+    margin-bottom: 2px;
+}
+
+a.btn.btn-success:not(.btn-xs) {
+    width: 200px;
+    text-align: initial;
+    padding-left: 23px !important;
+}
 ​
