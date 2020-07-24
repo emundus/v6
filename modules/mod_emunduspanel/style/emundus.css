@@ -1,4 +1,4 @@
-.emundus_home_page{
+.emundus_home_page {
     width:90%;
     margin-left:5%;
     text-align:center;
@@ -12,7 +12,7 @@
 a.text {
     opacity: 1;
 }
-    /*Accueil connecté*/
+/*Accueil connecté*/
 .select select {
     border: 1px solid #999;
     color: #666;
@@ -25,7 +25,7 @@ a.text {
     -webkit-box-shadow: none;
     box-shadow: none;
 }
-    /* Accueil Coordinateur */
+/* Accueil Coordinateur */
 .update {
     text-align: right;
     margin-top: 3rem;
@@ -62,9 +62,8 @@ div#em-panel .ui.grid {
 }
 .emundus_home_page select#profile.form-control.form-control-sm {
     border: none;
-    border-radius: 0px !important;
+    border-radius: 0 !important;
 }
 #em-panel.emundus_home_page p {
     text-align: left;
-    width: 90%;
 }
