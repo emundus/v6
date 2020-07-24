@@ -3586,7 +3586,8 @@ label.label__placeholder{
 
 .db-table{
   padding: 20px;
-  overflow: scroll;
+  overflow-x: scroll;
+  overflow-y: hidden;
 }
 .db-table h3{
   cursor: pointer;
@@ -3732,6 +3733,20 @@ label.label__placeholder{
   float: right;
   position: relative;
   top: 35px;
+}
+
+.custom-table-csv{
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 19px;
+  table-layout: fixed;
+}
+.custom-table-csv th {
+  padding: 10px;
+}
+
+.custom-table-csv td {
+  padding: 10px;
 }
 
 

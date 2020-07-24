@@ -1,13 +1,17 @@
 # Adding an other module to fix emundus logo on saas component
 INSERT INTO jos_modules (asset_id, title, note, content, ordering, position, checked_out, checked_out_time, publish_up, publish_down, published, module, access, showtitle, params, client_id, language)
-VALUES (308, 'Logo SaaS', '', '<p><a href="index.php"><img src="images/emundus/Emundus-LogoTypo-RVB.png" width="180" height="31" /> </a></p>', 1, 'header-a-saas', 0, null, '2017-12-05 10:33:43', '2030-07-20 16:39:07', 1, 'mod_custom', 1, 0, '{"prepare_content":1,"backgroundimage":"","layout":"_:default","moduleclass_sfx":"","cache":1,"cache_time":900,"cachemode":"static","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}', 0, '*');
+VALUES (308, 'Logo SaaS', '', '<p><a href="index.php"><img src="images/emundus/Emundus-LogoTypo-RVB.png" width="180" height="31" /> </a></p>', 1, 'header-a-saas', 0, '2017-12-05 10:33:43', '2017-12-05 10:33:43', '2030-07-20 16:39:07', 1, 'mod_custom', 1, 0, '{"prepare_content":1,"backgroundimage":"","layout":"_:default","moduleclass_sfx":"","cache":1,"cache_time":900,"cachemode":"static","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}', 0, '*');
+SET @logo_module := LAST_INSERT_ID();
+
+INSERT INTO jos_modules_menu
+VALUES(@logo_module,0);
 #
 
 # Create table emundus_datas_library
 CREATE TABLE IF NOT EXISTS jos_emundus_datas_library (
                                                          id int(11) NOT NULL AUTO_INCREMENT,
                                                          database_name varchar(255) NOT NULL,
-                                                         join_column_id varchar(255) NOT NULL,
+                                                         join_column_id varchar(255) DEFAULT 'id' NOT NULL,
                                                          join_column_val varchar(255) NOT NULL,
                                                          label varchar(255) NULL,
                                                          description varchar(255) NULL,
@@ -16,14 +20,14 @@ CREATE TABLE IF NOT EXISTS jos_emundus_datas_library (
                                                          PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='Bibliothèques des tables de databasejoin';
 
-INSERT INTO jos_emundus_datas_library (database_name, label, description,created)
-VALUES('data_country','Pays','Liste des pays','2020-07-17 10:00:00');
+/*INSERT INTO jos_emundus_datas_library (database_name,join_column_id,join_column_val,label, description,created,translation)
+VALUES('data_country','Pays','Liste des pays','2020-07-17 10:00:00');*/
 
-INSERT INTO jos_emundus_datas_library (database_name, label, description,created)
-VALUES('data_departements','Départements français','Liste des départements français','2020-07-17 10:00:00');
+INSERT INTO jos_emundus_datas_library (database_name,join_column_id,join_column_val,label, description,created,translation)
+VALUES('data_departements','departement_id','departement_nom','Départements français','Liste des départements français','2020-07-17 10:00:00',0);
 
-INSERT INTO jos_emundus_datas_library (database_name, label, description,created)
-VALUES('data_nationality','Nationalités','Liste des nationalités','2020-07-17 10:00:00');
+INSERT INTO jos_emundus_datas_library (database_name,join_column_id,join_column_val,label, description,created,translation)
+VALUES('data_nationality','id','label','Nationalités','Liste des nationalités','2020-07-17 10:00:00',1);
 #
 
 # Rename templates databases and add DELETE CASCADE
@@ -58,6 +62,21 @@ WHERE title LIKE 'Logo SaaS';
 UPDATE jos_modules
 SET content = '<p><a href="index.php"><img src="images/custom/logo.png" width="180" height="auto" /> </a></p>'
 WHERE title LIKE 'Logo';
+
+UPDATE jos_modules
+SET content = '<div class="bas-footer">
+<div class="em-containerAdresseLogo">
+<div class="adresse">
+<p class="university">eMundus</p>
+<p class="street">1 Rue Alexander Fleming<br /> 17000 La Rochelle</p>
+</div>
+<div class="logo"><a href="fr/index.php"><img class="logo" style="object-fit: contain; min-height: 35px;" src="images/custom/logo.png" alt="Logo" width="180" height="auto" /></a></div>
+</div>
+<div class="credits-emundus">
+<p>Logiciel <a title="Logiciel de gestion des appel à projets et dépôt de candidature en ligne" href="https://www.emundus.fr" target="_blank" rel="noopener noreferrer">eMundus</a></p>
+</div>
+</div>'
+WHERE title LIKE 'footer';
 #
 
 # Update onboarding articles

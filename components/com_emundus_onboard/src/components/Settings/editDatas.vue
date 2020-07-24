@@ -10,13 +10,16 @@
         <ModalAddDatas
                 @updateDatabases="getDatabases"
         />
+        <ModalImportDatas
+                @updateDatabases="getDatabases"
+        />
         <div class="d-flex">
             <a class="bouton-sauvergarder-et-continuer-3 mr-1" @click="$modal.show('modalAddDatas')">
                 {{CreateDatas}}
             </a>
-<!--            <a class="bouton-sauvergarder-et-continuer-3">
+            <a class="bouton-sauvergarder-et-continuer-3" @click="$modal.show('modalImportDatas')">
                 {{ImportDatas}}
-            </a>-->
+            </a>
         </div>
         <div class="mt-1">
             <div v-for="(database,index) in databases" class="db-table">
@@ -50,6 +53,7 @@
 <script>
     import axios from "axios";
     import ModalAddDatas from "../../views/advancedModals/ModalAddDatas";
+    import ModalImportDatas from "../../views/advancedModals/ModalImportDatas";
 
     const qs = require("qs");
 
@@ -57,7 +61,8 @@
         name: "editDatas",
 
         components: {
-            ModalAddDatas
+            ModalAddDatas,
+            ModalImportDatas,
         },
 
         props: {
@@ -149,5 +154,6 @@
     .db-item{
         background-size: 20px;
         cursor: pointer;
+        height: 35px;
     }
 </style>
