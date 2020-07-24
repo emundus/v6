@@ -13,7 +13,7 @@ $site_offset = $config->get('offset');
     <?php } else { ?>
             <h1 class="title em-program-title"><?php echo $this->campaign['label'];?></h1>
                 <div <?php if (!empty($this->com_emundus_programme_progdesc_class)) { echo "class=\"".$this->com_emundus_programme_progdesc_class."\""; } ?>>
-                    <p> <?php if ($this->com_emundus_programme_showprogramme) { echo $this->campaign['notes']; }?> </p>
+                    <p> <?php if (!empty($this->com_emundus_programme_showprogramme)) { echo $this->campaign['notes']; }?> </p>
 
                     <?php if($this->com_emundus_programme_showlink) :?>
                         <a class="btn btn-primary <?php echo !empty($this->com_emundus_programme_showlink_class) ? $this->com_emundus_programme_showlink_class : "";?>" target="_blank" href="<?php echo $this->campaign['link'] ;?>"><?php echo JText::_('MORE_INFO');?></a>
@@ -28,11 +28,15 @@ $site_offset = $config->get('offset');
                 <legend><?php echo JText::_('CAMPAIGN_PERIOD'); ?></legend>
                 <strong><i class="icon-clock"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?></strong>
 
-                <?php echo JFactory::getDate(new JDate(strtotime($this->campaign['start_date']),$site_offset))->format(JText::_('DATE_FORMAT_LC2'));
-                //date(JText::_('DATE_FORMAT_LC2'), strtotime($this->campaign['start_date'])); ?><br>
+                <?php echo JFactory::getDate(new JDate(strtotime($this->campaign['start_date']),$site_offset))->format(JText::_('DATE_FORMAT_LC2'));?>
+                <br>
                 <strong><i class="icon-clock"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?></strong>
-                <?php echo JFactory::getDate(new JDate(strtotime($this->campaign['end_date']),$site_offset))->format(JText::_('DATE_FORMAT_LC2'));
-                //date(JText::_('DATE_FORMAT_LC2'), strtotime($this->campaign['end_date'])); ?>
+                <?php echo JFactory::getDate(new JDate(strtotime($this->campaign['end_date']),$site_offset))->format(JText::_('DATE_FORMAT_LC2'));?>
+            </fieldset>
+        <br>
+            <fieldset class="em_period">
+                <a class="btn goback-btn"   role="button" href="index.php" data-toggle="sc-modal" ><?= JText::_('GO_BACK');?></a>
+                <a class="btn save-btn"  role="button" href="<?=$this->com_emundus_programme_candidate_link . '&cid=' . $this->campaign['id'];?>" data-toggle="sc-modal" ><?= JText::_('APPLY_NOW');?></a>
             </fieldset>
 
 <?php } ?>
