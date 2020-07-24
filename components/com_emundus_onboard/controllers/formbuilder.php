@@ -147,7 +147,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
 
         $jinput = JFactory::getApplication()->input;
         $labelTofind = $jinput->getString('labelTofind');
-        $newLabel = $jinput->getString('NewSubLabel');
+        $newLabel = $jinput->getRaw('NewSubLabel');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	        $result = 0;
@@ -236,8 +236,8 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
          $m_form = $this->model;
 
          $jinput = JFactory::getApplication()->input;
-         $label = $jinput->getString('label');
-         $intro = $jinput->getString('intro');
+         $label = $jinput->getRaw('label');
+         $intro = $jinput->getRaw('intro');
          $prid = $jinput->getInt('prid');
          $modelid = $jinput->getInt('modelid');
          $template = $jinput->getString('template');
