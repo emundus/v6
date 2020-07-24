@@ -3497,18 +3497,20 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
 footer#g-footer {
     background-color: #eee;
     border-top: none;
-    position: absolute;
     bottom: 0;
     width: 100vw;
 }
 
 #g-page-surround {
-    min-height:100vh;
+    min-height:100vh !important;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 #g-page-surround >  .g-container:not(.g-flushed) {
     width: 100vw !important;
-    margin-top: 100px;
+    margin-top: auto;
     height: 180px;
 }
 
