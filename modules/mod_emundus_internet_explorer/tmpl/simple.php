@@ -1,9 +1,6 @@
 <?php
 defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
-$document = JFactory::getDocument();
-$document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'bootstrap-336'.DS.'css'.DS.'bootstrap.min.css');
-$document->addStyleSheet('media'.DS.'com_emundus'.DS.'lib'.DS.'Semantic-UI-CSS-master'.DS.'semantic.min.css');
 ?>
 
 <center>
