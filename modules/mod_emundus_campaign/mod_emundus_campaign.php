@@ -83,6 +83,12 @@ if (!empty($program_code)) {
     $condition .= " AND pr.code IN(" . implode ( "','", array_map('trim', explode(',', $db->Quote($program_code)))) . ") ";
 }
 
+// Get single campaign
+$cid = JFactory::getApplication()->input->getInt('id', 0);
+if (!empty($cid)) {
+    $condition = ' AND ca.id = ' . $cid;
+}
+
 switch ($mod_em_campaign_groupby) {
     case 'month':
         $condition .= ' ORDER BY '.$order;
