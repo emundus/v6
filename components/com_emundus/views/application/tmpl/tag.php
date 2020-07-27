@@ -25,6 +25,10 @@ JFactory::getSession()->set('application_layout', 'tag');
                         <?php echo JText::_('ADD'); ?>
                     </button>
 	            <?php endif;?>
+                <div class="btn-group pull-right">
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
+                </div>
             </div>
             <div class="panel-body em-container-tags-body">
                 <ul class="list-group">

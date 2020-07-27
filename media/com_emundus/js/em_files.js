@@ -329,7 +329,7 @@ function tableOrder(order) {
 }
 
 // Open Application file
-function openFiles(fnum) {
+function openFiles(fnum, page = 0) {
 
     jQuery("html, body").animate({scrollTop : 0}, 300);
     // Run the reload actions function without waiting for return.
@@ -339,79 +339,7 @@ function openFiles(fnum) {
     var cid = parseInt(fnum.fnum.substr(14, 7));
     var sid = parseInt(fnum.fnum.substr(21, 7));
 
-    $.ajax({
-        type:'get',
-        url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&fnum='+fnum.fnum,
-        dataType:'json',
-        success: function(result) {
-
-            String.prototype.fmt = function (hash) {
-                var string = this, key;
-                for (key in hash) {
-                    string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
-                    return string;
-                }
-            };
-
-            $('#em-appli-menu .list-group').empty();
-            if (result.status) {
-                var menus = result.menus;
-                var firstMenu = menus[0].link;
-                var menuList = '';
-
-                for (var m in menus) {
-                    if (isNaN(parseInt(m)) || isNaN(menus[m].id) || typeof(menus[m].title) == 'undefined') {
-                        break;
-                    }
-
-                    url = menus[m].link.fmt({ fnum: fnum.fnum, applicant_id: sid, campaign_id: cid });
-                    url += '&fnum='+fnum.fnum;
-                    url += '&Itemid='+itemId;
-                    menuList += '<a href="'+url+'" class="list-group-item" title="'+menus[m].title+'" id="'+menus[m].id+'">';
-
-                    if (menus[m].hasSons) {
-                        menuList += '<span class="glyphicon glyphicon-plus" id="'+menus[m].id+'"></span>';
-                    }
-
-                    menuList +=  '<strong>'+menus[m].title+'</strong></a>';
-                }
-                $('#em-appli-menu .list-group').append(menuList);
-
-                $.ajax({
-                    type:'get',
-                    url:firstMenu,
-                    dataType:'html',
-                    data:({fnum:fnum.fnum}),
-                    success: function(result) {
-                        $('.em-dimmer').remove();
-                        $('#em-files-filters').hide();
-                        $(".main-panel .panel.panel-default").hide();
-                        $('#em-appli-block').empty();
-                        $('#em-appli-block').append(result);
-                        $('#accordion .panel.panel-default').show();
-                        $('#em-appli-menu, #em-last-open, #em-assoc-files, #em-synthesis, .em-open-files > div[id="'+fnum.fnum+'"]').show();
-                        menuBar1();
-
-                        $('#em-close-multi-file').hide();
-                        $('#em-close-multi-file button').hide();
-                    },
-                    error: function (jqXHR) {
-                        console.log(jqXHR.responseText);
-                        if (jqXHR.status === 302) {
-                            window.location.replace('/user');
-                        }
-                    }
-                });
-
-            } else {
-                $('#em-appli-menu .list-group').append(result.msg);
-            }
-        },
-        error: function (jqXHR) {
-            console.log(jqXHR.responseText);
-        }
-    });
-
+    
     $('#em-assoc-files .panel-body').empty();
 
     $.ajax({
@@ -450,6 +378,93 @@ function openFiles(fnum) {
             $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
             $('#em-synthesis .panel-body').empty();
             $('#em-synthesis .panel-body').append(panel);
+			
+			$.ajax({
+				type:'get',
+				url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&fnum='+fnum.fnum,
+				dataType:'json',
+				success: function(result) {
+
+					String.prototype.fmt = function (hash) {
+						var string = this, key;
+						for (key in hash) {
+							string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]);
+							return string;
+						}
+					};
+
+					$('#em-appli-menu .list-group').empty();
+					if (result.status) {
+						var menus = result.menus;
+						var numMenu = 0;
+
+                        while (numMenu <= menus.length) {
+                            if (menus[numMenu].link.indexOf("layout="+page) != -1) {
+                                break;
+                            }
+                            numMenu++;
+                            if(numMenu >= menus.length){
+                                numMenu = 0;
+                                break;
+                            }
+                        }
+						
+						var firstMenu = menus[numMenu].link;
+						var menuList = '';
+
+						for (var m in menus) {
+							if (isNaN(parseInt(m)) || isNaN(menus[m].id) || typeof(menus[m].title) == 'undefined') {
+								break;
+							}
+
+							url = menus[m].link.fmt({ fnum: fnum.fnum, applicant_id: sid, campaign_id: cid });
+							url += '&fnum='+fnum.fnum;
+							url += '&Itemid='+itemId;
+							menuList += '<a href="'+url+'" class="list-group-item" title="'+menus[m].title+'" id="'+menus[m].id+'">';
+
+							if (menus[m].hasSons) {
+								menuList += '<span class="glyphicon glyphicon-plus" id="'+menus[m].id+'"></span>';
+							}
+
+							menuList +=  '<strong>'+menus[m].title+'</strong></a>';
+						}
+						$('#em-appli-menu .list-group').append(menuList);
+
+						$.ajax({
+							type:'get',
+							url:firstMenu,
+							dataType:'html',
+							data:({fnum:fnum.fnum}),
+							success: function(result) {
+								$('.em-dimmer').remove();
+								$('#em-files-filters').hide();
+								$(".main-panel .panel.panel-default").hide();
+								
+								$('#em-appli-block').empty();
+								$('#em-appli-block').append(result);
+								$('#accordion .panel.panel-default').show();
+								$('#em-appli-menu, #em-last-open, #em-assoc-files, #em-synthesis, .em-open-files > div[id="'+fnum.fnum+'"]').show();
+								menuBar1();
+
+								$('#em-close-multi-file').hide();
+								$('#em-close-multi-file button').hide();
+							},
+							error: function (jqXHR) {
+								console.log(jqXHR.responseText);
+								if (jqXHR.status === 302) {
+									window.location.replace('/user');
+								}
+							}
+						});
+
+					} else {
+						$('#em-appli-menu .list-group').append(result.msg);
+					}
+				},
+				error: function (jqXHR) {
+					console.log(jqXHR.responseText);
+				}
+			});
         },
         error: function(jqXHR) {
             console.log(jqXHR.responseText);
@@ -1158,7 +1173,13 @@ $(document).ready(function() {
                     addDimmer();
                     fnum.sid = parseInt(fnum.fnum.substr(21, 7));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
-
+					
+					page = Array.from(document.querySelector('#em-appli-block .panel[class*="em-container-"]').classList).filter(
+						function x (p) {
+							return p.startsWith('em-container');
+						}
+					)[0].split('-')[2];
+					
                     $.ajax({
                         type: 'get',
                         url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
@@ -1171,7 +1192,7 @@ $(document).ready(function() {
                                 var fnumInfos = result.fnumInfos;
                                 fnum.name = fnumInfos.name;
                                 fnum.label = fnumInfos.label;
-                                openFiles(fnum);
+                                openFiles(fnum, page);
                             }
                         },
                         error: function (jqXHR) {
@@ -1210,6 +1231,14 @@ $(document).ready(function() {
                     fnum.sid = parseInt(fnum.fnum.substr(21, 7));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
+                    if (document.querySelector('#em-appli-block .panel[class*="em-container-"]')) {
+                        var page = Array.from(document.querySelector('#em-appli-block .panel[class*="em-container-"]').classList).filter(
+                            function x (p) {
+                                return p.startsWith('em-container');
+                            }
+                        )[0].split('-')[2];
+                    }
+					
                     $.ajax({
                         type: 'get',
                         url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
@@ -1222,7 +1251,7 @@ $(document).ready(function() {
                                 var fnumInfos = result.fnumInfos;
                                 fnum.name = fnumInfos.name;
                                 fnum.label = fnumInfos.label;
-                                openFiles(fnum);
+                                openFiles(fnum, page);
                             }
                         },
                         error: function (jqXHR) {
@@ -4974,53 +5003,127 @@ $(document).ready(function() {
 
             // Validating status changes for files
             case 13:
+
                 var state = $("#em-action-state").val();
+                var sel = document.getElementById("em-action-state");
+                var newState = document.getElementById("em-action-state").options[sel.selectedIndex].text;
 
-                $('.modal-body').empty();
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
-                url = 'index.php?option=com_emundus&controller=files&task=updatestate';
-
+                url = 'index.php?option=com_emundus&controller=files&task=getExistEmailTrigger';
                 $.ajax({
                     type:'POST',
                     url:url,
                     dataType:'json',
                     data:({fnums:checkInput, state: state}),
                     success: function(result) {
+                        $('.modal-body').empty();
+                        $('.modal-body').append('<div>' +
+                            '<img src="'+loadingLine+'" alt="loading"/>' +
+                            '</div>');
+                        url = 'index.php?option=com_emundus&controller=files&task=updatestate';
 
-                        $('.modal-footer').hide();
-                        if (result.status) {
-                            $('.modal-body').empty();
+                        if(result.status) {
                             Swal.fire({
-                                position: 'center',
-                                type: 'success',
-                                title: result.msg,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                        } else {
-                            $('.modal-body').empty();
-                            Swal.fire({
-                                position: 'center',
-                                type: 'warning',
-                                title: result.msg
+                                title: Joomla.JText._('WARNING_CHANGE_STATUS'),
+                                text: result.msg,
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonText: Joomla.JText._('VALIDATE_CHANGE_STATUT'),
+                                cancelButtonText: Joomla.JText._('CANCEL_CHANGE_STATUT')
+                            }).then(function(result) {
+                                if (result.value) {
+                                    $.ajax({
+                                        type:'POST',
+                                        url:url,
+                                        dataType:'json',
+                                        data:({fnums:checkInput, state: state}),
+                                        success: function(result) {
+
+                                            $('.modal-footer').hide();
+                                            if (result.status) {
+                                                $('.modal-body').empty();
+                                                Swal.fire({
+                                                    position: 'center',
+                                                    type: 'success',
+                                                    title: result.msg,
+                                                    showConfirmButton: false,
+                                                    timer: 1500
+                                                });
+                                            } else {
+                                                $('.modal-body').empty();
+                                                Swal.fire({
+                                                    position: 'center',
+                                                    type: 'warning',
+                                                    title: result.msg
+                                                });
+                                            }
+
+
+                                            $('#em-modal-actions').modal('hide');
+
+                                            reloadData();
+                                            reloadActions($('#view').val(), undefined, false);
+                                            $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                            $('body').removeClass('modal-open');
+                                        },
+                                        error: function (jqXHR) {
+                                            console.log(jqXHR.responseText);
+                                        }
+                                    });
+                                } else {
+                                    $('.modal-body').empty();
+                                    $('#em-modal-actions').modal('hide');
+                                    $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                    $('body').removeClass('modal-open');
+                                }
+                            })
+                        } else {
+                            $.ajax({
+                                type:'POST',
+                                url:url,
+                                dataType:'json',
+                                data:({fnums:checkInput, state: state}),
+                                success: function(result) {
+
+                                    $('.modal-footer').hide();
+                                    if (result.status) {
+                                        $('.modal-body').empty();
+                                        Swal.fire({
+                                            position: 'center',
+                                            type: 'success',
+                                            title: result.msg,
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
+                                    } else {
+                                        $('.modal-body').empty();
+                                        Swal.fire({
+                                            position: 'center',
+                                            type: 'warning',
+                                            title: result.msg
+                                        });
+                                    }
+
+
+                                    $('#em-modal-actions').modal('hide');
+
+                                    reloadData();
+                                    reloadActions($('#view').val(), undefined, false);
+                                    $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                    $('body').removeClass('modal-open');
+                                },
+                                error: function (jqXHR) {
+                                    console.log(jqXHR.responseText);
+                                }
                             });
                         }
 
-
-                        $('#em-modal-actions').modal('hide');
-
-                        reloadData();
-                        reloadActions($('#view').val(), undefined, false);
-                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-                        $('body').removeClass('modal-open');
                     },
                     error: function (jqXHR) {
-                        console.log(jqXHR.responseText);
+                        document.getElementsByClassName('modal-body')[0].innerHTML =jqXHR.responseText;
                     }
                 });
-            break;
+
+                break;
 
             // Validating tags
             case 14:
