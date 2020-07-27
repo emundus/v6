@@ -244,9 +244,11 @@ class EmundusHelperExport
     }
 
 	public static function getAdmissionPDF($fnum, $options = null) {
+
         $user = JFactory::getSession()->get('emundusUser');
-        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
-            die(JText::_('ACCESS_DENIED'));
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums))) {
+        	die(JText::_('ACCESS_DENIED'));
+        }
 
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
@@ -254,8 +256,8 @@ class EmundusHelperExport
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
 
-        $name 		= $fnum.'-admission.pdf';
-        $tmpName 	= JPATH_BASE.DS.'tmp'.DS.$name;
+        $name = $fnum.'-admission.pdf';
+        $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
@@ -264,8 +266,9 @@ class EmundusHelperExport
 
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_admission_'.$campaign['training'].'.php';
 
-        if (!file_exists($file))
-            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_admission.php';
+        if (!file_exists($file)) {
+        	$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_admission.php';
+        }
 
         require_once($file);
         pdf_admission($user->id, $fnum, false, $tmpName, $options);
