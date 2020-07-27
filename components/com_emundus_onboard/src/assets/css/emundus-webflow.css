@@ -3749,6 +3749,15 @@ label.label__placeholder{
   padding: 10px;
 }
 
+.justify-content-between{
+  justify-content: space-between;
+}
+
+.document-allowed_types{
+  font-style: italic;
+  color: grey;
+}
+
 
 
 

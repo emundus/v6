@@ -20,25 +20,35 @@
       <draggable
               handle=".handle"
               v-model="groups"
-              @start="draggable = true"
+              @start="startGroupDrag"
               @end="SomethingChangeInGroup">
           <div v-for="(group,index_group) in orderedGroups"
                v-bind:key="group.index"
                @mouseover="enableGroupHover(group.group_id)"
                @mouseleave="disableGroupHover()">
-            <fieldset :class="group.group_class" :id="'group_'+group.group_id" :style="group.group_css">
-              <div class="d-flex" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%">
-                <span v-show="hoverGroup && indexGroup == group.group_id" class="icon-handle-group">
-                  <em class="fas fa-grip-vertical handle"></em>
-                </span>
-                <legend
-                  v-if="group.group_showLegend"
-                  class="legend ViewerLegend">
-                  {{group.group_showLegend}}
-                </legend>
-                <a @click="enableUpdatingGroup(group)" style="margin-left: 1em" :title="Edit">
-                  <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
-                </a>
+            <fieldset :class="[group.group_class]" :id="'group_'+group.group_id" :style="group.group_css" style="background-size: 20px; width: 100%">
+              <div class="d-flex justify-content-between" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%" @click="handleGroup(group.group_id)">
+                <div class="d-flex">
+                  <span v-show="hoverGroup && indexGroup == group.group_id" class="icon-handle-group">
+                    <em class="fas fa-grip-vertical handle"></em>
+                  </span>
+                  <legend
+                    v-if="group.group_showLegend"
+                    class="legend ViewerLegend">
+                    {{group.group_showLegend}}
+                  </legend>
+                  <a @click="enableUpdatingGroup(group)" style="margin-left: 1em" :title="Edit">
+                    <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
+                  </a>
+                </div>
+                <div>
+                  <div v-show="!openGroup[group.group_id]">
+                    <em class="fas fa-chevron-right"></em>
+                  </div>
+                  <div v-show="openGroup[group.group_id]">
+                    <em class="fas fa-chevron-down"></em>
+                  </div>
+                </div>
               </div>
               <div style="width: max-content" v-show="updateGroup && indexGroup == group.group_id">
                 <div class="input-can-translate">
@@ -52,7 +62,7 @@
                       <em class="fas fa-check ml-20px mr-1" data-toggle="tooltip" data-placement="top"></em>
                     </a>
                     <a @click="enableRepatedGroup(group)" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon" :title="RepeatGroup">
-                      <em class="fas fa-retweet" data-toggle="tooltip" data-placement="top"></em>
+                      <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
                     </a>
                     <a @click="deleteAGroup(group,index_group)" style="margin-left: 1em;color: black" v-if="files == 0" :title="Delete">
                       <em class="fas fa-trash-alt" data-toggle="tooltip" data-placement="top"></em>
@@ -71,7 +81,7 @@
               </div>
               <div v-if="group.group_intro" class="groupintro">{{group.group_intro}}</div>
 
-              <div class="elements-block" v-if="openGroup[group.group_id]">
+              <div class="elements-block" v-show="openGroup[group.group_id]">
                 <draggable
                         handle=".handle"
                         v-model="group.elts"
@@ -755,6 +765,17 @@ export default {
         this.indexGroup = -1;
       }
     },
+    handleGroup(gid){
+      if(!this.updateGroup) {
+        this.openGroup[gid] ? this.openGroup[gid] = false : this.openGroup[gid] = true;
+      }
+    },
+    startGroupDrag() {
+      Object.keys(this.openGroup).forEach((group,key) => {
+        this.openGroup[group] = false;
+      });
+      this.draggable = true;
+    },
     //
 
     // Draggable trigger
@@ -772,6 +793,9 @@ export default {
     SomethingChangeInGroup: function() {
       this.draggable = false;
       this.updateGroupsOrder();
+      Object.keys(this.openGroup).forEach((group,key) => {
+        this.openGroup[group] = true;
+      });
     },
     //
   },

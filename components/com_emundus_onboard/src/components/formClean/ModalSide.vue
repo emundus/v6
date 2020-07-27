@@ -77,7 +77,7 @@
 
         <div class="col-md-12 d-flex mb-1" style="align-items: center">
           <input type="checkbox" v-model="template">
-          <label class="ml-10px">{{SaveAsTemplate}} :</label>
+          <label class="ml-10px">{{SaveAsTemplate}}</label>
         </div>
 
         <div class="col-md-12 mb-1">

@@ -697,21 +697,27 @@ class EmundusonboardModelcampaign extends JModelList
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
         $types = implode(";", array_values($types));
 
         $query
             ->insert($db->quoteName('#__emundus_setup_attachments'));
         $query
             ->set($db->quoteName('lbl') . ' = ' . $db->quote('_em'))
-            ->set($db->quoteName('value') . ' = ' . $db->quote($document[0]))
-            ->set($db->quoteName('description') . ' = ' . $db->quote($document[1]))
+            ->set($db->quoteName('value') . ' = ' . $db->quote($document['name']['fr']))
+            ->set($db->quoteName('description') . ' = ' . $db->quote($document['description']['fr']))
             ->set($db->quoteName('allowed_types') . ' = ' . $db->quote($types))
-            ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document[2]));
+            ->set($db->quoteName('ordering') . ' = ' . $db->quote(0))
+            ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document['nbmax']));
 
         try{
             $db->setQuery($query);
             $db->execute();
             $newdocument = $db->insertid();
+
+            $falang->insertFalang($document['name']['fr'],$document['name']['en'],$newdocument,'emundus_setup_attachments','value');
+            $falang->insertFalang($document['description']['fr'],$document['description']['en'],$newdocument,'emundus_setup_attachments','description');
 
             $query
                 ->clear()

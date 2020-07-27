@@ -1005,7 +1005,8 @@ class EmundusonboardModelform extends JModelList {
 				'sap.attachment_id AS id',
 				'sap.ordering',
 				'sap.mandatory AS need',
-				'sa.value'
+				'sa.value',
+                'sa.allowed_types'
 			])
 			->from($db->quoteName('#__emundus_setup_attachment_profiles', 'sap'))
 			->leftJoin($db->quoteName('#__emundus_setup_attachments', 'sa') . ' ON ' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('sap.attachment_id'))
@@ -1036,7 +1037,17 @@ class EmundusonboardModelform extends JModelList {
 
 		try {
 			$db->setQuery($query);
-			return $db->loadObjectList();
+			$undocuments = $db->loadObjectList();
+
+			foreach ($undocuments as $undocument){
+			    if(strpos($undocument->lbl, '_em') === 0){
+                    $undocument->can_be_deleted = true;
+                } else {
+                    $undocument->can_be_deleted = false;
+                }
+            }
+
+			return $undocuments;
 		} catch (Exception $e) {
 			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
 			return false;
@@ -1111,7 +1122,7 @@ class EmundusonboardModelform extends JModelList {
 				return $e->getMessage();
 			}
 
-			EmundusonboardModelform::deleteRemainingDocuments(
+			$this->deleteRemainingDocuments(
 				$prid,
 				$allDocumentsIds
 			);
@@ -1122,7 +1133,39 @@ class EmundusonboardModelform extends JModelList {
 		}
 	}
 
-	public function removeDocument($did,$prid,$cid){
+    public function deleteRemainingDocuments($prid, $allDocumentsIds) {
+        $db = $this->getDbo();
+
+        $values = [];
+
+        foreach ($allDocumentsIds as $document) {
+            array_push($values, '(' . $document . ',' . $prid . ',0,0)');
+        }
+
+        $query =
+            'INSERT INTO jos_emundus_setup_attachment_profiles 
+        (attachment_id, profile_id, displayed, published)
+        VALUES 
+        ' .
+            implode(',', $values) .
+            '
+        ON DUPLICATE KEY UPDATE 
+        displayed = VALUES(displayed),
+        published = VALUES(published),
+        profile_id = VALUES(profile_id)
+        ;';
+
+        try {
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return $e->getMessage();
+        }
+    }
+
+
+    public function removeDocument($did,$prid,$cid){
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -1137,11 +1180,39 @@ class EmundusonboardModelform extends JModelList {
             $documents_campaign = EmundusonboardModelform::getAllDocuments($prid, $cid);
 
             if (empty($documents_campaign)) {
-                var_dump('removechecklist');
                 $this->removeChecklistMenu($prid);
             }
 
             return true;
+        } catch (Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return $e->getMessage();
+        }
+    }
+
+    public function deleteDocument($did){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
+        try {
+            $falang->deleteFalang($did,'emundus_setup_attachments','value');
+            $falang->deleteFalang($did,'emundus_setup_attachments','description');
+
+            $query->clear()
+                ->delete($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
+
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->delete($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($did));
+
+            $db->setQuery($query);
+            return $db->execute();
         } catch (Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return $e->getMessage();

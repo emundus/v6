@@ -75,6 +75,10 @@
                   :menuHighlight="menuHighlight"
           ></addDocuments>
 
+          <addSubmittionPage
+                  v-if="menuHighlight == 2"
+          ></addSubmittionPage>
+
           <!--          <addEvalEval
                             v-if="menuHighlight == 6"
                             :funnelCategorie="formCategories[langue][menuHighlight]"
@@ -83,17 +87,13 @@
       </div>
     </div>
 
-    <div
-            class="section-sauvegarder-et-continuer-funnel"
-            :class="menuHighlight == 5 ? 'big' : menuHighlight == 1 ? 'noShow' : ''"
-    >
+    <div class="section-sauvegarder-et-continuer-funnel"
+         :class="menuHighlight == 5 ? 'big' : menuHighlight == 1 ? 'noShow' : ''">
       <div class="w-container">
         <div class="container-evaluation w-clearfix">
           <a @click="next()" class="bouton-sauvergarder-et-continuer-3">{{ Continuer }}</a>
           <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previous()">
-            {{
-            Retour
-            }}
+            {{ Retour }}
           </a>
         </div>
       </div>
@@ -113,6 +113,7 @@
   import addEvaluation from "../views/funnelFormulaire/addEvaluation";
   import addEvalVisi from "../views/funnelFormulaire/addEvalVisi";
   import addEvalEval from "../views/funnelFormulaire/addEvalEval";
+  import addSubmittionPage from "./funnelFormulaire/addSubmittionPage";
   import ModalWarningFormBuilder from "./advancedModals/ModalWarningFormBuilder";
 
   const qs = require("qs");
@@ -129,7 +130,8 @@
       addEmail,
       addEvaluation,
       addEvalVisi,
-      addEvalEval
+      addEvalEval,
+      addSubmittionPage
     },
 
     props: {
@@ -158,21 +160,24 @@
         [
           Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION"),
           Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCSDESCRIPTION"),
+          Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMITTIONDESCRIPTION"),
         ],
         [
           Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION"),
           Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCSDESCRIPTION"),
+          Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMITTIONDESCRIPTION"),
         ]
       ],
 
       formCategories: [
         [
           "Aperçu du formulaire",
-          "Documents"
+          "Documents",
+          "Soumission du formulaire"
         ],
         [
           "Form Preview",
-          "Documents"
+          "Submitting the form"
         ]
       ],
 

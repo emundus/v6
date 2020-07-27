@@ -389,6 +389,30 @@ class EmundusonboardControllerform extends JControllerLegacy {
     }
 
 
+    public function deletedocument() {
+
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $did = $jinput->getInt('did');
+            $m_form = $this->model;
+
+            $state = $m_form->deleteDocument($did);
+
+            $tab = array('status' => $state, 'msg' => JText::_('DOCUMENT_DELETED'));
+
+        }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+
      public function getFormsByProfileId() {
         $user = JFactory::getUser();
 

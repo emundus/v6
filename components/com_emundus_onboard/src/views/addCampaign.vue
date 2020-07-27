@@ -210,13 +210,6 @@
                   />
                 </div>
 
-                <input
-                  type="text"
-                  class="form__input field-general w-input"
-                  :placeholder="NameCategory"
-                  v-model="new_category"
-                />
-
                 <div class="form-group controls">
                   <editor :text="programForm.notes" v-model="programForm.notes" :placeholder="ProgramResume" :id="'program_campaign'"></editor>
                 </div>

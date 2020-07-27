@@ -1,6 +1,6 @@
 # Adding an other module to fix emundus logo on saas component
 INSERT INTO jos_modules (asset_id, title, note, content, ordering, position, checked_out, checked_out_time, publish_up, publish_down, published, module, access, showtitle, params, client_id, language)
-VALUES (308, 'Logo SaaS', '', '<p><a href="index.php"><img src="images/emundus/Emundus-LogoTypo-RVB.png" width="180" height="31" /> </a></p>', 1, 'header-a-saas', 0, '2017-12-05 10:33:43', '2017-12-05 10:33:43', '2030-07-20 16:39:07', 1, 'mod_custom', 1, 0, '{"prepare_content":1,"backgroundimage":"","layout":"_:default","moduleclass_sfx":"","cache":1,"cache_time":900,"cachemode":"static","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}', 0, '*');
+VALUES (0, 'Logo SaaS', '', '<p><a href="index.php"><img src="images/emundus/Emundus-LogoTypo-RVB.png" width="180" height="31" /> </a></p>', 1, 'header-a-saas', 0, '2017-12-05 10:33:43', '2017-12-05 10:33:43', '2030-07-20 16:39:07', 1, 'mod_custom', 1, 0, '{"prepare_content":1,"backgroundimage":"","layout":"_:default","moduleclass_sfx":"","cache":1,"cache_time":900,"cachemode":"static","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}', 0, '*');
 SET @logo_module := LAST_INSERT_ID();
 
 INSERT INTO jos_modules_menu
@@ -81,13 +81,32 @@ WHERE title LIKE 'footer';
 
 # Update onboarding articles
 UPDATE jos_content
+SET introtext = '<p style="text-align: center;"><span style="font-size: 14pt; color: #de6339;">  <img src="images/emundus/saas_tutorial/fusee.png" alt="" width="290" height="193" /></span></p>
+<p style="text-align: center;"> </p>
+<p style="text-align: center;"><span style="font-size: 12pt; color: #000000;">C''est ici que vous gérez vos dossiers et votre plateforme comme un professionnel. Dans quelques minutes vous pourrez recevoir vos premiers dossiers !<br /></span></p>
+<p style="text-align: center;"> </p>
+<p style="text-align: center;"> </p>'
+WHERE alias LIKE 'bienvenue-dans-votre-espace-de-gestion';
+
+UPDATE jos_content
+SET introtext = '<p style="text-align: center;">Mais avant on va vous donner quelques clés pour découvrir les nombreuses possibilités que vous offre la solution.</p>
+<p style="text-align: center;"><img src="images/emundus/saas_tutorial/login.png" alt="" width="312" height="208" /></p>
+<p> </p>'
+WHERE alias LIKE 'premiers-pas';
+
+UPDATE jos_content
 SET introtext = '<p>Votre formulaire est divisé en différentes pages. Vous pouvez créer une page vierge ou partir d''un modèle existant.</p>
 <p>Chaque page est composée de groupes et d''éléments. Pour créer un élément glissez simplement celui que vous voulez dans le groupe de votre choix.</p>
 <p><img src="/images/emundus/saas_tutorial/formbuilder.gif" alt="" width="577" height="325" /></p>'
 WHERE alias LIKE 'creation-de-votre-formulaire';
 
 UPDATE jos_content
-SET introtext = '<p>Votre élément est en place ? Vous pouvez le modifier en le survolant avec votre curseur. Divers options s''offre à vous :<br /><br />        - Le dépublier pour le cacher aux candidats<br />        - Le rendre obligatoire<br />        - Accéder aux paramètres avancés de personnalisation<br />        - Le supprimer</p>
+SET introtext = '<p>Votre élément est en place ? Modifiez en le survolant avec votre curseur. Divers options s''offre à vous :<br /><br />        - Le dépublier pour le cacher aux candidats<br />        - Le rendre obligatoire<br />        - Accéder aux paramètres avancés de personnalisation<br />        - Le supprimer</p>
 <p><img src="/images/emundus/saas_tutorial/formbuilder2.gif" alt="" width="577" height="325" /></p>'
 WHERE alias LIKE 'modification-des-elements';
+#
+
+# Delete logo translations
+DELETE FROM jos_falang_content
+WHERE reference_id = 90;
 #
