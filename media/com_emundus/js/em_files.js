@@ -4974,53 +4974,127 @@ $(document).ready(function() {
 
             // Validating status changes for files
             case 13:
+
                 var state = $("#em-action-state").val();
+                var sel = document.getElementById("em-action-state");
+                var newState = document.getElementById("em-action-state").options[sel.selectedIndex].text;
 
-                $('.modal-body').empty();
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
-                url = 'index.php?option=com_emundus&controller=files&task=updatestate';
-
+                url = 'index.php?option=com_emundus&controller=files&task=getExistEmailTrigger';
                 $.ajax({
                     type:'POST',
                     url:url,
                     dataType:'json',
                     data:({fnums:checkInput, state: state}),
                     success: function(result) {
+                        $('.modal-body').empty();
+                        $('.modal-body').append('<div>' +
+                            '<img src="'+loadingLine+'" alt="loading"/>' +
+                            '</div>');
+                        url = 'index.php?option=com_emundus&controller=files&task=updatestate';
 
-                        $('.modal-footer').hide();
-                        if (result.status) {
-                            $('.modal-body').empty();
+                        if(result.status) {
                             Swal.fire({
-                                position: 'center',
-                                type: 'success',
-                                title: result.msg,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                        } else {
-                            $('.modal-body').empty();
-                            Swal.fire({
-                                position: 'center',
-                                type: 'warning',
-                                title: result.msg
+                                title: Joomla.JText._('WARNING_CHANGE_STATUS'),
+                                text: result.msg,
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonText: Joomla.JText._('VALIDATE_CHANGE_STATUT'),
+                                cancelButtonText: Joomla.JText._('CANCEL_CHANGE_STATUT')
+                            }).then(function(result) {
+                                if (result.value) {
+                                    $.ajax({
+                                        type:'POST',
+                                        url:url,
+                                        dataType:'json',
+                                        data:({fnums:checkInput, state: state}),
+                                        success: function(result) {
+
+                                            $('.modal-footer').hide();
+                                            if (result.status) {
+                                                $('.modal-body').empty();
+                                                Swal.fire({
+                                                    position: 'center',
+                                                    type: 'success',
+                                                    title: result.msg,
+                                                    showConfirmButton: false,
+                                                    timer: 1500
+                                                });
+                                            } else {
+                                                $('.modal-body').empty();
+                                                Swal.fire({
+                                                    position: 'center',
+                                                    type: 'warning',
+                                                    title: result.msg
+                                                });
+                                            }
+
+
+                                            $('#em-modal-actions').modal('hide');
+
+                                            reloadData();
+                                            reloadActions($('#view').val(), undefined, false);
+                                            $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                            $('body').removeClass('modal-open');
+                                        },
+                                        error: function (jqXHR) {
+                                            console.log(jqXHR.responseText);
+                                        }
+                                    });
+                                } else {
+                                    $('.modal-body').empty();
+                                    $('#em-modal-actions').modal('hide');
+                                    $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                    $('body').removeClass('modal-open');
+                                }
+                            })
+                        } else {
+                            $.ajax({
+                                type:'POST',
+                                url:url,
+                                dataType:'json',
+                                data:({fnums:checkInput, state: state}),
+                                success: function(result) {
+
+                                    $('.modal-footer').hide();
+                                    if (result.status) {
+                                        $('.modal-body').empty();
+                                        Swal.fire({
+                                            position: 'center',
+                                            type: 'success',
+                                            title: result.msg,
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
+                                    } else {
+                                        $('.modal-body').empty();
+                                        Swal.fire({
+                                            position: 'center',
+                                            type: 'warning',
+                                            title: result.msg
+                                        });
+                                    }
+
+
+                                    $('#em-modal-actions').modal('hide');
+
+                                    reloadData();
+                                    reloadActions($('#view').val(), undefined, false);
+                                    $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                    $('body').removeClass('modal-open');
+                                },
+                                error: function (jqXHR) {
+                                    console.log(jqXHR.responseText);
+                                }
                             });
                         }
 
-
-                        $('#em-modal-actions').modal('hide');
-
-                        reloadData();
-                        reloadActions($('#view').val(), undefined, false);
-                        $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-                        $('body').removeClass('modal-open');
                     },
                     error: function (jqXHR) {
-                        console.log(jqXHR.responseText);
+                        document.getElementsByClassName('modal-body')[0].innerHTML =jqXHR.responseText;
                     }
                 });
-            break;
+
+                break;
 
             // Validating tags
             case 14:
