@@ -6,8 +6,7 @@
  * Time: 15:34
  */
 
-class JcrmViewContacts extends JViewLegacy
-{
+class JcrmViewContacts extends JViewLegacy {
 
 	protected $items;
 	protected $pagination;
@@ -28,7 +27,6 @@ class JcrmViewContacts extends JViewLegacy
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
-			;
 			throw new Exception(implode("\n", $errors));
 		}
 
@@ -52,6 +50,7 @@ class JcrmViewContacts extends JViewLegacy
 		} else {
 			$this->params->def('page_heading', JText::_('COM_JCRM_DEFAULT_PAGE_TITLE'));
 		}
+
 		$title = $this->params->get('page_title', '');
 		if (empty($title)) {
 			$title = $app->getCfg('sitename');

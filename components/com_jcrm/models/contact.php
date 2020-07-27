@@ -46,13 +46,14 @@ class JcrmModelContact extends JModelItem {
         $this->setState('params', $params);
     }
 
-    /**
-     * Method to get an ojbect.
-     *
-     * @param	integer	The id of the object to get.
-     *
-     * @return	mixed	Object on success, false on failure.
-     */
+	/**
+	 * Method to get an ojbect.
+	 *
+	 * @param integer    The id of the object to get.
+	 *
+	 * @return    mixed    Object on success, false on failure.
+	 * @throws Exception
+	 */
     public function &getData($id = null) {
         if ($this->_item === null) {
             $this->_item = false;
@@ -67,10 +68,9 @@ class JcrmModelContact extends JModelItem {
             // Attempt to load the row.
             if ($table->load($id)) {
                 // Check published state.
-                if ($published = $this->getState('filter.published')) {
-                    if ($table->state != $published) {
-                        return $this->_item;
-                    }
+                $published = $this->getState('filter.published');
+                if ($table->state != $published) {
+                    return $this->_item;
                 }
 
                 // Convert the JTable to a clean JObject.
@@ -82,7 +82,7 @@ class JcrmModelContact extends JModelItem {
         }
 
 
-		if ( isset($this->_item->created_by) ) {
+		if (isset($this->_item->created_by)) {
 			$this->_item->created_by_name = JFactory::getUser($this->_item->created_by)->name;
 		}
 
@@ -94,13 +94,15 @@ class JcrmModelContact extends JModelItem {
         return JTable::getInstance($type, $prefix, $config);
     }
 
-    /**
-     * Method to check in an item.
-     *
-     * @param	integer		The id of the row to check out.
-     * @return	boolean		True on success, false on failure.
-     * @since	1.6
-     */
+	/**
+	 * Method to check in an item.
+	 *
+	 * @param integer        The id of the row to check out.
+	 *
+	 * @return    boolean        True on success, false on failure.
+	 * @throws Exception
+	 * @since    1.6
+	 */
     public function checkin($id = null) {
         // Get the id.
         $id = (!empty($id)) ? $id : (int) $this->getState('contact.id');
@@ -111,24 +113,24 @@ class JcrmModelContact extends JModelItem {
             $table = $this->getTable();
 
             // Attempt to check the row in.
-            if (method_exists($table, 'checkin')) {
-                if (!$table->checkin($id)) {
-                    $this->setError($table->getError());
-                    return false;
-                }
+            if (method_exists($table, 'checkin') && !$table->checkin($id)) {
+                $this->setError($table->getError());
+                return false;
             }
         }
 
         return true;
     }
 
-    /**
-     * Method to check out an item for editing.
-     *
-     * @param	integer		The id of the row to check out.
-     * @return	boolean		True on success, false on failure.
-     * @since	1.6
-     */
+	/**
+	 * Method to check out an item for editing.
+	 *
+	 * @param integer        The id of the row to check out.
+	 *
+	 * @return    boolean        True on success, false on failure.
+	 * @throws Exception
+	 * @since    1.6
+	 */
     public function checkout($id = null) {
         // Get the user id.
         $id = (!empty($id)) ? $id : (int) $this->getState('contact.id');
@@ -142,11 +144,9 @@ class JcrmModelContact extends JModelItem {
             $user = JFactory::getUser();
 
             // Attempt to check the row out.
-            if (method_exists($table, 'checkout')) {
-                if (!$table->checkout($user->get('id'), $id)) {
-                    $this->setError($table->getError());
-                    return false;
-                }
+            if (method_exists($table, 'checkout') && !$table->checkout($user->get('id'), $id)) {
+                $this->setError($table->getError());
+                return false;
             }
         }
 
@@ -156,8 +156,7 @@ class JcrmModelContact extends JModelItem {
     public function getCategoryName($id) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query
-                ->select('title')
+        $query->select('title')
                 ->from('#__categories')
                 ->where('id = ' . $id);
         $db->setQuery($query);
@@ -176,19 +175,15 @@ class JcrmModelContact extends JModelItem {
         return $table->delete($id);
     }
 
-	public function addContact($contact)
-	{
+	public function addContact($contact) {
 		$dbo = $this->getDbo();
-		if(!isset($contact->organisation) || empty($contact->organisation))
-		{
+		if (!isset($contact->organisation) || empty($contact->organisation)) {
 			$contact->organisation = Null;
 		}
 		$jcard = JcrmFrontendHelper::buildJCard($contact);
-		if(!is_null($contact->organisation) && $contact->type == 0)
-		{
+		if (!is_null($contact->organisation) && $contact->type == 0) {
 			$org = $this->getOrganisationByName($contact->organisation);
-			if(is_null($org))
-			{
+			if (is_null($org)) {
 				$newOrg = new stdClass();
 				$newOrg->last_name="";
 				$newOrg->first_name="";
@@ -200,90 +195,70 @@ class JcrmModelContact extends JModelItem {
 		$email = (isset($jcard['email']))?$jcard['email'][0]->uri:null;
 		$phone = (isset($jcard['phone']))?$jcard['phone'][0]->tel:null;
 		$query = "insert into #__jcrm_contacts (`state`, `checked_out`, `created_by`,  `last_name`, `first_name`, `organisation`, `email`, `phone`, `jcard`, `type`, `full_name`) values (1, ".JFactory::getUser()->id.",".JFactory::getUser()->id.",'".addslashes($contact->last_name)."','".addslashes($contact->first_name)."','".addslashes($contact->organisation)."','".$email."','".$phone."','". addcslashes(json_encode((object)$jcard), "\\'")."', ".$contact->type.", '".addslashes($jcard['fn'])."')";
-		try
-		{
+		try {
 			$dbo->setQuery($query);
 			$dbo->execute();
 			$res = $dbo->insertid();
 
-			if(isset($org))
-			{
+			if (isset($org)) {
 				$query = "insert into #__jcrm_contact_orga (`contact_id`, `org_id`) values ($res, ".$org['id'].")";
 				$dbo->setQuery($query);
 				$dbo->execute();
 			}
-			if(isset($contact->formGroup))
-			{
+			if (isset($contact->formGroup)) {
 				$this->addUserToGroups($res, $contact->formGroup);
 			}
 
 			return $this->getContact($res);
-		}
-		catch(Exception $e)
-		{
+		} catch(Exception $e) {
 			JLog::add('Error in model/contact at function addContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
-	public function getContact($id)
-	{
+	public function getContact($id) {
 		$dbo = $this->getDbo();
 		$query = "select * from #__jcrm_contacts where id = ".intval($id);
 
-		try
-		{
+		try {
 			$dbo->setQuery($query);
 			$res = $dbo->loadAssoc();
-			if($res['type'] == 1)
-			{
+			if ($res['type'] == 1) {
 				$res['contacts'] = $this->getContactByOrg($res['id']);
 			}
 			$res['groups'] = $this->getGroupByContact($id);
 			$res['formGroup'] = $this->getGroupByContact($id, true);
 			return $res;
-		}
-		catch(Exception $e)
-		{
+		} catch(Exception $e) {
 			JLog::add('Error in model/contact at function getContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
-	public function getOrganisationByName($name)
-	{
+	public function getOrganisationByName($name) {
 		$dbo = $this->getDbo();
 		$query = "select id, organisation from #__jcrm_contacts where organisation LIKE ".$dbo->Quote($name)." and type = 1";
-		try
-		{
+		try {
 			$dbo->setQuery($query);
-			$res = $dbo->loadAssoc();
-			return $res;
-		}
-		catch(Exception $e)
-		{
+			return $dbo->loadAssoc();
+		} catch(Exception $e) {
 			JLog::add('Error in model/contact at function getOrganisationByName, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
-	public function update($contact)
-	{
+	public function update($contact) {
 		$dbo = $this->getDbo();
-		if(!isset($contact->organisation) || empty($contact->organisation))
-		{
+		if (!isset($contact->organisation) || empty($contact->organisation)) {
 			$contact->organisation = null;
 		}
-		try
-		{
+
+		try  {
 			$jcard = JcrmFrontendHelper::buildJCard($contact);
 			$email = (isset($jcard['email']))?$jcard['email'][0]->uri:null;
 			$phone = (isset($jcard['phone']))?$jcard['phone'][0]->tel:null;
 
-			if($contact->type == 0)
-			{
-				if(!is_null($contact->organisation))
-				{
+			if ($contact->type == 0) {
+				if (!is_null($contact->organisation)) {
 					$org = $this->getOrganisationByName($contact->organisation);
-					if(is_null($org))
-					{
+					if (is_null($org)) {
 						$newOrg = new stdClass();
 						$newOrg->last_name="";
 						$newOrg->first_name="";
@@ -293,8 +268,7 @@ class JcrmModelContact extends JModelItem {
 					}
 				}
 				$query = "update #__jcrm_contacts set `checked_out` = ".JFactory::getUser()->id.", `checked_out_time` = '".date('Y-m-d H:i:s')."', `last_name` = '" .addslashes($contact->last_name)."', `first_name` = '". addslashes($contact->first_name)."', `full_name`='".addslashes($jcard['fn'])."', `type` =".$contact->type.", `jcard`='".addcslashes(json_encode((object)$jcard), "\\'")."', `organisation` = '".addslashes($contact->organisation)."'";
-				if(isset($org))
-				{
+				if (isset($org)) {
 					$updateJointureQuery = "insert into #__jcrm_contact_orga (`contact_id`, `org_id`) values ($contact->id, ".$org['id'].")";
 					$delJointureQuery = "delete from #__jcrm_contact_orga where contact_id = $contact->id";
 					$dbo->setQuery($delJointureQuery);
@@ -302,66 +276,52 @@ class JcrmModelContact extends JModelItem {
 					$dbo->setQuery($updateJointureQuery);
 					$dbo->execute();
 				}
-			}
-			else
-			{
+			} else {
 				$query = "update #__jcrm_contacts set `checked_out` = ".JFactory::getUser()->id.", `checked_out_time` = '".date('Y-m-d H:i:s')."', `full_name`='".addslashes($jcard['fn'])."', `type` =".$contact->type.", `jcard`='".addcslashes(json_encode((object)$jcard), "\\'")."', `organisation` = '".addslashes($contact->organisation)."'";
 				$this->_updateContactJcardByOrg($contact);
 			}
 
-			if(!is_null($email))
-			{
+			if (!is_null($email)) {
 				$query .= ", `email` = '".$email."'";
 			}
 
-			if(!is_null($phone))
-			{
+			if (!is_null($phone)) {
 				$query .= ", `phone` = '".$phone."'";
 			}
 
 			$query .= " where `id` = ".$contact->id;
-			if(isset($contact->formGroup))
-			{
+			if (isset($contact->formGroup)) {
 				$this->addUserToGroups($contact->id, $contact->formGroup);
 			}
 			$dbo->setQuery($query);
 			$dbo->execute();
 
 			return $this->getContact($contact->id);
-		}
-		catch(Exception $e)
-		{
+		} catch(Exception $e) {
 			JLog::add('Error in model/contact at function update, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
-	public function getContactByOrg($id)
-	{
+	public function getContactByOrg($id) {
 		$dbo = $this->getDbo();
-		try
-		{
+		try {
 		    $query = "SELECT contact.*
 		    FROM #__jcrm_contacts as contact
 		    LEFT JOIN #__jcrm_contact_orga as orga on orga.contact_id = contact.id
 		    WHERE orga.org_id =" . $id;
 			$dbo->setQuery($query);
 			return $dbo->loadObjectList();
-		}
-		catch(Exception $e)
-		{
+		} catch(Exception $e) {
 		    error_log($e->getMessage(), 0);
 		    return false;
 		}
 	}
 
-	private function _updateContactJcardByOrg($orga)
-	{
+	private function _updateContactJcardByOrg($orga) {
 		$db = $this->getDbo();
-		try
-		{
+		try {
 			$contacts = $this->getContactByOrg($orga->id);
-			foreach($contacts as $contact)
-			{
+			foreach ($contacts as $contact) {
 				$jcard = json_decode($contact->jcard);
 				$jcard->org = $orga->organisation;
 				$contact->organisation = $orga->organisation;
@@ -374,156 +334,114 @@ class JcrmModelContact extends JModelItem {
 				$db->setQuery($query);
 				$db->execute();
 			}
-		}
-		catch(Exception $e)
-		{
+		} catch(Exception $e) {
 		    error_log($e->getMessage(), 0);
 		    return false;
 		}
 	}
 
-	public function addGroup($group)
-	{
+	public function addGroup($group) {
 		$dbo = $this->getDbo();
 
 		$query = "insert into #__jcrm_groups (`name`, `created_by`) VALUES (".$dbo->Quote($group->name).", ".JFactory::getUser()->id.")";
 
-		try
-		{
+		try {
 			$dbo->setQuery($query);
 			$dbo->execute();
-			$res = $dbo->insertid();
-			return $res;
-		}
-		catch(Exception $e)
-		{
+			return $dbo->insertid();
+		} catch(Exception $e) {
 			JLog::add('Error in model/contact at function addGroup, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
-	public function updateGroup($group)
-	{
+	public function updateGroup($group) {
 		$dbo = $this->getDbo();
-		try
-		{
+		try {
 			$query = "update #__jcrm_groups set name=".$dbo->Quote($group->name)." where id = ".$group->id;
 			$dbo->setQuery($query);
-			$res = $dbo->execute();
-			return $res;
-		}
-		catch(Exception $e)
-		{
+			return $dbo->execute();
+		} catch(Exception $e) {
 			JLog::add('Error in model/contact at function updateGroup, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
-	public function deleteGroup($id)
-	{
+	public function deleteGroup($id) {
 		$dbo = $this->getDbo();
-		try
-		{
+		try {
 			$query = "delete from #__jcrm_groups where id = $id";
 			$dbo->setQuery($query);
-			$res = $dbo->execute();
-			return $res;
-		}
-		catch(Exception $e)
-		{
+			return $dbo->execute();
+		} catch(Exception $e) {
 			JLog::add('Error in model/contact at function deleteGroup, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
-	public function deleteContact($contact)
-	{
+	public function deleteContact($contact) {
 		$dbo = $this->getDbo();
-		try
-		{
+		try {
 			$query = "delete from #__jcrm_contacts where id = $contact->id";
-			if($contact->type == 1)
-			{
+			if ($contact->type == 1) {
 				$contact->organisation = "";
 				$this->_updateContactJcardByOrg($contact);
 			}
 			$dbo->setQuery($query);
-			$res = $dbo->execute();
-			return $res;
-		}
-		catch(Exception $e)
-		{
+			return $dbo->execute();
+		} catch(Exception $e) {
 			JLog::add('Error in model/contact at function deleteContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
-	public function getGroupByContact($cid, $idOnly = false)
-	{
+	public function getGroupByContact($cid, $idOnly = false) {
 		$dbo = $this->getDbo();
-		try
-		{
-			if(!$idOnly)
-			{
+		try {
+			if (!$idOnly) {
 				$query = "select distinct gr.name, gr.id from #__jcrm_groups as gr join #__jcrm_group_contact as grc on grc.group_id = gr.id where grc.contact_id =" . $cid;
 				$dbo->setQuery($query);
 				return $dbo->loadObjectList();
-			}
-			else
-			{
+			} else {
 				$query = "select  gr.id from #__jcrm_groups as gr join #__jcrm_group_contact as grc on grc.group_id = gr.id where grc.contact_id =" . $cid;
 				$dbo->setQuery($query);
 				return $dbo->loadColumn();
 			}
-		}
-		catch(Exception $e)
-		{
+		} catch(Exception $e) {
 			error_log($e->getMessage(), 0);
 			return false;
 		}
 	}
 
-	public function addUserToGroups($id, $groups)
-	{
+	public function addUserToGroups($id, $groups) {
 		$dbo = $this->getDbo();
-		try
-		{
+		try {
 			$query = "delete from #__jcrm_group_contact  where `contact_id` = $id";
 			$dbo->setQuery($query);
 			$res = $dbo->execute();
 			$query = "INSERT INTO #__jcrm_group_contact( `group_id`, `contact_id`) VALUES ";
 			$value = "";
-			foreach($groups as $group)
-			{
+			foreach ($groups as $group) {
 				$value .= "($group, $id),";
 			}
 			$value = rtrim($value, ',');
-			if(!empty($value))
-			{
+			if (!empty($value)) {
 				$query.= $value;
 				$dbo->setQuery($query);
 				$res = $dbo->execute();
 			}
 			return $res;
-		}
-		catch(Exception $e)
-		{
+		} catch(Exception $e) {
 			error_log($e->getMessage(), 0);
 			return false;
 		}
-
 	}
 
-	public function getContactIdByGroup($ids)
-	{
+	public function getContactIdByGroup($ids) {
 		$dbo = $this->getDbo();
 		$query = "select c.id from #__jcrm_contacts as c
                   join #__jcrm_group_contact as grc on grc.contact_id = c.id where grc.group_id in  (".implode(', ', $ids).")
                   order by c.id";
-		try
-		{
+		try {
 			$dbo->setQuery($query);
-			$res =  $dbo->loadColumn();
-			return $res;
-		}
-		catch(JException $e)
-		{
+			return $dbo->loadColumn();
+		} catch(Exception $e) {
 			JLog::add('Error in model/contact at function getContactIdByGroup, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
@@ -539,9 +457,7 @@ class JcrmModelContact extends JModelItem {
 		$db->setquery($query);
 
 		try {
-
 			$orgIds = $db->loadColumn();
-
 		} catch (Exception $e) {
 			error_log($e->getMessage(), 0);
 			return $e->getMessage();
@@ -557,37 +473,26 @@ class JcrmModelContact extends JModelItem {
 			$db->setQuery($query);
 
 			try {
-
 				return $db->loadColumn();
-
 			} catch (Exception $e) {
 				error_log($e->getMessage(), 0);
 				return $e->getMessage();
 			}
-
 		}
-
 	}
 
-	public function getContacts($ids)
-	{
+	public function getContacts($ids) {
 		$dbo = $this->getDbo();
 		$query = "select * from #__jcrm_contacts ";
-		if(!empty($ids))
-		{
+		if (!empty($ids)) {
 			$query .= "where `id` in  (".implode(', ', $ids).")";
 		}
 		$query .= " order by `full_name`";
-		try
-		{
+		try {
 			$dbo->setQuery($query);
-			$res =  $dbo->loadAssocList();
-			return $res;
-		}
-		catch(JException $e)
-		{
+			return $dbo->loadAssocList();
+		} catch(Exception $e) {
 			JLog::add('Error in model/contact at function getContacts, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
-
 }

@@ -25,11 +25,14 @@ class JcrmViewContacts extends JViewLegacy {
     protected $params;
     protected $subjects;
 
-    /**
-     * Display the view
-     */
-    public function display($tpl = null)
-    {
+	/**
+	 * Display the view
+	 *
+	 * @param null $tpl
+	 *
+	 * @throws Exception
+	 */
+    public function display($tpl = null) {
         JText::script('CONTACT_ARE_YOU_SURE');
         JText::script('CONTACT_GROUP');
         JText::script('CONTACT_ADD_CONTACT_PLEASE');
@@ -58,11 +61,9 @@ class JcrmViewContacts extends JViewLegacy {
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_jcrm');
-        
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
-;
             throw new Exception(implode("\n", $errors));
         }
 
@@ -89,6 +90,7 @@ class JcrmViewContacts extends JViewLegacy {
         } else {
             $this->params->def('page_heading', JText::_('COM_JCRM_DEFAULT_PAGE_TITLE'));
         }
+
         $title = $this->params->get('page_title', '');
         if (empty($title)) {
             $title = $app->getCfg('sitename');

@@ -31,21 +31,14 @@ class JcrmViewSync extends JViewLegacy {
         $user = JFactory::getUser();
 
         $this->state = $this->get('State');
-        
 
         $this->params = $app->getParams('com_jcrm');
-
-        if (!empty($this->item)) {
-            
-        }
 
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
-
-        
 
         if ($this->_layout == 'edit') {
 
@@ -57,7 +50,6 @@ class JcrmViewSync extends JViewLegacy {
         }
 
         $this->_prepareDocument();
-
         parent::display($tpl);
     }
 
@@ -77,6 +69,7 @@ class JcrmViewSync extends JViewLegacy {
         } else {
             $this->params->def('page_heading', JText::_('COM_JCRM_DEFAULT_PAGE_TITLE'));
         }
+
         $title = $this->params->get('page_title', '');
         if (empty($title)) {
             $title = $app->getCfg('sitename');

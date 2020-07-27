@@ -24,8 +24,7 @@ class JcrmModelContacts extends JModelList
      * @see        JController
      * @since    1.6
      */
-    public function __construct($config = array())
-    {
+    public function __construct($config = array()) {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
                                 'id', 'a.id',
@@ -51,9 +50,7 @@ class JcrmModelContacts extends JModelList
      *
      * @since    1.6
      */
-    protected function populateState($ordering = null, $direction = null)
-    {
-
+    protected function populateState($ordering = null, $direction = null) {
 
         // Initialise variables.
         $app = JFactory::getApplication();
@@ -112,7 +109,6 @@ class JcrmModelContacts extends JModelList
 
                     // Just to keep the default case
                     default:
-                        $value = $value;
                         break;
                 }
 
@@ -137,8 +133,7 @@ class JcrmModelContacts extends JModelList
      * @return    JDatabaseQuery
      * @since    1.6
      */
-    protected function getListQuery()
-    {
+    protected function getListQuery() {
         // Create a new query object.
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -178,31 +173,25 @@ class JcrmModelContacts extends JModelList
         return $query;
     }
 
-    public function getItems()
-    {
-        $items = parent::getItems();
-        return $items;
+    public function getItems() {
+        return parent::getItems();
     }
 
     /**
      * Overrides the default function to check Date fields format, identified by
      * "_dateformat" suffix, and erases the field if it's not correct.
      */
-    protected function loadFormData()
-    {
+    protected function loadFormData() {
         $app = JFactory::getApplication();
         $filters = $app->getUserState($this->context . '.filter', array());
         $error_dateformat = false;
-        foreach ($filters as $key => $value)
-        {
-            if (strpos($key, '_dateformat') && !empty($value) && !$this->isValidDate($value))
-            {
+        foreach ($filters as $key => $value) {
+            if (strpos($key, '_dateformat') && !empty($value) && !$this->isValidDate($value)) {
                 $filters[$key] = '';
                 $error_dateformat = true;
             }
         }
-        if ($error_dateformat)
-        {
+        if ($error_dateformat) {
             $app->enqueueMessage(JText::_("COM_PRUEBA_SEARCH_FILTER_DATE_FORMAT"), "warning");
             $app->setUserState($this->context . '.filter', $filters);
         }
@@ -210,25 +199,28 @@ class JcrmModelContacts extends JModelList
         return parent::loadFormData();
     }
 
-    /**
-     * Checks if a given date is valid and in an specified format (YYYY-MM-DD)
-     *
-     * @param string Contains the date to be checked
-     *
-     */
-    private function isValidDate($date)
-    {
+	/**
+	 * Checks if a given date is valid and in an specified format (YYYY-MM-DD)
+	 *
+	 * @param string Contains the date to be checked
+	 *
+	 * @return bool
+	 */
+    private function isValidDate($date) {
         return preg_match("/^(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$/", $date) && date_create($date);
     }
 
-    /**
-     * Get the filter form
-     *
-     * @return  JForm/false  the JForm object or false
-     *
-     */
-    public function getFilterForm($data = array(), $loadData = true)
-    {
+	/**
+	 * Get the filter form
+	 *
+	 * @param array $data
+	 * @param bool  $loadData
+	 *
+	 * @return  JForm/false  the JForm object or false
+	 *
+	 * @throws Exception
+	 */
+    public function getFilterForm($data = array(), $loadData = true) {
         $form = null;
 
         // Try to locate the filter form automatically. Example: ContentModelArticles => "filter_articles"
@@ -254,8 +246,7 @@ class JcrmModelContacts extends JModelList
     /**
      * Function to get the active filters
      */
-    public function getActiveFilters()
-    {
+    public function getActiveFilters() {
         $activeFilters = false;
 
         if (!empty($this->filter_fields)) {
@@ -271,8 +262,7 @@ class JcrmModelContacts extends JModelList
         return $activeFilters;
     }
 
-    private function getParameterFromRequest($paramName, $default = null, $type = 'string')
-    {
+    private function getParameterFromRequest($paramName, $default = null, $type = 'string') {
         $variables = explode('.', $paramName);
         $input = JFactory::getApplication()->input;
 
@@ -291,43 +281,34 @@ class JcrmModelContacts extends JModelList
         }
 
         return ($nullFound) ? $default : JFilterInput::getInstance()->clean($data, $type);
-
     }
 
-    /**
-     * @param $id
-     * @param int $index
-     * @param string $q
-     * @return mixed
-     * @throws Exception
-     * @throws JException
-     */
-    public function getAllContacts($id, $index = 0, $q = "", $type = 0)
-	{
+	/**
+	 * @param        $id
+	 * @param int    $index
+	 * @param string $q
+	 * @param int    $type
+	 *
+	 * @return mixed
+	 */
+    public function getAllContacts($id, $index = 0, $q = "", $type = 0) {
 		$dbo = $this->getDbo();
 		$query = "select c.id, c.full_name, c.type from #__jcrm_contacts as c";
-        if(!is_null($id))
-        {
+        if (!is_null($id)) {
             $query .= " join #__jcrm_group_contact as grc on grc.contact_id = c.id where grc.group_id = $id and type = $type";
         }
-        if(is_null($id))
-        {
+        if (is_null($id)) {
             $query .= " where type = $type ";
         }
-        if(!empty($q))
-        {
+        if (!empty($q)) {
             $query .= " and (c.full_name like ".$dbo->quote('%'.$q.'%').") or (c.email like ".$dbo->quote('%'.$q.'%').")  or (c.last_name like ".$dbo->quote('%'.$q.'%').")  or (c.first_name like ".$dbo->quote('%'.$q.'%').") or (c.organisation like ".$dbo->quote('%'.$q.'%').") and type = $type";
         }
         $query .= " order by trim(c.full_name) limit $index, 100";
-        //echo str_replace("#_", "jos", $query);
-		try
-		{
+
+		try {
 			$dbo->setQuery($query);
-			$res =  $dbo->loadAssocList();
-			return $res;
-		}
-		catch(JException $e)
-		{
+			return $dbo->loadAssocList();
+		} catch(Exception $e) {
 			JLog::add('Error in model/contacts at function getAllContacts, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
@@ -336,18 +317,13 @@ class JcrmModelContacts extends JModelList
      * @param $name
      * @return mixed
      */
-    public function getOrgas($name)
-	{
+    public function getOrgas($name) {
 		$dbo = $this->getDbo();
 		$query = "select id, organisation from #__jcrm_contacts as c where c.type = 1 and c.organisation like '%".trim(addslashes($name))."%' limit 0, 100";
-		try
-		{
+		try {
 			$dbo->setQuery($query);
-			$res = $dbo->loadAssocList();
-			return $res;
-		}
-		catch(JDatabaseException $e)
-		{
+			return $dbo->loadAssocList();
+		} catch(JDatabaseException $e) {
 			JLog::add('Error in model/contacts at function getOrgas, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
@@ -355,49 +331,37 @@ class JcrmModelContacts extends JModelList
     /**
      * @return mixed
      * @throws Exception
-     * @throws JException
      */
-    public function getGroups()
-	{
+    public function getGroups() {
 		$dbo = $this->getDbo();
 		$query = "select * from #__jcrm_groups order by name";
-		try
-		{
+		try {
 			$dbo->setQuery($query);
-			$res =  $dbo->loadAssocList();
-			return $res;
-		}
-		catch(JException $e)
-		{
+			return $dbo->loadAssocList();
+		} catch(JException $e) {
 			JLog::add('Error in model/contacts at function getGroups, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 		}
 	}
 
 	/**
-     * @param $id
-     * @return mixed
-     * @throws Exception
-     * @throws JException
-     */
-    public function getNbContacts($id, $type)
-    {
+	 * @param $id
+	 * @param $type
+	 *
+	 * @return mixed
+	 */
+    public function getNbContacts($id, $type) {
         $dbo = $this->getDbo();
-        if (!is_null($id))
-            $query = "select count(*) from #__jcrm_contacts as c join #__jcrm_group_contact as grc on grc.contact_id = c.id where grc.group_id = $id and type = $type";
-        else
-            $query = "select count(*) from #__jcrm_contacts where type = $type";
-
-        try
-        {
-            $dbo->setQuery($query);
-            $res =  $dbo->loadResult();
-            return $res;
+        if (!is_null($id)) {
+        	$query = "select count(*) from #__jcrm_contacts as c join #__jcrm_group_contact as grc on grc.contact_id = c.id where grc.group_id = $id and type = $type";
+        } else {
+        	$query = "select count(*) from #__jcrm_contacts where type = $type";
         }
-        catch(JException $e)
-        {
+
+        try {
+            $dbo->setQuery($query);
+            return $dbo->loadResult();
+        } catch(Exception $e) {
             JLog::add('Error in model/contacts at function getNbContacts, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
-
-
 }

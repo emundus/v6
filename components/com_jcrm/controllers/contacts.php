@@ -21,10 +21,15 @@ class JcrmControllerContacts extends JcrmController
 {
 	/**
 	 * Proxy for getModel.
-	 * @since	1.6
+	 *
+	 * @param string $name
+	 * @param string $prefix
+	 * @param array  $config
+	 *
+	 * @return bool|JModelLegacy
+	 * @since    1.6
 	 */
-	public function &getModel($name = 'Contacts', $prefix = 'JcrmModel', $config = array())
-	{
+	public function &getModel($name = 'Contacts', $prefix = 'JcrmModel', $config = array()) {
 		$m_contacts = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $m_contacts;
 	}
@@ -32,8 +37,7 @@ class JcrmControllerContacts extends JcrmController
 	/**
 	 *
 	 */
-	public function getcontacts()
-	{
+	public function getcontacts() {
 		$jinput = JFactory::getApplication()->input;
 		$m_contacts = $this->getModel();
 		$id = $jinput->getInt('group_id', null);
@@ -41,12 +45,10 @@ class JcrmControllerContacts extends JcrmController
 		$q = $jinput->getString('q', "");
 		$type = $jinput->getInt('type', 1);
 
-		if($index < 0)
-		{
+		if ($index < 0) {
 			$index = 0;
 		}
-		if($id == 0)
-		{
+		if ($id == 0)  {
 			$id = null;
 		}
 
@@ -60,18 +62,14 @@ class JcrmControllerContacts extends JcrmController
 	/**
 	 *
 	 */
-	public function getorganisations()
-	{
+	public function getorganisations() {
 		$jinput = JFactory::getApplication()->input;
 		$org = $jinput->getString('org', "");
 		$m_contacts = $this->getModel();
 		$orgs = $m_contacts->getOrgas($org);
-		if(!is_string($orgs))
-		{
+		if (!is_string($orgs)) {
 			echo json_encode($orgs);
-		}
-		else
-		{
+		} else {
 			echo json_encode(array('error' => JText::_('ERROR'), 'msg' => $orgs));
 		}
 		exit();
