@@ -13,7 +13,6 @@ use Joomla\CMS\Language\Text;
 
 /** @var PlgInstallerWebinstaller $this */
 
-$dir         = $this->isRTL() ? ' dir="ltr"' : '';
 $installfrom = $this->getInstallFrom();
 
 ?>
@@ -32,7 +31,7 @@ $installfrom = $this->getInstallFrom();
 			<a class="close" data-dismiss="alert">×</a><?php echo Text::_('COM_INSTALLER_WEBINSTALLER_INSTALL_WEB_LOADING_ERROR'); ?>
 		</div>
 	</div>
-	<fieldset class="uploadform" id="uploadform-web" style="display:none"<?php echo $dir; ?>>
+	<fieldset class="uploadform" id="uploadform-web" style="display:none" dir="ltr">
 		<div class="control-group">
 			<strong><?php echo Text::_('COM_INSTALLER_WEBINSTALLER_INSTALL_WEB_CONFIRM'); ?></strong><br />
 			<span id="uploadform-web-name-label"><?php echo Text::_('COM_INSTALLER_WEBINSTALLER_INSTALL_WEB_CONFIRM_NAME'); ?>:</span> <span id="uploadform-web-name"></span><br />
