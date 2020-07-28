@@ -113,6 +113,9 @@ class JcrmControllerSyncs extends JcrmController {
 		exit();
 	}
 
+	/**
+	 *
+	 */
 	public function synccontact() {
 		$input = (object) json_decode(file_get_contents('php://input'));
 		$m_syncs = new JcrmModelSyncs();
@@ -126,17 +129,25 @@ class JcrmControllerSyncs extends JcrmController {
 		$referent = $m_syncs->getReferent($select, $tableName, $input->refId);
 		if ($input->contactId == "new") {
 			$newContact = JcrmFrontendHelper::buildContactFromReferent($referent, $input->index);
+
+			// Create or get group
+			if (!empty($newContact->formGroup)) {
+				$newContact->formGroup = $m_contact->createOrSelectGroup($newContact->formGroup);
+			}
+
 			$contact = $m_contact->addContact($newContact);
 			$input->contactId = $contact['id'];
 		}
+
 		$m_syncs->syncRef($tableName, $colContact, $input->refId, $input->contactId, $input->index);
 		$res = array('ContactSynced' => 1);
+
 		echo json_encode((object) $res);
 		exit();
 	}
 
-	public function refresh()
-	{
+
+	public function refresh() {
 		$input = (object) json_decode(file_get_contents('php://input'));
 		$m_syncs = new JcrmModelSyncs();
 		$select = JComponentHelper::getParams('com_jcrm')->get('sync_table_select');
@@ -151,27 +162,19 @@ class JcrmControllerSyncs extends JcrmController {
 		$sync->contactOptions = array();
 		$sync->orgaIdDefault = "new";
 		$sync->cIdDefault = "new";
-		if($referent[$colAccount.'_'.$input->index] !== "0")
-		{
+		if ($referent[$colAccount.'_'.$input->index] !== "0") {
 			$sync->orgaSynced = true;
-			if($referent[$colContact.'_'.$input->index] !== "0")
-			{
+			if ($referent[$colContact.'_'.$input->index] !== "0") {
 				$sync->contactSynced = true;
-			}
-			else
-			{
+			} else {
 				$sync->contactOptions = $m_syncs->findContact($referent['Email_'.$input->index]);
-				if(!empty($sync->contactOptions))
-				{
+				if (!empty($sync->contactOptions)) {
 					$sync->cIdDefault = $sync->contactOptions[0]->id;
 				}
 			}
-		}
-		else
-		{
+		} else {
 			$sync->orgaOptions = $m_syncs->getSiblingOrgs($referent['Organisation_'.$input->index]);
-			if(!empty($sync->orgaOptions))
-			{
+			if (!empty($sync->orgaOptions)) {
 				$sync->orgaIdDefault = $sync->orgaOptions[0]->id;
 			}
 		}
@@ -179,8 +182,7 @@ class JcrmControllerSyncs extends JcrmController {
 		exit();
 	}
 
-	public function ignore()
-	{
+	public function ignore() {
 		$input = (object) json_decode(file_get_contents('php://input'));
 		$m_syncs = new JcrmModelSyncs();
 		$tableName = JComponentHelper::getParams('com_jcrm')->get('sync_table_name');
@@ -221,7 +223,6 @@ class JcrmControllerSyncs extends JcrmController {
 		$select = $params->get('sync_table_select');
 		$colContact = $params->get('sync_contact_id_column');
 		$colAccount = $params->get('sync_account_id_column');
-		$colGroup = $params->get('sync_group_id_column');
 
 		$res = new stdClass();
 		foreach ($input as $referent) {
@@ -250,7 +251,7 @@ class JcrmControllerSyncs extends JcrmController {
 						$allreadyContact = $m_syncs->findContact($ref['Email_'.$referent->contact->index]);
 						if ($referent->contact->cId == "new") {
 							if (!is_null($allreadyContact) && empty($allreadyContact)) {
-								$contact = JcrmFrontendHelper::buildContactFromReferent($ref, $referent->contact->index);
+								$contact = JcrmFrontendHelper::buildContactFromReferent($ref, $referent->contact->index, $colGroup);
 								$contact = $m_contact->addContact($contact);
 								$m_syncs->syncRef($tableName, $colContact, $referent->contact->refId, $contact['id'], $referent->contact->index);
 							}
@@ -261,11 +262,10 @@ class JcrmControllerSyncs extends JcrmController {
 				}
 			}
 
-			$group = $m_contact->getGroupByContact($referent->contact->refId);
+			$group = $m_contact->getGroupsByContact($referent->contact->refId);
 			if (!empty($group)) {
 
 			}
-
 		}
 
 		$res->status = true;

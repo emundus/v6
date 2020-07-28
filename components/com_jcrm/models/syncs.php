@@ -349,13 +349,18 @@ class JcrmModelSyncs extends JModelList
 	 * @return mixed
 	 */
     public function getReferent($select, $tableName, $id) {
-        $dbo = $this->getDbo();
-        $query = "select $select from $tableName where id = $id";
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select($select)
+	        ->from($tableName)
+	        ->where('id = '.$id);
+
         try {
-            $dbo->setQuery($query);
-            return $dbo->loadAssoc();
+            $db->setQuery($query);
+            return $db->loadAssoc();
         } catch (Exception $e) {
-            JLog::add('Error in model/syncs at function getReferent, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
+            JLog::add('Error in model/syncs at function getReferent, QUERY: '.str_replace("\n", '' , $query->__toString()), JLog::ERROR, 'com_jcrm');
             return false;
         }
     }
@@ -381,21 +386,26 @@ class JcrmModelSyncs extends JModelList
     }
 
 	/**
-     * @param $tableName
-     * @param $colContact
+     * @param String $tableName
+     * @param String $colContact
      * @param $refId
      * @param $orgaId
      * @param $index
      * @return mixed
      */
     public function syncRef($tableName, $colContact, $refId, $orgaId, $index) {
-        $dbo = $this->getDbo();
-        $query = "update $tableName set `".$colContact."_".$index."` = $orgaId where `id` = $refId";
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update($db->quoteName($tableName))
+	        ->set($db->quoteName($colContact.'_'.$index).' = '.$orgaId)
+	        ->where($db->quoteName('id').' = '.$refId);
+
         try {
-            $dbo->setQuery($query);
-            return $dbo->execute();
+            $db->setQuery($query);
+            return $db->execute();
         } catch (Exception $e) {
-            JLog::add('Error in model/syncs at function syncRef, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
+            JLog::add('Error in model/syncs at function syncRef, QUERY: '.str_replace("\n", ' ', $query->__toString()), JLog::ERROR, 'com_jcrm');
             return false;
         }
     }

@@ -332,6 +332,13 @@ class JcrmFrontendHelper
 		return $fileName;
 	}
 
+
+	/**
+	 * @param $referent
+	 * @param $index
+	 *
+	 * @return stdClass
+	 */
 	public static function buildContactFromReferent($referent, $index) {
 
 		$newContact = new stdClass();
@@ -339,70 +346,73 @@ class JcrmFrontendHelper
 		$newContact->first_name = $referent['First_Name_'.$index];
 		$newContact->organisation = $referent['Organisation_'.$index];
 		$newContact->type = 0;
+		
+		if (!empty($referent['Group_'.$index])) {
+			$newContact->formGroup = $referent['Group_'.$index];
+		}
 
 		foreach ($referent as $item => $value) {
 
-			if (in_array($item, ['City_'.$index, 'Country_'.$index, 'Last_Name_'.$index , 'First_Name_'.$index, 'Organisation_'.$index])) {
+			// Skip values used above or used in tandem with the address field (like City).
+			if (in_array($item, ['City_'.$index, 'Country_'.$index, 'Last_Name_'.$index , 'First_Name_'.$index, 'Organisation_'.$index, 'Group_'.$index]) || empty($value)) {
 				continue;
 			}
 
-			if (in_array($item, ['Email_'.$index, 'Telephone_'.$index, 'Fax_number'.$index, 'Address_'.$index, 'Position_'.$index, 'Website_'.$index]) && !empty($value)) {
-				$newContact->email = array();
-				if ($item === 'Email_'.$index) {
-					$email = new stdClass();
-					$email->type = 'work';
-					$email->uri = $referent['Email_'.$index];
-					$newContact->email[] = $email;
-					continue;
-				}
+			$newContact->email = array();
+			if ($item === 'Email_'.$index) {
+				$email = new stdClass();
+				$email->type = 'work';
+				$email->uri = $referent['Email_'.$index];
+				$newContact->email[] = $email;
+				continue;
+			}
 
-				$newContact->phone = array();
-				if ($item === 'Telephone_'.$index) {
-					$phone = new stdClass();
-					$phone->type = 'work';
-					$phone->tel = $value;
-					$newContact->phone[] = $phone;
-					continue;
-				}
-				if ($item === 'Fax_number'.$index) {
-					$phone = new stdClass();
-					$phone->type = 'fax';
-					$phone->tel = $value;
-					$newContact->phone[] = $phone;
-					continue;
-				}
+			$newContact->phone = array();
+			if ($item === 'Telephone_'.$index) {
+				$phone = new stdClass();
+				$phone->type = 'work';
+				$phone->tel = $value;
+				$newContact->phone[] = $phone;
+				continue;
+			}
+			if ($item === 'Fax_number'.$index) {
+				$phone = new stdClass();
+				$phone->type = 'fax';
+				$phone->tel = $value;
+				$newContact->phone[] = $phone;
+				continue;
+			}
 
-				$newContact->adr = array();
-				if ($item === 'Address_'.$index) {
-					$adr = new stdClass();
-					$adr->type = 'work';
-					$adr->array = array($value, $referent['City_'.$index], '', $referent['Country_'.$index]);
-					$newContact->adr[] = $adr;
-					continue;
-				}
+			$newContact->adr = array();
+			if ($item === 'Address_'.$index) {
+				$adr = new stdClass();
+				$adr->type = 'work';
+				$adr->array = array($value, $referent['City_'.$index], '', $referent['Country_'.$index]);
+				$newContact->adr[] = $adr;
+				continue;
+			}
 
-				$newContact->other = array();
-				if ($item === 'Position_'.$index) {
-					$other = new stdClass();
-					$other->type = 'title';
-					$other->value = $value;
-					$newContact->other[] = $other;
-					continue;
-				}
+			$newContact->other = array();
+			if ($item === 'Position_'.$index) {
+				$other = new stdClass();
+				$other->type = 'title';
+				$other->value = $value;
+				$newContact->other[] = $other;
+				continue;
+			}
 
-				$newContact->infos = "";
-				if ($item === 'Website_'.$index) {
-					$newContact->infos .= "website: ". $value. "\n";
-					continue;
-				}
+			$newContact->infos = "";
+			if ($item === 'Website_'.$index) {
+				$newContact->infos .= "website: ". $value. "\n";
+				continue;
+			}
 
-				// This tricky if only gets fields that END in the index (for example ExtraInfo_1 would work but not SpecialField)
-				if (substr($item, -strlen($index)) === $index) {
-					$other = new StdClass();
-					$other->type = 'title';
-					$other->value = $value;
-					$newContact->other[] = $other;
-				}
+			// This tricky if only gets fields that END in the index (for example ExtraInfo_1 would work but not SpecialField)
+			if (substr($item, -strlen($index)) === $index) {
+				$other = new StdClass();
+				$other->type = 'title';
+				$other->value = $value;
+				$newContact->other[] = $other;
 			}
 		}
 		return $newContact;

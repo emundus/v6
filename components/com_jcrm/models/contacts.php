@@ -161,8 +161,6 @@ class JcrmModelContacts extends JModelList
             }
         }
 
-
-
         // Add the list ordering clause.
         $orderCol = $this->state->get('list.ordering');
         $orderDirn = $this->state->get('list.direction');
@@ -329,7 +327,7 @@ class JcrmModelContacts extends JModelList
 	}
 
     /**
-     * @return mixed
+     * @return array
      * @throws Exception
      */
     public function getGroups() {
@@ -338,8 +336,9 @@ class JcrmModelContacts extends JModelList
 		try {
 			$dbo->setQuery($query);
 			return $dbo->loadAssocList();
-		} catch(JException $e) {
+		} catch(Exception $e) {
 			JLog::add('Error in model/contacts at function getGroups, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
+			return [];
 		}
 	}
 
