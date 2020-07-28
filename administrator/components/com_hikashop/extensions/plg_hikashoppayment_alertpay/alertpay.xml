@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashoppayment">
 	<name>Hikashop Payza Payment Plugin</name>
-	<creationDate>18 juin 2020</creationDate>
+	<creationDate>27 juillet 2020</creationDate>
 	<version>4.3.0</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
