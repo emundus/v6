@@ -35,6 +35,8 @@ class SecuritycheckprosModelRules extends JModelLegacy
      * @var int Total number of files of Pagination 
      */
     var $total = 0;
+	
+	var $global_model = null;
 
     function __construct()
     {
@@ -42,6 +44,9 @@ class SecuritycheckprosModelRules extends JModelLegacy
     
     
         $mainframe = JFactory::getApplication();
+		
+		require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'model.php';
+		$this->global_model = new SecuritycheckproModel();
     
         // Obtenemos las variables de paginación de la petición
         $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
@@ -92,7 +97,7 @@ class SecuritycheckprosModelRules extends JModelLegacy
         $this->total = count($joomla_groups);
     
         // Timestamp
-        $date = JFactory::getDate();
+        $timestamp = $this->global_model->get_Joomla_timestamp();
     
         // Comprobamos si hay que añadir algún grupo a la tabla '#__securitycheckpro_rules'
         foreach ($joomla_groups as $element)
@@ -112,7 +117,7 @@ class SecuritycheckprosModelRules extends JModelLegacy
                   $valor = (object) array(
                  'group_id' => $group_id,
                  'rules_applied' => $rules_applied,
-                 'last_change' => $date->format("Y-m-d H:i:s"),
+                 'last_change' =>  $timestamp,
                   );
                   $insert_result = $db->insertObject('#__securitycheckpro_rules', $valor, 'id');
             }
@@ -170,7 +175,7 @@ class SecuritycheckprosModelRules extends JModelLegacy
         $uids = $jinput->getVar('cid', '', 'array');
     
         // Timestamp
-        $formatted_date = JFactory::getDate()->format("Y-m-d H:i:s");
+        $timestamp = $this->global_model->get_Joomla_timestamp();
     
         Joomla\Utilities\ArrayHelper::toInteger($uids, array());
         
@@ -179,7 +184,7 @@ class SecuritycheckprosModelRules extends JModelLegacy
         {
             try 
             {
-                  $sql = "UPDATE `#__securitycheckpro_rules` SET rules_applied=1,last_change='" .$formatted_date ."' WHERE group_id='{$uid}'";
+                  $sql = "UPDATE `#__securitycheckpro_rules` SET rules_applied=1,last_change='" .$timestamp ."' WHERE group_id='{$uid}'";
                   $db->setQuery($sql);
                   $db->execute();    
             } catch (Exception $e)
@@ -203,7 +208,7 @@ class SecuritycheckprosModelRules extends JModelLegacy
         $uids = $jinput->getVar('cid', '', 'array');
     
         // Timestamp
-        $formatted_date = JFactory::getDate()->format("Y-m-d H:i:s");
+        $timestamp = $this->global_model->get_Joomla_timestamp();
     
         Joomla\Utilities\ArrayHelper::toInteger($uids, array());
         
@@ -212,7 +217,7 @@ class SecuritycheckprosModelRules extends JModelLegacy
         {
             try 
             {
-                  $sql = "UPDATE `#__securitycheckpro_rules` SET rules_applied=0,last_change='" .$formatted_date ."' WHERE group_id='{$uid}'";
+                  $sql = "UPDATE `#__securitycheckpro_rules` SET rules_applied=0,last_change='" .$timestamp ."' WHERE group_id='{$uid}'";
                   $db->setQuery($sql);
                   $db->execute();
             }    catch (Exception $e)

@@ -11,15 +11,6 @@ echo '<script src="' . JURI::root() . 'media/com_securitycheckpro/new/vendor/cha
     
     jQuery(document).ready(function() {
         
-        jQuery( "#geoblock_button" ).click(function() {
-            Joomla.submitbutton('go_to_geoblock');
-        });
-        
-        jQuery( "#automatic_updates_geoblock_button" ).click(function() {
-            oculta_popup(); 
-            Joomla.submitbutton('automatic_updates_geoblock');
-        });
-        
         jQuery( "#disable_firewall_button" ).click(function() {
             Joomla.submitbutton('disable_firewall');
         });
@@ -80,39 +71,27 @@ echo '<script src="' . JURI::root() . 'media/com_securitycheckpro/new/vendor/cha
         
         // Actualizamos los datos del gráfico 'pie'
         Chart.defaults.global.defaultFontFamily='-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',Chart.defaults.global.defaultFontColor="#292b2c";var ctx=document.getElementById("piechart"),piechart=new Chart(ctx,{type:"pie",data:{labels:['<?php echo JText::_('COM_SECURITYCHECKPRO_BLOCKED_ACCESS'); ?>','<?php echo JText::_('COM_SECURITYCHECKPRO_USER_AND_SESSION_PROTECTION'); ?>','<?php echo JText::_('COM_SECURITYCHECKPRO_FIREWALL_RULES_APLIED'); ?>'],datasets:[{data:['<?php echo $this->total_blocked_access; ?>','<?php echo $this->total_user_session_protection; ?>','<?php echo $this->total_firewall_rules; ?>'],backgroundColor:["#007bff","#dc3545","#ffc107"]}]}});
-            
-    <?php 
-    // Actualizamos la variable de estado para no mostrar más el popup
-    $mainframe = JFactory::getApplication();                        
-    ?>
+    
         
         //Tooltip subscripcion
         jQuery("#subscriptions_status").tooltip();
         jQuery("#scp_version").tooltip();
         jQuery("#update_database_version").tooltip();
-        
-        if( Cookies.get('SCPInfoMessage') ){
-            //it is still within the day                    
-        } else {
-            //either cookie already expired, or user never visit the site
-            //create the cookie            
-            Cookies.set('SCPInfoMessage', 'SCPInfoMessage', { expires: 1 });
-
-            //and display the div
-           jQuery("#mensaje_informativo").show();
-           window.setTimeout(function () {
+		
+		// Si existe el mensaje informativo lo ocultamos en 5 segundos
+		var element =  document.getElementById('mensaje_informativo');
+		if (typeof(element) != 'undefined' && element != null)
+		{
+		  window.setTimeout(function () {
                 jQuery("#mensaje_informativo").fadeTo(500, 0).slideUp(500, function () {
                     jQuery(this).remove();
                 });
             }, 5000);
-        }
+		}        
         
     });
     
-    function oculta_popup(){
-        jQuery("#div_update_geoblock_database").modal('hide');        
-        jQuery("#div_refresh").hide();
-    }
+    
     function muestra_progreso(){
         jQuery("#div_boton_subida").hide();
         jQuery("#div_loading").show();

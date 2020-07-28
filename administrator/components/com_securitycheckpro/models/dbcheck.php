@@ -95,8 +95,10 @@ class SecuritycheckprosModelDbCheck extends SecuritycheckproModel
             }
         }
         
+		$timestamp = $this->get_Joomla_timestamp();
+		
         /* Actualizamos el campo que indica la última optimización de la bbdd */
-        $this->set_campo_filemanager('last_check_database', date('Y-m-d H:i:s'));
+        $this->set_campo_filemanager('last_check_database', $timestamp);
                 
         return $return;
     }
