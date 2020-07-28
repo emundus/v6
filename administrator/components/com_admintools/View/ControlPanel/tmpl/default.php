@@ -29,7 +29,7 @@ defined('_JEXEC') or die;
 						</p>
 						<p>
 							<a class="akeeba-btn--primary"
-							   href="https://www.akeebabackup.com/documentation/troubleshooter/atwafissues.html"
+							   href="https://www.akeeba.com/documentation/troubleshooter/atwafissues.html"
 							   target="_blank"
 							>
 								<span class="akion-information-circled"></span>
@@ -85,7 +85,7 @@ defined('_JEXEC') or die;
 					</p>
 
 					<p>Copyright &copy; 2010&ndash;<?php echo date('Y'); ?> Nicholas K. Dionysopoulos / <a
-								href="https://www.akeebabackup.com">Akeeba Ltd</a></p>
+								href="https://www.akeeba.com">Akeeba Ltd</a></p>
 					<p>
 						If you use Admin Tools <?php echo ADMINTOOLS_PRO ? 'Professional' : 'Core'; ?>, please post a
 						rating and a review at the <a
