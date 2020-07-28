@@ -35,10 +35,6 @@ $m_emails = new EmundusModelEmails;
 $fnums = $m_files->getFnumsInfos($this->fnum_array);
 $email = $m_emails->getEmail($this->default_email_tmpl);
 
-$experts_email = array();
-foreach ($this->experts_list as $key => $value) {
-    $experts_email[] = $value['email'];
-}
 ?>
 
 <div id="em-email-messages"></div>
@@ -169,13 +165,13 @@ if (!empty($files)) {
 var mail_body = document.getElementById("mail_body");
 var mail_subject = document.getElementById("mail_subject");
 var mail_attachments = document.getElementById("mail_attachments");
-var mail_to = document.getElementById("mail_to"); // TODO: Make this field work using a selectize field for multi entry.
+var mail_to = document.getElementById("mail_to");
 var mail_from = document.getElementById("mail_from");
 var mail_from_name = document.getElementById("mail_from_name");
 mail_body.value = '<?= str_replace("'", "\'", preg_replace('~[[:cntrl:]]~', '', $email->message)); ?>';
 mail_subject.value = "<?= $email->subject; ?>";
 mail_attachments.value = "<?= $files_path; ?>";
-mail_to.value = "<?= implode(',', $experts_email); ?>"; // TODO: Verify if experts email variable actually gets filled.
+mail_to.value = "<?= implode(',', $experts_email); ?>";
 mail_from.value = "<?= $email->emailfrom; ?>";
 mail_from_name.value = "<?= $email->name; ?>";
 
@@ -225,7 +221,6 @@ document.getElementById("adminForm").addEventListener("submit", event => {
                 $('#em-email').empty();
 
                 result = JSON.parse(result);
-
                 if (result.status) {
 
                     if (result.sent.length > 0) {
@@ -239,7 +234,7 @@ document.getElementById("adminForm").addEventListener("submit", event => {
                         Swal.fire({
                             type: 'success',
                             title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
-                            html:  sent_to + '</ul>'
+                            html: sent_to+'</ul>'
                         });
 
                     } else {
