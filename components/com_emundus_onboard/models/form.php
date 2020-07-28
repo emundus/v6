@@ -783,7 +783,7 @@ class EmundusonboardModelform extends JModelList {
                     } elseif ($key == 'title') {
                         $query->set($key . ' = ' . $db->quote($data['label']));
                     } elseif ($key == 'alias') {
-                        $query->set($key . ' = ' . $db->quote(str_replace(array(' '),'-',strtolower($data['label']))));
+                        $query->set($key . ' = ' . $db->quote(str_replace(array(' '),'-',strtolower($data['label'])) . '-' . $newprofile));
                     } elseif ($key == 'rgt') {
                         $query->set($key . ' = ' . $db->quote(1));
                     } elseif ($key == 'lft') {
@@ -806,7 +806,16 @@ class EmundusonboardModelform extends JModelList {
                 $formbuilder->createMenu($label, $intro, $newprofile, 'false');
 
                 // Create submittion page
-                $query->clear()
+                $label = array(
+                    'fr' => 'Confirmation d\'envoi de dossier',
+                    'en' => 'Data & disclaimer confirmation'
+                );
+                $intro = array(
+                    'fr' => '',
+                    'en' => ''
+                );
+                $formbuilder->createMenuFromTemplate($label,$intro,258,$newprofile);
+                /*$query->clear()
                     ->select('*')
                     ->from('#__menu')
                     ->where($db->quoteName('alias') . ' = ' . $db->quote('submitting-application-forms'));
@@ -837,7 +846,7 @@ class EmundusonboardModelform extends JModelList {
                         ->set($db->quoteName('menuid') . ' = ' . $db->quote($submittion_id));
                     $db->setQuery($query);
                     $db->execute();
-                }
+                }*/
 
                 $user = JFactory::getUser();
                 $settings->onAfterCreateForm($user->id);
@@ -1012,7 +1021,6 @@ class EmundusonboardModelform extends JModelList {
 			->leftJoin($db->quoteName('#__emundus_setup_attachments', 'sa') . ' ON ' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('sap.attachment_id'))
 			->order($db->quoteName('sap.ordering'))
 			->where($db->quoteName('sap.published') . ' = 1')
-			->where($db->quoteName('sap.profile_id') . ' = ' . $prid)
 			->andWhere($db->quoteName('sap.campaign_id') . ' = ' . $cid);
 
 		try {

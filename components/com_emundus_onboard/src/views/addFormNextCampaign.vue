@@ -75,10 +75,6 @@
                   :menuHighlight="menuHighlight"
           ></addDocuments>
 
-          <addSubmittionPage
-                  v-if="menuHighlight == 2"
-          ></addSubmittionPage>
-
           <!--          <addEvalEval
                             v-if="menuHighlight == 6"
                             :funnelCategorie="formCategories[langue][menuHighlight]"
@@ -113,7 +109,6 @@
   import addEvaluation from "../views/funnelFormulaire/addEvaluation";
   import addEvalVisi from "../views/funnelFormulaire/addEvalVisi";
   import addEvalEval from "../views/funnelFormulaire/addEvalEval";
-  import addSubmittionPage from "./funnelFormulaire/addSubmittionPage";
   import ModalWarningFormBuilder from "./advancedModals/ModalWarningFormBuilder";
 
   const qs = require("qs");
@@ -130,8 +125,7 @@
       addEmail,
       addEvaluation,
       addEvalVisi,
-      addEvalEval,
-      addSubmittionPage
+      addEvalEval
     },
 
     props: {
@@ -160,24 +154,21 @@
         [
           Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION"),
           Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCSDESCRIPTION"),
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMITTIONDESCRIPTION"),
         ],
         [
           Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION"),
           Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCSDESCRIPTION"),
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMITTIONDESCRIPTION"),
         ]
       ],
 
       formCategories: [
         [
           "Aperçu du formulaire",
-          "Documents",
-          "Soumission du formulaire"
+          "Documents"
         ],
         [
           "Form Preview",
-          "Submitting the form"
+          "Documents"
         ]
       ],
 
@@ -241,7 +232,7 @@
         if (this.menuHighlight < 1) {
           this.menuHighlight++;
         } else {
-          window.location.href = '/' + this.actualLanguage + '/configuration/campaigns';
+          window.location.href = '/fr/configuration-campagne';
         }
       },
 

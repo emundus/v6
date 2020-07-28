@@ -128,9 +128,6 @@ export default {
     },
     beforeOpen(event) {
     },
-    generatePseudo() {
-      this.form.login = (this.form.firstname.charAt(0) + this.form.lastname.substr(0, 10)).toLowerCase();
-    },
     createUser() {
       this.errors = {
         firstname: false,

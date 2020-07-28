@@ -113,7 +113,10 @@
 
   export default {
     name: "modalAddDocuments",
-    props: { cid: Number },
+    props: {
+      cid: Number,
+      pid: Number,
+    },
     data() {
       return {
         form: {
@@ -129,7 +132,8 @@
           selectedTypes: {
             pdf: false,
             'jpg;png;gif': false,
-            'doc;docx;odt;xls;xlsx;odf': false
+            'doc;docx;odt': false,
+            'xls;xlsx;odf': false,
           },
         },
         translate: {
@@ -143,16 +147,20 @@
         },
         types: [
           {
-            title: 'Documents PDF',
+            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PDF_DOCUMENTS"),
             value: 'pdf'
           },
           {
-            title: 'Images',
+            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS"),
             value: 'jpg;png;gif'
           },
           {
-            title: 'Documents Office',
-            value: 'doc;docx;odt;xls;xlsx;odf'
+            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS"),
+            value: 'doc;docx;odt'
+          },
+          {
+            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
+            value: 'xls;xlsx;odf'
           },
         ],
         selectedTypes: [],
@@ -227,7 +235,8 @@
           data: qs.stringify({
             document: this.form,
             types: types,
-            cid: this.cid
+            cid: this.cid,
+            pid: this.pid
           })
         }).then((rep) => {
           this.$emit("UpdateDocuments");

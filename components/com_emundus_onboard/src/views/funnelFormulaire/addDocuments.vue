@@ -2,6 +2,7 @@
   <div class="container-evaluation">
     <ModalAddDocuments
             :cid="this.campaignId"
+            :pid="this.profileId"
             @UpdateDocuments="updateList"
     />
     <transition :name="'slide-down'" type="transition">
@@ -184,10 +185,6 @@ export default {
       this.unid = [];
 
       this.getDocuments();
-      setTimeout(() => {
-        console.log(this.undocuments.length);
-        //this.addUndoc(this.undocuments[this.undocuments.length - 1])
-      },500);
     },
 
     getDocuments() {

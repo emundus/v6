@@ -487,9 +487,10 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $document = $jinput->getRaw('document');
             $types = $jinput->getRaw('types');
             $cid = $jinput->getInt('cid');
+            $pid = $jinput->getInt('pid');
             $m_camp = $this->model;
 
-            $result = $m_camp->createDocument($document,$types,$cid);
+            $result = $m_camp->createDocument($document,$types,$cid,$pid);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_ADDED'), 'data' => $result);

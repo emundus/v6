@@ -608,15 +608,23 @@ class EmundusonboardModelcampaign extends JModelList
         $query->select('year')
             ->from($db->quoteName('#__emundus_setup_campaigns'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
-        $db->setQuery($query);
-        $schoolyear = $db->loadResult();
-
-        $query->clear()
-            ->update($db->quoteName('#__emundus_setup_campaigns'))
-            ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
 
         try {
+            $db->setQuery($query);
+            $schoolyear = $db->loadResult();
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
+                ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign));
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_setup_campaigns'))
+                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
+
             $db->setQuery($query);
             $db->execute();
 
@@ -625,13 +633,8 @@ class EmundusonboardModelcampaign extends JModelList
                 ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
                 ->where($db->quoteName('schoolyear') . ' = ' . $db->quote($schoolyear));
 
-            try {
-                $db->setQuery($query);
-                return $db->execute();
-            } catch (Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                return false;
-            }
+            $db->setQuery($query);
+            return $db->execute();
         } catch (Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;
@@ -693,7 +696,7 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    public function createDocument($document,$types) {
+    public function createDocument($document,$types,$cid,$pid) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -724,6 +727,23 @@ class EmundusonboardModelcampaign extends JModelList
                 ->update($db->quoteName('#__emundus_setup_attachments'))
                 ->set($db->quoteName('lbl') . ' = ' . $db->quote('_em' . $newdocument))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($newdocument));
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->select('max(ordering)')
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($cid));
+            $db->setQuery($query);
+            $ordering = $db->loadResult();
+
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
+            $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+                ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($cid))
+                ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($newdocument))
+                ->set($db->quoteName('mandatory') . ' = ' . $db->quote(0))
+                ->set($db->quoteName('ordering') . ' = ' . $db->quote($ordering + 1));
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
