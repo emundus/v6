@@ -78,4 +78,12 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
         width: 100%;
 
     }
+
+    .view-reset #g-navigation {
+        height: auto !important;
+    }
+
+    .view-reset #g-navigation .g-container {
+        height: auto !important;
+    }
 }
