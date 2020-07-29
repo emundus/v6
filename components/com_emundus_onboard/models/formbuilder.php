@@ -2054,15 +2054,36 @@ class EmundusonboardModelformbuilder extends JModelList {
                 } elseif ($key == 'alias') {
                     $query->set($key . ' = ' . $db->quote('form-' . $newformid . '-' . $val));
                 } elseif ($key == 'path') {
-                    $query->set($key . ' = ' . $db->quote($menu_parent->path . '/' . explode('/', $val)[1]));
+                    if($formid == 258){
+                        $query->set($key . ' = ' . $db->quote('envoi-du-dossier-' . $profile->id));
+                    } else {
+                        if(strpos($val,'/')){
+                            $newpath = explode('/', $val)[1];
+                        } else {
+                            $newpath = $val;
+                        }
+                        $query->set($key . ' = ' . $db->quote($menu_parent->path . '/' . $newpath));
+                    }
                 } elseif ($key == 'link') {
                     $query->set($key . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $newformid));
                 } elseif ($key == 'parent_id') {
-                    $query->set($key . ' = ' . $db->quote($menu_parent->id));
+                    if($formid == 258){
+                        $query->set($key . ' = ' . $db->quote(1));
+                    } else {
+                        $query->set($key . ' = ' . $db->quote($menu_parent->id));
+                    }
                 } elseif ($key == 'lft') {
-                    $query->set($key . ' = ' . $db->quote(array_values($lfts)[strval(sizeof($lfts)-1)] + 2));
+                    if($formid == 258){
+                        $query->set($key . ' = ' . $db->quote(103));
+                    } else {
+                        $query->set($key . ' = ' . $db->quote(array_values($lfts)[strval(sizeof($lfts) - 1)] + 2));
+                    }
                 } elseif ($key == 'rgt') {
-                    $query->set($key . ' = ' . $db->quote(array_values($rgts)[strval(sizeof($rgts)-1)] + 2));
+                    if($formid == 258){
+                        $query->set($key . ' = ' . $db->quote(104));
+                    } else {
+                        $query->set($key . ' = ' . $db->quote(array_values($rgts)[strval(sizeof($rgts) - 1)] + 2));
+                    }
                 }
             }
             $db->setQuery($query);

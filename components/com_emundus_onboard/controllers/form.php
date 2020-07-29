@@ -516,5 +516,22 @@ class EmundusonboardControllerform extends JControllerLegacy {
         echo json_encode((object)$changeresponse);
         exit;
     }
+
+    public function getsubmittionpage(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_form = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $prid = $jinput->getInt('prid');
+
+            $submittionpage = $m_form->getSubmittionPage($prid);
+        }
+        echo json_encode((object)$submittionpage);
+        exit;
+    }
 }
 

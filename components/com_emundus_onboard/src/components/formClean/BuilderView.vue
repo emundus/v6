@@ -288,7 +288,8 @@ export default {
         let ellink = this.object.link.replace("fabrik","emundus_onboard");
         axios.get(ellink + "&format=vue_jsonclean").then(r => {
           this.groups.forEach(grp => {
-            this.object_json.Groups['group_' + grp.group_id].elements = r.data.Groups['group_' + grp.group_id].elements;
+              this.$set(this.object_json.Groups['group_' + grp.group_id], 'elements', r.data.Groups['group_' + grp.group_id].elements)
+            //this.object_json.Groups['group_' + grp.group_id].elements = r.data.Groups['group_' + grp.group_id].elements;
           });
         });
       }).catch(e => {
@@ -586,6 +587,7 @@ export default {
             }).then(() => {
               this.groups.splice(index,1);
               delete this.object_json.Groups['group_' + group.group_id];
+              this.updateGroup = false;
               this.$forceUpdate();
             });
           }).catch(e => {
@@ -767,7 +769,7 @@ export default {
     },
     handleGroup(gid){
       if(!this.updateGroup) {
-        this.openGroup[gid] ? this.openGroup[gid] = false : this.openGroup[gid] = true;
+        this.openGroup[gid] ? this.$set(this.openGroup,gid,false) : this.$set(this.openGroup,gid,true)
       }
     },
     startGroupDrag() {

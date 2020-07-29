@@ -302,3 +302,40 @@ select.fabrikinput.form-control{
 .toggle-editor.btn-toolbar.pull-right.clearfix{
   float: left !important;
 }
+
+.form-section{
+  display: flex;
+  margin: 2em 0 1em 0;
+  font-size: 20px;
+  padding: 0;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.form-section li{
+  padding: 0 1em 0 1em;
+}
+
+.form-section li a{
+  cursor: pointer;
+  color: black;
+}
+
+.form-section li a:hover{
+  text-decoration: none;
+}
+
+.form-section__current{
+  color: #de6339 !important;
+}
+
+.form-section__current::after{
+  content: "";
+  height: 3px;
+  margin: 3px 0 0;
+  -webkit-transition-duration: .2s;
+  transition-duration: .2s;
+  background-color: #de6339;
+  border-radius: 5px;
+  display: block;
+}

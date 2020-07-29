@@ -1372,6 +1372,32 @@ class EmundusonboardModelform extends JModelList {
 		}
 	}
 
+	public function getSubmittionPage($prid){
+        if (empty($prid)) {
+            return false;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select(['menu.link','menu.rgt'])
+            ->from ($db->quoteName('#__menu', 'menu'))
+            ->leftJoin($db->quoteName('#__menu_types', 'mt').' ON '.$db->quoteName('mt.menutype').' = '.$db->quoteName('menu.menutype'))
+            ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'sp').' ON '.$db->quoteName('sp.menutype').' = '.$db->quoteName('mt.menutype'))
+            ->where($db->quoteName('sp.id') . ' = '.$prid)
+            ->where($db->quoteName('menu.parent_id') . ' = 1')
+            ->where($db->quoteName('menu.type') . ' = ' . $db->quote('component'));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObject();
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+
+    }
+
     /**
      * @param $profile_id
      * @return bool|mixed|null

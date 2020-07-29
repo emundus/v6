@@ -30,12 +30,6 @@
             @removeMenu="removeMenu"
     />
     <div class="row form-builder">
-      <div class="heading-block col-md-offset-4">
-        <h1 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h1>
-        <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit">
-          <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
-        </a>
-      </div>
       <div class="actions-menu menu-block">
         <div>
           <div class="heading-actions">
@@ -80,38 +74,70 @@
         </a>
       </div>
       <div class="col-md-8 col-md-offset-4 menu-block">
-        <ul class="menus-row">
-          <draggable
-                  handle=".handle"
-                  v-model="formObjectArray"
-                  :class="'draggables-list'"
-                  @end="SomethingChange"
-          >
-            <li v-for="(value, index) in formObjectArray" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-              <span class="icon-handle" v-show="grab && indexGrab == index">
-                <em class="fas fa-grip-vertical handle"></em>
-              </span>
-              <a @click="changeGroup(index,value.rgt)"
-                 class="MenuFormItem"
-                 :class="indexHighlight == index ? 'MenuFormItem_current' : ''">
-                {{value.object.show_title.value}}
-              </a>
-            </li>
-          </draggable>
+        <div class="heading-block">
+          <h1 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h1>
+          <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit">
+            <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
+          </a>
+        </div>
+        <ul class="form-section">
+          <li>
+            <a :class="menuHighlight === 0 ? 'form-section__current' : ''" @click="menuHighlight = 0">{{FormPage}}</a>
+          </li>
+          <li>
+            <a :class="menuHighlight === 1 ? 'form-section__current' : ''" @click="menuHighlight = 1">{{SubmitPage}}</a>
+          </li>
         </ul>
-        <div class="col-md-12 form-viewer-builder">
-          <Builder
-                  :object="formObjectArray[indexHighlight]"
-                  v-if="formObjectArray[indexHighlight]"
-                  :UpdateUx="UpdateUx"
-                  @show="show"
-                  @UpdateFormBuilder="updateFormObjectAndComponent"
-                  @removeGroup="removeGroup"
-                  :key="builderKey"
-                  :rgt="rgt"
-                  :files="files"
-                  ref="builder"
-          />
+        <div v-if="menuHighlight === 0">
+          <ul class="menus-row">
+            <draggable
+                    handle=".handle"
+                    v-model="formObjectArray"
+                    :class="'draggables-list'"
+                    @end="SomethingChange"
+            >
+              <li v-for="(value, index) in formObjectArray" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+                <span class="icon-handle" v-show="grab && indexGrab == index">
+                  <em class="fas fa-grip-vertical handle"></em>
+                </span>
+                <a @click="changeGroup(index,value.rgt)"
+                   class="MenuFormItem"
+                   :class="indexHighlight == index ? 'MenuFormItem_current' : ''">
+                  {{value.object.show_title.value}}
+                </a>
+              </li>
+            </draggable>
+          </ul>
+          <div class="col-md-12 form-viewer-builder">
+            <Builder
+                    :object="formObjectArray[indexHighlight]"
+                    v-if="formObjectArray[indexHighlight]"
+                    :UpdateUx="UpdateUx"
+                    @show="show"
+                    @UpdateFormBuilder="updateFormObjectAndComponent"
+                    @removeGroup="removeGroup"
+                    :key="builderKey"
+                    :rgt="rgt"
+                    :files="files"
+                    ref="builder"
+            />
+          </div>
+        </div>
+        <div v-if="menuHighlight === 1">
+          <div class="col-md-12 form-viewer-builder">
+            <Builder
+                    :object="submittionPages[0]"
+                    v-if="submittionPages[0]"
+                    :UpdateUx="UpdateUx"
+                    @show="show"
+                    @UpdateFormBuilder="updateFormObjectAndComponent"
+                    @removeGroup="removeGroup"
+                    :key="builderSubmitKey"
+                    :rgt="rgt"
+                    :files="files"
+                    ref="builder_submit"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -162,6 +188,7 @@
       return {
         // UX variables
         UpdateUx: false,
+        menuHighlight: 0,
         indexHighlight: "0",
         indexGrab: "0",
         animation: {
@@ -180,12 +207,14 @@
 
         // Forms variables
         formObjectArray: [],
+        submittionPages: [],
         formList: "",
         profileLabel: "",
         id: 0,
         grab: 0,
         rgt: 0,
         builderKey: 0,
+        builderSubmitKey: 0,
         files: 0,
         //
 
@@ -240,6 +269,8 @@
         Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
         sendFormButton: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEND_FORM"),
         Edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
+        FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
+        SubmitPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
       };
     },
 
@@ -270,7 +301,7 @@
                 return qs.stringify(params);
               }
             }).then(response => {
-              this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elements['element'+response.data.id] = response.data;
+              this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
               this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
               this.$refs.builder.updateOrder(gid,this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts);
               this.loading = false;
@@ -335,6 +366,7 @@
           if(form.object.id == group.formid){
             this.formObjectArray[index]['object']['Groups']['group_'+group.group_id] = {
               elements: {},
+              elts: [],
               group_id: group.group_id,
               group_showLegend: group.group_showLegend,
               label_fr: group.label_fr,
@@ -344,8 +376,9 @@
             };
           }
         });
-        this.builderKey += 1;
         this.elementDisabled = false;
+        this.$refs.builder.getDataObject();
+        this.$refs.builder.$refs.builder_viewer.openGroup[group.group_id] = true;
         setTimeout(() => {
           window.scrollTo(0,document.body.scrollHeight);
         }, 200);
@@ -469,8 +502,31 @@
         });
       },
 
+      getSubmittionPage() {
+        axios({
+          method: "GET",
+          url: "index.php?option=com_emundus_onboard&controller=form&task=getsubmittionpage",
+          params: {
+            prid: this.prid,
+          },
+          paramsSerializer: params => {
+             return qs.stringify(params);
+          }
+        }).then(response => {
+          let ellink = response.data.link.replace("fabrik","emundus_onboard");
+          axios.get(ellink + "&format=vue_jsonclean")
+                  .then(rep => {
+                    this.submittionPages.push({
+                      object: rep.data,
+                      rgt: response.data.rgt,
+                      link: response.data.link
+                    });
+                  });
+        });
+      },
+
       /**
-       *  ** Récupère toute les formes du profile ID
+       *  ** Récupère toute les forms du profile ID
        */
       getForms() {
         this.loading = true;
@@ -591,8 +647,10 @@
         });
       },
       enableGrab(index){
-        this.indexGrab = index;
-        this.grab = true;
+        if(this.formList.length !== 1){
+          this.indexGrab = index;
+          this.grab = true;
+        }
       },
       disableGrab(){
         this.indexGrab = 0;
@@ -602,6 +660,7 @@
     },
     created() {
       this.getForms();
+      this.getSubmittionPage();
       this.getFilesByForm();
     },
 
