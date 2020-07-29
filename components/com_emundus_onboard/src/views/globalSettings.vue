@@ -143,13 +143,13 @@ export default {
 
   methods: {
     next() {
-      if (this.menuHighlight == 0) {
+      if (this.menuHighlight == 1) {
         this.menuHighlight++;
         this.updateHomepage(this.$refs.homepage.$data.form.content);
-      } else if (this.menuHighlight == 1) {
+      } else if (this.menuHighlight == 2) {
         this.menuHighlight++;
         this.updateStatus(this.$refs.datas.$data.status);
-      } else {
+      } else if (this.menuHighlight == 3) {
         this.updateTags(this.$refs.tags.$data.tags);
       }
     },
