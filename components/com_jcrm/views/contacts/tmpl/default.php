@@ -129,12 +129,12 @@ ul li {
 					<div class="panel-body">
 						<div class="my-alt-dime" ng-show="dimeBody"></div>
 						<div class="contact-main">
-							<div class="col-md-10" ng-show="contact.id && !formVisible">
-								<div class="row">
+							<div class="col-md-10 contact-card" ng-show="contact.id && !formVisible">
+								<div class="row hero-row">
 									<div class="col-md-2 ct-type">
 										<img class="img-circle img-thumbnail" ng-src="{{contact.photo.uri}}" width="100px" alt="...">
 									</div>
-									<div class="col-md-10">
+									<div class="col-md-8 contact-hero">
 										<div class="orga" ng-show="contact.organisation">
 											<h3>
                                                 {{contact.full_name}}<br/>
@@ -180,16 +180,8 @@ ul li {
 													{{arrayText[address.type]}}:
 												</div>
 												<div class="col-md-8">
-													{{address.array[0]}}
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-8 col-md-offset-2">
-													{{address.array[1]}} {{address.array[2]}}
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-8 col-md-offset-2">
+													{{address.array[0]}} <br>
+                                                    {{address.array[1]}} {{address.array[2]}} <br>
 													{{address.array[3]}}
 												</div>
 											</div>
@@ -213,7 +205,7 @@ ul li {
 											{{other.value}}
 										</div>
 									</div>
-									<hr/>
+									<hr ng-show="contact.contacts.length > 0 || contact.groups.length > 0" />
 									<div class="row" ng-show="contact.contacts.length > 0">
 										<div class="col-md-2 ct-type">
 											<?= JText::_('CONTACT_ORG_USER_HEADER'); ?>
@@ -249,7 +241,7 @@ ul li {
 								</div>
 							</div>
 							<form ng-show="formVisible" name="newContact" novalidate  class="form-horizontal col-md-10">
-								<div class="contact-head-block col-md-10">
+								<div class="contact-head-block">
 									<div class="form-group">
 										<div class="col-md-2">
 											<img ng-show="!contact.type" class="img-circle img-thumbnail" ng-src="/media/com_jcrm/images/contacts/user.svg" width="100px" alt="...">
@@ -290,7 +282,7 @@ ul li {
 										</div>
 									</div>
 								</div>
-								<div class="col-md-11">
+								<div class="contact-form-fields">
 									<div class="row">
 										<h5><?= JText::_('CONTACT_PHONE_HEADER'); ?></h5>
 										<div class="col-md-2">
@@ -315,6 +307,7 @@ ul li {
 											</div>
 										</div>
 									</div>
+                                    <hr>
 									<div class="row">
 										<h5><?= JText::_('CONTACT_EMAIL_HEADER'); ?></h5>
 										<div class="col-md-2">
@@ -340,6 +333,7 @@ ul li {
 											</div>
 										</div>
 									</div>
+                                    <hr>
 									<div class="row">
 										<h5><?= JText::_('CONTACT_ADDRESS_HEADER'); ?></h5>
 										<div class="col-md-2">
@@ -378,6 +372,7 @@ ul li {
 											</div>
 										</div>
 									</div>
+                                    <hr>
 									<div class="row">
 										<h5><?= JText::_('CONTACT_INFOS_HEADER'); ?></h5>
 
@@ -390,8 +385,8 @@ ul li {
 												<textarea name="contact-infos" id="contact-infos" class="form-control add-contact" rows="10" ng-model="contact.infos"></textarea>
 											</div>
 										</div>
-
 									</div>
+                                    <hr>
 									<div class="row">
 										<h5><?= JText::_('CONTACT_OTHER_HEADER'); ?></h5>
 
@@ -422,7 +417,7 @@ ul li {
 											</div>
 										</div>
 									</div>
-									<hr/>
+									<hr>
 									<div class="row">
 										<h5><?= JText::_('CONTACT_GROUPS_HEADER'); ?></h5>
 										<div class="col-md-2"></div>
@@ -452,7 +447,7 @@ ul li {
 										<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 									</div>
 
-									<div class = "row">
+									<div class="row">
 										<div class="col-md-12" ng-controller="TypeaheadCtrl">
 											<input type="text" class="form-control" ng-model="contactGuest"  placeholder="<?= JText::_('CONTACT_SEARCH_CONTACT_OR_GROUP'); ?>" typeahead="result.contact for result in getMailContact($viewValue)" typeahead-on-select="onSelect($item, $model, $label)"  typeahead-loading="loadingLocations" />
 											<i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
@@ -468,18 +463,18 @@ ul li {
 									</div>
 									<div class="row">
 										<div class="col-md-12">
-											<label for="orgMail"> <?= JText::_('CONTACT_SEND_ORG_GROUP_MAIL'); ?> </label>
-											<input type="radio" name="orgMail" value="members" ng-model="orgMail"> <?= JText::_('CONTACT_ORG_MEMBERS'); ?> </br>
-											<input type="radio" name="orgMail" value="direct" ng-model="orgMail"> <?= JText::_('CONTACT_ORG_DIRECT'); ?> </br>
+											<label for="orgMail"> <?= JText::_('CONTACT_SEND_ORG_GROUP_MAIL'); ?> </label><br>
+											<input type="radio" name="orgMail" value="members" ng-model="orgMail"> <?= JText::_('CONTACT_ORG_MEMBERS'); ?> <br>
+											<input type="radio" name="orgMail" value="direct" ng-model="orgMail"> <?= JText::_('CONTACT_ORG_DIRECT'); ?> <br>
 											<input type="radio" name="orgMail" value="both" ng-model="orgMail"> <?= JText::_('CONTACT_ORG_BOTH'); ?>
 										</div>
 									</div>
 									<div class="row">
 										<div class="col-md-12">
 											<select class="form-control" ng-model="bodyId" name="subject" id="subject" ng-change="getBody()">
-												<option value = "-1" selected><?= JText::_('CONTACT_CHOOSE_MAIL_TEMPLATE'); ?></option>
+												<option value="-1" selected><?= JText::_('CONTACT_CHOOSE_MAIL_TEMPLATE'); ?></option>
 												<?php foreach ($this->subjects as $subject) :?>
-													<option value="<?= $subject->id?>"><?= $subject->subject?></option>
+													<option value="<?= $subject->id?>"><?= $subject->subject; ?></option>
 												<?php endforeach; ?>
 											</select>
 										</div>
@@ -523,9 +518,9 @@ ul li {
 									</div>
 									<div class="row">
 										<div class="col-md-12">
-											<label for="orgExport"> <?= JText::_('CONTACT_ORG_EXPORT'); ?> </label>
-											<input type="radio" name="orgExport" value="members" ng-model="orgExport"> <?= JText::_('CONTACT_ORG_MEMBERS'); ?> </br>
-											<input type="radio" name="orgExport" value="direct" ng-model="orgExport"> <?= JText::_('CONTACT_ORG_DIRECT'); ?> </br>
+											<label for="orgExport"> <?= JText::_('CONTACT_ORG_EXPORT'); ?> </label> <br>
+											<input type="radio" name="orgExport" value="members" ng-model="orgExport"> <?= JText::_('CONTACT_ORG_MEMBERS'); ?> <br>
+											<input type="radio" name="orgExport" value="direct" ng-model="orgExport"> <?= JText::_('CONTACT_ORG_DIRECT'); ?> <br>
 											<input type="radio" name="orgExport" value="both" ng-model="orgExport"> <?= JText::_('CONTACT_ORG_BOTH'); ?>
 										</div>
 									</div>
@@ -582,25 +577,4 @@ $document->addScript('media/com_jcrm/js/app.js')
             }
         });
     }
-
-	function autoResizeDiv() {
-
-        var footH = 0;
-        var headH = 0;
-
-        if (document.getElementById('rt-footer') !== null) {
-            footH = document.getElementById('rt-footer').offsetHeight;
-            headH = document.getElementById('rt-top-surround').offsetHeight + 11;
-        } else {
-            footH = document.getElementById('g-footer').offsetHeight;
-            headH = document.getElementById('g-navigation').offsetHeight + 11;
-        }
-
-        // Using the positions of the footer and header, we can calculate the maximum size our app can take up.
-		document.getElementById('app-container').style.height = (window.innerHeight - (headH + footH)) +'px';
-	}
-
-	$(document).ready(function() {
-          autoResizeDiv();
-     });
 </script>
