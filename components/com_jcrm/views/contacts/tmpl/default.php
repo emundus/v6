@@ -499,7 +499,7 @@ ul li {
 									<div class="my-alt-dime" ng-show="showDimeModal"></div>
 									<div class="row">
 										<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-										<a href="{{dlButton.link}}" class="btn btn-success" ng-show="dlButton.link">{{dlButton.linkMsg}}</a>
+										<a href="{{dlButton.link}}" class="btn btn-success" target="_blank" ng-show="dlButton.link">{{dlButton.linkMsg}}</a>
 									</div>
 
 									<div class="row">

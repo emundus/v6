@@ -115,7 +115,7 @@ class JcrmFrontendHelper
 	}
 
 	public static function buildCSV($contacts) {
-		$crypt = mcrypt_create_iv(16);
+		$crypt = random_bytes(16);
 		$rand = md5(JUser::getInstance()->id.$crypt.time());
 		$path = JPATH_BASE.DS.'tmp';
 		$fileName = $rand.'c'.time().'-contacts.csv';
@@ -246,8 +246,8 @@ class JcrmFrontendHelper
 					if ($phone->type == "work") {
 						$fileLine[16] = $phone->array[0];
 						$fileLine[17] = $phone->array[1];
-						$fileLine[18] = $phone->array[2];
-						$fileLine[19] = $phone->array[3];
+						$fileLine[18] = $phone->array[2] ?? '';
+						$fileLine[19] = $phone->array[3] ?? '';
 					} else {
 						$fileLine[12] = $phone->array[0];
 						$fileLine[13] = $phone->array[1];
@@ -276,7 +276,7 @@ class JcrmFrontendHelper
 	}
 
 	public static function buildVcard($contacts) {
-		$crypt = mcrypt_create_iv(16);
+		$crypt = random_bytes(16);
 		$rand = md5(JUser::getInstance()->id.$crypt.time());
 		$path = JPATH_BASE.DS.'tmp';
 		$fileName = $rand.'c'.time().'-contacts.vcf';

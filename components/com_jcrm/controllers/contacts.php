@@ -101,39 +101,40 @@ class JcrmControllerContacts extends JcrmController
 	/**
 	 *
 	 */
-	public function export()
-	{
-		$request_body 	= (object) json_decode(file_get_contents('php://input'));
-		$groups 		= $request_body->contacts->groups;
-		$contacts 		= $request_body->contacts->contacts;
-		$orgExport 		= $request_body->orgexport;
+	public function export() {
+		$request_body = (object) json_decode(file_get_contents('php://input'));
+		$groups = $request_body->contacts->groups;
+		$contacts = $request_body->contacts->contacts;
+		$orgExport = $request_body->orgexport;
 
 		$m_contact = new JcrmModelContact();
 
-		if ($orgExport != 'direct')
+		if ($orgExport != 'direct') {
 			$orgList = $m_contact->getContactIdByOrg($contacts);
-		else
+		} else {
 			$orgList = array();
+		}
 
 		$contacts = array_unique(array_merge($contacts, $orgList));
 
-		if (!empty($groups))
+		if (!empty($groups)) {
 			$groupList = $m_contact->getContactIdByGroup($groups);
-		else
+		} else {
 			$groupList = array();
+		}
 
 		$contactIds = array_unique(array_merge($contacts, $groupList));
 
 		$contacts = $m_contact->getContacts($contactIds);
 
 		//type == 0 => csv
-		if ($request_body->export == 0)
+		if ($request_body->export == 0) {
 			$path = JcrmFrontendHelper::buildCSV($contacts);
-		else
+		} else {
 			$path = JcrmFrontendHelper::buildVcard($contacts);
+		}
 
-		$url = JURI::base();
-		$url .= 'index.php?option=com_jcrm&task=contacts.download&file='.$path;
+		$url = 'index.php?option=com_jcrm&task=contacts.download&file='.$path;
 
 		$res = array("status" => true, 'msg' => JText::_('CONTACT_EXPORT_SUCCESS_CLICK_LINK_BELOW'), 'link' => $url, 'linkMsg' => JText::_('CONTACT_CLICK_TO_DOWNLOAD'));
 		echo json_encode((object)$res);

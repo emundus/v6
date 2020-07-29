@@ -521,50 +521,40 @@ contactApp.controller('ModalDemoCtrl', function ($scope, $modal, $log, $http)
 
 // Please note that $modalInstance represents a modal window (instance) dependency.
 // It is not the same as the $modal service used above.
-contactApp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, sendTo, from, groupSelected, $http)
-{
+contactApp.controller('ModalInstanceCtrl', function($scope, $modalInstance, sendTo, from, groupSelected, $http) {
 	$scope.alerts = new Array();
 	$scope.showDimeModal = false;
-	if(from == 'mail')
-	{
+	if (from == 'mail') {
 		$scope.body='';
 		$scope.bodyId = -1;
 		$scope.subject = '';
 		$scope.from = 0;
 		$scope.orgMail = 'direct';
-	}
-	else if (from == 'vcard')
-	{
+	} else if (from == 'vcard') {
 		$scope.export= {type:0};
 		$scope.from = 1;
 		$scope.orgExport = 'direct';
 	}
 	$scope.guestList = {contacts:new Array(), groups:new Array(), items:new Array()};
-	if(sendTo.id)
-	{
+	if (sendTo.id) {
 		$scope.sendTo = sendTo;
 		$scope.guestList.contacts.push(sendTo.id);
 		$scope.guestList.items.push({id:sendTo.id, contact:sendTo.full_name, type:'contact'});
 	}
 
-	$scope.ok = function ()
-	{
+	$scope.ok = function() {
 		//envoi du mail dans le cas d'un envoi
-		if($scope.from == 0)
-		{
+		if ($scope.from == 0) {
 			var canSend = false;
-			if($scope.guestList.contacts.length > 0)
-			{
+			if ($scope.guestList.contacts.length > 0) {
 				canSend = true;
 			}
 
-			if($scope.guestList.groups.length > 0)
-			{
+			if ($scope.guestList.groups.length > 0) {
 				canSend = true;
 			}
 
-			if(canSend)
-			{
+			if(canSend) {
 				$scope.showDimeModal = true;
 
 				var datas = {
@@ -575,39 +565,25 @@ contactApp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, sen
 					orgmail: $scope.orgMail
 				};
 
-				$http.post('index.php?option=com_jcrm&task=email.sendmail', datas)
-					.success(function(data)
-	                 {
+				$http.post('index.php?option=com_jcrm&task=email.sendmail', datas).success(res => {
 	                     $scope.showDimeModal = false;
-	                     if(data.status)
-	                     {
-
-	                         $scope.alerts = [{type:'success', msg: data.msg}];
-	                         setTimeout(function()
-	                                    {
-	                                        $modalInstance.close();
-	                                    }, 1500);
-	                     }
-	                     else
-	                     {
-	                         $scope.alerts = [{type:'alert', msg: data.msg}];
+	                     if (res.status) {
+	                         $scope.alerts = [{type:'success', msg: res.msg}];
+	                         setTimeout(function() {
+								$modalInstance.close();
+							}, 1500);
+	                     } else {
+	                         $scope.alerts = [{type:'alert', msg: res.msg}];
 	                     }
 	                 });
-			}
-			else
-			{
+			} else {
 				$scope.alerts.push({type:'danger', msg: Joomla.JText._('CONTACT_ADD_CONTACT_PLEASE')});
 			}
-		}
-		else if($scope.from == 1)
-		{
+		} else if ($scope.from == 1) {
 			$scope.showDimeModal = true;
-			if(parseInt($scope.export.list) == 0)
-			{
+			if (parseInt($scope.export.list) == 0) {
 				$scope.export.id = sendTo.id;
-			}
-			else
-			{
+			} else {
 				$scope.export.id = groupSelected;
 			}
 
@@ -617,47 +593,34 @@ contactApp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, sen
 				orgexport: $scope.orgExport
 			};
 
-			$http.post('index.php?option=com_jcrm&task=contacts.export', data).
-				success(function(data)
-                        {
-	                        $scope.showDimeModal = false;
-							if(data.status)
-							{
-								$scope.alerts = [{type:'success', msg: data.msg}];
-								$scope.dlButton = {link:data.link, linkMsg:data.linkMsg};
-							}
-                            else
-							{
-								$scope.alerts.push({type:'danger', msg: data.msg});
-							}
-                        });
+			$http.post('index.php?option=com_jcrm&task=contacts.export', data).success(res => {
+				$scope.showDimeModal = false;
+				if (res.status) {
+					$scope.alerts = [{type:'success', msg: res.msg}];
+					$scope.dlButton = {link:res.link, linkMsg:res.linkMsg};
+				} else {
+					$scope.alerts.push({type:'danger', msg: res.msg});
+				}
+			});
 		}
 	};
 
-	$scope.cancel = function ()
-	{
+	$scope.cancel = function () {
 		$modalInstance.dismiss('cancel');
 	};
 
-	$scope.getBody = function()
-	{
-		if($scope.bodyId != "0")
-		{
-			$http.get('index.php?option=com_jcrm&task=email.getmailbody&bid='+$scope.bodyId).success(function(data)
-			                                                                         {
-				                                                                         $scope.body = data.message;
-				                                                                         $scope.subject = data.subject;
-			                                                                         });
-
-		}
-		else
-		{
+	$scope.getBody = function() {
+		if ($scope.bodyId != "0") {
+			$http.get('index.php?option=com_jcrm&task=email.getmailbody&bid='+$scope.bodyId).success(data => {
+				 $scope.body = data.message;
+				 $scope.subject = data.subject;
+			 });
+		} else {
 			$scope.body = '';
 		}
 	}
 
-	$scope.closeAlert = function(index)
-	{
+	$scope.closeAlert = function(index) {
 		$scope.alerts.splice(index, 1);
 	};
 });
