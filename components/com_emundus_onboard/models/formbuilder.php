@@ -2074,13 +2074,13 @@ class EmundusonboardModelformbuilder extends JModelList {
                     }
                 } elseif ($key == 'lft') {
                     if($formid == 258){
-                        $query->set($key . ' = ' . $db->quote(103));
+                        $query->set($key . ' = ' . $db->quote(111));
                     } else {
                         $query->set($key . ' = ' . $db->quote(array_values($lfts)[strval(sizeof($lfts) - 1)] + 2));
                     }
                 } elseif ($key == 'rgt') {
                     if($formid == 258){
-                        $query->set($key . ' = ' . $db->quote(104));
+                        $query->set($key . ' = ' . $db->quote(112));
                     } else {
                         $query->set($key . ' = ' . $db->quote(array_values($rgts)[strval(sizeof($rgts) - 1)] + 2));
                     }
@@ -2097,9 +2097,9 @@ class EmundusonboardModelformbuilder extends JModelList {
             // Affect modules to this menu
             foreach ($modules as $module) {
                 $query->clear()
-                    ->insert($db->quoteBinary('#__modules_menu'))
-                    ->set($db->quote('moduleid') . ' = ' . $db->quote($module))
-                    ->set($db->quote('menuid') . ' = ' . $db->quote($newmenuid));
+                    ->insert($db->quoteName('#__modules_menu'))
+                    ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                    ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
                 $db->setQuery($query);
                 $db->execute();
             }
@@ -2231,6 +2231,29 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         try {
             return $db->execute();
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function updateMenuLabel($label,$link){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
+        $query->clear()
+            ->select('id')
+            ->from($db->quoteName('#__menu'))
+            ->where($db->quoteName('link') . ' LIKE ' . $db->quote($link));
+        $db->setQuery($query);
+
+        try {
+            $menuid = $db->loadObject();
+
+            return $falang->updateFalang($label['fr'],$label['en'],$menuid->id,'menu','title');
         } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;

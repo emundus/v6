@@ -103,6 +103,7 @@
                             :files="files"
                             @reloadElement="reloadElement(element)"
                             :id="element.id"
+                            :key="keyElements['element' + element.id]"
                     />
                     <div class="d-flex builder-item-element__properties">
                       <span :class="element.publish ? 'icon-handle' : 'icon-handle-unpublished'" v-show="hoverUpdating && indexHighlight == element.id">
@@ -221,17 +222,22 @@ export default {
   data() {
     return {
       object_json: "",
+
+      // Groups trigger
       openGroup: {},
-      hoverUpdating: false,
       hoverGroup: false,
-      lastIndex: 0,
-      indexHighlight: 0,
       indexGroup: -1,
-      clickUpdatingLabel: false,
       updateGroup: false,
+
+      // Elements trigger
+      hoverUpdating: false,
+      indexHighlight: 0,
+      clickUpdatingLabel: false,
       draggable: false,
       fieldChanges: false,
       repeat: false,
+      keyElements: {},
+
       date: new Date(),
       options: {
         format: "DD/MM/YYYY",
@@ -241,6 +247,8 @@ export default {
         label: false,
         label_group: false
       },
+
+      // TRANSLATIONS
       update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
       updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
       updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
@@ -289,7 +297,6 @@ export default {
         axios.get(ellink + "&format=vue_jsonclean").then(r => {
           this.groups.forEach(grp => {
               this.$set(this.object_json.Groups['group_' + grp.group_id], 'elements', r.data.Groups['group_' + grp.group_id].elements)
-            //this.object_json.Groups['group_' + grp.group_id].elements = r.data.Groups['group_' + grp.group_id].elements;
           });
         });
       }).catch(e => {
@@ -499,9 +506,13 @@ export default {
           if(response.data.plugin === 'databasejoin' && this.repeat === false){
             this.repeat = true;
             this.reloadElement(element)
+            this.repeat = false;
           } else{
-            element.element = response.data.element;
+            this.$set(element,'element',response.data.element);
+            //element.element = response.data.element;
             element = response.data;
+            this.$set(this.keyElements,'element' + element.id,this.keyElements['element' + element.id] + 1)
+            //this.keyElements['element' + element.id] = 1;
           }
         }).catch(e => {
           this.$emit(
@@ -728,6 +739,7 @@ export default {
         this.openGroup[this.object_json.Groups[group].group_id] = true;
         Object.keys(this.object_json.Groups[group].elements).forEach(element => {
           this.object_json.Groups[group].elts.push(this.object_json.Groups[group].elements[element]);
+          this.keyElements[element] = 0;
         });
       });
     },
@@ -736,7 +748,6 @@ export default {
     enableActionBar(index) {
       this.hoverUpdating = true;
       this.indexHighlight = index;
-      this.lastIndex = index;
     },
     disableActionBar() {
       if(!this.clickUpdatingLabel) {

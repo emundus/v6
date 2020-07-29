@@ -206,6 +206,7 @@
       },
       beforeClose(event) {
         if (this.changes === true) {
+          this.changes = false;
           this.$emit(
                   "show",
                   "foo-velocity",
@@ -214,7 +215,6 @@
                   this.informations
           );
         }
-        this.changes = false;
       },
       beforeOpen(event) {
         this.initialisation();

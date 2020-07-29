@@ -20,6 +20,7 @@
             v-show="formObjectArray[indexHighlight]"
             :ID="value.rgt"
             :element="value.object"
+            :link="formObjectArray[indexHighlight].link"
             :menus="formObjectArray"
             :index="index"
             :files="files"
@@ -304,6 +305,7 @@
               this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
               this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
               this.$refs.builder.updateOrder(gid,this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts);
+              this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
               this.loading = false;
             });
           });

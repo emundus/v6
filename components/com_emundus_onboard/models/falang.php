@@ -116,6 +116,8 @@ class EmundusonboardModelfalang extends JModelList {
           ->andWhere($db->quoteName('language_id') . ' = 2');
       $db->setQuery($query);
       $db->execute();
+
+      return true;
   }
 
   function getFalang($reference_id,$reference_table,$reference_field){

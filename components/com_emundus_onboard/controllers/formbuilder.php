@@ -601,5 +601,25 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function updatemenulabel(){
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $label = $jinput->getRaw('label');
+            $link = $jinput->getString('link');
+
+            $state = $m_form->updateMenuLabel($label,$link);
+
+            $tab = array('status' => $state, 'msg' => 'worked');
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }
 

@@ -108,7 +108,7 @@ const qs = require("qs");
 
 export default {
   name: "modalSide",
-  props: { ID: Number, element: Object, index: Number, menus: Array, files: Number },
+  props: { ID: Number, element: Object, index: Number, menus: Array, files: Number, link: String },
   components: {},
   data() {
     return {
@@ -153,6 +153,7 @@ export default {
       }
       this.axioschange(this.intro, this.tempEl.intro_raw);
       this.axioschange(this.label, this.tempEl.show_title.titleraw);
+      this.updatefalang(this.label);
       this.saveAsTemplate();
       this.element = JSON.parse(JSON.stringify(this.tempEl));
       this.$emit("UpdateName", this.index, this.label.fr);
@@ -188,6 +189,19 @@ export default {
       }).catch(e => {
         console.log(e);
       });
+    },
+    updatefalang(label){
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatemenulabel",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          label: label,
+          link: this.link
+        })
+      }).then((result) => {});
     },
     axiostrad: function(totrad) {
       return axios({
