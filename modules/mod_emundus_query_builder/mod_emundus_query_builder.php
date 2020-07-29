@@ -8,6 +8,8 @@ JHtml::script('media/jui/js/bootstrap.min.js');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_query_builder/style/mod_emundus_query_builder.css" );
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$gotenberg_activation = $eMConfig->get('gotenberg_activation', 1);
 
 $helper = new modEmundusQueryBuilderHelper;
 
@@ -20,7 +22,7 @@ $i = 0;
 foreach ($tabModule as $mod) {
 	$typeMod = $helper->getTypeStatModule($mod['id']);
 	$view = json_decode($mod['params'], true)['view'];
-	
+
 	$showModule .= "<div class='input order_".$mod['ordering']."' id='id_".$mod['id']."'><table class='editModule'><tr><td class='order'>";
 	$showModule .= "<div class='move'>&#x283F;</div>";
 	$showModule .= "</td><td class='radioModule'><input type='checkbox' id='".JText::_($mod['title'])."' value='".$mod['id']."' onchange='changePublished(".$mod['id'].")' ".(($mod['published'] == 1)?"checked":"").">
