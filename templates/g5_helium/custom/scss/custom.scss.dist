@@ -191,11 +191,6 @@ table {
     display: none;
 }
 
-.well {
-    background-color: #fcfcfc;
-    border: none;
-}
-
 legend {
     margin: 10px 0 20px 0 !important;
 }
@@ -739,16 +734,27 @@ p.readmore .btn,
     transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
     top: 0;
 
-    &::before,
-    &::after {
-        border-radius: 1px;
-        height: 5px;
-        width: 32px;
-        background: $base-primary-color;
-        position: absolute;
-        display: block;
-        content: '';
-    }
+       &::after {
+            border-radius: 1px;
+            height: 5px;
+            width: 32px;
+            background: $base-primary-color;
+            position: absolute;
+            display: block;
+            content: '';
+            top: 20px;
+        }
+
+        &::before {
+            border-radius: 1px;
+            height: 5px;
+            width: 32px;
+            background: $base-primary-color;
+            position: absolute;
+            display: block;
+            content: '';
+            top: 10px;
+        }
 }
 
 /* USER MENU */
@@ -3562,5 +3568,36 @@ footer#g-footer {
 .view-list #g-container-main, .view-form #g-container-main, .view-details #g-container-main {
     .page-header {
         padding-bottom: 15px;
+    }
+}
+
+/* VARIABILISATION DES COULEURS - BTNS DU MODULE DE CONNEXION HEADER */
+#g-navigation #header-c .header-right {
+    a.btn.btn-danger {
+        font-weight: 300 !important;
+        font-size: 14px !important;
+        margin-bottom: 5px;
+
+        &.btn-creer-compte {
+            background-color: $base-secondary-color !important;
+            border-color: $base-secondary-color !important;
+
+            &:hover, &:active, &:focus {
+                background-color: #fff !important;
+                color: $base-secondary-color !important;
+                border-color: $base-secondary-color !important;
+            }
+        }
+
+        &:not(btn-creer-compte) {
+            background-color: $base-primary-color !important;
+            border-color: $base-primary-color !important;
+
+            &:hover, &:active, &:focus {
+                background-color: #fff !important;
+                color: $base-primary-color !important;
+                border-color: $base-primary-color !important;
+            }
+        }
     }
 }

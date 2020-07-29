@@ -44,3 +44,7 @@
 li>a:hover {
 	text-decoration: underline;
 }
+
+.header-c .header-right a:not(.btn):hover {
+    text-decoration: underline;
+}
