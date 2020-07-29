@@ -83,10 +83,10 @@
         </div>
         <ul class="form-section">
           <li>
-            <a :class="menuHighlight === 0 ? 'form-section__current' : ''" @click="menuHighlight = 0">{{FormPage}}</a>
+            <a :class="menuHighlight === 0 ? 'form-section__current' : ''" @click="menuHighlight = 0;indexHighlight = 0">{{FormPage}}</a>
           </li>
           <li>
-            <a :class="menuHighlight === 1 ? 'form-section__current' : ''" @click="menuHighlight = 1">{{SubmitPage}}</a>
+            <a :class="menuHighlight === 1 ? 'form-section__current' : ''" @click="menuHighlight = 1;indexHighlight = 0">{{SubmitPage}}</a>
           </li>
         </ul>
         <div v-if="menuHighlight === 0">
@@ -127,8 +127,8 @@
         <div v-if="menuHighlight === 1">
           <div class="col-md-12 form-viewer-builder">
             <Builder
-                    :object="submittionPages[0]"
-                    v-if="submittionPages[0]"
+                    :object="submittionPages[indexHighlight]"
+                    v-if="submittionPages[indexHighlight]"
                     :UpdateUx="UpdateUx"
                     @show="show"
                     @UpdateFormBuilder="updateFormObjectAndComponent"
@@ -311,13 +311,52 @@
           });
         }
       },
+      createSubmittionElement(gid,plugin,order){
+        if(!_.isEmpty(this.submittionPages[this.indexHighlight].object.Groups)){
+          this.loading = true;
+          axios({
+            method: "post",
+            url:
+                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              gid: gid,
+              plugin: plugin
+            })
+          }).then((result) => {
+            axios({
+              method: "get",
+              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+              params: {
+                element: result.data.scalar,
+                gid: gid
+              },
+              paramsSerializer: params => {
+                return qs.stringify(params);
+              }
+            }).then(response => {
+              this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
+              this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
+              this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
+              this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+              this.loading = false;
+            });
+          });
+        }
+      },
       addingNewElement: function(evt) {
         this.dragging = false;
         this.draggingIndex = -1;
         let plugin = evt.clone.id.split('_')[1];
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
         if(typeof gid != 'undefined'){
-          this.createElement(gid,plugin,evt.newIndex)
+          if(this.menuHighlight === 0) {
+            this.createElement(gid, plugin, evt.newIndex);
+          } else {
+            this.createSubmittionElement(gid, plugin, evt.newIndex);
+          }
         }
       },
       addingNewElementByDblClick: _.debounce(function(plugin) {
