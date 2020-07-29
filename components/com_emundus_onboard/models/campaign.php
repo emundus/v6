@@ -605,6 +605,8 @@ class EmundusonboardModelcampaign extends JModelList
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        $form = JModelLegacy::getInstance('form', 'EmundusonboardModel');
+
         $query->select('year')
             ->from($db->quoteName('#__emundus_setup_campaigns'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
@@ -619,6 +621,18 @@ class EmundusonboardModelcampaign extends JModelList
                 ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign));
             $db->setQuery($query);
             $db->execute();
+
+            // Create checklist menu if documents are asked
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__menu'))
+                ->where($db->quoteName('alias') . ' = ' . $db->quote('checklist-' . $profile));
+            $db->setQuery($query);
+            $checklist = $db->loadObject();
+
+            if ($checklist == null) {
+                $form->addChecklistMenu($profile);
+            }
 
             $query->clear()
                 ->update($db->quoteName('#__emundus_setup_campaigns'))

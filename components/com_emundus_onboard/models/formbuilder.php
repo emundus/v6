@@ -1949,7 +1949,12 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $query->clear();
                 $query->update($db->quoteName('#__fabrik_groups'));
 
-                $this->duplicateTranslation($group_model->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'GROUP_' . $newformid . '_' . $newgroupid);
+                if($formid == 258) {
+                    $this->addTransationFr('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . 'Confirmation d\'envoi de dossier' . "\"");
+                    $this->addTransationEn('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . 'Confirmation of file sending' . "\"");
+                } else {
+                    $this->duplicateTranslation($group_model->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'GROUP_' . $newformid . '_' . $newgroupid);
+                }
                 //
 
                 $query->set('label = ' . $db->quote('GROUP_' . $newformid . '_' . $newgroupid));
@@ -1984,7 +1989,12 @@ class EmundusonboardModelformbuilder extends JModelList {
                         }
                         $query->clear();
                         $query->update($db->quoteName('#__fabrik_elements'));
-                        $this->duplicateTranslation($element->element->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'ELEMENT_' . $newgroupid . '_' . $newelementid);
+                        if($formid == 258){
+                            $this->addTransationFr('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . 'Confirmation' . "\"");
+                            $this->addTransationEn('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . 'Confirmation' . "\"");
+                        } else {
+                            $this->duplicateTranslation($element->element->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'ELEMENT_' . $newgroupid . '_' . $newelementid);
+                        }
                         //
 
                         $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
@@ -2090,7 +2100,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->execute();
             $newmenuid = $db->insertid();
 
-            // Add translation for modules
+            // Add translation for menu
             $falang->insertFalang($label['fr'],$label['en'],$newmenuid,'menu','title');
             //
 
