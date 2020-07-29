@@ -150,6 +150,7 @@ export default {
         this.menuHighlight++;
         this.updateStatus(this.$refs.datas.$data.status);
       } else if (this.menuHighlight == 3) {
+        this.menuHighlight++;
         this.updateTags(this.$refs.tags.$data.tags);
       }
     },
@@ -177,9 +178,7 @@ export default {
         data: qs.stringify({
           tags: tags
         })
-      }).then(() => {
-        window.location.replace("campaigns");
-      });
+      }).then(() => {});
     },
 
     updateHomepage(content) {
