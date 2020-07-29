@@ -410,7 +410,7 @@ class JcrmFrontendHelper
 			// This tricky if only gets fields that END in the index (for example ExtraInfo_1 would work but not SpecialField)
 			if (substr($item, -strlen($index)) === $index) {
 				$other = new StdClass();
-				$other->type = 'title';
+				$other->type = substr($item, strlen($item)-strlen($index));
 				$other->value = $value;
 				$newContact->other[] = $other;
 			}
