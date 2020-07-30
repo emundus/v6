@@ -15,7 +15,7 @@
     font-size: 14px !important;
     margin-bottom: 5px;
 
-    &.btn-creer-compte {
+    &.btn-creer-compte, &.inscription {
       background-color: $base-secondary-color !important;
       border-color: $base-secondary-color !important;
       &:hover, &:active, &:focus {
@@ -88,3 +88,64 @@
 .campaign-title {
   color: $base-primary-color;
 }
+
+/* BOUTON RADIO SELECTIONNE- COULEUR */
+.applicant-form input[type='radio']:checked  {
+  background: $base-secondary-color;
+  outline: none;
+}
+
+/* AFTER SOUS LES TITRES H1 */
+
+h1::after, .swal2-title:after {
+  content: '';
+  position: absolute;
+  margin-top: 6px !important;
+  width: 2.7rem;
+  height: .2rem;
+  background: $base-secondary-color !important;
+  left: 0;
+  display: block !important;
+}
+
+/*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
+
+.view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form #fabrikSubmit_307 {
+  background-color:$base-secondary-color !important;
+  color: #ffffff !important;
+  border-color: $base-secondary-color !important;
+
+  &:hover, &active, &:focus {
+    background-color: #ffffff !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
+  }
+}
+
+/* PAGE PLUS D INFO - COULEUR BTN  CANDIDATER */
+
+.view-programme .em_period .btn.save-btn {
+  background-color: $base-secondary-color !important;
+  border-color: $base-secondary-color!important;
+
+  &:hover, &:active, &:focus {
+    background-color: #ffffff !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
+  }
+}
+
+/* MODULE LISTE DES CAMPAGNES - COULEUR BTN CANDIDATER */
+
+.homepage .campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {
+  background-color: $base-secondary-color !important;
+  border-color: $base-secondary-color!important;
+
+  &:hover, &:active, &:focus {
+    background-color: #ffffff !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
+  }
+}
+
+
