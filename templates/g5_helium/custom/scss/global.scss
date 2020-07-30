@@ -40,3 +40,38 @@
     text-decoration: underline;
   }
 }
+
+/* BURGER MENU - DECONNECTE */
+.burger span {
+  border-radius: 1px;
+  height: 5px;
+  width: 32px;
+  background: $base-primary-color;
+  position: absolute;
+  display: block;
+  content: '';
+  transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
+  top: 0;
+
+  &::after {
+    border-radius: 1px;
+    height: 5px;
+    width: 32px;
+    background: $base-primary-color;
+    position: absolute;
+    display: block;
+    content: '';
+    top: 20px;
+  }
+
+  &::before {
+    border-radius: 1px;
+    height: 5px;
+    width: 32px;
+    background: $base-primary-color;
+    position: absolute;
+    display: block;
+    content: '';
+    top: 10px;
+  }
+}
