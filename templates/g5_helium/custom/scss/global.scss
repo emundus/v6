@@ -75,3 +75,11 @@
     top: 10px;
   }
 }
+
+/* ESPACEMENTS SOUS LES TITRES  */
+
+.view-list #g-container-main, .view-form #g-container-main, .view-details #g-container-main {
+  .page-header {
+    padding-bottom: 15px;
+  }
+}
