@@ -251,8 +251,14 @@ class JcrmControllerSyncs extends JcrmController {
 						$allreadyContact = $m_syncs->findContact($ref['Email_'.$referent->contact->index]);
 						if ($referent->contact->cId == "new") {
 							if (!is_null($allreadyContact) && empty($allreadyContact)) {
-								$contact = JcrmFrontendHelper::buildContactFromReferent($ref, $referent->contact->index, $colGroup);
+
+								$contact = JcrmFrontendHelper::buildContactFromReferent($ref, $referent->contact->index);
+								// Create or get group
+								if (!empty($contact->formGroup)) {
+									$contact->formGroup = $m_contact->createOrSelectGroup($contact->formGroup);
+								}
 								$contact = $m_contact->addContact($contact);
+
 								$m_syncs->syncRef($tableName, $colContact, $referent->contact->refId, $contact['id'], $referent->contact->index);
 							}
 						} else {
@@ -262,10 +268,6 @@ class JcrmControllerSyncs extends JcrmController {
 				}
 			}
 
-			$group = $m_contact->getGroupsByContact($referent->contact->refId);
-			if (!empty($group)) {
-
-			}
 		}
 
 		$res->status = true;
