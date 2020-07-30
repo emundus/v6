@@ -148,4 +148,19 @@ h1::after, .swal2-title:after {
   }
 }
 
+/* PAGE CHECKLIST - COULEURS BTNS AJOUT DOCUMENTS */
 
+.view-checklist {
+  #attachment_list_mand, #attachment_list_opt {
+      .em-added-files a.btn.btn-success.btn-xs {
+      background: $base-secondary-color !important;
+      border-color: $base-secondary-color !important;
+
+          &:hover, &:active, &:focus {
+            background-color: #ffffff !important;
+            color: $base-secondary-color !important;
+            border-color: $base-secondary-color !important;
+          }
+    }
+  }
+}
