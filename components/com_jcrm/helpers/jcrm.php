@@ -12,8 +12,7 @@ defined('_JEXEC') or die;
 /**
  * Class JcrmFrontendHelper
  */
-class JcrmFrontendHelper
-{
+class JcrmFrontendHelper {
 	/**
 	 * @param $contact
 	 * @return array
@@ -346,6 +345,7 @@ class JcrmFrontendHelper
 		$newContact->first_name = $referent['First_Name_'.$index];
 		$newContact->organisation = $referent['Organisation_'.$index];
 		$newContact->type = 0;
+		$newContact->other = array();
 		
 		if (!empty($referent['Group_'.$index])) {
 			$newContact->formGroup = $referent['Group_'.$index];
@@ -354,7 +354,7 @@ class JcrmFrontendHelper
 		foreach ($referent as $item => $value) {
 
 			// Skip values used above or used in tandem with the address field (like City).
-			if (in_array($item, ['City_'.$index, 'Country_'.$index, 'Last_Name_'.$index , 'First_Name_'.$index, 'Organisation_'.$index, 'Group_'.$index]) || empty($value)) {
+			if (in_array($item, ['id_account_'.$index, 'City_'.$index, 'Country_'.$index, 'Last_Name_'.$index , 'First_Name_'.$index, 'Organisation_'.$index, 'Group_'.$index]) || empty($value)) {
 				continue;
 			}
 
@@ -392,7 +392,6 @@ class JcrmFrontendHelper
 				continue;
 			}
 
-			$newContact->other = array();
 			if ($item === 'Position_'.$index) {
 				$other = new stdClass();
 				$other->type = 'title';
@@ -408,9 +407,9 @@ class JcrmFrontendHelper
 			}
 
 			// This tricky if only gets fields that END in the index (for example ExtraInfo_1 would work but not SpecialField)
-			if (substr($item, -strlen($index)) === $index) {
+			if (substr($item, -strlen($index)) == $index) {
 				$other = new StdClass();
-				$other->type = substr($item, strlen($item)-strlen($index));
+				$other->type = substr($item, 0, strlen($item)-strlen($index));
 				$other->value = $value;
 				$newContact->other[] = $other;
 			}
