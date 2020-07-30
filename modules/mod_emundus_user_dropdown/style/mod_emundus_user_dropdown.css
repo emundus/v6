@@ -48,3 +48,8 @@ li>a:hover {
 .header-c .header-right a:not(.btn):hover {
     text-decoration: underline;
 }
+
+.view-reset #g-navigation .header-c .header-right a.btn {
+    letter-spacing: 0.1rem;
+}
+
