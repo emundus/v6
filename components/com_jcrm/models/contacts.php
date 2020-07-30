@@ -335,7 +335,12 @@ class JcrmModelContacts extends JModelList
 		$query = "select * from #__jcrm_groups order by name";
 		try {
 			$dbo->setQuery($query);
-			return $dbo->loadAssocList();
+			$groups = $dbo->loadAssocList();
+
+			foreach ($groups as $key => $group) {
+				$groups[$key]['name'] = JText::_($group['name']);
+ 			}
+			return $groups;
 		} catch(Exception $e) {
 			JLog::add('Error in model/contacts at function getGroups, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
 			return [];

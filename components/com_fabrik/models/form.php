@@ -953,7 +953,6 @@ class FabrikFEModelForm extends FabModelForm
 				$thisGroup->setGroup($row);
 
 				if ($row->published == 1) {
-					$thisGroup->name = JText::_($thisGroup->name);
 					$this->groups[$id] = $thisGroup;
 				}
 			}
