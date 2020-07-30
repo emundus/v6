@@ -6,3 +6,37 @@
 
 // Here you can add Anything you want to be present on the entire site AND with variables
 // - Laura.scss
+
+
+/* MODULE USER MENU - COULEURS */
+#g-navigation #header-c .header-right {
+  a.btn.btn-danger {
+    font-weight: 300 !important;
+    font-size: 14px !important;
+    margin-bottom: 5px;
+
+    &.btn-creer-compte {
+      background-color: $base-secondary-color !important;
+      border-color: $base-secondary-color !important;
+      &:hover, &:active, &:focus {
+        background-color: #fff !important;
+        color: $base-secondary-color !important;
+        border-color: $base-secondary-color !important;
+      }
+    }
+
+    &:not(btn-creer-compte) {
+      background-color: $base-primary-color !important;
+      border-color: $base-primary-color !important;
+
+      &:hover, &:active, &:focus {
+        background-color: #fff !important;
+        color: $base-primary-color !important;
+        border-color: $base-primary-color !important;
+      }
+    }
+  }
+  a:not(.btn):hover {
+    text-decoration: underline;
+  }
+}
