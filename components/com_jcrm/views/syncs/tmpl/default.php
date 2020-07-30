@@ -34,7 +34,6 @@ $canDelete = $user->authorise('core.delete', 'com_jcrm');
 
 <div class="app-container" ng-app="syncApp">
 	<div ng-controller="mainCtrl">
-		<button class="btn btn-primary" ng-click="refreshAll()"><?= JText::_('JCRM_SYNC_CHECK_ALL')?></button>
 		<button class="btn btn-primary" ng-click="validAll()"><?= JText::_('JCRM_SYNC_VALID_ALL')?></button>
 		<button class="btn btn-primary" ng-click="ignoreAll()"><?= JText::_('JCRM_SYNC_IGNORE_ALL')?></button>
 		<div class="my-alt-dime" ng-show="showDime"></div>
@@ -55,7 +54,6 @@ $canDelete = $user->authorise('core.delete', 'com_jcrm');
 			<tr ng-repeat="ref in contactToSync track by $index">
 				<td>
 					<span>{{$index + 1}}</span>
-					<span class="glyphicon glyphicon-refresh blue clickable" ng-click="refreshContact($index)"></span>
 					<span class="glyphicon glyphicon-remove red clickable" ng-click="ignoreContact($index)"></span>
 				</td>
 				<td ng-class="{'bg-danger': (ref.contact.options.length >= 2)}">

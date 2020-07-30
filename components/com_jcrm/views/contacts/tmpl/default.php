@@ -180,8 +180,8 @@ ul li {
 													{{arrayText[address.type]}}:
 												</div>
 												<div class="col-md-8">
-													{{address.array[0]}} <br>
-                                                    {{address.array[1]}} {{address.array[2]}} <br>
+													{{address.array[0]}} <br ng-show="address.array[0] != ''">
+                                                    {{address.array[1]}} {{address.array[2]}} <br ng-show="address.array[1] != '' && address.array[2] != ''">
 													{{address.array[3]}}
 												</div>
 											</div>

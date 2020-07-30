@@ -265,7 +265,7 @@ class EmundusHelperEmails {
 						<select name="mail_to[]" type="text" class="inputbox" id="mail_to" size="100" style="width: 100% !important;">
 							<option value="">'.JText::_('EMAIL_TO').'</option>';
 			foreach ($users as $expert) {
-				$email .= '<option value="'.$expert['email'].'">'.$expert['first_name'].' '.$expert['last_name'].' - '.$expert['email'].((!empty($expert['group']))?' ('.$expert['group'].')':'').'</option>';
+				$email .= '<option value="'.$expert['email'].'">'.$expert['first_name'].' '.$expert['last_name'].' - '.$expert['email'].((!empty($expert['group']))?' ('.JText::_($expert['group']).')':'').'</option>';
 			}
 			$email .= '</select>
 						<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />
