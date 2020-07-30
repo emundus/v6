@@ -148,6 +148,19 @@ h1::after, .swal2-title:after {
   }
 }
 
+/* MODULE APPLICATIONS  - COULEUR BTN IMPRIMER*/
+.list-group.candidacy-files-list .btn.btn-info {
+  background: darken($base-secondary-color,15) !important;
+  border-color: darken($base-secondary-color,15%)  !important;
+
+    &:hover, &:active, &:focus {
+      background-color: #ffffff !important;
+      color: darken($base-secondary-color,15%) !important;
+      border-color: darken($base-secondary-color,15%) !important;
+    }
+}
+
+
 /* PAGE CHECKLIST - COULEURS BTNS AJOUT DOCUMENTS */
 
 .view-checklist {
