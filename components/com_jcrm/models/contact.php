@@ -245,6 +245,9 @@ class JcrmModelContact extends JModelItem {
 				$res['contacts'] = $this->getContactByOrg($res['id']);
 			}
 			$res['groups'] = $this->getGroupByContact($id);
+			foreach ($res['groups'] as $key => $group) {
+				$res['groups'][$key]->name = JText::_($group->name);
+			}
 			$res['formGroup'] = $this->getGroupByContact($id, true);
 			return $res;
 		} catch(Exception $e) {
