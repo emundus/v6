@@ -64,17 +64,13 @@ contactApp.controller('contactsController', ['$scope', '$http', 'jcrmConfig', fu
 	$scope.dimeBody = false;
 	$scope.dimeList = false;
 	$scope.canLoad = true;
-	$http.get('index.php?option=com_jcrm&task=contacts.getgroups').
-		success(function(data)
-        {
-	       $scope.groups = data;
-        });
-	$scope.getContacts = function(id)
-	{
+	$http.get('index.php?option=com_jcrm&task=contacts.getgroups').success(function(data) {
+	   $scope.groups = data;
+	});
+	$scope.getContacts = function(id) {
 		$scope.dimeList = true;
 		var diff = false;
-		if(id != jcrmConfig.getGroupId())
-		{
+		if (id != jcrmConfig.getGroupId()) {
 			diff = true;
 			$("#em-jcrm-search").val();
 			$scope.search = '';
@@ -84,29 +80,22 @@ contactApp.controller('contactsController', ['$scope', '$http', 'jcrmConfig', fu
 		}
 		$scope.canLoad = false;
 		var type = ($scope.searchType)?1:0;
-		$http.get('index.php?option=com_jcrm&task=contacts.getcontacts&group_id='+jcrmConfig.getGroupId()+'&index='+jcrmConfig.getIndex()+'&q='+$scope.search+'&type='+type).
-			success(function(data)
-			        {
-				        if(jcrmConfig.getIndex() == 0 || diff || $scope.search != "")
-				        {
-					        $scope.contacts = data.contacts;
-				        }
-				        else
-				        {
-					      $scope.contacts = $scope.contacts.concat(data.contacts);
-				        }
-						jcrmConfig.setIndex($scope.contacts.length);
-				        $scope.nbContacts = data.nbContacts;
-				        $scope.dimeList = false;
-				        $scope.canLoad = true;
-			        });
-	}
+		$http.get('index.php?option=com_jcrm&task=contacts.getcontacts&group_id='+jcrmConfig.getGroupId()+'&index='+jcrmConfig.getIndex()+'&q='+$scope.search+'&type='+type).success(function(data) {
+			if (jcrmConfig.getIndex() == 0 || diff || $scope.search != "") {
+				$scope.contacts = data.contacts;
+			} else {
+			  $scope.contacts = $scope.contacts.concat(data.contacts);
+			}
+			jcrmConfig.setIndex($scope.contacts.length);
+			$scope.nbContacts = data.nbContacts;
+			$scope.dimeList = false;
+			$scope.canLoad = true;
+		});
+	};
 	$scope.getContacts(0);
 	$scope.contact = {phone:[{type:'work', tel:''}], adr:[{type:'work', array:[]}], email:[{type:'work', uri:''}], infos:'', other:[]};
-	$scope.newUser = function()
-	{
-		var contact =
-		{
+	$scope.newUser = function() {
+		var contact = {
 			phone: [{type: 'work', tel: ''}],
 			adr: [{type: 'work', array: []}],
 			email: [{type: 'work', uri: ''}],
@@ -117,95 +106,75 @@ contactApp.controller('contactsController', ['$scope', '$http', 'jcrmConfig', fu
 		return contact;
 	};
 	$scope.formVisible = false;
-	$scope.addContact = function(newContact)
-	{
-		if(newContact.$valid)
-		{
+	$scope.addContact = function(newContact) {
+		if (newContact.$valid) {
 			$scope.dimeBody = true;
-			$http({method:'POST', url:'index.php?option=com_jcrm&task=contact.addcontact', data:$scope.contact}).
-				success(function(response)
-				        {
-					        $scope.contacts = $scope.getContacts();
-					        $scope.contact = {};
-					        $scope.getContact(response.id);
-				        });
+			$http({method:'POST', url:'index.php?option=com_jcrm&task=contact.addcontact', data:$scope.contact}).success(function(response) {
+				$scope.contacts = $scope.getContacts();
+				$scope.contact = {};
+				$scope.getContact(response.id);
+			});
 		}
 	};
-	$scope.save = function(newContact)
-	{
-		if ($scope.contact.type)
+	$scope.save = function(newContact) {
+		if ($scope.contact.type) {
 			$scope.contact.type = 1;
-		else
+		} else {
 			$scope.contact.type = 0;
-		if($scope.contact.id)
-		{
-			$scope.editContact(newContact);
 		}
-		else
-		{
+
+		if ($scope.contact.id) {
+			$scope.editContact(newContact);
+		} else {
 			$scope.addContact(newContact);
 		}
-	}
-	$scope.addGroup = function()
-	{
+	};
+
+	$scope.addGroup = function() {
 		$scope.groups.push({name:"", edit:false, id:0});
-	}
-	$scope.saveGroup = function(index, $event)
-	{
+	};
+
+	$scope.saveGroup = function(index, $event) {
 		var name = $scope.groups[index].name;
-		if($scope.groups[index].id !== 0)
-		{
-			$http({method:'POST', url:'index.php?option=com_jcrm&task=contact.updategroup', data:$scope.groups[index]}).
-				success(function(response)
-				        {
-					        $scope.groups[index].name = name;
-					        $scope.groups[index].edit = false;
-					        $('#contact-groups').trigger('chosen:updated');
-				        });
-		}
-		else
-		{
-			$http({method:'POST', url:'index.php?option=com_jcrm&task=contact.addgroup', data:$scope.groups[index]}).
-				success(function(response)
-				        {
-					        $scope.groups[index].id = response.id;
-					        $scope.groups[index].name = name;
-					        $('#contact-groups').trigger('chosen:updated');
-				        });
+		if ($scope.groups[index].id !== 0) {
+			$http({method:'POST', url:'index.php?option=com_jcrm&task=contact.updategroup', data:$scope.groups[index]}).success(function(response) {
+				$scope.groups[index].name = name;
+				$scope.groups[index].edit = false;
+				$('#contact-groups').trigger('chosen:updated');
+			});
+		} else {
+			$http({method:'POST', url:'index.php?option=com_jcrm&task=contact.addgroup', data:$scope.groups[index]}).success(function(response) {
+				$scope.groups[index].id = response.id;
+				$scope.groups[index].name = name;
+				$('#contact-groups').trigger('chosen:updated');
+			});
 		}
 		$event.preventDefault();
-	}
-	$scope.editGroup = function(index)
-	{
-		$scope.groups[index].edit = true;
-	}
-	$scope.cancelGroup = function(index)
-	{
-		if($scope.groups[index].id == 0)
-		{
-			$scope.groups.splice(index,1);
-		}
-		else
-			$scope.groups[index].edit = false;
 	};
-	$scope.deleteGroup = function(index, id)
-	{
+
+	$scope.editGroup = function(index) {
+		$scope.groups[index].edit = true;
+	};
+
+	$scope.cancelGroup = function(index) {
+		if ($scope.groups[index].id == 0) {
+			$scope.groups.splice(index,1);
+		} else {
+			$scope.groups[index].edit = false;
+		}
+	};
+
+	$scope.deleteGroup = function(index, id) {
 		var r = confirm(Joomla.JText._('CONTACT_ARE_YOU_SURE'));
-		if (r == true)
-		{
+		if (r == true) {
 			$scope.groups.splice(index, 1);
 			$('#contact-groups').trigger('chosen:updated');
-			$http({method:'POST', url:'index.php?option=com_jcrm&task=contact.deletegroup', data: {id: id}}).
-				success(function(data)
-                        {
-
-                        });
+			$http({method:'POST', url:'index.php?option=com_jcrm&task=contact.deletegroup', data: {id: id}}).success(function(data) {});
 		}
-	}
-	$scope.addField = function(type)
-	{
-		switch (type)
-		{
+	};
+
+	$scope.addField = function(type) {
+		switch (type) {
 			case 'phone':
 				$scope.contact.phone.push({type:'work', tel:''});
 				break;
@@ -220,8 +189,8 @@ contactApp.controller('contactsController', ['$scope', '$http', 'jcrmConfig', fu
 				break;
 		}
 	};
-	$scope.deleteField = function(index, type)
-	{
+
+	$scope.deleteField = function(index, type) {
 		switch(type)
 		{
 			case 'phone':

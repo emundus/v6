@@ -345,6 +345,11 @@ class JcrmFrontendHelper {
 		$newContact->first_name = $referent['First_Name_'.$index];
 		$newContact->organisation = $referent['Organisation_'.$index];
 		$newContact->type = 0;
+
+		$newContact->email = array();
+		$newContact->phone = array();
+		$newContact->adr = array();
+		$newContact->infos = "";
 		$newContact->other = array();
 		
 		if (!empty($referent['Group_'.$index])) {
@@ -358,7 +363,6 @@ class JcrmFrontendHelper {
 				continue;
 			}
 
-			$newContact->email = array();
 			if ($item === 'Email_'.$index) {
 				$email = new stdClass();
 				$email->type = 'work';
@@ -367,7 +371,6 @@ class JcrmFrontendHelper {
 				continue;
 			}
 
-			$newContact->phone = array();
 			if ($item === 'Telephone_'.$index) {
 				$phone = new stdClass();
 				$phone->type = 'work';
@@ -383,7 +386,6 @@ class JcrmFrontendHelper {
 				continue;
 			}
 
-			$newContact->adr = array();
 			if ($item === 'Address_'.$index) {
 				$adr = new stdClass();
 				$adr->type = 'work';
@@ -400,7 +402,6 @@ class JcrmFrontendHelper {
 				continue;
 			}
 
-			$newContact->infos = "";
 			if ($item === 'Website_'.$index) {
 				$newContact->infos .= "website: ". $value. "\n";
 				continue;

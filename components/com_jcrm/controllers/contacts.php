@@ -83,16 +83,12 @@ class JcrmControllerContacts extends JcrmController
 	{
 		$m_contacts = $this->getModel();
 		$orgs = $m_contacts->getGroups();
-		if(!is_string($orgs))
-		{
-			if(is_null($orgs))
-			{
+		if (!is_string($orgs)) {
+			if (is_null($orgs)) {
 				$orgs = array();
 			}
 			echo json_encode($orgs);
-		}
-		else
-		{
+		} else {
 			echo json_encode(array('error' => JText::_('ERROR'), 'msg' => $orgs));
 		}
 		exit();
