@@ -860,7 +860,6 @@ ul.nav.nav-tabs.nav-stacked span {
 
 /* Module Campagnes */
 .campaign-title {
-    color: #292929;
     font-weight: 600;
     margin-bottom: 20px !important;
     padding-left: 0;
