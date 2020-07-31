@@ -160,37 +160,3 @@ footer div{
     width: 50px!important;
     height: 50px!important;
 }
-.burger {
-    cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    height: 50px;
-    z-index:1000;
-}
-
-.burger span:before {
-    top: 10px;
-}
-.burger span:after {
-    top: 20px;
-}
-.burger span:before, .burger span:after {
-    transition: all .5s linear;
-}
-
-.burger.active span {
-    width: 0;
-    left: 8px;
-}
-.burger.active span:before, .burger.active span:after {
-    top: 12px;
-}
-.burger.active span:before {
-    transform: rotate(45deg);
-}
-.burger.active span:after {
-    transform: rotate(-45deg);
-}
