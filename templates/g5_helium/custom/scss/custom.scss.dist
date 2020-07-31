@@ -191,11 +191,6 @@ table {
     display: none;
 }
 
-.well {
-    background-color: #fcfcfc;
-    border: none;
-}
-
 legend {
     margin: 10px 0 20px 0 !important;
 }
@@ -231,17 +226,6 @@ body {
             text-decoration: underline;
         }
     }
-}
-
-h1::after,
-.swal2-title:after {
-    content: '';
-    position: absolute;
-    margin-top: 45px;
-    width: 2.7rem;
-    height: .2rem;
-    background: $base-secondary-color !important;
-    left: 0;
 }
 
 /***************** BOUTONS *****************/
@@ -739,16 +723,27 @@ p.readmore .btn,
     transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
     top: 0;
 
-    &::before,
-    &::after {
-        border-radius: 1px;
-        height: 5px;
-        width: 32px;
-        background: $base-primary-color;
-        position: absolute;
-        display: block;
-        content: '';
-    }
+       &::after {
+            border-radius: 1px;
+            height: 5px;
+            width: 32px;
+            background: $base-primary-color;
+            position: absolute;
+            display: block;
+            content: '';
+            top: 20px;
+        }
+
+        &::before {
+            border-radius: 1px;
+            height: 5px;
+            width: 32px;
+            background: $base-primary-color;
+            position: absolute;
+            display: block;
+            content: '';
+            top: 10px;
+        }
 }
 
 /* USER MENU */
@@ -854,7 +849,6 @@ ul.nav.nav-tabs.nav-stacked span {
 
 /* Module Campagnes */
 .campaign-title {
-    color: #292929;
     font-weight: 600;
     margin-bottom: 20px !important;
     padding-left: 0;
@@ -2119,7 +2113,6 @@ div:not(.header-right) > .btn-danger {
     background-color: transparent !important;
     color: $base-primary-color !important;
     outline: none;
-    text-transform: uppercase;
     border: 1px solid $base-primary-color !important;
 
     &:hover {
@@ -2127,7 +2120,6 @@ div:not(.header-right) > .btn-danger {
         border: 1px solid $base-primary-color !important;
         text-shadow: none;
         color: white !important;
-        text-transform: uppercase;
     }
 }
 
@@ -3416,32 +3408,6 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
     }
 }
 
-/****** Couleur btn module campagne ****/
-
-.below-content a.btn.btn-primary.btn-plein.btn-blue {
-    background-color: $base-secondary-color !important;
-    border-color: $base-secondary-color!important;
-}
-
-
-.below-content a.btn.btn-primary.btn-plein.btn-blue:hover {
-    background-color: #ffffff !important;
-    color: $base-secondary-color !important;
-    border-color: $base-secondary-color !important;
-}
-
-/****** Couleur btns module login ****/
-.header-right a.btn.btn-danger.inscription {
-    background-color: $base-primary-color !important;
-    border-color: $base-primary-color!important;
-}
-
-.header-right a.btn.btn-danger.inscription:hover {
-    background-color: #ffffff !important;
-    color: $base-primary-color !important;
-    border-color: $base-primary-color !important;
-}
-
 /****** Longueur btns module login ****/
 
 .header-right a.btn.btn-danger.connexion {
@@ -3458,40 +3424,7 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
     margin-bottom: 5px;
 }
 
-/****** Mot de passe oublié  ****/
 
-.header-right a.em-resetPassword:hover {
-    text-decoration: underline;
-}
-
-/****** Couleur btns +d'info  ****/
-
-.view-programme .em_period .btn.save-btn {
-    background-color: $base-secondary-color !important;
-    border-color: $base-secondary-color!important;
-}
-
-
-.view-programme .em_period .btn.save-btn:hover {
-    background-color: #ffffff !important;
-    color: $base-secondary-color !important;
-    border-color: $base-secondary-color !important;
-}
-
-/****** Couleur btn inscription ****/
-
-.view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form #fabrikSubmit_307{
-    background-color:$base-secondary-color !important;
-    color: #ffffff !important;
-    border-color: $base-secondary-color !important;
-
-}
-
-.view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register:hover,  .view-form #fabrikSubmit_307:hover{
-    background-color: #ffffff !important;
-    color: $base-secondary-color !important;
-    border-color: $base-secondary-color !important;
-}
 /****** Footer ****/
 
 footer#g-footer {
@@ -3550,48 +3483,6 @@ footer#g-footer {
         p,a{
             color:$base-primary-color;
             text-decoration:none!important;
-        }
-    }
-}
-
-/* AJOUT APRES MAJ */
-.applicant-form input[type='radio']:checked  {
-    background: $base-secondary-color;
-}
-
-/* BTNS - GESTIONNAIRE - ADMINISTRATION - JCRM */
-.g-back-office-emundus-tableau.view-contacts .app-container.ng-scope  {
-    .col-md-7.ct-view.contact .panel-heading {
-        .btn.btn-default.btn.xs.pull-right {
-            background: $base-secondary-color !important;
-        }
-    }
-}
-
-/* BTNS - GESTIONNAIRE - ADMINISTRATION - DROPFILES */
-.com_dropfiles.view-manage {
-    #g-main-mainbody {
-        padding-top: 10px;
-
-        a {
-            color: $base-primary-color !important;
-        }
-
-        #newcategory.btn-group.button-primary.btn-categories.centpc {
-            background: $base-primary-color !important;
-            border-color:  $base-primary-color  !important;
-            margin-top: 0;
-            box-shadow: none;
-            text-shadow: none;
-
-            a.btn.btn-default {
-                padding-bottom: 35px !important;
-                color: white !important;
-
-                &:hover, &:active, &:focus {
-                    color: white !important;
-                }
-            }
         }
     }
 }

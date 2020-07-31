@@ -1,15 +1,3 @@
-#g-navigation {
-    height: 80.6px;
-}
-
-#g-navigation .g-container {
-    height: 80.6px;
-}
-
-#g-navigation .g-container img.logo {
-    padding-top : 14px;
-}
-
 form#user-registration.form-validate.form-horizontal.well,
 .reset-confirm .form-validate.form-horizontal.well,
 .reset-complete .form-validate.form-horizontal.well
@@ -26,8 +14,6 @@ form#user-registration.form-validate.form-horizontal.well label,
 {
     font-size: 14px;
 }
-
-
 
 form#user-registration.form-validate.form-horizontal.well .control-group .controls button,
 .reset-confirm .form-validate.form-horizontal.well .control-group .controls button,
@@ -52,17 +38,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     justify-content:center;
     align-items:center;
 }
-/*h1 {
-    width: 50%;
-    margin-right: auto !important;
-    margin-left: auto !important;
-    text-align: center;
-}
-​
-​
-h1::after {
-    left: 146px !important;
-}*/
+
 #user-registration .required .star,
 .reset-confirm .required .star,
 .reset-complete .required .star
@@ -91,17 +67,23 @@ h1::after {
     }
 }
 @media all and (max-width: 767px) {
-    /*h1 {
-        width: 100%;
-    }*/
-    h1::after{
-        width:2.7rem!important;
+
+    h1::after {
+        width: 2.7rem !important;
     }
+
     form#user-registration.form-validate.form-horizontal.well,
     .reset-confirm .form-validate.form-horizontal.well,
-    .reset-complete .form-validate.form-horizontal.well
-    {
+    .reset-complete .form-validate.form-horizontal.well {
         width: 100%;
+
     }
-    ​
+
+    .view-reset #g-navigation {
+        height: auto !important;
+    }
+
+    .view-reset #g-navigation .g-container {
+        height: auto !important;
+    }
 }

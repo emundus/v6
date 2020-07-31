@@ -47,16 +47,17 @@ g-back-office-emundus-tableau.view-details #g-container-main .page-header {
 
 .list-footer .limit .input-prepend.input-append span.add-on {
 	padding: 9px !important;
-    height: 41px;
-}
-
-.list-footer .limit .input-prepend.input-append span.add-on label {
-	margin-bottom: 0 !important;
+    height: 45px;
 }
 
 .list-footer .limit .input-prepend.input-append select.inputbox.input-mini {
-    padding: 10.6px !important;
+    padding: 10px !important;
     width: 80px;
+    height: 45px;
+}
+
+.list-footer .pagination ul.pagination-list {
+    box-shadow: none;
 }
 
 /* END - Your CSS styling ends here */
