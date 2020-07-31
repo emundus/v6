@@ -807,19 +807,38 @@ class EmundusonboardModelprogram extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        $user = JFactory::getUser()->id;
+
         $block_conditions = $db->quoteName('block') . ' = ' . $db->quote(0);
         if($filters['block'] == 'true'){
             $block_conditions = $db->quoteName('block') . ' = ' . $db->quote(0) . ' OR ' . $db->quote(1);
         }
 
-        $user = JFactory::getUser()->id;
+        if($filters['searchProgram'] != -1){
+            $query->select('sgr.parent_id AS parent_id')
+                ->from($db->quoteName('#__emundus_setup_programmes','sp'))
+                ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','sgr').' ON '.$db->quoteName('sp.code').' LIKE '.$db->quoteName('sgr.course'))
+                ->where($db->quoteName('sp.id') . ' = ' . $filters['searchProgram']);
+            $db->setQuery($query);
+            $group = $db->loadObject()->parent_id;
 
-        $query->select('id, name, email, registerDate, lastvisitDate, block')
-            ->from($db->quoteName('#__users'))
-            ->where($db->quoteName('id') . ' != ' . $db->quote($user))
-            ->andWhere($db->quoteName('id') . ' != 62')
-            ->andWhere($db->quoteName('username') . ' != ' . $db->quote('sysemundus'))
-            ->andWhere($block_conditions);
+            $query->clear()
+                ->select('us.id as id, us.name as name, us.email as email, us.registerDate as registerDate, us.lastvisitDate as lastvisitDate, us.block as block')
+                ->from($db->quoteName('#__users','us'))
+                ->leftJoin($db->quoteName('#__emundus_groups','g').' ON '.$db->quoteName('us.id').' = '.$db->quoteName('g.user_id'))
+                ->where($db->quoteName('g.group_id') . ' = ' . $db->quote($group))
+                ->andWhere($db->quoteName('us.id') . ' != ' . $db->quote($user))
+                ->andWhere($db->quoteName('us.id') . ' != 62')
+                ->andWhere($db->quoteName('us.username') . ' != ' . $db->quote('sysemundus'))
+                ->andWhere($block_conditions);
+        } else {
+            $query->select('us.id as id, us.name as name, us.email as email, us.registerDate as registerDate, us.lastvisitDate as lastvisitDate, us.block as block')
+                ->from($db->quoteName('#__users','us'))
+                ->where($db->quoteName('us.id') . ' != ' . $db->quote($user))
+                ->andWhere($db->quoteName('us.id') . ' != 62')
+                ->andWhere($db->quoteName('us.username') . ' != ' . $db->quote('sysemundus'))
+                ->andWhere($block_conditions);
+        }
 
         try {
             $db->setQuery($query);
@@ -1489,7 +1508,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->clear()
                     ->select('sgr.parent_id AS parent_id')
                     ->from($db->quoteName('#__emundus_setup_programmes','sp'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','sgr').' ON '.$db->quoteName('sp.code').' = '.$db->quoteName('sgr.course'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','sgr').' ON '.$db->quoteName('sp.code').' LIKE '.$db->quoteName('sgr.course'))
                     ->where($db->quoteName('sp.id') . ' = ' . $db->quote($id));
                 $db->setQuery($query);
                 $groups[] = $db->loadObject()->parent_id;

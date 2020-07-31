@@ -3631,6 +3631,7 @@ label.label__placeholder{
   border: solid 2px #e0e0e0;
   border-radius: 2em;
   font-size: inherit;
+  max-width: 15em;
 }
 
 .table-component__filter__clear {

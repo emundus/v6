@@ -8,15 +8,24 @@
         />
         <button class="create-user-admin__button bouton-sauvergarder-et-continuer-3" @click="$modal.show('modalAddUser')">{{ addUser }}</button>
         <div class="d-flex mt-1" id="blocked_filter">
-            <input type="checkbox" class="mr-1" v-model="block" />
-            <p>{{BlockedUsers}}</p>
+            <div class="d-flex mr-2">
+                <input type="checkbox" class="mr-1" v-model="block" />
+                <p>{{BlockedUsers}}</p>
+            </div>
+            <div class="d-flex mr-2">
+                <p class="mb-0 mr-1" style="white-space: nowrap">{{Program}} : </p>
+                <select class="dropdown-toggle" style="min-width: 80%" v-model="searchProgram">
+                    <option selected value="-1"></option>
+                    <option v-for="program in programs" :value="program.id">{{program.label}}</option>
+                </select>
+            </div>
         </div>
         <table-component
                 :data="users"
                 sort-by="name"
                 sort-order="asc"
                 show-caption="false"
-                :filter-placeholder="Search"
+                :filter-placeholder="Search + '...'"
                 :filter-no-results="NoResultsFound"
                 ref="table"
                 :key="table_users"
@@ -65,10 +74,13 @@
                 loading: false,
                 tableUsers: 0,
                 users: [],
+                programs: [],
                 filters: {
                   block: false,
+                  searchProgram: -1
                 },
                 block: false,
+                searchProgram: -1,
                 table_users: 0,
                 Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),
                 Email: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL"),
@@ -84,6 +96,7 @@
                 UnlockUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_UNLOCK_USER"),
                 ResetPassword: Joomla.JText._("COM_EMUNDUS_ONBOARD_RESET_PASSWORD"),
                 BlockedUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_BLOCKED_USERS"),
+                Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
             };
         },
 
@@ -105,6 +118,24 @@
                     });
                     document.getElementsByClassName('table-component__filter')[0].append(document.getElementById('blocked_filter'));
                     this.$refs.table.refresh();
+                });
+            },
+            getProgramsList() {
+                axios({
+                    method: "get",
+                    url: "index.php?option=com_emundus_onboard&controller=program&task=getallprogram",
+                    params: {
+                        filter: '',
+                        sort: '',
+                        recherche: '',
+                        lim: 100,
+                        page: 1,
+                    },
+                    paramsSerializer: params => {
+                        return qs.stringify(params);
+                    }
+                }).then(response => {
+                    this.programs = response.data.data;
                 });
             },
             unlockUser(id){
@@ -203,12 +234,18 @@
 
         created() {
             this.getUsers();
+            this.getProgramsList();
             //document.getElementsByClassName('table-component__filter')[0].append(document.getElementById('blocked_filter'));
         },
 
         watch: {
             block: function(value) {
                 this.filters.block = value;
+                this.getUsers();
+            },
+
+            searchProgram: function(value) {
+                this.filters.searchProgram = value;
                 this.getUsers();
             }
         }
