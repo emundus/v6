@@ -407,6 +407,7 @@ ul li {
 													<option value="title"> <?= JText::_('TITLE');?></option>
 													<option value="tz"> <?= JText::_('TZ');?></option>
 													<option value="url"> <?= JText::_('URL');?></option>
+                                                    <option value="{{contact.other[$index].type}}"> {{contact.other[$index].type}} </option>
 												</select>
 											</div>
 											<div class="col-md-9" >
