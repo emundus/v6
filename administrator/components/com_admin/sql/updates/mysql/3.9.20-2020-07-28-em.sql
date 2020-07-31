@@ -16,4 +16,4 @@ UPDATE jos_emundus_setup_emails t SET t.message = '<p>Dear Colleague,</p>
           <p>Merci de votre collaboration.</p>
           <p>Cordialement,<br /><br /></p>
           <p>P.S.: Vous ne pouvez envoyer qu''un seul document.</p>
-          <p>Si le lien ne fonctionne pas, veuillez copier et coller le lien suivant dans votre navigateur : [UPLOAD_URL]</p>' WHERE lbl.id = 'referent_letter';
+          <p>Si le lien ne fonctionne pas, veuillez copier et coller le lien suivant dans votre navigateur : [UPLOAD_URL]</p>' WHERE lbl = 'referent_letter';
