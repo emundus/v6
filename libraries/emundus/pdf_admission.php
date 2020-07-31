@@ -15,12 +15,12 @@ function pdf_admission($user_id, $fnum = null, $output = true, $name = null, $op
     $m_profile = new EmundusModelProfile;
     $m_files = new EmundusModelFiles;
 
-    $db 			= JFactory::getDBO();
-    $app 			= JFactory::getApplication();
-    $config 		= JFactory::getConfig();
+    $db = JFactory::getDBO();
+    $app = JFactory::getApplication();
+    $config = JFactory::getConfig();
 
-    $user 			= $m_profile->getEmundusUser($user_id);
-    $fnum 			= empty($fnum)?$user->fnum:$fnum;
+    $user = $m_profile->getEmundusUser($user_id);
+    $fnum = empty($fnum)?$user->fnum:$fnum;
 
     $infos = $m_profile->getFnumDetails($fnum);
     $campaign_id = $infos['campaign_id'];
@@ -57,12 +57,12 @@ function pdf_admission($user_id, $fnum = null, $output = true, $name = null, $op
     }
 
     //get logo
-    $template 	= $app->getTemplate(true);
-    $params     = $template->params;
+    $template = $app->getTemplate(true);
+    $params = $template->params;
 
     if (!empty($params->get('logo')->custom->image)) {
         $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-        $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+        $logo = !empty($logo['path'])?JPATH_ROOT.DS.$logo['path']:"";
     } else {
         $logo_module = JModuleHelper::getModuleById('90');
         preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
@@ -75,7 +75,7 @@ function pdf_admission($user_id, $fnum = null, $output = true, $name = null, $op
 		    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
 	    }
 
-        $logo = JPATH_BASE.DS.$tab[1];
+        $logo = !empty($tab[1])?JPATH_BASE.DS.$tab[1]:"";
     }
 
     //get title
@@ -135,9 +135,9 @@ function pdf_admission($user_id, $fnum = null, $output = true, $name = null, $op
 .label-darkpink { background-color: #db0a5b; }
 </style>';
 
-    if ( ! function_exists( 'exif_imagetype' ) ) {
-        function exif_imagetype ( $filename ) {
-            if ( ( list($width, $height, $type, $attr) = getimagesize( $filename ) ) !== false ) {
+    if (!function_exists('exif_imagetype')) {
+        function exif_imagetype($filename) {
+            if ((list($width, $height, $type, $attr) = getimagesize( $filename)) !== false) {
                 return $type;
             }
             return false;
@@ -146,7 +146,7 @@ function pdf_admission($user_id, $fnum = null, $output = true, $name = null, $op
 
     $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 
-    if(!empty($options) && $options[0] != "" && $options[0] != "0"){
+    if (!empty($options) && $options[0] != "" && $options[0] != "0") {
         $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
         if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
 
@@ -154,14 +154,13 @@ function pdf_admission($user_id, $fnum = null, $output = true, $name = null, $op
 							  <table width="100%"><tr>';
             if (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar)) {
                 $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/tn_'.$item->avatar.'" width="100" align="left" /></td>';
-            }
-            elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar)) {
+            } elseif (file_exists(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar) && !empty($item->avatar) && exif_imagetype(EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar)) {
                 $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.$item->user_id.'/'.$item->avatar.'" width="100" align="left" /></td>';
             }
             $htmldata .= '
 					<td width="80%">
 					<div class="name"><strong>'.$item->firstname.' '.strtoupper($item->lastname).'</strong>, '.$item->label.' ('.$item->cb_schoolyear.')</div>';
-            if(isset($item->maiden_name)) {
+            if (isset($item->maiden_name)) {
                 $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
             }
         }

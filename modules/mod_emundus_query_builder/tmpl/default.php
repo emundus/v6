@@ -47,9 +47,11 @@ header('Content-Type: text/html; charset=utf-8');
 				</div>
 				<div id="errorCreateModule"></div>
 			</div>
-				<input type="button" name="validation" class="btnQueryBuilder" id="validation" style="float:right;display:none;" value="<?php echo JText::_('VALIDATION'); ?>" onclick="createModule()"/>
+            <input type="button" name="validation" class="btnQueryBuilder" id="validation" style="float:right;display:none;" value="<?php echo JText::_('VALIDATION'); ?>" onclick="createModule()"/>
 			<input type="button" id="createButton" class="btnQueryBuilder" style="float:right;" value="+ <?php echo JText::_('CREATE_MODULE'); ?>" onclick="buttonCreateModule()"/>
-			<button onclick="getExport()" class="btnExport" style="float:left;">&#10515; <?php echo JText::_('EXPORT_MODULE'); ?></button>
+            <?php if (!empty($gotenberg_activation)) :?>
+			    <button onclick="getExport()" class="btnExport" style="float:left;">&#10515; <?php echo JText::_('EXPORT_MODULE'); ?></button>
+            <?php endif; ?>
 		</form>
 	</div>
 </center>

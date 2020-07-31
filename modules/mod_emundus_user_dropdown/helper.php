@@ -38,7 +38,7 @@ class modEmundusUserDropdownHelper {
 				}
 
 				// Hide hidden menu items.
-				if ($item->params->get('menu_show', 0) !== 1) {
+				if ($item->params->get('menu_show', 0) != 1) {
 					unset($items[$i]);
 					continue;
 				}
