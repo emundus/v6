@@ -119,10 +119,13 @@ JText::script('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN');
 JText::script('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN_TEXT');
 ## END ##
 
-
+$vue = 'em-formBuilder-vue';
+if($this->eval != 0){
+    $vue = 'em-evaluationBuilder-vue';
+}
 
 ?>
 
-<div id="em-formBuilder-vue" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>"></div>
+<div id="<?= $vue; ?>" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>" eval="<?= $this->eval; ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>

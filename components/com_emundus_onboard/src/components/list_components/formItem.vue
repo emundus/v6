@@ -19,9 +19,9 @@
           </div>
           <div class="column-inner-block-2 w-clearfix w-col w-col-4">
             <div v-if="updateAccess" class="container-gerer-modifier-visualiser">
-              <a :href="path + '/index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid='"
-                class="cta-block"
-                :title="Modify">
+              <a class="cta-block pointer"
+                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
+                 :title="Modify">
                 <em class="fas fa-edit"></em>
               </a>
             </div>
@@ -36,6 +36,8 @@
 import { list } from "../../store";
 import axios from "axios";
 
+const qs = require("qs");
+
 export default {
   name: "formItem",
   props: {
@@ -46,13 +48,29 @@ export default {
     return {
       selectedData: [],
       updateAccess: false,
-      path: window.location.pathname,
       publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
       unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
       passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
       Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
       Visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE")
     };
+  },
+
+  methods: {
+    redirectJRoute(link) {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        params: {
+          link: link,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        window.location.href = window.location.pathname + response.data.data;
+      });
+    }
   },
 
   created() {

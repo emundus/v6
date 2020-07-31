@@ -1149,15 +1149,10 @@ class EmundusonboardModelprogram extends JModelList {
     }
 
     function createGridFromModel($label, $intro, $model, $pid) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        $new_groups = [];
-
         // Prepare Fabrik API
         JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
         $form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
-        $form->setId($model);
+        $form->setId(intval($model));
         $groups	= $form->getGroups();
         //
 
@@ -1171,8 +1166,12 @@ class EmundusonboardModelprogram extends JModelList {
         $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
         //
 
-        $query->clear()
-            ->select('*')
+        $new_groups = [];
+
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('*')
             ->from('#__fabrik_forms')
             ->where($db->quoteName('id') . ' = ' . $db->quote($model));
         $db->setQuery($query);
@@ -1225,6 +1224,15 @@ class EmundusonboardModelprogram extends JModelList {
             }
             $db->setQuery($query);
             $db->execute();
+            $newlistid = $db->insertid();
+
+            $query->clear();
+            $query->update($db->quoteName('#__fabrik_lists'));
+            $query->set('label = ' . $db->quote('FORM_' . $pid . '_' . $formid));
+            $query->set('introduction = ' . $db->quote('<p>' . 'FORM_' . $pid . '_INTRO_' . $formid . '</p>'));
+            $query->where('id =' . $db->quote($newlistid));
+            $db->setQuery($query);
+            $db->execute();
 
             // Duplicate group
             $ordering = 0;
@@ -1260,6 +1268,7 @@ class EmundusonboardModelprogram extends JModelList {
                 //
 
                 $query->set('label = ' . $db->quote('GROUP_' . $formid . '_' . $newgroupid));
+                $query->set('name = ' . $db->quote('GROUP_' . $formid . '_' . $newgroupid));
                 $query->where('id =' . $newgroupid);
                 $db->setQuery($query);
                 $db->execute();
@@ -1278,6 +1287,14 @@ class EmundusonboardModelprogram extends JModelList {
                         $newelementid = $newelement->id;
 
                         // Update translation files
+                        if(($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options){
+                            $sub_labels = [];
+                            foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
+                                $this->duplicateTranslation($sub_label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index);
+                                $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
+                            }
+                            $el_params->sub_options->sub_labels = $sub_labels;
+                        }
                         $query->clear();
                         $query->update($db->quoteName('#__fabrik_elements'));
                         $formbuilder->duplicateTranslation($element->element->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'ELEMENT_' . $newgroupid . '_' . $newelementid);
@@ -1285,6 +1302,7 @@ class EmundusonboardModelprogram extends JModelList {
 
                         $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
                         $query->set('published = 1');
+                        $query->set('params = ' . $db->quote(json_encode($el_params)));
                         $query->where('id =' . $newelementid);
                         $db->setQuery($query);
                         $db->execute();
@@ -1458,6 +1476,27 @@ class EmundusonboardModelprogram extends JModelList {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
+    }
+
+    function getGroupsByPrograms($programs) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $groups = array();
+
+        foreach ($programs as $id => $program) {
+            if($program == 'true'){
+                $query->clear()
+                    ->select('sgr.parent_id AS parent_id')
+                    ->from($db->quoteName('#__emundus_setup_programmes','sp'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','sgr').' ON '.$db->quoteName('sp.code').' = '.$db->quoteName('sgr.course'))
+                    ->where($db->quoteName('sp.id') . ' = ' . $db->quote($id));
+                $db->setQuery($query);
+                $groups[] = $db->loadObject()->parent_id;
+            }
+        }
+
+        return $groups;
     }
 
 }

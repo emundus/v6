@@ -7,13 +7,13 @@
       :class="object_json.show_page_heading.class"
       v-html="object_json.show_page_heading.page_heading"
     />
-    <div class="d-flex">
+    <div class="d-flex" v-if="eval == 0">
       <h2 v-if="object_json.show_title" class="page_header" v-html="object_json.show_title.value" />
       <span @click="$modal.show('modalSide' + object.rgt)" :title="Edit">
         <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
       </span>
     </div>
-    <p v-if="object_json.intro" class="introP" v-html="object_json.intro" />
+    <p v-if="object_json.intro && eval == 0" class="introP" v-html="object_json.intro" />
 
     <form method="post" v-on:submit.prevent object_json.attribs class="form-page">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
@@ -212,7 +212,8 @@ export default {
     changedElement: Array,
     changedGroup: String,
     UpdateUx: Boolean,
-    files: Number
+    files: Number,
+    eval: Number,
   },
   components: {
     datePicker,

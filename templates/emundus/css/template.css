@@ -37,7 +37,7 @@ a:hover {
   border-top: 5px solid #de6339 !important;
 }
 
-.g-navigation img {
+.g-navigation .custom img {
   height: auto;
   max-width: 100%;
   display: inline-block;

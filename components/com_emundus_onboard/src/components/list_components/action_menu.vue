@@ -39,7 +39,7 @@
           </div>
 
           <div>
-            <a :href="data.add_url" class="bouton-ajouter w-inline-block" v-if="!addHidden">
+            <a @click="redirectToAdd" class="bouton-ajouter w-inline-block pointer" v-if="!addHidden">
               <div v-if="data.type === 'program'" class="add-button-div">
                 {{ AddProgram }}
                 <div class="addCampProgEmail"></div>
@@ -721,6 +721,21 @@
             });
             break;
         }
+      },
+
+      redirectToAdd() {
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+          params: {
+            link: this.data.add_url,
+          },
+          paramsSerializer: params => {
+             return qs.stringify(params);
+          }
+        }).then(response => {
+          window.location.href = window.location.pathname + response.data.data;
+        });
       }
     },
 

@@ -3759,6 +3759,10 @@ label.label__placeholder{
   color: grey;
 }
 
+.pointer{
+  cursor: pointer;
+}
+
 
 
 

@@ -632,8 +632,23 @@ export default {
         history.go(-1);
       }
       else if (quit == 1) {
-        window.location.replace('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.campaign + '&index=0');
+        this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.campaign + '&index=0')
       }
+    },
+
+    redirectJRoute(link) {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        params: {
+          link: link,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        window.location.href = window.location.pathname + response.data.data;
+      });
     },
 
     changeDate(dbDate) {

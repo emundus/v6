@@ -371,5 +371,21 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
+    public function redirectjroute() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $link = $jinput->getString('link');
+
+            $response = array('status' => true, 'msg' => 'SUCCESS', 'data' => JRoute::_($link, false));
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
 }
 

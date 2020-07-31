@@ -201,36 +201,32 @@
 
       quitFunnelOrContinue(quit) {
         if (quit == 0) {
-          window.location.replace(
-                  "forms"
-          );
+          history.go(-1);
         }
         else if (quit == 1) {
           if(this.campaignId != null){
-            window.location.replace('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=' + this.campaignId);
+            this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=' + this.campaignId);
           } else {
-            window.location.replace('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=');
+            this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=');
           }
         }
       },
+
+      redirectJRoute(link) {
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+          params: {
+            link: link,
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(response => {
+          window.location.href = window.location.pathname + response.data.data;
+        });
+      }
     },
-
-    mounted() {
-      /*var cid = this.campaign;
-      jQuery(document).ready(function($) {
-        if (window.history && window.history.pushState) {
-          window.history.pushState(
-            "forward",
-            null,
-            "index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=" + cid + "#forward"
-          );
-
-          $(window).on("popstate", function() {
-            window.location.replace("./campaigns");
-          });
-        }
-      });*/
-    }
   };
 </script>
 

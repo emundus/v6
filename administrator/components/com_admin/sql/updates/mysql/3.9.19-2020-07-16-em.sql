@@ -110,3 +110,15 @@ WHERE alias LIKE 'modification-des-elements';
 DELETE FROM jos_falang_content
 WHERE reference_id = 90;
 #
+
+# Delete path translations of onboarding menus
+DELETE FROM jos_falang_content
+WHERE value IN (
+                'configuration-campagne','configuration-campaigns',
+                'configuration-programme','configuration-programs',
+                'configuration-formulaire','configuration-forms',
+                'configuration-emails','configuration-emails',
+                'configuration-parametres','configuration-settings')
+AND reference_field = 'path'
+AND reference_table = 'menu';
+#

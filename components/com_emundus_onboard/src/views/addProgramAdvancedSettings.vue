@@ -18,8 +18,8 @@
                 {{ Category }} : {{ program.programmes }}
               </p>
             </div>
-            <a :href="'index.php?option=com_emundus_onboard&view=program&layout=add&pid=' + prog"
-                    class="modifier-la-campagne">
+            <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=program&layout=add&pid=' + prog)"
+               class="modifier-la-campagne pointer">
               <button class="w-inline-block edit-icon">
                 <em class="fas fa-edit"></em>
               </button>
@@ -202,7 +202,7 @@
         if (this.menuHighlight < 3) {
           this.menuHighlight++;
         } else {
-          window.location.href = '/fr/configuration-programme';
+          history.go(-1);
         }
       },
 
@@ -210,7 +210,7 @@
         if (this.menuHighlight > 0) {
           this.menuHighlight--;
         } else {
-          window.location.href = '/fr/configuration-programme';
+          history.go(-1);
         }
       },
 
@@ -220,6 +220,21 @@
                   this.campaigns = response.data.data;
                 });
       },
+
+      redirectJRoute(link) {
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+          params: {
+            link: link,
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(response => {
+          window.location.href = window.location.pathname + response.data.data;
+        });
+      }
     },
 
     computed: {

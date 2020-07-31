@@ -7,29 +7,6 @@
             position="bottom left"
             :classes="'vue-notification-custom'"
     />
-    <ModalAffectCampaign
-            :prid="prid"
-    />
-    <ModalMenu
-            :profileId="prid"
-            @AddMenu="pushMenu"
-    />
-    <ModalSide
-            v-for="(value, index) in formObjectArray"
-            :key="index"
-            v-show="formObjectArray[indexHighlight]"
-            :ID="value.rgt"
-            :element="value.object"
-            :link="formObjectArray[indexHighlight].link"
-            :menus="formObjectArray"
-            :index="index"
-            :files="files"
-            @show="show"
-            @UpdateUx="UpdateUXT"
-            @UpdateName="UpdateName"
-            @UpdateVue="updateFormObjectAndComponent"
-            @removeMenu="removeMenu"
-    />
     <div class="row form-builder">
       <div class="actions-menu menu-block">
         <div>
@@ -37,18 +14,14 @@
             <label class="form-title" style="padding: 0; margin: 0">{{Actions}}</label>
           </div>
           <div class="action-links">
-              <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')">
-                <em class="add-page-icon col-md-offset-1"></em>
-                <label class="action-label col-md-offset-2">{{addMenu}}</label>
-              </a>
-              <a class="d-flex action-link" @click="createGroup()">
-                <em class="add-group-icon col-md-offset-1"></em>
-                <label class="action-label col-md-offset-2">{{addGroup}}</label>
-              </a>
-              <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements">
-                <em class="add-element-icon col-md-offset-1"></em>
-                <label class="action-label col-md-offset-2" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
-              </a>
+            <a class="d-flex action-link" @click="createGroup()">
+              <em class="add-group-icon col-md-offset-1"></em>
+              <label class="action-label col-md-offset-2">{{addGroup}}</label>
+            </a>
+            <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements">
+              <em class="add-element-icon col-md-offset-1"></em>
+              <label class="action-label col-md-offset-2" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
+            </a>
             <transition :name="'slide-down'" type="transition">
               <draggable
                       v-model="plugins"
@@ -61,10 +34,10 @@
                       chosen-class="plugin-chosen"
                       ghost-class="plugin-ghost"
                       style="padding-bottom: 2em">
-                  <div class="d-flex plugin-link col-md-offset-3 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
-                    <em :class="plugin.icon"></em>
-                    <span class="ml-10px">{{plugin.name}}</span>
-                  </div>
+                <div class="d-flex plugin-link col-md-offset-3 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
+                  <em :class="plugin.icon"></em>
+                  <span class="ml-10px">{{plugin.name}}</span>
+                </div>
               </draggable>
             </transition>
           </div>
@@ -76,70 +49,22 @@
       </div>
       <div class="col-md-8 col-md-offset-4 menu-block">
         <div class="heading-block">
-          <h1 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h1>
-          <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit">
-            <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
-          </a>
+          <h1 class="form-title" style="padding: 0; margin: 0">Evaluation</h1>
         </div>
-        <ul class="form-section">
-          <li>
-            <a :class="menuHighlight === 0 ? 'form-section__current' : ''" @click="menuHighlight = 0;indexHighlight = 0">{{FormPage}}</a>
-          </li>
-          <li>
-            <a :class="menuHighlight === 1 ? 'form-section__current' : ''" @click="menuHighlight = 1;indexHighlight = 0">{{SubmitPage}}</a>
-          </li>
-        </ul>
-        <div v-if="menuHighlight === 0">
-          <ul class="menus-row">
-            <draggable
-                    handle=".handle"
-                    v-model="formObjectArray"
-                    :class="'draggables-list'"
-                    @end="SomethingChange"
-            >
-              <li v-for="(value, index) in formObjectArray" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-                <span class="icon-handle" v-show="grab && indexGrab == index">
-                  <em class="fas fa-grip-vertical handle"></em>
-                </span>
-                <a @click="changeGroup(index,value.rgt)"
-                   class="MenuFormItem"
-                   :class="indexHighlight == index ? 'MenuFormItem_current' : ''">
-                  {{value.object.show_title.value}}
-                </a>
-              </li>
-            </draggable>
-          </ul>
-          <div class="col-md-12 form-viewer-builder">
-            <Builder
-                    :object="formObjectArray[indexHighlight]"
-                    v-if="formObjectArray[indexHighlight]"
-                    :UpdateUx="UpdateUx"
-                    @show="show"
-                    @UpdateFormBuilder="updateFormObjectAndComponent"
-                    @removeGroup="removeGroup"
-                    :key="builderKey"
-                    :rgt="rgt"
-                    :files="files"
-                    ref="builder"
-            />
-          </div>
-        </div>
-        <div v-if="menuHighlight === 1">
-          <div class="col-md-12 form-viewer-builder">
-            <Builder
-                    :object="submittionPages[indexHighlight]"
-                    v-if="submittionPages[indexHighlight]"
-                    :UpdateUx="UpdateUx"
-                    @show="show"
-                    @UpdateFormBuilder="updateFormObjectAndComponent"
-                    @removeGroup="removeGroup"
-                    :key="builderSubmitKey"
-                    :rgt="rgt"
-                    :eval="0"
-                    :files="files"
-                    ref="builder_submit"
-            />
-          </div>
+        <div class="col-md-12 form-viewer-builder">
+          <Builder
+                  :object="formObjectArray[indexHighlight]"
+                  v-if="formObjectArray[indexHighlight]"
+                  :UpdateUx="UpdateUx"
+                  @show="show"
+                  @UpdateFormBuilder="updateFormObjectAndComponent"
+                  @removeGroup="removeGroup"
+                  :key="builderKey"
+                  :rgt="rgt"
+                  :eval="1"
+                  :files="files"
+                  ref="builder"
+          />
         </div>
       </div>
     </div>
@@ -171,11 +96,12 @@
   const qs = require("qs");
 
   export default {
-    name: "FormBuilder",
+    name: "EvaluationBuilder",
     props: {
       prid: String,
       index: Number,
       cid: Number,
+      eval: Number,
     },
     components: {
       List,
@@ -190,9 +116,7 @@
       return {
         // UX variables
         UpdateUx: false,
-        menuHighlight: 0,
-        indexHighlight: "0",
-        indexGrab: "0",
+        indexHighlight: 0,
         animation: {
           enter: {
             opacity: [1, 0],
@@ -209,14 +133,8 @@
 
         // Forms variables
         formObjectArray: [],
-        submittionPages: [],
-        formList: "",
-        profileLabel: "",
-        id: 0,
-        grab: 0,
         rgt: 0,
         builderKey: 0,
-        builderSubmitKey: 0,
         files: 0,
         //
 
@@ -265,7 +183,6 @@
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
           },
         },
-        addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
         addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
         Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
@@ -273,6 +190,8 @@
         Edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
         FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
         SubmitPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
+        groupCreated: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_CREATEDGROUPSUCCES"),
+        update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
       };
     },
 
@@ -283,7 +202,7 @@
           axios({
             method: "post",
             url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
+                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=createcriteria",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -312,52 +231,13 @@
           });
         }
       },
-      createSubmittionElement(gid,plugin,order){
-        if(!_.isEmpty(this.submittionPages[this.indexHighlight].object.Groups)){
-          this.loading = true;
-          axios({
-            method: "post",
-            url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              gid: gid,
-              plugin: plugin
-            })
-          }).then((result) => {
-            axios({
-              method: "get",
-              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
-              params: {
-                element: result.data.scalar,
-                gid: gid
-              },
-              paramsSerializer: params => {
-                return qs.stringify(params);
-              }
-            }).then(response => {
-              this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
-              this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
-              this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
-              this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
-              this.loading = false;
-            });
-          });
-        }
-      },
       addingNewElement: function(evt) {
         this.dragging = false;
         this.draggingIndex = -1;
         let plugin = evt.clone.id.split('_')[1];
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
         if(typeof gid != 'undefined'){
-          if(this.menuHighlight === 0) {
-            this.createElement(gid, plugin, evt.newIndex);
-          } else {
-            this.createSubmittionElement(gid, plugin, evt.newIndex);
-          }
+          this.createElement(gid, plugin, evt.newIndex);
         }
       },
       addingNewElementByDblClick: _.debounce(function(plugin) {
@@ -390,6 +270,23 @@
             })
           }).then((resultTrad) => {
             result.data.group_showLegend = resultTrad.data;
+            axios({
+              method: "post",
+              url: "index.php?option=com_emundus_onboard&controller=program&task=affectgrouptoprogram",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                group: result.data.group_id,
+                pid: this.cid
+              })
+            }).then((result) => {
+              this.show("foo-velocity",
+                      "success",
+                      this.groupCreated,
+                      this.update
+              );
+            });
             this.loading = false;
             this.pushGroup(result.data);
           });
@@ -404,9 +301,7 @@
         this.UpdateUx = true;
       },
       pushGroup(group) {
-        this.formObjectArray.forEach((form, index) => {
-          if(form.object.id == group.formid){
-            this.formObjectArray[index]['object']['Groups']['group_'+group.group_id] = {
+            this.formObjectArray[this.indexHighlight]['object']['Groups']['group_'+group.group_id] = {
               elements: {},
               elts: [],
               group_id: group.group_id,
@@ -416,39 +311,12 @@
               group_tag: group.group_tag,
               ordering: group.ordering
             };
-          }
-        });
         this.elementDisabled = false;
         this.$refs.builder.getDataObject();
         this.$refs.builder.$refs.builder_viewer.openGroup[group.group_id] = true;
         setTimeout(() => {
           window.scrollTo(0,document.body.scrollHeight);
         }, 200);
-      },
-      pushMenu(menu){
-        let menulist = {
-          link: menu.link,
-          rgt: menu.rgt
-        }
-        this.formList.push(menulist);
-        axios.get("index.php?option=com_emundus_onboard&view=form&formid=" + menu.id + "&format=vue_jsonclean")
-                .then(response => {
-                  this.formObjectArray.push({
-                    object: response.data,
-                    rgt: menu.rgt,
-                    link: menu.link
-                  });
-                  this.indexHighlight = this.formObjectArray.length - 1;
-                })
-      },
-      removeMenu(form_id) {
-        this.formObjectArray.forEach((form, index) => {
-          if(form.object.id == form_id){
-            this.formObjectArray.splice(index,1);
-          }
-        });
-        this.builderKey += 1;
-        this.indexHighlight -= 1;
       },
       removeGroup(group_id, form_id) {
         this.formObjectArray.forEach((form, index) => {
@@ -514,152 +382,42 @@
       },
 
       getDataObject() {
-        this.indexHighlight = this.index;
-        this.formList.forEach(element => {
-          let ellink = element.link.replace("fabrik","emundus_onboard");
-          axios.get(ellink + "&format=vue_jsonclean")
-                  .then(response => {
-                    this.formObjectArray.push({
-                      object: response.data,
-                      rgt: element.rgt,
-                      link: element.link
-                    });
-                  }).then(r => {
-                    this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
-                    this.rgt = this.formObjectArray[0].rgt;
-                    this.loading = false;
-                    this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
-                  }).catch(e => {
-                    console.log(e);
+        this.link = 'index.php?option=com_fabrik&view=form&formid=' + this.eval;
+        let ellink = this.link.replace("fabrik","emundus_onboard");
+        axios.get(ellink + "&format=vue_jsonclean")
+                .then(response => {
+                  this.formObjectArray.push({
+                    object: response.data,
+                    link: this.link
                   });
-        });
-      },
-
-      getFilesByForm() {
-        axios.get("index.php?option=com_emundus_onboard&controller=form&task=getfilesbyform&pid=" + this.prid).then(response => {
-          this.files = response.data.data;
-          if(this.files != 0){
-            this.tip();
-          }
-        });
-      },
-
-      getSubmittionPage() {
-        axios({
-          method: "GET",
-          url: "index.php?option=com_emundus_onboard&controller=form&task=getsubmittionpage",
-          params: {
-            prid: this.prid,
-          },
-          paramsSerializer: params => {
-             return qs.stringify(params);
-          }
-        }).then(response => {
-          let ellink = response.data.link.replace("fabrik","emundus_onboard");
-          axios.get(ellink + "&format=vue_jsonclean")
-                  .then(rep => {
-                    this.submittionPages.push({
-                      object: rep.data,
-                      rgt: response.data.rgt,
-                      link: response.data.link
-                    });
-                  });
-        });
-      },
-
-      /**
-       *  ** Récupère toute les forms du profile ID
-       */
-      getForms() {
-        this.loading = true;
-        axios({
-          method: "get",
-          url:
-                  "index.php?option=com_emundus_onboard&controller=form&task=getFormsByProfileId",
-          params: {
-            profile_id: this.prid
-          },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(response => {
-          this.formList = response.data.data;
-          setTimeout(() => {
-            this.getDataObject();
-            this.getProfileLabel(this.prid);
-          },100);
+                }).then(r => {
+          this.loading = false;
+          this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
         }).catch(e => {
           console.log(e);
         });
       },
 
-      /**
-       * Récupère le nom du formulaire
-       */
-      getProfileLabel(profile_id) {
+      sendForm() {
+        this.redirectJRoute('index.php?option=com_emundus_onboard&view=program&layout=advancedsettings&pid=' + this.cid);
+      },
+
+      redirectJRoute(link) {
         axios({
           method: "get",
-          url:
-                  "index.php?option=com_emundus_onboard&controller=form&task=getProfileLabelByProfileId",
+          url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
           params: {
-            profile_id: profile_id
+            link: link,
           },
           paramsSerializer: params => {
             return qs.stringify(params);
           }
-        })
-                .then(response => {
-                  this.profileLabel = response.data.data.label;
-                })
-                .catch(e => {
-                  console.log(e);
-                });
-      },
-
-      sendForm() {
-        if(this.cid != ""){
-          window.location.replace('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=1');
-        } else {
-          axios({
-            method: "get",
-            url:
-                    "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
-            params: {
-              pid: this.prid
-            },
-            paramsSerializer: params => {
-              return qs.stringify(params);
-            }
-          }).then(response => {
-            if(response.data.data.length > 0){
-              history.go(-1);
-            } else {
-              this.$modal.show('modalAffectCampaign');
-            }
-          }).catch(e => {
-            console.log(e);
-          });
-          //history.go(-1);
-        }
+        }).then(response => {
+          window.location.href = window.location.pathname + response.data.data;
+        });
       },
 
       // Triggers
-      changeGroup(index,rgt){
-        this.indexHighlight = index;
-        this.rgt = rgt;
-        this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
-      },
-      SomethingChange: function(e) {
-        this.dragging = true;
-        let rgts = [];
-        this.formList.forEach((menu, index) => {
-          rgts.push(menu.rgt);
-        });
-        this.formObjectArray.forEach((item, index) => {
-          item.rgt = rgts[index];
-        });
-        this.reorderItems();
-      },
       showElements() {
         if(this.elementDisabled){
           this.addingElement = false;
@@ -668,42 +426,9 @@
         }
       },
       //
-
-      // Draggable pages
-      reorderItems(){
-        this.formObjectArray.forEach(item => {
-          axios({
-            method: "post",
-            url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=reordermenu",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              rgt: item.rgt,
-              link: item.link
-            })
-          }).catch(e => {
-            console.log(e);
-          });
-        });
-      },
-      enableGrab(index){
-        if(this.formList.length !== 1){
-          this.indexGrab = index;
-          this.grab = true;
-        }
-      },
-      disableGrab(){
-        this.indexGrab = 0;
-        this.grab = false;
-      },
-      //
     },
     created() {
-      this.getForms();
-      this.getSubmittionPage();
-      this.getFilesByForm();
+      this.getDataObject();
     },
 
     computed: {

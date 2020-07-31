@@ -144,15 +144,15 @@ export default {
   methods: {
     next() {
       if (this.menuHighlight == 1) {
-        this.menuHighlight++;
         this.updateHomepage(this.$refs.homepage.$data.form.content);
       } else if (this.menuHighlight == 2) {
-        this.menuHighlight++;
         this.updateStatus(this.$refs.datas.$data.status);
       } else if (this.menuHighlight == 3) {
-        this.menuHighlight++;
         this.updateTags(this.$refs.tags.$data.tags);
+      } else if (this.menuHighlight == 5) {
+        this.history.go(-1);
       }
+      this.menuHighlight++;
     },
 
     updateStatus(status) {

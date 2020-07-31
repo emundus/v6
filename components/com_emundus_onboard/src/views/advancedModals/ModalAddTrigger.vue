@@ -348,7 +348,8 @@ export default {
   }
 
   .users-block{
-    height: 15em;
+    height: auto;
+    max-height: 15vh;
     overflow: scroll;
   }
 

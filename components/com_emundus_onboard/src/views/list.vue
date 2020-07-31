@@ -112,7 +112,7 @@
       </div>
     </div>
 
-    <div v-show="total == 0 && type != 'files'" class="noneDiscover">
+    <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">
       {{
         this.type == "campaign"
           ? noCampaign
@@ -124,6 +124,9 @@
           ? noForm
           : noFiles
       }}
+    </div>
+    <div class="loading-form" v-if="loading">
+      <RingLoader :color="'#de6339'" />
     </div>
   </div>
 </template>
@@ -173,6 +176,7 @@ export default {
       type: "",
       add_url: ""
     },
+    loading: false,
 
     Select: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT"),
     Deselect: Joomla.JText._("COM_EMUNDUS_ONBOARD_DESELECT"),
@@ -217,13 +221,14 @@ export default {
       this.type = "formulaire";
     }
     if (this.typeForAdd != "files") {
-      this.actions.add_url =  window.location.pathname + '/index.php?option=com_emundus_onboard&view=' + this.typeForAdd + '&layout=add'
+      this.actions.add_url =  'index.php?option=com_emundus_onboard&view=' + this.typeForAdd + '&layout=add'
     }
     this.validateFilters();
   },
 
   methods: {
     validateFilters() {
+      this.loading = true;
       this.filtersCount = this.filtersCountFilter + this.filtersCountSearch;
       this.filters =
         this.filtersFilter +
@@ -296,11 +301,14 @@ export default {
                   list.commit("formsAccessUpdate", rep.data.forms_updating);
                 }
                 this.countPages = Math.ceil(this.total / this.limit);
+                this.loading = false;
               }).catch(e => {
                 console.log(e);
+                this.loading = false;
               });
           }).catch(e => {
             console.log(e);
+            this.loading = false;
           });
       }
     },
@@ -396,4 +404,8 @@ h2 {
   margin: 0 auto;
   text-align: center;
 }
+
+  .loading-form{
+    top: unset;
+  }
 </style>

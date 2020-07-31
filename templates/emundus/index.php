@@ -75,11 +75,19 @@ $doc = JFactory::getDocument();
                     <jdoc:include type="modules" name="header-c"/>
                 <?php endif; ?>
             </div>
+            <div id="moduletable-e" class="moduletable-e size-9">
+                <?php
+                $showcolumn = $this->countModules('top-a');
+                ?>
+                <?php if($showcolumn): ?>
+                    <jdoc:include type="modules" name="top-a"/>
+                <?php endif; ?>
+            </div>
         </div>
     </section>
     <section id="g-feature" class="g-feature">
         <div id="g-container" class="g-container">
-            <div id="moduletable-e" class="moduletable-e size-9">
+            <div id="moduletable-f" class="moduletable-f size-9">
                 <?php
                 $showcolumn = $this->countModules('content-tutorial-a');
                 ?>

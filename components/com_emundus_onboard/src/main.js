@@ -9,6 +9,7 @@ import AddForm from './views/addForm.vue';
 import AddFormNextCampaign from './views/addFormNextCampaign.vue';
 import GlobalSettings from './views/globalSettings.vue';
 import formBuilder from './views/formBuilder.vue';
+import evaluationBuilder from './views/evaluationBuilder.vue';
 import VueJsModal from 'vue-js-modal';
 import { VTooltip, VPopover, VClosePopover } from 'v-tooltip';
 import * as VueSpinnersCss from 'vue-spinners-css';
@@ -142,6 +143,22 @@ if (document.getElementById('em-formBuilder-vue')) {
           prid: this.$el.attributes.prid.value,
           index: this.$el.attributes.index.value,
           cid: this.$el.attributes.cid.value,
+        }
+      });
+    }
+  });
+}
+
+if (document.getElementById('em-evaluationBuilder-vue')) {
+  new Vue({
+    el: '#em-evaluationBuilder-vue',
+    render(h) {
+      return h(evaluationBuilder, {
+        props: {
+          prid: this.$el.attributes.prid.value,
+          index: this.$el.attributes.index.value,
+          cid: this.$el.attributes.cid.value,
+          eval: this.$el.attributes.eval.value,
         }
       });
     }
