@@ -21,10 +21,15 @@ class JcrmControllerContacts extends JcrmController
 {
 	/**
 	 * Proxy for getModel.
-	 * @since	1.6
+	 *
+	 * @param string $name
+	 * @param string $prefix
+	 * @param array  $config
+	 *
+	 * @return bool|JModelLegacy
+	 * @since    1.6
 	 */
-	public function &getModel($name = 'Contacts', $prefix = 'JcrmModel', $config = array())
-	{
+	public function &getModel($name = 'Contacts', $prefix = 'JcrmModel', $config = array()) {
 		$m_contacts = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $m_contacts;
 	}
@@ -32,8 +37,7 @@ class JcrmControllerContacts extends JcrmController
 	/**
 	 *
 	 */
-	public function getcontacts()
-	{
+	public function getcontacts() {
 		$jinput = JFactory::getApplication()->input;
 		$m_contacts = $this->getModel();
 		$id = $jinput->getInt('group_id', null);
@@ -41,12 +45,10 @@ class JcrmControllerContacts extends JcrmController
 		$q = $jinput->getString('q', "");
 		$type = $jinput->getInt('type', 1);
 
-		if($index < 0)
-		{
+		if ($index < 0) {
 			$index = 0;
 		}
-		if($id == 0)
-		{
+		if ($id == 0)  {
 			$id = null;
 		}
 
@@ -60,18 +62,14 @@ class JcrmControllerContacts extends JcrmController
 	/**
 	 *
 	 */
-	public function getorganisations()
-	{
+	public function getorganisations() {
 		$jinput = JFactory::getApplication()->input;
 		$org = $jinput->getString('org', "");
 		$m_contacts = $this->getModel();
 		$orgs = $m_contacts->getOrgas($org);
-		if(!is_string($orgs))
-		{
+		if (!is_string($orgs)) {
 			echo json_encode($orgs);
-		}
-		else
-		{
+		} else {
 			echo json_encode(array('error' => JText::_('ERROR'), 'msg' => $orgs));
 		}
 		exit();
@@ -85,16 +83,12 @@ class JcrmControllerContacts extends JcrmController
 	{
 		$m_contacts = $this->getModel();
 		$orgs = $m_contacts->getGroups();
-		if(!is_string($orgs))
-		{
-			if(is_null($orgs))
-			{
+		if (!is_string($orgs)) {
+			if (is_null($orgs)) {
 				$orgs = array();
 			}
 			echo json_encode($orgs);
-		}
-		else
-		{
+		} else {
 			echo json_encode(array('error' => JText::_('ERROR'), 'msg' => $orgs));
 		}
 		exit();
@@ -103,39 +97,40 @@ class JcrmControllerContacts extends JcrmController
 	/**
 	 *
 	 */
-	public function export()
-	{
-		$request_body 	= (object) json_decode(file_get_contents('php://input'));
-		$groups 		= $request_body->contacts->groups;
-		$contacts 		= $request_body->contacts->contacts;
-		$orgExport 		= $request_body->orgexport;
+	public function export() {
+		$request_body = (object) json_decode(file_get_contents('php://input'));
+		$groups = $request_body->contacts->groups;
+		$contacts = $request_body->contacts->contacts;
+		$orgExport = $request_body->orgexport;
 
 		$m_contact = new JcrmModelContact();
 
-		if ($orgExport != 'direct')
+		if ($orgExport != 'direct') {
 			$orgList = $m_contact->getContactIdByOrg($contacts);
-		else
+		} else {
 			$orgList = array();
+		}
 
 		$contacts = array_unique(array_merge($contacts, $orgList));
 
-		if (!empty($groups))
+		if (!empty($groups)) {
 			$groupList = $m_contact->getContactIdByGroup($groups);
-		else
+		} else {
 			$groupList = array();
+		}
 
 		$contactIds = array_unique(array_merge($contacts, $groupList));
 
 		$contacts = $m_contact->getContacts($contactIds);
 
 		//type == 0 => csv
-		if ($request_body->export == 0)
+		if ($request_body->export == 0) {
 			$path = JcrmFrontendHelper::buildCSV($contacts);
-		else
+		} else {
 			$path = JcrmFrontendHelper::buildVcard($contacts);
+		}
 
-		$url = JURI::base();
-		$url .= 'index.php?option=com_jcrm&task=contacts.download&file='.$path;
+		$url = 'index.php?option=com_jcrm&task=contacts.download&file='.$path;
 
 		$res = array("status" => true, 'msg' => JText::_('CONTACT_EXPORT_SUCCESS_CLICK_LINK_BELOW'), 'link' => $url, 'linkMsg' => JText::_('CONTACT_CLICK_TO_DOWNLOAD'));
 		echo json_encode((object)$res);

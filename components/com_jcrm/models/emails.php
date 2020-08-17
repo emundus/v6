@@ -14,8 +14,7 @@ jimport('joomla.application.component.modellist');
 /**
  * Methods supporting a list of Jcrm records.
  */
-class JcrmModelEmails extends JModelList
-{
+class JcrmModelEmails extends JModelList {
 
     /**
      * Constructor.
@@ -24,26 +23,25 @@ class JcrmModelEmails extends JModelList
      * @see        JController
      * @since    1.6
      */
-    public function __construct($config = array())
-    {
+    public function __construct($config = array()) {
         if (empty($config['filter_fields'])) {
-            $config['filter_fields'] = array(
-
-            );
+            $config['filter_fields'] = array();
         }
         parent::__construct($config);
     }
 
-    /**
-     * Method to auto-populate the model state.
-     *
-     * Note. Calling getState in this method will result in recursion.
-     *
-     * @since    1.6
-     */
-    protected function populateState($ordering = null, $direction = null)
-    {
-
+	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @param null $ordering
+	 * @param null $direction
+	 *
+	 * @throws Exception
+	 * @since    1.6
+	 */
+    protected function populateState($ordering = null, $direction = null) {
 
         // Initialise variables.
         $app = JFactory::getApplication();
@@ -102,7 +100,6 @@ class JcrmModelEmails extends JModelList
 
                     // Just to keep the default case
                     default:
-                        $value = $value;
                         break;
                 }
 
@@ -127,40 +124,31 @@ class JcrmModelEmails extends JModelList
      * @return    JDatabaseQuery
      * @since    1.6
      */
-    protected function getListQuery()
-{
-		$db		= $this->getDbo();
-		$query	= $db->getQuery(true);
-		return $query;
+    protected function getListQuery() {
+		$db	= $this->getDbo();
+		return $db->getQuery(true);
 	}
 
 
-	public function getItems()
-    {
-        $items = parent::getItems();
-
-        return $items;
+	public function getItems() {
+        return parent::getItems();
     }
 
     /**
      * Overrides the default function to check Date fields format, identified by
      * "_dateformat" suffix, and erases the field if it's not correct.
      */
-    protected function loadFormData()
-    {
+    protected function loadFormData() {
         $app = JFactory::getApplication();
         $filters = $app->getUserState($this->context . '.filter', array());
         $error_dateformat = false;
-        foreach ($filters as $key => $value)
-        {
-            if (strpos($key, '_dateformat') && !empty($value) && !$this->isValidDate($value))
-            {
+        foreach ($filters as $key => $value) {
+            if (strpos($key, '_dateformat') && !empty($value) && !$this->isValidDate($value)) {
                 $filters[$key] = '';
                 $error_dateformat = true;
             }
         }
-        if ($error_dateformat)
-        {
+        if ($error_dateformat) {
             $app->enqueueMessage(JText::_("COM_PRUEBA_SEARCH_FILTER_DATE_FORMAT"), "warning");
             $app->setUserState($this->context . '.filter', $filters);
         }
@@ -168,25 +156,25 @@ class JcrmModelEmails extends JModelList
         return parent::loadFormData();
     }
 
-    /**
-     * Checks if a given date is valid and in an specified format (YYYY-MM-DD)
-     *
-     * @param string Contains the date to be checked
-     *
-     */
-    private function isValidDate($date)
-    {
+	/**
+	 * Checks if a given date is valid and in an specified format (YYYY-MM-DD)
+	 *
+	 * @param string Contains the date to be checked
+	 *
+	 * @return bool
+	 */
+    private function isValidDate($date) {
         return preg_match("/^(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$/", $date) && date_create($date);
     }
 
-    /**
-     * Get the filter form
-     *
-     * @return  JForm/false  the JForm object or false
-     *
-     */
-    public function getFilterForm()
-    {
+	/**
+	 * Get the filter form
+	 *
+	 * @return  JForm/false  the JForm object or false
+	 *
+	 * @throws Exception
+	 */
+    public function getFilterForm() {
         $form = null;
 
         // Try to locate the filter form automatically. Example: ContentModelArticles => "filter_articles"
@@ -212,8 +200,7 @@ class JcrmModelEmails extends JModelList
     /**
      * Function to get the active filters
      */
-    public function getActiveFilters()
-    {
+    public function getActiveFilters() {
         $activeFilters = false;
 
         if (!empty($this->filter_fields)) {
@@ -229,8 +216,7 @@ class JcrmModelEmails extends JModelList
         return $activeFilters;
     }
 
-    private function getParameterFromRequest($paramName, $default = null, $type = 'string')
-    {
+    private function getParameterFromRequest($paramName, $default = null, $type = 'string') {
         $variables = explode('.', $paramName);
         $input = JFactory::getApplication()->input;
 
@@ -249,8 +235,5 @@ class JcrmModelEmails extends JModelList
         }
 
         return ($nullFound) ? $default : JFilterInput::getInstance()->clean($data, $type);
-
     }
-
-
 }
