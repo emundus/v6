@@ -48,7 +48,7 @@ a:hover {
 }
 
 .g-container{
-  width: 85rem;
+  width: 90rem;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -76,9 +76,15 @@ a:hover {
   width: 9%;
 }
 
+.moduletable-c,.moduletable-d{
+  justify-content: center;
+  display: flex;
+}
+
 #g-navigation .g-container {
   padding: 14px !important;
   position: relative;
+  width: 95%;
 }
 
 .g-menu-overlay {

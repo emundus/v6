@@ -1,5 +1,7 @@
 .advanced-dropdown form{
     margin: 10px 0 !important;
+    padding: 0 !important;
+    width: auto !important;
 }
 
 div.advanced-dropdown{
@@ -15,6 +17,7 @@ div.mod-languages.advanced-dropdown ul{
     margin-top: -3px;
     background: #eeebeb;
     padding-bottom: 10px;
+    max-height: 40px;
 }
 
 div.mod-languages ul.lang-inline li{
