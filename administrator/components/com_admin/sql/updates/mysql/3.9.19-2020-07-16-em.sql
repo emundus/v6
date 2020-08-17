@@ -59,7 +59,7 @@ UPDATE jos_modules
 SET content = '<p><a href="index.php"><img src="images/emundus/Emundus-LogoTypo-RVB.png" width="180" height="80" /> </a></p>'
 WHERE title LIKE 'Logo SaaS';
 
-UPDATE jos_modules
+/*UPDATE jos_modules
 SET content = '<p><a href="index.php"><img src="images/custom/logo.png" width="180" height="80" /> </a></p>'
 WHERE title LIKE 'Logo';
 
@@ -76,7 +76,7 @@ SET content = '<div class="bas-footer">
 <p>Logiciel <a title="Logiciel de gestion des appel à projets et dépôt de candidature en ligne" href="https://www.emundus.fr" target="_blank" rel="noopener noreferrer">eMundus</a></p>
 </div>
 </div>'
-WHERE title LIKE 'footer';
+WHERE title LIKE 'footer';*/
 #
 
 # Update onboarding articles
@@ -112,7 +112,8 @@ WHERE alias LIKE 'premiers-pas-2';
 
 # Delete logo translations
 DELETE FROM jos_falang_content
-WHERE reference_id = 90;
+WHERE reference_id = 90
+AND reference_table LIKE 'modules';
 #
 
 # Delete path translations of onboarding menus

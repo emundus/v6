@@ -126,11 +126,10 @@ class EmundusonboardModelform extends JModelList {
         $query
             ->select('id')
             ->from($db->quoteName('#__emundus_setup_profiles'))
-            ->where($db->quoteName('id') . ' > 1000');
+            ->where($db->quoteName('id') . ' > 1000')
+            ->andWhere($db->quoteName('published') . ' = 1');
         $db->setQuery($query);
-        foreach ($db->loadRowList() as $profile){
-            $access_profiles[] = $profile[0];
-        }
+        $access_profiles[] = $db->loadColumn();
 
         $profiles_campaign_associated = [];
 
