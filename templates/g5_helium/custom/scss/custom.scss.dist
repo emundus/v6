@@ -698,6 +698,8 @@ p.readmore .btn,
 
     .g-container {
         padding: 10px !important;
+        width: 95%;
+        margin: auto !important;
     }
 }
 
@@ -722,8 +724,17 @@ p.readmore .btn,
     text-align: center;
 }
 
+#header-c, #header-switch {
+    display: flex;
+    justify-content: center;
+}
+
 .header-right a {
     color: #4E5B6D;
+}
+
+.right-divider{
+    border-right: solid 1px #cecece;
 }
 
 
@@ -1060,7 +1071,7 @@ form#member-registration div a {
         border: none;
         margin-bottom: 0 !important;
         border-radius: 0;
-        padding: 20px !important;
+        padding: 20px;
         box-shadow: none;
         width: 50%;
     }
