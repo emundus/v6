@@ -486,6 +486,8 @@ class orderController extends hikashopController {
 			$found = $method;
 			break;
 		}
+
+		$app = JFactory::getApplication();
 		if(!$found) {
 			$app->enqueueMessage(JText::_('INVALID_DATA'), 'error');
 			return false;
@@ -522,7 +524,6 @@ class orderController extends hikashopController {
 		$order->order_payment_price = $updateOrder->order_payment_price;
 		$order->order_full_price = $updateOrder->order_full_price;
 
-		$app = JFactory::getApplication();
 		$app->setUserState(HIKASHOP_COMPONENT.'.cc_number', null);
 		$app->setUserState(HIKASHOP_COMPONENT.'.cc_month', null);
 		$app->setUserState(HIKASHOP_COMPONENT.'.cc_year', null);

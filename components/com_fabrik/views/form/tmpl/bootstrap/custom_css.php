@@ -1022,6 +1022,16 @@ body.em-formRegistrationCenter  {
     border: 1px solid #e0e0e5 !important;
 }
 
+form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
+        height: 41px !important; 
+        border-radius: 0px; 
+}
+
+/* EDITER LE PROFIL DU CANDIDAT - ESPACEMENT SOUS LE TITRE - */ 
+.view-profile #member-profile fieldset:nth-child(2) legend {
+          margin-bottom: 0px !important;
+}
+
 .applicant-form input[type='radio']:checked  { 
     background: #de6339;
 }

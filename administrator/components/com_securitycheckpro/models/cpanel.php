@@ -54,7 +54,9 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
     'dynamic_blacklist_time'        => 600,
     'dynamic_blacklist_counter'        => 5,
     'blacklist_email'        => 0,
-    'priority'        => 'Blacklists first',
+    'priority1'        => 'Whitelist',
+    'priority2'        => 'DynamicBlacklist',
+    'priority3'        => 'Blacklist',
     'methods'            => 'GET,POST,REQUEST',
     'mode'            => 1,
     'logs_attacks'            => 1,
@@ -646,8 +648,7 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
             $db->setQuery($query);
             $db->execute();
         } catch (Exception $e)
-        {            
-            //dump($e->getMessage(),"error");
+        {                        
         }    
     }
 

@@ -24,15 +24,10 @@ $icon = $params->get('icon', 'big circular user outline icon');
 $show_logout = $params->get('show_logout', '1');
 $intro = $params->get('intro', '');
 
-$link_login = $params->get('link_login');
-$link_register = $params->get('link_register');
-$link_forgotten_password = $params->get('link_forgotten_password');
-$show_registration = !$params->get('show_registration');
-
-$link_login = $params->get('link_login');
-$link_register = $params->get('link_register');
-$link_forgotten_password = $params->get('link_forgotten_password');
-$show_registration = !$params->get('show_registration');
+$link_login = $params->get('link_login', 'index.php?option=com_users&view=login&Itemid=1135');
+$link_register = $params->get('link_register', 'index.php?option=com_fabrik&view=form&formid=307&Itemid=1136');
+$link_forgotten_password = $params->get('link_forgotten_password', 'index.php?option=com_users&view=reset&Itemid=2833');
+$show_registration = !$params->get('show_registration', '0');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');

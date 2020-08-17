@@ -180,7 +180,7 @@ class VoteViewVote extends hikashopView{
 		if(!empty($vote_id)){
 			$element = $class->get($vote_id,true);
 			$task='edit';
-			$this->user_type = ($element->vote_pseudo == '0') ? 'registered' : 'anonymous';
+			$this->user_type = (!empty($element->vote_user_id)) ? 'registered' : 'anonymous';
 		}else{
 			$element = new stdClass();
 			$element->vote_url = HIKASHOP_LIVE;

@@ -167,7 +167,10 @@ JText::script('COM_EMUNDUS_FILE');
 JText::script('COM_EMUNDUS_FILES');
 JText::script('COM_EMUNDUS_SELECT_USER');
 JText::script('COM_EMUNDUS_SELECT_USERS');
-
+JText::script('WARNING_CHANGE_STATUS');
+JText::script('MAIL_CHANGE_STATUT_INFO');
+JText::script('VALIDATE_CHANGE_STATUT');
+JText::script('CANCEL_CHANGE_STATUT');
 
 // view user
 JText::script('NOT_A_VALID_EMAIL');
@@ -341,6 +344,10 @@ JText::script('COM_EMUNDUS_ERROR_MISSING_FORM_DATA');
 JText::script('CONFIRM_PASSWORD');
 
 JText::script('JGLOBAL_SELECT_AN_OPTION');
+
+//Award list
+JText::script('COM_EMUNDUS_VOTE_NON_ACCEPTED');
+JText::script('COM_EMUNDUS_VOTE_ACCEPTED');
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 //JHtml::script('media/jui/js/jquery.min.js');

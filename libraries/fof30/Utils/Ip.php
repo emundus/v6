@@ -439,7 +439,7 @@ class Ip
 	/**
 	 * Gets the visitor's IP address. Automatically handles reverse proxies
 	 * reporting the IPs of intermediate devices, like load balancers. Examples:
-	 * https://www.akeebabackup.com/support/admin-tools/13743-double-ip-adresses-in-security-exception-log-warnings.html
+	 * https://www.akeeba.com/support/admin-tools/13743-double-ip-adresses-in-security-exception-log-warnings.html
 	 * http://stackoverflow.com/questions/2422395/why-is-request-envremote-addr-returning-two-ips
 	 * The solution used is assuming that the first IP address is the external one (unless $useFirstIpInChain is set to
 	 * false)

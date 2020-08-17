@@ -25,7 +25,7 @@ $query->select('COUNT(*)')
 $_db->setQuery($query);
 $exist = $_db->loadResult();
 
-if (intval($exist) > 0) {
+if (intval($exist) > 0 && !empty($user->campaign_id)) {
     $query='SELECT esa.value, esap.id, esa.id as _id
 	FROM #__emundus_setup_attachment_profiles esap
 	JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id

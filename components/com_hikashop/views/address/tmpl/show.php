@@ -115,7 +115,7 @@ if(isset($this->edit) && $this->edit === true) {
 <?php
 		}
 	} else {
-		echo $this->addressClass->maxiFormat($this->address, null, true);
+		echo $this->addressClass->maxiFormat($this->address, $this->fields, true);
 	}
 
 	if(!empty($this->display_badge)) {

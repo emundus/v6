@@ -83,8 +83,7 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
         $this->priority1 = $items['priority1'];
         $this->priority2 = $items['priority2'];
         $this->priority3 = $items['priority3'];
-        $this->priority4 = $items['priority4'];
-
+        
         // Pestaña methods
         $methods= null;
         if (!is_null($items['methods'])) {

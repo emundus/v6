@@ -62,6 +62,9 @@ $moduleClass = hikashop_get('class.modules');
 if($moduleClass->restrictedModule($params) === false)
 	return;
 
+if(!empty($module->params) && is_string($module->params))
+	$module->params = json_decode($module->params, true);
+
 $params->set('cart_type','cart');
 $params->set('from','module');
 $html = trim(hikashop_getLayout('product','cart',$params,$js));

@@ -2279,21 +2279,20 @@ if (JFactory::getUser()->id == 63)
     public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1) {
 
     	$db = $this->getDbo();
-
         $locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
 
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 	    if ($anonymize_data) {
-		    $query = 'select c.fnum, esc.label, sp.code, esc.id as campaign_id';
+		    $query = 'select jos_emundus_campaign_candidature.fnum, esc.label, sp.code, esc.id as campaign_id';
 	    } else {
-		    $query = 'select c.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
+		    $query = 'select jos_emundus_campaign_candidature.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
 	    }
 
         $leftJoin = '';
         $leftJoinMulti = '';
         $tableAlias = [
             'jos_emundus_setup_campaigns' => 'esc',
-            'jos_emundus_campaign_candidature' => 'c',
+            'jos_emundus_campaign_candidature' => 'jos_emundus_campaign_candidature',
             'jos_emundus_setup_programmes' => 'sp',
             'jos_users' => 'u',
             'jos_emundus_tag_assoc' => 'eta'
@@ -2310,9 +2309,8 @@ if (JFactory::getUser()->id == 63)
                 if (!isset($lastTab)) {
 	                $lastTab = array();
                 }
-
                 if (!in_array($elt->tab_name, $lastTab)) {
-	                $leftJoin .= ' left join '.$elt->tab_name.' on '.$elt->tab_name.'.fnum = c.fnum ';
+	                $leftJoin .= ' left join '.$elt->tab_name.' on '.$elt->tab_name.'.fnum = jos_emundus_campaign_candidature.fnum ';
                 }
 
                 $lastTab[] = $elt->tab_name;
@@ -2328,13 +2326,11 @@ if (JFactory::getUser()->id == 63)
                         $where  = $element_attribs->join_key_column.'='.$elt->table_join.'.'.$elt->element_name;
                         $sub_query = 'SELECT '.$select.' FROM '.$from.' WHERE '.$where;
                         $sub_query = preg_replace('#{thistable}#', $from, $sub_query);
-                        //$sub_query = preg_replace('#{my->id}#', $aid, $sub_query);
                         $sub_query = preg_replace('#{shortlang}#', $locales, $sub_query);
 
                         $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
 
-                    }
-                    elseif ($elt->element_plugin == 'cascadingdropdown') {
+                    } elseif ($elt->element_plugin == 'cascadingdropdown') {
                         $element_attribs = json_decode($elt->element_attribs);
                         $cascadingdropdown_id = $element_attribs->cascadingdropdown_id;
                         $r1 = explode('___', $cascadingdropdown_id);
@@ -2365,12 +2361,10 @@ if (JFactory::getUser()->id == 63)
 
                         $sub_query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                         $sub_query = preg_replace('#{thistable}#', $from, $sub_query);
-                        //$sub_query = preg_replace('#{my->id}#', $aid, $sub_query);
                         $sub_query  = preg_replace('#{shortlang}#', $locales, $sub_query);
 
                         $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
-                    }
-                    else {
+                    } else {
                         $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
                     }
 
@@ -2402,7 +2396,7 @@ if (JFactory::getUser()->id == 63)
                             $select .= 'FROM '.$tableAlias[$elt->tab_name].'
                                 LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
                                 LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$elt->table_join.'.'.$elt->element_name.'
-                                WHERE '.$tableAlias[$elt->tab_name].'.fnum=c.fnum)';
+                                WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
                         }
 
                         $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
@@ -2418,7 +2412,7 @@ if (JFactory::getUser()->id == 63)
                             FROM '.$tableAlias[$elt->tab_name].'
                             LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
                             LEFT JOIN '.$from.' as t ON t.'.$where.'
-                            WHERE '.$tableAlias[$elt->tab_name].'.fnum=c.fnum)';
+                            WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
 
                         $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
                     }
@@ -2486,14 +2480,14 @@ if (JFactory::getUser()->id == 63)
                 $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
             }
         }
-        $query .= ' from #__emundus_campaign_candidature as c
-                    left join #__users as u on u.id = c.applicant_id
-                    left join #__emundus_setup_campaigns as esc on esc.id = c.campaign_id
+        $query .= ' from #__emundus_campaign_candidature as jos_emundus_campaign_candidature
+                    left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
+                    left join #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id
                     left join #__emundus_setup_programmes as sp on sp.code = esc.training ';
 
         $query .= $leftJoin. ' '. $leftJoinMulti;
 
-        $query .= 'where u.block=0 AND c.fnum in ("'.implode('","', $fnums).'") ';
+        $query .= 'where u.block=0 AND jos_emundus_campaign_candidature.fnum in ("'.implode('","', $fnums).'") ';
 
 	    if (preg_match("/emundus_evaluations/i", $query)) {
 

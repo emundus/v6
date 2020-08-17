@@ -141,17 +141,23 @@ class SecuritycheckprosModelLogs extends JModelList
     {
         if (empty($uids)) {
             $jinput = JFactory::getApplication()->input;
-            $uids = $jinput->get('cid', 0, 'array');
-        }    
+            $uids = $jinput->get('cid', 0, 'array');			
+        }       
+		
+		if ( !empty($uids) )
+		{
+			Joomla\Utilities\ArrayHelper::toInteger($uids, array());
     
-        Joomla\Utilities\ArrayHelper::toInteger($uids, array());
-    
-        $db = $this->getDbo();
-        foreach($uids as $uid) {
-            $sql = "UPDATE `#__securitycheckpro_logs` SET marked=1 WHERE id='{$uid}'";
-            $db->setQuery($sql);
-            $db->execute();
-        }
+			$db = $this->getDbo();
+			foreach($uids as $uid) {
+				$sql = "UPDATE `#__securitycheckpro_logs` SET marked=1 WHERE id='{$uid}'";
+				$db->setQuery($sql);
+				$db->execute();
+			}
+		} else {
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_LOG_SELECTED'), 'warning');
+		}
+        
     }
 
     /* Función para cambiar el estado de un array de logs de leído a no leído */
@@ -159,15 +165,20 @@ class SecuritycheckprosModelLogs extends JModelList
     {
         $jinput = JFactory::getApplication()->input;
         $uids = $jinput->get('cid', 0, 'array');
-    
-        Joomla\Utilities\ArrayHelper::toInteger($uids, array());
-        
-        $db = $this->getDbo();
-        foreach($uids as $uid) {
-            $sql = "UPDATE `#__securitycheckpro_logs` SET marked=0 WHERE id='{$uid}'";
-            $db->setQuery($sql);
-            $db->execute();            
-        }
+		
+		if ( !empty($uids) )
+		{    
+			Joomla\Utilities\ArrayHelper::toInteger($uids, array());
+			
+			$db = $this->getDbo();
+			foreach($uids as $uid) {
+				$sql = "UPDATE `#__securitycheckpro_logs` SET marked=0 WHERE id='{$uid}'";
+				$db->setQuery($sql);
+				$db->execute();            
+			}
+		} else {
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_LOG_SELECTED'), 'warning');
+		}
     }
 
     /* Función para borrar un array de logs */
@@ -175,16 +186,21 @@ class SecuritycheckprosModelLogs extends JModelList
     {
         $jinput = JFactory::getApplication()->input;
         $uids = $jinput->get('cid', 0, 'array');
-    
-        Joomla\Utilities\ArrayHelper::toInteger($uids, array());
-    
-        $db = $this->getDbo();
-        foreach($uids as $uid) 
-        {
-            $sql = "DELETE FROM `#__securitycheckpro_logs` WHERE id='{$uid}'";
-            $db->setQuery($sql);
-            $db->execute();    
-        }
+		
+		if ( !empty($uids) )
+		{     
+			Joomla\Utilities\ArrayHelper::toInteger($uids, array());
+		
+			$db = $this->getDbo();
+			foreach($uids as $uid) 
+			{
+				$sql = "DELETE FROM `#__securitycheckpro_logs` WHERE id='{$uid}'";
+				$db->setQuery($sql);
+				$db->execute();    
+			}
+		} else {
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_NO_LOG_SELECTED'), 'warning');
+		}
     }
 
     /* Función para chequear si una ip pertenece a una lista en la que podemos especificar rangos. Podemos tener una ip del tipo 192.168.*.* y una ip 192.168.1.1 entraría en ese rango */
