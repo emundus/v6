@@ -137,7 +137,7 @@ try {
 	$replytoname = $obj->name;
 
 	if ($obj->Template) {
-		$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj->Template);
+        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/", "/\[SITE_NAME\]/"], [$subject, $body, JFactory::getConfig()->get('sitename')], $obj->Template);
 	}
 	$body = preg_replace($patterns, $replacements, $body);
 

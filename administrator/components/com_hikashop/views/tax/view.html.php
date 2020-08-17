@@ -154,7 +154,7 @@ class TaxViewTax extends hikashopView{
 				$info =& $orders_taxes[$k]->order_tax_info;
 				if(!$info) continue;
 				foreach($info as $k2 => $taxes_info){
-					$tax_amount = $taxes_info->tax_amount + @$taxes_info->tax_amount_for_shipping - @$taxes_info->tax_amount_for_coupon;
+					$tax_amount = $taxes_info->tax_amount;
 					if(!isset($taxes_info->tax_rate)) $taxes_info->tax_rate = $rows[$taxes_info->tax_namekey]->tax_rate;
 					if($taxes_info->tax_rate != 0)
 						$info[$k2]->amount = $currencyClass->round($tax_amount/$taxes_info->tax_rate,$currencyClass->getRounding($v->order_currency_id));

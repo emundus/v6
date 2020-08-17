@@ -159,6 +159,7 @@ display: inline-block;
 color:white;
 font-size:1.1rem;
 margin-bottom:0;
+width: 85%; 
 }
 .cardContainerHeader img{
 height:30px;

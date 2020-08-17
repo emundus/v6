@@ -8,15 +8,15 @@
 <extension version="3.9.0" type="package" method="upgrade">
     <name>Admin Tools package</name>
     <author>Nicholas K. Dionysopoulos</author>
-    <creationDate>2020-06-17</creationDate>
+    <creationDate>2020-07-14</creationDate>
     <packagename>admintools</packagename>
-    <version>5.7.3</version>
-    <url>https://www.akeebabackup.com</url>
+    <version>5.7.4</version>
+    <url>https://www.akeeba.com</url>
     <packager>Akeeba Ltd</packager>
-    <packagerurl>https://www.akeebabackup.com</packagerurl>
+    <packagerurl>https://www.akeeba.com</packagerurl>
     <copyright>Copyright (c)2010-2019 Akeeba Ltd / Nicholas K. Dionysopoulos</copyright>
     <license>GNU GPL v3 or later</license>
-    <description>Admin Tools Core installation package v.5.7.3</description>
+    <description>Admin Tools Core installation package v.5.7.4</description>
 
     <!-- List of extensions to install -->
     <files>
@@ -35,6 +35,6 @@
 
     <!-- Update servers -->
     <updateservers>
-        <server type="extension" priority="1" name="Admin Tools Core">https://cdn.akeebabackup.com/updates/pkgadmintoolscore.xml</server>
+        <server type="extension" priority="1" name="Admin Tools Core">https://cdn.akeeba.com/updates/pkgadmintoolscore.xml</server>
     </updateservers>
 </extension>

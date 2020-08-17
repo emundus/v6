@@ -153,11 +153,6 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				$fnumArray = array();
 
-			    // get evaluation form ID
-			    $formid = $m_evaluation->getEvaluationFormByProgramme();
-			    $this->assignRef('formid', $formid);
-			    $form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
-			    $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
 			    $this->assignRef('form_url_edit', $form_url_edit);
 
 				if (!empty($users)) {
@@ -207,6 +202,13 @@ class EmundusViewEvaluation extends JViewLegacy
 						$usObj = new stdClass();
 						$usObj->val = 'X';
 						$fnumArray[] = $user['fnum'];
+                        // get evaluation form ID
+
+                        $formid = $m_evaluation->getEvaluationFormByProgramme($user['code']);
+
+                        $this->assignRef('formid', $formid);
+                        $form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
+                        $form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&tmpl=component&iframe=1&rowid=';
 						$line = array('check' => $usObj);
 
 						if (array_key_exists($user['fnum'], $taggedFile)) {
@@ -234,7 +236,7 @@ class EmundusViewEvaluation extends JViewLegacy
 								$userObj->user->name = $user['name'];
 								$line['fnum'] = $userObj;
 
-							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step') {
+							} elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'code') {
 								continue;
 							} elseif ($key == 'evaluator') {
 

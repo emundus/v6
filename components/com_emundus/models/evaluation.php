@@ -1363,7 +1363,7 @@ class EmundusModelEvaluation extends JModelList {
 		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
 		$current_user = JFactory::getUser();
 
-		$query = 'select c.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class ';
+		$query = 'select c.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
 
 		$group_by = 'GROUP BY c.fnum ';
 

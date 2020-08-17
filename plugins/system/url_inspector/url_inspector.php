@@ -399,8 +399,8 @@ class PlgSystemurl_Inspector extends JPlugin
 			elseif ($action_inspector == 2)
 			{
 				// Add to blacklist
-				include_once JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'firewalllists.php';
-				$firewalllists_object = new SecuritycheckprosModelFirewallLists;
+				include_once JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'firewallconfig.php';
+				$firewalllists_object = new SecuritycheckprosModelFirewallConfig;
 				$firewalllists_object->manage_list('blacklist', 'add', $remote_ip);
 
 				// Redireccionamos para evitar que las peticiones continuen

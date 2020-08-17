@@ -14,8 +14,7 @@ use Joomla\CMS\Language\Text as JText;
 class plgSystemSecuritycheckpro extends JPlugin
 {
     private $pro_plugin = null;
-    private $geoblock_config = null;
-    
+        
     function __construct(&$subject, $config)
     {
         parent::__construct($subject, $config);
@@ -185,46 +184,6 @@ class plgSystemSecuritycheckpro extends JPlugin
         
     }
     
-    /* Función para grabar los logs de la propia aplicación*/
-    function grabar_log_propio($description)
-    {
-        
-        // Obtenemos la configuración del plugin
-        $methods = $this->pro_plugin->getValue('methods', 'GET,POST,REQUEST', 'pro_plugin');
-        $priority = $this->pro_plugin->getValue('priority', 'Blacklists first', 'pro_plugin');
-        $logs_attacks = $this->pro_plugin->getValue('logs_attacks', 'pro_plugin');
-        $mode = $this->pro_plugin->getValue('mode', '', 'pro_plugin');
-        $blacklist_ips = $this->pro_plugin->getValue('blacklist', '', 'pro_plugin');
-        $dynamic_blacklist_on = $this->pro_plugin->getValue('dynamic_blacklist', '', 'pro_plugin');
-        $dynamic_blacklist_time = $this->pro_plugin->getValue('dynamic_blacklist_time', '', 'pro_plugin');
-        $dynamic_blacklist_counter = $this->pro_plugin->getValue('dynamic_blacklist_counter', '', 'pro_plugin');
-        $whitelist_ips = $this->pro_plugin->getValue('whitelist', '', 'pro_plugin');
-        $secondlevel = $this->pro_plugin->getValue('second_level', '', 'pro_plugin');
-        $check_base_64 = $this->pro_plugin->getValue('check_base_64', '', 'pro_plugin');
-        
-        $description = "Mensaje: " . $description . "  | Prioridad: " . $priority . " ,Grabar ataques: " . $logs_attacks 
-        . " ,Modo: " . $mode . " ,Lista negra: " . $blacklist_ips 
-        . " ,Lista negra dinamica (activa/tiempo/contador): " . $dynamic_blacklist_on . "/" . $dynamic_blacklist_time
-        . "/" . $dynamic_blacklist_counter . " ,Lista blanca: " . $whitelist_ips . " ,Segundo nivel: " . $secondlevel
-        . " ,Chequear base64: " . $check_base_64;
-            
-        $db = JFactory::getDBO();
-        
-        // Sanitizamos la entrada
-        $description = filter_var($description, FILTER_SANITIZE_STRING);
-        $description = $db->escape($description);
-        
-        // Borramos las entradas con más de un mes de antigüedad
-        $sql = "DELETE FROM `#__securitycheckpro_own_logs` WHERE (DATE_ADD(`time`, INTERVAL 1 MONTH)) < NOW();";
-        $db->setQuery($sql);
-        $db->execute();
-            
-        $sql = "INSERT INTO `#__securitycheckpro_own_logs` (`time`, `description`) VALUES (now(), '{$description}')";
-        $db->setQuery($sql);
-        $db->execute();
-        
-    }
-        
     /* Determina si un valor está codificado en base64 */    
     function is_base64($value)
     {
@@ -1174,9 +1133,8 @@ class plgSystemSecuritycheckpro extends JPlugin
                 // Si estamos en la parte administrativa nunca hemos de hacer la redirección para evitar vulnerabilidades
                 if ($is_admin) {
                     // Mostramos el código establecido por el administrador, una cabecera de Forbidden y salimos                    
-                    echo $custom_code;
                     header('HTTP/1.1 403 Forbidden');
-                    exit;
+					die($custom_code);
                 }
                 
                 if ($redirect_options == 1) {
@@ -1190,15 +1148,13 @@ class plgSystemSecuritycheckpro extends JPlugin
             } else 
             {
                 // Mostramos el código establecido por el administrador, una cabecera de Forbidden y salimos                    
-                echo $custom_code;
                 header('HTTP/1.1 403 Forbidden');
-                exit;
+				die($custom_code);
             }            
         } else 
         { // Rechazamos la conexión mostrando el código establecido por el administrador, una cabecera de Forbidden y salimos
-            echo $custom_code;
             header('HTTP/1.1 403 Forbidden');
-            exit;
+			die($custom_code);
         }
     
     }
@@ -1338,8 +1294,7 @@ class plgSystemSecuritycheckpro extends JPlugin
                 $send = false;
             }
                         
-            if ($send !== true) {
-                //$this->grabar_log_propio("Error al enviar un email: " . $send->message);
+            if ($send !== true) {              
             }else
             {
                 $db = JFactory::getDBO();
@@ -1851,8 +1806,7 @@ class plgSystemSecuritycheckpro extends JPlugin
             $dynamic_blacklist_counter = $this->pro_plugin->getValue('dynamic_blacklist_counter', 5, 'pro_plugin');
             $whitelist_ips = $this->pro_plugin->getValue('whitelist', 'pro_plugin');
             $secondlevel = $this->pro_plugin->getValue('second_level', 1, 'pro_plugin');
-            $check_base_64 = $this->pro_plugin->getValue('check_base_64', 1, 'pro_plugin');
-            $add_geoblock_logs = $this->pro_plugin->getValue('add_geoblock_logs', 0, 'pro_plugin');
+            $check_base_64 = $this->pro_plugin->getValue('check_base_64', 1, 'pro_plugin');           
             $priority1 = $this->pro_plugin->getValue('priority1', 'Whitelist', 'pro_plugin');
             $priority2 = $this->pro_plugin->getValue('priority2', 'Blacklist', 'pro_plugin');
             $priority3 = $this->pro_plugin->getValue('priority3', 'DynamicBlacklist', 'pro_plugin');
@@ -1870,12 +1824,12 @@ class plgSystemSecuritycheckpro extends JPlugin
             
             $aparece_lista_negra = $model->chequear_ip_en_lista($attack_ip, $blacklist_ips);
             $aparece_lista_blanca = $model->chequear_ip_en_lista($attack_ip, $whitelist_ips);
-            
-			// If priority1 was set to "geoblock" we must set it to other value (i.e Blacklist) or no actions will be taken
+                    
+            // If priority1 was set to "geoblock" we must set it to other value (i.e Whitelist) or no actions will be taken
 			if ($priority1 == "Geoblock") {		
-				$priority1 = "Blacklist";
+				$priority1 = "Whitelist";
 			}
-                        
+			
             // Prioridad            
             if ($priority1 == "Whitelist") {
                 if ($aparece_lista_blanca) {
@@ -2094,9 +2048,8 @@ class plgSystemSecuritycheckpro extends JPlugin
                         
                 $this->grabar_log($logs_attacks, $attack_ip, 'UPLOAD_SCANNER', $action, $type, $request_uri, $file['name'] . PHP_EOL . $malware_description, $user->username, $component);
                 $error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
-                echo $custom_code;
                 header('HTTP/1.1 403 Forbidden');
-                exit;     
+				die($custom_code);     
             }
         }
     }

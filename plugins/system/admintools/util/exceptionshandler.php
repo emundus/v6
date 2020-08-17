@@ -612,14 +612,16 @@ class AtsystemUtilExceptionshandler
 
 		// Because SpamAssassin blacklists our domain when it misidentifies an email as spam.
 		$replaceThat = [
-			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
-			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeebabackup.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
-			'https://www.akeebabackup.com',
-			'http://www.akeebabackup.com',
+			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeeba.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
+			'<p style=\"text-align: right; font-size: 7pt; color: #ccc;\">Powered by <a style=\"color: #ccf; text-decoration: none;\" href=\"https://www.akeeba.com/products/admin-tools.html\">Akeeba AdminTools</a></p>',
+			'https://www.akeeba.com',
+			'https://www.akeeba.com',
 			'http://akeebabackup.com',
 			'https://akeebabackup.com',
 			'www.akeebabackup.com',
+			'www.akeeba.com',
 			'akeebabackup.com',
+			'akeeba.com',
 		];
 
 		foreach ($replaceThat as $find)

@@ -72,7 +72,6 @@ class FEF extends Joomla
 			if ($useDarkMode != 0)
 			{
 				$this->container->template->addCSS('media://fef/css/dark.min.css');
-				$this->container->template->addJS('media://fef/js/darkmode.min.js');
 			}
 		}
 

@@ -11,6 +11,7 @@ use FOF30\Cli\Traits\CGIModeAware;
 use FOF30\Cli\Traits\CustomOptionsAware;
 use FOF30\Cli\Traits\JoomlaConfigAware;
 use FOF30\Cli\Traits\MemStatsAware;
+use FOF30\Cli\Traits\MessageAware;
 use FOF30\Cli\Traits\TimeAgoAware;
 use FOF30\Utils\CliSessionHandler;
 use Joomla\CMS\Application\CliApplication;
@@ -32,7 +33,7 @@ if (@file_exists($cmsImportFilePath))
  */
 abstract class FOFCliApplicationJoomla3 extends CliApplication
 {
-	use CGIModeAware, CustomOptionsAware, JoomlaConfigAware, MemStatsAware, TimeAgoAware;
+	use CGIModeAware, CustomOptionsAware, JoomlaConfigAware, MemStatsAware, TimeAgoAware, MessageAware;
 
 	private $allowedToClose = false;
 
