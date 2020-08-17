@@ -29,7 +29,7 @@
               <span class="error">{{LabelRequired}}</span>
             </p>
 
-            <div class="form-group prog-code">
+            <!--<div class="form-group prog-code">
               <label for="prog_code" style="top: 12.8em">{{ProgCode}} *</label>
               <input
                 id="prog_code"
@@ -43,10 +43,10 @@
             </div>
             <p v-if="errors.code" class="error col-md-12 mb-2">
               <span class="error">{{CodeRequired}}</span>
-            </p>
+            </p>-->
 
             <div class="form-group prog-label">
-              <label for="prog_code" style="top: 10.7em">{{ChooseCategory}} *</label>
+              <label for="prog_category" style="top: 10.7em">{{ChooseCategory}}</label>
               <autocomplete
                 @searched="onSearchCategory"
                 :id="'prog_category'"

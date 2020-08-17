@@ -22,9 +22,9 @@
           <div class="column-inner-block-2 w-clearfix w-col w-col-4" style="min-height: 150px !important">
             <a href="#" class="button-programme">{{ type[langue][data.type - 1] }}</a>
             <div class="container-gerer-modifier-visualiser">
-              <a :href="path + '/index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id"
-                class="cta-block"
-                :title="Modify">
+              <a class="cta-block pointer"
+                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
+                 :title="Modify">
                 <em class="fas fa-edit"></em>
               </a>
             </div>
@@ -37,6 +37,9 @@
 
 <script>
 import { list } from "../../store";
+import axios from "axios";
+
+const qs = require("qs");
 
 export default {
   name: "emailItem",
@@ -50,7 +53,6 @@ export default {
       langue: 0,
 
       selectedData: [],
-      path: window.location.pathname,
       publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
       unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
       passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
@@ -62,6 +64,23 @@ export default {
         ['System', 'Model']
       ]
     };
+  },
+
+  methods: {
+    redirectJRoute(link) {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        params: {
+          link: link,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        window.location.href = window.location.pathname + response.data.data;
+      });
+    }
   },
 
   computed: {

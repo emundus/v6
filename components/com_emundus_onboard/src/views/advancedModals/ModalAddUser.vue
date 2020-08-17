@@ -39,16 +39,33 @@
           </p>
         </div>
         <div class="form-group">
-          <label class="require col-md-3">{{Email}}* :</label>
+          <label>{{Email}}* :</label>
           <input v-model="form.email" type="text" class="form__input field-general w-input" maxlength="40" :class="{ 'is-invalid': errors.email}" />
           <p v-if="errors.email" class="error">
             <span class="error">{{EmailRequired}}</span>
           </p>
         </div>
-        <div class="form-group">
+        <div class="form-group" v-if="userManage == 1">
+          <label class="mb-1">{{Program}}* :</label>
+          <div class="select-all">
+              <input type="checkbox" class="form-check-input bigbox" @click="selectAllPrograms" v-model="selectall">
+              <label>
+                {{SelectAll}}
+              </label>
+          </div>
+          <div class="users-block">
+            <div v-for="(program, index) in programs" :key="index" class="user-item">
+              <input type="checkbox" class="form-check-input bigbox" v-model="affected_programs[program.id]">
+              <div class="ml-10px">
+                  <p>{{program.label}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" v-if="userManage == 0 || !least_one_program">
           <label>{{Role}}* :</label>
           <select v-model="form.profile" class="dropdown-toggle" :class="{ 'is-invalid': errors.profile}">
-            <option value="5">{{Administrator}}</option>
+            <option value="5" v-if="coordinatorAccess != 0">{{Administrator}}</option>
             <option value="6">{{Evaluator}}</option>
           </select>
           <p v-if="errors.profile" class="error">
@@ -66,17 +83,25 @@
           @click.prevent="$modal.hide('modalAddUser')"
         >{{Retour}}</a>
       </div>
+      <div class="loading-form" v-if="loading">
+        <Ring-Loader :color="'#de6339'" />
+      </div>
     </modal>
   </span>
 </template>
 
 <script>
 import axios from "axios";
+import Swal from "sweetalert2";
 const qs = require("qs");
 
 export default {
   name: "modalAddUser",
-  props: { group: Number },
+  props: {
+    group: Number,
+    coordinatorAccess: Number,
+    userManage: Number
+  },
   data() {
     return {
       errors: {
@@ -99,7 +124,12 @@ export default {
         university_id: 0,
         ldap: 0
       },
+      affected_programs: [],
+      least_one_program: true,
+      programs: [],
+      selectall: false,
       changes: false,
+      loading: false,
       addUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER"),
       Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
       Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
@@ -113,6 +143,8 @@ export default {
       RoleRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_ROLE_REQUIRED"),
       Administrator: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATOR"),
       Evaluator: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATOR"),
+      Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+      SelectAll: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT_ALL"),
     };
   },
   methods: {
@@ -120,8 +152,38 @@ export default {
     },
     beforeOpen(event) {
     },
-    generatePseudo() {
-      this.form.login = (this.form.firstname.charAt(0) + this.form.lastname.substr(0, 10)).toLowerCase();
+    selectAllPrograms() {
+      if(!this.selectall) {
+        this.least_one_program = false;
+      } else {
+        this.least_one_program = true;
+      }
+      this.programs.forEach(element => {
+        if(!this.selectall) {
+          this.affected_programs[element.id] = true;
+        } else {
+          this.affected_programs[element.id] = false;
+        }
+      });
+      this.$forceUpdate();
+    },
+    getProgramsList() {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=program&task=getallprogram",
+        params: {
+          filter: '',
+          sort: '',
+          recherche: '',
+          lim: 100,
+          page: 1,
+        },
+        paramsSerializer: params => {
+           return qs.stringify(params);
+        }
+      }).then(response => {
+          this.programs = response.data.data;
+      });
     },
     createUser() {
       this.errors = {
@@ -144,7 +206,7 @@ export default {
       }
 
       this.form.login = this.form.email;
-
+      this.loading = true;
       axios({
         method: "post",
         url: 'index.php?option=com_emundus&controller=users&task=adduser',
@@ -154,31 +216,86 @@ export default {
         data: qs.stringify(this.form)
       }).then((response) => {
         if(response.data.status == true){
-          axios({
-            method: "post",
-            url: 'index.php?option=com_emundus_onboard&controller=program&task=affectusertogroup',
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              profile: this.form.profile,
-              group: this.group,
-              email: this.form.email
-            })
-          }).then((rep) => {
-            if(this.form.profile == 5) {
-              this.$emit("Updatemanager");
-            } else {
-              this.$emit("Updateevaluator");
-            }
-            this.$modal.hide('modalAddUser')
+          if(!this.least_one_program && this.userManage == 1){
+            axios({
+              method: "get",
+              url: "index.php?option=com_emundus_onboard&controller=program&task=getgroupsbyprograms",
+              params: {
+                programs: this.affected_programs,
+              },
+              paramsSerializer: params => {
+                 return qs.stringify(params);
+              }
+            }).then(rep => {
+              rep.data.groups.forEach((group) => {
+                this.affectUserToRole(group);
+              })
+            });
+          } else if (this.userManage == 0) {
+            this.affectUserToRole(this.group);
+          } else {
+            this.loading = false;
+            this.$emit("UpdateUsers",this.form);
+            this.$modal.hide('modalAddUser');
+          }
+
+        } else {
+          this.loading = false;
+          Swal.fire({
+            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR"),
+            text: response.data.msg,
+            type: "error",
+            showCancelButton: false,
+            confirmButtonColor: '#de6339',
+            confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
           });
         }
       }).catch((error) =>  {
         console.log(error);
       });
     },
+
+    affectUserToRole(group) {
+      axios({
+        method: "post",
+        url: 'index.php?option=com_emundus_onboard&controller=program&task=affectusertogroup',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          profile: this.form.profile,
+          group: group,
+          email: this.form.email
+        })
+      }).then((rep) => {
+        this.loading = false;
+        if(this.userManage == 1) {
+          this.$emit("UpdateUsers",this.form);
+        } else {
+          if (this.form.profile == 5) {
+            this.$emit("Updatemanager");
+          } else {
+            this.$emit("Updateevaluator");
+          }
+        }
+        this.$modal.hide('modalAddUser')
+      });
+    }
   },
+
+  created() {
+    if(this.userManage == 1) {
+      this.getProgramsList();
+    }
+  },
+
+  watch: {
+    affected_programs: function () {
+        this.least_one_program = this.affected_programs.every((value) => {
+          return value === false;
+        });
+    }
+  }
 };
 </script>
 
@@ -207,26 +324,36 @@ export default {
     align-items: center;
   }
 
-  .require{
-    margin-bottom: 10px !important;
-  }
-
-.inputF{
-  margin: 0 0 10px 0 !important;
-}
-
   p .error{
     position: absolute;
     bottom: -10px;
     left: 28%;
   }
 
-  .d-flex{
-    display: flex;
-    align-items: center;
-  }
+.users-block{
+  height: auto;
+  overflow: scroll;
+  max-height: 15vh;
+}
 
-  .dropdown-custom{
-    height: 35px;
-  }
+.user-item{
+  display: flex;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.bigbox{
+  height: 30px !important;
+  width: 30px !important;
+  cursor: pointer;
+}
+
+.select-all{
+  display: flex;
+  align-items: end;
+  margin-bottom: 1em;
+}
 </style>

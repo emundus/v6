@@ -172,5 +172,220 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         echo json_encode((object)$changeresponse);
         exit;
     }
+
+    public function updatelogo() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $image = $jinput->files->get('file');
+
+            if(isset($image)) {
+                $target_dir = "images/custom/";
+                $target_file = $target_dir . basename('logo.png');
+
+                if (move_uploaded_file($image["tmp_name"], $target_file)) {
+                    $tab = array('status' => 1, 'msg' => JText::_('LOGO_UPDATED'));
+                } else {
+                    $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'));
+                }
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'));
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+    }
+
+    public function getappcolors(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
+
+            $primary = $yaml['base']['primary-color'];
+            $secondary = $yaml['base']['secondary-color'];
+            $tab = array('status' => '1', 'msg' => JText::_("SUCCESS"), 'primary' => $primary, 'secondary' => $secondary);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function updatecolor(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => '0', 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $type = $jinput->post->getString('type');
+            $color = $jinput->post->getString('color');
+
+            $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
+            $yaml['base'][$type . '-color'] = $color;
+            if($type == 'primary'){
+                $yaml['accent']['color-1'] = $color;
+            } else {
+                $yaml['accent']['color-2'] = $color;
+            }
+
+            $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 5);
+
+            file_put_contents('templates/g5_helium/custom/config/default/styles.yaml', $new_yaml);
+
+            $tab = array('status' => '1', 'msg' => JText::_("SUCCESS"));
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getdatasfromtable() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $dbtable = $jinput->getString('db');
+
+            $datas = $m_settings->getDatasFromTable($dbtable);
+            $response = array('status' => '1', 'msg' => 'SUCCESS', 'data' => $datas);
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function savedatas() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $form = $jinput->getRaw('form');
+
+            $state = $m_settings->saveDatas($form);
+            $response = array('status' => $state, 'msg' => 'SUCCESS');
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function saveimporteddatas() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $form = $jinput->getRaw('form');
+            $datas = $jinput->getRaw('datas');
+
+            $state = $m_settings->saveImportedDatas($form,$datas);
+            $response = array('status' => $state, 'msg' => 'SUCCESS');
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function unlockuser() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $user_id = $jinput->getInt('user');
+
+            $state = $m_settings->unlockUser($user_id);
+            $response = array('status' => $state, 'msg' => 'SUCCESS');
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function lockuser() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $user_id = $jinput->getInt('user');
+
+            $state = $m_settings->lockUser($user_id);
+            $response = array('status' => $state, 'msg' => 'SUCCESS');
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function checkfirstdatabasejoin() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+
+            $state = $m_settings->checkFirstDatabaseJoin($user->id);
+            $response = array('status' => $state, 'msg' => 'SUCCESS');
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function removeparam() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $param = $jinput->getString('param');
+
+            $state = $m_settings->removeParam($param, $user->id);
+            $response = array('status' => $state, 'msg' => 'SUCCESS');
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function redirectjroute() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $link = $jinput->getString('link');
+
+            $response = array('status' => true, 'msg' => 'SUCCESS', 'data' => JRoute::_($link, false));
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
 }
 

@@ -18,30 +18,12 @@ if (!empty($articles)) :?>
 
         function tip<?= $user_param->name; ?>() {
 
-            let path = window.location.href.split('/');
-            let route = path[path.length - 1];
-            let url = route.split('&');
-            let parameters = [];
-            let view = '';
-            let layout = '';
-            let cid = '';
-            if(url.length > 1){
-                url.forEach(parameter => {
-                    parameters.push({
-                        parameter: parameter.split('=')[0],
-                        value: parameter.split('=')[1]
-                    });
-                });
-            }
-            Object.values(parameters).forEach((parameter) => {
-                if(parameter.parameter ==  'view'){
-                    view = parameter.value;
-                } else if(parameter.parameter ==  'layout'){
-                    layout = parameter.value;
-                } else if(parameter.parameter ==  'cid'){
-                    cid = parameter.value;
-                }
-            });
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+
+            const view = urlParams.get('view')
+            const layout = urlParams.get('layout')
+            const cid = urlParams.get('cid')
 
             let queue = []
 
@@ -138,7 +120,10 @@ if (!empty($articles)) :?>
             Swal.mixin({
                 confirmButtonColor: '#de6339',
                 showCloseButton: true,
-                allowOutsideClick: false
+                allowOutsideClick: false,
+                customClass: {
+                    popup: 'swal-popup-custom',
+                }
             }).queue(queue).then((result) => {
                 <?php if ($run) :?>
                 if(result.value) {

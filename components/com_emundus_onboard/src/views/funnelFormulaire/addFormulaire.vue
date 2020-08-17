@@ -38,14 +38,12 @@ export default {
       this.EmitIndex = value;
     },
     formbuilder() {
-      window.location.replace(
-        "index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=" +
-          this.profileId +
-          "&index=" +
-          this.EmitIndex +
-          "&fid=" +
-          this.formulaireEmundus
-      );
+      this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' +
+              this.profileId +
+              '&index=' +
+              this.EmitIndex +
+              '&fid=' +
+              this.formulaireEmundus);
     },
     getForms(profile_id) {
       axios({
@@ -65,6 +63,21 @@ export default {
         .catch(e => {
           console.log(e);
         });
+    },
+
+    redirectJRoute(link) {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        params: {
+          link: link,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        window.location.href = window.location.pathname + response.data.data;
+      });
     }
   },
   created() {

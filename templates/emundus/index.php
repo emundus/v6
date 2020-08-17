@@ -41,10 +41,10 @@ $doc = JFactory::getDocument();
                         <div id="platform-content" class="platform-content">
                             <div id="moduletable" class="moduletable">
                                 <?php
-                                $showcolumn = $this->countModules('header-a');
+                                $showcolumn = $this->countModules('header-a-saas');
                                 ?>
                                 <?php if($showcolumn): ?>
-                                    <jdoc:include type="modules" name="header-a" style="<?php if(($this->params->get('header-a') == 'block') || ($this->params->get('header-a') == Null)): echo "block"; else: echo "xhtml"; endif;?>"/>
+                                    <jdoc:include type="modules" name="header-a-saas" style="<?php if(($this->params->get('header-a-saas') == 'block') || ($this->params->get('header-a-saas') == Null)): echo "block"; else: echo "xhtml"; endif;?>"/>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -75,11 +75,19 @@ $doc = JFactory::getDocument();
                     <jdoc:include type="modules" name="header-c"/>
                 <?php endif; ?>
             </div>
+            <div id="moduletable-e" class="moduletable-e size-9">
+                <?php
+                $showcolumn = $this->countModules('top-a');
+                ?>
+                <?php if($showcolumn): ?>
+                    <jdoc:include type="modules" name="top-a"/>
+                <?php endif; ?>
+            </div>
         </div>
     </section>
     <section id="g-feature" class="g-feature">
         <div id="g-container" class="g-container">
-            <div id="moduletable-e" class="moduletable-e size-9">
+            <div id="moduletable-f" class="moduletable-f size-9">
                 <?php
                 $showcolumn = $this->countModules('content-tutorial-a');
                 ?>
