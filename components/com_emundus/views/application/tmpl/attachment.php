@@ -24,7 +24,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
     <i class="dropdown icon"></i> <?php echo JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
 </div>-->
 <div class="row">
-    <div class="panel panel-default widget em-container-form">
+    <div class="panel panel-default widget em-container-attachment em-container-form">
         <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
             <span class="glyphicon glyphicon-paperclip"></span>

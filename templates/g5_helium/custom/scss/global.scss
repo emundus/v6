@@ -1,0 +1,179 @@
+@import "dependencies";
+
+/*CSS base*/
+/*IMPORT POLICE*/
+@import url("https://use.typekit.net/czx4mrf.css");
+
+// Here you can add Anything you want to be present on the entire site AND with variables
+// - Laura.scss
+
+
+/* MODULE USER MENU - COULEURS */
+#g-navigation #header-c .header-right {
+  a.btn.btn-danger {
+    font-weight: 300 !important;
+    font-size: 14px !important;
+    margin-bottom: 5px;
+
+    &.btn-creer-compte, &.inscription {
+      background-color: $base-secondary-color !important;
+      border-color: $base-secondary-color !important;
+      &:hover, &:active, &:focus {
+        background-color: #fff !important;
+        color: $base-secondary-color !important;
+        border-color: $base-secondary-color !important;
+      }
+    }
+
+    &:not(btn-creer-compte) {
+      background-color: $base-primary-color !important;
+      border-color: $base-primary-color !important;
+
+      &:hover, &:active, &:focus {
+        background-color: #fff !important;
+        color: $base-primary-color !important;
+        border-color: $base-primary-color !important;
+      }
+    }
+  }
+  a:not(.btn):hover {
+    text-decoration: underline;
+  }
+}
+
+/* BURGER MENU - DECONNECTE */
+.burger span {
+  border-radius: 1px;
+  height: 5px;
+  width: 32px;
+  background: $base-primary-color;
+  position: absolute;
+  display: block;
+  content: '';
+  transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
+  top: 0;
+
+  &::after {
+    border-radius: 1px;
+    height: 5px;
+    width: 32px;
+    background: $base-primary-color;
+    position: absolute;
+    display: block;
+    content: '';
+    top: 20px;
+  }
+
+  &::before {
+    border-radius: 1px;
+    height: 5px;
+    width: 32px;
+    background: $base-primary-color;
+    position: absolute;
+    display: block;
+    content: '';
+    top: 10px;
+  }
+}
+
+/* ESPACEMENTS SOUS LES TITRES  */
+
+.view-list #g-container-main, .view-form #g-container-main, .view-details #g-container-main {
+  .page-header {
+    padding-bottom: 15px;
+  }
+}
+
+/* MODULE CAMPAGNES */
+.campaign-title {
+  color: $base-primary-color;
+}
+
+/* BOUTON RADIO SELECTIONNE- COULEUR */
+.applicant-form input[type='radio']:checked  {
+  background: $base-secondary-color;
+  outline: none;
+}
+
+/* AFTER SOUS LES TITRES H1 */
+
+h1::after, .swal2-title:after {
+  content: '';
+  position: absolute;
+  margin-top: 6px !important;
+  width: 2.7rem;
+  height: .2rem;
+  background: $base-secondary-color !important;
+  left: 0;
+  display: block !important;
+}
+
+/*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
+
+.view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form #fabrikSubmit_307 {
+  background-color:$base-secondary-color !important;
+  color: #ffffff !important;
+  border-color: $base-secondary-color !important;
+
+  &:hover, &active, &:focus {
+    background-color: #ffffff !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
+  }
+}
+
+/* PAGE PLUS D INFO - COULEUR BTN  CANDIDATER */
+
+.view-programme .em_period .btn.save-btn {
+  background-color: $base-secondary-color !important;
+  border-color: $base-secondary-color!important;
+
+  &:hover, &:active, &:focus {
+    background-color: #ffffff !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
+  }
+}
+
+/* MODULE LISTE DES CAMPAGNES - COULEUR BTN CANDIDATER */
+
+.homepage .campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {
+  background-color: $base-secondary-color !important;
+  border-color: $base-secondary-color!important;
+
+  &:hover, &:active, &:focus {
+    background-color: #ffffff !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
+  }
+}
+
+/* MODULE APPLICATIONS  - COULEUR BTN IMPRIMER*/
+.list-group.candidacy-files-list .btn.btn-info {
+  background: darken($base-secondary-color,15) !important;
+  border-color: darken($base-secondary-color,15%)  !important;
+
+    &:hover, &:active, &:focus {
+      background-color: #ffffff !important;
+      color: darken($base-secondary-color,15%) !important;
+      border-color: darken($base-secondary-color,15%) !important;
+    }
+}
+
+
+/* PAGE CHECKLIST - COULEURS BTNS AJOUT DOCUMENTS */
+
+.view-checklist {
+  #attachment_list_mand, #attachment_list_opt {
+      .em-added-files a.btn.btn-success.btn-xs {
+      background: $base-secondary-color !important;
+      border-color: $base-secondary-color !important;
+
+          &:hover, &:active, &:focus {
+            background-color: #ffffff !important;
+            color: $base-secondary-color !important;
+            border-color: $base-secondary-color !important;
+          }
+    }
+  }
+}
