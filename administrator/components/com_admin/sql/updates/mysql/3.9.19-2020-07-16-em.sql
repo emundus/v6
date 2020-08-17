@@ -106,7 +106,7 @@ SET introtext = '<p>Votre élément est en place ? Modifiez en le survolant avec
 WHERE alias LIKE 'modification-des-elements';
 
 UPDATE jos_content
-SET note = '{"confirm_text":"MOD_EMUNDUS_TUTORIAL_CREATE_CAMPAIGN","link":"configuration/campaigns?view=campaign&layout=add"}'
+SET note = '{"confirm_text":"MOD_EMUNDUS_TUTORIAL_CREATE_CAMPAIGN","link":"configuration-campaigns?view=campaign&layout=add"}'
 WHERE alias LIKE 'premiers-pas-2';
 #
 
@@ -146,22 +146,22 @@ WHERE storage_key = 'pro_plugin';
 
 #
 UPDATE jos_menu
-SET path = 'campaigns'
+SET path = 'configuration-campaigns'
 WHERE alias = 'campaigns';
 
 UPDATE jos_menu
-SET path = 'programs'
+SET path = 'configuration-programs'
 WHERE alias = 'programs';
 
 UPDATE jos_menu
-SET path = 'forms'
+SET path = 'configuration-forms'
 WHERE alias = 'forms';
 
 UPDATE jos_menu
-SET path = 'emails'
+SET path = 'configuration-emails'
 WHERE alias = 'emails';
 
 UPDATE jos_menu
-SET path = 'settings'
+SET path = 'configuration-settings'
 WHERE alias = 'settings';
 #
