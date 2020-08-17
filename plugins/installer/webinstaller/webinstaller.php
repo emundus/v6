@@ -69,14 +69,6 @@ class PlgInstallerWebinstaller extends CMSPlugin
 	private $installfrom = null;
 
 	/**
-	 * Flag if the document is in a RTL direction
-	 *
-	 * @var    integer|null
-	 * @since  1.0
-	 */
-	private $rtl = null;
-
-	/**
 	 * Event listener for the `onInstallerBeforeDisplay` event.
 	 *
 	 * @param   boolean  $showJedAndWebInstaller  Flag indicating the install from web prompt should be displayed
@@ -229,23 +221,6 @@ JS;
 		}
 
 		return $this->_hathor;
-	}
-
-	/**
-	 * Internal check to determine if the output is in a RTL direction
-	 *
-	 * @return  integer
-	 *
-	 * @since   1.0
-	 */
-	private function isRTL()
-	{
-		if (is_null($this->rtl))
-		{
-			$this->rtl = strtolower(Factory::getDocument()->getDirection()) === 'rtl' ? 1 : 0;
-		}
-
-		return $this->rtl;
 	}
 
 	/**

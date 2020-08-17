@@ -71,6 +71,7 @@ class hikashopShippingPlugin extends hikashopPlugin {
 			if(bccomp($price, 0, 5) && isset($rate->shipping_params->shipping_percentage) && bccomp($rate->shipping_params->shipping_percentage, 0, 3)){
 				$rate->shipping_price = $rate->shipping_price + $price * $rate->shipping_params->shipping_percentage / 100;
 			}
+
 			$rate->shipping_price = $currencyClass->round($rate->shipping_price, $currencyClass->getRounding($rate->shipping_currency_id, true));
 
 			if(!empty($rate->shipping_params->shipping_min_price) && bccomp((float)hikashop_toFloat($rate->shipping_params->shipping_min_price), (float)$price, 5) == 1)
@@ -82,13 +83,14 @@ class hikashopShippingPlugin extends hikashopPlugin {
 			if(!empty($rate->shipping_params->shipping_max_volume) && bccomp((float)@$rate->shipping_params->shipping_max_volume, 0, 3)) {
 				$rate->shipping_params->shipping_max_volume_orig = $rate->shipping_params->shipping_max_volume;
 				$rate->shipping_params->shipping_max_volume = $this->volumeHelper->convert($rate->shipping_params->shipping_max_volume, @$rate->shipping_params->shipping_size_unit);
-				if(bccomp((float)$rate->shipping_params->shipping_max_volume, (float)$shipping_prices->volume) == -1)
+				if(bccomp((float)$rate->shipping_params->shipping_max_volume, (float)$shipping_prices->volume, 5) == -1)
 					$rate->errors['max_volume'] = ($rate->shipping_params->shipping_max_volume - $shipping_prices->volume);
 			}
+
 			if(!empty($rate->shipping_params->shipping_min_volume) && bccomp((float)@$rate->shipping_params->shipping_min_volume, 0, 3)) {
 				$rate->shipping_params->shipping_min_volume_orig = $rate->shipping_params->shipping_min_volume;
 				$rate->shipping_params->shipping_min_volume = $this->volumeHelper->convert($rate->shipping_params->shipping_min_volume, @$rate->shipping_params->shipping_size_unit);
-				if(bccomp((float)$rate->shipping_params->shipping_min_volume, (float)$shipping_prices->volume) == 1)
+				if(bccomp((float)$rate->shipping_params->shipping_min_volume, (float)$shipping_prices->volume, 5) == 1)
 					$rate->errors['min_volume'] = ($shipping_prices->volume - $rate->shipping_params->shipping_min_volume);
 			}
 

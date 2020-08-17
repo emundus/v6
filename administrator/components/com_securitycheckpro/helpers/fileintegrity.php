@@ -101,30 +101,18 @@ use Joomla\CMS\Language\Text as JText;
     var respuesta_reparar = '';
         
     function date_time(id) {
-        date = new Date();
-        year = date.getFullYear();
-        month = date.getMonth()+1;
-        if (month<10) {
-            month = "0"+month;
-        }
-        day = date.getDate();
-        if (day<10) {
-            day = "0"+day;
-        }
-        h = date.getHours();
-        if (h<10) {
-            h = "0"+h;
-        }
-        m = date.getMinutes();
-        if (m<10) {
-            m = "0"+m;
-        }
-        s = date.getSeconds();
-        if (s<10) {
-            s = "0"+s;
-        }
-        now = year+'-'+month+'-'+day+' '+h+':'+m+':'+s
-        document.getElementById(id).innerHTML = now;        
+        url = 'index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=currentDateTime';
+		jQuery.ajax({
+			url: url,                            
+			method: 'GET',
+			success: function(responseText){	
+				document.getElementById(id).innerHTML = responseText;
+			},
+			error: function(responseText) { 
+				
+			}
+		});				
+		        
     }
     
     function runButton() {
