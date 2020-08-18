@@ -46,7 +46,7 @@ $this->is_dead_line_passed = !empty($this->is_admission) ? strtotime(date($now))
 $is_app_sent = !in_array($this->user->status, $status_for_send);
 
 $block_upload = true;
-if ($can_edit_after_deadline || (!$is_app_sent && !$this->is_dead_line_passed) || in_array($this->user->id, $applicants) || ($is_app_sent && !$this->is_dead_line_passed && $can_edit_until_deadline)) {
+if ($can_edit_after_deadline || (!$is_app_sent && (!$this->is_dead_line_passed || $this->isLimitObtained !== true)) || in_array($this->user->id, $applicants) || ($is_app_sent && !$this->is_dead_line_passed && $can_edit_until_deadline && $this->isLimitObtained !== true)) {
     $block_upload = false;
 }
 
@@ -487,7 +487,8 @@ if (!empty($this->custom_title)) :?>
                 $div .= '</tbody>';
                 }
             } else {
-                $div .= JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($this->user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($this->user->end_date) )));
+                if ($this->isL)
+                $div .= JError::raiseNotice(401, JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($this->user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($this->user->end_date) )));
             }
             $div .= '</table></div></fieldset>';
             if ($attachment->mandatory) {
