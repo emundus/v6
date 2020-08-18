@@ -2,6 +2,7 @@
 
 defined('_JEXEC') or die('Access Deny');
 require_once(dirname(__FILE__).DS.'helper.php');
+include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
 JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
 JHtml::script('media/com_emundus/js/jquery.cookie.js');
@@ -121,7 +122,7 @@ $paginationPast     = new JPagination($helper->getTotalPast(), $session->get('li
 $paginationFutur    = new JPagination($helper->getTotalFutur(), $session->get('limitstartFutur'), $session->get('limit'));
 $paginationTotal    = new JPagination($helper->getTotal(), $session->get('limitstart'), $session->get('limit'));
 
-
+$m_campaign     = new EmundusModelCampaign;
 require(JModuleHelper::getLayoutPath('mod_emundus_campaign', $params->get('mod_em_campaign_layout')));
 
 ?>
