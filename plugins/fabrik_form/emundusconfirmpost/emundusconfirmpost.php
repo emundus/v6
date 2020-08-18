@@ -93,6 +93,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 		include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
 
 		jimport('joomla.log.log');
@@ -111,6 +112,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 		$m_application  = new EmundusModelApplication;
 		$m_files        = new EmundusModelFiles;
 		$m_emails       = new EmundusModelEmails;
+        $m_campaign = new EmundusModelCampaign;
 
 		$offset = $app->get('offset', 'UTC');
 		try {
@@ -127,10 +129,17 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
             $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$student->end_date));
         }
 
+        // Check campaign limit, if the limit is obtained, then we set the deadline to true
+        $isLimitObtained = $m_campaign->isLimitObtained($this->_user->fnums[$this->_user->fnum]->campaign_id);
+
 		// If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
-		if ($is_dead_line_passed && !in_array($student->id, $id_applicants)) {
-			JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($student->start_date)), strftime("%d/%m/%Y %H:%M", strtotime($student->end_date))));
-			return null;
+		if (($is_dead_line_passed || $isLimitObtained === true) && !in_array($student->id, $id_applicants)) {
+            if ($this->isLimitObtained === true) {
+                $this->getModel()->formErrorMsg = JText::_('LIMIT_OBTAINED');
+            } else {
+                $this->getModel()->formErrorMsg = JText::_('CANDIDATURE_PERIOD_TEXT');
+            }
+            return false;
 		}
 
 		// Database UPDATE data
