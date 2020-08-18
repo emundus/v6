@@ -24,6 +24,8 @@ JText::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
 JText::script('COM_EMUNDUS_ONBOARD_ADD_CONTINUER');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_CATEGORY');
+JText::script('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE');
+JText::script('COM_EMUNDUS_ONBOARD_EMAILTYPE');
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0, 2);

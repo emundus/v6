@@ -3,6 +3,7 @@
     <div class="w-container">
       <form id="program-form" @submit.prevent="submit">
         <div class="sous-container">
+          <p class="required">{{RequiredFieldsIndicate}}</p>
           <div class="heading-form">
             <div class="icon-title informations"></div>
             <h2 class="heading">{{ Informations }}</h2>
@@ -21,7 +22,7 @@
             </div>
 
             <div class="form-group">
-              <label>{{receiverName}} *</label>
+              <label>{{receiverName}}</label>
               <input
                 type="text"
                 class="form__input field-general w-input"
@@ -30,7 +31,7 @@
             </div>
 
             <div class="form-group">
-              <label>{{emailAddress}} *</label>
+              <label>{{emailAddress}}</label>
               <input
                 type="text"
                 class="form__input field-general w-input"
@@ -39,7 +40,7 @@
             </div>
 
             <div class="form-group controls forms-emails-editor">
-              <editor :text="form.message" v-if="dynamicComponent" v-model="form.message" :placeholder="EmailResume"></editor>
+              <editor :text="form.message" v-if="dynamicComponent" :lang="actualLanguage" v-model="form.message" :id="'email'" :placeholder="EmailResume"></editor>
             </div>
           </div>
         </div>
@@ -53,7 +54,8 @@
           <p class="paragraphe-sous-titre">
             {{ ParameterDesc }}
           </p>
-          <div class="form-group container-flexbox-choisir-ou-plus w-clearfix">
+          <div class="form-group">
+            <label>{{EmailType}} *</label>
             <select class="dropdown-toggle w-select" v-model="form.type">
               <option disabled value="">{{ emailType }}</option>
               <option
@@ -66,31 +68,36 @@
             </select>
           </div>
 
-          <div class="form-group container-flexbox-choisir-ou-plus w-clearfix">
-            <select class="dropdown-toggle w-select" v-model="form.category" :disabled="isHiddenCategory">
-              <option disabled value="">{{ emailCategory }}</option>
-              <option
-                v-for="(item, index) in this.categories"
-                v-bind:value="item"
-                :key="index"
-                :selected="form.category"
+          <div class="form-group">
+            <label>{{ emailCategory }}</label>
+            <div class="d-flex">
+              <select class="dropdown-toggle w-select" v-model="form.category" :disabled="isHiddenCategory">
+                <option value=""></option>
+                <option
+                    v-for="(item, index) in this.categories"
+                    v-bind:value="item"
+                    :key="index"
+                    :selected="form.category"
                 >{{ item }}</option
+                >
+              </select>
+              <div
+                  @click="displayCategory"
+                  id="add-category"
+                  class="addCampProgEmail"
               >
-            </select>
-            <div
-                    @click="displayCategory"
-                    id="add-category"
-                    class="addCampProgEmail"
-            >
+              </div>
             </div>
           </div>
           <transition name="slide-fade">
-            <label v-if="isHiddenCategory">{{CategoryName}} *</label>
-            <input v-if="isHiddenCategory"
-              type="text"
-              class="form__input field-general w-input"
-              v-model="new_category"
-            />
+            <div v-if="isHiddenCategory">
+              <label>{{CategoryName}} *</label>
+              <input
+                type="text"
+                class="form__input field-general w-input"
+                v-model="new_category"
+              />
+            </div>
           </transition>
         </div>
 
@@ -151,6 +158,8 @@ export default {
     emailAddress: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS"),
     EmailResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME"),
     CategoryName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_CATEGORY"),
+    RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
+    EmailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILTYPE"),
 
     new_category: "",
 
@@ -179,8 +188,7 @@ export default {
     form: {
       subject: { required },
       message: { required },
-      type: { required },
-      category: { required }
+      type: { required }
     }
   },
 

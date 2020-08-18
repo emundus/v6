@@ -530,7 +530,7 @@ class EmundusonboardModelprogram extends JModelList {
         $query->select(['us.id as id','us.name as name','us.email as email'])
             ->from($db->quoteName('#__emundus_groups', 'g'))
             ->leftJoin($db->quoteName('#__users', 'us'). ' ON '. $db->quoteName('g.user_id').' = '.$db->quoteName('us.id'))
-            ->where($db->quoteName('g.group_id').' = 3')
+            ->where($db->quoteName('g.group_id').' = 1')
             ->orWhere($db->quoteName('g.group_id').' = ' . $db->quote($group))
             ->andWhere($db->quoteName('us.id').' != 95')
             ->group('us.id')
@@ -553,7 +553,7 @@ class EmundusonboardModelprogram extends JModelList {
         $query->select(['us.id as id','us.name as name','us.email as email'])
             ->from($db->quoteName('#__emundus_groups', 'g'))
             ->leftJoin($db->quoteName('#__users', 'us'). ' ON '. $db->quoteName('g.user_id').' = '.$db->quoteName('us.id'))
-            ->where($db->quoteName('g.group_id').' = 4')
+            ->where($db->quoteName('g.group_id').' = 2')
             ->orWhere($db->quoteName('g.group_id').' = ' . $db->quote($group))
             ->group('us.id')
             ->having('count(*) > 1');
@@ -589,7 +589,7 @@ class EmundusonboardModelprogram extends JModelList {
             ->select('count(*)')
             ->from($db->quoteName('#__emundus_groups'))
             ->where($db->quoteName('user_id') . ' = ' . $db->quote($uid))
-            ->andWhere($db->quoteName('group_id') . ' = 3');
+            ->andWhere($db->quoteName('group_id') . ' = 1');
         $db->setQuery($query);
         $already_in_manager = $db->loadResult();
 
@@ -597,7 +597,7 @@ class EmundusonboardModelprogram extends JModelList {
             $query->clear()
                 ->insert($db->quoteName('#__emundus_groups'))
                 ->set($db->quoteName('user_id') . ' = ' . $uid)
-                ->set($db->quoteName('group_id') . ' = 3');
+                ->set($db->quoteName('group_id') . ' = 1');
         }
 
         try {
@@ -631,7 +631,7 @@ class EmundusonboardModelprogram extends JModelList {
             ->select('count(*)')
             ->from($db->quoteName('#__emundus_groups'))
             ->where($db->quoteName('user_id') . ' = ' . $db->quote($uid))
-            ->andWhere($db->quoteName('group_id') . ' = 4');
+            ->andWhere($db->quoteName('group_id') . ' = 2');
         $db->setQuery($query);
         $already_in_evaluator = $db->loadResult();
 
@@ -639,7 +639,7 @@ class EmundusonboardModelprogram extends JModelList {
             $query->clear()
                 ->insert($db->quoteName('#__emundus_groups'))
                 ->set($db->quoteName('user_id') . ' = ' . $uid)
-                ->set($db->quoteName('group_id') . ' = 4');
+                ->set($db->quoteName('group_id') . ' = 2');
         }
 
         try {
@@ -668,7 +668,7 @@ class EmundusonboardModelprogram extends JModelList {
                 ->select('count(*)')
                 ->from($db->quoteName('#__emundus_groups'))
                 ->where($db->quoteName('user_id') . ' = ' . $db->quote($user))
-                ->andWhere($db->quoteName('group_id') . ' = 3');
+                ->andWhere($db->quoteName('group_id') . ' = 1');
             $db->setQuery($query);
             $already_in_manager = $db->loadResult();
 
@@ -676,7 +676,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->clear()
                     ->insert($db->quoteName('#__emundus_groups'))
                     ->set($db->quoteName('user_id') . ' = ' . $user)
-                    ->set($db->quoteName('group_id') . ' = 3');
+                    ->set($db->quoteName('group_id') . ' = 1');
             }
 
             try {
@@ -706,7 +706,7 @@ class EmundusonboardModelprogram extends JModelList {
                 ->select('count(*)')
                 ->from($db->quoteName('#__emundus_groups'))
                 ->where($db->quoteName('user_id') . ' = ' . $db->quote($user))
-                ->andWhere($db->quoteName('group_id') . ' = 4');
+                ->andWhere($db->quoteName('group_id') . ' = 2');
             $db->setQuery($query);
             $already_in_evaluator = $db->loadResult();
 
@@ -714,7 +714,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->clear()
                     ->insert($db->quoteName('#__emundus_groups'))
                     ->set($db->quoteName('user_id') . ' = ' . $user)
-                    ->set($db->quoteName('group_id') . ' = 4');
+                    ->set($db->quoteName('group_id') . ' = 2');
             }
 
             try {
@@ -744,7 +744,7 @@ class EmundusonboardModelprogram extends JModelList {
                 ->select('count(*)')
                 ->from($db->quoteName('#__emundus_groups'))
                 ->where($db->quoteName('user_id') . ' = ' . $db->quote($userid))
-                ->andWhere($db->quoteName('group_id') . ' != 3');
+                ->andWhere($db->quoteName('group_id') . ' != 1');
             $db->setQuery($query);
             $in_other_group = $db->loadResult();
 
@@ -752,7 +752,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->clear()
                     ->delete($db->quoteName('#__emundus_groups'))
                     ->where($db->quoteName('user_id') . ' = ' . $db->quote($userid))
-                    ->andWhere($db->quoteName('group_id') . ' = 3');
+                    ->andWhere($db->quoteName('group_id') . ' = 1');
             }
 
             $db->setQuery($query);
@@ -779,7 +779,7 @@ class EmundusonboardModelprogram extends JModelList {
                 ->select('count(*)')
                 ->from($db->quoteName('#__emundus_groups'))
                 ->where($db->quoteName('user_id') . ' = ' . $db->quote($userid))
-                ->andWhere($db->quoteName('group_id') . ' != 4');
+                ->andWhere($db->quoteName('group_id') . ' != 2');
             $db->setQuery($query);
             $in_other_group = $db->loadResult();
 
@@ -787,7 +787,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->clear()
                     ->delete($db->quoteName('#__emundus_groups'))
                     ->where($db->quoteName('user_id') . ' = ' . $db->quote($userid))
-                    ->andWhere($db->quoteName('group_id') . ' = 4');
+                    ->andWhere($db->quoteName('group_id') . ' = 2');
             }
 
             try {
@@ -967,7 +967,7 @@ class EmundusonboardModelprogram extends JModelList {
 
                         $query->clear()
                             ->insert($db->quoteName('#__emundus_setup_groups_repeat_fabrik_group_link'))
-                            ->set($db->quoteName('parent_id') . ' = 4')
+                            ->set($db->quoteName('parent_id') . ' = 2')
                             ->set($db->quoteName('fabrik_group_link') . ' = ' . $db->quote($group->group_id));
                         try {
                             $db->setQuery($query);
@@ -993,7 +993,7 @@ class EmundusonboardModelprogram extends JModelList {
 
                 $query->clear()
                     ->delete($db->quoteName('#__emundus_setup_groups_repeat_fabrik_group_link'))
-                    ->where($db->quoteName('parent_id') . ' = 4')
+                    ->where($db->quoteName('parent_id') . ' = 2')
                     ->andWhere($db->quoteName('fabrik_group_link') . ' = ' . $db->quote($gid));
                 try {
                     $db->setQuery($query);
@@ -1015,7 +1015,7 @@ class EmundusonboardModelprogram extends JModelList {
 
                 $query->clear()
                     ->insert($db->quoteName('#__emundus_setup_groups_repeat_fabrik_group_link'))
-                    ->set($db->quoteName('parent_id') . ' = 4')
+                    ->set($db->quoteName('parent_id') . ' = 2')
                     ->set($db->quoteName('fabrik_group_link') . ' = ' . $db->quote($gid));
                 try {
                     $db->setQuery($query);

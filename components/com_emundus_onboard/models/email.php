@@ -333,11 +333,6 @@ class EmundusonboardModelemail extends JModelList {
         $query = $db->getQuery(true);
 
         if (!empty($data)) {
-
-            foreach ($data as $key => $val) {
-                $data[$key] = htmlspecialchars($data[$key]);
-            }
-
         	$query->insert($db->quoteName('#__emundus_setup_emails'))
                 ->columns($db->quoteName(array_keys($data)))
                 ->values(implode(',', $db->Quote(array_values($data))));
@@ -372,7 +367,7 @@ class EmundusonboardModelemail extends JModelList {
             $fields = [];
 
             foreach ($data as $key => $val) {
-                $insert = $db->quoteName(htmlspecialchars($key)) . ' = ' . $db->quote(htmlspecialchars($val));
+                $insert = $db->quoteName($key) . ' = ' . $db->quote($val);
                 $fields[] = $insert;
             }
 

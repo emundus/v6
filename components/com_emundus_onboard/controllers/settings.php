@@ -86,6 +86,20 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         exit;
     }
 
+    public function createstatus() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $changeresponse = $m_settings->createStatus();
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+
     public function deletetag() {
         $user = JFactory::getUser();
 
@@ -95,8 +109,25 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         } else {
 	        $m_settings = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $id = $jinput->getRaw('id');
+	        $id = $jinput->getInt('id');
             $changeresponse = $m_settings->deleteTag($id);
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+
+    public function deletestatus() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $id = $jinput->getInt('id');
+            $step = $jinput->getInt('step');
+            $changeresponse = $m_settings->deleteStatus($id,$step);
         }
         echo json_encode((object)$changeresponse);
         exit;
