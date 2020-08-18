@@ -79,6 +79,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
 
         $user = JFactory::getUser();
         $app = JFactory::getApplication();
+        $formModel = $this->getModel();
         $jinput = $app->input;
 
         $campaign_id = is_array($jinput->get('jos_emundus_campaign_candidature___campaign_id_raw')) ? $jinput->get('jos_emundus_campaign_candidature___campaign_id_raw')[0] : $jinput->get('jos_emundus_campaign_candidature___campaign_id_raw');
@@ -97,8 +98,8 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
 
         if ($isLimitObtained === true) {
             JLog::add('User: '.$user->id.' Campaign limit is obtained', JLog::ERROR, 'com_emundus.campaign-check');
-            $app->enqueueMessage(JText::_('CAMPAIGN_LIMIT_OBTAINED'), 'error');
-            $app->redirect(JUri::getInstance());
+            $this->getModel()->formErrorMsg = '';
+            $this->getModel()->getForm()->error = JText::_('LIMIT_OBTAINED');
             return false;
         }
 
@@ -110,8 +111,8 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
             // Cannot create new campaigns at all.
             case 0:
                 JLog::add('User: '.$user->id.' already has a file.', JLog::ERROR, 'com_emundus.campaign-check');
-                $app->enqueueMessage(JText::_('CANNOT_HAVE_MULTI_FILE'), 'error');
-                $app->redirect(JUri::getInstance());
+                $this->getModel()->formErrorMsg = '';
+                $this->getModel()->getForm()->error = JText::_('CANNOT_HAVE_MULTI_FILE');
                 break;
 
             // If the applicant can only have one file per campaign.
@@ -144,14 +145,14 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                     $db->setQuery($query);
                     if (!in_array($campaign_id, $db->loadColumn())) {
                         JLog::add('User: '.$user->id.' already has a file for campaign id: '.$campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
-                        $app->enqueueMessage(JText::_('USER_HAS_FILE_FOR_CAMPAIGN'), 'error');
-                        $app->redirect(JUri::getInstance());
+                        $this->getModel()->formErrorMsg = '';
+                        $this->getModel()->getForm()->error = JText::_('USER_HAS_FILE_FOR_CAMPAIGN');
                     }
 
                 } catch (Exception $e) {
                     JLog::add('plugin/emundus_campaign SQL error at query :'. str_replace('\n', $query->__toString()), JLog::ERROR, 'com_emundus.campaign-check');
-                    $app->enqueueMessage(JText::_('ERROR'), 'error');
-                    $app->redirect(JUri::getInstance());
+                    $this->getModel()->formErrorMsg = '';
+                    $this->getModel()->getForm()->error = JText::_('ERROR');
                 }
 
                 break;
@@ -188,14 +189,14 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                     $db->setQuery($query);
                     if (!in_array($campaign_id, $db->loadColumn())) {
                         JLog::add('User: '.$user->id.' already has a file for year belong to campaign: '.$campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
-                        $app->enqueueMessage(JText::_('USER_HAS_FILE_FOR_YEAR'), 'error');
-                        $app->redirect(JUri::getInstance());
+                        $this->getModel()->formErrorMsg = '';
+                        $this->getModel()->getForm()->error = JText::_('USER_HAS_FILE_FOR_YEAR');
                     }
 
                 } catch (Exception $e) {
                     JLog::add('plugin/emundus_campaign SQL error at query :'. str_replace('\n', $query->__toString()), JLog::ERROR, 'com_emundus.campaign-check');
-                    $app->enqueueMessage(JText::_('ERROR'), 'error');
-                    $app->redirect(JUri::getInstance());
+                    $this->getModel()->formErrorMsg = '';
+                    $this->getModel()->getForm()->error = JText::_('ERROR');
                 }
 
                 break;
