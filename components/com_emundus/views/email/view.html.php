@@ -125,7 +125,7 @@ class EmundusViewEmail extends JViewLegacy
 			    }
 		    }
 
-		    $this->experts_list = $m_evaluation->getExperts(@$fnums[0]->fnum, $reference_field, $reference_table);
+		    $this->experts_list = $m_evaluation->getExperts();
 		    $this->email = $h_emails->createEmailBlock(['expert'], $this->experts_list);
 		    $this->fnums = $fnums;
 		    $this->fnum_array = $fnum_array;

@@ -1,0 +1,192 @@
+<template>
+  <!-- modalC -->
+  <span :id="'modalUpdateLogo'">
+    <modal
+            :name="'modalUpdateLogo'"
+            height="auto"
+            transition="nice-modal-fade"
+            :min-width="200"
+            :min-height="200"
+            :delay="100"
+            :adaptive="true"
+            :clickToClose="false"
+            @closed="beforeClose"
+            @before-open="beforeOpen"
+    >
+      <div class="modalC-content">
+        <div class="update-field-header">
+          <div class="topright">
+            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalUpdateLogo')">
+              <em class="fas fa-times-circle"></em>
+            </button>
+          </div>
+          <h2 class="update-title-header">
+             {{updateLogo}}
+          </h2>
+        </div>
+        <vue-dropzone
+                ref="dropzone"
+                id="customdropzone"
+                :include-styling="false"
+                :options="dropzoneOptions"
+                :useCustomSlot=true
+                v-on:vdropzone-file-added="afterAdded"
+                v-on:vdropzone-thumbnail="thumbnail"
+                v-on:vdropzone-removed-file="afterRemoved"
+                v-on:vdropzone-complete="onComplete"
+                v-on:vdropzone-error="catchError">
+          <div class="dropzone-custom-content" id="dropzone-message">
+            <i class="fas fa-file-image"></i>
+            {{DropHere}}
+          </div>
+        </vue-dropzone>
+      </div>
+      <div class="col-md-12 mb-1">
+        <a class="bouton-sauvergarder-et-continuer-3"
+           @click.prevent="uploadNewLogo()">
+          {{ Continuer }}
+        </a>
+        <a class="bouton-sauvergarder-et-continuer-3 w-retour"
+           @click.prevent="$modal.hide('modalUpdateLogo')">
+          {{Retour}}
+        </a>
+      </div>
+    </modal>
+  </span>
+</template>
+
+<script>
+  import axios from "axios";
+  import vueDropzone from 'vue2-dropzone'
+  import Swal from "sweetalert2";
+  const qs = require("qs");
+
+  const getTemplate = () => `
+<div class="dz-preview dz-file-preview">
+  <div class="dz-image">
+    <div data-dz-thumbnail-bg></div>
+  </div>
+  <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
+  <div class="dz-error-message"><span data-dz-errormessage></span></div>
+  <div class="dz-success-mark"><i class="fa fa-check"></i></div>
+  <div class="dz-error-mark"><i class="fa fa-close"></i></div>
+</div>
+`;
+
+  export default {
+    name: "modalUpdateLogo",
+    props: { },
+    components: {
+      vueDropzone
+    },
+    data() {
+      return {
+        dropzoneOptions: {
+          url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatelogo',
+          maxFilesize: 10,
+          maxFiles: 1,
+          autoProcessQueue: false,
+          addRemoveLinks: true,
+          thumbnailWidth: null,
+          thumbnailHeight: null,
+          resizeMimeType: 'image/png',
+          acceptedFiles: 'image/*',
+          previewTemplate: getTemplate(),
+          dictCancelUpload: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD"),
+          dictCancelUploadConfirmation: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION"),
+          dictRemoveFile: Joomla.JText._("COM_EMUNDUS_ONBOARD_REMOVE_FILE"),
+          dictInvalidFileType: Joomla.JText._("COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE"),
+          dictFileTooBig: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE_TOO_BIG"),
+          dictMaxFilesExceeded: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_FILES_EXCEEDED"),
+        },
+        updateLogo: Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATE_LOGO"),
+        Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+        DropHere: Joomla.JText._("COM_EMUNDUS_ONBOARD_DROP_HERE"),
+        Error: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR"),
+      };
+    },
+    methods: {
+      beforeClose(event) {
+      },
+      beforeOpen(event) {
+      },
+      afterAdded() {
+        document.getElementById('dropzone-message').style.display = 'none';
+      },
+      afterRemoved() {
+        if(this.$refs.dropzone.getAcceptedFiles().length === 0){
+          document.getElementById('dropzone-message').style.display = 'block';
+        }
+      },
+      onComplete: function(response){
+        if(response.status == 'success'){
+          this.$emit("UpdateLogo",response.dataURL);
+          this.$modal.hide('modalUpdateLogo');
+        }
+      },
+      catchError: function(file, message, xhr){
+        Swal.fire({
+          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR"),
+          text: message,
+          type: "error",
+          showCancelButton: false,
+          showConfirmButton: false,
+          timer: 3000,
+        });
+        this.$refs.dropzone.removeFile(file);
+      },
+      thumbnail: function (file, dataUrl) {
+        var j, len, ref, thumbnailElement;
+        if (file.previewElement) {
+          file.previewElement.classList.remove("dz-file-preview");
+          ref = file.previewElement.querySelectorAll("[data-dz-thumbnail-bg]");
+          for (j = 0, len = ref.length; j < len; j++) {
+            thumbnailElement = ref[j];
+            thumbnailElement.alt = file.name;
+            thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
+          }
+          return setTimeout(((function (_this) {
+            return function () {
+              return file.previewElement.classList.add("dz-image-preview");
+            };
+          })(this)), 1);
+        }
+      },
+      uploadNewLogo() {
+        this.$refs.dropzone.processQueue();
+      }
+    }
+  };
+</script>
+
+<style scoped>
+  .modalC-content {
+    height: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 15px;
+    overflow: auto;
+  }
+  .topright {
+    font-size: 25px;
+    float: right;
+  }
+  .btnCloseModal {
+    background-color: inherit;
+  }
+  .update-field-header{
+    margin-bottom: 1em;
+  }
+
+  .update-title-header{
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .fa-file-image{
+    font-size: 25px;
+    margin-right: 20px;
+  }
+</style>

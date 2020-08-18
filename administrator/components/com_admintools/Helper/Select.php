@@ -134,6 +134,17 @@ class Select
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
+	public static function exptime($name, $attribs = null, $selected = null)
+	{
+		$options = [
+			HTMLHelper::_('FEFHelper.select.option', '0', Text::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_EXPTIME_NO')),
+			HTMLHelper::_('FEFHelper.select.option', '1', Text::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_EXPTIME_VARIES')),
+			HTMLHelper::_('FEFHelper.select.option', '2', Text::_('COM_ADMINTOOLS_LBL_HTACCESSMAKER_EXPTIME_YEAR')),
+		];
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
 	public static function perms($name, $attribs = null, $selected = null)
 	{
 		$rawperms = [

@@ -135,8 +135,8 @@ class TaxationViewTaxation extends hikashopView{
 				if(!empty($row->taxation_date_start)){
 					$restrictions['START_DATE'] = hikashop_getDate($row->taxation_date_start,'%Y-%m-%d %H:%M');
 				}
-				if(!empty($row->taxation_end_start)){
-					$restrictions['END_DATE'] = hikashop_getDate($row->taxation_end_start,'%Y-%m-%d %H:%M');
+				if(!empty($row->taxation_date_end)){
+					$restrictions['END_DATE'] = hikashop_getDate($row->taxation_date_end,'%Y-%m-%d %H:%M');
 				}
 
 				$rows[$k]->restrictions = $restrictions;

@@ -59,5 +59,7 @@ if(hikashop_level(1)) {
 			if(empty($data->element->$namekey) && !strlen($data->element->$namekey)) continue;
 			$vars['PRODUCT_DETAILS'] .= '<p>'.$fieldsClass->getFieldName($field).': '.$fieldsClass->show($field, $data->element->$namekey, 'admin_email').'</p>';
 		}
+		if(!empty($vars['PRODUCT_DETAILS']))
+			$vars['PRODUCT'] = true;
 	}
 }

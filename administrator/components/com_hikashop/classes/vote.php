@@ -176,7 +176,7 @@ class hikashopVoteClass extends hikashopClass {
 		if(!empty($this->error['code']))
 			return false;
 
-		$element->vote_date = time();
+
 		if(!$this->app->isAdmin()){
 			if($this->config->get('vote_ip', 1))
 				$element->vote_ip = hikashop_getIP();
@@ -230,6 +230,8 @@ class hikashopVoteClass extends hikashopClass {
 		$do = true;
 		$errors = array();
 		$new = empty($element->vote_id);
+		if($new)
+			$element->vote_date = time();
 
 		if($new)
 			$app->triggerEvent('onBeforeVoteCreate', array( &$element, &$do, &$errors ) );

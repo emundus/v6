@@ -23,7 +23,7 @@ class SecuritycheckprosControllerJson extends SecuritycheckproController
 	public function execute($task)
 	{
 		$task = 'json';
-
+				
 		parent::execute($task);
 	}
 
@@ -33,36 +33,26 @@ class SecuritycheckprosControllerJson extends SecuritycheckproController
 	 */
 	public function json()
 	{
-
-		if (function_exists('ob_start'))
-		{
-			@ob_start();
-		}
-
+		
 		// String json de la petición
 		$clientJSON = $this->input->get('json', null, 'raw', 2);
-
-		// Elininamos posibles barras añadidas si magic_quotes_gpc está habilitado
-		if (function_exists('get_magic_quotes_gpc'))
+						
+		// Decodificamos el string para añadir el referrer, que será usado en caso de fallo (por ejemplo cuando las claves secretas no coinciden)
+		$request = json_decode($clientJSON, true);
+		$referrer = $_SERVER['HTTP_REFERER'];
+		
+		if ( (!is_null($request)) && (is_array($request)) )
 		{
-			if (PHP_VERSION_ID < 50400 && get_magic_quotes_gpc())			
-			{
-				$clientJSON = stripslashes($clientJSON);
-			}
+			$request['referrer'] = $referrer;
 		}
-
-		// Parseamos el mensaje utilizando el modelo
+		
+		// Volvemos a codificar el string en formato json
+		$clientJSON = json_encode($request);
+						
 		$model = $this->getModel('json');
-		$json = $model->execute($clientJSON);
-
-		if (function_exists('ob_clean'))
-		{
-			@ob_clean();
-		}
-
-		// Devolvemos ela respuesta y paramos la aplicación
-		echo $json;
-		$app = JFactory::getApplication();
-		$app->close();
+		$json = $model->register_task($clientJSON);
+		
+		// Devolvemos la respuesta
+		echo $json;		
 	}
 }

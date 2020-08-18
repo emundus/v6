@@ -3416,6 +3416,8 @@ class hikashopCartClass extends hikashopClass {
 		$remove = $current_items - $item_limit;
 
 		$product_cart_ids = array_reverse(array_keys($cart->cart_products));
+		$id_changed = 0;
+		$name_changed = '';
 		foreach($product_cart_ids as $k) {
 			if(!is_numeric($k) && substr($k, 0, 1) == 'p')
 				continue;
@@ -3425,15 +3427,29 @@ class hikashopCartClass extends hikashopClass {
 				$remove -= $q;
 				$cart->cart_products[$k]->cart_product_quantity = 0;
 				$cart->products[$k]->cart_product_quantity = 0;
+				if(empty($id_changed)) {
+					$id_changed = $cart->products[$k]->product_id;
+					$name_changed = $cart->products[$k]->product_name;
+				}
 			} else {
 				$q -= $remove;
 				$cart->cart_products[$k]->cart_product_quantity = $q;
 				$cart->products[$k]->cart_product_quantity = $q;
 				$remove = 0;
+				if(empty($id_changed)) {
+					$id_changed = $cart->products[$k]->product_id;
+					$name_changed = $cart->products[$k]->product_name;
+			}
 			}
 			if(empty($remove))
 				break;
 		}
+
+		$cart->messages[] = array(
+			'msg' => JText::sprintf('LIMIT_REACHED_REMOVED', $name_changed),
+			'product_id' => $id_changed,
+			'type' => 'notice'
+		);
 
 		return false;
 	}

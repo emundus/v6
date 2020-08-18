@@ -14,3 +14,7 @@
 .swal-button-link{
     padding: 0 !important;
 }
+
+.swal-popup-custom{
+    width: auto !important;
+}

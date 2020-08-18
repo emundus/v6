@@ -32,8 +32,9 @@
           <div class="column-inner-block-2 w-clearfix w-col w-col-4">
             <div class="stats-block mb-1">
               <label class="mb-0">{{Program}} : </label>
-              <a class="button-programme ml-10px"
-                 :href="path + '/index.php?option=com_emundus_onboard&view=program&layout=advancedsettings&pid=' + data.program_id">
+              <a class="button-programme ml-10px pointer"
+                 :title="AdvancedSettings"
+                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=program&layout=advancedsettings&pid=' + data.program_id)">
                 {{ data.program_label }}
               </a>
             </div>
@@ -44,13 +45,15 @@
               </div>
             </div>
             <div class="container-gerer-modifier-visualiser">
-              <a :href="path + '/index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + data.id + '&index=0'"
-                 class="cta-block"
+              <a
+                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + data.id + '&index=0')"
+                 class="cta-block pointer"
                  :title="AdvancedSettings">
                 <em class="fas fa-cog"></em>
               </a>
-              <a :href="path + '/index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=' + data.id"
-                 class="cta-block ml-10px"
+              <a
+                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=' + data.id)"
+                 class="cta-block ml-10px pointer"
                  :title="Modify">
                 <em class="fas fa-edit"></em>
               </a>
@@ -65,6 +68,9 @@
 <script>
 import moment from "moment";
 import { list } from "../../store";
+import axios from "axios";
+
+const qs = require("qs");
 
 export default {
   name: "camapaignItem",
@@ -75,7 +81,6 @@ export default {
   data() {
     return {
       selectedData: [],
-      path: window.location.pathname,
       publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
       unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
       passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
@@ -93,6 +98,21 @@ export default {
   methods: {
     moment(date) {
       return moment(date);
+    },
+
+    redirectJRoute(link) {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        params: {
+          link: link,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        window.location.href = window.location.pathname + response.data.data;
+      });
     }
   },
 
@@ -113,7 +133,7 @@ export default {
 
     isActive() {
       return list.getters.isSelected(this.data.id);
-    }
+    },
   }
 };
 </script>

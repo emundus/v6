@@ -193,7 +193,6 @@ class FabrikViewFormBase extends FabrikView
 		JDEBUG ? $profiler->mark('form view: after getRelatedTables()') : null;
 		$this->setMessage();
 
-
 		// If rendered as a module (non ajax) and we have inserted the session errors, clear them from the session.
 		if ($clearErrors)
 		{

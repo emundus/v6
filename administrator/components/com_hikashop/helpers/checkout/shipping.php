@@ -96,6 +96,17 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 		$cart = $checkoutHelper->getCart();
 		$shipping_price = $this->getShippingPrice($cart);
 
+		foreach($cart->shipping_groups as $group_id => $group_info) {
+			$group_check = false;
+			foreach($shipping_ids as $ship_group_id => $ship_id){
+				if($ship_group_id == $group_id)
+					$group_check = true;
+			}
+			if(!$group_check)
+				return false;
+		}
+
+
 		$selectionOnly = hikaInput::get()->getInt('selectionOnly', 0);
 		if($selectionOnly) {
 			$cart_markers = $checkoutHelper->getCartMarkers();

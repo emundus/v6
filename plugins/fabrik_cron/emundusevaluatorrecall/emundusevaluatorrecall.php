@@ -94,7 +94,7 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
 
                 foreach ($evaluators as $evaluator => $val) {
                     foreach ($empty_evals as $applicant) {
-                        // We check if the fnum is in the list of associated fnums 
+                        // We check if the fnum is in the list of associated fnums
                         // If it is, this means we have to notify the evaluator, meaning, adding it in the emailArray
                         if (array_search($applicant->fnum, $val) !== false) {
 
@@ -158,7 +158,7 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
                                 'EVALUATION_END' => strftime("%d/%m/%Y %H:%M", strtotime($campaign['eval_end_date'])),
                                 'NAME' => $user->name,
                             );
-                            $c_messages->sendEmailNoFnum($user->email, $reminder_mail_id, $post);
+                            $c_messages->sendEmailNoFnum($user->email, $reminder_mail_id, $post, $user->id);
                         }
                     }
                     JLog::add("\n process " . sizeof($emailArray) . " emails sent", JLog::INFO, 'com_emundus');

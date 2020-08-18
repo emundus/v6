@@ -252,19 +252,22 @@ class EmundusHelperEmails {
 			$params = array('mode' => 'simple');
 			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params);
 
-			$experts = "";
-
 			$email .= '<div>';
 
 			$AllEmail_template = EmundusHelperEmails::getAllEmail(2);
 			$email .= '<select name="select_template" onChange="getTemplate(this);">
-						<option value="%">-- '.JText::_( 'SELECT_TEMPLATE' ).' --</option>';
+						<option value="%">-- '.JText::_('SELECT_TEMPLATE').' --</option>';
 			foreach ($AllEmail_template as $email_template) {
 				$email .= '<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
 			}
 			$email .= '</select>
 						<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
-						<input placeholder="'.JText::_( 'EMAIL_TO' ).'"  name="mail_to" type="text" class="inputbox" id="mail_to" value="'.$experts.'" size="100" style="width: 100% !important;" />
+						<select name="mail_to[]" type="text" class="inputbox" id="mail_to" size="100" style="width: 100% !important;">
+							<option value="">'.JText::_('EMAIL_TO').'</option>';
+			foreach ($users as $expert) {
+				$email .= '<option value="'.$expert['email'].'">'.$expert['first_name'].' '.$expert['last_name'].' - '.$expert['email'].((!empty($expert['group']))?' ('.JText::_($expert['group']).')':'').'</option>';
+			}
+			$email .= '</select>
 						<input name="fnums" type="hidden" class="inputbox" id="fnums" value=\''.$fnums.'\' />
 						<input name="delete_attachment" type="hidden" class="inputbox" id="delete_attachment" value=0 />'.$mail_body.'
 						<input name="mail_attachments" type="hidden" class="inputbox" id="mail_attachments" value="" />

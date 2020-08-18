@@ -2,8 +2,10 @@
   <div class="container-evaluation">
     <ModalAddDocuments
             :cid="this.campaignId"
+            :pid="this.profileId"
             @UpdateDocuments="updateList"
     />
+    <transition :name="'slide-down'" type="transition">
     <div class="w-form">
       <ul style="padding-left: 0">
         <draggable
@@ -14,34 +16,29 @@
           v-bind="dragOptions"
         >
           <transition-group type="transition" :value="!drag ? 'flip-list' : null">
-            <li
-              class="list-group-item"
+            <li class="list-group-item"
               :id="'itemDoc' + document.id"
               v-for="(document, indexDoc) in documents"
-              :key="indexDoc"
-            >
-              <em class="fas fa-arrows-alt-v handle"></em>
+              :key="indexDoc">
+              <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
               <div style="display: inline;">
-                <span
-                  class="draggable"
-                  >{{ document.value }}</span
-                >
+                <span class="draggable">
+                  {{ document.value }}
+                  <span class="document-allowed_types">({{ document.allowed_types }})</span>
+                </span>
                 <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
                   <em class="fas fa-times"></em>
                 </button>
                 <div style="float: right"
                      :class="document.need == 1
                      ? 'text-required'
-                     : ''
-              ">
+                     : ''">
                   {{ inners[langue][2] }}
                 </div>
-                <div class="toggle"
-                  @click="changeState(indexDoc, document.id)"
+                <div @click="changeState(indexDoc, document.id)"
                   :id="'spanDoc' + document.id"
                   style="float: right; margin: 0 12px"
-                  class="toggle changeStateDoc"
-                >
+                  class="toggle changeStateDoc">
                   <input
                     type="checkbox"
                     true-value="1"
@@ -57,8 +54,7 @@
                 <div style="float: right"
                      :class="document.need == 0
                      ? 'text-non-required'
-                     : ''
-                ">
+                     : ''">
                   {{ inners[langue][1] }}
                 </div>
               </div>
@@ -75,8 +71,7 @@
           tag="ul"
           class="list-group"
           handle=".handle"
-          v-bind="undocDragOptions"
-        >
+          v-bind="undocDragOptions">
           <transition-group type="transition" :value="!drag ? 'flip-list' : null">
             <li
               class="list-group-item undocuments-item"
@@ -95,9 +90,12 @@
                 <em class="fas fa-plus"></em>
               </button>
               <div style="display: inline;">
-                <span class="draggable">{{ undocument.value }}</span>
-                <div :id="'spanDoc' + undocument.id" style="float: right">
-                  {{ inners[langue][0] }}
+                <span class="draggable">{{ undocument.value }} <span class="document-allowed_types">({{ undocument.allowed_types }})</span></span>
+                <div :id="'spanDoc' + undocument.id" class="text-no-assigned">
+                  <span class="col-md-10">{{ inners[langue][0] }}</span>
+                  <div v-show="undocument.can_be_deleted" class="ml-10px" @click="deleteDocument(undocument.id,indexUndoc)">
+                    <em class="fas fa-trash-alt" style="color: red; cursor: pointer"></em>
+                  </div>
                 </div>
               </div>
             </li>
@@ -108,6 +106,7 @@
         <button class="bouton-sauvergarder-et-continuer-3" style="float: none" type="button" @click="$modal.show('modalAddDocuments')">{{createDocument}}</button>
       </div>
     </div>
+    </transition>
 
     <div class="section-sauvegarder-et-continuer-funnel">
       <div class="w-container">
@@ -128,6 +127,7 @@
 import axios from "axios";
 import draggable from "vuedraggable";
 import ModalAddDocuments from "../advancedModals/ModalAddDocuments";
+import Swal from "sweetalert2";
 
 const qs = require("qs");
 
@@ -212,6 +212,8 @@ export default {
                               id: unattachment.id,
                               value: unattachment.value,
                               ordering: unattachment.ordering,
+                              can_be_deleted: unattachment.can_be_deleted,
+                              allowed_types: unattachment.allowed_types,
                               need: -1
                             };
                             return infos;
@@ -260,6 +262,34 @@ export default {
               .catch(error => {
                 console.log(error);
               });
+    },
+
+    deleteDocument(id,index) {
+      Swal.fire({
+        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEDOCUMENTTYPE"),
+        text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEDOCUMENTTYPE_MESSAGE"),
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: '#de6339',
+        confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+        cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+        reverseButtons: true
+      }).then(result => {
+        if(result.value){
+          axios({
+            method: "POST",
+            url: "index.php?option=com_emundus_onboard&controller=form&task=deletedocument",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              did: id,
+            })
+          }).then(() => {
+            this.undocuments.splice(index, 1);
+          });
+        }
+      });
     },
 
     changeState(index, id) {
@@ -320,5 +350,11 @@ export default {
   }
   .text-non-required{
     color: #de6339;
+  }
+
+  .text-no-assigned{
+    float: right;
+    display: flex;
+    width: 100px
   }
 </style>

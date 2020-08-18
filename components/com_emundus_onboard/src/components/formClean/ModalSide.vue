@@ -37,15 +37,19 @@
             <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" @click="translate.label = !translate.label"></button>
           </div>
         </div>
+        <transition :name="'slide-down'" type="transition">
         <div class="inlineflex" v-if="translate.label">
           <label class="translate-label">
             {{TranslateEnglish}}
           </label>
           <em class="fas fa-sort-down"></em>
         </div>
+        </transition>
+        <transition :name="'slide-down'" type="transition">
         <div class="form-group mb-1" v-if="translate.label">
           <input v-model="label.en" type="text" maxlength="40" class="form__input field-general w-input"/>
         </div>
+        </transition>
         <p v-if="errors" class="error col-md-12 mb-2">
           <span class="error">{{LabelRequired}}</span>
         </p>
@@ -57,19 +61,23 @@
             <button class="translate-icon" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
           </div>
         </div>
+        <transition :name="'slide-down'" type="transition">
         <div class="inlineflex" v-if="translate.intro">
           <label class="translate-label">
             {{TranslateEnglish}}
           </label>
           <em class="fas fa-sort-down"></em>
         </div>
+        </transition>
+        <transition :name="'slide-down'" type="transition">
         <div class="form-group mb-1" v-if="translate.intro">
           <textarea v-model="intro.en" rows="3" class="form__input field-general w-input" maxlength="300"></textarea>
         </div>
+        </transition>
 
         <div class="col-md-12 d-flex mb-1" style="align-items: center">
           <input type="checkbox" v-model="template">
-          <label class="ml-10px">{{SaveAsTemplate}} :</label>
+          <label class="ml-10px">{{SaveAsTemplate}}</label>
         </div>
 
         <div class="col-md-12 mb-1">
@@ -79,7 +87,7 @@
           >{{Continuer}}</a>
           <a class="bouton-sauvergarder-et-continuer-3 w-delete"
              @click.prevent="deleteMenu()"
-             v-if="menus.length > 1">
+             v-if="menus.length > 1 && files == 0">
             {{Delete}}
           </a>
           <a
@@ -100,7 +108,7 @@ const qs = require("qs");
 
 export default {
   name: "modalSide",
-  props: { ID: Number, element: Object, index: Number, menus: Array },
+  props: { ID: Number, element: Object, index: Number, menus: Array, files: Number, link: String },
   components: {},
   data() {
     return {
@@ -145,6 +153,7 @@ export default {
       }
       this.axioschange(this.intro, this.tempEl.intro_raw);
       this.axioschange(this.label, this.tempEl.show_title.titleraw);
+      this.updatefalang(this.label);
       this.saveAsTemplate();
       this.element = JSON.parse(JSON.stringify(this.tempEl));
       this.$emit("UpdateName", this.index, this.label.fr);
@@ -180,6 +189,19 @@ export default {
       }).catch(e => {
         console.log(e);
       });
+    },
+    updatefalang(label){
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatemenulabel",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          label: label,
+          link: this.link
+        })
+      }).then((result) => {});
     },
     axiostrad: function(totrad) {
       return axios({

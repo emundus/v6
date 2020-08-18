@@ -15,7 +15,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport('joomla.application.component.controller');
 
 /**
- * formuairez Controller
+ * FormBuilder Controller
  *
  * @package    Joomla
  * @subpackage eMundus
@@ -42,7 +42,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
 
         $jinput = JFactory::getApplication()->input;
         $elements = $jinput->getRaw('elements');
-        $group_id = $jinput->get('group_id');
+        $group_id = $jinput->getInt('group_id');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -76,39 +76,13 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Update the field type of an element
-     *
-     * @throws Exception
-     */
-    public function updatefieldtype() {
-        $user = JFactory::getUser();
-        $m_form = $this->model;
 
-        $jinput = JFactory::getApplication()->input;
-        $element = $jinput->getRaw('element');
-
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $changeresponse = $m_form->UpdateFieldType($element,  $user->id);
-        }
-        echo json_encode((object)$changeresponse);
-        exit;
-    }
-
-    /**
-     * Update the publish status of an element
-     *
-     * @throws Exception
-     */
     public function publishunpublishelement() {
         $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $element = $jinput->getRaw('element');
+        $element = $jinput->getInt('element');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -120,11 +94,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Update global params of an element
-     *
-     * @throws Exception
-     */
+
     public function updateparams() {
         $user = JFactory::getUser();
         $m_form = $this->model;
@@ -142,18 +112,14 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Update sublabels of an element
-     *
-     * @throws Exception
-     */
+
      public function SubLabelsxValues() {
         $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
         $element = $jinput->getRaw('element');
-        $newLabel = $jinput->getRaw('NewSubLabel');
+        $newLabel = $jinput->getString('NewSubLabel');
 
         $lang = JFactory::getLanguage();
         $locallang = $lang->getTag();
@@ -180,7 +146,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $labelTofind = $jinput->getRaw('labelTofind');
+        $labelTofind = $jinput->getString('labelTofind');
         $newLabel = $jinput->getRaw('NewSubLabel');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -204,7 +170,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $toJTEXT = $jinput->getRaw('toJTEXT');
+        $toJTEXT = $jinput->getString('toJTEXT');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	        $result = 0;
@@ -228,7 +194,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $toJTEXT = $jinput->getRaw('toJTEXT');
+        $toJTEXT = $jinput->getString('toJTEXT');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	        $result = 0;
@@ -250,7 +216,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $toJTEXT = $jinput->getRaw('toJTEXT');
+        $toJTEXT = $jinput->getString('toJTEXT');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -264,11 +230,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Create a new page in a form
-     *
-     * @throws Exception
-     */
+
      public function createMenu() {
          $user = JFactory::getUser();
          $m_form = $this->model;
@@ -276,9 +238,9 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
          $jinput = JFactory::getApplication()->input;
          $label = $jinput->getRaw('label');
          $intro = $jinput->getRaw('intro');
-         $prid = $jinput->getRaw('prid');
-         $modelid = $jinput->getRaw('modelid');
-         $template = $jinput->getRaw('template');
+         $prid = $jinput->getInt('prid');
+         $modelid = $jinput->getInt('modelid');
+         $template = $jinput->getString('template');
 
          if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
              $result = 0;
@@ -294,17 +256,13 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
          exit;
      }
 
-    /**
-     * Delete a menu
-     *
-     * @throws Exception
-     */
+
     public function deletemenu() {
         $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $mid = $jinput->getRaw('mid');
+        $mid = $jinput->getInt('mid');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -317,13 +275,14 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
+
     public function savemenuastemplate() {
         $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
         $menu = $jinput->getRaw('menu');
-        $template = $jinput->getRaw('template');
+        $template = $jinput->getString('template');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -335,40 +294,13 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Create a group
-     *
-     * @throws Exception
-     */
-    public function createGroup(){
-        $user = JFactory::getUser();
-        $m_form = $this->model;
 
-        $jinput = JFactory::getApplication()->input;
-        $label = $jinput->getRaw('label');
-        $fid = $jinput->getRaw('fid');
-
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $changeresponse = $m_form->createGroup($label, $fid);
-        }
-        echo json_encode((object)$changeresponse);
-        exit;
-    }
-
-    /**
-     * Create a simple group with a default label
-     *
-     * @throws Exception
-     */
     public function createsimplegroup(){
         $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $fid = $jinput->getRaw('fid');
+        $fid = $jinput->getInt('fid');
         $label = array(
             'fr' => 'Nouveau groupe',
             'en' => 'New group'
@@ -384,17 +316,13 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Delete a group
-     *
-     * @throws Exception
-     */
+
     public function deleteGroup() {
         $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $gid = $jinput->getRaw('gid');
+        $gid = $jinput->getInt('gid');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -416,8 +344,8 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $element = $jinput->getRaw('element');
-        $gid = $jinput->getRaw('gid');
+        $element = $jinput->getInt('element');
+        $gid = $jinput->getInt('gid');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -429,18 +357,14 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Create an element with default parameters
-     *
-     * @throws Exception
-     */
+
     public function createsimpleelement() {
         $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $gid = $jinput->getRaw('gid');
-        $plugin = $jinput->getRaw('plugin');
+        $gid = $jinput->getInt('gid');
+        $plugin = $jinput->getString('plugin');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -462,8 +386,8 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $gid = $jinput->getRaw('gid');
-        $plugin = $jinput->getRaw('plugin');
+        $gid = $jinput->getInt('gid');
+        $plugin = $jinput->getString('plugin');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -475,17 +399,13 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Delete an element
-     *
-     * @throws Exception
-     */
+
     public function deleteElement() {
         $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $element = $jinput->getRaw('element');
+        $element = $jinput->getInt('element');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -497,18 +417,14 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Reorder pages
-     *
-     * @throws Exception
-     */
+
     public function reordermenu() {
         $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $rgt = $jinput->getRaw('rgt');
-        $link = $jinput->getRaw('link');
+        $rgt = $jinput->getInt('rgt');
+        $link = $jinput->getString('link');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -520,18 +436,14 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
-    /**
-     * Return the group ordering of a page
-     *
-     * @throws Exception
-     */
+
     public function getGroupOrdering() {
         $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-        $gid = $jinput->getRaw('gid');
-        $fid = $jinput->getRaw('fid');
+        $gid = $jinput->getInt('gid');
+        $fid = $jinput->getInt('fid');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -554,7 +466,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
 
         $jinput = JFactory::getApplication()->input;
         $groups = $jinput->getRaw('groups');
-        $fid = $jinput->getRaw('fid');
+        $fid = $jinput->getInt('fid');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -597,7 +509,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
 
         $user = JFactory::getUser();
         $jinput = JFactory::getApplication()->input;
-        $cid = $jinput->getRaw('cid');
+        $cid = $jinput->getInt('cid');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -626,11 +538,85 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
 	        $jinput = JFactory::getApplication()->input;
-	        $group = $jinput->getRaw('group');
-	        $cid = $jinput->getRaw('cid');
+	        $group = $jinput->getInt('group');
+	        $cid = $jinput->getInt('cid');
             $visibility = $m_form->checkVisibility($group,$cid);
 
             $tab = array('status' => 1, 'msg' => 'worked', 'data' => $visibility);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getdatabasesjoin() {
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $databases = $m_form->getDatabasesJoin();
+
+            $tab = array('status' => 1, 'msg' => 'worked', 'data' => $databases);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function enablegrouprepeat() {
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $gid = $jinput->getInt('gid');
+
+            $state = $m_form->enableRepeatGroup($gid);
+
+            $tab = array('status' => $state, 'msg' => 'worked');
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function disablegrouprepeat() {
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $gid = $jinput->getInt('gid');
+
+            $state = $m_form->disableRepeatGroup($gid);
+
+            $tab = array('status' => $state, 'msg' => 'worked');
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function updatemenulabel(){
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $label = $jinput->getRaw('label');
+            $link = $jinput->getString('link');
+
+            $state = $m_form->updateMenuLabel($label,$link);
+
+            $tab = array('status' => $state, 'msg' => 'worked');
         }
         echo json_encode((object)$tab);
         exit;

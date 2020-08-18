@@ -60,6 +60,7 @@
 						<option value="institut_fr">Institut Français</option>
 						<option value="nantes">Nantes</option>
 						<option value="old">LIST_OLD</option>
+						<option value="single_campaign">Single Campaign</option>
 					</field>
 					<field type="list" name="mod_em_campaign_class" label="MOD_EM_CAMPAIGN_CLASS" description="MOD_EM_CAMPAIGN_CLASS_DESC">
 						<option value="">LIST_DEFAULT</option>
