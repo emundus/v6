@@ -65,7 +65,7 @@
       </transition>
 
       <transition-group :name="'slide-down'" type="transition">
-        <div v-if="type != 'files'" v-for="(data, index) in list" :key="index">
+        <div v-if="type != 'files'" v-for="(data, index) in list" :key="index" class="col-md-6">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
       </transition-group>

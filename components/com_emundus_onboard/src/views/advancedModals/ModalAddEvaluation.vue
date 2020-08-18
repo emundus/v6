@@ -162,8 +162,7 @@ export default {
         this.submitted = true;
         axios({
           method: "post",
-          url:
-                  "index.php?option=com_emundus_onboard&controller=program&task=creategrid",
+          url: "index.php?option=com_emundus_onboard&controller=program&task=creategrid",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },

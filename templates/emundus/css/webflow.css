@@ -554,13 +554,15 @@ textarea.w-select {
   min-height: 200px;
 }
 .column-block.w-col.w-col-11 {
-  height: auto;
+  height: 250px;
   min-height: 250px;
   padding-left: 0;
+  margin-bottom: 2em;
 
 }
 .column-inner-block.w-col.w-col-8 {
   min-height: 200px;
+  overflow: scroll;
 }
 .column-inner-block-2.w-clearfix.w-col.w-col-4 .button-programme {
   max-width: 200px;

@@ -1228,7 +1228,7 @@ class EmundusonboardModelprogram extends JModelList {
             $query->clear()
                 ->select('*')
                 ->from('#__fabrik_lists')
-                ->where($db->quoteName('form_id') . ' = ' . $db->quote(270));
+                ->where($db->quoteName('form_id') . ' = ' . $db->quote($model));
             $db->setQuery($query);
             $list_model = $db->loadObject();
 
@@ -1302,8 +1302,15 @@ class EmundusonboardModelprogram extends JModelList {
 
                 foreach ($elements as $element) {
                     try {
+                        // Default parameters
+                        $dbtype = 'VARCHAR(255)';
+                        $dbnull = 'NULL';
+                        //
+
                         $newelement = $element->copyRow($element->element->id, 'Copy of %s', $newgroupid);
                         $newelementid = $newelement->id;
+
+                        $el_params = json_decode($element->element->params);
 
                         // Update translation files
                         if(($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options){
@@ -1320,11 +1327,23 @@ class EmundusonboardModelprogram extends JModelList {
                         //
 
                         $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
+                        $query->set('name = ' . $db->quote('criteria_' . $formid . '_' . $newelementid));
                         $query->set('published = 1');
                         $query->set('params = ' . $db->quote(json_encode($el_params)));
                         $query->where('id =' . $newelementid);
                         $db->setQuery($query);
                         $db->execute();
+
+                        if ($element->element->plugin === 'birthday') {
+                            $dbtype = 'DATE';
+                        } elseif ($element->element->plugin === 'textarea') {
+                            $dbtype = 'TEXT';
+                        }
+
+                        $query = "ALTER TABLE jos_emundus_evaluations" . " ADD criteria_" . $formid . "_" . $newelementid . " " . $dbtype . " " . $dbnull;
+                        $db->setQuery($query);
+                        $db->execute();
+                        $query = $db->getQuery(true);
                     } catch (Exception $e) {
                         JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                         return false;
@@ -1419,7 +1438,7 @@ class EmundusonboardModelprogram extends JModelList {
         $query->clear()
             ->select('*')
             ->from('#__fabrik_lists')
-            ->where($db->quoteName('id') . ' = 279');
+            ->where($db->quoteName('form_id') . ' = 270');
         $db->setQuery($query);
         $list_model = $db->loadObject();
 
@@ -1448,7 +1467,7 @@ class EmundusonboardModelprogram extends JModelList {
 
         $group = $formbuilder->createGroup($label,$formid);
 
-        // Link groups to programme
+        // Link groups to program
         $this->affectGroupToProgram($group['group_id'],$pid);
         //
 
