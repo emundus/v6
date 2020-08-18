@@ -17,13 +17,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.application.component.model' );
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
-class EmundusModelCampaign extends JModelList
-{
+class EmundusModelCampaign extends JModelList {
 	var $_user = null;
 	var $_db = null;
 
-	function __construct()
-	{
+	function __construct() {
 		parent::__construct();
 		global $option;
 
@@ -43,10 +41,12 @@ class EmundusModelCampaign extends JModelList
         $this->setState('filter_order_Dir', $filter_order_Dir);
         $this->setState('limit', $limit);
         $this->setState('limitstart', $limitstart);
-	}
 
-	function getActiveCampaign()
-	{
+        JLog::addLogger(['text_file' => 'com_emundus.error.php'], JLog::ERROR, array('com_emundus'));
+
+    }
+
+	function getActiveCampaign() {
 		// Lets load the data if it doesn't already exist
 		$query = $this->_buildQuery();
 		$query .= $this->_buildContentOrderBy();
@@ -66,8 +66,7 @@ class EmundusModelCampaign extends JModelList
 		return $query;
 	}
 
-	function _buildContentOrderBy()
-	{
+	function _buildContentOrderBy() {
         global $option;
 
 		$mainframe = JFactory::getApplication();
@@ -78,7 +77,7 @@ class EmundusModelCampaign extends JModelList
 
 		$can_be_ordering = array ('id', 'label', 'year', 'start_date', 'end_date');
         /* Error handling is never a bad thing*/
-        if(!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)){
+        if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
         	$orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
 		}
 
@@ -87,10 +86,9 @@ class EmundusModelCampaign extends JModelList
 
 	function getAllowedCampaign($uid = null) {
 
-
-		if (empty($uid))
-			$uid = JFactory::getUser()->id;
-
+		if (empty($uid)) {
+            $uid = JFactory::getUser()->id;
+        }
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
@@ -577,5 +575,74 @@ class EmundusModelCampaign extends JModelList
 		    JLog::add('Error getting latest programme at model/campaign at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
 		    return [];
 	    }
+    }
+
+    /**
+     * Get campaign limit params
+     * @param $id
+     *
+     * @return Object|mixed
+     *
+     * @since 1.2.0
+     *
+     */
+    public function getLimit($id) {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select([$db->quoteName('esc.is_limited'), $db->quoteName('esc.limit'), 'GROUP_CONCAT(escrl.limit_status) AS steps'])
+            ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+            ->leftJoin($db->quoteName('#__emundus_setup_campaigns_repeat_limit_status','escrl').' ON '.$db->quoteName('escrl.parent_id').' = '.$db->quoteName('esc.id'))
+            ->where($db->quoteName('esc.id') . ' = ' . $id);
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObject();
+
+        } catch (Exception $exception) {
+            JLog::add('Error getting campaign limit at query :'.str_replace('\n', $query->__toString()), JLog::ERROR, 'com_emundus');
+            return null;
+        }
+
+    }
+
+    /**
+     * Check if campaign's limit is obtained
+     * @param $id
+     *
+     * @return Object|mixed
+     *
+     * @since 1.2.0
+     *
+     */
+    public function isLimitObtained($id) {
+
+        $limit = $this->getLimit($id);
+
+        if (!empty($limit->is_limited)) {
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query
+                ->select('COUNT(id)')
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where($db->quoteName('status') . ' IN (' . $limit->steps . ')');
+
+            try {
+
+                $db->setQuery($query);
+                return ($limit->limit <= $db->loadResult());
+
+            } catch (Exception $exception) {
+
+                JLog::add('Error checking obtained limit at query :'.str_replace('\n', $query->__toString()), JLog::ERROR, 'com_emundus');
+                return null;
+
+            }
+        }
+
     }
 }
