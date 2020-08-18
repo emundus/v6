@@ -95,7 +95,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
         $m_campaign     = new EmundusModelCampaign;
         $isLimitObtained = $m_campaign->isLimitObtained($campaign_id);
 
-        if ($isLimitObtained) {
+        if ($isLimitObtained === true) {
             JLog::add('User: '.$user->id.' Campaign limit is obtained', JLog::ERROR, 'com_emundus.campaign-check');
             $app->enqueueMessage(JText::_('CAMPAIGN_LIMIT_OBTAINED'), 'error');
             $app->redirect(JUri::getInstance());

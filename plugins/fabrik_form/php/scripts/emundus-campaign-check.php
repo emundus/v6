@@ -12,7 +12,7 @@ require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campai
 $m_campaign     = new EmundusModelCampaign;
 $isLimitObtained = $m_campaign->isLimitObtained($campaign_id);
 
-if ($isLimitObtained) {
+if ($isLimitObtained === true) {
     JLog::add('User: '.$user->id.' Campaign limit is obtained', JLog::ERROR, 'com_emundus');
 
     $formModel->setFormErrorMsg("Campaign limit is obtained.");
