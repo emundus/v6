@@ -19,12 +19,26 @@
       <div class="col-md-10 p-1" style="padding-left: 2em !important;">
         <div class="d-flex justify-content-between">
           <h2 class="mb-0">{{settingsCategories[langue][menuHighlight]}}</h2>
-          <a @click="next()" class="bouton-sauvergarder-et-continuer-3">{{ Save }}</a>
+          <div class="d-flex" v-if="menuHighlight == 0">
+            <transition name="slide-right">
+              <div class="loading-form-save" v-if="saving">
+                <Ring-Loader :color="'#de6339'" />
+              </div>
+            </transition>
+            <transition name="slide-right">
+              <div v-if="endSaving" class="d-flex">
+                <i class="fas fa-check"></i><span class="mr-1">{{Saved}}</span>
+              </div>
+            </transition>
+            <a @click="savePage()" class="bouton-sauvergarder-et-continuer-3">{{ Save }}</a>
+          </div>
         </div>
         <p class="paragraphe-sous-titre">{{funnelDescription[langue][menuHighlight]}}</p>
         <transition name="slide-right">
           <customization
-                  v-if="menuHighlight == 0 && coordinatorAccess != 0"
+                  v-if="menuHighlight == 0"
+                  @updateLoading="updateLoading"
+                  ref="customization"
           ></customization>
 
           <editUsers
@@ -40,7 +54,7 @@
       </div>
     </div>
 
-    <div
+    <!--<div
             class="section-sauvegarder-et-continuer-funnel"
     >
       <div class="w-container">
@@ -51,7 +65,7 @@
           </a>
         </div>
       </div>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -88,6 +102,8 @@ export default {
   data: () => ({
     menuHighlight: 0,
     langue: 0,
+    saving: false,
+    endSaving: false,
 
     funnelDescription: [
       [
@@ -116,80 +132,39 @@ export default {
     Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
     Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
     Save: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
+    Saved: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVED"),
   }),
 
   methods: {
-    next() {
-      if (this.menuHighlight == 1) {
-        this.updateHomepage(this.$refs.homepage.$data.form.content);
-      } else if (this.menuHighlight == 2) {
-        this.updateStatus(this.$refs.datas.$data.status);
-      } else if (this.menuHighlight == 3) {
-        this.updateTags(this.$refs.tags.$data.tags);
-      } else if (this.menuHighlight == 5) {
-        this.history.go(-1);
+    savePage() {
+      this.$refs.customization.saveCurrentPage();
+    },
+
+    updateLoading(run) {
+      this.saving = run;
+      if(this.saving === false){
+        setTimeout(() => {
+          this.endSaving = true;
+        },500)
       }
-      this.menuHighlight++;
-    },
-
-    updateStatus(status) {
-      axios({
-        method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatestatus',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          status: status
-        })
-      }).then(() => {});
-    },
-
-    updateTags(tags){
-      axios({
-        method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatetags',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          tags: tags
-        })
-      }).then(() => {});
-    },
-
-    updateHomepage(content) {
-      axios({
-        method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatehomepage',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          content: content
-        })
-      }).then(() => {});
-    },
-
-    previous() {
-      if (this.menuHighlight > 0) {
-        this.menuHighlight--;
-      } else {
-        history.go(-1);
-      }
-    },
+      setTimeout(() => {
+        this.endSaving = false;
+      },3000);
+    }
   },
 
   created() {
     if (this.actualLanguage == "en") {
       this.langue = 1;
     }
-    if(this.coordinatorAccess == 0){
-      this.menuHighlight = 3;
-    }
   },
 };
 </script>
 
 <style scoped>
+.fa-check{
+  width: 40px;
+  font-size: 25px;
+  color: green;
+}
 </style>

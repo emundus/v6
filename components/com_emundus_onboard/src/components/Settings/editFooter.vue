@@ -1,19 +1,19 @@
 <template>
     <div class="container-evaluation">
         <ul class="menus-home-row">
-            <li v-for="(value, index) in languages" :key="index" class="MenuFormHome">
+            <li v-for="(value, index) in columns" :key="index" class="MenuFormHome">
                 <a class="MenuFormItemHome"
-                   @click="changeTranslation(index)"
+                   @click="changeColumn(index)"
                    :class="indexHighlight == index ? 'MenuFormItemHome_current' : ''">
                     {{value}}
                 </a>
             </li>
         </ul>
         <div class="form-group controls" v-if="indexHighlight == 0">
-            <editor :text="form.content.fr" :lang="actualLanguage" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.fr"></editor>
+            <editor :text="form.content.col1" :lang="actualLanguage" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.col1"></editor>
         </div>
         <div class="form-group controls" v-if="indexHighlight == 1">
-            <editor :text="form.content.en" :lang="actualLanguage" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.en"></editor>
+            <editor :text="form.content.col2" :lang="actualLanguage" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.col2"></editor>
         </div>
     </div>
 </template>
@@ -25,7 +25,7 @@
     const qs = require("qs");
 
     export default {
-        name: "editHomepage",
+        name: "editFooter",
 
         components: {
             Editor
@@ -41,35 +41,36 @@
                 indexHighlight: 0,
                 form: {
                     content: {
-                        fr: '',
-                        en: ''
+                        col1: '',
+                        col2: ''
                     }
                 },
-                languages: [
-                    "Français",
-                    "Anglais"
+                columns: [
+                  Joomla.JText._("COM_EMUNDUS_ONBOARD_COLUMN") + ' 1',
+                  Joomla.JText._("COM_EMUNDUS_ONBOARD_COLUMN") + ' 2',
+                  Joomla.JText._("COM_EMUNDUS_ONBOARD_PREVIEW"),
                 ],
                 TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
             };
         },
 
         methods: {
-            getArticle() {
-                axios.get("index.php?option=com_emundus_onboard&controller=settings&task=gethomepagearticle")
+            getArticles() {
+                axios.get("index.php?option=com_emundus_onboard&controller=settings&task=getfooterarticles")
                     .then(response => {
-                        this.form.content.fr = response.data.data.introtext;
-                        this.form.content.en = response.data.data.introtext_en;
+                        this.form.content.col1 = response.data.data.column1.content;
+                        this.form.content.col2 = response.data.data.column2.content;
                     });
             },
 
-            changeTranslation(index) {
+            changeColumn(index) {
                 this.indexHighlight = index;
                 this.dynamicComponent++;
             }
         },
 
         created() {
-            this.getArticle();
+            this.getArticles();
         }
     };
 </script>
@@ -100,16 +101,11 @@
     }
     .MenuFormItemHome:not(.MenuFormItemHome_current):hover {
         color: grey;
-        text-decoration: none;
     }
     .MenuFormItemHome_current {
         color: white;
         cursor: pointer;
         background-color: #de6339;
-    }
-    .MenuFormItemHome_current:hover {
-        text-decoration: none;
-        color: white;
     }
     .MenuFormItemHome_current:after, .MenuFormItemHome_current:before {
         opacity: 1 !important;

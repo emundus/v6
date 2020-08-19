@@ -3074,10 +3074,19 @@ label.label__placeholder{
   height: 100%;
   top: 50vh;
 }
-.lds-ring{
+.loading-form-save{
+  position: relative;
+  right: 1em;
+  width: 50%;
+}
+.loading-form-save .lds-ring{
+  width: 35px !important;
+  height: 35px !important;
+}
+.loading-form .lds-ring{
   position: fixed !important;
 }
-.lds-ring div:first-child{
+.loading-form .lds-ring div:first-child{
   box-shadow: 0 0 0 9999px #cecece85;
   background: #cecece85;
 }

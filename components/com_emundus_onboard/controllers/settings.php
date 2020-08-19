@@ -204,6 +204,43 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         exit;
     }
 
+    public function getfooterarticles() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $content = $m_settings->getFooterArticles();
+            if (!empty($content)) {
+                $tab = array('status' => 1, 'msg' => JText::_('FOOTER_RETRIEVED'), 'data' => $content);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_FOOTER'), 'data' => $content);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function updatefooter() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $content = $jinput->getRaw('content');
+
+            $changeresponse = $m_settings->updateFooter($content);
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+
     public function updatelogo() {
         $user = JFactory::getUser();
 

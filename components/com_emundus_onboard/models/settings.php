@@ -441,6 +441,34 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
+    function getFooterArticles() {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $footers = new stdClass();
+
+        $query->select('id as id,content as content')
+            ->from($db->quoteName('#__modules'))
+            ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'));
+
+        try {
+            $db->setQuery($query);
+            $footers->column1 = $db->loadObject();
+
+            $query->clear()
+                ->select('id as id,content as content')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-b'));
+
+            $db->setQuery($query);
+            $footers->column2 = $db->loadObject();
+            return $footers;
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
     function updateHomepage($content) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -472,6 +500,34 @@ class EmundusonboardModelsettings extends JModelList {
         }
 
         return $results;
+    }
+
+    function updateFooter($content) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $results = [];
+
+        $query->update($db->quoteName('#__modules'))
+            ->set($db->quoteName('content') . ' = ' . $db->quote($content['col1']))
+            ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'));
+
+        try {
+            $db->setQuery($query);
+            $results[] = $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__modules'))
+                ->set($db->quoteName('content') . ' = ' . $db->quote($content['col2']))
+                ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-b'));
+            $db->setQuery($query);
+            $results[] = $db->execute();
+
+            return $results;
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
     }
 
     function onAfterCreateCampaign($user_id) {

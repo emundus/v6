@@ -12,10 +12,11 @@
     </transition>
     <div class="w-row">
       <div class="col-md-10 p-1" style="padding-left: 2em !important;">
-        <p class="paragraphe-sous-titre">{{funnelDescription[langue][menuHighlight]}}</p>
         <transition name="slide-right">
           <editStyle
                   v-if="menuHighlight == 0 && coordinatorAccess != 0"
+                  @LaunchLoading="runLoading"
+                  @StopLoading="stopLoading"
                   ref="styling"
           ></editStyle>
 
@@ -25,20 +26,30 @@
                   :actualLanguage="actualLanguage"
           ></editHomepage>
 
+          <editFooter
+              v-if="menuHighlight == 2 && coordinatorAccess != 0"
+              ref="footer"
+              :actualLanguage="actualLanguage"
+          ></editFooter>
+
           <editStatus
-                  v-if="menuHighlight == 2 && coordinatorAccess != 0"
-                  ref="datas"
+                  v-if="menuHighlight == 3 && coordinatorAccess != 0"
+                  @LaunchLoading="runLoading"
+                  @StopLoading="stopLoading"
+                  ref="status"
           ></editStatus>
 
           <editTags
-                  v-if="menuHighlight == 3"
+                  v-if="menuHighlight == 4"
+                  @LaunchLoading="runLoading"
+                  @StopLoading="stopLoading"
                   ref="tags"
           ></editTags>
         </transition>
       </div>
     </div>
 
-    <div
+    <!--<div
             class="section-sauvegarder-et-continuer-funnel"
     >
       <div class="w-container">
@@ -49,7 +60,7 @@
           </a>
         </div>
       </div>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -58,6 +69,7 @@ import axios from "axios";
 import editStatus from "./editStatus";
 import editTags from "./editTags";
 import editHomepage from "./editHomepage";
+import editFooter from "./editFooter";
 import editStyle from "./editStyle";
 import editDatas from "./editDatas";
 import editUsers from "./editUsers";
@@ -71,6 +83,7 @@ export default {
     editStatus,
     editTags,
     editHomepage,
+    editFooter,
     editStyle,
     editDatas,
     editUsers
@@ -85,31 +98,18 @@ export default {
     menuHighlight: 0,
     langue: 0,
 
-    funnelDescription: [
-      [
-        '',
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_HOMEDESCRIPTION"),
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_STATUSDESCRIPTION"),
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_TAGSDESCRIPTION")
-      ],
-      [
-        '',
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_HOMEDESCRIPTION"),
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_STATUSDESCRIPTION"),
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_TAGSDESCRIPTION")
-      ]
-    ],
-
     settingsCategories: [
       [
         "Style",
         "Page d'accueil",
+        "Pied de page",
         "Statuts",
         "Etiquettes"
       ],
       [
         "Styling",
         "Home page",
+        "Footer",
         "Status",
         "Tags"
       ]
@@ -121,19 +121,11 @@ export default {
 
   methods: {
     next() {
-      if (this.menuHighlight == 1) {
-        this.updateHomepage(this.$refs.homepage.$data.form.content);
-      } else if (this.menuHighlight == 2) {
-        this.updateStatus(this.$refs.datas.$data.status);
-      } else if (this.menuHighlight == 3) {
-        this.updateTags(this.$refs.tags.$data.tags);
-      } else if (this.menuHighlight == 5) {
-        this.history.go(-1);
-      }
       this.menuHighlight++;
     },
 
     updateStatus(status) {
+      this.runLoading();
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatestatus',
@@ -143,10 +135,13 @@ export default {
         data: qs.stringify({
           status: status
         })
-      }).then(() => {});
+      }).then(() => {
+        this.stopLoading();
+      });
     },
 
     updateTags(tags){
+      this.runLoading();
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatetags',
@@ -156,10 +151,29 @@ export default {
         data: qs.stringify({
           tags: tags
         })
-      }).then(() => {});
+      }).then(() => {
+        this.stopLoading();
+      });
+    },
+
+    updateFooter(content) {
+      this.runLoading();
+      axios({
+        method: "post",
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatefooter',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          content: content
+        })
+      }).then(() => {
+        this.stopLoading();
+      });
     },
 
     updateHomepage(content) {
+      this.runLoading();
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatehomepage',
@@ -169,7 +183,28 @@ export default {
         data: qs.stringify({
           content: content
         })
-      }).then(() => {});
+      }).then(() => {
+        this.stopLoading();
+      });
+    },
+
+    saveCurrentPage() {
+      if(this.menuHighlight === 1) {
+        this.updateHomepage(this.$refs.homepage.$data.form.content);
+      } else if (this.menuHighlight === 2) {
+        this.updateFooter(this.$refs.footer.$data.form.content);
+      } else if (this.menuHighlight === 3) {
+        this.updateStatus(this.$refs.status.$data.status);
+      } else if (this.menuHighlight === 4) {
+        this.updateStatus(this.$refs.tags.$data.tags);
+      }
+    },
+
+    runLoading() {
+      this.$emit("updateLoading",true);
+    },
+    stopLoading() {
+      this.$emit("updateLoading",false);
     },
 
     previous() {
@@ -188,6 +223,12 @@ export default {
     if(this.coordinatorAccess == 0){
       this.menuHighlight = 3;
     }
+
+    this.$nextTick(function () {
+      window.setInterval(() => {
+        this.saveCurrentPage();
+      },20000);
+    })
   },
 };
 </script>

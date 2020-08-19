@@ -78,6 +78,7 @@
             },
 
             pushStatus() {
+              this.$emit("LaunchLoading");
               axios({
                 method: "post",
                 url: 'index.php?option=com_emundus_onboard&controller=settings&task=createstatus',
@@ -89,10 +90,12 @@
                 setTimeout(() => {
                   this.getHexColors(newstatus.data);
                 }, 100);
+                this.$emit("StopLoading");
               });
             },
 
             removeStatus(status, index) {
+              this.$emit("LaunchLoading");
               axios({
                 method: "post",
                 url: 'index.php?option=com_emundus_onboard&controller=settings&task=deletestatus',
@@ -105,6 +108,7 @@
                 })
               }).then(() => {
                 this.status.splice(index,1);
+                this.$emit("StopLoading");
               });
             },
 
