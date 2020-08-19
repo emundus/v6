@@ -75,7 +75,7 @@ export default {
 
   created() {
     list.getters.formsAccess.forEach(element => {
-      if(element === this.data.id){
+      if(element[0] === this.data.id){
         this.updateAccess = true;
       }
     });

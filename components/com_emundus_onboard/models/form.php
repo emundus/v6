@@ -143,13 +143,17 @@ class EmundusonboardModelform extends JModelList {
             $campaigns_id[] = $campaign->id;
         }
 
-        $query
-            ->clear()
-            ->select('*')
-            ->from($db->quoteName('#__emundus_setup_campaigns'))
-            ->where($db->quoteName('id') . ' NOT IN (' . implode(',',$db->quote($campaigns_id)) . ')');
-        $db->setQuery($query);
-        $campaigns_not_user = $db->loadObjectList();
+	    if(!empty($campaigns_id)) {
+            $query
+                ->clear()
+                ->select('*')
+                ->from($db->quoteName('#__emundus_setup_campaigns'))
+                ->where($db->quoteName('id') . ' NOT IN (' . implode(',', $db->quote($campaigns_id)) . ')');
+            $db->setQuery($query);
+            $campaigns_not_user = $db->loadObjectList();
+        } else {
+            $campaigns_not_user = [];
+        }
 
         foreach ($campaigns_not_user as $campaign){
             if($campaign->profile_id != null){

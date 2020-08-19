@@ -266,7 +266,7 @@
 
             searchRole: function(value) {
               this.filters.searchRole = value;
-              //this.getUsers();
+              this.getUsers();
             }
         }
     };
@@ -284,12 +284,13 @@
     }
     .user-list__actions{
         display: flex;
-        justify-content: space-between;
+        justify-content: start;
     }
 
     .user-list__actions a{
         cursor: pointer;
         color: #1b1f3c;
+        margin-right: 10px;
     }
 
     .user-infos__icon{

@@ -68,8 +68,8 @@ class EmundusonboardControllerform extends JControllerLegacy {
 	        $m_forms = $this->model;
 	        $jinput = JFactory::getApplication()->input;
 
-	        $page = $jinput->getInt('offset');
-	        $lim = $jinput->getInt('limit');
+	        $page = $jinput->getInt('page');
+	        $lim = $jinput->getInt('lim');
 	        $filter = $jinput->getString('filter');
 	        $sort = $jinput->getString('sort');
 	        $recherche = $jinput->getString('recherche');
