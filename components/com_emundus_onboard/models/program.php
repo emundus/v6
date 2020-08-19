@@ -823,13 +823,13 @@ class EmundusonboardModelprogram extends JModelList {
             $group = $db->loadObject()->parent_id;
 
             $query->clear()
-                ->select('us.id as id, us.name as name, us.email as email, us.registerDate as registerDate, us.lastvisitDate as lastvisitDate, us.block as block')
+                ->select('us.id as id, us.name as name, us.email as email, us.registerDate as registerDate, us.lastvisitDate as lastvisitDate, us.block as block, eus.profile as profile')
                 ->from($db->quoteName('#__users','us'))
-                ->leftJoin($db->quoteName('#__emundus_groups','g').' ON '.$db->quoteName('us.id').' = '.$db->quoteName('g.user_id'));
+                ->leftJoin($db->quoteName('#__emundus_groups','g').' ON '.$db->quoteName('us.id').' = '.$db->quoteName('g.user_id'))
+                ->leftJoin($db->quoteName('#__emundus_users','eus').' ON '.$db->quoteName('us.id').' = '.$db->quoteName('eus.user_id'));
 
                 if($filters['searchRole'] != -1){
-                    $query->leftJoin($db->quoteName('#__emundus_users','eus').' ON '.$db->quoteName('us.id').' = '.$db->quoteName('eus.user_id'))
-                    ->where($db->quoteName('eus.profile') . ' = ' . $db->quote($filters['searchRole']));
+                    $query->where($db->quoteName('eus.profile') . ' = ' . $db->quote($filters['searchRole']));
                 }
                 $query->where($db->quoteName('g.group_id') . ' = ' . $db->quote($group))
                 ->andWhere($db->quoteName('us.id') . ' != ' . $db->quote($user))
@@ -837,12 +837,12 @@ class EmundusonboardModelprogram extends JModelList {
                 ->andWhere($db->quoteName('us.username') . ' != ' . $db->quote('sysemundus'))
                 ->andWhere($block_conditions);
         } else {
-            $query->select('us.id as id, us.name as name, us.email as email, us.registerDate as registerDate, us.lastvisitDate as lastvisitDate, us.block as block')
-                ->from($db->quoteName('#__users','us'));
+            $query->select('us.id as id, us.name as name, us.email as email, us.registerDate as registerDate, us.lastvisitDate as lastvisitDate, us.block as block, eus.profile as profile')
+                ->from($db->quoteName('#__users','us'))
+                ->leftJoin($db->quoteName('#__emundus_users','eus').' ON '.$db->quoteName('us.id').' = '.$db->quoteName('eus.user_id'));
 
                 if($filters['searchRole'] != -1){
-                    $query->leftJoin($db->quoteName('#__emundus_users','eus').' ON '.$db->quoteName('us.id').' = '.$db->quoteName('eus.user_id'))
-                        ->where($db->quoteName('eus.profile') . ' = ' . $db->quote($filters['searchRole']));
+                    $query->where($db->quoteName('eus.profile') . ' = ' . $db->quote($filters['searchRole']));
                 }
                 $query->where($db->quoteName('us.id') . ' != ' . $db->quote($user))
                 ->andWhere($db->quoteName('us.id') . ' != 62')

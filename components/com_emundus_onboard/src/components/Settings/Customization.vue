@@ -1,41 +1,39 @@
 <template>
-  <div class="column-menu-main w-row" style="margin-top: 120px">
+  <div class="container-evaluation" style="width: auto">
+    <transition name="slide-right">
+      <ul class="menus-row">
+        <li class="MenuForm" v-for="(settingsCat, index) in settingsCategories[langue]" :key="index">
+          <a @click="menuHighlight = index"
+             class="MenuFormItem"
+             :class="menuHighlight == index ? 'w--current' : ''"
+          >{{ settingsCat }}</a>
+        </li>
+      </ul>
+    </transition>
     <div class="w-row">
-      <div class="col-md-2 p-1">
-        <transition name="slide-right">
-          <div class="col-md-12 mt-2">
-            <div class="container-menu-funnel">
-              <div v-for="(settingsCat, index) in settingsCategories[langue]" :key="index" v-if="(coordinatorAccess == 0 && index == 3) || coordinatorAccess == 1">
-                <a @click="menuHighlight = index"
-                   class="menu-item"
-                   :class="menuHighlight == index ? 'w--current' : ''"
-                >{{ settingsCat }}</a>
-              </div>
-            </div>
-          </div>
-        </transition>
-      </div>
-
       <div class="col-md-10 p-1" style="padding-left: 2em !important;">
-        <div class="d-flex justify-content-between">
-          <h2 class="mb-0">{{settingsCategories[langue][menuHighlight]}}</h2>
-          <a @click="next()" class="bouton-sauvergarder-et-continuer-3">{{ Save }}</a>
-        </div>
         <p class="paragraphe-sous-titre">{{funnelDescription[langue][menuHighlight]}}</p>
         <transition name="slide-right">
-          <customization
+          <editStyle
                   v-if="menuHighlight == 0 && coordinatorAccess != 0"
-          ></customization>
+                  ref="styling"
+          ></editStyle>
 
-          <editUsers
+          <editHomepage
                   v-if="menuHighlight == 1 && coordinatorAccess != 0"
-                  ref="users"
-          ></editUsers>
+                  ref="homepage"
+                  :actualLanguage="actualLanguage"
+          ></editHomepage>
 
-          <editDatas
+          <editStatus
                   v-if="menuHighlight == 2 && coordinatorAccess != 0"
                   ref="datas"
-          ></editDatas>
+          ></editStatus>
+
+          <editTags
+                  v-if="menuHighlight == 3"
+                  ref="tags"
+          ></editTags>
         </transition>
       </div>
     </div>
@@ -57,18 +55,17 @@
 
 <script>
 import axios from "axios";
-import editStatus from "../components/Settings/editStatus";
-import editTags from "../components/Settings/editTags";
-import editHomepage from "../components/Settings/editHomepage";
-import editStyle from "../components/Settings/editStyle";
-import editDatas from "../components/Settings/editDatas";
-import editUsers from "../components/Settings/editUsers";
-import customization from "../components/Settings/Customization"
+import editStatus from "./editStatus";
+import editTags from "./editTags";
+import editHomepage from "./editHomepage";
+import editStyle from "./editStyle";
+import editDatas from "./editDatas";
+import editUsers from "./editUsers";
 
 const qs = require("qs");
 
 export default {
-  name: "globalSettings",
+  name: "Customization",
 
   components: {
     editStatus,
@@ -76,8 +73,7 @@ export default {
     editHomepage,
     editStyle,
     editDatas,
-    editUsers,
-    customization
+    editUsers
   },
 
   props: {
@@ -92,30 +88,35 @@ export default {
     funnelDescription: [
       [
         '',
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTIONSETTINGS"),
+        Joomla.JText._("COM_EMUNDUS_ONBOARD_HOMEDESCRIPTION"),
+        Joomla.JText._("COM_EMUNDUS_ONBOARD_STATUSDESCRIPTION"),
+        Joomla.JText._("COM_EMUNDUS_ONBOARD_TAGSDESCRIPTION")
       ],
       [
         '',
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTIONSETTINGS"),
+        Joomla.JText._("COM_EMUNDUS_ONBOARD_HOMEDESCRIPTION"),
+        Joomla.JText._("COM_EMUNDUS_ONBOARD_STATUSDESCRIPTION"),
+        Joomla.JText._("COM_EMUNDUS_ONBOARD_TAGSDESCRIPTION")
       ]
     ],
 
     settingsCategories: [
       [
-        "Personnalisation",
-        "Utilisateurs",
-        "Référentiels de données",
+        "Style",
+        "Page d'accueil",
+        "Statuts",
+        "Etiquettes"
       ],
       [
         "Styling",
-        "Users",
-        "Data repository",
+        "Home page",
+        "Status",
+        "Tags"
       ]
     ],
 
     Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
     Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-    Save: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
   }),
 
   methods: {

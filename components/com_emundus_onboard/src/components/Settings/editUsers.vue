@@ -43,6 +43,7 @@
             <table-column show="id" label="ID" data-type="numeric" hidden></table-column>
             <table-column show="name" :label="Name"></table-column>
             <table-column show="email" :label="Email"></table-column>
+            <table-column show="profile" :label="Role" :formatter="roleFormatter"></table-column>
             <table-column show="lastvisitDate" :label="LastConnected" :filterable="false" data-type="date:DD/MM/YYYY"></table-column>
             <table-column show="block" :label="Status" :filterable="false" :formatter="statusFormatter"></table-column>
             <table-column :label="Actions" :sortable="false" :filterable="false" cell-class="user-list__actions">
@@ -234,6 +235,13 @@
                     return '<i class="fas fa-minus-circle blocked col-md-2"></i><span class="ml-10px">' + this.Blocked + '</span>';
                 }
             },
+          roleFormatter(value, rowProperties) {
+            if(value == 5){
+              return '<span>' + this.Administrator + '</span>';
+            } else {
+              return '<span>' + this.Evaluator + '</span>';
+            }
+          }
             /*actionFormatter(value) {
                 let user = this.users.find(user => user.id == value);
                 let lockAction = '<a onclick="lockUser(' + user.id + ')"><i class="fas fa-unlock"></i></a>\n'
