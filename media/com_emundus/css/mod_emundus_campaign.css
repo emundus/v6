@@ -679,7 +679,7 @@ button.btn.btn-default.sch {
 
     .campaign-content .left-side,
     .campaign-content .right-side {
-        width: 100%;
+        width: 100% !important;
     }
 
     .right-side {

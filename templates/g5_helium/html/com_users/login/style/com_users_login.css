@@ -90,6 +90,7 @@ ul.nav.nav-tabs.nav-stacked a::before {
 .view-login .form-horizontal .control-group {
     display: flex;
     justify-content: center;
+    flex-direction: column;
 }
 footer div{
     line-height:1.5em;
@@ -116,6 +117,7 @@ body.view-reset label#jform_username-lbl::after,
     width: 100% !important;
     height: 41px;
     margin-right: 0px !important;
+    font-weight: 300;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
     border-radius :0px;
@@ -247,7 +249,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     .login form {
         padding-right: 3rem;
         padding-left: 3rem;
-        width: 100%;
+        width: 100% !important;
     }
 
     ul.nav.nav-tabs.nav-stacked {
