@@ -130,7 +130,7 @@
     .campaingapply {
         float: right !important;
         background-color: #e1edfa;
-        color: #5476a4;
+        color: #000;
         border: 1px #5476a4;
     }
 
@@ -142,13 +142,13 @@
 
     .campaingapply.blue {
         background-color: #e1edfa;
-        color: #5476a4;
+        color: #000;
         border: #5476a4;
     }
 
     .campaingapply.orange {
         background-color: #e1edfa;
-        color: #E87E04;
+        color: #000;
         border: #E87E04;
     }
 
@@ -668,18 +668,17 @@ button.btn.btn-default.sch {
     }
 
     .campaigns-list .campaignbymonth .campaign-month-label .position-me {
-        top: 0px;
+        top: 0px !important;
     }
 
     .campaigns-list .campaignbymonth .campaign-month-label .position-me .rotate-me.blue,   .campaigns-list .campaignbymonth .campaign-month-label .position-me .rotate-me.orange {
         transform: rotate(180deg) !important;
-        padding-left: 10px !important;
-        width: calc(100% - 16px);
+        padding-left: 60px !important;
         margin: 0 auto;
     }
 
-    .left-side,
-    .right-side {
+    .campaign-content .left-side,
+    .campaign-content .right-side {
         width: 100%;
     }
 
