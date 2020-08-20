@@ -257,7 +257,7 @@
         width: 100% !important;
     }
 
-    .campaigns-list .campaignbymonth .campaign-month-label .position-me .rotate-me.blue {
+   .campaign-month-label .position-me .rotate-me.blue,  .campaign-month-label .position-me .rotate-me.orange {
         width: 100%;
         display: flex;
         justify-content: flex-start;
@@ -313,6 +313,11 @@
 }
 
 @media all and (max-width: 959px) {
+
+    .nav-tabs {
+        width: auto;
+    }
+
     .left-side {
         width: 100% !important;
         border-bottom: 1px solid #ddd !important;

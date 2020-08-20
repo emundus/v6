@@ -536,7 +536,7 @@ a {
     a.btn.btn-primary.btn-plein.btn-blue {
       background-color: $base-secondary-color !important;
       border-color: $base-secondary-color !important;
-      &:hover {
+      &:hover, &:active, &:focus {
         background-color: #ffffff !important;
         color: $base-secondary-color !important;
         border-color: $base-secondary-color !important;
@@ -546,7 +546,7 @@ a {
     a.btn.btn-primary.btn-creux.btn-orange {
       background-color: $base-primary-color !important;
       border-color: $base-primary-color !important;
-      &:hover {
+      &:hover, &:active, &:focus {
         background-color: #ffffff !important;
         color: $base-primary-color !important;
         border-color: $base-primary-color !important;
@@ -1511,6 +1511,7 @@ div#em-appli-block {
 /* FOOTER */
   .bas-footer {
     flex-direction: column !important;
+    width: auto;
 
     .em-containerAdresseLogo {
       flex-direction: column-reverse !important;
@@ -1596,6 +1597,7 @@ div#em-appli-block {
     display: flex !important;
     justify-content: center !important;
     margin-bottom: 10px !important;
+    margin-top: 10px;
   }
 
   #header-a.size-71 {
@@ -1830,11 +1832,21 @@ div#em-appli-block {
     padding-right: 0;
     padding-left: 0;
   }
+  .bas-footer {
+    width: 90%;
+  }
+
+  #g-navigation .g-container {
+      padding: 10px 30px !important;
+    }
 }
 
 @media screen and (min-width: 960px) and (max-width: 1199px) {
   #g-main-mainbody {
     padding-top: 0;
+  }
+  .bas-footer {
+    width: 95%;
   }
 }
 

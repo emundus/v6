@@ -71,14 +71,12 @@ li>a:hover {
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte, #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription {
      color: #fff;
      border-radius: 0px;
-     width: 10rem;
      margin-bottom: 5px;
 }
 
 #g-navigation #header-c .header-right a.btn.btn-danger:not(btn-creer-compte) {
      color: #fff;
      border-radius: 0px;
-     width: 10rem;
      margin-bottom: 5px;
 }
 
