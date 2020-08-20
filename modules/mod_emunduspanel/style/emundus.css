@@ -55,10 +55,43 @@ div#em-panel .ui.grid {
     justify-content: flex-end;
     right: 20px;
 }
+
 .emundus_home_page select#profile.form-control.form-control-sm {
     border: none;
     border-radius: 0 !important;
 }
 #em-panel.emundus_home_page p {
     text-align: left;
+}
+
+div#em-panel legend {
+    color: #4E5B6D;
+    font-size: 22px;
+}
+
+.candidacy-files-list h2,
+#em-panel h2 {
+    font-weight: 600;
+    padding-left: 0;
+    margin-bottom: 10px !important;
+}
+
+.select select {
+    background-color: #eee;
+    color: #666;
+}
+
+@media all and (max-width: 767px) {
+    #em-panel h2 {
+        margin-left: 0;
+    }
+
+    div#em-panel legend {
+        margin-left: 0;
+    }
+
+    .emundus_home_page legend {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
 }

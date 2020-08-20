@@ -150,6 +150,7 @@ table .btn-group > .btn {
 .caret {
     margin: 6px 0 0 5px !important;
 }
+
 /* TABLEAUX - LISTES */
 
 .table>thead>tr>th,
@@ -365,6 +366,7 @@ div#em-appli-block button.btn.btn-default {
     display: inline-flex;
     border: none !important;
 }
+
 .label {
     text-shadow: none;
 }
@@ -790,6 +792,11 @@ div#em-modal-actions .panel-heading h5 {
     color: #868686;
 }
 
+.chosen-container .chosen-results li.highlighted {
+     background-image: none !important;
+ }
+
+
 .main-panel .well label {
     display: inline;
 }
@@ -1056,6 +1063,12 @@ td:first-child>.em-cell {
     border-color: rgb(44, 62, 80);
     outline: 0 none !important;
     box-shadow: none !important;
+}
+
+.form-control:focus {
+    border-color: #000;
+    -webkit-box-shadow: none;
+    box-shadow: none;
 }
 
 textarea>.form-control,
@@ -1970,4 +1983,318 @@ footer#g-footer {
 
 .em-personalDetail-table-inline tr td {
     width: 50%;
+}
+
+.em-personalInfo > a {
+    border: none !important;
+}
+
+div#em-assoc-files .panel.panel-primary, div#em-assoc-files .panel.panel-default {
+    border: none;
+    color: #ffffff;
+    background: #6E7887;
+}
+
+div#em-assoc-files  .panel.panel-primary ul,  div#em-assoc-files .panel.panel-default ul {
+    margin: 1px 1px 1px 5px;
+}
+
+div#em-assoc-files .panel-collapse.collapse {
+    border: 2px solid #404B5A !important;
+    border-top: 0 !important;
+}
+
+div#em-assoc-files  .panel-body .panel-body {
+    border: none !important;
+    background: #6E7887;
+    padding-bottom: 5px !important;
+    padding-top: 5px !important;
+}
+
+div#em-assoc-files .panel > .panel-heading {
+    background: #404B5A;
+    border-radius: 5px 5px 0 0;
+    border-bottom: 1px solid #404B5A;
+}
+
+.glyphicon {
+    display: inline-flex;
+    align-items: center;
+}
+
+.g-back-office-emundus-tableau button#search ,  .g-back-office-emundus-tableau button#clear-search, .g-back-office-emundus-tableau button#save-filter , .g-back-office-emundus-tableau button#add-filter,  .g-back-office-emundus-tableau input#search ,  .g-back-office-emundus-tableau input#clear-search, .g-back-office-emundus-tableau input#save-filter , .g-back-office-emundus-tableau input#add-filter  {
+    box-shadow: none !important;
+    text-shadow: none;
+    color: #FFFFFF;
+    padding: 6px 8px !important;
+    border-radius: 5px !important;
+}
+
+.g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {
+    box-shadow: none !important;
+    text-shadow: none;
+    color: #ffffff !important;
+}
+
+.g-back-office-emundus-tableau button#search:active ,  .g-back-office-emundus-tableau button#clear-search:active, .g-back-office-emundus-tableau button#save-filter:active , .g-back-office-emundus-tableau button#add-filter:active,  .g-back-office-emundus-tableau input#search:active ,  .g-back-office-emundus-tableau input#clear-search:active, .g-back-office-emundus-tableau input#save-filter:active , .g-back-office-emundus-tableau input#add-filter:active  {
+    box-shadow: none !important;
+    text-shadow: none;
+    color: #ffffff !important;
+}
+
+.g-back-office-emundus-tableau button#search:focus ,  .g-back-office-emundus-tableau button#clear-search:focus, .g-back-office-emundus-tableau button#save-filter:focus , .g-back-office-emundus-tableau button#add-filter:focus,  .g-back-office-emundus-tableau input#search:focus ,  .g-back-office-emundus-tableau input#clear-search:focus, .g-back-office-emundus-tableau input#save-filter:focus , .g-back-office-emundus-tableau input#add-filter:focus  {
+    box-shadow: none !important;
+    text-shadow: none;
+    color: #ffffff !important;
+}
+
+.g-back-office-emundus-tableau button#showhide,  .g-back-office-emundus-tableau input#showhide {
+    font-size: 14px !important;
+    border-radius: 0 0 5px 5px !important;
+    font-weight: bold !important;
+    display: inline-flex !important;
+    align-items: center;
+    margin-top: -28px !important;
+    justify-content: center;
+}
+
+.g-back-office-emundus-tableau .panel-body {
+    background-color: #4e5b6d;
+}
+
+.g-back-office-emundus-tableau .ct-list .panel-body {
+    background-color: white;
+}
+.g-back-office-emundus-tableau .ct-view .panel-body {
+    background-color: white;
+}
+
+.g-back-office-emundus-tableau  .panel-info {
+    border-color: #4E5B6D;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.g-back-office-emundus-tableau .panel-info > .panel-heading {
+    border-bottom: 2px #FFFFFF dashed;
+    height: 50px !important;
+    border-radius: 0;
+    background-color: #4e5b6d;
+    padding: 10px;
+}
+
+.g-back-office-emundus-tableau .ct-list .panel-info > .panel-heading {
+    border: none;
+}
+
+.g-back-office-emundus-tableau .ct-view .panel-info > .panel-heading {
+    border: none;
+}
+
+button#em-close-file {
+    background: #4E5B6D !important;
+    color: #ffffff;
+    box-shadow: none;
+    border: 1px solid #4E5B6D !important;
+    text-shadow: none;
+    background-image: none;
+    margin-top: -3px;
+    height: 36px;
+}
+
+button#em-close-file:hover, button#em-close-file:focus, button#em-close-file:active {
+    background: #404B5A !important;
+    border-color: #404B5A !important;
+}
+
+#em_select_filter #del-filter i {
+    margin: 0 !important;
+}
+
+.btn:hover .caret {
+    color: inherit !important;
+}
+
+.btn .caret {
+    border-top: 4px solid #fff !important;
+}
+
+div#em-modal-actions .panel-default > .panel-heading {
+    border: none !important;
+    box-shadow: none;
+    color: #2a363b !important;
+    background: transparent;
+}
+
+div#em-modal-actions .panel-heading h5 {
+    color: #2a363b;
+}
+
+.col-md-3.side-panel div#em-files-filters div#em-appli-menu .panel-body a {
+    background: #4E5B6D;
+}
+
+.list-group-item:nth-last-child(even) {
+    background-color: #404B5A;
+    color: #ffffff;
+    border: 0;
+}
+
+.list-group-item:nth-last-child(odd) {
+    background: #4E5B6D;
+    color: #ffffff;
+    border: 0;
+}
+
+table#groups-table a {
+    background: #4E5B6D !important;
+    box-shadow: none;
+    border: 1px solid #4E5B6D !important;
+    color: #ffffff;
+}
+table#groups-table a:hover {
+     background: #404B5A !important;
+     box-shadow: none;
+     border: 1px solid #404B5A !important;
+     color: #ffffff;
+ }
+
+/* MENU ACTIONS */
+.navbar.navbar-inverse {
+    border-radius: 0;
+    background: #4E5B6D;
+    padding: 10px;
+}
+
+.em-cell a:focus {
+    color: #2a363b;
+}
+
+.btn span.icon-ok,
+.btn span.icon-cancel {
+    margin-right: 5px !important;
+}
+
+
+.btn-info,
+.fabrik__rowlink,
+a.delete,
+a.copy-0 {
+    background-color: #aaa;
+}
+
+.btn-info:hover,
+.fabrik__rowlink:hover,
+a.delete:hover,
+a.copy-0:hover {
+    background-color: #000;
+}
+
+.btn-info:active,
+.fabrik__rowlink:active,
+a.delete:active,
+a.copy-0:active {
+    background-color: #000;
+}
+.btn-info:focus,
+.fabrik__rowlink:focus,
+a.delete:focus,
+a.copy-0:focus {
+    background-color: #000;
+}
+
+.modal-content .panel-heading .btn-info {
+    border: none !important;
+}
+
+.panel-body .content .btn-info,
+.panel-body .content .btn-sm {
+    display: inline-flex !important;
+}
+
+.g-back-office-emundus-tableau .footer-b .custom,
+.g-back-office-emundus-tableau .footer-c .custom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@media all and (max-width: 767px) {
+
+    #em-hide-filters {
+        display: none;
+    }
+}
+
+
+@media all and (max-width: 959px) {
+
+    .g-back-office-emundus-tableau #g-main-mainbody .platform-content, .email-history-indicators-page #g-main-mainbody {
+        padding: 0 !important;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+
+    .view-files .main-panel {
+        padding-right: 0;
+    }
+    #em-hide-filters {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1199px) {
+    div#em-files-filters .panel-body td {
+        padding-left: 0 !important;
+    }
+
+    .g-back-office-emundus-tableau #em_filters .chosen-container-active.chosen-with-drop .chosen-single, #em_filters .chosen-container-single .chosen-single {
+        background: #ffffff;
+        border: 1px solid #ffffff;
+        box-shadow: none;
+        padding: 14px 2px;
+        border-radius: 0.3rem;
+        margin-top: 0;
+    }
+
+    .g-back-office-emundus-tableau div#elements_chosen,  .g-back-office-emundus-tableau div#select_filter_chosen {
+        width: 83% !important;
+    }
+
+    .g-back-office-emundus-tableau  button#del-filter {
+        background: #EA9262;
+        text-shadow: none;
+        color: #ffffff;
+        padding: 0.3rem 0.5rem !important;
+    }
+
+    .g-back-office-emundus-tableau div#em-files-filters .panel-heading h3 {
+        font-size: 1.3rem;
+        margin-top: 11px;
+    }
+
+    div#em_filters fieldset select {
+        display: inline-block;
+        padding: 2px 0;
+        margin-bottom: 0;
+        font-size: 12px;
+        vertical-align: middle;
+        border-radius: 4px;
+    }
+}
+
+@media all and (max-width: 1239px) {
+
+    .g-back-office-emundus-tableau #g-main-mainbody .platform-content {
+        width: 100% !important;
+        margin: auto !important;
+        padding: 0 20px !important;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1239px) {
+    #em_select_filter label {
+        font-size: 0.8rem;
+    }
 }

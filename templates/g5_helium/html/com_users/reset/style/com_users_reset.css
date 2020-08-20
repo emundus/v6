@@ -1,3 +1,10 @@
+#user-registration fieldset  {
+    background: transparent;
+}
+#user-registration fieldset  p {
+    margin-bottom: 20px !important;
+}
+
 form#user-registration.form-validate.form-horizontal.well,
 .reset-confirm .form-validate.form-horizontal.well,
 .reset-complete .form-validate.form-horizontal.well
@@ -7,12 +14,14 @@ form#user-registration.form-validate.form-horizontal.well,
     margin-right: auto !important;
 }
 
-
 form#user-registration.form-validate.form-horizontal.well label,
 .reset-confirm .form-validate.form-horizontal.well label,
 .reset-complete .form-validate.form-horizontal.well  label
 {
     font-size: 14px;
+    color: #565656 !important;
+    margin-bottom: 5px !important;
+    font-weight: bold !important;
 }
 
 form#user-registration.form-validate.form-horizontal.well .control-group .controls button,
@@ -23,6 +32,12 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     height: 41px;
     text-transform: capitalize;
     margin-right:0;
+    border-radius: 0px;
+    padding: 8px 12px;
+    font-family: "Open Sans" !important;
+    line-height: normal;
+    font-weight: 300;
+    font-size: 14px;
 }
 
 form#user-registration.form-validate.form-horizontal.well .control-group .controls input,
@@ -31,6 +46,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 {
     border-radius: 0px;
 }
+
 .view-reset .reset .page-header,
 .view-reset .reset-complete .page-header{
     display:flex;
@@ -76,7 +92,6 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     .reset-confirm .form-validate.form-horizontal.well,
     .reset-complete .form-validate.form-horizontal.well {
         width: 100%;
-
     }
 
     .view-reset #g-navigation {
@@ -86,4 +101,13 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     .view-reset #g-navigation .g-container {
         height: auto !important;
     }
+
+    .reset .form-validate.form-horizontal.well {
+        padding: 20px !important;
+    }
+
+    .remind .form-validate.form-horizontal.well, .reset .form-validate.form-horizontal.well  {
+        padding: 2rem 4rem 2rem 4rem;
+    }
+
 }

@@ -57,3 +57,9 @@
 .btnConsulter:hover a {
 	color:#de6339!important;
 }
+
+@media all and (max-width: 959px) {
+	.indicateurs-page #g-main-mainbody {
+		padding: 0;
+	}
+}

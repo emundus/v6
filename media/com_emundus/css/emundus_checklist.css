@@ -423,6 +423,13 @@ body.view-reset label#jform_username-lbl::after,
 .fabrikLabel[opts*="Validation"] > .icon-star{
     display: none !important;
 }*/
+
+@media screen and (max-width: 991px) {
+    .custom-sticky {
+        width: 25%;
+    }
+}
+
 @media screen and (max-width: 767px){
     .applicant-form .fabrikActions.form-actions .span4:not(.offset1){
         justify-content: flex-end;
@@ -449,4 +456,113 @@ body.view-reset label#jform_username-lbl::after,
         justify-content: flex-start;
     }
 
+}
+
+#g-sidebar .platform-content a {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+    line-height: 1.2rem;
+}
+
+.em-print-button, .em-send-button {
+    display: block;
+    width: 100%;
+    padding: 0;
+}
+
+.em-print-button a i , .em-send-button a i {
+    margin: 5px 8px !important;
+}
+
+.em-send-button a {
+    margin-top: 1rem !important;
+    text-shadow: none !important;
+    width: 100% !important;
+    padding: 8px 12px !important;
+    font-size: 1rem !important;
+    display: flex !important;
+    justify-content: center;
+
+}
+
+.em-send-button a:hover, .em-send-button a:focus, .em-send-button a:active {
+     background: transparent !important;
+ }
+
+.em-print-button a {
+    text-shadow: none !important;
+    padding: 8px 12px !important;
+}
+
+.em-print-button a:hover, .em-print-button a:focus, .em-print-button a:active {
+     background: transparent !important;
+ }
+
+
+#attachment_list_mand legend a,
+.applicant-form #attachment_list_opt legend a {
+    color: #000 !important;
+}
+
+.need_missing.active a::before {
+    font-family: FontAwesome;
+    content: "\f141";
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.active .em_form {
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: transparent;
+    background-image: none;
+    background-origin: padding-box;
+    background-position: 0 0;
+    background-repeat: repeat;
+    background-size: auto auto;
+    color: #4E5B6D;
+}
+
+.em_module.need_ok a::before {
+    font-family: FontAwesome;
+    content: "\f058";
+    color: #55ce47;
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+#attachment_list #legend .need_ok::before {
+    font-family: FontAwesome;
+    content: "\f058";
+    color: #55ce47;
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.need_missing a::before,
+#attachment_list #legend .need_missing::before {
+    font-family: FontAwesome;
+    content: "\f057";
+    font-size: 20px;
+    margin-right: 10px;
+    color: #e5283b;
+}
+
+.need_missing_fac a::before,
+#attachment_list #legend .need_missing_fac::before {
+    font-family: FontAwesome;
+    content: "\f06a";
+    font-size: 20px;
+    margin-right: 10px;
+    color: #e5283b;
+}
+
+@media all and (max-width: 767px) {
+    #g-sidebar {
+        margin: 0;
+    }
+
+    #g-sidebar .moduletable .custom {
+            justify-content: flex-start;
+    }
 }

@@ -35,3 +35,7 @@ div.content-bottom-a fieldset.em_period {
     width: 170px;
     display: inline-block;
 }
+
+.view-programme fieldset {
+    background: transparent;
+}

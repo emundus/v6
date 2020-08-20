@@ -167,3 +167,35 @@
 	border: #e03c32;
 	color: #ffffff;
 }
+
+.applicant-form fieldset,
+.view-checklist fieldset,
+body:not(.g-back-office-emundus-tableau) .ui.attached.warning.message,
+body:not(.g-back-office-emundus-tableau) .ui.warning.message {
+	box-shadow: 2px 2px 10px 0 #c0c0c0;
+}
+
+.step.completed i.icon.file.text.outline::before,
+.step.completed i.icon.attach::before,
+.step.completed i.icon.add.to.cart::before,
+.step.completed i.icon.time::before {
+	background: none !important;
+}
+
+.view-form .attached p, .view-details .attached p {
+	color: white;
+}
+@media all and (max-width: 767px) {
+	.applicant-form .ui.attached.segment p, .view-checkout .ui.attached.segment p {
+		text-align: center !important;
+	}
+}
+
+@media all and (min-width: 768px) {
+	.applicant-form .ui.attached.segment, .view-checkout .ui.attached.segment {
+		display: flex !important;
+		align-items: center !important;
+		justify-content: space-between !important;
+	}
+}
+

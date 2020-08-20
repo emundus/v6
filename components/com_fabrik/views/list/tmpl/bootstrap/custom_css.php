@@ -60,5 +60,49 @@ g-back-office-emundus-tableau.view-details #g-container-main .page-header {
     box-shadow: none;
 }
 
+ul.pagination.pagination-sm a {
+  color: #4E5B6D;
+}
+
+ul.pagination.pagination-sm a:hover, ul.pagination.pagination-sm a:focus, ul.pagination.pagination-sm a:active {
+    color: #404B5A;
+}
+
+.pagination > li.active a {
+  font-weight: bold !important;
+}
+
+table {
+  border-radius: 0 !important;
+}
+
+@media all and (max-width: 767px) {
+  #listform_84_com_fabrik_84 {
+    padding: 0 !important;
+  }
+  
+  .view-list form {
+    overflow: auto;
+  }
+}
+
+@media all and (max-width: 959px) {
+  .email-history-indicators-page form {
+    padding: 0 !important;f
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+  .fabrikForm.form-search {
+    overflow: auto;
+  }
+}
+
+@media all and (max-width: 1239px) {
+  .fabrikDataContainer {
+    overflow: auto;
+  }
+}
+
 /* END - Your CSS styling ends here */
 EOT;
