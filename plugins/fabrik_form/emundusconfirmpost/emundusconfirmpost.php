@@ -130,11 +130,11 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
         }
 
         // Check campaign limit, if the limit is obtained, then we set the deadline to true
-        $isLimitObtained = $m_campaign->isLimitObtained($this->_user->fnums[$this->_user->fnum]->campaign_id);
+        $isLimitObtained = $m_campaign->isLimitObtained($student->fnums[$this->_user->fnum]->campaign_id);
 
 		// If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
 		if (($is_dead_line_passed || $isLimitObtained === true) && !in_array($student->id, $id_applicants)) {
-            if ($this->isLimitObtained === true) {
+            if ($isLimitObtained === true) {
                 $this->getModel()->formErrorMsg = JText::_('LIMIT_OBTAINED');
             } else {
                 $this->getModel()->formErrorMsg = JText::_('CANDIDATURE_PERIOD_TEXT');
@@ -166,6 +166,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 
 		try {
 			$db->execute();
+
 		} catch (Exception $e) {
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
