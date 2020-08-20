@@ -5,6 +5,16 @@
     margin-bottom: 20px !important;
 }
 
+.view-reset #user-registration .controls {
+ width: 100%;
+    margin-left: 0px !important;
+}
+
+.view-reset #user-registration .control-label {
+    width: 100%;
+   text-align: left !important;
+}
+
 form#user-registration.form-validate.form-horizontal.well,
 .reset-confirm .form-validate.form-horizontal.well,
 .reset-complete .form-validate.form-horizontal.well
