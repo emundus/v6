@@ -201,7 +201,138 @@ class modEmundusCustomHelper {
 		}
 	}
 
+	/**
+	 * Ajax function to insert/update FG table for Nantes.
+	 *
+	 * @since version
+	 */
+	static function suPostRankingAjax() {
 
+		jimport('joomla.log.log');
+		JLog::addLogger(['text_file' => 'com_emundus.suRank.php'], JLog::ALL, ['com_emundus']);
+
+		$user = JFactory::getUser();
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$jinput = JFactory::getApplication()->input;
+		$fnum = $jinput->post->get('fnum');
+		$type = $jinput->get->get('type');
+		$rank = $jinput->post->getInt('rank');
+
+		if (empty($fnum) || empty($type)) {
+			JLog::add('Aucun numéro de dossier ou type de rang envoyé.', JLog::ERROR, 'com_emundus');
+			die(json_encode((object)['status' => false, 'msg' => 'Aucun numéro de dossier ou type de rang envoyé.']));
+		}
+
+		if (empty($rank)) {
+			JLog::add('Aucun rang envoyé.', JLog::ERROR, 'com_emundus');
+			die(json_encode((object)['status' => false, 'msg' => 'Aucun rang envoyé.']));
+		}
+
+		$query->select($db->quoteName('id'))
+			->from($db->quoteName('#__emundus_final_grade', 'fg'))
+			->where($db->quoteName('fg.fnum').' LIKE '.$db->quote($fnum));
+		$db->setQuery($query);
+		try {
+			$fg_id = $db->loadResult();
+		} catch (Exception $e) {
+			$fg_id = null;
+		}
+
+		if (!empty($fg_id)) {
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_final_grade'));
+
+			switch ($type) {
+
+				case 'paquet':
+					$fields = [
+						$db->quoteName('classement_paquet').' = '.$db->quote($rank),
+					];
+					break;
+				case 'thematique':
+					$fields = [
+						$db->quoteName('classement_thematique').' = '.$db->quote($rank),
+					];
+					break;
+				case 'general':
+					$fields = [
+						$db->quoteName('classement_general').' = '.$db->quote($rank),
+					];
+					break;
+				default:
+					$fields = [];
+					break;
+
+			}
+
+			$query->set($fields)
+				->where($db->quoteName('id').' = '.$fg_id);
+			$db->setQuery($query);
+
+			try {
+				$db->execute();
+				die(json_encode((object)['status' => true, 'msg' => 'Classement mis à jour.']));
+			} catch (Exception $e) {
+				JLog::add('Erreur de sauvegarde de classement -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+				die(json_encode((object)['status' => false, 'msg' => 'Erreur de sauvegarde de classement.']));
+			}
+
+		} else {
+
+			$offset = JFactory::getApplication()->get('offset', 'UTC');
+			try {
+				$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+				$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+				$now = $dateTime->format('Y-m-d H:i:s');
+			} catch (Exception $e) {
+				$now = new Date();
+				$now = $now->toSql();
+			}
+
+			$columns = [
+				'time_date',
+				'fnum',
+				'student_id',
+				'user',
+				'campaign_id',
+			];
+
+			switch ($type) {
+
+				case 'paquet':
+					$columns[] = 'classement_paquet';
+					break;
+				case 'thematique':
+					$columns[] = 'classement_thematique';
+					break;
+				case 'general':
+					$columns[] = 'classement_general';
+					break;
+				default:
+					break;
+
+			}
+
+			$values = $db->quote($now).', '.$db->quote($fnum).', '.(int)substr($fnum, -7).', '.$user->id.', '.(int)substr($fnum, 14, 7).', '.$rank;
+
+			$query->clear()
+				->insert($db->quoteName('#__emundus_final_grade'))
+				->columns($db->quoteName($columns))
+				->values($values);
+			$db->setQuery($query);
+
+			try {
+				$db->execute();
+				die(json_encode((object)['status' => true, 'msg' => 'Commission ajoutée.']));
+			} catch (Exception $e) {
+				JLog::add('Erreur de sauvegarde de commission -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+				die(json_encode((object)['status' => false, 'msg' => 'Erreur de sauvegarde de commission.']));
+			}
+		}
+	}
 
     /**
      * Ajax function confirm all evaluations for an evaluator
