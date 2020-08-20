@@ -72,16 +72,25 @@ li>a:hover {
      color: #fff;
      border-radius: 0px;
      margin-bottom: 5px;
+    line-height: normal;
+    letter-spacing: normal;
 }
 
 #g-navigation #header-c .header-right a.btn.btn-danger:not(btn-creer-compte) {
      color: #fff;
      border-radius: 0px;
      margin-bottom: 5px;
+    line-height: normal;
+    letter-spacing: normal;
 }
 
 #g-navigation #header-c .header-right a:not(.btn):hover {
     text-decoration: underline;
+}
+
+/* CORRECTION  */
+.login .btn, .logout .btn, .registration .btn, .profile-edit .btn, .remind .btn, .reset .btn {
+    margin-right: 0px !important;
 }
 
 @media all and (max-width: 767px) {

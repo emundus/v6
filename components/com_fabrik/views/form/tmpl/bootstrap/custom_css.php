@@ -1163,6 +1163,11 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
   flex-direction: column;
 }
 
+
+#form_307 #jos_emundus_users___civility .row-fluid {
+  display: inline-block;
+}
+
 .em-formRegistrationCenter {
   display: flex !important;
   flex-direction: column;

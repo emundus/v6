@@ -261,6 +261,7 @@ footer#g-footer {
 #g-page-surround {
   display: flex;
   flex-direction: column;
+  overflow-y: auto ;
 }
 
 #g-page-surround >  .g-container:not(.g-flushed) {
