@@ -24,34 +24,62 @@ class EmundusonboardModelfalang extends JModelList {
       $currentDate = date('Y-m-d H:i:s');
       $user = JFactory::getUser()->id;
 
-      // Insert english text
-      $query->insert('#__falang_content')
-          ->set($db->quoteName('language_id') . ' = 1')
-          ->set($db->quoteName('value') . ' = ' . $db->quote($texten))
-          ->set($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
-          ->set($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-          ->set($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
-          ->set($db->quoteName('original_text') . ' = ' . $db->quote(''))
-          ->set($db->quoteName('modified') . ' = ' . $db->quote($currentDate))
-          ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
-          ->set($db->quoteName('published') . ' = 1');
+      // Check if exist update else insert
+      $query
+          ->select('COUNT(*)')
+          ->from($db->quoteName('#__falang_content'))
+          ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+          ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+          ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+          ->andWhere($db->quoteName('language_id') . ' = 1');
       $db->setQuery($query);
-      $db->execute();
+      if($db->loadResult() == 0) {
+          // Insert english text
+          $query->clear()
+              ->insert('#__falang_content')
+              ->set($db->quoteName('language_id') . ' = 1')
+              ->set($db->quoteName('value') . ' = ' . $db->quote($texten))
+              ->set($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+              ->set($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+              ->set($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+              ->set($db->quoteName('original_text') . ' = ' . $db->quote(''))
+              ->set($db->quoteName('modified') . ' = ' . $db->quote($currentDate))
+              ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+              ->set($db->quoteName('published') . ' = 1');
+          $db->setQuery($query);
+          $db->execute();
+      } else {
+          $this->updateFalang($textfr,$texten,$reference_id,$reference_table,$reference_field);
+      }
+      //
 
-      // Insert french text
+      // Check if exist update else insert
       $query->clear()
-          ->insert('#__falang_content')
-          ->set($db->quoteName('language_id') . ' = 2')
-          ->set($db->quoteName('value') . ' = ' . $db->quote($textfr))
-          ->set($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
-          ->set($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-          ->set($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
-          ->set($db->quoteName('original_text') . ' = ' . $db->quote(''))
-          ->set($db->quoteName('modified') . ' = ' . $db->quote($currentDate))
-          ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
-          ->set($db->quoteName('published') . ' = 1');
+          ->select('COUNT(*)')
+          ->from($db->quoteName('#__falang_content'))
+          ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+          ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+          ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+          ->andWhere($db->quoteName('language_id') . ' = 2');
       $db->setQuery($query);
-      $db->execute();
+      if($db->loadResult() == 0) {
+          // Insert french text
+          $query->clear()
+              ->insert('#__falang_content')
+              ->set($db->quoteName('language_id') . ' = 2')
+              ->set($db->quoteName('value') . ' = ' . $db->quote($textfr))
+              ->set($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+              ->set($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+              ->set($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+              ->set($db->quoteName('original_text') . ' = ' . $db->quote(''))
+              ->set($db->quoteName('modified') . ' = ' . $db->quote($currentDate))
+              ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+              ->set($db->quoteName('published') . ' = 1');
+          $db->setQuery($query);
+          $db->execute();
+      } else {
+          $this->updateFalang($textfr,$texten,$reference_id,$reference_table,$reference_field);
+      }
   }
 
   function deleteFalang($reference_id,$reference_table,$reference_field){
@@ -88,6 +116,8 @@ class EmundusonboardModelfalang extends JModelList {
           ->andWhere($db->quoteName('language_id') . ' = 2');
       $db->setQuery($query);
       $db->execute();
+
+      return true;
   }
 
   function getFalang($reference_id,$reference_table,$reference_field){

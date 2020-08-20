@@ -30,10 +30,15 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
     private $vuln_table = 'Not_defined';
     // Variable que contiene la versión de la bbdd local (contendrá el mayor valor del campo 'dbversion' del archivo xml leído)
     private $higher_database_version = '0.0.0';
+	
+	var $global_model = null;
 
     function __construct()
     {
         parent::__construct();
+		
+		require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'model.php';
+		$this->global_model = new SecuritycheckproModel();
 
     }
 
@@ -153,13 +158,7 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
             }
         }
 
-    }
-
-    /* Función que devuelve la hora y fecha actuales */
-    public function currentDateTime_func()
-    {
-        return (date('Y-m-d H:i:s'));
-    }
+    }    
 
     /* Devuelve la versión de la bbdd local */
     function get_database_version()
@@ -195,7 +194,7 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
     
         // Si el campo no esta vacío, devolvemos la hora/día actual formateada
         if ((isset($task_time)) && (!empty($task_time))) {
-            $last_check = new DateTime(date('Y-m-d H:i:s', strtotime($task_time)));
+			$last_check = $this->global_model->get_Joomla_timestamp();            
         } 
     
         return $last_check;
@@ -322,7 +321,8 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
                 // Si el proceso ha sido correcto, actualizamos la bbdd
                 if ($result) {
                     // Actualizamos la fecha de la última comprobación y la versión de la bbdd local
-                    $this->set_campo_bbdd('last_check', date('Y-m-d H:i:s'));
+					$timestamp = $this->global_model->get_Joomla_timestamp();
+                    $this->set_campo_bbdd('last_check', $timestamp);
                     $this->set_campo_bbdd('version', $this->higher_database_version);
                     $this->set_campo_bbdd('message', 'PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED');            
                 } 
@@ -364,11 +364,11 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
             $interval = 20;
         } else
         {
-            $now = new DateTime(date('Y-m-d', strtotime($this->currentDateTime_func())));
-            // Extraemos las horas que han pasado desde el último chequeo
-            $diff = $now->diff($last_check);    
-            (int) $hours = $diff->h;
-            $interval = $hours + ($diff->days*24);        
+			$now = $this->global_model->get_Joomla_timestamp();
+			
+			$seconds = strtotime($now) - strtotime($last_check);
+			// Extraemos las horas que han pasado desde el último chequeo
+			$interval = intval($seconds/3600);	    
         }
         
         if ($interval > 12) {

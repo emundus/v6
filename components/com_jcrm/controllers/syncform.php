@@ -49,37 +49,38 @@ class JcrmControllerSyncForm extends JcrmController {
         $this->setRedirect(JRoute::_('index.php?option=com_jcrm&view=syncform&layout=edit', false));
     }
 
-    /**
-     * Method to save a user's profile data.
-     *
-     * @return	void
-     * @since	1.6
-     */
+	/**
+	 * Method to save a user's profile data.
+	 *
+	 * @return bool
+	 * @throws Exception
+	 * @since    1.6
+	 */
     public function save() {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('SyncForm', 'JcrmModel');
+        $m_syncform = $this->getModel('SyncForm', 'JcrmModel');
 
         // Get the user data.
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
         // Validate the posted data.
-        $form = $model->getForm();
+        $form = $m_syncform->getForm();
         if (!$form) {
-            JError::raiseError(500, $model->getError());
+            JError::raiseError(500, $m_syncform->getError());
             return false;
         }
 
         // Validate the posted data.
-        $data = $model->validate($form, $data);
+        $data = $m_syncform->validate($form, $data);
 
         // Check for errors.
         if ($data === false) {
             // Get the validation messages.
-            $errors = $model->getErrors();
+            $errors = $m_syncform->getErrors();
 
             // Push up to three validation messages out to the user.
             for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
@@ -103,7 +104,7 @@ class JcrmControllerSyncForm extends JcrmController {
         }
 
         // Attempt to save the data.
-        $return = $model->save($data);
+        $return = $m_syncform->save($data);
 
         // Check for errors.
         if ($return === false) {
@@ -112,7 +113,7 @@ class JcrmControllerSyncForm extends JcrmController {
 
             // Redirect back to the edit screen.
             $id = (int) $app->getUserState('com_jcrm.edit.sync.id');
-            $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
+            $this->setMessage(JText::sprintf('Save failed', $m_syncform->getError()), 'warning');
             $this->setRedirect(JRoute::_('index.php?option=com_jcrm&view=syncform&layout=edit&id=' . $id, false));
             return false;
         }
@@ -120,7 +121,7 @@ class JcrmControllerSyncForm extends JcrmController {
 
         // Check in the profile.
         if ($return) {
-            $model->checkin($return);
+            $m_syncform->checkin($return);
         }
 
         // Clear the profile id from the session.
@@ -145,11 +146,11 @@ class JcrmControllerSyncForm extends JcrmController {
         $editId = (int) $app->getUserState('com_jcrm.edit.sync.id');
 
         // Get the model.
-        $model = $this->getModel('SyncForm', 'JcrmModel');
+        $m_syncform = $this->getModel('SyncForm', 'JcrmModel');
 
         // Check in the item
         if ($editId) {
-            $model->checkin($editId);
+            $m_syncform->checkin($editId);
         }
         
         $menu = JFactory::getApplication()->getMenu();
@@ -162,7 +163,7 @@ class JcrmControllerSyncForm extends JcrmController {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('SyncForm', 'JcrmModel');
+        $m_syncform = $this->getModel('SyncForm', 'JcrmModel');
 
         // Get the user data.
         $data = array();
@@ -171,7 +172,7 @@ class JcrmControllerSyncForm extends JcrmController {
         // Check for errors.
         if (empty($data['id'])) {
             // Get the validation messages.
-            $errors = $model->getErrors();
+            $errors = $m_syncform->getErrors();
 
             // Push up to three validation messages out to the user.
             for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
@@ -192,7 +193,7 @@ class JcrmControllerSyncForm extends JcrmController {
         }
 
         // Attempt to save the data.
-        $return = $model->delete($data);
+        $return = $m_syncform->delete($data);
 
         // Check for errors.
         if ($return === false) {
@@ -201,7 +202,7 @@ class JcrmControllerSyncForm extends JcrmController {
 
             // Redirect back to the edit screen.
             $id = (int) $app->getUserState('com_jcrm.edit.sync.id');
-            $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
+            $this->setMessage(JText::sprintf('Delete failed', $m_syncform->getError()), 'warning');
             $this->setRedirect(JRoute::_('index.php?option=com_jcrm&view=sync&layout=edit&id=' . $id, false));
             return false;
         }
@@ -209,7 +210,7 @@ class JcrmControllerSyncForm extends JcrmController {
 
         // Check in the profile.
         if ($return) {
-            $model->checkin($return);
+            $m_syncform->checkin($return);
         }
 
         // Clear the profile id from the session.

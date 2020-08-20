@@ -46,13 +46,14 @@ class JcrmModelEmail extends JModelItem {
         $this->setState('params', $params);
     }
 
-    /**
-     * Method to get an ojbect.
-     *
-     * @param	integer	The id of the object to get.
-     *
-     * @return	mixed	Object on success, false on failure.
-     */
+	/**
+	 * Method to get an ojbect.
+	 *
+	 * @param integer    The id of the object to get.
+	 *
+	 * @return    mixed    Object on success, false on failure.
+	 * @throws Exception
+	 */
     public function &getData($id = null) {
         if ($this->_item === null) {
             $this->_item = false;
@@ -67,10 +68,9 @@ class JcrmModelEmail extends JModelItem {
             // Attempt to load the row.
             if ($table->load($id)) {
                 // Check published state.
-                if ($published = $this->getState('filter.published')) {
-                    if ($table->state != $published) {
-                        return $this->_item;
-                    }
+                $published = $this->getState('filter.published');
+                if ($table->state != $published) {
+                    return $this->_item;
                 }
 
                 // Convert the JTable to a clean JObject.
@@ -82,7 +82,7 @@ class JcrmModelEmail extends JModelItem {
         }
 
 
-		if ( isset($this->_item->created_by) ) {
+		if (isset($this->_item->created_by)) {
 			$this->_item->created_by_name = JFactory::getUser($this->_item->created_by)->name;
 		}
 
@@ -94,41 +94,42 @@ class JcrmModelEmail extends JModelItem {
         return JTable::getInstance($type, $prefix, $config);
     }
 
-    /**
-     * Method to check in an item.
-     *
-     * @param	integer		The id of the row to check out.
-     * @return	boolean		True on success, false on failure.
-     * @since	1.6
-     */
+	/**
+	 * Method to check in an item.
+	 *
+	 * @param integer        The id of the row to check out.
+	 *
+	 * @return    boolean        True on success, false on failure.
+	 * @throws Exception
+	 * @since    1.6
+	 */
     public function checkin($id = null) {
         // Get the id.
         $id = (!empty($id)) ? $id : (int) $this->getState('email.id');
 
         if ($id) {
-
             // Initialise the table
             $table = $this->getTable();
 
             // Attempt to check the row in.
-            if (method_exists($table, 'checkin')) {
-                if (!$table->checkin($id)) {
-                    $this->setError($table->getError());
-                    return false;
-                }
+            if (method_exists($table, 'checkin') && !$table->checkin($id)) {
+                $this->setError($table->getError());
+                return false;
             }
         }
 
         return true;
     }
 
-    /**
-     * Method to check out an item for editing.
-     *
-     * @param	integer		The id of the row to check out.
-     * @return	boolean		True on success, false on failure.
-     * @since	1.6
-     */
+	/**
+	 * Method to check out an item for editing.
+	 *
+	 * @param integer        The id of the row to check out.
+	 *
+	 * @return    boolean        True on success, false on failure.
+	 * @throws Exception
+	 * @since    1.6
+	 */
     public function checkout($id = null) {
         // Get the user id.
         $id = (!empty($id)) ? $id : (int) $this->getState('email.id');
@@ -142,11 +143,9 @@ class JcrmModelEmail extends JModelItem {
             $user = JFactory::getUser();
 
             // Attempt to check the row out.
-            if (method_exists($table, 'checkout')) {
-                if (!$table->checkout($user->get('id'), $id)) {
-                    $this->setError($table->getError());
-                    return false;
-                }
+            if (method_exists($table, 'checkout') && !$table->checkout($user->get('id'), $id)) {
+                $this->setError($table->getError());
+                return false;
             }
         }
 
@@ -175,27 +174,20 @@ class JcrmModelEmail extends JModelItem {
         return $table->delete($id);
     }
 
-    public function getMailSubject()
-    {
+    public function getMailSubject() {
         $dbo = $this->getDbo();
-        try
-        {
+        try {
             $query = "select id, subject from #__emundus_setup_emails where type = 3";
             $dbo->setQuery($query);
-            $res = $dbo->loadObjectList();
-            return $res;
-        }
-        catch(Exeption $e)
-        {
+            return $dbo->loadObjectList();
+        } catch (Exception $e) {
             JLog::add('Error in model/email at function getMailSubject, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
-    public function getMailContact($name)
-    {
+    public function getMailContact($name) {
         $dbo = $this->getDbo();
-        try
-        {
+        try {
             $query = "select id, full_name, email from #__jcrm_contacts as c where  (c.full_name like '%".addslashes($name)."%') or (c.email like '%".addslashes($name)."%')  or (c.last_name like '%".addslashes($name)."%')  or (c.first_name like '%".addslashes($name)."%') or (c.organisation like '%".addslashes($name)."%') limit 0, 100";
             $dbo->setQuery($query);
             $res['contacts'] = $dbo->loadAssocList();
@@ -203,53 +195,39 @@ class JcrmModelEmail extends JModelItem {
             $dbo->setQuery($query);
             $res['groups'] = $dbo->loadAssocList();
             return $res;
-        }
-        catch(JDatabaseException $e)
-        {
+        } catch(JDatabaseException $e) {
             JLog::add('Error in model/email at function getMailContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
-    public function getMailBody($id)
-    {
+    public function getMailBody($id) {
         $dbo = $this->getDbo();
 
-        try
-        {
+        try {
             $query = "select message, subject from #__emundus_setup_emails where `id` = $id";
             $dbo->setQuery($query);
             return $dbo->loadObject();
-
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             JLog::add('Error in model/email at function getMailBody, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
-    public function getEmailFrom($id)
-    {
+    public function getEmailFrom($id) {
         $dbo = $this->getDbo();
 
-        try
-        {
+        try {
             $query = "select `emailfrom`, `name`  from #__emundus_setup_emails where `id` = $id";
             $dbo->setQuery($query);
             $res = $dbo->loadObject();
-            if($res->emailfrom == '[USER_EMAIL]')
-            {
+            if ($res->emailfrom == '[USER_EMAIL]') {
                 $res->emailfrom = JFactory::getUser()->email;
             }
-            if($res->name == '[USER_NAME]')
-            {
+            if ($res->name == '[USER_NAME]') {
                 $res->name = JFactory::getUser()->name;
             }
 
             return $res;
-
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             JLog::add('Error in model/email at function getEmailFrom, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
@@ -269,7 +247,7 @@ class JcrmModelEmail extends JModelItem {
 
                 $orgIds = $dbo->loadColumn();
 
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 error_log($e->getMessage(), 0);
                 return $e->getMessage();
             }
@@ -284,16 +262,12 @@ class JcrmModelEmail extends JModelItem {
                 $dbo->setQuery($query);
 
                 try {
-
                     $orgContacts = $dbo->loadAssocList();
-
                 } catch(Exception $e) {
                     error_log($e->getMessage(), 0);
                     return $e->getMessage();
                 }
-
             }
-
         }
 
         if ($orgMail == 'direct' || $orgMail == 'both') {
@@ -314,45 +288,34 @@ class JcrmModelEmail extends JModelItem {
 
         }
 
-        if (isset($orgContacts))
-            $contacts = array_merge($contacts, $orgContacts);
+        if (isset($orgContacts)) {
+        	$contacts = array_merge($contacts, $orgContacts);
+        }
 
         return $contacts;
-
     }
 
-    public function getContacts($list)
-    {
+    public function getContacts($list) {
         $dbo = $this->getDbo();
         $query = "select c.id from #__jcrm_contacts as c
                   join #__jcrm_group_contact as grc on grc.contact_id = c.id where grc.group_id in  (".implode(', ', $list).")
                   order by c.id";
-        try
-        {
+        try {
             $dbo->setQuery($query);
-            $res =  $dbo->loadColumn();
-            return $res;
-        }
-        catch(JException $e)
-        {
+            return $dbo->loadColumn();
+        } catch(Exception $e) {
             JLog::add('Error in model/email at function getContacts, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
         }
     }
 
-    public function addMessage($to, $s, $m)
-    {
+    public function addMessage($to, $s, $m) {
         $dbo = $this->getDbo();
-        try
-        {
+        try {
             $query = "insert (`user_id`, `email_to`, `state`, `priority`, `subject`, `message`) into #__jcrm_messages
                       values(".JFactory::getUser()->id.", '".$to."', 0, 0, ".$dbo->Quote($s).", ".$dbo->Quote($m)." )";
             $dbo->setQuery($query);
-            $res = $dbo->execute();
-            //echo str_replace('#_', 'jos', $query);
-            return $res;
-        }
-        catch(Exception $e)
-        {
+            return $dbo->execute();
+        } catch(Exception $e) {
             error_log($e->getMessage(), 0);
             return $e->getMessage();
         }

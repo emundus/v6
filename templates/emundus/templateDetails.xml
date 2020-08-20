@@ -27,7 +27,7 @@
     </files>
 
     <positions>
-        <position>header-a</position>
+        <position>header-a-saas</position>
         <position>header-onboarding</position>
         <position>header-switch</position>
         <position>header-c</position>
@@ -63,7 +63,7 @@
                     <option value="1">Show</option>
                     <option value="0">Hide</option>
                 </field>
-                <field name="header-a" type="list" default="block" label="header-a Position Style">
+                <field name="header-a-saas" type="list" default="block" label="header-a-saas Position Style">
                     <option value="block">TT Default</option>
                     <option value="none">None</option>
                 </field>

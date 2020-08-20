@@ -1,43 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <fieldset label="COM_JCRM" name="jcrm">
-        <field name="sync_table_select" type="text"
-               label="COM_JCRM_FORM_LBL_SYNC_TABLE_SELECT"
-               description="COM_JCRM_FORM_DESC_SYNC_SELECT_NAME"
-               default="*"
-                />
-        <field name="sync_table_name" type="text"
-               label="COM_JCRM_FORM_LBL_SYNC_TABLE_NAME"
-               description="COM_JCRM_FORM_DESC_SYNC_TABLE_NAME"
-               default="jos_emundus_references"
-                />
-        <field name="sync_contact_id_column" type="text"
-               label="COM_JCRM_FORM_LBL_SYNC_CONTACT_ID_COLUMN"
-               description="COM_JCRM_FORM_DESC_SYNC_CONTACT_ID_COLUMN"
-               default="id_contact" />
-        <field name="sync_account_id_column" type="text"
-            label="COM_JCRM_FORM_LBL_SYNC_ACCOUNT_ID_COLUMN"
-            description="COM_JCRM_FORM_DESC_SYNC_ACCOUNT_ID_COLUMN" 
-                 default="id_account" 
-                 />
-        <field name="sync_nb_referees" type="text"
-            label="COM_JCRM_FORM_LBL_SYNC_NB_REFEREES"
-            description="COM_JCRM_FORM_DESC_SYNC_NB_REFEREES"
-            default="3"
-            filter="int"
-            size="1"
-            maxlength="2" />
+        <field name="sync_table_select" type="text" label="COM_JCRM_FORM_LBL_SYNC_TABLE_SELECT" description="COM_JCRM_FORM_DESC_SYNC_SELECT_NAME" default="*"/>
+        <field name="sync_table_name" type="text" label="COM_JCRM_FORM_LBL_SYNC_TABLE_NAME" description="COM_JCRM_FORM_DESC_SYNC_TABLE_NAME" default="jos_emundus_references"/>
+        <field name="sync_contact_id_column" type="text" label="COM_JCRM_FORM_LBL_SYNC_CONTACT_ID_COLUMN" description="COM_JCRM_FORM_DESC_SYNC_CONTACT_ID_COLUMN" default="id_contact" />
+        <field name="sync_account_id_column" type="text" label="COM_JCRM_FORM_LBL_SYNC_ACCOUNT_ID_COLUMN" description="COM_JCRM_FORM_DESC_SYNC_ACCOUNT_ID_COLUMN" default="id_account"/>
+        <field name="sync_nb_referees" type="text" label="COM_JCRM_FORM_LBL_SYNC_NB_REFEREES" description="COM_JCRM_FORM_DESC_SYNC_NB_REFEREES" default="3" filter="int" size="1" maxlength="2" />
     </fieldset>
-    <fieldset 
-        name="permissions"
-	description="JCONFIG_PERMISSIONS_DESC"
-	label="JCONFIG_PERMISSIONS_LABEL">
 
-		<field 
-                    name="rules" type="rules" component="com_jcrm"
-                    class="inputbox" filter="rules" validate="rules"
-                    label="JCONFIG_PERMISSIONS_LABEL"
-                    section="component" />
+    <fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">
+		<field name="rules" type="rules" component="com_jcrm" class="inputbox" filter="rules" validate="rules" label="JCONFIG_PERMISSIONS_LABEL" section="component" />
 	</fieldset>
 </config>
 <!--

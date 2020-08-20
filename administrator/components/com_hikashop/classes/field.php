@@ -1934,7 +1934,7 @@ class hikashopFieldItem {
 				$app = JFactory::getApplication();
 				$app->enqueueMessage($message, 'error');
 			} else {
-				$this->parent->messages[$this->prefix.$field->field_namekey] = array($message, 'error');
+				$this->parent->messages[$this->prefix.$field->field_namekey] = array($message);
 			}
 		}
 		return false;

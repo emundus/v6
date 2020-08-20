@@ -143,7 +143,7 @@ class com_SecuritycheckproInstallerScript
     'media/images/view_analyzed_files.png',
     'media/images/view_files_integrity.png',
     'media/images/view_trackactions_logs.png',
-    'media/images/waf_lists.png',           
+    'media/images/waf_lists.png',          
     ),
     'folders'    => array
     (
@@ -176,6 +176,7 @@ class com_SecuritycheckproInstallerScript
     'administrator/components/com_securitycheckpro/views/uploadscanner',
     // Removed obsolete javascript
     'media/com_securitycheckpro/javascript',
+	'media/com_securitycheckpro/new/js/js.cookie.js',
     )
     );
             

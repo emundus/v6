@@ -22,19 +22,22 @@ class JcrmViewContactform extends JViewLegacy {
     protected $form;
     protected $params;
 
-    /**
-     * Display the view
-     */
+	/**
+	 * Display the view
+	 *
+	 * @param null $tpl
+	 *
+	 * @throws Exception
+	 */
     public function display($tpl = null) {
 
         $app = JFactory::getApplication();
-        $user = JFactory::getUser();
 
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
 
         $this->params = $app->getParams('com_jcrm');
-        $this->form		= $this->get('Form');
+        $this->form	= $this->get('Form');
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
@@ -42,7 +45,6 @@ class JcrmViewContactform extends JViewLegacy {
         }
 
         $this->_prepareDocument();
-
         parent::display($tpl);
     }
 
@@ -62,6 +64,7 @@ class JcrmViewContactform extends JViewLegacy {
         } else {
             $this->params->def('page_heading', JText::_('COM_JCRM_DEFAULT_PAGE_TITLE'));
         }
+
         $title = $this->params->get('page_title', '');
         if (empty($title)) {
             $title = $app->getCfg('sitename');
@@ -84,5 +87,4 @@ class JcrmViewContactform extends JViewLegacy {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
     }
-
 }

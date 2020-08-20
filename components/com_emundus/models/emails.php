@@ -405,7 +405,7 @@ class EmundusModelEmails extends JModelList {
         );
         $replacements = array(
             $user->id, $user->name, $user->email, $user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
-            JURI::base()."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), "index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(), $sitename, 
+            JURI::base()."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), "index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(), $sitename,
             $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
         );
 
@@ -415,7 +415,7 @@ class EmundusModelEmails extends JModelList {
                 $replacements[] = $value;
             }
         }
-        
+
         $constants = array('patterns' => $patterns , 'replacements' => $replacements);
 
         return $constants;
@@ -524,7 +524,7 @@ class EmundusModelEmails extends JModelList {
     public function setTagsFabrik($str, $fnums = array()) {
         require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $file = new EmundusModelFiles();
-        
+
         $jinput = JFactory::getApplication()->input;
 
         if (count($fnums) == 0) {
@@ -533,14 +533,14 @@ class EmundusModelEmails extends JModelList {
         } else {
             $fnumsArray = $fnums;
         }
-        
+
         $tags = $file->getVariables($str);
-        
+
         $idFabrik = array();
         $setupTags = array();
 
         if (count($tags) > 0) {
-            
+
             foreach ($tags as $val) {
                 $tag = strip_tags($val);
                 if (is_numeric($tag)) {
@@ -570,12 +570,12 @@ class EmundusModelEmails extends JModelList {
 	                    $fabrikValues[$elt['id']] = $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                     }
                 }
-                
+
                 if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-                        
+
                         $val = explode(',', $val["val"]);
-                        
+
                         foreach ($val as $k => $v) {
 
                             // If the value is empty then we do not get the label, this avoids '--- Please Select ---' from appearing.
@@ -590,7 +590,7 @@ class EmundusModelEmails extends JModelList {
                         $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                     }
                 }
-                
+
                 if ($elt['plugin'] == "birthday") {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                         $val = explode(',', $val['val']);
@@ -600,7 +600,7 @@ class EmundusModelEmails extends JModelList {
                         $fabrikValues[$elt['id']][$fnum]['val'] = implode(",", $val);
                     }
                 }
-                
+
                 if ($elt['plugin'] == 'cascadingdropdown') {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                         $fabrikValues[$elt['id']][$fnum]['val'] = $this->getCddLabel($elt, $val['val']);
@@ -618,7 +618,7 @@ class EmundusModelEmails extends JModelList {
                     }
                 }
             }
-            
+
             return $this->replace($preg, $str);
         } else {
         	return $str;
@@ -641,13 +641,13 @@ class EmundusModelEmails extends JModelList {
         $label = $attribs->cascadingdropdown_label;
         $r2 = explode('___', $label);
         $select = !empty($attribs->cascadingdropdown_label_concat)?str_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), str_replace('{thistable}',$r2[0],"CONCAT(".$attribs->cascadingdropdown_label_concat.")")):$r2[1];
-        
+
         $query = $this->_db->getQuery(true);
         $query->select($select)
             ->from($this->_db->quoteName($r2[0]))
             ->where($this->_db->quoteName($r1[1]).' LIKE '.$this->_db->quote($val));
         $this->_db->setQuery($query);
-        
+
         try {
         	$ret = $this->_db->loadResult();
             if (empty($ret)) {

@@ -9,6 +9,9 @@
       <div class="text-center" v-if="grid == null">
         <button class="bouton-sauvergarder-et-continuer-3" style="float: none" type="button" @click="$modal.show('modalAddEvaluation')">{{addGrid}}</button>
       </div>
+      <div class="text-center" v-if="grid != null">
+        <button class="bouton-sauvergarder-et-continuer-3" style="float: none" type="button" @click="evaluationBuilder">Modifier la grille</button>
+      </div>
       <FormViewerEvaluation :link="link" :prog="prog" :key="viewer" v-if="grid != null"/>
     </div>
   </div>
@@ -19,6 +22,8 @@ import { Datetime } from "vue-datetime";
 import axios from "axios";
 import FormViewerEvaluation from "../../components/Form/FormViewerEvaluation";
 import ModalAddEvaluation from "../advancedModals/ModalAddEvaluation";
+
+const qs = require("qs");
 
 export default {
   name: "addEvaluationGrid",
@@ -56,6 +61,28 @@ export default {
                   this.viewer++;
                 }
               });
+    },
+
+    evaluationBuilder() {
+      this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=&index=0&cid=' +
+              this.prog +
+              '&evaluation=' +
+              this.grid);
+    },
+
+    redirectJRoute(link) {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        params: {
+          link: link,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        window.location.href = window.location.pathname + response.data.data;
+      });
     }
   },
 

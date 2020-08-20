@@ -1,4 +1,10 @@
 <?php die() ?>
+Admin Tools 5.7.4
+================================================================================
++ .htaccess/NginX Conf/web.config Maker: more options for the expiration time
+# [LOW] Clearing the Security Exceptions Log date filters can cause an error on MySQL 8
+# [LOW] Expiration time was not being set for WOFF fonts in the .htaccess Maker
+
 Admin Tools 5.7.3
 ================================================================================
 ~ Small change in the FOF library to prevent harmless but confusing and annoying errors from appearing during upgrade

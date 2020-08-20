@@ -21,10 +21,14 @@ use Joomla\Filesystem\File as JFile;
  */
 class SecuritycheckprosControllerFileManager extends SecuritycheckproController
 {
-
+	var $global_model = null;
+	
     public function __construct() 
     {
         parent::__construct();    
+		
+		require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'model.php';
+		$this->global_model = new SecuritycheckproModel();
         
         $jinput = JFactory::getApplication()->input;
         
@@ -144,7 +148,8 @@ class SecuritycheckprosControllerFileManager extends SecuritycheckproController
         $mainframe->setUserState("repair_launched", null);
             
         $model->set_campo_filemanager('files_scanned', 0);
-        $model->set_campo_filemanager('last_check', date('Y-m-d H:i:s'));
+		$timestamp = $this->global_model->get_Joomla_timestamp();
+        $model->set_campo_filemanager('last_check', $timestamp);
         $message = JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS');
         echo $message; 
         $model->set_campo_filemanager('estado', 'IN_PROGRESS'); 
@@ -157,7 +162,8 @@ class SecuritycheckprosControllerFileManager extends SecuritycheckproController
         $model = $this->getModel("filemanager");
     
         $model->set_campo_filemanager('files_scanned_integrity', 0);
-        $model->set_campo_filemanager('last_check_integrity', date('Y-m-d H:i:s'));
+		$timestamp = $this->global_model->get_Joomla_timestamp();
+        $model->set_campo_filemanager('last_check_integrity', $timestamp);
         $message = JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS');
         echo $message; 
         $model->set_campo_filemanager('estado_integrity', 'IN_PROGRESS'); 
@@ -170,7 +176,8 @@ class SecuritycheckprosControllerFileManager extends SecuritycheckproController
         $model = $this->getModel("filemanager");
     
         $model->set_campo_filemanager('files_scanned_malwarescan', 0);
-        $model->set_campo_filemanager('last_check_malwarescan', date('Y-m-d H:i:s'));
+		$timestamp = $this->global_model->get_Joomla_timestamp();
+        $model->set_campo_filemanager('last_check_malwarescan', $timestamp);
         $message = JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS');
         echo $message; 
         $model->set_campo_filemanager('estado_malwarescan', 'IN_PROGRESS'); 
@@ -234,7 +241,8 @@ class SecuritycheckprosControllerFileManager extends SecuritycheckproController
 
     public function currentDateTime()
     {
-        echo date('Y-m-d H:i:s');
+		$timestamp = $this->global_model->get_Joomla_timestamp();
+        echo $timestamp;
     }
 
     /* Obtiene el estado del proceso de análisis de la integridad de los archivos consultando los datos de sesión almacenados previamente */

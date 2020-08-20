@@ -208,9 +208,8 @@ export default {
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify({ body: this.form, code: this.email })
-        })
-          .then(response => {
-            window.location.replace("emails");
+        }).then(response => {
+            history.go(-1);
           })
           .catch(error => {
             console.log(error);
@@ -225,7 +224,7 @@ export default {
           data: qs.stringify({ body: this.form })
         })
           .then(response => {
-            window.location.replace("emails");
+            history.go(-1);
           })
           .catch(error => {
             console.log(error);

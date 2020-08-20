@@ -11,6 +11,7 @@ Joomla.apps = {
     view: "dashboard",
     id: 0,
     ordering: "",
+    version: "current",
     cssfiles: [],
     jsfiles: [],
     list: 0,
@@ -39,10 +40,16 @@ Joomla.loadweb = function (url) {
     url += '&product=' + Joomla.apps.options.product + '&release=' + Joomla.apps.options.release + '&dev_level=' + Joomla.apps.options.dev_level + '&list=' + (Joomla.apps.list ? 'list' : 'grid') + '&pv=' + Joomla.apps.options.pv;
 
     var ordering = Joomla.apps.ordering;
+    var version = Joomla.apps.version;
 
     if (ordering !== "" && jQuery('#com-apps-ordering').val()) {
         ordering = jQuery('#com-apps-ordering').val();
         url += '&ordering=' + ordering;
+    }
+
+    if (version !== "" && jQuery('#com-apps-filter-joomla-version').val()) {
+        version = jQuery('#com-apps-filter-joomla-version').val();
+        url += '&filter_version=' + version;
     }
 
     jQuery('html, body').animate({scrollTop: 0}, 0);
@@ -188,6 +195,7 @@ Joomla.installfromwebajaxsubmit = function () {
     }
 
     var ordering = Joomla.apps.ordering;
+    var version = Joomla.apps.version;
 
     if (ordering !== "" && jQuery('#com-apps-ordering').val()) {
         ordering = jQuery('#com-apps-ordering').val();
@@ -195,6 +203,14 @@ Joomla.installfromwebajaxsubmit = function () {
 
     if (ordering) {
         tail += '&ordering=' + ordering;
+    }
+
+    if (version !== "" && jQuery('#com-apps-filter-joomla-version').val()) {
+        version = jQuery('#com-apps-filter-joomla-version').val();
+    }
+
+    if (version) {
+        tail += '&filter_version=' + version;
     }
 
     Joomla.loadweb(Joomla.apps.options.base_url + 'index.php?format=json&option=com_apps' + tail);
@@ -253,6 +269,11 @@ Joomla.apps.initialize = function () {
 
     jQuery('#com-apps-ordering').live('change', function (event) {
         Joomla.apps.ordering = jQuery(this).prop("selectedIndex");
+        Joomla.installfromwebajaxsubmit();
+    });
+
+    jQuery('#com-apps-filter-joomla-version').live('change', function (event) {
+        Joomla.apps.version = jQuery(this).prop("selectedIndex");
         Joomla.installfromwebajaxsubmit();
     });
 

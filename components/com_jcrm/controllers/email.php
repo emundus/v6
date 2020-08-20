@@ -50,12 +50,13 @@ class JcrmControllerEmail extends JcrmController {
         $this->setRedirect(JRoute::_('index.php?option=com_jcrm&view=emailform&layout=edit', false));
     }
 
-    /**
-     * Method to save a user's profile data.
-     *
-     * @return	void
-     * @since	1.6
-     */
+	/**
+	 * Method to save a user's profile data.
+	 *
+	 * @return    void
+	 * @throws Exception
+	 * @since    1.6
+	 */
     public function publish() {
         // Initialise variables.
         $app = JFactory::getApplication();
@@ -85,7 +86,7 @@ class JcrmControllerEmail extends JcrmController {
 
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_JCRM_ITEM_SAVED_SUCCESSFULLY'));
-            $menu = & JFactory::getApplication()->getMenu();
+            $menu = JFactory::getApplication()->getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
         } else {
@@ -132,7 +133,7 @@ class JcrmControllerEmail extends JcrmController {
             }
 
             // Redirect to the list screen.
-            $menu = & JFactory::getApplication()->getMenu();
+            $menu = JFactory::getApplication()->getMenu();
             $item = $menu->getActive();
             $this->setRedirect(JRoute::_($item->link, false));
         } else {
@@ -143,18 +144,14 @@ class JcrmControllerEmail extends JcrmController {
 	/**
      *
      */
-    public function getmailcontact()
-    {
+    public function getmailcontact() {
         $jinput = JFactory::getApplication()->input;
         $contact = $jinput->getString('contact', "");
         $m_email = new JcrmModelEmail();
         $contactList = $m_email->getMailContact($contact);
-        if(!is_string($contactList))
-        {
+        if (!is_string($contactList)) {
             echo json_encode($contactList);
-        }
-        else
-        {
+        } else {
             echo json_encode(array('error' => JText::_('ERROR'), 'msg' => $contactList));
         }
         exit();
@@ -163,8 +160,7 @@ class JcrmControllerEmail extends JcrmController {
 
 	/**
      * @throws Exception
-     * @throws JException
-     */
+	 */
     public function sendmail() {
         $m_email = new JcrmModelEmail();
         $user = JFactory::getUser();
@@ -177,10 +173,11 @@ class JcrmControllerEmail extends JcrmController {
         $body           = $request_body->body;
         $orgMail        = $request_body->orgmail;
 
-        if (!empty($groups))
-            $groupList = $m_email->getContacts($groups);
-        else
-            $groupList = array();
+        if (!empty($groups)) {
+        	$groupList = $m_email->getContacts($groups);
+        } else {
+        	$groupList = array();
+        }
 
         $contacts = array_unique(array_merge($contacts, $groupList));
         $mailAdress = $m_email->getEmailAdr($contacts, $orgMail);
@@ -197,8 +194,9 @@ class JcrmControllerEmail extends JcrmController {
         $fail = 0;
         $tags = array('[FULL_NAME]','[LAST_NAME]', '[FIRST_NAME]', '[EMAIL]', '[PHONE]', '[ORGANISATION]');
         foreach ($mailAdress as $mail) {
-            if ($cpt % 10 == 0)
-                sleep(1);
+            if ($cpt % 10 == 0) {
+            	sleep(1);
+            }
 
             $body = str_replace($tags, array($mail['full_name'], $mail['last_name'], $mail['first_name'], $mail['email'], $mail['phone'], $mail['organisation']), $body);
 
@@ -213,24 +211,15 @@ class JcrmControllerEmail extends JcrmController {
             $mailer->isHTML(true);
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
-//die(var_dump($mailer));
+
             $send = $mailer->Send();
-            if ($send !== true)
-                $fail++;
-            else
-                $m_email->addMessage($mail['email'], $subject, $body);
+            if ($send !== true) {
+            	$fail++;
+            } else {
+            	$m_email->addMessage($mail['email'], $subject, $body);
+            }
 
             $cpt++;
-/*
-            if (JUtility::sendMail($userFrom->emailfrom, $userFrom->name, $mail['email'], $subject, $body, true))
-            {
-                $m_email->addMessage($mail['email'], $subject, $body);
-            }
-            else
-            {
-                $fail++;
-            }
-*/
         }
 
         $status = true;
@@ -241,8 +230,9 @@ class JcrmControllerEmail extends JcrmController {
             $cpt--;
             $sent = $cpt - $fail;
             $msg = $sent . ' ' . JText::_('CONTACT_SENT_WITH_SUCCESS');
-            if ($fail > 0)
-                $msg .= ' ' . $fail . ' ' . JText::_('CONTACT_FAILED');
+            if ($fail > 0) {
+            	$msg .= ' ' . $fail . ' ' . JText::_('CONTACT_FAILED');
+            }
         }
 
         echo json_encode((object)array('status' => $status, 'msg' => $msg));
@@ -253,19 +243,16 @@ class JcrmControllerEmail extends JcrmController {
 	/**
      *
      */
-    public function getmailbody()
-    {
+    public function getmailbody() {
         $jinput = JFactory::getApplication()->input;
         $id = $jinput->getInt('bid', null);
         $m_email = new JcrmModelEmail();
-        if(!is_null($id))
-            $body = $m_email->getMailBody($id);
-        if(!is_string($body))
-        {
-            echo json_encode($body);
+        if (!is_null($id)) {
+        	$body = $m_email->getMailBody($id);
         }
-        else
-        {
+        if (!is_string($body)) {
+            echo json_encode($body);
+        } else {
             echo json_encode(array('error' => JText::_('ERROR'), 'msg' => $body));
         }
         exit();

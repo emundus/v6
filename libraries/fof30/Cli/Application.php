@@ -172,6 +172,7 @@ include_once __DIR__ . '/Traits/CGIModeAware.php';
 include_once __DIR__ . '/Traits/CustomOptionsAware.php';
 include_once __DIR__ . '/Traits/JoomlaConfigAware.php';
 include_once __DIR__ . '/Traits/MemStatsAware.php';
+include_once __DIR__ . '/Traits/MessageAware.php';
 include_once __DIR__ . '/Traits/TimeAgoAware.php';
 
 // The actual implementation of the CliApplication depends on the Joomla version we're running under

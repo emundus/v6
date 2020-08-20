@@ -3119,15 +3119,23 @@ class EmundusModelApplication extends JModelList {
      * @return bool
      */
     function allowEmbed($url) {
-        $header = @get_headers($url, 1);
+
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    if ($eMConfig->get('headerCheck', '1') == 1) {
+		    $header = @get_headers($url, 1);
+	    } else {
+	    	$header = true;
+	    }
 
         // URL okay?
-        if (!$header || stripos($header[0], '200 ok') === false)
-            return false;
+        if (!$header || stripos($header[0], '200 ok') === false) {
+        	return false;
+        }
 
         // Check X-Frame-Option
-        elseif (isset($header['X-Frame-Options']) && (stripos($header['X-Frame-Options'], 'SAMEORIGIN') !== false || stripos($header['X-Frame-Options'], 'deny') !== false))
-            return false;
+        elseif (isset($header['X-Frame-Options']) && (stripos($header['X-Frame-Options'], 'SAMEORIGIN') !== false || stripos($header['X-Frame-Options'], 'deny') !== false)) {
+        	return false;
+        }
 
         // Everything passed? Return true!
         return true;

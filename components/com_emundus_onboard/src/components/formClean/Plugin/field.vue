@@ -3,11 +3,11 @@
     <div class="row rowmodal">
       <div class="form-group">
         <label>{{fieldtype}} :</label>
-        <select v-model="element.params.password" class="dropdown-toggle">
+        <select v-model="element.params.password" class="dropdown-toggle" :disabled="files != 0 && element.params.password == 6">
           <option value="0">{{textfield}}</option>
           <option value="2">{{phonefield}}</option>
           <option value="3">{{emailfield}}</option>
-          <option value="6">{{numberfield}}</option>
+          <option value="6" v-if="files == 0 || (files != 0 && element.params.password == 6)">{{numberfield}}</option>
         </select>
       </div>
       <div class="form-group">
@@ -42,7 +42,7 @@
 <script>
 export default {
   name: "fieldF",
-  props: { element: Object },
+  props: { element: Object, files: Number },
   data() {
     return {
       msg: '',
@@ -61,9 +61,6 @@ export default {
   },
   methods: {},
   created(){
-    if(window.location.host == 'localhost:8888'){
-      this.path = window.location.protocol + '//' + window.location.host + '/v6/media/com_emundus_onboard/'
-    }
     this.msg =
             '<p style="color: white">' + this.placeholderHelp + '</p>' +
             '<img src="' + this.path + 'placeholder.gif" />'
