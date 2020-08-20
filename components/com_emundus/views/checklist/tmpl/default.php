@@ -487,8 +487,11 @@ if (!empty($this->custom_title)) :?>
                 $div .= '</tbody>';
                 }
             } else {
-                if ($this->isL)
-                $div .= JError::raiseNotice(401, JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($this->user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($this->user->end_date) )));
+                if ($this->isLimitObtained === true) {
+                    $div .= JError::raiseNotice(401, JText::_('LIMIT_OBTAINED'));
+                } else {
+                    $div .= JError::raiseNotice(401, JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($this->user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($this->user->end_date) )));
+                }
             }
             $div .= '</table></div></fieldset>';
             if ($attachment->mandatory) {
