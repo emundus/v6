@@ -3774,6 +3774,10 @@ label.label__placeholder{
   cursor: pointer;
 }
 
+.rte-autocomplete{
+  width: auto;
+}
+
 
 
 

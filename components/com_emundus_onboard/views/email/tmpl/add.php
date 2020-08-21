@@ -30,6 +30,8 @@ JText::script('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING');
 JText::script('COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_BODY_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY');
+JText::script('COM_EMUNDUS_ONBOARD_VARIABLESTIP');
+JText::script('COM_EMUNDUS_ONBOARD_TIP');
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0, 2);

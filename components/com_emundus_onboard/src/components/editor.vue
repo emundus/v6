@@ -93,8 +93,18 @@ export default {
           }
         },
         queryBy: 'tag',
+        delay: 200,
         insert: function(item) {
           return '[' + item.tag + ']';
+        },
+        render: function(item) {
+          return '<li>' +
+              '<a href="javascript:;"><span>' + item.tag + '</span><p>' + item.description + '</p></a>' +
+              '</li>';
+        },
+        renderDropdown: function() {
+          //add twitter bootstrap dropdown-menu class
+          return '<ul class="rte-autocomplete dropdown-menu"></ul>';
         }
       },
       setup: (editor) => {

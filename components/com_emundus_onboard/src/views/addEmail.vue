@@ -1,5 +1,12 @@
 <template>
   <div class="section-principale">
+    <notifications
+        group="foo-velocity"
+        position="bottom left"
+        animation-type="velocity"
+        :speed="500"
+        :classes="'vue-notification-custom'"
+    />
     <div class="w-container">
       <form id="program-form" @submit.prevent="submit">
         <div class="sous-container">
@@ -129,6 +136,7 @@
       BodyRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_BODY_REQUIRED"),
 
       categories: [],
+      enableTip: false,
 
       form: {
         lbl: "",
@@ -200,6 +208,36 @@
       onSearchCategory(value) {
         this.form.category = value;
       },
+
+      enableVariablesTip() {
+        if(!this.enableTip){
+          this.enableTip = true;
+          this.tip();
+        }
+      },
+
+      /**
+       * ** Methods for notify
+       */
+      tip(){
+        this.show(
+            "foo-velocity",
+            Joomla.JText._("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
+            Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+        );
+      },
+
+      show(group, text = "", title = "Information") {
+        this.$notify({
+          group,
+          title: `${title}`,
+          text,
+          duration: 10000
+        });
+      },
+      clean(group) {
+        this.$notify({ group, clean: true });
+      },
     },
 
     created() {
@@ -226,6 +264,9 @@
               }).catch(e => {
                 console.log(e);
               });
+      setTimeout(() => {
+        this.enableVariablesTip();
+      },2000);
     },
 
     mounted() {

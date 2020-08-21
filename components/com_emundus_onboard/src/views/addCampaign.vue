@@ -15,9 +15,6 @@
             <div class="icon-title"></div>
             <h2 class="heading">{{ Parameter }}</h2>
           </div>
-          <p class="paragraphe-sous-titre">
-            {{ ParameterDesc }}
-          </p>
           <div class="form-group campaign-label">
             <label for="campLabel">{{CampName}} *</label>
             <div class="input-can-translate">

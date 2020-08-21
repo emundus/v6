@@ -856,7 +856,7 @@ class EmundusonboardModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('tag')
+        $query->select('tag,description')
             ->from($db->quoteName('#__emundus_setup_tags'))
             ->where($db->quoteName('published') . ' = ' . $db->quote(1));
 
