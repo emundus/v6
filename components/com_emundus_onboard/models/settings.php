@@ -43,6 +43,12 @@ class EmundusonboardModelsettings extends JModelList {
         );
     }
 
+    function clean($string) {
+        $string = str_replace(' ', '_', $string); // Replaces all spaces with hyphens.
+
+        return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
+    }
+
     function getStatus() {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -388,7 +394,7 @@ class EmundusonboardModelsettings extends JModelList {
         return true;
     }
 
-    private function removeParam($param, $user_id) {
+    function removeParam($param, $user_id) {
 
         $user = JFactory::getUser($user_id);
 
@@ -416,5 +422,228 @@ class EmundusonboardModelsettings extends JModelList {
             return false;
         }
         return true;
+    }
+
+    function getDatasFromTable($table){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        if(strpos($table, 'data_') !== false){
+
+            $query->select('join_column_val,translation')
+                ->from($db->quoteName('#__emundus_datas_library'))
+                ->where($db->quoteName('database_name') . ' LIKE ' . $db->quote($table));
+            $db->setQuery($query);
+            $columntodisplay = $db->loadObject();
+
+            if(boolval($columntodisplay->translation)){
+                $columntodisplay->join_column_val = $columntodisplay->join_column_val . '_en,' . $columntodisplay->join_column_val . '_fr';
+            }
+
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName($table));
+            $db->setQuery($query);
+
+            try {
+                return $db->loadAssocList();
+            } catch (Exception $e) {
+                JLog::add('Error : '.$e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function saveDatas($form){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $name = strtolower($this->clean($form['label']));
+
+        // Check if a table already get the same name and increment them
+        $query->clear()
+            ->select('COUNT(*)')
+            ->from($db->quoteName('information_schema.tables'))
+            ->where($db->quoteName('table_name') . ' LIKE ' . $db->quote('%data_' . $name . '%'));
+        $db->setQuery($query);
+        $result = $db->loadResult();
+
+        $increment = '00';
+        if ($result < 10) {
+            $increment = '0' . strval($result);
+        } elseif ($result > 10) {
+            $increment = strval($result);
+        }
+
+        $table_name = 'data_' . $name . '_' . $increment;
+        //
+
+        $query->insert($db->quoteName('#__emundus_datas_library'));
+        $query->set($db->quoteName('database_name') . ' = ' . $db->quote($table_name))
+            ->set($db->quoteName('join_column_val') . ' = ' . $db->quote('value'))
+            ->set($db->quoteName('label') . ' = ' . $db->quote($form['label']))
+            ->set($db->quoteName('description') . ' = ' . $db->quote($form['desc']))
+            ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')));
+        $db->setQuery($query);
+        try {
+            $db->execute();
+
+            // Create the new table
+            $table_query = "CREATE TABLE IF NOT EXISTS " . $table_name . " (
+            id int(11) NOT NULL AUTO_INCREMENT,
+            value_fr varchar(255) NOT NULL,
+            value_en varchar(255) NOT NULL,
+            PRIMARY KEY (id)
+            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+            $db->setQuery($table_query);
+            $db->execute();
+            //
+
+            // Insert values
+            $query = $db->getQuery(true);
+            foreach($form['db_values'] as $values) {
+                $query->clear()
+                    ->insert($db->quoteName($table_name));
+                $query->set($db->quoteName('value_fr') . ' = ' . $db->quote($values['fr']))
+                    ->set($db->quoteName('value_en') . ' = ' . $db->quote($values['en']));
+                $db->setQuery($query);
+                $db->execute();
+            }
+            //
+
+            return true;
+        } catch (Exception $e) {
+            JLog::add('Error : '.$e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function saveImportedDatas($form,$datas){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $name = strtolower($this->clean($form['label']));
+
+        // Check if a table already get the same name and increment them
+        $query->clear()
+            ->select('COUNT(*)')
+            ->from($db->quoteName('information_schema.tables'))
+            ->where($db->quoteName('table_name') . ' LIKE ' . $db->quote('%data_' . $name . '%'));
+        $db->setQuery($query);
+        $result = $db->loadResult();
+
+        $increment = '00';
+        if ($result < 10) {
+            $increment = '0' . strval($result);
+        } elseif ($result > 10) {
+            $increment = strval($result);
+        }
+
+        $table_name = 'data_' . $name . '_' . $increment;
+        //
+
+        $columns = array_keys($datas[0]);
+        unset($datas[0]);
+        foreach ($columns as $key => $column) {
+            $columns[$key] = strtolower($this->clean($column));
+        }
+
+        $query->insert($db->quoteName('#__emundus_datas_library'));
+        $query->set($db->quoteName('database_name') . ' = ' . $db->quote($table_name))
+            ->set($db->quoteName('join_column_val') . ' = ' . $db->quote($columns[0]))
+            ->set($db->quoteName('label') . ' = ' . $db->quote($form['label']))
+            ->set($db->quoteName('description') . ' = ' . $db->quote($form['desc']))
+            ->set($db->quoteName('translation') . ' = ' . $db->quote(0))
+            ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')));
+        $db->setQuery($query);
+        try {
+            $db->execute();
+
+            // Create the new table
+            $table_query = "CREATE TABLE IF NOT EXISTS " . $table_name . " (
+            id int(11) NOT NULL AUTO_INCREMENT,
+            PRIMARY KEY (id)
+            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+            $db->setQuery($table_query);
+            $db->execute();
+
+            foreach ($columns as $key => $column) {
+                $query = "ALTER TABLE " . $table_name . " ADD " . $column . " VARCHAR(255) NULL";
+                $db->setQuery($query);
+                $db->execute();
+            }
+            //
+
+            // Insert values
+            $query = $db->getQuery(true);
+            foreach($datas as $value) {
+                $query->clear()
+                    ->insert($db->quoteName($table_name));
+                foreach (array_keys($value) as $key => $column){
+                    $query->set($db->quoteName(strtolower($this->clean($column))) . ' = ' . $db->quote(array_values($value)[$key]));
+                }
+                $db->setQuery($query);
+                $db->execute();
+            }
+            //
+
+            return true;
+        } catch (Exception $e) {
+            JLog::add('Error : '.$e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function unlockUser($user_id){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update('#__users')
+            ->set($db->quoteName('block') . ' = 0')
+            ->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
+
+        try {
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Error : '.$e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function lockUser($user_id){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $user = JFactory::getUser();
+
+        if($user_id != 62 && $user_id != $user->id) {
+            $query->update('#__users')
+                ->set($db->quoteName('block') . ' = 1')
+                ->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
+
+            try {
+                $db->setQuery($query);
+                return $db->execute();
+            } catch (Exception $e) {
+                JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function checkFirstDatabaseJoin($user_id) {
+        $user = JFactory::getUser($user_id);
+
+        $table = JTable::getInstance('user', 'JTable');
+        $table->load($user->id);
+
+        // Check if the param exists but is false, this avoids accidetally resetting a param.
+        $params = $user->getParameters();
+        return $params->get('first_databasejoin', true);
     }
 }

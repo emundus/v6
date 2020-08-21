@@ -116,7 +116,7 @@ class PlgFabrik_Cronemundushesamrecap extends PlgFabrik_Cron{
 				];
 
 				// Send the email.
-				$c_messages->sendEmailNoFnum($user->email, $reminder_mail_lbl, $post);
+				$c_messages->sendEmailNoFnum($user->email, $reminder_mail_lbl, $post, $user->id);
 			}
 		}
 

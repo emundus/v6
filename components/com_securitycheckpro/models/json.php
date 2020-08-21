@@ -21,6 +21,7 @@ use Joomla\CMS\Client\FtpClient as JFtpClient;
 use Joomla\Filesystem\Path as JPath;
 use Joomla\CMS\Http\HttpFactory as JHttpFactory;
 use Joomla\CMS\Table\Table as JTable;
+use Joomla\CMS\Component\ComponentHelper as JComponentHelper;
 
 class SecuritycheckProsModelJson extends SecuritycheckproModel
 {
@@ -35,8 +36,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	const    STATUS_NOT_AVAILABLE        = 503;    // Remote service not activated
 
 	const    CIPHER_RAW            = 1;    // Data in plain-text JSON
-	const    CIPHER_AESCBC128        = 2;    // Data in AES-128 standard (CBC) mode encrypted JSON
-	const    CIPHER_AESCBC256        = 3;    // Data in AES-256 standard (CBC) mode encrypted JSON
+	const    CIPHER_AESCBC256        = 2;    // Data in AES-256 standard (CBC) mode encrypted JSON
 
 	private    $json_errors = array(
 	'JSON_ERROR_NONE' => 'No error has occurred (probably emtpy data passed)',
@@ -47,60 +47,119 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 		// Inicializamos las variables
 	private    $status = 200;  // Estado de la petición
-
 	private $cipher = 2;    // Método usado para cifrar los datos
-
 	private $clear_data = '';        // Datos enviados en la petición del cliente (ya en claro)
-
 	public $data = '';        // Datos devueltos al cliente
-
 	private $password = null;
-
 	private $method_name = null;
-
 	private $log_buffer = '******* Start of file ******* </br>';    // Buffer para almacenar el continido del fichero de logs
-
 	private $createfolder = false;    // ¿Se ha creado el directorio para guardar los resultados?
-
 	private $remote_site = '';
-
 	private $same_branch = true;    // ¿Pertenecen los dos sitios a la misma versión de Joomla?
-
 	private $stored_filename = '';    // Fichero remoto descargado
-
 	private $database_name = '';    // Nombre del fichero .out
-
 	private $maintain_db_structure = 0;    // Indica si hemos de mantener la estructura (establecida en configuration.php) del sitio local
-
 	private $database_prefix = null;    // Prefijo de la BBDD local, necesaria si hemos de mantener la estructura de la BBDD local
-
 	private $remote_database_prefix = null;    // Prefijo de la BBDD remota, necesaria si hemos de mantener la estructura de la BBDD local
-
 	private $delete_existing_db = 0;    // Indica si hemos de borrar la BBDD local (aplicable sólo si no hemos de mantener la estructura del sitio)
-
 	private $cipher_file = 0;    // Indica si el fichero remoto está cifrado
-
 	private $backupinfo = array('product' => '', 'latest' => '', 'latest_status' => '', 'latest_type' => '');
-
 	private $update_database_plugin_needs_update = 0;   // Indica si el plugin 'Update Database' necesita actualizarse
-
 	private $info = null;  // Contendrá información sobre el sistema: versión de php, mysql y servidor
-
-			// Función que realiza una determinada función según los parámetros especificados en la variable pasada como argumento
-
+	private $site = null;  // Contendrá la url a la que hemos de devolver el callback
+	private $site_id = null;  // Contendrá la id de la web en Control Center
+	
+	public function register_task($json)
+	{
+		$cron_enabled = $this->PluginStatus(2);
+		
+		if ($cron_enabled == 0)
+		{
+			return "Error: Cron task is disabled"; 
+		} else
+		{
+		
+			$db = $this->getDbo();	
+					
+			$object = (object)array(
+			'storage_key'        => 'remote_task',
+			'storage_value'        => $json
+			);				
+			
+			try 
+			{
+				$result = $db->insertObject('#__securitycheckpro_storage', $object);            
+			} catch (Exception $e)
+			{    			
+				return "Error:" . $e->getMessage(); 
+			}
+			
+			return "Task added";
+		}
+	}
+	
+	// Función que realiza una determinada función según los parámetros especificados en la variable pasada como argumento
 	public function execute($json)
 	{
+		$db = JFactory::getDBO();
+		$query = 'DELETE FROM #__securitycheckpro_storage WHERE storage_key="remote_task"';
+		$db->setQuery($query);
+		$db->execute();
+				
+		// Decodificamos el string json
+		$json_trimmed = rtrim($json, chr(0));
+		
+		// Comprobamos que el string JSON es válido y que tiene al menos 12 caracteres (longitud mínima de un mensaje válido)
+		if ((strlen($json_trimmed) < 12) || (substr($json_trimmed, 0, 1) != '{') || (substr($json_trimmed, -1) != '}'))
+		{
+			// El string JSON no es válido, no podemos hacer nada ya que no sabemos a qué dirección devolver la petición
+			/*$this->data = 'JSON decoding error';
+			$this->status = self::STATUS_ERROR;
+			$this->cipher = self::CIPHER_RAW;
 
-						// Comprobamos si el frontend está habilitado
+			return $this->sendResponse();*/
+			return;
+		}
+		else
+		{
+			// Decodificamos la petición
+			$request = json_decode($json, true);
+		}	
+		
+							
+		if (is_null($request))
+		{
+			// El string JSON no es válido, no podemos hacer nada ya que no sabemos a qué dirección devolver la petición
+			/*$this->data = 'JSON decoding error';
+			$this->status = self::STATUS_ERROR;
+			$this->cipher = self::CIPHER_RAW;
+
+			return $this->sendResponse();*/
+			return;
+		}
+		
+		// Extraemos los parámetros necesarios para mandar las peticiones en caso de error		
+		$this->cipher = $request['cipher'];
+		// Site id
+		$this->site_id = $request['body']['id'];
+		if ( empty($this->site_id) )
+		{
+			// El site_id no es válido, no podemos hacer nada ya que no sabemos a qué sitio devolver la petición
+			return;
+		}
+		
+		// Comprobamos si el frontend está habilitado
 		$config = $this->Config('controlcenter');
-
+		
 		if (is_null($config))
 		{
+			// Vamos a usar el referrer como url a la que devolver la petición
+			$this->site = $request['referrer'];
 			$this->data = "Can't get configuration";
 			$this->status = self::STATUS_ERROR;
 			$this->cipher = self::CIPHER_RAW;
 
-			return $this->sendResponse();
+			return $this->sendResponse();return;
 		}
 
 		if (!array_key_exists('control_center_enabled', $config))
@@ -118,6 +177,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		}
 		else
 		{
+			// Vamos a usar el referrer como url a la que devolver la petición
+			$this->site = $request['referrer'];
 			$this->data = 'Remote password not configured';
 			$this->status = self::STATUS_NOT_AUTH;
 			$this->cipher = self::CIPHER_RAW;
@@ -125,51 +186,61 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			return $this->sendResponse();
 		}
 
-				// Si el frontend no está habilitado, devolvemos un error 503
+		// Si el frontend no está habilitado, devolvemos un error 503
 		if (!$enabled)
 		{
+			// Vamos a usar el referrer como url a la que devolver la petición
+			$this->site = $request['referrer'];
 			$this->data = 'Access denied';
 			$this->status = self::STATUS_NOT_AVAILABLE;
 			$this->cipher = self::CIPHER_RAW;
 
 			return $this->sendResponse();
 		}
-
-				$json_trimmed = rtrim($json, chr(0));
-
-		// Comprobamos que el string JSON es válido y que tiene al menos 12 caracteres (longitud mínima de un mensaje válido)
-		if ((strlen($json_trimmed) < 12) || (substr($json_trimmed, 0, 1) != '{') || (substr($json_trimmed, -1) != '}'))
+		
+		
+		// Site to return the callback to; let's decypher it
+		if ( !empty($request['body']['site']) )
 		{
-			// El string JSON no es válido, devolvemos un error
-			$this->data = 'JSON decoding error';
+			$this->site = $request['body']['site'];				
+			$this->site = $this->decrypt($this->site, $this->password);
+			
+			if ( (empty($this->site)) || (strstr($this->site,"Internal") !== false ) )
+			{
+				if ( empty($this->site) ){
+					$this->data = 'Error decrypting data. Are both secret keys equals?';
+				} else 
+				{
+					$this->data = $this->site . '. Are both secret keys equals?';
+				}
+				// Vamos a usar el referrer como url a la que devolver la petición
+				$this->site = $request['referrer'];
+				
+				$this->status = self::STATUS_ERROR;
+				$this->cipher = self::CIPHER_RAW;				
+										
+				return $this->sendResponse();
+			}
+				
+		} else
+		{
+			// Vamos a usar el referrer como url a la que devolver la petición
+			$this->site = $request['referrer'];
+			
+			$this->data = 'Error decrypting data. Are both secret keys equals?';
 			$this->status = self::STATUS_ERROR;
 			$this->cipher = self::CIPHER_RAW;
 
 			return $this->sendResponse();
-		}
-		else
-		{
-			// Decodificamos la petición
-			$request = json_decode($json, true);
-		}
-
-		if (is_null($request))
-		{
-			// Si no podemos decodificar la petición JSON, devolvemos un error
-			$this->data = 'JSON decoding error';
-			$this->status = self::STATUS_ERROR;
-			$this->cipher = self::CIPHER_RAW;
-
-			return $this->sendResponse();
-		}
-
-				// Decodificamos el 'body' de la petición
+		}			
+					
+		// Decodificamos el 'body' de la petición
 		if (isset($request['cipher']) && isset($request['body']))
 		{
 			switch ($request['cipher'])
 			{
 				case self::CIPHER_RAW:
-					if (($request['body']['task'] == "getStatus") || ($request['body']['task'] == "checkVuln") || ($request['body']['task'] == "checkLogs") || ($request['body']['task'] == "checkPermissions") || ($request['body']['task'] == "checkIntegrity") || ($request['body']['task'] == "deleteBlocked") || ($request['body']['task'] == "checkmalware") || ($request['body']['task'] == "UpdateExtension") || ($request['body']['task'] == "Backup") || ($request['body']['task'] == "unlocktables") || ($request['body']['task'] == "locktables"))
+					if (($request['body']['task'] == "getStatus") || ($request['body']['task'] == "checkVuln") || ($request['body']['task'] == "checkLogs") || ($request['body']['task'] == "checkPermissions") || ($request['body']['task'] == "checkIntegrity") || ($request['body']['task'] == "deleteBlocked") || ($request['body']['task'] == "checkmalware") || ($request['body']['task'] == "UpdateExtension") || ($request['body']['task'] == "Backup") || ($request['body']['task'] == "unlocktables") || ($request['body']['task'] == "locktables") || ($request['body']['task'] == "server_statistics"))
 					{
 						  /*
                            Los resultados de todas las tareas se devuelven cifrados; si recibimos una petición para devolverlos sin cifrar, la rechazamos
@@ -180,14 +251,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 						return $this->sendResponse();
 					}
-				break;
-
-				case self::CIPHER_AESCBC128:
-					if (!is_null($request['body']['data']))
-					{
-						// $this->clear_data = $this->mc_decrypt_128($request->body->data, $this->password);
-					}
-				break;
+				break;				
 
 				case self::CIPHER_AESCBC256:
 					if (!is_null($request['body']['data']))
@@ -195,10 +259,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 						// $this->clear_data = $this->mc_decrypt_256($request->body->data, $this->password);
 					}
 				break;
-			}
-
-							$this->cipher = $request['cipher'];
-
+			}												
+						
 			switch ($request['body']['task'])
 			{
 				case "getStatus":
@@ -235,41 +297,44 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 				case "UpdateExtension":
 					$this->UpdateExtension($request['body']['data']);
-							break;
+					break;
 
 				case "Backup":
 					$this->Backup($request['body']['data']);
-							break;
+					break;
 
 				case "Uploadinstall":
 					$this->Upload_install($request['body']['data']);
-							break;
+					break;
 
 				case "Connect":
 					$this->Connect();
-							break;
+					break;
 
-				case "UpdateConnect":
+				case "UpdateConnect":					
 					$this->UpdateConnect($request['body']['data']);
-							break;
+					break;
 
 				case "unlocktables":
 					$this->unlocktables();
-							break;
+					break;
 
 				case "locktables":
 					$this->locktables();
-							break;
+					break;
+
+				case "server_statistics":
+					$this->server_statistics();
+					break;
 
 				case self::CIPHER_AESCBC256:
-
-													break;
+					break;
+					
 				default:
 					$this->data = 'Method not configured';
 					$this->status = self::STATUS_NOT_FOUND;
 					$this->cipher = self::CIPHER_RAW;
-
-			return $this->sendResponse();
+					return $this->sendResponse();
 			}
 
 			return $this->sendResponse();
@@ -282,39 +347,47 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	{
 		// Inicializamos la respuesta
 		$response = array(
-		'cipher'    => $this->cipher,
-		'body'        => array(
-		'status'        => $this->status,
-		'data'            => null
-		)
+			'cipher'    => $this->cipher,
+			'body'        => array(
+			'status'        => $this->status,
+			'data'            => null,
+			'id'            => $this->site_id
+			)
 		);
 
-				// Codificamos los datos enviados en formato JSON
-		$data = json_encode($this->data);
-
-				// Ciframos o no los datos según el método establecido en la petición
+		// Codificamos los datos enviados en formato JSON
+		$data = json_encode($this->data);		
+				
+		// Ciframos o no los datos según el método establecido en la petición
 		switch ($this->cipher)
 		{
 			case self::CIPHER_RAW:
-			break;
-
-			case self::CIPHER_AESCBC128:
-				$data = $this->encrypt($data, $this->password);
-			break;
+			break;		
 
 			case self::CIPHER_AESCBC256:
-				// $data = $this->mc_encrypt_256($data, $this->password);
+				$data = $this->encrypt($data, $this->password);
 			break;
 		}
 
 		// Guardamos los datos...
 		$response['body']['data'] = $data;
-
+		
+		$response = json_encode($response);	
+				
 		// ... y los devolvemos al cliente
-		return '###' . json_encode($response) . '###';
+		$ch = curl_init($this->site . "index.php?option=com_securitycheckprocontrolcenter&view=json&format=raw&json=" . urlencode($response));
+		
+		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+		curl_setopt($ch, CURLOPT_FAILONERROR, true);
+		curl_setopt($ch, CURLOPT_HEADER, true);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);		
+			
+		$response = curl_exec($ch);
 	}
 
-		// Extraemos los parámetros del componente
+	// Extraemos los parámetros del componente
 
 	private function Config($key_name)
 	{
@@ -328,7 +401,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$res = $db->loadResult();
 		$res = json_decode($res, true);
 
-					return $res;
+		return $res;
 	}
 
 		// Función que verifica una fecha
@@ -834,8 +907,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 	}
 
-		// Función que lanza un chequeo de permisos
-
+	// Función que lanza un chequeo de permisos
 	private function checkPermissions()
 	{
 		// Import Securitycheckpros model
@@ -851,7 +923,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		}
 
 		$filemanager_model->set_campo_filemanager('files_scanned', 0);
-		$filemanager_model->set_campo_filemanager('last_check', date('Y-m-d H:i:s'));
+		$timestamp = $this->get_Joomla_timestamp();
+		$filemanager_model->set_campo_filemanager('last_check', $timestamp);
 		$filemanager_model->set_campo_filemanager('estado', 'IN_PROGRESS');
 		$filemanager_model->scan("permissions");
 
@@ -891,7 +964,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		}
 
 		$filemanager_model->set_campo_filemanager('files_scanned_integrity', 0);
-		$filemanager_model->set_campo_filemanager('last_check_integrity', date('Y-m-d H:i:s'));
+		$timestamp = $this->global_model->get_Joomla_timestamp();
+		$filemanager_model->set_campo_filemanager('last_check_integrity', $timestamp);
 		$filemanager_model->set_campo_filemanager('estado_integrity', 'IN_PROGRESS');
 		$filemanager_model->scan("integrity");
 
@@ -987,7 +1061,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	// Función que actualiza el Core de Joomla a la última versión disponible
 	private function UpdateCore()
 	{
-
+		
 		// Cargamos el lenguaje del componente 'com_installer'
 		$lang = JFactory::getLanguage();
 		$lang->load('com_installer', JPATH_ADMINISTRATOR);
@@ -1013,16 +1087,24 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 		// Extraemos la url de descarga
 		$coreInformation = $model->getUpdateInformation();
-
+		
 		try
 		{
 		// Descargamos el archivo
 			$file = $this->download_core($coreInformation['object']->downloadurl->_data);
-
+			
 			// Extract the downloaded package file
 			$config   = JFactory::getConfig();
 			$tmp_dest = $config->get('tmp_path');
 
+			if ( !class_exists('ZipArchive') )
+			{
+				$msg = JText::sprintf('COM_SECURITYCHECKPRO_MISSING_CLASS', 'ZipArchive');
+				$result[0][1] = $msg;
+				$result[0][0] = false;				
+				return $result;
+			}
+			
 			$zip = new ZipArchive;
 			$res = $zip->open($tmp_dest . DIRECTORY_SEPARATOR . $file);
 
@@ -1034,7 +1116,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 			// Create restoration file
 			$this->createRestorationFile($file);
-
+			
 			$install_result = $this->finaliseUpgrade();
 
 			if (!$install_result)
@@ -1135,7 +1217,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		{
 			if (in_array($installType, array('upload', 'url')))
 			{
-				JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
+				//JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
 			}
 
 			return false;
@@ -1146,7 +1228,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		{
 			if (in_array($installType, array('upload', 'url')))
 			{
-				JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
+				//JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
 			}
 
 			$app->setUserState('com_installer.message', JText::_('COM_INSTALLER_UNABLE_TO_FIND_INSTALL_PACKAGE'));
@@ -1184,13 +1266,13 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$app->setUserState('com_installer.redirect_url', $installer->get('redirect_url'));
 
 		// Cleanup the install files
-		if (!is_file($package['packagefile']))
+		/*if (!is_file($package['packagefile']))
 		{
 			$config = JFactory::getConfig();
 			$package['packagefile'] = $config->get('tmp_path') . '/' . $package['packagefile'];
 		}
 
-		JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
+		JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);*/
 
 		return $result;
 	}
@@ -1270,8 +1352,9 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			$filemanager_model = JModel::getInstance('filemanager', 'SecuritycheckprosModel');
 		}
 
-				$filemanager_model->set_campo_filemanager('files_scanned_malwarescan', 0);
-		$filemanager_model->set_campo_filemanager('last_check_malwarescan', date('Y-m-d H:i:s'));
+		$filemanager_model->set_campo_filemanager('files_scanned_malwarescan', 0);
+		$timestamp = $this->global_model->get_Joomla_timestamp();
+		$filemanager_model->set_campo_filemanager('last_check_malwarescan', $timestamp);
 		$filemanager_model->set_campo_filemanager('estado_malwarescan', 'IN_PROGRESS');
 		$filemanager_model->scan("malwarescan");
 
@@ -1315,7 +1398,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		}
 		else
 		{
-						// Consultamos si Xcloner Backup and Restore está instalado
+			// Consultamos si Xcloner Backup and Restore está instalado
 			$query = 'SELECT COUNT(*) FROM #__extensions WHERE element="com_xcloner-backupandrestore"';
 			$db->setQuery($query);
 			$db->execute();
@@ -1344,12 +1427,11 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 	}
 
-		// Función que obtiene información del estado del último backup creado por Akeeba Backup
-
+	// Función que obtiene información del estado del último backup creado por Akeeba Backup
 	private function AkeebaBackupInfo()
 	{
 
-				// Instanciamos la consulta
+		// Instanciamos la consulta
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true)
 			->select('MAX(' . $db->qn('id') . ')')
@@ -1358,7 +1440,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$db->setQuery($query);
 		$id = $db->loadResult();
 
-				// Hay al menos un backup creado
+		// Hay al menos un backup creado
 		if (!empty($id))
 		{
 			$query = $db->getQuery(true)
@@ -1368,22 +1450,21 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			$db->setQuery($query);
 			$backup_statistics = $db->loadAssocList();
 
-									// Almacenamos el resultado
+			// Almacenamos el resultado
 			$this->backupinfo['latest'] = $backup_statistics[0]['backupend'];
 			$this->backupinfo['latest_status'] = $backup_statistics[0]['status'];
 			$this->backupinfo['latest_type'] = $backup_statistics[0]['type'];
 		}
 	}
 
-		// Función que obtiene información del estado del último backup creado por Xcloner - Backup and Restore
-
+	// Función que obtiene información del estado del último backup creado por Xcloner - Backup and Restore
 	private function XclonerbackupInfo()
 	{
 
-				// Incluimos el fichero de configuración de la extensión
+		// Incluimos el fichero de configuración de la extensión
 		include JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . "components" . DIRECTORY_SEPARATOR . "com_xcloner-backupandrestore" . DIRECTORY_SEPARATOR . "cloner.config.php";
 
-				// Extraemos el directorio donde se encuentran almacenados los backups...
+		// Extraemos el directorio donde se encuentran almacenados los backups...
 		$backup_dir = $_CONFIG['clonerPath'];
 
 				// ... y buscamos dentro los ficheros existentes, ordenándolos por fecha
@@ -1391,10 +1472,10 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$files_name = array_combine($files_name, array_map("filemtime", $files_name));
 		arsort($files_name);
 
-				// El primer elemento del array será el que se ha creado el último. Formateamos la fecha para guardarlo en la BBDD.
+		// El primer elemento del array será el que se ha creado el último. Formateamos la fecha para guardarlo en la BBDD.
 		$latest_backup = date("Y-m-d H:i:s", filemtime(key($files_name)));
 
-				// Almacenamos el resultado
+		// Almacenamos el resultado
 		$this->backupinfo['latest'] = $latest_backup;
 		$this->backupinfo['latest_status'] = 'complete';
 
@@ -1475,9 +1556,9 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$needs_update = 1;
 		jimport('joomla.updater.update');
 
-				$db = JFactory::getDBO();
+		$db = JFactory::getDBO();
 
-				// Extraemos el id de la extensión..
+		// Extraemos el id de la extensión..
 		$query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
 		$db->setQuery($query);
 		$db->execute();
@@ -1488,27 +1569,26 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$db->execute();
 		$detailsurl = $db->loadResult();
 
-				// Instanciamos el objeto JUpdate y cargamos los detalles de la actualización
+		// Instanciamos el objeto JUpdate y cargamos los detalles de la actualización
 		$update = new JUpdate;
 		$update->loadFromXML($detailsurl);
 
-				// Le pasamos a la función de actualización el objeto con los detalles de la actualización
+		// Le pasamos a la función de actualización el objeto con los detalles de la actualización
 		$result = $this->install_update($update);
 
-				// Si la actualización ha tenido éxito, actualizamos la variable 'needs_update', que indica si el plugin necesita actualizarse.
+		// Si la actualización ha tenido éxito, actualizamos la variable 'needs_update', que indica si el plugin necesita actualizarse.
 		if ($result)
 		{
 			$needs_update = 0;
 		}
 
-				// Devolvemos el resultado
+		// Devolvemos el resultado
 		$this->data = array(
 		'update_plugin_needs_update' => $needs_update
 		);
 	}
 
-		// Función para actualizar los componentes. Extraída del core de Joomla (administrator/components/com_installer/models/update.php)
-
+	// Función para actualizar los componentes. Extraída del core de Joomla (administrator/components/com_installer/models/update.php)
 	private function install_update($update,$dlid=false)
 	{
 		/* Cargamos el lenguaje del componente 'com_installer' */
@@ -1529,7 +1609,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		} else {
 			$result[0][1] = JError::raiseWarning('', JText::_('COM_INSTALLER_INVALID_EXTENSION_UPDATE'));
 			$result[0][0] = false;
-		}
+		}		
 
 		$p_file = JInstallerHelper::downloadPackage($url);
 
@@ -1790,9 +1870,9 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	private function UpdateAll()
 	{
 
-			$db = JFactory::getDBO();
+		$db = JFactory::getDBO();
 
-				// Extraemos el la información de las extensiones que necesitan ser actualizadas, que se caracterizan porque su extension_id es distinto a cero
+		// Extraemos el la información de las extensiones que necesitan ser actualizadas, que se caracterizan porque su extension_id es distinto a cero
 		$query = 'SELECT extension_id FROM #__updates WHERE extension_id != 0';
 		$db->setQuery($query);
 		$extension_id_array = $db->loadRowList();
@@ -1826,8 +1906,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 	}
 
-		// Función que actualiza un array de extensiones (en formato json) pasado como argumento
-
+	// Función que actualiza un array de extensiones (en formato json) pasado como argumento
 	private function UpdateExtension($extension_id_array,$updateall = false)
 	{
 
@@ -1836,7 +1915,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		$db = JFactory::getDBO();
 		jimport('joomla.updater.update');
 
-				// Si las tablas están bloqueadas abortamos la instalación
+		// Si las tablas están bloqueadas abortamos la instalación
 		$locked_tables = $this->check_locked_tables();
 
 		if ($locked_tables)
@@ -1852,13 +1931,13 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		}
 		else
 		{
-					// Tenemos que actualizar todas las extensiones. En este caso recibimos un string en lugar de un array (en formato json).
+			// Tenemos que actualizar todas las extensiones. En este caso recibimos un string en lugar de un array (en formato json).
 			if ($updateall)
 			{
 				$extension_id_array = json_decode($extension_id_array, true);
 			}
 
-						// Para cada extensión, realizamos su actualización
+			// Para cada extensión, realizamos su actualización
 			foreach ($extension_id_array as $extension_id)
 			{
 				if ($extension_id == 700)
@@ -1892,6 +1971,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 					// Instanciamos el objeto JUpdate y cargamos los detalles de la actualización
 					$update = new JUpdate;
 					$update->loadFromXML($detailsurl);
+					
 
 					// Le pasamos a la función de actualización el objeto con los detalles de la actualización
 					$result = $this->install_update($update);
@@ -1922,20 +2002,20 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	private function Backup($data)
 	{
 
-				// URI del sitio
+		// URI del sitio
 		$uri = JURI::root();
-
-				// Desencriptamos los datos recibidos, que vendrán como un array (véase data[0]) y en formato json
-		$response = $this->decrypt($data[0], $this->password);
+		
+		// Desencriptamos los datos recibidos, que vendrán como un array (véase data[0]) y en formato json
+		$response = $this->decrypt($data, $this->password);
 		$response = json_decode($response, true);
 
-				// Extraemos la clave pública de Akeeba, que vendrá en el elemento 'akeeba_key' del array
+		// Extraemos la clave pública de Akeeba, que vendrá en el elemento 'akeeba_key' del array
 		$akeeba_key = $response['frontend_key'];
 
 		// Extraemos el perfil, que por defecto será 1
 		$akeeba_profile = $response['akeeba_profile'];
-
-						// Inicializamos la tarea
+		
+		// Inicializamos la tarea
 		$ch = curl_init($uri . "?option=com_akeeba&view=backup&key=" . $akeeba_key . "&profile=" . $akeeba_profile);
 
 		// Configuración extraída de https://www.akeebabackup.com/documentation/akeeba-backup-documentation/automating-your-backup.html
@@ -1944,10 +2024,10 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		curl_setopt($ch, CURLOPT_MAXREDIRS, 10000); // Fix by Nicholas
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-							$response = curl_exec($ch);
+		$response = curl_exec($ch);
 		curl_close($ch);
 
-				// Devolvemos el resultado
+		// Devolvemos el resultado
 		$this->data = array(
 		'backup'        => $response
 		);
@@ -1973,7 +2053,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 		// Url del paquete a instalar
 		$url = $response['path_to_file'];
-
+		
 		$package = null;
 		
 		// Si las tablas están bloqueadas abortamos la instalación
@@ -1991,10 +2071,10 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 			// Was the package unpacked?
 			if (!$package || !$package['type'])
-			{
+			{				
 				if (in_array($installType, array('upload', 'url')))
 				{
-					JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
+					//JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
 				}
 
 				$msg = JText::_('COM_INSTALLER_UNABLE_TO_FIND_INSTALL_PACKAGE');
@@ -2010,7 +2090,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			{
 				// There was an error installing the package
 				$msg = JText::sprintf('COM_INSTALLER_INSTALL_ERROR', JText::_('COM_INSTALLER_TYPE_TYPE_' . strtoupper($package['type'])));
-				$result = false;
+				$result = false;				
 			}
 			else
 			{
@@ -2019,7 +2099,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			}
 
 			// Cleanup the install files
-			if (!is_file($package['packagefile']))
+			/*if (!is_file($package['packagefile']))
 			{
 				$config = JFactory::getConfig();
 				$package['packagefile'] = $config->get('tmp_path') . '/' . $package['packagefile'];
@@ -2027,7 +2107,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 			$cleanup_resume = JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
 
-						// Si el borrado de los ficheros de instalación falla, lo hacemos 'artesanalmente'
+			// Si el borrado de los ficheros de instalación falla, lo hacemos 'artesanalmente'
 			if (!$cleanup_resume)
 			{
 				$config = JFactory::getConfig();
@@ -2042,13 +2122,14 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 					{
 					}					
 				}
-			}
+			}*/
 
-						// Recogemos los mensajes encolados para mostrar más información
+			// Recogemos los mensajes encolados para mostrar más información
 			$enqueued_messages = JFactory::getApplication()->getMessageQueue();
 		}
-
-				// Devolvemos el resultado
+		
+		
+		// Devolvemos el resultado
 		$this->data = array(
 			'upload_install'        => $result,
 			'message'    => $msg,
@@ -2066,7 +2147,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	protected function getPackageFromUrl($url)
 	{
 
-				// Did you give us a URL?
+		// Did you give us a URL?
 		if (!$url)
 		{
 			JFactory::getApplication()->enqueueMessage(JText::_('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL'), 'warning');
@@ -2119,6 +2200,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	public function download_core($packageURL)
 	{
 		$basename = basename($packageURL);
+		
 
 		// Find the path to the temp directory and the local package.
 		$config = JFactory::getConfig();
@@ -2160,6 +2242,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	 */
 	protected function downloadPackage($url, $target)
 	{
+			
 		// Get the handler to download the package
 		try
 		{
@@ -2168,7 +2251,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		catch (RuntimeException $e)
 		{
 			return false;
-		}
+		}	
 
 		// Make sure the target does not exist.
 		if (file_exists($target)) {
@@ -2655,15 +2738,15 @@ ENDDATA;
 		$attacks_last_year = $cpanel_model->LogsByDate('last_year');
 		$attacks_this_year = $cpanel_model->LogsByDate('this_year');
 
-				$attacks = array(
-		'today'    => $attacks_today,
-		'yesterday'        => $attacks_yesterday,
-		'last_7_days'        => $attacks_last_7_days,
-		'this_month'        => $attacks_this_month,
-		'last_month'        => $attacks_last_month,
-		'this_year'        => $attacks_this_year,
-		'last_year'        => $attacks_last_year
-		);
+		$attacks = array(
+			'today'    => $attacks_today,
+			'yesterday'        => $attacks_yesterday,
+			'last_7_days'        => $attacks_last_7_days,
+			'this_month'        => $attacks_this_month,
+			'last_month'        => $attacks_last_month,
+			'this_year'        => $attacks_this_year,
+			'last_year'        => $attacks_last_year
+			);
 
 		// Ruta al fichero de información
 		$file_path = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'scans' . DIRECTORY_SEPARATOR . 'cc_info.php';
@@ -2684,14 +2767,13 @@ ENDDATA;
 			$ips = null;
 		}
 
-						$this->data = array(
-		'ips'        => $ips,
-		'attacks'    => $attacks
-		);
-	}
+		$this->data = array(
+			'ips'        => $ips,
+			'attacks'    => $attacks
+			);
+		}
 
-		// Función que añade una IP a la lista negra dinámica
-
+	// Función que añade una IP a la lista negra dinámica
 	function actualizar_lista_dinamica($attack_ip)
 	{
 
@@ -2726,16 +2808,15 @@ ENDDATA;
 		}
 	}
 
-		// Función que añade ips a la lista negra pasados por el plugin "Connect"
-
+	// Función que añade ips a la lista negra pasados por el plugin "Connect"
 	private function UpdateConnect($data)
 	{
-
 		// Desencriptamos los datos recibidos, que vendrán en formato json
-		$response = $this->decrypt($data[0], $this->password);
-		$ips_passed = json_decode($response, true);
+		$response = $this->decrypt($data, $this->password);				
+		$ips_passed = json_decode($response, true);	
+				
 		$message = "";
-
+		
 		include_once JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'firewallconfig.php';
 		$firewall_config_model = new SecuritycheckprosModelFirewallConfig;
 
@@ -2743,26 +2824,26 @@ ENDDATA;
 		{
 			if (count($ips_passed['whitelist']))
 			{
-				$message .= "<b>" . JText::_('COM_SECURITYCHECKPRO_WHITELIST') . "</b><br/>";
+				$message .= JText::_('COM_SECURITYCHECKPRO_WHITELIST') . " ";
 			}
 
 			foreach ($ips_passed['whitelist'] as $whitelist)
 			{
-				$returned_message = $firewall_config_model->manage_list('whitelist', 'add', $blacklist, true, true);
+				$returned_message = $firewall_config_model->manage_list('whitelist', 'add', $whitelist, true, true);
 
 				if (!empty($returned_message))
 				{
-					$message .= $whitelist . ": " . $returned_message . "<br/>";
+					$message .= $whitelist . ": " . $returned_message . " ";
 				}
 				else
 				{
-					$message .= $whitelist . ": OK" . "<br/>";
+					$message .= $whitelist . ": OK ";
 				}
 			}
 
 			if (count($ips_passed['blacklist']))
 			{
-				$message .= "<b>" . JText::_('COM_SECURITYCHECKPRO_BLACKLIST') . "</b><br/>";
+				$message .= JText::_('COM_SECURITYCHECKPRO_BLACKLIST') . " ";
 			}
 
 			foreach ($ips_passed['blacklist'] as $blacklist)
@@ -2771,17 +2852,17 @@ ENDDATA;
 
 				if (!empty($returned_message))
 				{
-					$message .= $blacklist . ": " . $returned_message . "<br/>";
+					$message .= $blacklist . ": " . $returned_message . " ";
 				}
 				else
 				{
-					$message .= $blacklist . ": OK" . "<br/>";
+					$message .= $blacklist . ": OK ";
 				}
 			}
 
 			if (count($ips_passed['dynamic_blacklist']))
 			{
-				$message .= "<b>" . JText::_('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST') . "</b><br/>";
+				$message .= JText::_('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST') . " ";
 			}
 
 			foreach ($ips_passed['dynamic_blacklist'] as $dynamic_blacklist)
@@ -2790,20 +2871,20 @@ ENDDATA;
 
 				if (!empty($returned_message))
 				{
-					$message .= $dynamic_blacklist . ": " . $returned_message . "<br/>";
+					$message .= $dynamic_blacklist . ": " . $returned_message . " ";
 				}
 				else
 				{
-					$message .= $dynamic_blacklist . ": OK" . "<br/>";
+					$message .= $dynamic_blacklist . ": OK ";
 				}
 			}
-		}
+		}		
 
 		// Devolvemos el resultado
 		$this->data = array(
-		'UpdateConnect'        => $message
-		);
-	}
+			'UpdateConnect'        => $message
+			);
+		}
 
 		// Función para desbloquear las tablas (Lock tables feature)
 
@@ -2834,5 +2915,163 @@ ENDDATA;
 		);
 
 	}
+	
+	/* Función para formatear un entero en unidades de almacenamiento */
+	function formatBytes($size, $precision = 2)
+	{
+		$base = log($size, 1024);
+		$suffixes = array('', 'K', 'M', 'G', 'T');   
+
+		return round(pow(1024, $base - floor($base)), $precision) .' '. $suffixes[floor($base)];
+	}
+	
+	function percent_to_color($p){
+		if($p < 30) return 'success';
+		if($p < 45) return 'info';
+		if($p < 60) return 'primary';
+		if($p < 75) return 'warning';
+		return 'danger';
+	}
+	
+	/* Get memory usage - https://www.php.net/manual/es/function.memory-get-usage.php */
+	private function server_statistics()
+    {
+        $memoryTotal = null;
+        $memoryFree = null;
+		$memory_array = array();
+		$uptime = null;
+		// Inicializamos la variable $result, que será un array con el resultado y el mensaje devuelto en el proceso
+		$result = array();
+		
+		// Memory usage
+        if (stristr(PHP_OS, "win")) {
+            // Get total physical memory (this is in bytes)
+            $cmd = "wmic ComputerSystem get TotalPhysicalMemory";
+            @exec($cmd, $outputTotalPhysicalMemory);
+
+            // Get free physical memory (this is in kibibytes!)
+            $cmd = "wmic OS get FreePhysicalMemory";
+            @exec($cmd, $outputFreePhysicalMemory);
+
+            if ($outputTotalPhysicalMemory && $outputFreePhysicalMemory) {
+                // Find total value
+                foreach ($outputTotalPhysicalMemory as $line) {
+                    if ($line && preg_match("/^[0-9]+\$/", $line)) {
+                        $memoryTotal = $line;
+                        break;
+                    }
+                }
+
+                // Find free value
+                foreach ($outputFreePhysicalMemory as $line) {
+                    if ($line && preg_match("/^[0-9]+\$/", $line)) {
+                        $memoryFree = $line;
+                        $memoryFree *= 1024;  // convert from kibibytes to bytes
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (is_readable("/proc/meminfo"))
+            {
+                $stats = @file_get_contents("/proc/meminfo");
+
+                if ($stats !== false) {
+                    // Separate lines
+                    $stats = str_replace(array("\r\n", "\n\r", "\r"), "\n", $stats);
+                    $stats = explode("\n", $stats);
+
+                    // Separate values and find correct lines for total and free mem
+                    foreach ($stats as $statLine) {
+                        $statLineData = explode(":", trim($statLine));
+
+                        //
+                        // Extract size (TODO: It seems that (at least) the two values for total and free memory have the unit "kB" always. Is this correct?
+                        //
+
+                        // Total memory
+                        if (count($statLineData) == 2 && trim($statLineData[0]) == "MemTotal") {
+                            $memoryTotal = trim($statLineData[1]);
+                            $memoryTotal = explode(" ", $memoryTotal);
+                            $memoryTotal = $memoryTotal[0];
+                            $memoryTotal *= 1024;  // convert from kibibytes to bytes
+                        }
+
+                        // Free memory
+                        if (count($statLineData) == 2 && trim($statLineData[0]) == "MemFree") {
+                            $memoryFree = trim($statLineData[1]);
+                            $memoryFree = explode(" ", $memoryFree);
+                            $memoryFree = $memoryFree[0];
+                            $memoryFree *= 1024;  // convert from kibibytes to bytes
+                        }
+                    }
+                }
+            }
+        }
+
+        if (is_null($memoryTotal) || is_null($memoryFree)) {
+            $memory_array = null;
+        } else {
+			$used = $this->formatBytes( $memoryTotal - $memoryFree);
+			$used_raw = $memoryTotal - $memoryFree;
+			$total = $this->formatBytes($memoryTotal);
+			$memory_percentage = round(($used_raw/$memoryTotal)*100,2);
+			$memory_color = $this->percent_to_color($memory_percentage);
+			
+			$memory_array = array(
+				"memory_total" => $total,
+				"memory_used" => $used,
+				"memory_percentage" => $memory_percentage,
+				"memory_color" => $memory_color,
+			);			
+        }
+		
+		if ( (empty($memory_array["memory_total"])) && (empty($memory_array["memory_used"])) )
+		{
+			$memory_array = null;
+		}
+		
+		$result['memory_array'] = $memory_array;
+		
+		// Uptime
+		if (function_exists('system')) {
+			try
+			{
+				$uptime = @system('uptime');
+				$uptime_array = explode(",",$uptime);
+				if ( (empty($uptime_array[0])) && (empty($uptime_array[1])) )
+				{
+					$result['uptime'] = null;
+				}else
+				{
+					$result['uptime'] = $uptime_array[0] . "," . $uptime_array[1];	
+				}		
+						
+				$pos = strpos($uptime_array[2],":");
+				$load_average = substr($uptime_array[2],$pos+1,strlen($uptime_array[2])-$pos);
+				if ( (empty($load_average)) && (empty($uptime_array[3])) && (empty($uptime_array[4])) )
+				{
+					$result['server_load'] = null;
+				}else
+				{
+					$result['server_load'] = $load_average . "," . $uptime_array[3] . "," . $uptime_array[4];
+				}
+				
+			}catch (Exception $e)	
+			{
+				$result['uptime'] = null;
+				$result['server_load'] = null;			
+			}
+		} else
+		{
+			$result['uptime'] = null;
+			$result['server_load'] = null;
+		}
+		
+		// Devolvemos el resultado
+		$this->data = $result;
+    }
 
 }

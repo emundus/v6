@@ -53,10 +53,7 @@
     display: block;
     width: 100% !important;
 }
-.campaingapplycontent {
-    font-size: 15px;
-    padding: 0;
-}
+
 #navfilter .navsearch .navsearch-content .input-group-btn button::before {
     content: "\f002";
     font-family: FontAwesome;
@@ -109,7 +106,10 @@
 }
 .campaingapplycontent {
     line-height: 22px;
+    font-size: 15px;
+    padding: 0;
 }
+
 .campaingapplycontent b{
     color:#000000;
 }
@@ -123,7 +123,6 @@
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
-
 }
 .below-content a.btn.btn-primary.btn-plein.btn-blue {
     background-color: #de6339 !important;
@@ -134,12 +133,24 @@
     color:  #de6339 !important;
     border-color: #de6339 !important;
 }
+
+/*** Single campaign template additions ***/
+.single-campaign {
+    display: flex;
+    flex-direction: column;
+}
+.single-campaign .right-side, .single-campaign .below-content {
+    border: none !important;
+}
+.single-campaign .below-content {
+    text-align: left !important;
+}
 ​
+/*** Media queries ***/
 @media all and (max-width: 1227px) {
-    .campaign-content .below-content a{
+    .campaign-content .below-content a {
         width: 17.3%;
     }
-    ​
 }
 @media all and (max-width: 1034px) {
     .campaign-content .below-content a{

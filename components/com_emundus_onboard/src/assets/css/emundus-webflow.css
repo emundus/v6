@@ -141,7 +141,11 @@ h3 {
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
-/* IE11 hide native button (thanks Matt!) */
+.dropdown-toggle[disabled] {
+  filter: grayscale(1) contrast(0.8);
+}
+
+/* IE11 hide native button */
 .dropdown-toggle::-ms-expand {
   display: none;
 }
@@ -2705,6 +2709,10 @@ input:focus{
   margin-bottom: 1em;
 }
 
+.mr-20px{
+  margin-right: 20px;
+}
+
 .mr-1{
   margin-right: 1em !important;
 }
@@ -3221,7 +3229,7 @@ label.label__placeholder{
   height: 30px;
   width: 30px;
   border-radius: 50%;
-  background: #de6339;
+  background: #1b1f3c;
   color: white;
 }
 .vue-notification-custom{
@@ -3246,7 +3254,7 @@ label.label__placeholder{
   list-style: none;
   text-decoration: none;
   margin: 10px 10px 30px 10px;
-  width: 100%;
+  width: auto;
 }
 
 .MenuFormItem {
@@ -3260,7 +3268,8 @@ label.label__placeholder{
   font-size: 18px;
 }
 .MenuFormItem:not(.MenuFormItem_current):hover {
-  color: grey;
+  color: #de6339;
+  text-decoration: none;
 }
 .MenuFormItem_current {
   color: white;
@@ -3270,6 +3279,11 @@ label.label__placeholder{
 .MenuFormItem_current:after, .MenuFormItem_current:before {
   opacity: 1 !important;
   width: 50% !important;
+}
+
+.MenuFormItem.MenuFormItem_current:hover {
+  text-decoration: none;
+  color: white;
 }
 
 .menus-row{
@@ -3307,11 +3321,6 @@ label.label__placeholder{
 }
 .menus-row a:after {
   right: 0;
-}
-.menus-row a:not(.MenuFormItem_current):hover:after {
-  opacity: 1;
-  width: 50%;
-  text-decoration: none;
 }
 .menu-block{
   margin-top: 2em;
@@ -3378,6 +3387,7 @@ label.label__placeholder{
   padding-right: 2em;
   position: fixed;
   width: 350px;
+  margin-top: 4em;
 }
 
 .vdatetime-popup__header{
@@ -3486,6 +3496,272 @@ label.label__placeholder{
   background: #de6339;
   color: white;
   cursor: grab;
+}
+
+.logo-settings{
+  width: 20vw;
+  margin: 20px;
+}
+
+/**** DROPZONE ****/
+#customdropzone {
+  letter-spacing: 0.2px;
+  background: #ececec;
+  color: #777;
+  transition: background-color .2s linear;
+  height: 200px;
+  padding: 40px;
+  border: dashed;
+  border-radius: 5px;
+  margin: 10px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.dz-default.dz-message{
+  text-align: center !important;
+}
+
+#customdropzone .dz-preview {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+}
+#customdropzone .dz-preview .dz-image {
+  width: auto;
+  height: 100px;
+}
+#customdropzone .dz-preview .dz-image > div {
+  width: inherit;
+  height: inherit;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+#customdropzone .dz-preview .dz-image > img {
+  width: 100%;
+}
+
+#customdropzone .dz-preview .dz-details {
+  color: black;
+  transition: opacity .2s linear;
+  text-align: center;
+}
+#customdropzone .dz-success-mark, .dz-error-mark {
+  display: none;
+}
+
+.color-picker{
+  width: 40px;
+  border-radius: 50%;
+  height: 40px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.color-input{
+  padding: 0;
+  border: none;
+  display: inline-block;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.add-databasejoin{
+  width: 30px;
+  height: 30px;
+  background: #1b1f3c;
+  border-radius: 50%;
+  color: white;
+  margin-left: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.databasejoin-active{
+  background: #de6339;
+}
+
+.db-table{
+  padding: 20px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+.db-table h3{
+  cursor: pointer;
+}
+
+.db-description{
+  border: solid 1px #ececec;
+  margin-top: 10px;
+  display: inline-table;
+  width: 100%;
+}
+.db-description th{
+  padding: 10px;
+  border: solid 1px #fff;
+}
+.db-columns{
+  background: #1b1f3c;
+  color: white;
+  border: solid 2px #1b1f3c;
+}
+.db-values {
+  border-bottom: solid 2px #cecece;
+  border-right: solid 2px #cecece;
+  border-left: solid 2px #cecece;
+}
+
+.table-component {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.table-component__filter {
+  align-self: flex-start;
+}
+
+.table-component__filter__field {
+  padding: 0 1.25em 0 .75em;
+  height: 2.5em;
+  border: solid 2px #e0e0e0;
+  border-radius: 2em;
+  font-size: inherit;
+  max-width: 15em;
+}
+
+.table-component__filter__clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2em;
+  color: #007593;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.table-component__filter__field:focus {
+  outline: 0;
+  border-color: #007593;
+}
+
+.table-component__table-wrapper {
+  overflow-x: auto;
+  margin: 1em 0;
+  width: 100%;
+  border-bottom: none;
+}
+
+.table-component__table {
+  min-width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.table-component__table__caption {
+  position: absolute;
+  top: auto;
+  left: -10000px;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+}
+
+.table-component__table th,
+.table-component__table td {
+  padding: 1.5em 1.5em;
+  vertical-align: top;
+  text-align: left;
+}
+
+.table-component__table th {
+  color: #1b1f3c;
+  text-transform: uppercase;
+  white-space: nowrap;
+  font-size: .85em;
+}
+
+.table-component__table a {
+  color: #007593;
+}
+
+.table-component__message {
+  color: #999;
+  font-style: italic;
+}
+
+.table-component__th--sort,
+.table-component__th--sort-asc,
+.table-component__th--sort-desc {
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.table-component__th--sort-asc:after,
+.table-component__th--sort-desc:after {
+  position: relative;
+  left: .25em;
+  display: inline-block;
+  color: #1b1f3c;
+  margin-top: -.25em;
+}
+
+.table-component__th--sort-asc:after {
+  content: '↑';
+}
+
+.table-component__th--sort-desc:after {
+  content: '↓';
+}
+
+.table-component__table__head{
+  -webkit-box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 5px 10px 0px rgba(238, 238, 238, 0.75);
+}
+
+.create-user-admin__button{
+  float: right;
+  position: relative;
+  top: 35px;
+}
+
+.custom-table-csv{
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 19px;
+  table-layout: fixed;
+}
+.custom-table-csv th {
+  padding: 10px;
+}
+
+.custom-table-csv td {
+  padding: 10px;
+}
+
+.justify-content-between{
+  justify-content: space-between;
+}
+
+.document-allowed_types{
+  font-style: italic;
+  color: grey;
+}
+
+.pointer{
+  cursor: pointer;
 }
 
 

@@ -4,13 +4,17 @@
             <div :style="{background: statu.class}" class="status-field">
                 <div style="width: 100%">
                     <input type="text" v-model="statu.value_fr">
-                    <div class="translate-block" v-if="statu.translate">
-                        <label class="translate-label">
-                            {{TranslateEnglish}}
-                        </label>
-                        <em class="fas fa-sort-down"></em>
-                    </div>
-                    <input type="text" v-model="statu.value_en" v-if="statu.translate">
+                    <transition :name="'slide-down'" type="transition">
+                        <div class="translate-block" v-if="statu.translate">
+                            <label class="translate-label">
+                                {{TranslateEnglish}}
+                            </label>
+                            <em class="fas fa-sort-down"></em>
+                        </div>
+                    </transition>
+                    <transition :name="'slide-down'" type="transition">
+                        <input type="text" v-model="statu.value_en" v-if="statu.translate">
+                    </transition>
                 </div>
                 <button class="translate-icon" style="height: 10%;margin-top: 10px;" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
                 <input type="hidden" :class="'label-' + statu.class">

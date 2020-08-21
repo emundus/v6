@@ -26,14 +26,50 @@
         </div>
         <div class="form-group">
           <label for="name">{{Name}}* :</label>
-          <input type="text" maxlength="40" class="form__input field-general w-input" v-model="form.name" id="name" :class="{ 'is-invalid': errors.name}" />
+          <div class="input-can-translate">
+            <input type="text" maxlength="40" class="form__input field-general w-input mb-0" v-model="form.name.fr" id="name" :class="{ 'is-invalid': errors.name}" />
+            <button class="translate-icon" :class="{'translate-icon-selected': translate.name}" type="button" @click="translate.name = !translate.name"></button>
+          </div>
+          <transition :name="'slide-down'" type="transition">
+            <div class="inlineflex" v-if="translate.name" style="margin: 10px">
+              <label class="translate-label">
+                {{TranslateEnglish}}
+              </label>
+              <em class="fas fa-sort-down"></em>
+            </div>
+          </transition>
+          <transition :name="'slide-down'" type="transition">
+              <input v-if="translate.name"
+                     type="text"
+                     class="form__input field-general w-input"
+                     v-model="form.name.en"
+              />
+          </transition>
           <p v-if="errors.name" class="error col-md-12 mb-2">
             <span class="error">{{NameRequired}}</span>
           </p>
         </div>
         <div class="form-group">
           <label for="description">{{Description}} :</label>
-          <textarea type="text" maxlength="200" class="form__input field-general w-input" v-model="form.description" id="description" />
+          <div class="input-can-translate">
+            <textarea type="text" maxlength="200" class="form__input field-general w-input mb-0" v-model="form.description.fr" id="description" />
+            <button class="translate-icon" :class="{'translate-icon-selected': translate.description}" type="button" @click="translate.description = !translate.description"></button>
+          </div>
+          <transition :name="'slide-down'" type="transition">
+            <div class="inlineflex" v-if="translate.description" style="margin: 10px">
+              <label class="translate-label">
+                {{TranslateEnglish}}
+              </label>
+              <em class="fas fa-sort-down"></em>
+            </div>
+          </transition>
+          <transition :name="'slide-down'" type="transition">
+              <input v-if="translate.description"
+                     type="text"
+                     class="form__input field-general w-input"
+                     v-model="form.description.en"
+              />
+          </transition>
         </div>
         <div class="form-group">
           <label for="nbmax">{{MaxPerUser}}* :</label>
@@ -77,18 +113,32 @@
 
   export default {
     name: "modalAddDocuments",
-    props: { cid: Number },
+    props: {
+      cid: Number,
+      pid: Number,
+    },
     data() {
       return {
         form: {
-          name: '',
-          description: '',
+          name: {
+            fr: '',
+            en: ''
+          },
+          description: {
+            fr: '',
+            en: ''
+          },
           nbmax: 1,
           selectedTypes: {
             pdf: false,
             'jpg;png;gif': false,
-            'doc;docx;odt;xls;xlsx;odf': false
+            'doc;docx;odt': false,
+            'xls;xlsx;odf': false,
           },
+        },
+        translate: {
+          name: false,
+          description: false
         },
         errors: {
           name: false,
@@ -97,16 +147,20 @@
         },
         types: [
           {
-            title: 'Documents PDF',
+            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PDF_DOCUMENTS"),
             value: 'pdf'
           },
           {
-            title: 'Images',
+            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS"),
             value: 'jpg;png;gif'
           },
           {
-            title: 'Documents Office',
-            value: 'doc;docx;odt;xls;xlsx;odf'
+            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS"),
+            value: 'doc;docx;odt'
+          },
+          {
+            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
+            value: 'xls;xlsx;odf'
           },
         ],
         selectedTypes: [],
@@ -120,12 +174,20 @@
         NameRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),
         MaxRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER_REQUIRED"),
         TypeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED"),
+        TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
       };
     },
     methods: {
       beforeClose(event) {
         this.form = {
           name: '',
+          description: '',
+          nbmax: 1,
+          selectedTypes: {
+            pdf: false,
+            'jpg;png;gif': false,
+            'doc;docx;odt;xls;xlsx;odf': false
+          },
         };
       },
       beforeOpen(event) {
@@ -136,7 +198,7 @@
           nbmax: false,
           selectedTypes: false
         };
-        if(this.form.name === ''){
+        if(this.form.name.fr === ''){
           this.errors.name = true;
           return 0;
         }
@@ -149,8 +211,15 @@
           return 0;
         }
 
-        let types = [];
+        if(this.translate.name === false){
+          this.form.name.en = this.form.name.fr;
+        }
 
+        if(this.translate.description === false){
+          this.form.description.en = this.form.description.fr;
+        }
+
+        let types = [];
         Object.keys(this.form.selectedTypes).forEach(key => {
           if(this.form.selectedTypes[key] == true){
             types.push(key);
@@ -166,7 +235,8 @@
           data: qs.stringify({
             document: this.form,
             types: types,
-            cid: this.cid
+            cid: this.cid,
+            pid: this.pid
           })
         }).then((rep) => {
           this.$emit("UpdateDocuments");

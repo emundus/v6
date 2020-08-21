@@ -1950,14 +1950,20 @@ class hikashopProductClass extends hikashopClass{
 		return $options;
 	}
 
-	public function getAllValuesMatches($characteristics, $variants) {
+	public function getAllValuesMatches($characteristics, $variants, $mainProduct = null) {
 		$allMatches = array();
 		$length = count($characteristics);
 		if($length == 1)
 			return false;
 
+		$config = hikashop_config();
+		$waitlist = $config->get('product_waitlist', 0);
+		if($waitlist == 1 && !empty($mainProduct))
+			$waitlist = $mainProduct->product_waitlist;
+		$wishlist = $config->get('enable_wishlist', 1);
 		foreach($variants as $k => $variant) {
-			if(!$variant->product_published || $variant->product_quantity == 0) {
+			$isNeeded = $variant->product_published && ($variant->product_quantity != 0 || $waitlist || $wishlist);
+			if(!$isNeeded) {
 				continue;
 			}
 			$chars = array();
@@ -2569,7 +2575,27 @@ class hikashopProductClass extends hikashopClass{
 		else
 			$app->triggerEvent( 'onAfterProductUpdate', array( & $element ) );
 
-		if($tags !== null && @$element->product_type!='variant') {
+		if($tags === null && !empty($element->old)) {
+			$tagsHelper = hikashop_get('helper.tags');
+			if($tagsHelper->isCompatible()) {
+				$tags = $tagsHelper->loadTags('product', $element->old);
+				if(!empty($tags) && count($tags)) {
+					$array = array();
+					foreach($tags as $tag) {
+						$array[] = $tag->tag_id;
+					}
+					$tags = $array;
+				}
+			}
+		}
+
+		$type = null;
+		if(isset($element->product_type))
+			$type = $element->product_type;
+		elseif(!empty($element->old->product_type))
+			$type = $element->old->product_type;
+
+		if($tags !== null && $type!='variant') {
 			$tagsHelper = hikashop_get('helper.tags');
 			$fullElement = $element;
 			if(!empty($element->old)) {

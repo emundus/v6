@@ -475,7 +475,7 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_phocagallery','component','4.3.17','<','3.0.0','>=','Phoca Gallery Component','XSS vulnerability','Apr 26 2019','Version 4.3.15 prior','update','4.3.17'),
 ('Joomla!','core','3.9.5','<=','3.0.0','>=','Joomla! core','Xss vulnerability','May 072019','Joomla 1.7.0 through 3.9.5','update','3.9.6'),
 ('com_rsform','component','2.2.0','==','3.0.0','>=','RSForm! Pro Component','Csv injection vulnerability','May 13 2019','Version 2.2.0','update','2.2.1'),
-('com_rsmembership','component','2.2.0','<=','3.0.0','>=','RSMembership! Component','Csv injection vulnerability','May 13 2019','Version 1.22.10 and lower','update','1.22.11'),
+('com_rsmembership','component','1.22.10','<=','3.0.0','>=','RSMembership! Component','Csv injection vulnerability','May 13 2019','Version 1.22.10 and lower','update','1.22.11'),
 ('com_rsevents','component','2.2.0','<=','3.0.0','>=','RSEvents! Pro Component','Csv injection vulnerability','May 13 2019','Version 2.2.0 and lower','update','2.2.1'),
 ('com_oziogallery','component','5.0.1','==','3.0.0','>=','Oziogallery Component','Xss vulnerability','May 14 2019','Version 5.0.1','update','5.0.2'),
 ('com_loginguard','component','3.1.1','<=','3.0.0','>=','Akeeba LoginGuard Component','Information disclosure vulnerability','May 18 2019','Version 3.1.1 and lower','update','3.2.0'),
@@ -520,7 +520,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.75');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.70');
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,

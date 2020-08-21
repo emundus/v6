@@ -14,6 +14,7 @@ use Joomla\CMS\Factory as JFactory;
 use Joomla\CMS\Language\Text as JText;
 use Joomla\CMS\Uri\Uri as JUri;
 use Joomla\CMS\Router\Route as JRoute;
+use Joomla\Input\Input;
 
 // Load language
 $lang = JFactory::getLanguage();
@@ -37,8 +38,6 @@ $translator_url = $lang2->_('COM_SECURITYCHECKPRO_TRANSLATOR_URL');
 $document = JFactory::getDocument();
 $document->addScript(JURI::root().'media/system/js/core.js');
 
-//Cookie
-$document->addScript(JURI::root().'media/com_securitycheckpro/new/js/js.cookie.js');
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/vendor/popper/popper.min.js');
@@ -70,8 +69,10 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/cpanel.php
     $valor_a_mostrar = 0; 
     $contador = 0; 
     $period = ""; 
+	
 while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
-    $aleatorio = rand(1, 5);
+    $aleatorio = rand(1, 5);	
+	
     switch ($aleatorio) {
     case 1:
         // Logs este año
@@ -109,26 +110,37 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
     <?php 
     // Cargamos la navegación
     require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/navigation.php';
-    ?>    
-        
-    <?php
-    if ($valor_a_mostrar != 0) {        
+    ?>  
+
+	<?php
+    if ($valor_a_mostrar != 0) {  	
+		
+		$input = new Input();
+
+		// Get the cookie
+		$value = $input->cookie->get('SCPInfoMessage', null);		
+		if ( is_null($value) ) { 
         ?>
-            <div id="mensaje_informativo" class="alert alert-success none">
+            <div id="mensaje_informativo" class="alert alert-success">
                  <h4><?php echo JText::sprintf('COM_SECURITYCHECKPRO_INFO_MESSAGE', $valor_a_mostrar, $period) ?></h4>
              </div>
         <?php
+			$time = time() + 86400; // 1 day	
+			$app = JFactory::getApplication();
+			$input->cookie->set('SCPInfoMessage', 'SCPInfoMessage', ['expires' => $time, 'path' => $app->get('cookie_path', '/'), 'domain' => $app->get('cookie_domain', ''), 'secure' => $app->isHttpsForced(), 'httponly' => true, 'samesite' => 'Strict']);			
+		} 		
     }
     ?>
         
-          <!-- Breadcrumb-->
+        <!-- Breadcrumb-->
           <ol class="breadcrumb">
             <li class="breadcrumb-item">
               <a href="#"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_DASHBOARD'); ?></a>
             </li>
             <li class="breadcrumb-item active"><?php echo JText::_('COM_SECURITYCHECKPRO_CPANEL_MYDASHBOARD'); ?></li>
           </ol>
-          
+		  
+	  
     <?php
                 $app = JComponentHelper::getParams('com_securitycheckpro');
                 $downloadid = $app->get('downloadid');
