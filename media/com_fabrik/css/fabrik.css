@@ -727,10 +727,11 @@ form.fabrikForm label.radio {
 	 display: none;
 }
 
-.g-back-office-emundus-tableau.view-list.email-history-indicators-page .fabrikDataContainer .jos_messages___message table[role="presentation"]:first-of-type td {
-	max-width: 30vw;
+.g-back-office-emundus-tableau.view-list.email-history-indicators-page .fabrikDataContainer .jos_messages___message table[role="presentation"]:first-child td {
+	max-width: 20vw;
 }
 
 .g-back-office-emundus-tableau.view-list.email-history-indicators-page .fabrikDataContainer .jos_messages___message table[role="presentation"] td {
-	max-width: 28vw;
+	max-width: 20vw;
+	overflow-x: scroll;
 }
