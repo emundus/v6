@@ -68,7 +68,13 @@ echo <<<EOT
     padding: 0;
     width:75rem;
     margin:auto;
-   }
+}
+
+.view-form.applicant-form #g-container-main .page-header, 
+.view-details.applicant-form #g-container-main .page-header { 
+    padding-bottom: 30px;
+}
+
 /* FORMULAIRE */
 .modal {
     position: relative !important;

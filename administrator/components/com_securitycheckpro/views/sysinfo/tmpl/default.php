@@ -986,11 +986,14 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/sysinfo.ph
                                             <li class="list-group-item list-group-item-dark"><?php echo JText::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_CRON_LAST_FILEMANAGER_CHECK'); ?></li>
                                             <li class="list-group-item">
                                                 <?php 
-                                                    $last_check = new DateTime(date('Y-m-d', strtotime($this->system_info['last_check'])));
-                                                    $now = new DateTime(date('Y-m-d', strtotime(date('Y-m-d H:i:s'))));
-                                    
-                                                    // Extraemos los días que han pasado desde el último chequeo
-                                                    (int) $interval = $now->diff($last_check)->format("%a");
+                                                    $last_check = $this->system_info['last_check'];
+													require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'model.php';
+													$global_model = new SecuritycheckproModel();
+                                                    $now = $global_model->get_Joomla_timestamp();
+													
+													$seconds = strtotime($now) - strtotime($last_check);
+													// Extraemos los días que han pasado desde el último chequeo
+													$interval = intval($seconds/86400);	                                            
                                                                                         
                                                 if ($interval < 2 ) {
                                                     $span = "<span class=\"badge badge-success\">";
@@ -998,7 +1001,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/sysinfo.ph
                                                     $span = "<span class=\"badge badge-warning\">";
                                                 }
                                                 ?>
-                <?php echo $span . $this->system_info['last_check']; ?>
+												<?php echo $span . $this->system_info['last_check']; ?>
                                                     </span>
                 <?php 
                 if ($interval < 2 ) {
@@ -1038,11 +1041,14 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/sysinfo.ph
                                             <li class="list-group-item list-group-item-dark"><?php echo JText::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_CRON_LAST_FILEINTEGRITY_CHECK'); ?></li>
                                             <li class="list-group-item">
                                                 <?php 
-                                                    $last_check_integrity = new DateTime(date('Y-m-d', strtotime($this->system_info['last_check_integrity'])));
-                                                    $now = new DateTime(date('Y-m-d', strtotime(date('Y-m-d H:i:s'))));
-                                    
-                                                    // Extraemos los días que han pasado desde el último chequeo
-                                                    (int) $interval = $now->diff($last_check_integrity)->format("%a");
+                                                    $last_check_integrity = $this->system_info['last_check_integrity'];
+                                                    require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'model.php';
+													$global_model = new SecuritycheckproModel();
+                                                    $now = $global_model->get_Joomla_timestamp();
+													
+													$seconds = strtotime($now) - strtotime($last_check_integrity);
+													// Extraemos los días que han pasado desde el último chequeo
+													$interval = intval($seconds/86400);	            
                                                                                         
                                                 if ($interval < 2 ) {
                                                     $span = "<span class=\"badge badge-success\">";

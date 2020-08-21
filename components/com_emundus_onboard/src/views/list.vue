@@ -12,9 +12,14 @@
       :validateFilters="validateFilters"
       :nbresults="nbresults"
       :isEmpty="isEmpty"
+      :coordinatorAccess="coordinatorAccess"
     ></actions>
-    <h2 v-show="total > 0">{{ Total }} : {{ total }}</h2>
 
+    <transition :name="'slide-down'" type="transition">
+      <h2 v-show="total > 0">{{ Total }} : {{ total }}</h2>
+    </transition>
+
+    <transition :name="'slide-down'" type="transition">
     <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'">
       <ul class="pagination" v-if="total > 0">
         <a @click="nbpages(pages - 1)" class="pagination-arrow arrow-left">
@@ -43,22 +48,27 @@
         </a>
       </ul>
     </div>
+    </transition>
 
     <div v-show="total > 0 || type == 'files'">
-      <div v-show="total > 0" class="buttonSelectDeselect">
-        <button @click="!isEmpty ? selectAllItem() : deselectItem()"
-          class="btn-selectAll"
-          :class="[isEmpty ? 'active' : '']">
-        </button>
-        <div v-show="!isEmpty" id="buttonLabelSelect">
-          {{ Select }} ({{ pages < countPages ? limit : total - limit * countPages + limit }})
+      <transition :name="'slide-down'" type="transition">
+        <div v-show="total > 0" class="buttonSelectDeselect">
+          <button @click="!isEmpty ? selectAllItem() : deselectItem()"
+            class="btn-selectAll"
+            :class="[isEmpty ? 'active' : '']">
+          </button>
+          <div v-show="!isEmpty" id="buttonLabelSelect">
+            {{ Select }} ({{ pages < countPages ? limit : total - limit * countPages + limit }})
+          </div>
+          <div v-show="isEmpty" id="buttonLabelDeselect">{{ Deselect }}</div>
         </div>
-        <div v-show="isEmpty" id="buttonLabelDeselect">{{ Deselect }}</div>
-      </div>
+      </transition>
 
-      <div v-if="type != 'files'" v-for="(data, index) in list" :key="index">
-        <component v-bind:is="type" :data="data" :selectItem="selectItem" />
-      </div>
+      <transition-group :name="'slide-down'" type="transition">
+        <div v-if="type != 'files'" v-for="(data, index) in list" :key="index">
+          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+        </div>
+      </transition-group>
 
       <div v-if="type == 'files'">
         <component v-bind:is="type" />
@@ -102,7 +112,7 @@
       </div>
     </div>
 
-    <div v-show="total == 0 && type != 'files'" class="noneDiscover">
+    <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">
       {{
         this.type == "campaign"
           ? noCampaign
@@ -114,6 +124,9 @@
           ? noForm
           : noFiles
       }}
+    </div>
+    <div class="loading-form" v-if="loading">
+      <RingLoader :color="'#de6339'" />
     </div>
   </div>
 </template>
@@ -154,7 +167,8 @@ export default {
   name: "list",
   props: {
     type: String,
-    actualLanguage: String
+    actualLanguage: String,
+    coordinatorAccess: Number
   },
   data: () => ({
     selecedItems: [],
@@ -162,6 +176,7 @@ export default {
       type: "",
       add_url: ""
     },
+    loading: false,
 
     Select: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT"),
     Deselect: Joomla.JText._("COM_EMUNDUS_ONBOARD_DESELECT"),
@@ -171,9 +186,7 @@ export default {
     noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
     noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
     noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
-    isActionsAvailable: false,
     total: 0,
-    isActiveAll: false,
     filtersCount: "",
     filters: "",
     filtersCountFilter: "&filterCount=",
@@ -208,13 +221,14 @@ export default {
       this.type = "formulaire";
     }
     if (this.typeForAdd != "files") {
-      this.actions.add_url =  window.location.pathname + '/index.php?option=com_emundus_onboard&view=' + this.typeForAdd + '&layout=add'
+      this.actions.add_url =  'index.php?option=com_emundus_onboard&view=' + this.typeForAdd + '&layout=add'
     }
     this.validateFilters();
   },
 
   methods: {
     validateFilters() {
+      this.loading = true;
       this.filtersCount = this.filtersCountFilter + this.filtersCountSearch;
       this.filters =
         this.filtersFilter +
@@ -267,36 +281,34 @@ export default {
 
     allFilters(filtersCount, filters) {
       if (this.type != "files") {
-        axios
-          .get(
-            "index.php?option=com_emundus_onboard&controller=" +
+        axios.get("index.php?option=com_emundus_onboard&controller=" +
               this.typeForAdd +
               "&task=get" +
               this.typeForAdd +
               "count" +
               filtersCount
-          )
-          .then(response => {
-            this.total = response.data.data;
-          })
-          .then(() => {
+          ).then(response => {
             axios.get(
                 "index.php?option=com_emundus_onboard&controller=" +
                   this.typeForAdd +
                   "&task=getall" +
                   this.typeForAdd +
                   filters
-              )
-              .then(response => {
-                list.commit("listUpdate", response.data.data);
+              ).then(rep => {
+                this.total = response.data.data;
+                list.commit("listUpdate", rep.data.data);
+                if(typeof rep.data.forms_updating != 'undefined') {
+                  list.commit("formsAccessUpdate", rep.data.forms_updating);
+                }
                 this.countPages = Math.ceil(this.total / this.limit);
-              })
-              .catch(e => {
+                this.loading = false;
+              }).catch(e => {
                 console.log(e);
+                this.loading = false;
               });
-          })
-          .catch(e => {
+          }).catch(e => {
             console.log(e);
+            this.loading = false;
           });
       }
     },
@@ -392,4 +404,8 @@ h2 {
   margin: 0 auto;
   text-align: center;
 }
+
+  .loading-form{
+    top: unset;
+  }
 </style>

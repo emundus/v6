@@ -544,7 +544,7 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 			<?php if (ADMINTOOLS_PRO): ?>
 				<p>
 					We strongly recommend watching our <a
-							href="https://www.akeebabackup.com/videos/1207-admin-tools.html">video
+							href="https://www.akeeba.com/videos/1207-admin-tools.html">video
 						tutorials</a> before using this component.
 				</p>
 
@@ -561,8 +561,8 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 
 			<p>
 				By installing this component you are implicitly accepting
-				<a href="https://www.akeebabackup.com/license.html">its license (GNU GPLv3)</a> and our
-				<a href="https://www.akeebabackup.com/privacy-policy.html">Terms of Service</a>,
+				<a href="https://www.akeeba.com/license.html">its license (GNU GPLv3)</a> and our
+				<a href="https://www.akeeba.com/privacy-policy.html">Terms of Service</a>,
 				including our Support Policy.
 			</p>
 		</fieldset>
@@ -622,7 +622,7 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 		?>
 		<h2>Admin Tools Uninstallation Status</h2>
 		<p>We are sorry that you decided to uninstall Admin Tools. Please let us know why by using the <a
-					href="https://www.akeebabackup.com/contact-us.html" target="_blank">Contact Us form on our site</a>.
+					href="https://www.akeeba.com/contact-us.html" target="_blank">Contact Us form on our site</a>.
 			We
 			appreciate your feedback; it helps us develop better software!</p>
 		<?php

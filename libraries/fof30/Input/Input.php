@@ -196,7 +196,7 @@ class Input extends JInput
 			}
 			else
 			{
-				$safeHtmlFilter = InputFilter::getInstance([], [], InputFilter::TAGS_BLACKLIST, InputFilter::ATTR_BLACKLIST);
+				$safeHtmlFilter = InputFilter::getInstance([], [], 1, 1);
 			}
 			$var = $safeHtmlFilter->clean($var, $type);
 		}

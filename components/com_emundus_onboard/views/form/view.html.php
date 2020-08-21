@@ -33,17 +33,18 @@ class EmundusonboardViewForm extends JViewLegacy
 		$layout = $jinput->getString('layout', null);
 
 		if ($layout == 'add') {
-			$this->pid = $jinput->getString('pid', null);
-			$this->cid = $jinput->getString('cid', null);
+			$this->pid = $jinput->getInt('pid', null);
+			$this->cid = $jinput->getInt('cid', null);
 		}
         if ($layout == 'addnextcampaign') {
-            $this->cid = $jinput->getString('cid', null);
-            $this->index = $jinput->getString('index', null);
+            $this->cid = $jinput->getInt('cid', null);
+            $this->index = $jinput->getInt('index', null);
         }
 		if ($layout == 'formbuilder') {
 			$this->prid = $jinput->getString('prid', null);
-			$this->index = $jinput->getString('index', 0);
-			$this->cid = $jinput->getString('cid', null);
+			$this->index = $jinput->getInt('index', 0);
+			$this->cid = $jinput->getInt('cid', null);
+			$this->eval = $jinput->getInt('evaluation', 0);
 
 			$this->layout = $layout;
 		}

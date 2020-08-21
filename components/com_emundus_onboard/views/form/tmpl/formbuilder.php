@@ -19,6 +19,8 @@ JText::script('COM_EMUNDUS_ONBOARD_SIDEMENUHELP');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDMENU');
 JText::script('COM_EMUNDUS_ONBOARD_PREVIEW');
 JText::script('COM_EMUNDUS_ONBOARD_ELEMENTTOOLTIPS');
+JText::script('COM_EMUNDUS_ONBOARD_FORM_PAGE');
+JText::script('COM_EMUNDUS_ONBOARD_SUBMIT_PAGE');
 ## END ##
 
 ## FIELDS ##
@@ -46,6 +48,10 @@ JText::script('COM_EMUNDUS_ONBOARD_ACTIONS_SETTINGS');
 JText::script('COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH');
 JText::script('COM_EMUNDUS_ONBOARD_ACTION_PUBLISH');
+JText::script('COM_EMUNDUS_ONBOARD_UPDATEFORMTIP');
+JText::script('COM_EMUNDUS_ONBOARD_UPDATEFORMTIP1');
+JText::script('COM_EMUNDUS_ONBOARD_UPDATEFORMTIP2');
+JText::script('COM_EMUNDUS_ONBOARD_TIP');
 ## END ##
 
 ## BUILDER ##
@@ -102,12 +108,24 @@ JText::script('COM_EMUNDUS_ONBOARD_CHOOSE_GROUP');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CREATEDELEMENT');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CREATEDELEMENTSUCCES');
 JText::script('COM_EMUNDUS_ONBOARD_SEND_FORM');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_MAXLENGTH');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_USE_ADVANCED_EDITOR');
+JText::script('COM_EMUNDUS_ONBOARD_MODIFY');
+JText::script('COM_EMUNDUS_ONBOARD_REPEAT_GROUP');
+JText::script('COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE');
+JText::script('COM_EMUNDUS_ONBOARD_REPEAT_GROUP_DISABLE');
+JText::script('COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE_DISABLE');
+JText::script('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN');
+JText::script('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN_TEXT');
 ## END ##
 
-
+$vue = 'em-formBuilder-vue';
+if($this->eval != 0){
+    $vue = 'em-evaluationBuilder-vue';
+}
 
 ?>
 
-<div id="em-formBuilder-vue" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>"></div>
+<div id="<?= $vue; ?>" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>" eval="<?= $this->eval; ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>

@@ -192,12 +192,13 @@ class SecuritycheckprosModelSysinfo extends SecuritycheckproModel
                 }
                 
                 // Cron 
-                $last_check = new DateTime(date('Y-m-d', strtotime($this->info['last_check'])));
-                $now = new DateTime(date('Y-m-d', strtotime(date('Y-m-d H:i:s'))));
-                    
-                // Extraemos los días que han pasado desde el último chequeo
-                (int) $interval = $now->diff($last_check)->format("%a");
-                                                                        
+                $last_check = $this->info['last_check'];
+				$now = $this->get_Joomla_timestamp();
+				
+				$seconds = strtotime($now) - strtotime($last_check);
+				// Extraemos los días que han pasado desde el último chequeo
+				$interval = intval($seconds/86400);	
+                                   
                 if ($interval < 2) {
                     $overall = $overall + 10;                    
                 } else
@@ -205,12 +206,11 @@ class SecuritycheckprosModelSysinfo extends SecuritycheckproModel
                     
                 }
                 
-                $last_check_integrity = new DateTime(date('Y-m-d', strtotime($this->info['last_check_integrity'])));
-                $now = new DateTime(date('Y-m-d', strtotime(date('Y-m-d H:i:s'))));
-                    
-                // Extraemos los días que han pasado desde el último chequeo
-                (int) $interval = $now->diff($last_check_integrity)->format("%a");
-                                                                        
+                $last_check_integrity = $this->info['last_check_integrity'];
+				$seconds = strtotime($now) - strtotime($last_check_integrity);
+				// Extraemos los días que han pasado desde el último chequeo
+				$interval = intval($seconds/86400);
+                                                                                        
                 if ($interval < 2) {
                     $overall = $overall + 10;                    
                 } else

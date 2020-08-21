@@ -58,10 +58,10 @@ class EmundusViewEmail extends JViewLegacy {
 			$document->addScript("media/com_emundus/lib/chosen/chosen.jquery.min.js");
 
 			if (!is_array($fnums) || $fnums == "all") {
-				$m_files     = new EmundusModelFiles;
-				$fnums       = $m_files->getAllFnums();
+				$m_files = new EmundusModelFiles;
+				$fnums = $m_files->getAllFnums();
 				$fnums_infos = $m_files->getFnumsInfos($fnums, 'object');
-				$fnums       = $fnums_infos;
+				$fnums = $fnums_infos;
 			}
 
 			$fnum_array = array();
@@ -72,7 +72,7 @@ class EmundusViewEmail extends JViewLegacy {
 
 			$m_application = new EmundusModelApplication();
 			$m_evaluation  = new EmundusModelEvaluation;
-			$h_emails      = new EmundusHelperEmails();
+			$h_emails = new EmundusHelperEmails();
 
 			$reference_table = $eMConfig->get('reference_table', '#__emundus_references');
 			$reference_field = $eMConfig->get('reference_field', 'Email_1 as email');
@@ -80,22 +80,22 @@ class EmundusViewEmail extends JViewLegacy {
 			foreach ($fnums as $key => $fnum) {
 
 				if ($fnum->fnum === 'em-check-all') {
-					unset ($fnums[$key]);
+					unset($fnums[$key]);
 					continue;
 				}
 
 				if (EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id, $fnum->fnum)) {
 					$fnum_array[] = $fnum->fnum;
-					$app_file     = $m_application->getApplication($fnum->fnum);
+					$app_file = $m_application->getApplication($fnum->fnum);
 					$fnum->status = $app_file->status;
 				}
 			}
 			$fnums = array_values($fnums);
 
-			$this->experts_list       = $m_evaluation->getExperts(@$fnums[0]->fnum, $reference_field, $reference_table);
-			$this->email              = $h_emails->createEmailBlock(['expert'], $this->experts_list);
-			$this->fnums              = $fnums;
-			$this->fnum_array         = $fnum_array;
+			$this->experts_list = $m_evaluation->getExperts();
+			$this->email = $h_emails->createEmailBlock(['expert'], $this->experts_list);
+			$this->fnums = $fnums;
+			$this->fnum_array = $fnum_array;
 			$this->default_email_tmpl = $default_email_tmpl;
 
 		} else {

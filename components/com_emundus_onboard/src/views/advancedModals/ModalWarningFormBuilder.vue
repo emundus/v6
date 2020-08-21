@@ -29,14 +29,18 @@
         </div>
       </div>
       <div class="col-md-12 mb-1">
-        <a
-                class="bouton-sauvergarder-et-continuer-3"
-                @click.prevent="duplicateProfile()"
-        >{{ Duplicate }}</a>
-        <a
-                class="bouton-sauvergarder-et-continuer-3 w-retour"
-                @click.prevent="$modal.hide('modalWarningFormBuilder')"
-        >{{Retour}}</a>
+<!--        <a class="bouton-sauvergarder-et-continuer-3"
+           @click.prevent="duplicateProfile()">
+          {{ Duplicate }}
+        </a>-->
+        <a class="bouton-sauvergarder-et-continuer-3 mr-1"
+           @click.prevent="formbuilder()">
+          {{ Update }}
+        </a>
+        <a class="bouton-sauvergarder-et-continuer-3 w-retour"
+           @click.prevent="$modal.hide('modalWarningFormBuilder')">
+          {{Retour}}
+        </a>
       </div>
     </modal>
   </span>
@@ -58,13 +62,14 @@ export default {
       FormAffectedToFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_AFFECTEDFILES"),
       Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
       Duplicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_DUPLICATE"),
+      Update: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
     };
   },
   methods: {
     beforeClose(event) {
     },
     beforeOpen(event) {},
-    duplicateProfile() {
+    /*duplicateProfile() {
       axios({
         method: "post",
         url:
@@ -95,7 +100,16 @@ export default {
           );
         });
       });
-    }
+    },*/
+
+    formbuilder(){
+      window.location.replace(
+              "index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=" +
+              this.pid +
+              "&index=0&cid=" +
+              this.cid
+      );
+    },
   },
 };
 </script>

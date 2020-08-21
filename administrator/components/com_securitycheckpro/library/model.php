@@ -261,10 +261,10 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         if ($key_name != 'inspector') {        
             // Chequeamos si los valores de prioridad son nulos; si lo son, les asignamos un valor
             if ((array_key_exists("priority1", $data)) && (is_null($data['priority1'])) || (!array_key_exists("priority1", $data))) {
-                $data['priority1'] = 'Geoblock';
+                $data['priority1'] = 'Whitelist';
             }
             if ((array_key_exists("priority2", $data)) && (is_null($data['priority2'])) || (!array_key_exists("priority2", $data))) {
-                $data['priority2'] = 'Whitelist';
+                $data['priority2'] = 'Blacklist';
             }
             if ((array_key_exists("priority3", $data)) && (is_null($data['priority3'])) || (!array_key_exists("priority3", $data))) {
                 $data['priority3'] = 'DynamicBlacklist';
@@ -483,34 +483,79 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         return $aparece;
     }
 
-    function encrypt($text_to_encrypt,$encryption_key)
-    {
-        // Generate an initialization vector
-        // This *MUST* be available for decryption as well
-        $iv = openssl_random_pseudo_bytes(8);
-        $iv = bin2hex($iv);
-                
-        // Encrypt $data using aes-128-cbc cipher with the given encryption key and 
-        // our initialization vector. The 0 gives us the default options, but can
-        // be changed to OPENSSL_RAW_DATA or OPENSSL_ZERO_PADDING
-        $encrypted = openssl_encrypt($text_to_encrypt, 'aes-128-cbc', $encryption_key, 0, $iv);
-                
-        $encrypted = $encrypted . ':' . $iv;
-    
-        return $encrypted;
-    }
+	/**
+		* Encrypt data using OpenSSL (AES-256-CBC)
+		* Based on code from: https://stackoverflow.com/questions/3422759/php-aes-encrypt-decrypt
+	*/
+    function encrypt($plaindata, $encryption_key)
+	{
+		$method = "AES-256-CBC";
+			
+		$iv = openssl_random_pseudo_bytes(16);
+			
+		$hash_pbkdf2 = hash_pbkdf2("sha512", $encryption_key, "", 5000);
+		$key = substr($hash_pbkdf2, 0, 256);
+		$hashkey = substr($hash_pbkdf2, 256, 512);
+			
+		$cipherdata = openssl_encrypt($plaindata, $method, $key, OPENSSL_RAW_DATA, $iv);
 
-    function decrypt($text_to_decrypt,$encryption_key)
-    {
-        // To decrypt, separate the encrypted data from the initialization vector ($iv)
-        $parts = explode(':', $text_to_decrypt);
-        // $parts[0] = encrypted data
-        // $parts[1] = initialization vector
+		if ($cipherdata === false)
+		{
+			$cryptokey = "**REMOVED**";
+			$hashkey = "**REMOVED**";
+			throw new \Exception("Internal error: openssl_encrypt() failed:".openssl_error_string());
+		}
 
-        $decrypted = openssl_decrypt($parts[0], 'aes-128-cbc', $encryption_key, 0, $parts[1]);
-    
-        return $decrypted;
-    }
+		$hash = hash_hmac('sha256', $cipherdata.$iv, $hashkey, true);
+
+		if ($hash === false)
+		{
+			$cryptokey = "**REMOVED**";
+			$hashkey = "**REMOVED**";
+			throw new \Exception("Internal error: hash_hmac() failed");
+		}
+
+		return base64_encode($iv.$hash.$cipherdata);
+	}
+	
+	/**
+		* Decrypt data using OpenSSL (AES-256-CBC)
+		* Based on code from: https://stackoverflow.com/questions/3422759/php-aes-encrypt-decrypt
+	*/
+	function decrypt($encrypteddata, $encryption_key)
+	{
+		$method = "AES-256-CBC";
+			
+		$encrypteddata = base64_decode($encrypteddata);
+			
+		$iv = substr($encrypteddata, 0, 16);
+		$hash = substr($encrypteddata, 16, 32);
+		$cipherdata = substr($encrypteddata, 48);
+							
+		$hash_pbkdf2 = hash_pbkdf2("sha512", $encryption_key, "", 5000);
+		$key = substr($hash_pbkdf2, 0, 256);
+		$hashkey = substr($hash_pbkdf2, 256, 512);
+			
+		if (!hash_equals(hash_hmac('sha256', $cipherdata.$iv, $hashkey, true), $hash))
+		{
+			/*$cryptokey = "**REMOVED**";
+			$hashkey = "**REMOVED**";
+			throw new \Exception("Internal error: Hash verification failed");*/
+			return "Internal error: Hash verification failed";
+		}
+
+		$plaindata = openssl_decrypt($cipherdata, $method, $key, OPENSSL_RAW_DATA, $iv);
+
+		if ($plaindata === false)
+		{
+			/*$cryptokey = "**REMOVED**";
+			$hashkey = "**REMOVED**";
+			throw new \Exception("Internal error: openssl_decrypt() failed:".openssl_error_string());*/
+			return "Internal error: openssl_decrypt() failed";
+		}
+
+		return $plaindata;
+	}
 
     /* Función que modifica el valor de algún parámetro de un componente */
     function modify_component_value($param_name,$value,$option)
@@ -1201,5 +1246,23 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         $app->logout($user_id);
     
     }
+	
+	/* Devuelve una fecha datetime usando el offset establecido en Joomla */
+	public function get_Joomla_timestamp()
+	{
+		// Obtenemos el timezone de Joomla y sobre esa información calculamos el timestamp
+		$config = JFactory::getConfig();
+		$offset = $config->get('offset');
+						
+		if (empty($offset))
+		{
+			$offset = 'UTC';
+		}
+		
+		$date = new DateTime("now", new DateTimeZone($offset) );
+		$timestamp_joomla_timezone = $date->format('Y-m-d H:i:s');
+			
+		return $timestamp_joomla_timezone;
+	}
 
 }

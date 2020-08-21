@@ -15,7 +15,6 @@ require_once dirname(__FILE__) . '/helper.php';
 
 $id = JFactory::getUser()->id;
 
-$coordinatoraccess = EmundusHelperAccess::asCoordinatorAccessLevel($id);
 $path = ModEmundusSwitchFunnel::getRoute($params);
 
 $lang = JFactory::getLanguage()->getTag();

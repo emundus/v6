@@ -48,10 +48,7 @@
     display: block;
     width: 100% !important;
 }
-.campaingapplycontent {
-    font-size: 15px;
-    padding: 0;
-}
+
 #navfilter .navsearch .navsearch-content .input-group-btn button::before {
     content: "\f002";
     font-family: FontAwesome;
@@ -102,6 +99,8 @@
 
 .campaingapplycontent {
     line-height: 22px;
+    font-size: 15px;
+    padding: 0;
 }
 
 .campaingapplycontent b{
@@ -119,7 +118,6 @@
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
-
 }
 
 .campaigns-list .below-content a.btn {
@@ -191,6 +189,18 @@
 
 .campaigntext.blue h4 a {
     color: #292929;
+}
+
+/*** Single campaign template additions ***/
+.single-campaign {
+    display: flex;
+    flex-direction: column;
+}
+.single-campaign .right-side, .single-campaign .below-content {
+    border: none !important;
+}
+.single-campaign .below-content {
+    text-align: left !important;
 }
 ​
 @media all and (max-width: 767px) {

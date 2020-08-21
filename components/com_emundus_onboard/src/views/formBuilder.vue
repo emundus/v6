@@ -2,9 +2,10 @@
   <div class="container-fluid">
     <notifications
             group="foo-velocity"
-            position="top right"
             animation-type="velocity"
             :speed="500"
+            position="bottom left"
+            :classes="'vue-notification-custom'"
     />
     <ModalAffectCampaign
             :prid="prid"
@@ -19,8 +20,10 @@
             v-show="formObjectArray[indexHighlight]"
             :ID="value.rgt"
             :element="value.object"
+            :link="formObjectArray[indexHighlight].link"
             :menus="formObjectArray"
             :index="index"
+            :files="files"
             @show="show"
             @UpdateUx="UpdateUXT"
             @UpdateName="UpdateName"
@@ -28,12 +31,6 @@
             @removeMenu="removeMenu"
     />
     <div class="row form-builder">
-      <div class="heading-block col-md-offset-4">
-        <h1 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h1>
-        <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em">
-          <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
-        </a>
-      </div>
       <div class="actions-menu menu-block">
         <div>
           <div class="heading-actions">
@@ -52,6 +49,7 @@
                 <em class="add-element-icon col-md-offset-1"></em>
                 <label class="action-label col-md-offset-2" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
               </a>
+            <transition :name="'slide-down'" type="transition">
               <draggable
                       v-model="plugins"
                       v-bind="dragOptions"
@@ -63,11 +61,12 @@
                       chosen-class="plugin-chosen"
                       ghost-class="plugin-ghost"
                       style="padding-bottom: 2em">
-                  <div class="d-flex plugin-link col-md-offset-3 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value">
+                  <div class="d-flex plugin-link col-md-offset-3 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
                     <em :class="plugin.icon"></em>
                     <span class="ml-10px">{{plugin.name}}</span>
                   </div>
               </draggable>
+            </transition>
           </div>
         </div>
         <a class="send-form-button" @click="sendForm">
@@ -76,37 +75,71 @@
         </a>
       </div>
       <div class="col-md-8 col-md-offset-4 menu-block">
-        <ul class="menus-row">
-          <draggable
-                  handle=".handle"
-                  v-model="formObjectArray"
-                  :class="'draggables-list'"
-                  @end="SomethingChange"
-          >
-            <li v-for="(value, index) in formObjectArray" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-              <span class="icon-handle" v-show="grab && indexGrab == index">
-                <em class="fas fa-grip-vertical handle"></em>
-              </span>
-              <a @click="changeGroup(index,value.rgt)"
-                 class="MenuFormItem"
-                 :class="indexHighlight == index ? 'MenuFormItem_current' : ''">
-                {{value.object.show_title.value}}
-              </a>
-            </li>
-          </draggable>
+        <div class="heading-block">
+          <h1 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h1>
+          <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit">
+            <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
+          </a>
+        </div>
+        <ul class="form-section">
+          <li>
+            <a :class="menuHighlight === 0 ? 'form-section__current' : ''" @click="menuHighlight = 0;indexHighlight = 0">{{FormPage}}</a>
+          </li>
+          <li>
+            <a :class="menuHighlight === 1 ? 'form-section__current' : ''" @click="menuHighlight = 1;indexHighlight = 0">{{SubmitPage}}</a>
+          </li>
         </ul>
-        <div class="col-md-12 form-viewer-builder">
-          <Builder
-                  :object="formObjectArray[indexHighlight]"
-                  v-if="formObjectArray[indexHighlight]"
-                  :UpdateUx="UpdateUx"
-                  @show="show"
-                  @UpdateFormBuilder="updateFormObjectAndComponent"
-                  @removeGroup="removeGroup"
-                  :key="builderKey"
-                  :rgt="rgt"
-                  ref="builder"
-          />
+        <div v-if="menuHighlight === 0">
+          <ul class="menus-row">
+            <draggable
+                    handle=".handle"
+                    v-model="formObjectArray"
+                    :class="'draggables-list'"
+                    @end="SomethingChange"
+            >
+              <li v-for="(value, index) in formObjectArray" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+                <span class="icon-handle" v-show="grab && indexGrab == index">
+                  <em class="fas fa-grip-vertical handle"></em>
+                </span>
+                <a @click="changeGroup(index,value.rgt)"
+                   class="MenuFormItem"
+                   :class="indexHighlight == index ? 'MenuFormItem_current' : ''">
+                  {{value.object.show_title.value}}
+                </a>
+              </li>
+            </draggable>
+          </ul>
+          <div class="col-md-12 form-viewer-builder">
+            <Builder
+                    :object="formObjectArray[indexHighlight]"
+                    v-if="formObjectArray[indexHighlight]"
+                    :UpdateUx="UpdateUx"
+                    @show="show"
+                    @UpdateFormBuilder="updateFormObjectAndComponent"
+                    @removeGroup="removeGroup"
+                    :key="builderKey"
+                    :rgt="rgt"
+                    :files="files"
+                    ref="builder"
+            />
+          </div>
+        </div>
+        <div v-if="menuHighlight === 1">
+          <div class="col-md-12 form-viewer-builder">
+            <Builder
+                    :object="submittionPages[indexHighlight]"
+                    v-if="submittionPages[indexHighlight]"
+                    :UpdateUx="UpdateUx"
+                    @show="show"
+                    @UpdateFormBuilder="updateFormObjectAndComponent"
+                    @removeGroup="removeGroup"
+                    :key="builderSubmitKey"
+                    :rgt="rgt"
+                    :eval="0"
+                    :files="files"
+                    ref="builder_submit"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -133,6 +166,7 @@
   import _ from 'lodash';
   import ModalElement from "../components/formClean/ModalElement";
   import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
+  import List from "./list";
 
   const qs = require("qs");
 
@@ -141,9 +175,10 @@
     props: {
       prid: String,
       index: Number,
-      cid: Number
+      cid: Number,
     },
     components: {
+      List,
       ModalAffectCampaign,
       ModalElement,
       Builder,
@@ -153,18 +188,11 @@
     },
     data() {
       return {
+        // UX variables
         UpdateUx: false,
-        showModal: false,
+        menuHighlight: 0,
         indexHighlight: "0",
         indexGrab: "0",
-        formObjectArray: [],
-        thevalue: "",
-        formList: "",
-        profileLabel: "",
-        id: 0,
-        grab: 0,
-        rgt: 0,
-        builderKey: 0,
         animation: {
           enter: {
             opacity: [1, 0],
@@ -177,7 +205,24 @@
           }
         },
         loading: false,
+        //
+
+        // Forms variables
+        formObjectArray: [],
+        submittionPages: [],
+        formList: "",
+        profileLabel: "",
+        id: 0,
+        grab: 0,
+        rgt: 0,
+        builderKey: 0,
+        builderSubmitKey: 0,
+        files: 0,
+        //
+
         link: '',
+
+        // Draggabbles variables
         dragging: false,
         draggingIndex: -1,
         elementDisabled: false,
@@ -220,15 +265,17 @@
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
           },
         },
-        buildmenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDMENU"),
-        preview: Joomla.JText._("COM_EMUNDUS_ONBOARD_PREVIEW"),
         addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
         addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
         Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
         sendFormButton: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEND_FORM"),
+        Edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
+        FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
+        SubmitPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
       };
     },
+
     methods: {
       createElement(gid,plugin,order) {
         if(!_.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups)){
@@ -256,9 +303,45 @@
                 return qs.stringify(params);
               }
             }).then(response => {
-              this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elements['element'+response.data.id] = response.data;
+              this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
               this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
               this.$refs.builder.updateOrder(gid,this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts);
+              this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+              this.loading = false;
+            });
+          });
+        }
+      },
+      createSubmittionElement(gid,plugin,order){
+        if(!_.isEmpty(this.submittionPages[this.indexHighlight].object.Groups)){
+          this.loading = true;
+          axios({
+            method: "post",
+            url:
+                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              gid: gid,
+              plugin: plugin
+            })
+          }).then((result) => {
+            axios({
+              method: "get",
+              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+              params: {
+                element: result.data.scalar,
+                gid: gid
+              },
+              paramsSerializer: params => {
+                return qs.stringify(params);
+              }
+            }).then(response => {
+              this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
+              this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
+              this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
+              this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
               this.loading = false;
             });
           });
@@ -270,9 +353,20 @@
         let plugin = evt.clone.id.split('_')[1];
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
         if(typeof gid != 'undefined'){
-          this.createElement(gid,plugin,evt.newIndex)
+          if(this.menuHighlight === 0) {
+            this.createElement(gid, plugin, evt.newIndex);
+          } else {
+            this.createSubmittionElement(gid, plugin, evt.newIndex);
+          }
         }
       },
+      addingNewElementByDblClick: _.debounce(function(plugin) {
+        let gid = Object.keys(this.formObjectArray[this.indexHighlight].object.Groups)[Object.keys(this.formObjectArray[this.indexHighlight].object.Groups).length-1].split('_')[1];
+        let index = this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.length;
+        if(typeof gid != 'undefined'){
+          this.createElement(gid,plugin,index)
+        }
+      }, 250, { 'maxWait': 1000 }),
       createGroup() {
         this.loading = true;
         axios({
@@ -301,6 +395,7 @@
           });
         });
       },
+
       // Update component dynamically
       UpdateName(index, label) {
         this.formObjectArray[index].object.show_title.value = label;
@@ -313,6 +408,7 @@
           if(form.object.id == group.formid){
             this.formObjectArray[index]['object']['Groups']['group_'+group.group_id] = {
               elements: {},
+              elts: [],
               group_id: group.group_id,
               group_showLegend: group.group_showLegend,
               label_fr: group.label_fr,
@@ -322,8 +418,9 @@
             };
           }
         });
-        this.builderKey += 1;
         this.elementDisabled = false;
+        this.$refs.builder.getDataObject();
+        this.$refs.builder.$refs.builder_viewer.openGroup[group.group_id] = true;
         setTimeout(() => {
           window.scrollTo(0,document.body.scrollHeight);
         }, 200);
@@ -388,6 +485,14 @@
       /**
        * ** Methods for notify
        */
+      tip(){
+        this.showTip(
+                "foo-velocity",
+                Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP") + '<br/>' + Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP1") + '<br/>' + Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP2"),
+                Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+        );
+      },
+
       show(group, type = "", text = "", title = "Information") {
         this.$notify({
           group,
@@ -396,47 +501,83 @@
           type
         });
       },
+      showTip(group, text = "", title = "Information") {
+        this.$notify({
+          group,
+          title: `${title}`,
+          text: text,
+          duration: 20000
+        });
+      },
       clean(group) {
         this.$notify({ group, clean: true });
       },
 
-      //TODOS a refaire
       getDataObject() {
         this.indexHighlight = this.index;
         this.formList.forEach(element => {
           let ellink = element.link.replace("fabrik","emundus_onboard");
-          axios
-                  .get(ellink + "&format=vue_jsonclean")
+          axios.get(ellink + "&format=vue_jsonclean")
                   .then(response => {
                     this.formObjectArray.push({
                       object: response.data,
                       rgt: element.rgt,
                       link: element.link
                     });
-                  })
-                  .then(r => {
+                  }).then(r => {
                     this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
                     this.rgt = this.formObjectArray[0].rgt;
                     this.loading = false;
                     this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
-                  })
-                  .catch(e => {
+                  }).catch(e => {
                     console.log(e);
                   });
         });
       },
 
+      getFilesByForm() {
+        axios.get("index.php?option=com_emundus_onboard&controller=form&task=getfilesbyform&pid=" + this.prid).then(response => {
+          this.files = response.data.data;
+          if(this.files != 0){
+            this.tip();
+          }
+        });
+      },
+
+      getSubmittionPage() {
+        axios({
+          method: "GET",
+          url: "index.php?option=com_emundus_onboard&controller=form&task=getsubmittionpage",
+          params: {
+            prid: this.prid,
+          },
+          paramsSerializer: params => {
+             return qs.stringify(params);
+          }
+        }).then(response => {
+          let ellink = response.data.link.replace("fabrik","emundus_onboard");
+          axios.get(ellink + "&format=vue_jsonclean")
+                  .then(rep => {
+                    this.submittionPages.push({
+                      object: rep.data,
+                      rgt: response.data.rgt,
+                      link: response.data.link
+                    });
+                  });
+        });
+      },
+
       /**
-       *  ** Récupère toute les formes du profile ID
+       *  ** Récupère toute les forms du profile ID
        */
-      getForms(profile_id) {
+      getForms() {
         this.loading = true;
         axios({
           method: "get",
           url:
                   "index.php?option=com_emundus_onboard&controller=form&task=getFormsByProfileId",
           params: {
-            profile_id: profile_id
+            profile_id: this.prid
           },
           paramsSerializer: params => {
             return qs.stringify(params);
@@ -445,7 +586,7 @@
           this.formList = response.data.data;
           setTimeout(() => {
             this.getDataObject();
-            this.getProfileLabel(profile_id);
+            this.getProfileLabel(this.prid);
           },100);
         }).catch(e => {
           console.log(e);
@@ -548,8 +689,10 @@
         });
       },
       enableGrab(index){
-        this.indexGrab = index;
-        this.grab = true;
+        if(this.formList.length !== 1){
+          this.indexGrab = index;
+          this.grab = true;
+        }
       },
       disableGrab(){
         this.indexGrab = 0;
@@ -558,7 +701,9 @@
       //
     },
     created() {
-      this.getForms(this.prid);
+      this.getForms();
+      this.getSubmittionPage();
+      this.getFilesByForm();
     },
 
     computed: {
@@ -685,7 +830,6 @@
 
   .draggables-list{
     display: flex;
-    flex-wrap: wrap;
     flex-direction: row;
     align-self: baseline;
   }

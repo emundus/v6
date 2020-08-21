@@ -18,8 +18,8 @@
                 {{ Category }} : {{ program.programmes }}
               </p>
             </div>
-            <a :href="'index.php?option=com_emundus_onboard&view=program&layout=add&pid=' + prog"
-                    class="modifier-la-campagne">
+            <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=program&layout=add&pid=' + prog)"
+               class="modifier-la-campagne pointer">
               <button class="w-inline-block edit-icon">
                 <em class="fas fa-edit"></em>
               </button>
@@ -51,6 +51,7 @@
                   v-if="menuHighlight == 0"
                   :funnelCategorie="progCategories[langue][menuHighlight]"
                   :group="this.prog_group"
+                  :coordinatorAccess="coordinatorAccess"
           ></addGestionnaires>
 
           <addEvaluationGrid
@@ -100,7 +101,6 @@
   import addEmail from "../views/funnelFormulaire/addEmail";
   import addEvalVisi from "../views/funnelFormulaire/addEvalVisi";
   import addEvalEval from "../views/funnelFormulaire/addEvalEval";
-  import addMenu from "../views/funnelFormulaire/addMenu";
   import addEvaluationGrid from "./funnelFormulaire/addEvaluationGrid";
 
   import ModalAddUser from "./advancedModals/ModalAddUser";
@@ -116,23 +116,20 @@
       addEmail,
       addEvalVisi,
       addEvalEval,
-      addMenu,
       addEvaluationGrid,
       ModalAddUser
     },
 
     props: {
       prog: Number,
-      actualLanguage: String
+      actualLanguage: String,
+      coordinatorAccess: Number,
     },
 
     data: () => ({
-      EmitIndex: "0",
       menuHighlight: null,
-      selectedform: "default",
 
       dynamicComponent: false,
-      isHidden: false,
       categories: [],
       cats: [],
       prog_group: null,
@@ -169,35 +166,6 @@
         ]
       ],
 
-      /*formCategories: [
-        [
-          "Aperçu du formulaire",
-          "Documents",
-          "Gestionnaires",
-          "Email",
-          "Évaluations",
-          "Visibilité",
-          "Évaluateurs",
-          "Attribution",
-          "Paramètres",
-          "Invitation",
-          "Paramètres de campagne"
-        ],
-        [
-          "Form Preview",
-          "Documents",
-          "Managers",
-          "Email",
-          "Evaluations",
-          "Visibility",
-          "Evaluators",
-          "Attribution",
-          "Settings",
-          "Invitation",
-          "Campaign Settings"
-        ]
-      ],*/
-
       program: {
         label: "",
         code: "",
@@ -221,13 +189,8 @@
       Code: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_CODE"),
       Category: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_CATEGORY"),
       FORM: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
-      ChooseEvaluatorGroup: Joomla.JText._(
-              "COM_EMUNDUS_ONBOARD_CHOOSE_EVALUATOR_GROUP"
-      ),
       Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
       Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      chooseForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
-      chooseProfileWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING"),
     }),
 
     methods: {
@@ -239,7 +202,7 @@
         if (this.menuHighlight < 3) {
           this.menuHighlight++;
         } else {
-          window.location.href = '/' + this.actualLanguage + '/configuration/programs';
+          history.go(-1);
         }
       },
 
@@ -247,7 +210,7 @@
         if (this.menuHighlight > 0) {
           this.menuHighlight--;
         } else {
-          window.location.href = '/' + this.actualLanguage + '/configuration/programs';
+          history.go(-1);
         }
       },
 
@@ -257,6 +220,21 @@
                   this.campaigns = response.data.data;
                 });
       },
+
+      redirectJRoute(link) {
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+          params: {
+            link: link,
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(response => {
+          window.location.href = window.location.pathname + response.data.data;
+        });
+      }
     },
 
     computed: {
@@ -268,8 +246,7 @@
         this.langue = 1;
       }
 
-      axios
-              .get("index.php?option=com_emundus_onboard&controller=program&task=getprogramcategories")
+      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getprogramcategories")
               .then(response => {
                 this.categories = response.data.data;
                 for (var i = 0; i < this.categories.length; i++) {
@@ -297,44 +274,18 @@
                             this.dynamicComponent = true;
                             this.prog_group = rep.data.data.group;
                             this.menuHighlight = 0;
-                          })
-                          .catch(e => {
+                          }).catch(e => {
                             console.log(e);
                           });
                 } else {
                   this.dynamicComponent = true;
                 }
-              })
-              .catch(e => {
+              }).catch(e => {
                 console.log(e);
               });
 
       this.getCampaignsByProgram();
     },
-
-    mounted() {
-      /*var formulaireEmundus = this.formulaireEmundus;
-      var fid = this.formulaireEmundus;
-
-      jQuery(document).ready(function($) {
-        if (window.history && window.history.pushState) {
-          window.history.pushState(
-            "forward",
-            null,
-            "index.php?option=com_emundus_onboard&view=form&layout=add&fid=" +
-              fid +
-              "#forward"
-          );
-
-          $(window).on("popstate", function() {
-            window.location.replace(
-              "index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=" +
-                formulaireEmundus
-            );
-          });
-        }
-      });*/
-    }
   };
 </script>
 
