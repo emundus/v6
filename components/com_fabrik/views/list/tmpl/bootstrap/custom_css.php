@@ -76,6 +76,10 @@ table {
   border-radius: 0 !important;
 }
 
+.g-back-office-emundus-tableau.view-list.email-history-indicators-page .fabrikForm form-search .jos_messages___message tbody td {
+    max-width: 30vw; 
+}
+
 @media all and (max-width: 767px) {
   #listform_84_com_fabrik_84 {
     padding: 0 !important;
@@ -85,6 +89,7 @@ table {
     overflow: auto;
   }
 }
+
 
 @media all and (max-width: 959px) {
   .email-history-indicators-page form {
