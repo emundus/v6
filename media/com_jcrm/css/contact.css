@@ -324,3 +324,11 @@ form .btn.btn-danger:hover,
 .modal-body {
     max-height: 660px !important;
 }
+
+.g-back-office-emundus-tableau .panel-info > .panel-heading {
+    border-bottom: 2px #FFFFFF dashed;
+    height: 50px !important;
+    border-radius: 0;
+    background-color: #4e5b6d;
+    padding: 10px;
+}
