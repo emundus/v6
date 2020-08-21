@@ -154,16 +154,19 @@ a.btn.btn-success:not(.btn-xs) {
     font-weight: 600;
     fill: #000 !important;
 }
-
-.candidacy-files-list hr:last-child {
+.g-block.size-100.content-bottom-a hr:last-child {
     display: none !important;
 }
-
 
 @media all and (max-width: 767px) {
     .main-page-application-title {
         text-align: center;
     }
+
+    .main-page-file-info a {
+        margin-bottom: 4px;
+    }
+
 }
 
 @media screen and (max-width: 991px) {
