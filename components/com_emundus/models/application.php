@@ -444,7 +444,7 @@ class EmundusModelApplication extends JModelList {
                     WHERE ecc.fnum like '.$this->_db->Quote($fnum);
                 $this->_db->setQuery($query);
 
-                $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $this->_db->loadResult()) ? $current_user->profile : $this->_db->loadResult();
+                $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $this->_db->loadResult() && $current_user->applicant === 1) ? $current_user->profile : $this->_db->loadResult();
             }
 
             $forms = @EmundusHelperMenu::buildMenuQuery($profile_id);
