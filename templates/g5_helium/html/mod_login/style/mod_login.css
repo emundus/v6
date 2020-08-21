@@ -33,3 +33,17 @@
 .em-star{
     margin-top: -4px!important;
 }
+
+/* CONNEXION - CANDIDATER */
+
+ul.unstyled.em-linkForgot{
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+    border: none;
+    padding: 0px;
+}
+
+ul.unstyled.em-linkForgot li {
+    border: none;
+}

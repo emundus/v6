@@ -262,6 +262,7 @@ footer#g-footer {
   display: flex;
   flex-direction: column;
   overflow-y: auto ;
+  min-height: 100vh !important;
 }
 
 #g-page-surround >  .g-container:not(.g-flushed) {
@@ -1333,6 +1334,18 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 /* CONNEXION */
 
 ul.nav.nav-tabs.nav-stacked span {
+  color: $base-primary-color;
+  &:hover,
+  &:focus,
+  &:active,
+  &:focus-within {
+    color: $base-primary-color;
+  }
+}
+
+/* CONNEXION - CANDIDATER */
+
+ul.unstyled.em-linkForgot li a {
   color: $base-primary-color;
   &:hover,
   &:focus,
