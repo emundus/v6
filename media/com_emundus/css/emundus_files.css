@@ -17,7 +17,7 @@
 /* BTNS ACTIONS- GESTIONNAIRE - DOSSIERS */
 .em-containerFilter-heading div.buttons {
     display: flex;
-    margin-top: -8px !important;
+    margin-top: -3px !important;
 }
 
 button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn, .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save), .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
@@ -556,7 +556,7 @@ div.modal-header table td {
 }
 
 div#em-modal-actions h4#em-modal-actions-title {
-    color: #ffffff;
+    color: #ffffff !important;
     font-weight: 700;
     font-size: 2rem;
 }
@@ -685,6 +685,13 @@ div#em-modal-actions .panel-heading h5 {
     background-color: #fff !important;
 }
 
+.g-back-office-emundus-tableau .panel-info > .panel-heading {
+    border-bottom: 2px #FFFFFF dashed;
+    height: 50px !important;
+    border-radius: 0;
+    background-color: #4e5b6d;
+    padding: 10px;
+}
 
 .g-back-office-emundus-tableau .panel-body .em_label label, .g-back-office-emundus-tableau div#em_adv_filters label {
     color: #ffffff !important;

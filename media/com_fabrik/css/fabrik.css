@@ -722,3 +722,15 @@ form.fabrikForm label.radio {
 	}
 
 }
+
+.g-back-office-emundus-tableau.view-list.email-history-indicators-page .fabrikDataContainer .jos_messages___message br  {
+	 display: none;
+}
+
+.g-back-office-emundus-tableau.view-list.email-history-indicators-page .fabrikDataContainer .jos_messages___message table[role="presentation"]:first-of-type td {
+	max-width: 30vw;
+}
+
+.g-back-office-emundus-tableau.view-list.email-history-indicators-page .fabrikDataContainer .jos_messages___message table[role="presentation"] td {
+	max-width: 28vw;
+}

@@ -237,6 +237,8 @@ h1::after, .swal2-title:after {
 
   .g-container {
     padding: 10px !important;
+    width: 95%;
+    margin: auto !important;
   }
 
   #header-a {
@@ -247,6 +249,15 @@ h1::after, .swal2-title:after {
       max-height: 64px;
     }
   }
+}
+
+#header-c, #header-switch {
+  display: flex;
+  justify-content: center;
+}
+
+.right-divider {
+  border-right: solid 1px #cecece;
 }
 
 /* FOOTER */
