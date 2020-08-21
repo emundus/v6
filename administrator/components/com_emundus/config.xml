@@ -239,6 +239,7 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="allowed_non_applicant_profiles" type="text" default="" label="COM_EMUNDUS_ALLOWED_NON_APPLICANT_PROFILES" description="COM_EMUNDUS_ALLOWED_NON_APPLICANT_PROFILES_DESC" />
+		<field name="all_rights_group" type="number" default="1" label="COM_EMUNDUS_ALL_RIGHTS_GROUP" description="COM_EMUNDUS_ALL_RIGHTS_GROUP_DESC" />
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_INTEGRATION" name="ametys" description="COM_EMUNDUS_INTEGRATION_DESC">
 

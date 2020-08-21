@@ -162,5 +162,33 @@ class  FalangControllerHelper  {
 
 	}
 
+	/**
+	 * Check Advanced Routeur not available in Free Falang version but can be set in Content Parameter
+	 *
+	 * @since version 3.3.0
+	 */
+
+	public static function _checkAdvancedRouter(){
+
+		$falang_advanced_router = JComponentHelper::getParams('com_falang')->get('advanced_router',false);
+		$content_advanced_router = JComponentHelper::getParams('com_content')->get('sef_advanced',false);
+
+		$isFreeVersion = false;
+
+		include_once( JPATH_ADMINISTRATOR . '/components/com_falang/version.php');
+		$version = new FalangVersion();
+		if ($version->_versiontype == 'free'  ) {
+			$isFreeVersion = true;
+		}
+
+		if ($content_advanced_router && !$falang_advanced_router){
+			if ($isFreeVersion){
+				JFactory::getApplication()->enqueueMessage(JText::_('COM_FALANG_ADVANCED_ROUTER_ENABLED_FREE_FALANG'), 'error');
+			} else {
+
+				JFactory::getApplication()->enqueueMessage(JText::_('COM_FALANG_ADVANCED_ROUTER_ENABLED'), 'error');
+			}
+		}
+	}
 
 }

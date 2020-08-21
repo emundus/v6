@@ -213,7 +213,7 @@ $site_offset = $config->get('offset');
 					<div class="below-content">
                         <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course='.$result->code.'&cid='.$result->id); ?>
 
-						<?php if ($result->apply_online == 1) :?>
+						<?php if ($result->apply_online == 1 && $m_campaign->isLimitObtained($result->id) !== true) :?>
                             <?php if ($mod_em_campaign_get_link) :?>
                                 <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php else :?>
