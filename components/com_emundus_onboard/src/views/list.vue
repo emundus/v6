@@ -15,6 +15,15 @@
       :coordinatorAccess="coordinatorAccess"
     ></actions>
 
+    <ul class="form-section email-sections" v-if="type == 'email' && !loading">
+      <li>
+        <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0;indexEmail = 0">Modèles</a>
+      </li>
+      <li>
+        <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1;indexEmail = 0">Systèmes</a>
+      </li>
+    </ul>
+
     <transition :name="'slide-down'" type="transition">
       <h2 v-show="total > 0">{{ Total }} : {{ total }}</h2>
     </transition>
@@ -201,7 +210,10 @@ export default {
     search: "",
     limit: 25,
     pages: 1,
-    countPages: 1
+    countPages: 1,
+
+    menuEmail: 0,
+    indexEmail: 0,
   }),
 
   computed: {
@@ -408,4 +420,9 @@ h2 {
   .loading-form{
     top: unset;
   }
+
+.email-sections{
+  width: 50%;
+  margin: 0 auto;
+}
 </style>

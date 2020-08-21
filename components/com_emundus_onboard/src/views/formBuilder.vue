@@ -119,6 +119,7 @@
                     @removeGroup="removeGroup"
                     :key="builderKey"
                     :rgt="rgt"
+                    :prid="prid"
                     :files="files"
                     ref="builder"
             />
@@ -135,6 +136,7 @@
                     @removeGroup="removeGroup"
                     :key="builderSubmitKey"
                     :rgt="rgt"
+                    :prid="prid"
                     :eval="0"
                     :files="files"
                     ref="builder_submit"

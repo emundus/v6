@@ -1353,6 +1353,8 @@ class EmundusonboardModelform extends JModelList {
 			return false;
 		}
 
+        $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
+
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -1368,12 +1370,57 @@ class EmundusonboardModelform extends JModelList {
 
 		try {
 			$db->setQuery($query);
-			return $db->loadObjectList();
+			$forms = $db->loadObjectList();
+
+			foreach ($forms as $form){
+			    $link = explode('=', $form->link);
+                $form->id = $link[sizeof($link) - 1];
+                $query->clear()
+                    ->select('label')
+                    ->from($db->quoteName('#__fabrik_forms'))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($form->id));
+                $db->setQuery($query);
+                $form->label = $formbuilder->getJTEXT($db->loadResult());
+            }
+
+			return $forms;
 		} catch(Exception $e) {
 			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
 			return false;
 		}
 	}
+
+	public function getGroupsByForm($form_id){
+        $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select(['g.id' , 'g.label', 'g.params'])
+            ->from ($db->quoteName('#__fabrik_formgroup', 'fg'))
+            ->leftJoin($db->quoteName('#__fabrik_groups', 'g').' ON '.$db->quoteName('g.id').' = '.$db->quoteName('fg.group_id'))
+            ->where($db->quoteName('fg.form_id') . ' = '.$form_id)
+            ->order('fg.ordering ASC');
+
+
+        try {
+            $db->setQuery($query);
+            $groups = $db->loadObjectList();
+
+            foreach ($groups as $key => $group){
+                $params = json_decode($group->params, true);
+                if ($params['repeat_group_show_first'] == -1) {
+                    array_splice($groups, $key, 1);
+                }
+                $group->label = $formbuilder->getJTEXT($group->label);
+            }
+
+            return $groups;
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
 
 	public function getSubmittionPage($prid){
         if (empty($prid)) {

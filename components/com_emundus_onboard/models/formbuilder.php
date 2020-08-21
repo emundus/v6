@@ -1302,6 +1302,17 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db_element = $db->loadObject();
         //
 
+        // Default parameters
+        $dbtype = 'VARCHAR(255)';
+        $dbnull = 'NULL';
+        //
+
+        if ($element['plugin'] === 'birthday') {
+            $dbtype = 'DATE';
+        } elseif ($element['plugin'] === 'textarea') {
+            $dbtype = 'TEXT';
+        }
+
         // Filter by plugin
         if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown') {
             $old_params = json_decode($db_element->params, true);
@@ -1354,12 +1365,11 @@ class EmundusonboardModelformbuilder extends JModelList {
             }
 
             $query = "ALTER TABLE " . $db_element->dbtable .
-                " MODIFY COLUMN " . $db_element->name . " VARCHAR(255) NOT NULL";
+                " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
             $db->setQuery($query);
             $db->execute();
         } elseif ($element['plugin'] === 'birthday') {
             $element['params']['birthday_yearstart'] = 1950;
-            $dbtype = 'DATE';
 
             foreach ($element['params']['sub_options']['sub_labels'] as $index=>$sub_label) {
                 $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
@@ -1368,7 +1378,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             unset($element['params']['sub_options']);
 
             $query = "ALTER TABLE " . $db_element->dbtable .
-                " MODIFY COLUMN " . $db_element->name . " " . $dbtype . " NOT NULL";
+                " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
             $db->setQuery($query);
             $db->execute();
         } elseif ($element['plugin'] === 'field'){
@@ -1388,12 +1398,11 @@ class EmundusonboardModelformbuilder extends JModelList {
             unset($element['params']['birthday_yearstart']);
 
             $query = "ALTER TABLE " . $db_element->dbtable .
-                " MODIFY COLUMN " . $db_element->name . " " . $dbtype . " NOT NULL";
+                " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
             $db->setQuery($query);
             $db->execute();
         } elseif ($element['plugin'] === 'textarea') {
             $element['params']['width'] = 60;
-            $dbtype = 'TEXT';
 
             if ($element['params']['sub_options']) {
                 foreach ($element['params']['sub_options']['sub_labels'] as $index=>$sub_label) {
@@ -1405,7 +1414,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             unset($element['params']['birthday_yearstart']);
 
             $query = "ALTER TABLE " . $db_element->dbtable .
-                " MODIFY COLUMN " . $db_element->name . " " . $dbtype . " NOT NULL";
+                " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
             $db->setQuery($query);
             $db->execute();
         }
@@ -1430,6 +1439,84 @@ class EmundusonboardModelformbuilder extends JModelList {
         catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return $e->getMessage();
+        }
+    }
+
+    function duplicateElement($eid,$group,$old_group,$form_id){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Prepare Fabrik API
+        JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
+        $groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
+        $groupModel->setId(intval($old_group));
+        $elements = $groupModel->getMyElements();
+        //
+
+        // Prepare languages
+        $path_to_file = basename(__FILE__) . '/../language/overrides/';
+        $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
+        $Content_Folder_FR = file_get_contents($path_to_file_fr);
+        $path_to_file_en = $path_to_file . 'en-GB.override.ini' ;
+        $Content_Folder_EN = file_get_contents($path_to_file_en);
+
+        try {
+            foreach ($elements as $element) {
+                if($element->element->id == $eid) {
+                    $dbtype = 'VARCHAR(255)';
+
+                    $newelement = $element->copyRow($element->element->id, 'Copy of %s', intval($group),'e_' . $form_id . '_tmp');
+                    $newelementid = $newelement->id;
+
+                    $el_params = json_decode($element->element->params);
+
+                    // Update translation files
+                    if (($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options) {
+                        $sub_labels = [];
+                        foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
+                            $this->duplicateTranslation($sub_label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'SUBLABEL_' . $group . '_' . $newelementid . '_' . $index);
+                            $sub_labels[] = 'SUBLABEL_' . $group . '_' . $newelementid . '_' . $index;
+                        }
+                        $el_params->sub_options->sub_labels = $sub_labels;
+                    }
+                    $query->clear();
+                    $query->update($db->quoteName('#__fabrik_elements'));
+                    $this->duplicateTranslation($element->element->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'ELEMENT_' . $group . '_' . $newelementid);
+                    //
+
+                    $query->set('label = ' . $db->quote('ELEMENT_' . $group . '_' . $newelementid));
+                    $query->set('name = ' . $db->quote('e_' . $form_id . '_' . $newelementid));
+                    $query->set('published = 1');
+                    $query->set('params = ' . $db->quote(json_encode($el_params)));
+                    $query->where('id =' . $newelementid);
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    $query
+                        ->clear()
+                        ->select([
+                            'fl.db_table_name AS dbtable',
+                        ])
+                        ->from($db->quoteName('#__fabrik_lists', 'fl'))
+                        ->where($db->quoteName('fl.form_id') . ' = ' . $db->quote($form_id));
+                    $db->setQuery($query);
+                    $dbtable = $db->loadObject()->dbtable;
+
+                    if ($element->element->plugin === 'birthday') {
+                        $dbtype = 'DATE';
+                    } elseif ($element->element->plugin === 'textarea') {
+                        $dbtype = 'TEXT';
+                    }
+
+                    $query = "ALTER TABLE " . $dbtable . " ADD e_" . $form_id . "_" . $newelementid . " " . $dbtype . " NULL";
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    return  $newelementid;
+                }
+            }
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
         }
     }
 

@@ -14,6 +14,7 @@
         @UpdateUxf="UpdateUXF"
         :key="builderViewKey"
         :files="files"
+        :prid="prid"
         ref="builder_viewer"
       />
     </div>
@@ -32,7 +33,7 @@ const qs = require("qs");
 
 export default {
   name: "FormBuilder",
-  props: { object: Object, UpdateUx: Boolean, rgt: Number, files: Number  },
+  props: { object: Object, UpdateUx: Boolean, rgt: Number, files: Number, prid: String  },
   components: {
     draggable,
     BuilderViewer,

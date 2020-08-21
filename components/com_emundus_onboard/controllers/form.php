@@ -437,6 +437,30 @@ class EmundusonboardControllerform extends JControllerLegacy {
         exit;
     }
 
+    public function getgroupsbyform() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $form_id = $jinput->getInt('form_id');
+
+            $m_form = $this->model;
+            $form = $m_form->getGroupsByForm($form_id);
+
+            if (!empty($form)) {
+                $tab = array('status' => 1, 'msg' => 'worked', 'data' => $form);
+            } else {
+                $tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $form);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
 
     public function getProfileLabelByProfileId() {
         $user = JFactory::getUser();

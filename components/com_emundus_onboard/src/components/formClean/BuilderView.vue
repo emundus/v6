@@ -40,6 +40,9 @@
                   <a @click="enableUpdatingGroup(group)" style="margin-left: 1em" :title="Edit">
                     <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
                   </a>
+                  <a v-if="group.repeat_group" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px" :title="RepeatedGroup">
+                    <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
+                  </a>
                 </div>
                 <div>
                   <div v-show="!openGroup[group.group_id]">
@@ -103,6 +106,14 @@
                             :files="files"
                             @reloadElement="reloadElement(element)"
                             :id="element.id"
+                            :key="keyElements['element' + element.id]"
+                    />
+                    <modalDuplicateElement
+                            :ID="element.id"
+                            :currentGroup="group.group_id"
+                            :id="element.id"
+                            :prid="prid"
+                            @reloadElement="reloadElement(element)"
                             :key="keyElements['element' + element.id]"
                     />
                     <div class="d-flex builder-item-element__properties">
@@ -171,6 +182,10 @@
                         <em class="fas fa-cog"></em>
                         <span class="ml-10px">{{Settings}}</span>
                       </a>
+                      <a class="d-flex mr-2 text-orange" @click="$modal.show('modalDuplicateElement' + element.id)">
+                        <em class="fas fa-copy"></em>
+                        <span class="ml-10px">{{Duplicate}}</span>
+                      </a>
                       <a class="d-flex mr-2" style="color: black" @click="deleteElement(element,index)" v-if="files == 0">
                         <em class="fas fa-trash-alt"></em>
                         <span class="ml-10px">{{Delete}}</span>
@@ -196,6 +211,7 @@ import axios from "axios";
 import datePicker from "vue-bootstrap-datetimepicker";
 import draggable from "vuedraggable";
 import modalEditElement from "./Modal";
+import modalDuplicateElement from "./ModalDuplicateElement"
 
 const qs = require("qs");
 
@@ -214,11 +230,13 @@ export default {
     UpdateUx: Boolean,
     files: Number,
     eval: Number,
+    prid: String
   },
   components: {
     datePicker,
     draggable,
-    modalEditElement
+    modalEditElement,
+    modalDuplicateElement
   },
   data() {
     return {
@@ -267,6 +285,8 @@ export default {
       Cancel: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
       Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
       RepeatGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
+      RepeatedGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEATED_GROUP"),
+      Duplicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_DUPLICATE"),
     };
   },
   methods: {
@@ -672,6 +692,16 @@ export default {
             }).then((result) => {
               if(result.data.status == true){
                 group.repeat_group = 1;
+                this.$emit(
+                        "show",
+                        "foo-velocity",
+                        "success",
+                        this.updateSuccess,
+                        this.update
+                );
+                group.group_showLegend = group.label_fr;
+                this.translate.label_group = false;
+                this.updateGroup = false;
               }
             });
           }
@@ -700,6 +730,16 @@ export default {
             }).then((result) => {
               if(result.data.status == true){
                 group.repeat_group = 0;
+                this.$emit(
+                        "show",
+                        "foo-velocity",
+                        "success",
+                        this.updateSuccess,
+                        this.update
+                );
+                group.group_showLegend = group.label_fr;
+                this.translate.label_group = false;
+                this.updateGroup = false;
               }
             });
           }
@@ -898,7 +938,7 @@ export default {
     color: white !important;
   }
   .group-repeat-icon{
-    padding: 2px;
+    padding: 5px;
     border-radius: 5px;
     color: #1b1f3c;
   }

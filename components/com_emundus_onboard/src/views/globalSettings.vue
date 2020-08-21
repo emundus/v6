@@ -5,7 +5,7 @@
         <transition name="slide-right">
           <div class="col-md-12 mt-2">
             <div class="container-menu-funnel">
-              <div v-for="(settingsCat, index) in settingsCategories[langue]" :key="index" v-if="(coordinatorAccess == 0 && index == 3) || coordinatorAccess == 1">
+              <div v-for="(settingsCat, index) in settingsCategories[langue]" :key="index">
                 <a @click="menuHighlight = index"
                    class="menu-item"
                    :class="menuHighlight == index ? 'w--current' : ''"

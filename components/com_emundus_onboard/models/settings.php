@@ -851,4 +851,21 @@ class EmundusonboardModelsettings extends JModelList {
         $params = $user->getParameters();
         return $params->get('first_databasejoin', true);
     }
+
+    function getEditorVariables() {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('tag')
+            ->from($db->quoteName('#__emundus_setup_tags'))
+            ->where($db->quoteName('published') . ' = ' . $db->quote(1));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
 }
