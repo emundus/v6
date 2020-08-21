@@ -272,8 +272,7 @@ footer#g-footer {
 
 .g-container > #g-footer {
   width: 100vw !important;
-  margin-top: auto;
-  height: 140px;
+  margin-top: auto !important;
 }
 
 #g-footer .g-grid{
@@ -344,17 +343,6 @@ a {
   color: #404B5A;
   text-decoration: underline;
 }
-}
-
-.view-login,
-.view-form,
-.view-article,
-.view-details,
-.view-contact,
-.view-programme {
-  #g-footer {
-    margin-top: 20px !important;
-  }
 }
 
 /* MODULE USER DROPDOWN */
@@ -690,11 +678,11 @@ a {
 }
 
 .applicant-form .fabrikElement button.calendarbutton {
-  background-color: $base-primary-color;
+  background-color: #F5F5F5;
 }
 
 .applicant-form .fabrikElement button.calendarbutton:hover {
-  background-color: darken($base-primary-color, 10%);
+  background-color: darken(#F5F5F5, 10%);
 }
 
 .applicant-form .fabrikGroupRepeater .pull-right .addGroup i:hover {
@@ -852,6 +840,10 @@ body.error-page p {
 
 .btnmarge {
   margin-left: 20px !important;
+}
+
+.btn-primary {
+ font-weight: 300 !important;
 }
 
 /* PRINT AND SEND FILE */
@@ -1523,11 +1515,14 @@ div#em-appli-block {
       align-self: center !important;
       width: 100%;
       margin: 10px 0;
+       .street {
+         text-align: center;
+       }
     }
 
     img.logo {
       min-height: 25px !important;
-      height: 25px !important
+      height: 25px !important;
     }
   }
 

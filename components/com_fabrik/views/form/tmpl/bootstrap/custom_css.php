@@ -1563,6 +1563,11 @@ a.btn-attach:active {
 
 @media all and (max-width: 767px) {
 
+    .applicant-form .btn.btn-primary.save-btn.sauvegarder.save_continue {
+        margin-left: 0px !important;
+        margin-bottom: 10px; 
+    }
+
     .add-new-program-page .save, .add-program-year-page .save {
         margin-bottom: 10px;
     }
@@ -1718,6 +1723,10 @@ a.btn-attach:active {
 }
 
 @media all and (max-width: 959px) {
+
+    .applicant-form form.fabrikForm label.radio  { 
+        display: inline-block !important; 
+    }
     .form-horizontal .control-group {
           flex-direction: column;
     }

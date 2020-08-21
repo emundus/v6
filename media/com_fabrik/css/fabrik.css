@@ -706,6 +706,12 @@ form.fabrikForm label.radio {
 	text-align: start;
 }
 
+/* form - view details - go back button */
+.view-details .fabrikActions.form-actions button.btn.goback-btn.button {
+	border-radius : 0px !important;
+	font-weight: 300;
+}
+
 /** Prevent links from showing in print view - Bootstrap related */
 
 @media print {

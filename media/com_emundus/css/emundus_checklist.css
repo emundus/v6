@@ -444,7 +444,8 @@ body.view-reset label#jform_username-lbl::after,
         justify-content: space-between;
     }
     #attachment_list_mand form .input-group .em-description input{
-        width: 60% !important;
+        width: 100% !important;
+        margin-right: -95px;
     }
     .applicant-form form .input-group div:nth-child(2) .col-sm-12{
         flex-direction: column;
