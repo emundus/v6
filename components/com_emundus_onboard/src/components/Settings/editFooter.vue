@@ -9,10 +9,10 @@
                 </a>
             </li>
         </ul>
-        <div class="form-group controls" v-if="indexHighlight == 0">
+        <div class="form-group controls" v-if="indexHighlight == 0 && this.form.content.col1 != null">
             <editor :text="form.content.col1" :lang="actualLanguage" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.col1"></editor>
         </div>
-        <div class="form-group controls" v-if="indexHighlight == 1">
+        <div class="form-group controls" v-if="indexHighlight == 1 && this.form.content.col2 != null">
             <editor :text="form.content.col2" :lang="actualLanguage" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.col2"></editor>
         </div>
     </div>
@@ -41,8 +41,8 @@
                 indexHighlight: 0,
                 form: {
                     content: {
-                        col1: '',
-                        col2: ''
+                        col1: null,
+                        col2: null
                     }
                 },
                 columns: [

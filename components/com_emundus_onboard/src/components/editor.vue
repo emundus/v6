@@ -94,8 +94,11 @@ export default {
         },
         queryBy: 'tag',
         delay: 200,
-        insert: function(item) {
-          return '[' + item.tag + ']';
+        insert: (item) => {
+          setTimeout(() => {
+            this.$emit("input", tinymce.activeEditor.getContent());
+          },500);
+          return '<span>[' + item.tag + ']</span>';
         },
         render: function(item) {
           return '<li>' +

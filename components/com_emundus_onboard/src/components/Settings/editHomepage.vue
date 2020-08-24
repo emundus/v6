@@ -9,10 +9,10 @@
                 </a>
             </li>
         </ul>
-        <div class="form-group controls" v-if="indexHighlight == 0">
+        <div class="form-group controls" v-if="indexHighlight == 0 && this.form.content.fr != null">
             <editor :text="form.content.fr" :lang="actualLanguage" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.fr"></editor>
         </div>
-        <div class="form-group controls" v-if="indexHighlight == 1">
+        <div class="form-group controls" v-if="indexHighlight == 1 && this.form.content.en != null">
             <editor :text="form.content.en" :lang="actualLanguage" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.en"></editor>
         </div>
     </div>
@@ -41,8 +41,8 @@
                 indexHighlight: 0,
                 form: {
                     content: {
-                        fr: '',
-                        en: ''
+                        fr: null,
+                        en: null
                     }
                 },
                 languages: [

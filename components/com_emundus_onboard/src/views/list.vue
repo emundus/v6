@@ -17,10 +17,10 @@
 
     <ul class="form-section email-sections" v-if="type == 'email' && !loading">
       <li>
-        <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0;indexEmail = 0">Modèles</a>
+        <a :class="menuEmail === 2 ? 'form-section__current' : ''" @click="menuEmail = 2">Modèles</a>
       </li>
       <li>
-        <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1;indexEmail = 0">Systèmes</a>
+        <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">Systèmes</a>
       </li>
     </ul>
 
@@ -74,8 +74,11 @@
       </transition>
 
       <transition-group :name="'slide-down'" type="transition">
-        <div v-if="type != 'files'" v-for="(data, index) in list" :key="index" class="col-md-6">
+        <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-md-6">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+        </div>
+        <div v-if="type == 'email' && data.type == menuEmail" v-for="(data, index) in list" :key="index" class="col-md-6">
+            <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
       </transition-group>
 
@@ -212,8 +215,7 @@ export default {
     pages: 1,
     countPages: 1,
 
-    menuEmail: 0,
-    indexEmail: 0,
+    menuEmail: 2,
   }),
 
   computed: {
