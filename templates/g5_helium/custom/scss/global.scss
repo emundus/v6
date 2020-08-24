@@ -178,6 +178,28 @@ h1::after, .swal2-title:after {
   }
 }
 
+/* FOOTER */
+footer#g-footer {
+  background-color: #eee;
+  border-top: none;
+  bottom: 0;
+  width: 100vw;
+}
+
+#g-page-surround {
+  min-height:100vh !important;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+#g-page-surround >  .g-container:not(.g-flushed) {
+  width: 100vw !important;
+  margin-top: auto;
+  height: 180px;
+}
+
+
 /* Branding */
 .g-branding{
   text-align: end;
