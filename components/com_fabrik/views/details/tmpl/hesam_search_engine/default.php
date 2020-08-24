@@ -569,7 +569,7 @@ $document->setMetaData('og:description', $this->data['jos_emundus_projet___quest
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
     <div id="em-sending-email-caption"><?= JText::_('COM_EMUNDUS_CIFRE_SENDING'); ?></div>
-    <img class="em-sending-email-img" id="em-sending-email-img" src="/images/emundus/sending-email.gif">
+    <img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif">
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
