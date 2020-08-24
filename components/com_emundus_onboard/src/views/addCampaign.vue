@@ -101,6 +101,50 @@
             </div>
             <label for="published" class="ml-10px">{{ Publish }}</label>
           </div>
+          <div class="form-group d-flex">
+            <div class="toggle">
+              <input type="checkbox"
+                     true-value="1"
+                     false-value="0"
+                     class="check"
+                     id="limit"
+                     name="limit"
+                     v-model="form.is_limited"
+              />
+              <strong class="b switch"></strong>
+              <strong class="b track"></strong>
+            </div>
+            <label for="limit" class="ml-10px">{{ FilesLimit }}</label>
+          </div>
+          <transition name="'slide-down'">
+            <div v-if="form.is_limited == 1">
+              <div class="form-group campaign-label">
+                <label for="campLabel">{{FilesNumberLimit}} *</label>
+                <input type="number"
+                       class="form__input field-general w-input"
+                       v-model="form.limit"
+                       :class="{ 'is-invalid': errors.limit_files_number }"
+                />
+              </div>
+              <p v-if="errors.limit_files_number" class="error">
+                <span class="error">{{FilesLimitRequired}}</span>
+              </p>
+              <div class="form-group campaign-label">
+                <label for="campLabel">{{StatusLimit}} *</label>
+                <div class="users-block" :class="{ 'is-invalid': errors.limit_status}">
+                  <div v-for="(statu, index) in status" :key="index" class="user-item">
+                    <input type="checkbox" class="form-check-input bigbox" v-model="form.limit_status[statu.step]">
+                    <div class="ml-10px">
+                      <p>{{statu.value}}</p>
+                    </div>
+                  </div>
+                </div>
+                <p v-if="errors.limit_status" class="error">
+                  <span class="error">{{StatusLimitRequired}}</span>
+                </p>
+              </div>
+            </div>
+          </transition>
         </div>
         <div class="divider"></div>
         <div class="sous-container">
@@ -217,14 +261,14 @@
                            true-value="1"
                            false-value="0"
                            class="check"
-                           id="published"
-                           name="published"
+                           id="prog_published"
+                           name="prog_published"
                            v-model="programForm.published"
                     />
                     <strong class="b switch"></strong>
                     <strong class="b track"></strong>
                   </div>
-                  <label for="published" class="ml-10px">{{ Publish }}</label>
+                  <label for="prog_published" class="ml-10px">{{ Publish }}</label>
                 </div>
 
                 <div class="form-group d-flex">
@@ -321,6 +365,7 @@ export default {
     programs: [],
     years: [],
     categories: [],
+    status: [],
 
     new_category: "",
 
@@ -337,7 +382,10 @@ export default {
       description: "",
       training: "",
       year: "",
-      published: 1
+      published: 1,
+      is_limited: 0,
+      limit: 50,
+      limit_status: [],
     },
 
     translate: {
@@ -369,6 +417,8 @@ export default {
       progCode: false,
       progLabel: false,
       short_description: false,
+      limit_files_number: false,
+      limit_status: false
     },
 
     Parameter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
@@ -399,6 +449,11 @@ export default {
     OK: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
     Cancel: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
     TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+    FilesLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT"),
+    FilesNumberLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER"),
+    StatusLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS"),
+    StatusLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
+    FilesLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED"),
 
     submitted: false
   }),
@@ -427,8 +482,15 @@ export default {
           this.form.end_date = response.data.data.campaign.end_date;
           this.form.training = response.data.data.campaign.training;
           this.form.year = response.data.data.campaign.year;
+          this.form.is_limited = response.data.data.campaign.is_limited;
+          this.form.limit = response.data.data.campaign.limit;
           this.form.start_date = this.changeDate(this.form.start_date);
           this.form.end_date = this.changeDate(this.form.end_date);
+          if(typeof response.data.data.campaign.status != 'undefined') {
+            Object.values(response.data.data.campaign.status).forEach((statu) => {
+              this.form.limit_status[parseInt(statu.limit_status)] = true;
+            });
+          }
           if (this.form.end_date == "0000-00-00T00:00:00.000Z") {
             this.form.end_date = "";
           } else {
@@ -459,10 +521,11 @@ export default {
 
     axios.get("index.php?option=com_emundus_onboard&controller=program&task=getprogramcategories")
       .then(response => {
-        this.categories = response.data.data;
+        this.categories  = response.data.data;
       }).catch(e => {
         console.log(e);
       });
+    this.getStatus();
   },
 
   methods: {
@@ -501,12 +564,21 @@ export default {
       });
     },
 
+    getStatus() {
+      axios.get("index.php?option=com_emundus_onboard&controller=settings&task=getstatus")
+              .then(response => {
+                this.status = response.data.data;
+              });
+    },
+
     submit() {
       this.errors = {
         label: false,
         progCode: false,
         progLabel: false,
         short_description: false,
+        limit_files_number: false,
+        limit_status: false
       }
 
       if(this.form.label.fr == ""){
@@ -525,6 +597,22 @@ export default {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         document.getElementById('year').focus();
         return 0;
+      }
+
+      if (this.form.is_limited == 1){
+        let least_one_status = this.form.limit_status.every((value) => {
+          return value === false;
+        });
+        if(this.form.limit == ''){
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          this.errors.limit_files_number = true;
+          return 0;
+        }
+        if(this.form.limit_status.length == 0 || least_one_status) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          this.errors.limit_status = true;
+          return 0;
+        }
       }
 
       if (this.form.short_description == "") {
@@ -934,5 +1022,26 @@ h2 {
     display: flex;
     align-items: center;
   }
+
+.users-block{
+  height: auto;
+  overflow: scroll;
+  max-height: 15vh;
+}
+
+.user-item{
+  display: flex;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.bigbox{
+  height: 30px !important;
+  width: 30px !important;
+  cursor: pointer;
+}
 
 </style>
