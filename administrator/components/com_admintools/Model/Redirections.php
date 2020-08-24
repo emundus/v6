@@ -10,15 +10,17 @@ namespace Akeeba\AdminTools\Admin\Model;
 defined('_JEXEC') or die;
 
 use Akeeba\AdminTools\Admin\Helper\Storage;
+use Exception;
 use FOF30\Container\Container;
 use FOF30\Model\DataModel;
+use Joomla\CMS\Language\Text;
 
 /**
- * @property   int	   $id
- * @property   string  $source
- * @property   string  $dest
- * @property   int     $published
- * @property   int     $keepurlparams
+ * @property   int    $id
+ * @property   string $source
+ * @property   string $dest
+ * @property   int    $published
+ * @property   int    $keepurlparams
  *
  * @method  $this  source()  source(string $v)
  * @method  $this  dest()  dest(string $v)
@@ -31,7 +33,7 @@ class Redirections extends DataModel
 	{
 		$config['tableName']   = '#__admintools_redirects';
 		$config['idFieldName'] = 'id';
-		$config['aliasFields'] = array('enabled' => 'published');
+		$config['aliasFields'] = ['enabled' => 'published'];
 
 		parent::__construct($container, $config);
 	}
@@ -40,12 +42,12 @@ class Redirections extends DataModel
 	{
 		if (!$this->source)
 		{
-			throw new \Exception(\JText::_('COM_ADMINTOOLS_ERR_REDIRECTION_NEEDS_SOURCE'));
+			throw new Exception(Text::_('COM_ADMINTOOLS_ERR_REDIRECTION_NEEDS_SOURCE'));
 		}
 
 		if (!$this->dest)
 		{
-			throw new \Exception(\JText::_('COM_ADMINTOOLS_ERR_REDIRECTION_NEEDS_DEST'));
+			throw new Exception(Text::_('COM_ADMINTOOLS_ERR_REDIRECTION_NEEDS_DEST'));
 		}
 
 		if (empty($this->published) && ($this->published !== 0))
@@ -75,8 +77,8 @@ class Redirections extends DataModel
 	{
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true)
-		            ->select(array('*'))
-		            ->from($db->quoteName('#__admintools_redirects'));
+			->select(['*'])
+			->from($db->quoteName('#__admintools_redirects'));
 
 		$fltSource = $this->getState('source', null, 'string');
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -523,7 +523,7 @@ class hikashopDiscountClass extends hikashopClass {
 		static $multiTranslation = null;
 		if($multiTranslation === null) {
 			$translationHelper = hikashop_get('helper.translation');
-			$multiTranslation = $translationHelper->isMulti(true);
+			$multiTranslation = $translationHelper->isMulti(true) && $translationHelper->falang;
 		}
 
 		$db = JFactory::getDBO();

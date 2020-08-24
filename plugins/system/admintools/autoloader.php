@@ -36,6 +36,16 @@ class AdmintoolsAutoloaderPlugin
 	public static $pluginPath = null;
 
 	/**
+	 * Public constructor. Registers the autoloader with PHP.
+	 */
+	public function __construct()
+	{
+		self::$pluginPath = __DIR__;
+
+		spl_autoload_register([$this, 'autoload_admintools_system_plugin']);
+	}
+
+	/**
 	 * Initialise this autoloader
 	 *
 	 * @return  AdmintoolsAutoloaderPlugin
@@ -48,16 +58,6 @@ class AdmintoolsAutoloaderPlugin
 		}
 
 		return self::$autoloader;
-	}
-
-	/**
-	 * Public constructor. Registers the autoloader with PHP.
-	 */
-	public function __construct()
-	{
-		self::$pluginPath = __DIR__;
-
-		spl_autoload_register(array($this, 'autoload_admintools_system_plugin'));
 	}
 
 	/**
@@ -96,7 +96,7 @@ class AdmintoolsAutoloaderPlugin
 		{
 			reset($class);
 			$lastPart = end($class);
-			$path = self::$pluginPath . '/' . implode('/', $class) . '/' . $lastPart . '.php';
+			$path     = self::$pluginPath . '/' . implode('/', $class) . '/' . $lastPart . '.php';
 
 			if (@file_exists($path))
 			{

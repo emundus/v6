@@ -68,7 +68,13 @@ echo <<<EOT
     padding: 0;
     width:75rem;
     margin:auto;
-   }
+}
+
+.view-form.applicant-form #g-container-main .page-header, 
+.view-details.applicant-form #g-container-main .page-header { 
+    padding-bottom: 30px;
+}
+
 /* FORMULAIRE */
 .modal {
     position: relative !important;
@@ -1022,6 +1028,16 @@ body.em-formRegistrationCenter  {
     border: 1px solid #e0e0e5 !important;
 }
 
+form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
+        height: 41px !important; 
+        border-radius: 0px; 
+}
+
+/* EDITER LE PROFIL DU CANDIDAT - ESPACEMENT SOUS LE TITRE - */ 
+.view-profile #member-profile fieldset:nth-child(2) legend {
+          margin-bottom: 0px !important;
+}
+
 .applicant-form input[type='radio']:checked  { 
     background: #de6339;
 }
@@ -1046,6 +1062,14 @@ body.em-formRegistrationCenter  {
 .fabrikMainError.alert.alert-error.fabrikError .close{
     color: #b94a48 !important;
 }
+
+/*** HIDE VALIDATION TITLE ***/
+.popover-title {
+  display: none !important;
+}
+
+
+/*** MEDIA QUERY SECTION ***/
 
 @media all and (max-width: 1239px) {
     #form_307.fabrikForm {

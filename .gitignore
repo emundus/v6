@@ -16,6 +16,8 @@ administrator/cache/*
 /templates/rt_afterburner2/css-compiled/*
 /templates/rt_afterburner2/css/rt_afterburner2-custom.css
 templates/rt_afterburner2/css/rt_afterburner2-custom.css
+templates/g5_helium/templatesDetails.xml
+/templates/g5_helium/templatesDetails.xml
 /images/emundus/files/*
 /images/emundus/letters/*
 /image/logo.png
@@ -52,5 +54,8 @@ administrator/templates/isis/images/logo.png
 !.vscode/extensions.json
 .history
 
-### Linux ###
+### NodeJS ###
 *~
+/components/com_emundus_onboard/node_modules/
+media/com_emundus_onboard/app.*
+media/com_emundus_onboard/chunk-vendors.*

@@ -127,10 +127,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 		if (!empty($doc) && file_exists(JPATH_BASE.DS.$doc)) {
 			$toAttach[] = JPATH_BASE.DS.$doc;
 		}
-		
-		if (!empty($message)) {
-			$mailMessage = "Message de l'utilisateur : ".$message;
-		}
+
 		if (!empty($motivation)) {
             $mailMotivation = "Motivation de l'utilisateur : ".$motivation;
 		}
@@ -162,7 +159,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 			// Link created: Send email.
 			if (!empty($linkedOffer)) {
-				
+
 				$linkedOffer = $this->m_cifre->getOffer($linkedOffer);
 				$post = [
 					'USER_NAME' => $this->user->name,
@@ -176,7 +173,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'LINKED_OFFER_FNUM' => $linkedOffer->fnum,
 					'LINKED_OFFER_NAME' => $linkedOffer->titre,
 					'LINKED_OFFER_ID' => $linkedOffer->search_engine_page,
-					'OFFER_MESSAGE' => $mailMessage . '<br>' . $mailMotivation
+					'OFFER_MESSAGE' => $message . '<br>' . $mailMotivation
 				];
 
 				$email_to_send = 72;
@@ -193,7 +190,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 					'OFFER_NAME' => $offerInformation->titre,
 					'CONTACT_ID' => $contact_id,
 					'OFFER_USER_ID' => $fnum['applicant_id'],
-					'OFFER_MESSAGE' => $mailMessage . '<br>' . $mailMotivation
+					'OFFER_MESSAGE' => $message . '<br>' . $mailMotivation
 				];
 
 				$email_to_send = 71;
@@ -209,7 +206,7 @@ class EmundusControllerCifre extends JControllerLegacy {
                 echo json_encode((object)['status' => false, 'msg' => 'Internal server error']);
                 exit;
             }
-            
+
 			echo json_encode((object)['status' => $this->c_messages->sendEmail($fnum['fnum'], $email_to_send, $post, $toAttach, $bcc)]);
 			exit;
 
@@ -348,7 +345,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 			$fnum = $this->m_files->getFnumInfos($fnum);
 			$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
 			$contact_id = $this->m_cifre->getContactRequestID($fnum['applicant_id'], $this->user->id, $fnum['fnum']);
-			
+
 			$post = [
 				'USER_NAME' => $this->user->name,
 				'OFFER_USER_NAME' => $fnum['name'],
@@ -417,9 +414,14 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 		if (!empty($link->fnum_from)) {
 
+			$fnum = $this->m_files->getFnumInfos($link->fnum_from);
+			$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
+
 			$post = [
 				'USER_NAME' => $this->user->name,
-				'CONTACT_ID' => $id
+				'OFFER_USER_NAME' => $fnum['name'],
+				'OFFER_NAME' => $offerInformation->titre,
+				'CONTACT_ID' => $id,
 			];
 
 			$fnum = $this->m_files->getFnumInfos($link->fnum_from);
@@ -647,7 +649,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 			// If no fnum: We are user_to and fnum_from does not exist: send to user_from about fnum_to
 			if (empty($fnum)) {
-				
+
 				$fnum = $this->m_files->getFnumInfos($link->fnum_to);
 				$user_from = JFactory::getUser($link->user_from);
 
@@ -765,6 +767,282 @@ class EmundusControllerCifre extends JControllerLegacy {
 		}
 	}
 
+	/**
+	 * Adds a contact request on an offer as favorite.
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function favorite() {
+
+		$jinput = JFactory::getApplication()->input;
+		$link_id = $jinput->post->getInt('link_id');
+
+		if (empty($link_id)) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
+			exit;
+		}
+
+
+		$link = $this->m_cifre->getLinkByID($link_id);
+
+		if ($link->user_to != $this->user->id && $link->user_from != $this->user->id) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link does not concern current user.']);
+			exit;
+		}
+
+		$favorite = null;
+		// By using this we can get the link direction, this is then used for checking if another favorite exists for that offer.
+		if ($link->user_to == $this->user->id) {
+
+			$profile = $this->getUserCifreProfile($link->user_from);
+			if (empty($profile)) {
+				echo json_encode((object) ['status' => false, 'msg' => 'No correct profile for user, this is bad.']);
+				exit;
+			}
+
+			// If the user TO is our user, then we need to look at USER_TO_FAVORITE.
+			$direction = 1;
+			$fnum = $link->fnum_to;
+			$favorite = $this->m_cifre->checkForFavorites($fnum, $profile, $this->user->id);
+
+		} elseif (!empty($link->fnum_from)) {
+
+			// If the user FROM is us and we have linked an offer, then check for favorites on that offer / status.
+			$profile = $this->getUserCifreProfile($link->user_to);
+			if (empty($profile)) {
+				echo json_encode((object) ['status' => false, 'msg' => 'No correct profile for user, this is bad.']);
+				exit;
+			}
+
+			// If the user FROM is our user, then we need to look at USER_FROM_FAVORITE.
+			$direction = -1;
+			$fnum = $link->fnum_from;
+			$favorite = $this->m_cifre->checkForFavorites($fnum, $profile, $this->user->id);
+
+		} else {
+			echo json_encode((object) ['status' => false, 'msg' => 'Error.']);
+			exit;
+		}
+
+		if (!empty($favorite)) {
+			$this->m_cifre->unfavorite($favorite, $direction);
+		}
+
+		$this->m_cifre->favorite($link_id, $direction);
+
+		// If two favorites are picked, send email notifying, and create chatroom.
+		$favorites = $this->m_cifre->checkForTwoFavorites($fnum, $this->user->id);
+		if (count($favorites) === 2) {
+
+			$m_messages = new EmundusModelMessages();
+
+			$users = [];
+			// Here we get the two users from our favorites who are not us.
+			foreach ($favorites as $fav) {
+				if ($fav->user_to == $this->user->id) {
+					$users[] = $fav->user_from;
+				} else {
+					$users[] = $fav->user_to;
+				}
+			}
+
+			// Look up the chatroom id using our three users.
+			$chatroom_id = $m_messages->getChatroomByUsers($this->user->id, $users[0], $users[1]);
+
+			if (empty($chatroom_id)) {
+
+				require_once(JPATH_COMPONENT . DS . 'models' . DS . 'users.php');
+				$m_users = new EmundusModelUsers();
+
+				// Set the user param in order to show onBoarding message for user adding a fave for first time or being added as a fav for the first time.
+				$m_users->createParam('addedFaves', $this->user->id);
+				$m_users->createParam('addedAsFav', $users[0]);
+				$m_users->createParam('addedAsFav', $users[1]);
+
+				$chatroom_id = $m_messages->createChatroom($fnum);
+
+				if (empty($chatroom_id)) {
+					echo json_encode((object) ['status' => false, 'msg' => 'Cannot create chatroom.']);
+					exit;
+				}
+
+				$m_messages->joinChatroom($chatroom_id, $this->user->id, $users[0], $users[1]);
+
+				// Send the email notifying they can chat.
+				$offerInformation = $this->m_cifre->getOffer($fnum);
+
+				$email_user = JFactory::getUser($users[0]);
+				$this->c_messages->sendEmailNoFnum($email_user->email, 'chatroom_created', [
+					'USER_NAME'       => $email_user->name,
+					'OFFER_USER_NAME' => $this->user->name,
+					'OFFER_NAME'      => $offerInformation->titre,
+				], $email_user->id);
+
+				$email_user = JFactory::getUser($users[1]);
+				$this->c_messages->sendEmailNoFnum($email_user->email, 'chatroom_created', [
+					'USER_NAME'       => $email_user->name,
+					'OFFER_USER_NAME' => $this->user->name,
+					'OFFER_NAME'      => $offerInformation->titre,
+				], $email_user->id);
+
+				$this->c_messages->sendEmailNoFnum($this->user->email, 'chatroom_created', [
+					'USER_NAME'       => $this->user->name,
+					'OFFER_USER_NAME' => $this->user->name,
+					'OFFER_NAME'      => $offerInformation->titre,
+				], $email_user->id);
+			}
+
+			echo json_encode((object) ['status' => true, 'reload' => true]);
+			exit;
+
+		}
+
+		echo json_encode((object) ['status' => true]);
+		exit;
+	}
+
+
+	/**
+	 * Removes a contact request on an offer as favorite.
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function unfavorite() {
+
+		$jinput = JFactory::getApplication()->input;
+		$link_id = $jinput->post->getInt('link_id');
+
+		if (empty($link_id)) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
+			exit;
+		}
+
+		$link = $this->m_cifre->getLinkByID($link_id);
+
+		if ($link->user_to != $this->user->id && $link->user_from != $this->user->id) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link does not concern current user.']);
+			exit;
+		}
+
+		// By using this we can get the link direction, this is then used for checking if another favorite exists for that offer.
+		if ($link->user_to == $this->user->id) {
+			// If the user TO is our user, then we need to remove USER_TO_FAVORITE.
+			$direction = 1;
+		} elseif (!empty($link->fnum_from)) {
+			// If the user FROM is our user, then we need to remove USER_FROM_FAVORITE.
+			$direction = -1;
+		} else {
+			echo json_encode((object) ['status' => false, 'msg' => 'Error.']);
+			exit;
+		}
+
+		$this->m_cifre->unfavorite($link_id, $direction);
+		echo json_encode((object) ['status' => true]);
+		exit;
+	}
+
+
+	/**
+	 * Enables notification on a contact request.
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function notify() {
+
+		$jinput = JFactory::getApplication()->input;
+		$link_id = $jinput->post->getInt('link_id');
+
+		if (empty($link_id)) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
+			exit;
+		}
+
+		$link = $this->m_cifre->getLinkByID($link_id);
+		if ($link->user_to != $this->user->id && $link->user_from != $this->user->id) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link does not concern current user.']);
+			exit;
+		}
+
+		// By using this we can get the link direction, this allows us to see which column should be filled (user to or from).
+		if ($link->user_to == $this->user->id) {
+			// If the user TO is our user, then we need to look at USER_TO_NOTIFY.
+			$direction = 1;
+		} else {
+			// If the user FROM is our user, then we need to look at USER_FROM_NOTIFYE.
+			$direction = -1;
+		}
+
+		$this->m_cifre->notify($link_id, $direction);
+		echo json_encode((object) ['status' => true]);
+		exit;
+	}
+
+
+	/**
+	 * Disables notification on a contact request.
+	 *
+	 * @throws Exception
+	 * @since version
+	 */
+	public function unnotify() {
+
+		$jinput = JFactory::getApplication()->input;
+		$link_id = $jinput->post->getInt('link_id');
+
+		if (empty($link_id)) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link ID not provided.']);
+			exit;
+		}
+
+		$link = $this->m_cifre->getLinkByID($link_id);
+		if ($link->user_to != $this->user->id && $link->user_from != $this->user->id) {
+			echo json_encode((object) ['status' => false, 'msg' => 'Link does not concern current user.']);
+			exit;
+		}
+
+		// By using this we can get the link direction, this allows us to see which column should be filled (user to or from).
+		if ($link->user_to == $this->user->id) {
+			// If the user TO is our user, then we need to remove USER_TO_NOTIFY.
+			$direction = 1;
+		} else {
+			// If the user FROM is our user, then we need to remove USER_FROM_NOTIFY.
+			$direction = -1;
+		}
+
+		$this->m_cifre->unnotify($link_id, $direction);
+		echo json_encode((object) ['status' => true]);
+		exit;
+	}
+
+
+	/**
+	 * @param $user
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	private function getUserCifreProfile($user) {
+		require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+		$m_profile = new EmundusModelProfile();
+
+		// Get the other user's profile, used for checking for
+		$profiles = $m_profile->getUserProfiles($user);
+
+		// Filter out any secondary profiles, this is useful for coordinator accounts for example.
+		$profiles = array_filter($profiles, function ($profile) {
+			return ($profile->id === '1006' || $profile->id === '1007' || $profile->id === '1008');
+		});
+
+		return $profiles[0]->id;
+	}
+
+	/**
+	 *
+	 */
 	public function getdepartmentsbyregion() {
         try {
             $application = JFactory::getApplication();

@@ -1,0 +1,22 @@
+.bandeau-internet-explorer {
+	background-color:red;
+	width:100%;
+	padding:15px;
+	border:2px solid darkred;
+	border-radius:0.25rem;
+	margin-bottom:15px;
+	color:white;
+}
+.closeButton {
+	float:right;
+	cursor:pointer;
+	color:darkred;
+}
+.bandeau-internet-explorer a {
+	color:black;
+	font-weight:bold;
+}
+.bandeau-internet-explorer a:hover {
+	color:white;
+	font-weight:bold;
+}

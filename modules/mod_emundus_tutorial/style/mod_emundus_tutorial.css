@@ -1,0 +1,20 @@
+.tutorial-link{
+    color: white !important;
+    text-decoration: unset !important;
+    display: flex;
+    padding: .625em 2em;
+    text-align: center;
+    align-items: center;
+}
+
+.swal2-title{
+    margin-top: 1em !important;
+}
+
+.swal-button-link{
+    padding: 0 !important;
+}
+
+.swal-popup-custom{
+    width: auto !important;
+}

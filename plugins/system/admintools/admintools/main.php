@@ -8,10 +8,16 @@
 use Akeeba\AdminTools\Admin\Helper\Storage;
 use FOF30\Container\Container;
 use FOF30\Utils\Ip;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Application\SiteApplication;
+use Joomla\CMS\Authentication\AuthenticationResponse;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Input\Input;
+use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Uri\Uri;
 
 defined('_JEXEC') or die;
-
-JLoader::import('joomla.application.plugin');
 
 // This dummy class is here to allow the class autoloader to load the main plugin file
 class AtsystemAdmintoolsMain
@@ -31,34 +37,52 @@ if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/inclu
  * @author nicholas
  *
  */
-class plgSystemAdmintools extends JPlugin
+class plgSystemAdmintools extends CMSPlugin
 {
-	/** @var   Storage   Component parameters */
-	protected $componentParams = null;
-
-	/** @var   array  Maps plugin hooks (onSomethingSomething) to feature objects */
-	protected $featuresPerHook = array();
-
-	/** @var   JInput  The Joomla! application input */
-	protected $input = null;
-
-	/** @var   AtsystemUtilExceptionshandler  The security exceptions handler */
-	protected $exceptionsHandler = null;
-
 	/** @var   array  The applicable WAF Exceptions which prevent filtering from taking place */
-	public $exceptions = array();
+	public $exceptions = [];
 
 	/** @var   bool   Should I skip filtering (because of whitelisted IPs, WAF Exceptions etc) */
 	public $skipFiltering = false;
 
-	/** @var   JApplicationCms|\Joomla\CMS\Application\CMSApplication  The application we're running in */
+	/** @var   CMSApplication|CMSApplication  The application we're running in */
 	public $app = null;
 
 	/** @var   JDatabaseDriver  The Joomla! database driver */
 	public $db = null;
 
+	/** @var   Storage   Component parameters */
+	protected $componentParams = null;
+
+	/** @var   array  Maps plugin hooks (onSomethingSomething) to feature objects */
+	protected $featuresPerHook = [];
+
+	/** @var   Input  The Joomla! application input */
+	protected $input = null;
+
+	/** @var   AtsystemUtilExceptionshandler  The security exceptions handler */
+	protected $exceptionsHandler = null;
+
 	/** @var   Container  The component container */
 	protected $container;
+
+	/**
+	 * Initialises the System - Admin Tools plugin
+	 *
+	 * @param   object  $subject  The object to observe
+	 * @param   array   $config   Configuration information
+	 */
+	public function __construct(&$subject, $config = [])
+	{
+		// Autoload the language strings
+		$this->autoloadLanguage = true;
+
+		// Call the parent constructor
+		parent::__construct($subject, $config);
+
+		// Initialize the plugin
+		$this->initialize();
+	}
 
 	/**
 	 * Working around stupid (JoomlaShine) serializing CMSApplication and, with it, all plugins.
@@ -72,7 +96,7 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	public function __sleep()
 	{
-		return array('_name', '_type', 'params');
+		return ['_name', '_type', 'params'];
 	}
 
 	/**
@@ -93,37 +117,19 @@ class plgSystemAdmintools extends JPlugin
 	}
 
 	/**
-	 * Initialises the System - Admin Tools plugin
-	 *
-	 * @param  object $subject The object to observe
-	 * @param  array  $config  Configuration information
-	 */
-	public function __construct(&$subject, $config = array())
-	{
-		// Autoload the language strings
-		$this->autoloadLanguage = true;
-
-		// Call the parent constructor
-		parent::__construct($subject, $config);
-
-		// Initialize the plugin
-		$this->initialize();
-	}
-
-	/**
 	 * Log a security exception coming from a third party application. It's supposed to be used by 3PD to log security
 	 * exceptions in Admin Tools' log.
 	 *
-	 * @param   string $reason    The blocking reason to show to the administrator. MANDATORY.
-	 * @param   string $message   The message to show to the user being blocked. MANDATORY.
-	 * @param   array  $extraInfo Any extra information to record to the log file (hash array).
-	 * @param   bool   $autoban   OBSOLETE. Automatic IP ban can only be toggled through the Configure WAF page.
+	 * @param   string  $reason     The blocking reason to show to the administrator. MANDATORY.
+	 * @param   string  $message    The message to show to the user being blocked. MANDATORY.
+	 * @param   array   $extraInfo  Any extra information to record to the log file (hash array).
+	 * @param   bool    $autoban    OBSOLETE. Automatic IP ban can only be toggled through the Configure WAF page.
 	 *
 	 * @return  void
 	 */
-	public function onAdminToolsThirdpartyException($reason, $message, $extraInfo = array(), $autoban = false)
+	public function onAdminToolsThirdpartyException($reason, $message, $extraInfo = [], $autoban = false)
 	{
-		$this->runFeature('onAdminToolsThirdpartyException', array($reason, $message, $extraInfo = array(), $autoban = false));
+		$this->runFeature('onAdminToolsThirdpartyException', [$reason, $message, $extraInfo = [], $autoban = false]);
 	}
 
 	/**
@@ -132,7 +138,7 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	public function onAfterInitialise()
 	{
-		return $this->runFeature('onAfterInitialise', array());
+		return $this->runFeature('onAfterInitialise', []);
 	}
 
 	/**
@@ -142,7 +148,7 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	public function onAfterRoute()
 	{
-		return $this->runFeature('onAfterRoute', array());
+		return $this->runFeature('onAfterRoute', []);
 	}
 
 	/**
@@ -153,11 +159,18 @@ class plgSystemAdmintools extends JPlugin
 	public function onBeforeRender()
 	{
 		// Register the late bound after render event handler, guaranteed to be the last onAfterRender plugin to execute
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
-		$app->registerEvent('onAfterRender', array($this, 'onAfterRenderLatebound'));
+		if (version_compare(JVERSION, '3.999.999', 'lt'))
+		{
+			$app->registerEvent('onAfterRender', [$this, 'onAfterRenderLatebound']);
+		}
+		else
+		{
+			$app->getDispatcher()->addListener('onAfterRender', [$this, 'onAfterRenderLatebound'],  PHP_INT_MAX - 1);
+		}
 
-		return $this->runFeature('onBeforeRender', array());
+		return $this->runFeature('onBeforeRender', []);
 	}
 
 	/**
@@ -168,7 +181,7 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	public function onAfterRender()
 	{
-		return $this->runFeature('onAfterRender', array());
+		return $this->runFeature('onAfterRender', []);
 	}
 
 	/**
@@ -178,7 +191,7 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	public function onAfterRenderLatebound()
 	{
-		return $this->runFeature('onAfterRenderLatebound', array());
+		return $this->runFeature('onAfterRenderLatebound', []);
 	}
 
 	/**
@@ -188,13 +201,13 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	public function onAfterDispatch()
 	{
-		return $this->runFeature('onAfterDispatch', array());
+		return $this->runFeature('onAfterDispatch', []);
 	}
 
 	/**
 	 * Alias for onUserLoginFailure
 	 *
-	 * @param JAuthenticationResponse $response
+	 * @param   AuthenticationResponse  $response
 	 *
 	 * @return mixed
 	 *
@@ -202,7 +215,7 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	public function onLoginFailure($response)
 	{
-		return $this->runFeature('onUserLoginFailure', array($response));
+		return $this->runFeature('onUserLoginFailure', [$response]);
 	}
 
 	/**
@@ -214,7 +227,7 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	public function onUserLoginFailure($response)
 	{
-		return $this->runFeature('onUserLoginFailure', array($response));
+		return $this->runFeature('onUserLoginFailure', [$response]);
 	}
 
 	/**
@@ -227,40 +240,157 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	public function onUserLogout($parameters, $options)
 	{
-		return $this->runFeature('onUserLogout', array($parameters, $options));
+		return $this->runFeature('onUserLogout', [$parameters, $options]);
 	}
 
 	/**
 	 * Alias for onUserLogin
 	 *
-	 * @param string $user
-	 * @param array  $options
+	 * @param   string  $user
+	 * @param   array   $options
 	 *
 	 * @return mixed
 	 */
 	public function onLoginUser($user, $options)
 	{
-		return $this->runFeature('onUserLogin', array($user, $options));
+		return $this->runFeature('onUserLogin', [$user, $options]);
 	}
 
 	public function onUserAuthorisationFailure($authorisation)
 	{
-		return $this->runFeature('onUserAuthorisationFailure', array($authorisation));
+		return $this->runFeature('onUserAuthorisationFailure', [$authorisation]);
 	}
 
 	public function onUserLogin($user, $options)
 	{
-		return $this->runFeature('onUserLogin', array($user, $options));
+		return $this->runFeature('onUserLogin', [$user, $options]);
 	}
 
 	public function onUserAfterSave($user, $isnew, $success, $msg)
 	{
-		return $this->runFeature('onUserAfterSave', array($user, $isnew, $success, $msg));
+		return $this->runFeature('onUserAfterSave', [$user, $isnew, $success, $msg]);
 	}
 
 	public function onUserBeforeSave($olduser, $isnew, $user)
 	{
-		return $this->runFeature('onUserBeforeSave', array($olduser, $isnew, $user));
+		return $this->runFeature('onUserBeforeSave', [$olduser, $isnew, $user]);
+	}
+
+	/**
+	 * Execute a feature which is already loaded.
+	 *
+	 * @param   string  $name
+	 * @param   array   $arguments
+	 *
+	 * @return  mixed
+	 */
+	public function runFeature($name, array $arguments)
+	{
+		if (!isset($this->featuresPerHook[$name]))
+		{
+			return null;
+		}
+
+		$result = null;
+
+		foreach ($this->featuresPerHook[$name] as $plugin)
+		{
+			if (method_exists($plugin, $name))
+			{
+				// Call_user_func_array is ~3 times slower than direct method calls.
+				// See the on-line PHP documentation page of call_user_func_array for more information.
+				switch (count($arguments))
+				{
+					case 0 :
+						$result = $plugin->$name();
+						break;
+					case 1 :
+						$result = $plugin->$name($arguments[0]);
+						break;
+					case 2:
+						$result = $plugin->$name($arguments[0], $arguments[1]);
+						break;
+					case 3:
+						$result = $plugin->$name($arguments[0], $arguments[1], $arguments[2]);
+						break;
+					case 4:
+						$result = $plugin->$name($arguments[0], $arguments[1], $arguments[2], $arguments[3]);
+						break;
+					case 5:
+						$result = $plugin->$name($arguments[0], $arguments[1], $arguments[2], $arguments[3], $arguments[4]);
+						break;
+					default:
+						// Resort to using call_user_func_array for many segments
+						$result = call_user_func_array([$plugin, $name], $arguments);
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Execute a feature which is already loaded. The feature returns the boolean AND result of all of the features'
+	 * results.
+	 *
+	 * @param   string  $name
+	 * @param   bool    $default
+	 * @param   array   $arguments
+	 *
+	 * @return  bool
+	 */
+	public function runBooleanFeature($name, $default, array $arguments)
+	{
+		$result = $default;
+
+		if (!isset($this->featuresPerHook[$name]))
+		{
+			return $result;
+		}
+
+		if (!count($this->featuresPerHook[$name]))
+		{
+			return $result;
+		}
+
+		$result = true;
+
+		foreach ($this->featuresPerHook[$name] as $plugin)
+		{
+			if (method_exists($plugin, $name))
+			{
+				// Call_user_func_array is ~3 times slower than direct method calls.
+				// See the on-line PHP documentation page of call_user_func_array for more information.
+				switch (count($arguments))
+				{
+					case 0 :
+						$r = $plugin->$name();
+						break;
+					case 1 :
+						$r = $plugin->$name($arguments[0]);
+						break;
+					case 2:
+						$r = $plugin->$name($arguments[0], $arguments[1]);
+						break;
+					case 3:
+						$r = $plugin->$name($arguments[0], $arguments[1], $arguments[2]);
+						break;
+					case 4:
+						$r = $plugin->$name($arguments[0], $arguments[1], $arguments[2], $arguments[3]);
+						break;
+					case 5:
+						$r = $plugin->$name($arguments[0], $arguments[1], $arguments[2], $arguments[3], $arguments[4]);
+						break;
+					default:
+						// Resort to using call_user_func_array for many segments
+						$r = call_user_func_array([$plugin, $name], $arguments);
+				}
+
+				$result = $result && $r;
+			}
+		}
+
+		return $result;
 	}
 
 	/**
@@ -271,8 +401,6 @@ class plgSystemAdmintools extends JPlugin
 	protected function loadComponentParameters()
 	{
 		// Load the components parameters
-		JLoader::import('joomla.application.component.model');
-
 		require_once JPATH_ADMINISTRATOR . '/components/com_admintools/Helper/Storage.php';
 
 		$this->componentParams = Storage::getInstance();
@@ -403,8 +531,8 @@ class plgSystemAdmintools extends JPlugin
 	protected function loadFeatures()
 	{
 		// Load all enabled features
-		$di = new DirectoryIterator(__DIR__ . '/../feature');
-		$features = array();
+		$di       = new DirectoryIterator(__DIR__ . '/../feature');
+		$features = [];
 
 		/** @var DirectoryIterator $fileSpec */
 		foreach ($di as $fileSpec)
@@ -418,7 +546,7 @@ class plgSystemAdmintools extends JPlugin
 			$fileName = $fileSpec->getFilename();
 			$fileName = substr($fileName, 0, -4);
 
-			if (in_array($fileName, array('interface', 'abstract')))
+			if (in_array($fileName, ['interface', 'abstract']))
 			{
 				continue;
 			}
@@ -438,7 +566,7 @@ class plgSystemAdmintools extends JPlugin
 				continue;
 			}
 
-			$features[] = array($o->getLoadOrder(), $o);
+			$features[] = [$o->getLoadOrder(), $o];
 		}
 
 		// Make sure we have some enabled features
@@ -448,8 +576,7 @@ class plgSystemAdmintools extends JPlugin
 		}
 
 		// Sort the features by load order
-		uasort($features, function ($a, $b)
-		{
+		uasort($features, function ($a, $b) {
 			if ($a[0] == $b[0])
 			{
 				return 0;
@@ -475,7 +602,7 @@ class plgSystemAdmintools extends JPlugin
 
 				if (!isset($this->featuresPerHook[$method]))
 				{
-					$this->featuresPerHook[$method] = array();
+					$this->featuresPerHook[$method] = [];
 				}
 
 				$this->featuresPerHook[$method][] = $feature;
@@ -488,9 +615,16 @@ class plgSystemAdmintools extends JPlugin
 	 */
 	protected function loadWAFExceptions()
 	{
-		$container = \FOF30\Container\Container::getInstance('com_admintools');
-		$jConfig   = $container->platform->getConfig();
-		$isSEF     = $jConfig->get('sef', 0);
+		$container = Container::getInstance('com_admintools');
+
+		// Joomla 4 loads system plugins in CLI applications too
+		if ($container->platform->isCli())
+		{
+			return;
+		}
+
+		$jConfig = $container->platform->getConfig();
+		$isSEF   = $jConfig->get('sef', 0);
 
 		$option = $this->input->getCmd('option', '');
 		$view   = $this->getCurrentView();
@@ -508,7 +642,7 @@ class plgSystemAdmintools extends JPlugin
 
 			if (!empty($Itemid))
 			{
-				list($option, $view) = $this->loadMenuItem($Itemid, $option, $view);
+				[$option, $view] = $this->loadMenuItem($Itemid, $option, $view);
 			}
 
 			$this->loadWAFExceptionsByOption($option, $view);
@@ -540,7 +674,7 @@ class plgSystemAdmintools extends JPlugin
 		}
 
 		// Get the SEF URI path
-		$uriPath = JUri::getInstance()->getPath();
+		$uriPath = Uri::getInstance()->getPath();
 		$uriPath = ltrim($uriPath, '/');
 
 		// Do I have an index.php prefix?
@@ -554,13 +688,13 @@ class plgSystemAdmintools extends JPlugin
 
 		if ($this->container->platform->isFrontend())
 		{
-			/** @var \Joomla\CMS\Application\SiteApplication $app */
-			$app = \JFactory::getApplication();
+			/** @var SiteApplication $app */
+			$app = Factory::getApplication();
 
 			if ($app->getLanguageFilter())
 			{
 				jimport('joomla.language.helper');
-				$languages = JLanguageHelper::getLanguages('lang_code');
+				$languages = LanguageHelper::getLanguages('lang_code');
 
 				foreach ($languages as $lang)
 				{
@@ -576,8 +710,8 @@ class plgSystemAdmintools extends JPlugin
 
 		// Load all WAF exceptions for SEF URLs
 		$db               = $this->db;
-		$this->exceptions = array();
-		$exceptions       = array();
+		$this->exceptions = [];
+		$exceptions       = [];
 		$view             = $this->getCurrentView();
 
 		$sql = $db->getQuery(true)
@@ -627,8 +761,8 @@ class plgSystemAdmintools extends JPlugin
 		$db = $this->db;
 
 		$sql = $db->getQuery(true)
-				  ->select($db->qn('query'))
-				  ->from($db->qn('#__admintools_wafexceptions'));
+			->select($db->qn('query'))
+			->from($db->qn('#__admintools_wafexceptions'));
 
 		if (empty($option))
 		{
@@ -694,16 +828,16 @@ class plgSystemAdmintools extends JPlugin
 		// Option and view already set, they will override the Itemid
 		if (!empty($option) && !empty($view))
 		{
-			return array($option, $view);
+			return [$option, $view];
 		}
 
 		// Load the menu item
-		$menu = JFactory::getApplication()->getMenu()->getItem($Itemid);
+		$menu = Factory::getApplication()->getMenu()->getItem($Itemid);
 
 		// Menu item does not exist, nothign to do
 		if (!is_object($menu))
 		{
-			return array($option, $view);
+			return [$option, $view];
 		}
 
 		// Remove "index.php?" and parse the link
@@ -721,124 +855,7 @@ class plgSystemAdmintools extends JPlugin
 		}
 
 		// Return the new option and view
-		return array($option, $view);
-	}
-
-	/**
-	 * Execute a feature which is already loaded.
-	 *
-	 * @param   string  $name
-	 * @param   array   $arguments
-	 *
-	 * @return  mixed
-	 */
-	public function runFeature($name, array $arguments)
-	{
-		if (!isset($this->featuresPerHook[$name]))
-		{
-			return null;
-		}
-
-		$result = null;
-
-		foreach ($this->featuresPerHook[$name] as $plugin)
-		{
-			if (method_exists($plugin, $name))
-			{
-				// Call_user_func_array is ~3 times slower than direct method calls.
-				// See the on-line PHP documentation page of call_user_func_array for more information.
-				switch (count($arguments))
-				{
-					case 0 :
-						$result = $plugin->$name();
-						break;
-					case 1 :
-						$result = $plugin->$name($arguments[0]);
-						break;
-					case 2:
-						$result = $plugin->$name($arguments[0], $arguments[1]);
-						break;
-					case 3:
-						$result = $plugin->$name($arguments[0], $arguments[1], $arguments[2]);
-						break;
-					case 4:
-						$result = $plugin->$name($arguments[0], $arguments[1], $arguments[2], $arguments[3]);
-						break;
-					case 5:
-						$result = $plugin->$name($arguments[0], $arguments[1], $arguments[2], $arguments[3], $arguments[4]);
-						break;
-					default:
-						// Resort to using call_user_func_array for many segments
-						$result = call_user_func_array(array($plugin, $name), $arguments);
-				}
-			}
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Execute a feature which is already loaded. The feature returns the boolean AND result of all of the features'
-	 * results.
-	 *
-	 * @param   string  $name
-	 * @param   bool    $default
-	 * @param   array   $arguments
-	 *
-	 * @return  bool
-	 */
-	public function runBooleanFeature($name, $default, array $arguments)
-	{
-		$result = $default;
-
-		if (!isset($this->featuresPerHook[$name]))
-		{
-			return $result;
-		}
-
-		if (!count($this->featuresPerHook[$name]))
-		{
-			return $result;
-		}
-
-		$result = true;
-
-		foreach ($this->featuresPerHook[$name] as $plugin)
-		{
-			if (method_exists($plugin, $name))
-			{
-				// Call_user_func_array is ~3 times slower than direct method calls.
-				// See the on-line PHP documentation page of call_user_func_array for more information.
-				switch (count($arguments))
-				{
-					case 0 :
-						$r = $plugin->$name();
-						break;
-					case 1 :
-						$r = $plugin->$name($arguments[0]);
-						break;
-					case 2:
-						$r = $plugin->$name($arguments[0], $arguments[1]);
-						break;
-					case 3:
-						$r = $plugin->$name($arguments[0], $arguments[1], $arguments[2]);
-						break;
-					case 4:
-						$r = $plugin->$name($arguments[0], $arguments[1], $arguments[2], $arguments[3]);
-						break;
-					case 5:
-						$r = $plugin->$name($arguments[0], $arguments[1], $arguments[2], $arguments[3], $arguments[4]);
-						break;
-					default:
-						// Resort to using call_user_func_array for many segments
-						$r = call_user_func_array(array($plugin, $name), $arguments);
-				}
-
-				$result = $result && $r;
-			}
-		}
-
-		return $result;
+		return [$option, $view];
 	}
 
 	/**
@@ -855,20 +872,18 @@ class plgSystemAdmintools extends JPlugin
 	{
 		$this->container = Container::getInstance('com_admintools');
 
-		// Under Joomla 2.5 we have to explicitly load the application and the database,
-		// the parent class won't do that for us.
 		if (is_null($this->app))
 		{
-			$this->app = JFactory::getApplication();
+			$this->app = Factory::getApplication();
 		}
 
 		if (is_null($this->db))
 		{
-			$this->db = JFactory::getDbo();
+			$this->db = Factory::getDbo();
 		}
 
 		// Store a reference to the global input object
-		$this->input = JFactory::getApplication()->input;
+		$this->input = Factory::getApplication()->input;
 
 		// Load the component parameters
 		$this->loadComponentParameters();
@@ -901,7 +916,7 @@ class plgSystemAdmintools extends JPlugin
 
 		if (empty($view) && (strpos($task, '.') !== false))
 		{
-			list($view, $task) = explode('.', $task, 2);
+			[$view, $task] = explode('.', $task, 2);
 		}
 
 		return $view;

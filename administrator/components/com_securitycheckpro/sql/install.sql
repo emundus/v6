@@ -492,7 +492,7 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_phocagallery','component','4.3.17','<','3.0.0','>=','Phoca Gallery Component','XSS vulnerability','Apr 26 2019','Version 4.3.15 prior','update','4.3.17'),
 ('Joomla!','core','3.9.5','<=','3.0.0','>=','Joomla! core','Xss vulnerability','May 07 2019','Joomla 1.7.0 through 3.9.5','update','3.9.6'),
 ('com_rsform','component','2.2.0','==','3.0.0','>=','RSForm! Pro Component','Csv injection vulnerability','May 13 2019','Version 2.2.0','update','2.2.1'),
-('com_rsmembership','component','2.2.0','<=','3.0.0','>=','RSMembership! Component','Csv injection vulnerability','May 13 2019','Version 1.22.10 and lower','update','1.22.11'),
+('com_rsmembership','component','1.22.10','<=','3.0.0','>=','RSMembership! Component','Csv injection vulnerability','May 13 2019','Version 1.22.10 and lower','update','1.22.11'),
 ('com_rsevents','component','2.2.0','<=','3.0.0','>=','RSEvents! Pro Component','Csv injection vulnerability','May 13 2019','Version 2.2.0 and lower','update','2.2.1'),
 ('com_oziogallery','component','5.0.1','==','3.0.0','>=','Oziogallery Component','Xss vulnerability','May 14 2019','Version 5.0.1','update','5.0.2'),
 ('com_loginguard','component','3.1.1','<=','3.0.0','>=','Akeeba LoginGuard Component','Information disclosure vulnerability','May 18 2019','Version 3.1.1 and lower','update','3.2.0'),
@@ -518,7 +518,8 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_simplecalendar','component','3.1.9','<=','3.0.0','>=','Simple Calendar Component','Sql injection Vulnerability','Mar 24 2020','Version 3.1.9 and lower','update','3.2.1'),
 ('com_acym','component','6.9.2','<','3.0.0','>=','Acymailing 6 Component','File upload Vulnerability','Mar 24 2020','Version 6','update','6.9.2'),
 ('com_gmapfp','component','3.30','==','3.0.0','>=','GMapFP Component','Other Vulnerability','Apr 14 2020','Version 3.30','update','3.52'),
-('Joomla!','core','3.9.16','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Apr 22 2020','Joomla 2.5.0 through 3.9.16','update','3.9.18');
+('Joomla!','core','3.9.16','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','Apr 22 2020','Joomla 2.5.0 through 3.9.16','update','3.9.18'),
+('Joomla!','core','3.9.18','<=','3.0.0','>=','Joomla! core','Five low vulnerabilities','Jun 03 2020','Joomla 2.5.0 through 3.9.18','update','3.9.19');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -598,7 +599,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_storage` (
 `storage_key` varchar(255) NOT NULL,
 `storage_value` longtext NOT NULL,
 PRIMARY KEY (`storage_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `#__securitycheckpro_storage` (`storage_key`,`storage_value`) VALUES 
 ('locked','0');
@@ -640,7 +641,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.75');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.1.76');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (

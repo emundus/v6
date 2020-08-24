@@ -78,16 +78,20 @@
 			   description="COM_ADMINTOOLS_LBL_JCONFIG_LARGEFILETHRESHOLD_DESC"
 		/>
 
-		<field name="scandiffs" type="list" default="0"
+		<field name="scandiffs" type="radio" default="0"
 			   label="COM_ADMINTOOLS_JCONFIG_SCANDIFF_LABEL"
-			   description="COM_ADMINTOOLS_JCONFIG_SCANDIFF_DESC">
+			   description="COM_ADMINTOOLS_JCONFIG_SCANDIFF_DESC"
+			   class="btn-group btn-group-yesno"
+		>
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
 
-		<field name="scanignorenonthreats" type="list" default="0"
+		<field name="scanignorenonthreats" type="radio" default="0"
 			   label="COM_ADMINTOOLS_JCONFIG_SCANIGNORENONTHREATS_LABEL"
-			   description="COM_ADMINTOOLS_JCONFIG_SCANIGNORENONTHREATS_DESC">
+			   description="COM_ADMINTOOLS_JCONFIG_SCANIGNORENONTHREATS_DESC"
+			   class="btn-group btn-group-yesno"
+		>
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
@@ -103,9 +107,11 @@
 			   description="COM_ADMINTOOLS_LBL_JCONFIG_SCANEMAIL_DESC"
 		/>
 
-		<field name="scan_conditional_email" type="list" default="1"
+		<field name="scan_conditional_email" type="radio" default="1"
 			   label="COM_ADMINTOOLS_JCONFIG_SCAN_CONDITIONAL_EMAIL_LABEL"
-			   description="COM_ADMINTOOLS_JCONFIG_SCAN_CONDITIONAL_EMAIL_DESC">
+			   description="COM_ADMINTOOLS_JCONFIG_SCAN_CONDITIONAL_EMAIL_DESC"
+			   class="btn-group btn-group-yesno"
+		>
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
@@ -121,36 +127,44 @@
 		<field name="dark_mode" type="radio" default="-1"
 			   label="COM_ADMINTOOLS_JBACKEND_DARKMODE_LABEL"
 			   description="COM_ADMINTOOLS_JCONFIG_BACKEND_DARKMODE_DESC"
-			   class="switcher btn-group">
+			   class="btn-group">
 			<option value="-1">COM_ADMINTOOLS_JCONFIG_BACKEND_DARKMODE_AUTO</option>
 			<option value="0">COM_ADMINTOOLS_JCONFIG_BACKEND_DARKMODE_NEVER</option>
 			<option value="1">COM_ADMINTOOLS_JCONFIG_BACKEND_DARKMODE_ALWAYS</option>
 		</field>
 
-		<field name="showstats" type="list" default="1"
+		<field name="showstats" type="radio" default="1"
 			   label="COM_ADMINTOOLS_JCONFIG_SHOWSTATS_LABEL"
-			   description="COM_ADMINTOOLS_JCONFIG_SHOWSTATS_DESC">
+			   description="COM_ADMINTOOLS_JCONFIG_SHOWSTATS_DESC"
+			   class="btn-group btn-group-yesno"
+		>
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
 
-		<field name="longconfigpage" type="list" default="0"
+		<field name="longconfigpage" type="radio" default="0"
 			   label="COM_ADMINTOOLS_JCONFIG_LONGCONFIGPAGE_LABEL"
-			   description="COM_ADMINTOOLS_JCONFIG_LONGCONFIGPAGE_DESC">
+			   description="COM_ADMINTOOLS_JCONFIG_LONGCONFIGPAGE_DESC"
+			   class="btn-group btn-group-yesno"
+		>
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
 
-		<field name="reorderplugin" type="list" default="1"
+		<field name="reorderplugin" type="radio" default="1"
 			   label="COM_ADMINTOOLS_JCONFIG_REORDERPLUGIN_LABEL"
-			   description="COM_ADMINTOOLS_JCONFIG_REORDERPLUGIN_DESC">
+			   description="COM_ADMINTOOLS_JCONFIG_REORDERPLUGIN_DESC"
+			   class="btn-group btn-group-yesno"
+		>
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
 
-		<field name="serverconfigwarn" type="list" default="1"
+		<field name="serverconfigwarn" type="radio" default="1"
 			   label="COM_ADMINTOOLS_JCONFIG_SERVERCONFIGWARN_LABEL"
-			   description="COM_ADMINTOOLS_JCONFIG_SERVERCONFIGWARN_DESC">
+			   description="COM_ADMINTOOLS_JCONFIG_SERVERCONFIGWARN_DESC"
+			   class="btn-group btn-group-yesno"
+		>
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
@@ -164,10 +178,12 @@
 
 	<fieldset name="frontend" label="COM_ADMINTOOLS_JCONFIG_FRONTEND_LABEL"
 			  description="COM_ADMINTOOLS_JCONFIG_FRONTEND_DESC">
+
 		<field name="frontend_enable" type="radio" default="0"
 			   label="COM_ADMINTOOLS_JCONFIG_FEBENABLE_LABEL"
 			   description="COM_ADMINTOOLS_JCONFIG_FEBENABLE_DESC"
-			   class="btn-group">
+			   class="btn-group btn-group-yesno"
+		>
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
@@ -177,7 +193,7 @@
 			   description="COM_ADMINTOOLS_JCONFIG_SECRETWORD_DESC"
 			   class="input-large"/>
 
-		<field name="email_timezone" type="timezone" default="GMT" size="50"
+		<field name="email_timezone" type="timezone" default="GMT"
 			   label="COM_ADMINTOOLS_JCONFIG_EMAILTIMEZONE_LABEL"
 			   description="COM_ADMINTOOLS_JCONFIG_EMAILTIMEZONE_DESC"
 			   class="input-xxlarge">
@@ -196,32 +212,10 @@
 			   label="COM_ADMINTOOLS_LBL_JCONFIG_DOWNLOADID"
 			   description=""/>
 
-		<!--
-		<field name="autoupdateCli" type="list" default="1"
-			   label="COM_ADMINTOOLS_JCONFIG_AUTOUPDATE_SETTINGS_LABEL"
-			   description="COM_ADMINTOOLS_JCONFIG_AUTOUPDATE_SETTINGS_DESC">
-			<option value="1">COM_ADMINTOOLS_JCONFIG_AUTOUPDATE_NOTIFY_UPDATE</option>
-			<option value="2">COM_ADMINTOOLS_JCONFIG_AUTOUPDATE_NOTIFY</option>
-			<option value="3">COM_ADMINTOOLS_JCONFIG_AUTOUPDATE_UPDATE</option>
-		</field>
-
-		<field name="notificationFreq" type="text" default="1"
-			   label="COM_ADMINTOOLS_JCONFIG_NOTIFICATION_FREQ_LABEL"/>
-
-		<field name="notificationTime" type="list" default="day"
-			   label="COM_ADMINTOOLS_JCONFIG_NOTIFICATION_TIME_LABEL">
-			<option value="min">COM_ADMINTOOLS_JCONFIG_NOTIFICATION_TIME_MIN</option>
-			<option value="hour">COM_ADMINTOOLS_JCONFIG_NOTIFICATION_TIME_HOUR</option>
-			<option value="day">COM_ADMINTOOLS_JCONFIG_NOTIFICATION_TIME_DAY</option>
-		</field>
-
-		<field name="notificationEmail" type="text" default=""
-			   label="COM_ADMINTOOLS_JCONFIG_NOTIFICATION_EMAIL_LABEL"
-			   description="COM_ADMINTOOLS_JCONFIG_NOTIFICATION_EMAIL_DESC"/>
-	   -->
-
-		<field name="stats_enabled" type="list" default="1" label="COM_ADMINTOOLS_JCONFIG_USAGESTATS_LABEL"
-			   description="COM_ADMINTOOLS_JCONFIG_USAGESTATS_DESC">
+		<field name="stats_enabled" type="radio" default="1" label="COM_ADMINTOOLS_JCONFIG_USAGESTATS_LABEL"
+			   description="COM_ADMINTOOLS_JCONFIG_USAGESTATS_DESC"
+			   class="btn-group btn-group-yesno"
+		>
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>

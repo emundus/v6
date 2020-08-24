@@ -8,26 +8,34 @@
 namespace Akeeba\AdminTools\Admin\Helper;
 
 // Protect from unauthorized access
+defined('_JEXEC') or die();
+
 use Exception;
 use FOF30\Container\Container;
-use JFactory;
 use Joomla\Registry\Registry;
-
-defined('_JEXEC') or die();
 
 /**
  * A helper class to handle the storage of configuration values in the database
  */
 class Storage
 {
+	/** @var  Storage  Singleton instance */
+	static $instance = null;
+
 	/** @var  Registry  The internal values registry */
 	private $config = null;
 
 	/** @var Container The component's container */
 	private $container;
 
-	/** @var  Storage  Singleton instance */
-	static $instance = null;
+	/**
+	 * Storage constructor.
+	 */
+	public function __construct()
+	{
+		$this->container = Container::getInstance('com_admintools');
+		$this->load();
+	}
 
 	/**
 	 * Singleton implementation
@@ -42,15 +50,6 @@ class Storage
 		}
 
 		return static::$instance;
-	}
-
-	/**
-	 * Storage constructor.
-	 */
-	public function __construct()
-	{
-		$this->container = Container::getInstance('com_admintools');
-		$this->load();
 	}
 
 	/**
@@ -94,7 +93,7 @@ class Storage
 	 */
 	public function resetContents($save = false)
 	{
-		$this->config->loadArray(array());
+		$this->config->loadArray([]);
 
 		if ($save)
 		{
@@ -111,9 +110,9 @@ class Storage
 	{
 		$db    = $this->container->db;
 		$query = $db->getQuery(true)
-					->select($db->quoteName('value'))
-					->from($db->quoteName('#__admintools_storage'))
-					->where($db->quoteName('key') . ' = ' . $db->quote('cparams'));
+			->select($db->quoteName('value'))
+			->from($db->quoteName('#__admintools_storage'))
+			->where($db->quoteName('key') . ' = ' . $db->quote('cparams'));
 		$db->setQuery($query);
 
 		$error = 0;
@@ -152,15 +151,15 @@ class Storage
 		$data = json_encode($data);
 
 		$query = $db->getQuery(true)
-					->delete($db->quoteName('#__admintools_storage'))
-					->where($db->quoteName('key') . ' = ' . $db->quote('cparams'));
+			->delete($db->quoteName('#__admintools_storage'))
+			->where($db->quoteName('key') . ' = ' . $db->quote('cparams'));
 		$db->setQuery($query);
 		$db->execute();
 
-		$object = (object)array(
+		$object = (object) [
 			'key'   => 'cparams',
-			'value' => $data
-		);
+			'value' => $data,
+		];
 
 		$db->insertObject('#__admintools_storage', $object);
 	}

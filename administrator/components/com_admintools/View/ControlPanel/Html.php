@@ -17,7 +17,7 @@ use Akeeba\AdminTools\Admin\Model\Stats;
 use Akeeba\AdminTools\Admin\View\Mixin\SystemPluginExists;
 use FOF30\Date\Date;
 use FOF30\View\DataView\Html as BaseView;
-use JText;
+use Joomla\CMS\Language\Text;
 
 class Html extends BaseView
 {
@@ -120,6 +120,13 @@ class Html extends BaseView
 	 * @var  bool
 	 */
 	public $isMySQL;
+
+	/**
+	 * Is this Joomla 3?
+	 *
+	 * @var  bool
+	 */
+	public $isJoomla3;
 
 	/**
 	 * The extension ID of the System - Admin Tools plugin
@@ -257,6 +264,7 @@ class Html extends BaseView
 
 		// Pass properties to the view
 		$this->isMySQL              = strpos($dbType, 'mysql') !== false;
+		$this->isJoomla3            = version_compare(JVERSION, '3.999.999', 'le');
 		$this->adminLocked          = $adminPasswordModel->isLocked();
 		$this->hasValidPassword     = $masterPasswordModel->hasValidPassword();
 		$this->enable_cleantmp      = $masterPasswordModel->accessAllowed('CleanTempDirectory');
@@ -298,7 +306,7 @@ class Html extends BaseView
 		}
 
 		// Push translations
-		JText::script('COM_ADMINTOOLS_LBL_DATABASETOOLS_PURGESESSIONS_WARN', true);
+		Text::script('COM_ADMINTOOLS_LBL_DATABASETOOLS_PURGESESSIONS_WARN', true);
 
 		// Initialize some Javascript variables used in the view
 		$myIP = $controlPanelModel->getVisitorIP();

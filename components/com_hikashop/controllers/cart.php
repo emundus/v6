@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,13 +14,14 @@ class CartController extends hikashopController {
 		'share','printcart','add',
 		'showcart','showcarts'
 	);
-	public $modify_views = array();
+	public $modify_views = array('product_edit');
 	public $add = array();
 	public $modify = array(
 		'apply','save',
 		'setcurrent',
 		'addtocart',
-		'sendshare'
+		'sendshare',
+		'product_save'
 	);
 	public $delete = array('remove');
 	public $type = 'cart';
@@ -144,6 +145,21 @@ class CartController extends hikashopController {
 		$cart = $cartClass->get($cart_id);
 
 		if(empty($cart) && empty($cart_id)) {
+			$cart_id = hikashop_getCID('cart_id');
+			if(!empty($cart_id)) {
+				$cart = $cartClass->get($cart_id, null, array('skip_user_check' => true));
+				$user_id = hikashop_loadUser(false);
+				if(!empty($cart) && empty($user_id)) {
+					$app = JFactory::getApplication();
+					$app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
+
+					global $Itemid;
+					$suffix = (!empty($Itemid) ? '&Itemid=' . $Itemid : '');
+
+					$url = 'index.php?option=com_users&view=login';
+					$app->redirect(JRoute::_($url . $suffix . '&return='.urlencode(base64_encode(hikashop_currentUrl('', false))), false));
+				}
+			}
 			hikashop_get('helper.checkout');
 			$checkoutHelper = hikashopCheckoutHelper::get();
 			$this->setRedirect($checkoutHelper->getRedirectUrl(), JText::_('CART_EMPTY'));
@@ -164,6 +180,190 @@ class CartController extends hikashopController {
 		}
 
 		return parent::show();
+	}
+
+	public function product_edit() {
+		hikashop_nocache();
+		$cartClass = hikashop_get('class.cart');
+		$cart_id = hikashop_getCID('cart_id');
+		$cart = $cartClass->get($cart_id);
+
+		if(empty($cart) && !empty($cart_id)) {
+			$cart = $cartClass->get($cart_id, null, array('skip_user_check' => true));
+			$user_id = hikashop_loadUser(false);
+			if(!empty($cart) && empty($user_id)) {
+				$app = JFactory::getApplication();
+				$app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
+
+				global $Itemid;
+				$suffix = (!empty($Itemid) ? '&Itemid=' . $Itemid : '');
+
+				$url = 'index.php?option=com_users&view=login&tmpl=component';
+				$app->redirect(JRoute::_($url . $suffix . '&return='.urlencode(base64_encode(hikashop_currentUrl('', false))), false));
+			}
+		} elseif(empty($cart)) {
+			echo JText::_('CART_EMPTY');
+			return true;
+		}
+
+		$cart_product_id = hikaInput::get()->getInt('cart_product_id', 0);
+
+		if(empty($cart_product_id)) {
+			echo 'no cart_product_id provided';
+			return true;
+		}
+
+		$found = false;
+		foreach($cart->cart_products as $p){
+			if($p->cart_product_id == $cart_product_id) {
+				$found = true;
+				break;
+			}
+		}
+		if(!$found) {
+			echo 'cart_product_id '.$cart_product_id.' not for the cart '.$cart_id;
+			return true;
+		}
+		hikaInput::get()->set('layout', 'product_edit');
+		return parent::display();
+	}
+
+	public function product_save() {
+		hikashop_nocache();
+		$cartClass = hikashop_get('class.cart');
+		$cart_id = hikashop_getCID('cart_id');
+		$cart = $cartClass->get($cart_id);
+
+		if(empty($cart) && !empty($cart_id)) {
+			$cart = $cartClass->get($cart_id, null, array('skip_user_check' => true));
+			$user_id = hikashop_loadUser(false);
+			if(!empty($cart) && empty($user_id)) {
+				echo JText::_('PLEASE_LOGIN_FIRST');
+				return true;
+			}
+		}
+		if(empty($cart)) {
+			echo JText::_('CART_EMPTY');
+			return true;
+		}
+
+		$cart_product_id = hikaInput::get()->getInt('cart_product_id', 0);
+
+		if(empty($cart_product_id)) {
+			echo 'no cart_product_id provided';
+			return true;
+		}
+
+		$found = false;
+		$product_id = 0;
+		$qty = 0;
+		foreach($cart->cart_products as $p){
+			if($p->cart_product_id == $cart_product_id) {
+				$found = $p;
+				$product_id = $p->product_id;
+				$qty = $p->cart_product_quantity;
+				break;
+			}
+		}
+		if(!$found) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage(JText::_('THE_PRODUCT_BIENG_MODIFIED_IS_NOT_IN_THE_CURRENT_CART_ANYMORE'),'error');
+			return true;
+		}
+
+		$optionsData = null;
+		if(hikashop_level(1)) {
+			$options = hikaInput::get()->get('hikashop_product_option', array(), 'array');
+			$options_qty = hikaInput::get()->get('hikashop_product_option_qty', array(), 'array');
+			if(!empty($options) && is_array($options)) {
+				$optionsData = array();
+				foreach($options as $k => $option) {
+					if(empty($option) || (int)$option == 0)
+						continue;
+					if(isset($options_qty[$k]) && empty($options_qty[$k]))
+						continue;
+					if(!isset($options_qty[$k]) || (int)$options_qty[$k] < 0) $options_qty[$k] = 0;
+					$quantity = !empty($options_qty[$k]) ? (int)$options_qty[$k] : $qty;
+					$coef = !empty($options_qty[$k]) ? 0 : 1;
+					$optionsData[] = array(
+						'id' => (int)$option,
+						'qty' => $quantity,
+						'coef' => $coef
+					);
+				}
+				if(empty($optionsData))
+					$optionsData = null;
+			}
+		}
+
+		$options = array();
+
+		$fieldData = null;
+		if(hikashop_level(2)) {
+			$product_ids = array($product_id);
+			$fields = $cartClass->loadFieldsForProducts($product_ids, 'display:cart_edit=1');
+			if(!empty($fields)) {
+				$formData = hikaInput::get()->get('data', array(), 'array');
+				$cart_products[0]['fields'] = array();
+				foreach($fields as $k => $field){
+					if($field->field_type == 'customtext')
+						continue;
+					$fieldData[$field->field_namekey] = @$formData['item'][$field->field_namekey];
+				}
+
+				$data = new stdClass();
+				$fieldClass = hikashop_get('class.field');
+				$ok = $fieldClass->checkFieldsData($fields, $fieldData, $data, 'item', $found);
+				$options['fields_area'] = 'display:cart_edit=1';
+				if(!$ok) {
+					if(!empty($fieldClass->error_fields)) {
+						foreach($fieldClass->error_fields as $error_field){
+							if(!empty($error_field->field_options['errormessage']))
+								$message = $fieldClass->trans($error_field->field_options['errormessage']);
+							else
+								$message = JText::sprintf('FIELD_VALID', $fieldClass->trans($error_field->field_realname));
+							$cartClass->addMessage($cart, array(
+								'msg' => $message,
+								'product_id' => $product_id,
+								'type' => 'error'
+							));
+						}
+					}
+					return $this->product_edit();
+				}
+			}
+		}
+
+		$new_product_id = hikaInput::get()->getInt('new_product_id', 0);
+		if(!empty($new_product_id)) {
+			$productClass = hikashop_get('class.product');
+			$old_product = $productClass->get($product_id);
+			$new_product = $productClass->get($new_product_id);
+			if($old_product->product_parent_id != $new_product->product_parent_id) {
+				echo 'new variant '.$new_product_id.' is not from the same parent product as the one being changed '.$product_id;
+				return true;
+			}
+			$product_id = $new_product_id;
+		}
+
+		$cart_products = array(array('id'=>$cart_product_id,'qty'=>0));
+		$result = $cartClass->updateProduct($cart_id, $cart_products);
+
+		$cart_products[0]['id'] = $product_id;
+		$cart_products[0]['qty'] = $qty;
+		if(!empty($fieldData))
+			$cart_products[0]['fields'] = $fieldData;
+		if(!empty($optionsData))
+			$cart_products[0]['options'] = $optionsData;
+
+		$result = $cartClass->addProduct($cart_id, $cart_products, $options);
+
+		if(!$result) {
+			return $this->product_edit();
+		}
+
+		hikaInput::get()->set('layout', 'product_save');
+		return parent::display();
 	}
 
 	public function edit() {
@@ -262,13 +462,15 @@ class CartController extends hikashopController {
 		hikashop_nocache();
 		$emails = preg_split("/[\s,]+/", $emails);
 		jimport('joomla.mail.helper');
+		$mailer = JFactory::getMailer();
 		$ok = true;
 		$bcc = array();
 		foreach($emails as $k => $email){
 			$email = trim($email);
 			if(empty($email))
 				continue;
-			if(method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($email)){
+
+			if((method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($email))|| !$mailer->validateAddress($email)){
 				hikashop_display(JText::sprintf('THE_EMAIL_ADDRESS_X_IS_INVALID', $email), 'error');
 				$ok = false;
 			}else{

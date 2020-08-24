@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1153,7 +1153,7 @@ class hikashopWidgetClass extends hikashopClass {
 							if(!isset($leftjoin['order_product'])){
 								$leftjoin['order_product'] = ' LEFT JOIN '.hikashop_table('order_product').' AS prod ON a.order_id=prod.order_id ';
 							}
-							$sum = 'prod.order_product_price*prod.order_product_quantity+a.order_discount_price';
+							$sum = 'prod.order_product_price*prod.order_product_quantity-a.order_discount_price';
 						}else{
 							if(!isset($leftjoin['order_product'])){
 								$leftjoin['order_product'] = ' LEFT JOIN '.hikashop_table('order_product').' AS prod ON a.order_id=prod.order_id ';
@@ -1329,7 +1329,7 @@ class hikashopWidgetClass extends hikashopClass {
 			}
 		}
 		$select = rtrim($select, ', ');
-		if(!empty($fieldtype)) {
+		if(!empty($fieldtype) && strpos($fieldtype,',') !== 0) {
 			$fieldtype = ', ' . $fieldtype;
 		}
 
@@ -1528,7 +1528,7 @@ class hikashopWidgetClass extends hikashopClass {
 						}
 
 					}else{
-						if(!isset($dates[$obj->calculated_date.$widget->widget_params->content])){
+						if(!isset($dates[$obj->calculated_date.$widget->widget_params->content]) && $widget->widget_params->start < $end){
 							$this->_jsDate($widget->widget_params->date_group,$obj, $widget, $diff);
 							$obj->total = 0;
 							$obj->type=$this->_generateName($widget, $widget->widget_params->content, $obj);

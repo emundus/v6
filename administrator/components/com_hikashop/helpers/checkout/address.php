@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -314,6 +314,9 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		$cart = $checkoutHelper->getCart();
 		$cartClass = hikashop_get('class.cart');
 
+		$app = JFactory::getApplication();
+		$old_messages = $app->getMessageQueue();
+
 		$ret_billing = true;
 		if(!empty($billing)) {
 			$ret_billing = $cartClass->updateAddress($cart->cart_id, 'billing', $billing);
@@ -329,6 +332,18 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 			$checkoutHelper->getCart(true);
 			return true;
 		}
+		$new_messages = $app->getMessageQueue(true);
+
+		if(count($old_messages) < count($new_messages)) {
+			$new_messages = array_slice($new_messages, count($old_messages));
+			foreach($new_messages as $i => $msg) {
+				$checkoutHelper->addMessage('address.joomla_error_' . $i, array(
+					'msg' => $msg['message'],
+					'type' => $msg['type']
+				));
+			}
+		}
+
 		return false;
 	}
 

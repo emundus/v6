@@ -2,11 +2,11 @@
 <extension version="2.5" type="plugin" group="hikashop" method="upgrade">
 	<name>Hikashop TaxCloud Plugin</name>
 	<creationDate>December 2013</creationDate>
-	<version>4.2.2</version>
+	<version>4.3.0</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@obsidev.com</authorEmail>
 	<authorUrl>http://www.obsidev.com</authorUrl>
-	<copyright>Copyright (C) 2012-2019 OBSIDEV SARL - All rights reserved.</copyright>
+	<copyright>Copyright (C) 2012-2020 OBSIDEV SARL - All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin enables you to communication with TaxCloud</description>
 	<files>

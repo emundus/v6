@@ -25,7 +25,7 @@ if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->
 ?>
 <?php if ($user->guest): ?>
     <div class="alert alert-error">
-        <b><?php echo JText::_('WARNING'); ?> : </b> <?php echo JText::_('COM_EMUNDUS_JOBS_PLEASE_CONNECT_OR_LOGIN_TO_APPLY'); ?>
+        <b><?php echo JText::_('COM_EMUNDUS_JOBS_PLEASE_CONNECT_OR_LOGIN_TO_APPLY'); ?>
     </div>
 <?php endif; ?>
 <?php if ($this->item) : ?>
@@ -86,9 +86,7 @@ if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->
             </tr>
             <tr>
                 <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_RESPONSABLE_EMAIL'); ?></th>
-                <td><?php 
-                    $value = $user->id > 0 ? $this->item->adresse_correspondance : JText::_('COM_EMUNDUS_HIDE_FOR_GUEST');
-                    echo $value; ?>
+                <td><?php echo $this->item->adresse_correspondance; ?>
                 </td>
             </tr>
 

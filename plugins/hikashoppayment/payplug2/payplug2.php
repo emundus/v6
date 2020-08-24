@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,7 +17,7 @@ class plgHikashoppaymentPayplug2 extends hikashopPaymentPlugin
 	var $multiple = true;
 	var $name = 'payplug2';
 	var $pluginConfig = array(
-		'token' => array('HIKA_TOKEN', 'input'),
+		'token' => array('SECRET_KEY', 'input'),
 		'debug' => array('DEBUG', 'boolean', '0'),
 		'delivery_type' => array('PAYPLUG_DELIVERY_TYPE', 'list',array(
 			'NEW' => 'PAYPLUG_SHIP_TO_SHIPPING_ADDRESS',
@@ -59,21 +59,26 @@ class plgHikashoppaymentPayplug2 extends hikashopPaymentPlugin
 			if(!empty($order->cart->billing_address->address_title) && in_array($order->cart->billing_address->address_title, array('Mr', 'Mrs', 'Miss')))
 				$billing['title'] = $order->cart->billing_address->address_title;
 
-			$shipping = array(
-				'first_name' => substr(@$order->cart->shipping_address->address_firstname,0,100),
-				'last_name' => substr(@$order->cart->shipping_address->address_lastname,0,100),
-				'address1' => substr(@$order->cart->shipping_address->address_street,0,255),
-				'postcode' => substr(@$order->cart->shipping_address->address_post_code,0,16),
-				'city' => substr(@$order->cart->shipping_address->address_city,0,100),
-				'country' => @$order->cart->shipping_address->address_country->zone_code_2,
-				'email' => substr($this->user->user_email,0,255),
-				'delivery_type' => $delivery_type
-			);
-			if(!empty($order->cart->shipping_address->address_street2))
-				$shipping['address2'] = substr(@$order->cart->shipping_address->address_street2,0,255);
+			if(!empty($order->cart->shipping_address) && is_object($order->cart->shipping_address)) {
+				$shipping = array(
+					'first_name' => substr(@$order->cart->shipping_address->address_firstname,0,100),
+					'last_name' => substr(@$order->cart->shipping_address->address_lastname,0,100),
+					'address1' => substr(@$order->cart->shipping_address->address_street,0,255),
+					'postcode' => substr(@$order->cart->shipping_address->address_post_code,0,16),
+					'city' => substr(@$order->cart->shipping_address->address_city,0,100),
+					'country' => @$order->cart->shipping_address->address_country->zone_code_2,
+					'email' => substr($this->user->user_email,0,255),
+					'delivery_type' => $delivery_type
+				);
+				if(!empty($order->cart->shipping_address->address_street2))
+					$shipping['address2'] = substr(@$order->cart->shipping_address->address_street2,0,255);
 
-			if(!empty($order->cart->shipping_address->address_title) && in_array($order->cart->shipping_address->address_title, array('Mr', 'Mrs', 'Miss')))
-				$shipping['title'] = $order->cart->shipping_address->address_title;
+				if(!empty($order->cart->shipping_address->address_title) && in_array($order->cart->shipping_address->address_title, array('Mr', 'Mrs', 'Miss')))
+					$shipping['title'] = $order->cart->shipping_address->address_title;
+			} else {
+				$shipping = $billing;
+				$shipping['delivery_type'] = $delivery_type;
+			}
 
 			$data = array(
 				'amount' => (int)(round($order->cart->full_total->prices[0]->price_value_with_tax,2)*100),
@@ -102,7 +107,10 @@ class plgHikashoppaymentPayplug2 extends hikashopPaymentPlugin
 
 			$paymentUrl = $payment->hosted_payment->payment_url;
 		}catch(Exception $e){
-			$this->app->enqueueMessage($e, 'error');
+			if($this->payment_params->debug) {
+				hikashop_writeToLog($e);
+			}
+			$this->app->enqueueMessage($e->getHttpResponse(), 'error');
 			return;
 		}
 		header("Location: $paymentUrl");

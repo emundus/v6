@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,7 +16,7 @@ $title = (count($shippings) > 1) ? JText::_('SEVERAL_SHIPPING_METHOD_PER_PRODUCT
 <?php
 foreach($shipData as $key => $value) {
 
-	if ( ($shipData[$key]['minQtity'] > 1) && ($display == 1) ) {
+	if ( !empty($shipData[$key]['several']) && $display == 1 ) {
 ?>				
 		<div id="shipping_per_product_<?php $key; ?>">
 			<span class="shipping_per_product_<?php $key; ?>">
@@ -25,8 +25,7 @@ foreach($shipData as $key => $value) {
 			</span>
 		</div>
 <?php
-	} 
-	if ($shipData[$key]['minQtity'] == 0) {
+	} elseif ($shipData[$key]['minQtity'] == 0) {
 ?>
 		<div id="shipping_per_product_<?php $key; ?>">
 			<span class="shipping_per_product_<?php $key; ?>"> <?php echo $shipData[$key]['name'] . ' : ';?>

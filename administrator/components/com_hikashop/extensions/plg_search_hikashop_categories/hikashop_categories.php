@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -91,11 +91,9 @@ class plgSearchHikashop_categories extends JPlugin{
 				break;
 		}
 		$trans=hikashop_get('helper.translation');
-		$multi=$trans->isMulti();
-		$trans_table = 'jf_content';
-		if($trans->falang){
-			$trans_table = 'falang_content';
-		}
+		$multi=$trans->isMulti() && $trans->falang;
+		$trans_table = 'falang_content';
+
 		$rows = array();
 
 		$filters = array('a.category_published=1');
@@ -223,6 +221,7 @@ class plgSearchHikashop_categories extends JPlugin{
 			$categoryClass = hikashop_get('class.category');
 			foreach ( $rows as $k => $row ) {
 				$row->category_name = $row->title;
+				$row->category_id = $row->id;
 				$categoryClass->addAlias($row);
 				$row->title = hikashop_translate($row->title);
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -28,6 +28,8 @@ if(!empty($this->options['display'])) {
 	$cart = $this->checkoutHelper->getCart();
 	$this->cart_addresses = $this->checkoutHelper->getAddresses();
 
+	if(empty($this->options['edit_address']))
+		$this->checkoutHelper->displayMessages('address');
 	if(empty($this->options['edit_address']) && !empty($this->options['show_billing']) && !empty($this->options['show_shipping'])) {
 ?>
 	<div class="hk-container-fluid">
@@ -99,7 +101,7 @@ if(!empty($this->options['display'])) {
 	<input type="hidden" name="data[address_selecttype_<?php echo $this->step . '_' . $this->module_position; ?>]" value="1" />
 <?php
 		}
-		if(!empty($this->options['same_address']) && !empty($this->options['new_address_type'])) {
+		if(!empty($this->options['same_address']) && !empty($this->options['new_address_type']) && ($this->options['new_address_type'] == 'shipping' || $this->options['show_shipping'])) {
 ?>
 	<div class="hkform-group control-group hikashop_checkout_address_same" id="hikashop_checkout_address_<?php echo $this->step . '_' . $this->module_position .'_same'; ?>">
 		<div class="<?php echo $labelcolumnclass; ?>"></div>

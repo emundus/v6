@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -245,14 +245,14 @@ window.productMgr.addPrice = function(formkey) {
 
 	el = d.getElementById('hikashop_' + formkey + '_edit');
 	if(el) {
-		value = parseFloat(el.value);
+		value = parseFloat(el.value.replace(',', '.'));
 		if(isNaN(value))
 			value = 0;
 		price = value + ' ' + curr;
 
 		el = d.getElementById('hikashop_' + formkey + '_with_tax_edit');
 		if(el) {
-			value_with_tax = parseFloat(el.value);
+			value_with_tax = parseFloat(el.value.replace(',', '.'));
 			if(isNaN(value_with_tax))
 				value_with_tax = 0;
 			price += ' / ' + value_with_tax + ' ' + curr;
@@ -348,7 +348,7 @@ window.productMgr.updatePrice = function(taxed, key) {
 		tax_id = <?php echo $this->product->product_tax_id; ?>;
 <?php } ?>
 	var url = '<?php echo str_replace('\'', '\\\'', hikashop_completeLink('product&task=getprice&price={PRICE}&tax_id={TAXID}&conversion={CONVERSION}', true, false, true)); ?>';
-	url = url.replace('{PRICE}', price).replace('{TAXID}', tax_id).replace('{CONVERSION}', conversion);
+	url = url.replace('{PRICE}', encodeURIComponent(price)).replace('{TAXID}', encodeURIComponent(tax_id)).replace('{CONVERSION}', encodeURIComponent(conversion));
 	o.xRequest(url, null, function(xhr, params) {
 		dest.value = xhr.responseText;
 	});

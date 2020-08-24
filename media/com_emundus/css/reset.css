@@ -153,6 +153,7 @@ h1::after, .swal2-title:after {
     height: .2rem;
     background: #e5283b;
     left: 0;
+    display: block !important;
 }
 
 .swal2-title {
@@ -221,7 +222,7 @@ form {
 }
 
 .well {
-    background-color: #fcfcfc;
+    background-color: #fff;
     border: none;
 }
 

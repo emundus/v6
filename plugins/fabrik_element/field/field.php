@@ -4,7 +4,7 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.field
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -349,6 +349,8 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		$config = JComponentHelper::getParams('com_fabrik');
 		$apiKey = trim($config->get('google_api_key', ''));
 		$opts->mapKey = empty($apiKey) ? false : $apiKey;
+		$opts->language = trim(strtolower($config->get('google_api_language', '')));
+
 
 		if ($this->getParams()->get('autocomplete', '0') == '2')
 		{

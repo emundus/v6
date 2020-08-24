@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -176,6 +176,29 @@ class plgSystemHikashopuser extends JPlugin {
 		}
 
 		$userClass->save($hikaUser, true);
+
+		$session = JFactory::getSession();
+		$session_id = $session->getId();
+		if($isnew && strlen(trim($session_id)) > 0 && (int)$user['id'] > 0)
+		{
+			$db = JFactory::getDBO();
+
+			$query = 'SELECT `user_id`';
+			$query .= ' FROM  `#__hikashop_user` ';
+			$query .= ' WHERE '.$db->quoteName('user_cms_id').' = '.(int)$user['id'].';';
+			$db->setQuery($query);
+			$user_hikashop_id = (int)$db->loadResult();
+
+			if(!empty($user_hikashop_id)) {
+
+				$query = 'UPDATE '.$db->quoteName('#__hikashop_cart');
+				$query .= ' SET '.$db->quoteName('user_id').' = ' . (int)$user_hikashop_id . '';
+				$query .= ' WHERE '.$db->quoteName('user_id').' = 0 ';
+				$query .= ' AND '.$db->quoteName('session_id').' = '.$db->quote($session_id).';';
+				$db->setQuery($query);
+				$db->Query();
+			}
+		}
 		return true;
 	}
 
@@ -317,7 +340,7 @@ class plgSystemHikashopuser extends JPlugin {
 
 		$config = hikashop_config();
 		if(!$config->get('enable_multicart', 1)) {
-			$query = 'SELECT cart_id FROM #__hikashop_cart WHERE user_id = '.(int)$hika_user_id.' AND cart_type = \'cart\';';
+			$query = 'SELECT cart_id FROM #__hikashop_cart WHERE user_id = '.(int)$hika_user_id.'  AND session_id != '.$db->Quote($this->session).' AND cart_type = \'cart\';';
 			$db->setQuery($query);
 			$cart_ids = $db->loadColumn();
 			if(count($cart_ids)) {

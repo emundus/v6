@@ -80,7 +80,7 @@ class plgUserEmundus_user_recap extends JPlugin {
 		    	'FILES_DELETED' => (empty($fnums))?JText::_('PLG_USER_RECAP_NO_FILES_DELETED'):JText::sprintf('PLG_USER_RECAP_FILES_DELETED', sizeof($fnums))
 		    ];
 
-		    $c_messages->sendEmailNoFnum($user['email'], $email, $post, $file);
+		    $c_messages->sendEmailNoFnum($user['email'], $email, $post, $user['id'], $file);
 
 	    }
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -97,16 +97,6 @@ echo $this->leftmenu(
 		?></td>
 	</tr>
 	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('server_current_url_mode');?>><?php echo JText::_('SERVER_CURRENT_URL_MODE'); ?></td>
-		<td><?php
-		$arr = array(
-			JHTML::_('select.option', '0', JText::_('HIKA_AUTOMATIC') ),
-			JHTML::_('select.option', 'REDIRECT_URL',  JText::_('REDIRECT_URL') ),
-			JHTML::_('select.option', 'REQUEST_URI',  JText::_('REQUEST_URI') ),
-		);
-		echo JHTML::_('hikaselect.genericlist', $arr, "config[server_current_url_mode]" , 'class="custom-select"', 'value', 'text',$this->config->get('server_current_url_mode','REQUEST_URI') );?></td>
-	</tr>
-	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('partner_id');?>><?php echo JText::_('AFFILIATE');?></td>
 		<td>
 			<input name="config[partner_id]" type="text" value="<?php echo $this->config->get('partner_id')?>" />
@@ -161,6 +151,18 @@ echo $this->leftmenu(
 			echo JHTML::_('hikaselect.booleanlist', 'config[carousel_legacy]', '', $this->config->get('carousel_legacy', 1));
 		?></td>
 	</tr>
+<?php if($this->config->get('server_current_url_mode', '0') != '0'){ ?>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('server_current_url_mode');?>><?php echo JText::_('SERVER_CURRENT_URL_MODE'); ?></td>
+		<td><?php
+		$arr = array(
+			JHTML::_('select.option', '0', JText::_('HIKA_AUTOMATIC') ),
+			JHTML::_('select.option', 'REDIRECT_URL',  JText::_('REDIRECT_URL') ),
+			JHTML::_('select.option', 'REQUEST_URI',  JText::_('REQUEST_URI') ),
+		);
+		echo JHTML::_('hikaselect.genericlist', $arr, "config[server_current_url_mode]" , 'class="custom-select"', 'value', 'text',$this->config->get('server_current_url_mode','0') );?></td>
+	</tr>
+<?php } ?>
 <?php if($this->config->get('checkout_legacy', 0)){ ?>
 	<tr>
 		<td colspan="2"><h4><?php echo JText::_('CHECKOUT_LEGACY_MODE'); ?></h4></td>

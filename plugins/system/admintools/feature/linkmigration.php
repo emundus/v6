@@ -5,6 +5,8 @@
  * @license   GNU General Public License version 3, or later
  */
 
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die;
 
 class AtsystemFeatureLinkmigration extends AtsystemFeatureAbstract
@@ -63,23 +65,16 @@ class AtsystemFeatureLinkmigration extends AtsystemFeatureAbstract
 
 		$this->populateMyDomain();
 
-		if (method_exists($this->app, 'getBody'))
-		{
-			$buffer = $this->app->getBody();
-		}
-		else
-		{
-			$buffer = JResponse::getBody();
-		}
+		$buffer = $this->app->getBody();
 
-		$pattern = '/(href|src)=\"([^"]*)\"/i';
+		$pattern           = '/(href|src)=\"([^"]*)\"/i';
 		$number_of_matches = preg_match_all($pattern, $buffer, $matches, PREG_OFFSET_CAPTURE);
 
 		if ($number_of_matches > 0)
 		{
 			$substitutions = $matches[2];
 			$last_position = 0;
-			$temp = '';
+			$temp          = '';
 
 			// Loop all URLs
 			foreach ($substitutions as &$entry)
@@ -106,14 +101,7 @@ class AtsystemFeatureLinkmigration extends AtsystemFeatureAbstract
 			// Replace content with the processed one
 			unset($buffer);
 
-			if (method_exists($this->app, 'setBody'))
-			{
-				$this->app->setBody($temp);
-			}
-			else
-			{
-				JResponse::setBody($temp);
-			}
+			$this->app->setBody($temp);
 
 			unset($temp);
 		}
@@ -155,7 +143,7 @@ class AtsystemFeatureLinkmigration extends AtsystemFeatureAbstract
 	 */
 	protected function populateOldDomains()
 	{
-		$this->oldDomains = array();
+		$this->oldDomains = [];
 
 		$list = $this->cparams->getValue('migratelist', '');
 
@@ -207,7 +195,7 @@ class AtsystemFeatureLinkmigration extends AtsystemFeatureAbstract
 	 */
 	protected function populateMyDomain()
 	{
-		$this->myDomain = JUri::base(false);
+		$this->myDomain = Uri::base(false);
 
 		if (substr($this->myDomain, -1) == '/')
 		{

@@ -9,34 +9,75 @@
 // No direct access.
 defined('_JEXEC') or die;
 ?>
+<div class="profil-container" id="em-suggestions-module">
 
-<div class="em-contact-request-module">
+    <?= $intro; ?>
 
-	<?php if (!empty($offers)) :?>
-		<span class="em-contact-request col-md-12">
-			<?php foreach ($offers as $offer) :?>
+    <?php foreach ($offers as $key => $offer) :?>
 
-				<div class="col-md-4" id="<?php echo $offer->fnum; ?>">
-                    <div class="em-contact-request-card">
-                        <div class="em-bottom-space">
-                            <div class="em-contact-request-heading"><?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_OFFER_NAME'); ?></div>
-                            <?php if (!empty($offer->titre)) :?>
-                                <?php echo '<b>'.$offer->titre.'</b>'; ?>
-                            <?php else: ?>
-                                <?php echo '<b>'.JText::_('NO_TITLE').'</b>'; ?>
-                            <?php endif; ?>
-                        </div>
+        <?php if ($key%2 === 0) :?>
+            <div class="column-card-container w-row">
+        <?php endif; ?>
 
-                        <div class="em-bottom-space">
-                            <div id="em-buttons-<?php echo $offer->fnum; ?>">
-                                <a role="button" class="btn btn-primary" href="<?php echo JRoute::_(JURI::base()."/les-offres/consultez-les-offres/details/299/".$offer->search_engine_page); ?>">
-                                    <?php echo JText::_('MOD_EMUNDUS_CIFRE_OFFERS_VIEW'); ?>
-                                </a>
+                <div class="w-col w-col-6">
+                    <div>
+                        <div class="card-offre" id="<?= $offer->fnum; ?>">
+                            <div class="text-block-2"><?= (!empty($offer->titre))?$offer->titre:JText::_('NO_TITLE'); ?></div>
+                            <div class="div-block margin">
+                                <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9ef4873152d535b204da4b_Twiice%20-%20Plan%20de%20travail%201.svg" alt="" class="image">
+                                <div class="name">
+                                    <?= $offer->profile; ?>
+                                </div>
+                            </div>
+                            <div class="div-block">
+                                <img src="https://assets.website-files.com/5e9eea59278d0a02df79f6bd/5e9f6bfa9fb16576de7aa78d_5e9ef4871565a65129befc4c_Twiice2-%20Plan%20de%20travail%201.svg" alt="" class="image">
+                                <div class="name">
+                                    <?= $offer->search; ?>
+                                </div>
+                            </div>
+                            <div class="div-block-copy">
+                                <div class="text-block-2-copy">Thématiques</div>
+                                <div class="name">
+                                    <?= $offer->themes; ?>
+                                </div>
+                            </div>
+                            <div class="div-block-copy">
+                                <div class="text-block-2-copy">Département</div>
+                                <div class="name">
+                                    <?= (empty($offer->department))?JText::_('COM_EMUNDUS_FABRIK_ALL_DEPARTMANTS'):$offer->department; ?>
+                                </div>
                             </div>
                         </div>
+                        <a href="<?= JRoute::_(JURI::base()."consultez-les-offres/details/299/".$offer->search_engine_page); ?>" class="cta-offre w-inline-block">
+                            <div class="text-block-2"><?= JText::_('MOD_EMUNDUS_CIFRE_OFFERS_VIEW'); ?></div>
+                        </a>
                     </div>
-				</div>
-			<?php endforeach; ?>
-		</span>
-	<?php endif; ?>
+                </div>
+
+            <?php if ($key === (count($offers) - 1)) :?>
+                <!-- Final card offering to search for more. -->
+                <?php if ($key%2 !== 0) :?>
+                    </div>
+                    <div class="column-card-container w-row">
+                <?php endif; ?>
+
+                    <div class="w-col w-col-6">
+                        <div>
+                            <a href="consultez-les-offres" class="voir-toutes-les-offres w-inline-block">
+                                <div class="voir-offres">Voir toutes les offres</div>
+                            </a>
+                        </div>
+                    </div>
+
+                <?php if ($key%2 === 0) :?>
+                    </div>
+                <?php endif; ?>
+
+            <?php endif; ?>
+
+        <?php if ($key%2 !== 0) :?>
+            </div>
+        <?php endif; ?>
+
+    <?php endforeach; ?>
 </div>

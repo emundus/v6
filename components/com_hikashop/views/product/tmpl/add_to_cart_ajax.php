@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -138,6 +138,8 @@ if($add_to_cart && !$has_options && !$global_on_listing) {
 	<a class="<?php echo $css_button . ' ' . $css_button_cart; ?>" rel="nofollow" href="<?php echo hikashop_completeLink($classical_url); ?>" onclick="if(window.hikashop.addToCart) { return window.hikashop.addToCart(this); }" data-addToCart="<?php echo $this->row->product_id; ?>" data-addTo-div="<?php echo $this->params->get('main_div_name'); ?>"<?php if(!empty($extra_div_name)){ echo ' data-addTo-extra="' . $extra_div_name. '"'; } ?> data-addTo-class="add_in_progress"><span><?php
 		if(!empty($this->row->product_addtocart_message))
 			echo JText::_($this->row->product_addtocart_message);
+		else if(!empty($this->row->main->product_addtocart_message))
+		        echo JText::_($this->row->main->product_addtocart_message);
 		else
 			echo JText::_('ADD_TO_CART');
 	?></span></a>

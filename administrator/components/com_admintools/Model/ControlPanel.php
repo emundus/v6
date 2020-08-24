@@ -11,12 +11,16 @@ defined('_JEXEC') or die;
 
 use Akeeba\AdminTools\Admin\Helper\Storage;
 use Akeeba\AdminTools\Admin\Model\Scanner\Complexify;
+use Exception;
 use FOF30\Database\Installer;
 use FOF30\Encrypt\Randval;
 use FOF30\Model\Model;
 use FOF30\Utils\CacheCleaner;
 use FOF30\Utils\Ip;
-use JText;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 use RuntimeException;
 
 class ControlPanel extends Model
@@ -244,7 +248,7 @@ class ControlPanel extends Model
 	 */
 	public function updateMagicParameters()
 	{
-		$this->container->params->set('siteurl', str_replace('/administrator', '', \JUri::base()));
+		$this->container->params->set('siteurl', str_replace('/administrator', '', Uri::base()));
 		$this->container->params->save();
 	}
 
@@ -265,12 +269,12 @@ class ControlPanel extends Model
 
 		if (!$log_dir || !@is_writable($log_dir))
 		{
-			return JText::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_JCONFIG_INVALID_LOGDIR');
+			return Text::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_JCONFIG_INVALID_LOGDIR');
 		}
 
 		if ($siteroot == $log_dir)
 		{
-			return JText::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_JCONFIG_LOGDIR_SITEROOT');
+			return Text::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_JCONFIG_LOGDIR_SITEROOT');
 		}
 
 		// Do we have a VALID tmp folder?
@@ -278,12 +282,12 @@ class ControlPanel extends Model
 
 		if (!$tmp_dir || !@is_writable($tmp_dir))
 		{
-			return JText::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_JCONFIG_INVALID_TMPDIR');
+			return Text::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_JCONFIG_INVALID_TMPDIR');
 		}
 
 		if ($siteroot == $tmp_dir)
 		{
-			return JText::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_JCONFIG_TMPDIR_SITEROOT');
+			return Text::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_JCONFIG_TMPDIR_SITEROOT');
 		}
 
 		return false;
@@ -471,11 +475,11 @@ class ControlPanel extends Model
 
 		if (!$res)
 		{
-			$res = \JFile::copy($from, $to);
+			$res = File::copy($from, $to);
 
 			if ($res)
 			{
-				\JFile::delete($from);
+				File::delete($from);
 			}
 		}
 
@@ -520,7 +524,7 @@ class ControlPanel extends Model
 	 */
 	public function deleteOldLogs()
 	{
-		$logpath = \JFactory::getConfig()->get('log_path');
+		$logpath = Factory::getConfig()->get('log_path');
 		$files   = [
 			$logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log',
 			$logpath . DIRECTORY_SEPARATOR . 'admintools_breaches.log.1',
@@ -551,7 +555,7 @@ class ControlPanel extends Model
 				continue;
 			}
 
-			\JFile::delete($file);
+			File::delete($file);
 		}
 	}
 
@@ -594,7 +598,7 @@ class ControlPanel extends Model
 			/** @var ServerConfigMaker $serverModel */
 			$serverModel = $this->container->factory->model($configInfo->technology)->tmpInstance();
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			return false;
 		}

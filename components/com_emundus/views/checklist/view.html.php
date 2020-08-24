@@ -27,6 +27,7 @@ class EmundusViewChecklist extends JViewLegacy {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'checklist.php');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
 
         $this->_user = JFactory::getSession()->get('emundusUser');
         $this->_db = JFactory::getDBO();
@@ -151,13 +152,19 @@ class EmundusViewChecklist extends JViewLegacy {
 
                 $is_dead_line_passed = $end_date < $now;
 
-                if ($is_dead_line_passed && $eMConfig->get('can_edit_after_deadline', 0) == 0) {
+                // Check campaign limit, if the limit is obtained, then we set the deadline to true
+                $m_campaign = new EmundusModelCampaign;
+
+                $isLimitObtained = $m_campaign->isLimitObtained($this->_user->fnums[$this->_user->fnum]->campaign_id);
+
+                if (($is_dead_line_passed || $isLimitObtained === true) && $eMConfig->get('can_edit_after_deadline', 0) == 0) {
                     $m_checklist->setDelete(0, $this->_user);
                 } elseif (!empty($eMConfig->get('can_edit_until_deadline', 0)) || $eMConfig->get('can_edit_after_deadline', 0) == 1) {
                     $m_checklist->setDelete(1, $this->_user);
                 }
 
                 $this->assignRef('is_dead_line_passed', $is_dead_line_passed);
+                $this->assignRef('isLimitObtained', $isLimitObtained);
                 $this->assignRef('user', $this->_user);
                 $this->assignRef('title', $title);
                 $this->assignRef('text', $text);

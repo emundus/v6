@@ -13,6 +13,7 @@ use Akeeba\AdminTools\Admin\Controller\Mixin\CustomACL;
 use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
+use Joomla\CMS\Language\Text;
 
 class ChangeDBCollation extends Controller
 {
@@ -31,11 +32,11 @@ class ChangeDBCollation extends Controller
 		$this->csrfProtection();
 
 		/** @var \Akeeba\AdminTools\Admin\Model\ChangeDBCollation $model */
-		$model = $this->getModel();
+		$model     = $this->getModel();
 		$collation = $this->input->getString('collation', 'utf8mb4_general_ci');
 		$model->changeCollation($collation);
 
-		$msg = \JText::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_DONE');
+		$msg = Text::_('COM_ADMINTOOLS_LBL_CHANGEDBCOLLATION_DONE');
 		$this->setRedirect('index.php?option=com_admintools&view=ChangeDBCollation', $msg);
 	}
 }

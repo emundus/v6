@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -75,12 +75,12 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 					$price = $order->full_total->prices[0]->price_value_without_payment;
 			}
 
-			if(!empty($method->payment_params->payment_min_price) && hikashop_toFloat($method->payment_params->payment_min_price) > $price) {
+			if(!empty($method->payment_params->payment_min_price) && bccomp((float)hikashop_toFloat($method->payment_params->payment_min_price), (float)$price, 5) == 1) {
 				$method->errors['min_price'] = (hikashop_toFloat($method->payment_params->payment_min_price) - $price);
 				continue;
 			}
 
-			if(!empty($method->payment_params->payment_max_price) && hikashop_toFloat($method->payment_params->payment_max_price) < $price){
+			if(!empty($method->payment_params->payment_max_price) && bccomp((float)hikashop_toFloat($method->payment_params->payment_max_price), (float)$price, 5) == -1){
 				$method->errors['max_price'] = ($price - hikashop_toFloat($method->payment_params->payment_max_price));
 				continue;
 			}
@@ -88,7 +88,7 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			if(!empty($method->payment_params->payment_max_volume) && bccomp((float)@$method->payment_params->payment_max_volume, 0, 3)) {
 				$method->payment_params->payment_max_volume_orig = $method->payment_params->payment_max_volume;
 				$method->payment_params->payment_max_volume = $volumeHelper->convert($method->payment_params->payment_max_volume, @$method->payment_params->payment_size_unit);
-				if($method->payment_params->payment_max_volume < $order->volume){
+				if(bccomp((float)$method->payment_params->payment_max_volume, (float)$order->volume, 3) == -1){
 					$method->errors['max_volume'] = ($method->payment_params->payment_max_volume - $order->volume);
 					continue;
 				}
@@ -96,7 +96,7 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			if(!empty($method->payment_params->payment_min_volume) && bccomp((float)@$method->payment_params->payment_min_volume, 0, 3)) {
 				$method->payment_params->payment_min_volume_orig = $method->payment_params->payment_min_volume;
 				$method->payment_params->payment_min_volume = $volumeHelper->convert($method->payment_params->payment_min_volume, @$method->payment_params->payment_size_unit);
-				if($method->payment_params->payment_min_volume > $order->volume){
+				if(bccomp((float)$method->payment_params->payment_min_volume, (float)$order->volume, 3) == 1){
 					$method->errors['min_volume'] = ($order->volume - $method->payment_params->payment_min_volume);
 					continue;
 				}
@@ -105,7 +105,7 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			if(!empty($method->payment_params->payment_max_weight) && bccomp((float)@$method->payment_params->payment_max_weight, 0, 3)) {
 				$method->payment_params->payment_max_weight_orig = $method->payment_params->payment_max_weight;
 				$method->payment_params->payment_max_weight = $weightHelper->convert($method->payment_params->payment_max_weight, @$method->payment_params->payment_weight_unit);
-				if($method->payment_params->payment_max_weight < $order->weight){
+				if(bccomp((float)$method->payment_params->payment_max_weight, (float)$order->weight, 3) == -1){
 					$method->errors['max_weight'] = ($method->payment_params->payment_max_weight - $order->weight);
 					continue;
 				}
@@ -113,20 +113,20 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 			if(!empty($method->payment_params->payment_min_weight) && bccomp((float)@$method->payment_params->payment_min_weight,0,3)){
 				$method->payment_params->payment_min_weight_orig = $method->payment_params->payment_min_weight;
 				$method->payment_params->payment_min_weight = $weightHelper->convert($method->payment_params->payment_min_weight, @$method->payment_params->payment_weight_unit);
-				if($method->payment_params->payment_min_weight > $order->weight){
+				if(bccomp((float)$method->payment_params->payment_min_weight, (float)$order->weight, 3) == 1){
 					$method->errors['min_weight'] = ($order->weight - $method->payment_params->payment_min_weight);
 					continue;
 				}
 			}
 
 			if(!empty($method->payment_params->payment_max_quantity) && (int)$method->payment_params->payment_max_quantity) {
-				if($method->payment_params->payment_max_quantity < $order->total_quantity){
+				if((int)$method->payment_params->payment_max_quantity < (int)$order->total_quantity){
 					$method->errors['max_quantity'] = ($method->payment_params->payment_max_quantity - $order->total_quantity);
 					continue;
 				}
 			}
 			if(!empty($method->payment_params->payment_min_quantity) && (int)$method->payment_params->payment_min_quantity){
-				if($method->payment_params->payment_min_quantity > $order->total_quantity){
+				if((int)$method->payment_params->payment_min_quantity > (int)$order->total_quantity){
 					$method->errors['min_quantity'] = ($order->total_quantity - $method->payment_params->payment_min_quantity);
 					continue;
 				}

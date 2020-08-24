@@ -7,11 +7,10 @@
 
 namespace FOF30\Date;
 
-use DateInterval;
+defined('_JEXEC') || die;
+
 use DateTime;
 use JDatabaseDriver;
-
-defined('_JEXEC') or die;
 
 /**
  * This decorator will get any DateTime descendant and turn it into a FOF30\Date\Date compatible class. If the methods
@@ -47,6 +46,13 @@ class DateDecorator extends Date
 		return;
 	}
 
+	public static function getInstance($date = 'now', $tz = null)
+	{
+		$coreObject = new Date($date, $tz);
+
+		return new DateDecorator($coreObject);
+	}
+
 	/**
 	 * Magic method to access properties of the date given by class to the format method.
 	 *
@@ -63,7 +69,7 @@ class DateDecorator extends Date
 	{
 		if (method_exists($this->decorated, $name))
 		{
-			return call_user_func_array(array($this->decorated, $name), $arguments);
+			return call_user_func_array([$this->decorated, $name], $arguments);
 		}
 
 		throw new \InvalidArgumentException("JDate object does not have a $name method");
@@ -89,13 +95,6 @@ class DateDecorator extends Date
 	public function __toString()
 	{
 		return (string) $this->decorated;
-	}
-
-	public static function getInstance($date = 'now', $tz = null)
-	{
-		$coreObject = new Date($date, $tz);
-
-		return new DateDecorator($coreObject);
 	}
 
 	public function dayToString($day, $abbr = false)
@@ -128,6 +127,16 @@ class DateDecorator extends Date
 		return $this->decorated->setTimezone($tz);
 	}
 
+	public function getTimezone()
+	{
+		return $this->decorated->getTimezone();
+	}
+
+	public function getOffset()
+	{
+		return $this->decorated->getOffset();
+	}
+
 	public function toISO8601($local = false)
 	{
 		return $this->decorated->toISO8601($local);
@@ -146,5 +155,35 @@ class DateDecorator extends Date
 	public function toUnix()
 	{
 		return $this->decorated->toUnix();
+	}
+
+	public function getTimestamp()
+	{
+		return $this->decorated->getTimestamp();
+	}
+
+	public function setTime($hour, $minute, $second = 0, $microseconds = 0)
+	{
+		return $this->decorated->setTime($hour, $minute, $second, $microseconds);
+	}
+
+	public function setDate($year, $month, $day)
+	{
+		return $this->decorated->setDate($year, $month, $day);
+	}
+
+	public function setISODate($year, $week, $day = 1)
+	{
+		return $this->decorated->setISODate($year, $week, $day);
+	}
+
+	public function setTimestamp($unixtimestamp)
+	{
+		return $this->decorated->setTimestamp($unixtimestamp);
+	}
+
+	public function diff($datetime2, $absolute = false)
+	{
+		return $this->decorated->diff($datetime2, $absolute);
 	}
 }

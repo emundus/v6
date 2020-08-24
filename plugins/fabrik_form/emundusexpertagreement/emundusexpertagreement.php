@@ -89,6 +89,11 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 
 		$group = $this->getParam('group');
 		$profile_id = $this->getParam('profile_id');
+		$pick_fnums = $this->getParam('pick_fnums', 0);
+
+		if ($pick_fnums) {
+			$files_picked = $jinput->get('jos_emundus_files_request___your_files');
+		}
 
 		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
@@ -116,11 +121,16 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		$db->setQuery($query);
 		$fnums = $db->loadColumn();
 
+		if ($pick_fnums) {
+			// Only get fnums that are found in BOTH arrays, this both allows filtering (only accept files which were picked by the user) and prevents the user from cheating and entering someone else's fnum.
+			$fnums = array_intersect($fnums, $files_picked);
+		}
+
 		try {
 			$query->clear()
 				->update($db->quoteName('#__emundus_files_request'))
 				->set([$db->quoteName('uploaded').'=1', $db->quoteName('firstname').'='.$db->quote($firstname), $db->quoteName('lastname').'='.$db->quote($lastname), $db->quoteName('modified_date').'=NOW()'])
-				->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id));
+				->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id).' AND '.$db->quoteName('fnum').' IN ("'.implode('","', $fnums).'")');
 			$db->setQuery($query);
 			$db->execute();
 		} catch (Exception $e) {

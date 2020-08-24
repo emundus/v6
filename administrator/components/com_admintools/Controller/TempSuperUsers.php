@@ -11,9 +11,13 @@ namespace Akeeba\AdminTools\Admin\Controller;
 defined('_JEXEC') or die();
 
 use Akeeba\AdminTools\Admin\Model\TempSuperUsers as TempSuperUsersModel;
+use DateInterval;
+use Exception;
 use FOF30\Container\Container;
 use FOF30\Controller\DataController;
 use FOF30\Controller\Mixin\PredefinedTaskList;
+use FOF30\Date\Date;
+use Joomla\CMS\Language\Text;
 use RuntimeException;
 
 class TempSuperUsers extends DataController
@@ -95,7 +99,7 @@ class TempSuperUsers extends DataController
 			}
 
 			// Create or find a user
-			/** @var \Akeeba\AdminTools\Admin\Model\TempSuperUsers $model */
+			/** @var TempSuperUsersModel $model */
 			$model           = $this->getModel()->tmpInstance();
 			$user_id         = $model->getUserIdFromInfo();
 			$data['user_id'] = $user_id;
@@ -116,17 +120,45 @@ class TempSuperUsers extends DataController
 			$session->clear($field, 'admintools_tempsuper_wizard');
 		}
 
+		/** @var TempSuperUsersModel $model */
+		$model  = $this->getModel();
+		$userID = !empty($this->newUserId) ? $this->newUserId : $model->user_id;
+
 		// Finally, activate and unblock the Super User (if it was a new record).
-		if ($this->newUserId)
+		if ($userID)
 		{
-			$user    = $this->container->platform->getUser($this->newUserId);
+			$user = $this->container->platform->getUser($userID);
+
+			try
+			{
+				$lastVisitDate = new Date($user->lastvisitDate);
+				$interval      = new DateInterval('P30D');
+				$then          = $lastVisitDate->add($interval)->toSql();
+
+				if ($then <= time())
+				{
+					throw new RuntimeException('Fake exception to force the last visit date to update.');
+				}
+			}
+			catch (Exception $e)
+			{
+				$lastVisitDate = new Date();
+			}
+
 			$updates = [
-				'block'      => 0,
-				'sendEmail'  => 0,
-				'activation' => null,
+				'block'         => 0,
+				'sendEmail'     => 0,
+				'lastvisitDate' => $lastVisitDate->toSql(),
+				'activation'    => null,
+				'otpKey'        => '',
+				'otep'          => '',
+				'requireReset'  => 0,
 			];
 			$user->bind($updates);
+
+			$model->setNoCheckFlags(true);
 			$user->save();
+			$model->setNoCheckFlags(false);
 		}
 	}
 
@@ -135,7 +167,7 @@ class TempSuperUsers extends DataController
 	 *
 	 * If you do not specify the user ID being edited / created we'll figure it out from the request using the model.
 	 *
-	 * @param   int|null $editingID The ID of the user being edited.
+	 * @param   int|null  $editingID  The ID of the user being edited.
 	 *
 	 * @since   5.3.0
 	 */
@@ -157,7 +189,7 @@ class TempSuperUsers extends DataController
 		{
 			if ($id == $myId)
 			{
-				throw new RuntimeException(\JText::sprintf('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_CANTEDITSELF'), 403);
+				throw new RuntimeException(Text::sprintf('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_CANTEDITSELF'), 403);
 			}
 		}
 	}
@@ -185,6 +217,6 @@ class TempSuperUsers extends DataController
 		}
 
 		// Uh oh, I am a temporary Super User.
-		throw new RuntimeException(\JText::sprintf('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_UNAVAILABLETOTEMP'), 403);
+		throw new RuntimeException(Text::sprintf('COM_ADMINTOOLS_ERR_TEMPSUPERUSERS_UNAVAILABLETOTEMP'), 403);
 	}
 }

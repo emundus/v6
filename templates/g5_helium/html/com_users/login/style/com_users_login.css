@@ -123,7 +123,7 @@ h1.em-titre-connectez-vous::after {
     height: 0.2rem;
     background: #de6339;
     left: 0;
-    display: block;
+    display: block !important;
 }
 .header-right a.btn.btn-danger.connexion , a.btn.btn-danger.inscription  {
     font-weight: 300;

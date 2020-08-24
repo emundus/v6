@@ -46,13 +46,14 @@ class JcrmModelSync extends JModelItem {
         $this->setState('params', $params);
     }
 
-    /**
-     * Method to get an ojbect.
-     *
-     * @param	integer	The id of the object to get.
-     *
-     * @return	mixed	Object on success, false on failure.
-     */
+	/**
+	 * Method to get an ojbect.
+	 *
+	 * @param integer    The id of the object to get.
+	 *
+	 * @return    mixed    Object on success, false on failure.
+	 * @throws Exception
+	 */
     public function &getData($id = null) {
         if ($this->_item === null) {
             $this->_item = false;
@@ -67,10 +68,9 @@ class JcrmModelSync extends JModelItem {
             // Attempt to load the row.
             if ($table->load($id)) {
                 // Check published state.
-                if ($published = $this->getState('filter.published')) {
-                    if ($table->state != $published) {
-                        return $this->_item;
-                    }
+	            $published = $this->getState('filter.published');
+                if ($table->state != $published) {
+                    return $this->_item;
                 }
 
                 // Convert the JTable to a clean JObject.
@@ -81,8 +81,7 @@ class JcrmModelSync extends JModelItem {
             }
         }
 
-
-		if ( isset($this->_item->created_by) ) {
+		if (isset($this->_item->created_by)) {
 			$this->_item->created_by_name = JFactory::getUser($this->_item->created_by)->name;
 		}
 
@@ -94,13 +93,15 @@ class JcrmModelSync extends JModelItem {
         return JTable::getInstance($type, $prefix, $config);
     }
 
-    /**
-     * Method to check in an item.
-     *
-     * @param	integer		The id of the row to check out.
-     * @return	boolean		True on success, false on failure.
-     * @since	1.6
-     */
+	/**
+	 * Method to check in an item.
+	 *
+	 * @param integer        The id of the row to check out.
+	 *
+	 * @return    boolean        True on success, false on failure.
+	 * @throws Exception
+	 * @since    1.6
+	 */
     public function checkin($id = null) {
         // Get the id.
         $id = (!empty($id)) ? $id : (int) $this->getState('sync.id');
@@ -111,24 +112,24 @@ class JcrmModelSync extends JModelItem {
             $table = $this->getTable();
 
             // Attempt to check the row in.
-            if (method_exists($table, 'checkin')) {
-                if (!$table->checkin($id)) {
-                    $this->setError($table->getError());
-                    return false;
-                }
+            if (method_exists($table, 'checkin') && !$table->checkin($id)) {
+                $this->setError($table->getError());
+                return false;
             }
         }
 
         return true;
     }
 
-    /**
-     * Method to check out an item for editing.
-     *
-     * @param	integer		The id of the row to check out.
-     * @return	boolean		True on success, false on failure.
-     * @since	1.6
-     */
+	/**
+	 * Method to check out an item for editing.
+	 *
+	 * @param integer        The id of the row to check out.
+	 *
+	 * @return    boolean        True on success, false on failure.
+	 * @throws Exception
+	 * @since    1.6
+	 */
     public function checkout($id = null) {
         // Get the user id.
         $id = (!empty($id)) ? $id : (int) $this->getState('sync.id');
@@ -142,11 +143,9 @@ class JcrmModelSync extends JModelItem {
             $user = JFactory::getUser();
 
             // Attempt to check the row out.
-            if (method_exists($table, 'checkout')) {
-                if (!$table->checkout($user->get('id'), $id)) {
-                    $this->setError($table->getError());
-                    return false;
-                }
+            if (method_exists($table, 'checkout') && !$table->checkout($user->get('id'), $id)) {
+                $this->setError($table->getError());
+                return false;
             }
         }
 
@@ -156,8 +155,7 @@ class JcrmModelSync extends JModelItem {
     public function getCategoryName($id) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query
-                ->select('title')
+        $query->select('title')
                 ->from('#__categories')
                 ->where('id = ' . $id);
         $db->setQuery($query);

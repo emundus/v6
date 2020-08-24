@@ -136,14 +136,7 @@ class ServerTechnology
 			return;
 		}
 
-		if (version_compare(PHP_VERSION, '5.4.0', 'lt'))
-		{
-			$backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT);
-		}
-		else
-		{
-			$backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 3);
-		}
+		$backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 3);
 
 
 		$securityViolation = false;
@@ -155,7 +148,7 @@ class ServerTechnology
 
 		if (!$securityViolation)
 		{
-			$check = $backtrace[2]['class'] . '::' . $backtrace[2]['function'];
+			$check             = $backtrace[2]['class'] . '::' . $backtrace[2]['function'];
 			$securityViolation = true;
 
 			foreach ($allowedCallers as $allowed)
@@ -186,7 +179,7 @@ class ServerTechnology
 	 *
 	 * @return  void  Actually, it never returns. It just dies.
 	 */
-	public static function thirdPartySettingsModification($backtrace = array())
+	public static function thirdPartySettingsModification($backtrace = [])
 	{
 		@$message = <<< HTML
 <html>

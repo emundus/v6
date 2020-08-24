@@ -5,13 +5,15 @@
  * @license   GNU General Public License version 3, or later
  */
 
+use Joomla\CMS\Language\Text;
+
 /** @var $this \Akeeba\AdminTools\Admin\View\CheckTempAndLogDirectories\Html */
 
 defined('_JEXEC') or die;
 
 ?>
 <h1 id="check-header">
-    <?php echo \JText::_('COM_ADMINTOOLS_LBL_CHECKTEMPANDLOGDIRECTORIES_CHECKINPROGRESS'); ?>
+    <?php echo Text::_('COM_ADMINTOOLS_LBL_CHECKTEMPANDLOGDIRECTORIES_CHECKINPROGRESS'); ?>
 </h1>
 
 <div class="akeeba-progress">
@@ -22,5 +24,5 @@ defined('_JEXEC') or die;
 <div id="message" class="" style="display:none"></div>
 
 <div id="autoclose" class="akeeba-block--info" style="display:none">
-	<p><?php echo \JText::_('COM_ADMINTOOLS_LBL_COMMON_AUTOCLOSEIN3S'); ?></p>
+	<p><?php echo Text::_('COM_ADMINTOOLS_LBL_COMMON_AUTOCLOSEIN3S'); ?></p>
 </div>

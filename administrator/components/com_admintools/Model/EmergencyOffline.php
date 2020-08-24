@@ -10,10 +10,8 @@ namespace Akeeba\AdminTools\Admin\Model;
 defined('_JEXEC') or die;
 
 use FOF30\Model\Model;
-use JFactory;
-use JFile;
-use JLoader;
-use JText;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Language\Text;
 
 class EmergencyOffline extends Model
 {
@@ -24,12 +22,11 @@ class EmergencyOffline extends Model
 	 */
 	public function isOffline()
 	{
-		JLoader::import('joomla.filesystem.file');
 		$backupFile = JPATH_SITE . '/.htaccess.eom';
 
-		if (JFile::exists($backupFile))
+		if (File::exists($backupFile))
 		{
-			$filedata = JFile::read($backupFile);
+			$filedata = @file_get_contents($backupFile);
 			$lines    = explode("\n", $filedata);
 
 			if (!empty($lines))
@@ -51,8 +48,6 @@ class EmergencyOffline extends Model
 	 */
 	public function putOffline()
 	{
-		JLoader::import('joomla.filesystem.file');
-
 		// If the backup doesn't exist, try to create it
 		$htaccessFilePath = JPATH_SITE . '/.htaccess';
 		if (!$this->isOffline())
@@ -62,9 +57,9 @@ class EmergencyOffline extends Model
 
 			if (@file_exists($sourceFile))
 			{
-				$sourceData = JFile::read($sourceFile);
+				$sourceData = @file_get_contents($sourceFile);
 				$sourceData = "## EOMBAK - Do not remove this line or this file\n" . $sourceData;
-				$result     = JFile::write($backupFile, $sourceData);
+				$result     = File::write($backupFile, $sourceData);
 
 				if (!$result)
 				{
@@ -73,7 +68,7 @@ class EmergencyOffline extends Model
 
 				if (!@unlink($sourceFile))
 				{
-					JFile::delete($sourceFile);
+					File::delete($sourceFile);
 				}
 			}
 			else
@@ -83,7 +78,7 @@ class EmergencyOffline extends Model
 
 				if (!$result)
 				{
-					$result = JFile::write($backupFile, $sourceData);
+					$result = File::write($backupFile, $sourceData);
 				}
 
 				if (!$result)
@@ -99,7 +94,7 @@ class EmergencyOffline extends Model
 		if (!@file_exists($offlineFile))
 		{
 			$jreg     = $this->container->platform->getConfig();
-			$message  = JText::_($jreg->get('offline_message'));
+			$message  = Text::_($jreg->get('offline_message'));
 			$sitename = $jreg->get('sitename');
 
 			$fileContents = <<<ENDHTML
@@ -122,7 +117,7 @@ class EmergencyOffline extends Model
 ENDHTML;
 			if (!@file_put_contents($offlineFile, $fileContents))
 			{
-				JFile::write($offlineFile, $fileContents);
+				File::write($offlineFile, $fileContents);
 			}
 		}
 
@@ -132,7 +127,7 @@ ENDHTML;
 
 		if (!$result)
 		{
-			$result = JFile::write($htaccessFilePath, $htaccess);
+			$result = File::write($htaccessFilePath, $htaccess);
 		}
 
 		return $result;
@@ -145,8 +140,6 @@ ENDHTML;
 	 */
 	public function putOnline()
 	{
-		JLoader::import('joomla.filesystem.file');
-
 		if (!$this->isOffline())
 		{
 			return false;
@@ -159,13 +152,13 @@ ENDHTML;
 
 		if (!$result)
 		{
-			$result = JFile::delete($htaccessPath);
+			$result = File::delete($htaccessPath);
 		}
 
 		if (@file_exists($oldHtaccessPath))
 		{
 			$filedata = @file($oldHtaccessPath);
-			$newLines = array();
+			$newLines = [];
 			$lookFor  = "## EOMBAK - Do not remove this line or this file";
 
 			foreach ($filedata as $line)
@@ -184,7 +177,7 @@ ENDHTML;
 
 			if (!$result)
 			{
-				$result   = JFile::write($htaccessPath, $filedata);
+				$result = File::write($htaccessPath, $filedata);
 			}
 		}
 
@@ -192,7 +185,7 @@ ENDHTML;
 		{
 			if (!@unlink($oldHtaccessPath))
 			{
-				JFile::delete($oldHtaccessPath);
+				File::delete($oldHtaccessPath);
 			}
 		}
 
@@ -206,12 +199,10 @@ ENDHTML;
 	 */
 	public function getHtaccess()
 	{
-		JLoader::import('joomla.filesystem.file');
-
 		// Sniff the .htaccess for a RewriteBase line
 		$rewriteBase = '';
-		$sourceFile = JPATH_SITE . '/.htaccess.eom';
-		
+		$sourceFile  = JPATH_SITE . '/.htaccess.eom';
+
 		if (!@file_exists($sourceFile))
 		{
 			$sourceFile = JPATH_SITE . '/.htaccess';
@@ -240,7 +231,7 @@ ENDHTML;
 		// And finally create our stealth .htaccess
 		$ip = $cpanelModel->getVisitorIP();
 		$ip = str_replace('.', '\\.', $ip);
-		
+
 		$htaccess = <<<ENDHTACCESS
 RewriteEngine On
 $rewriteBase

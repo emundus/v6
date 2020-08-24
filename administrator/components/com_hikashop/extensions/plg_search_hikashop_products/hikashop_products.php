@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -74,11 +74,8 @@ class plgSearchHikashop_products extends JPlugin{
 				break;
 		}
 		$trans=hikashop_get('helper.translation');
-		$multi=$trans->isMulti();
-		$trans_table = 'jf_content';
-		if($trans->falang){
-			$trans_table = 'falang_content';
-		}
+		$multi=$trans->isMulti() && $trans->falang;;
+		$trans_table = 'falang_content';
 
 		$rows = array();
 
@@ -179,7 +176,7 @@ class plgSearchHikashop_products extends JPlugin{
 
 		$new_page = (int)$this->params->get('new_page','1');
 
-		$select = ' a.product_id AS id, a.product_name, a.product_alias, a.product_canonical, a.product_created AS created , a.product_description, "'.$new_page.'" AS browsernav';
+		$select = ' a.product_id, a.product_id AS id, a.product_name, a.product_alias, a.product_canonical, a.product_created AS created , a.product_description, "'.$new_page.'" AS browsernav';
 		if($variants){
 			$select.=', a.product_type, a.product_parent_id';
 		}

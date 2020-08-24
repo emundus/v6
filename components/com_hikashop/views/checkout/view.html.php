@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -124,6 +124,7 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$this->imageHelper = $imageHelper;
 
 		$this->continueShopping = $this->config->get('continue_shopping');
+		$this->continueShopping = hikashop_translate($this->continueShopping);
 		$this->display_checkout_bar = $this->config->get('display_checkout_bar');
 		$cartHelper = hikashop_get('helper.cart');
 		$this->assignRef('cart', $cartHelper);
@@ -264,6 +265,9 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 
 	public function displayBlock($layout, $pos, $options) {
 		$ctrl = hikashop_get('helper.checkout-' . $layout);
+
+		$app = JFactory::getApplication();
+		$obj =& $this;
 		if(!empty($ctrl)) {
 			$previous_options = null;
 			if(!empty($this->options))
@@ -272,15 +276,18 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 			$this->options = $options;
 			$this->module_position = (int)$pos;
 
+			$app->triggerEvent('onBeforeCheckoutViewDisplay', array($layout, &$obj));
+
 			$this->setLayout('show_block_' . $layout);
 			$ret = $this->loadTemplate();
+
+
+			$app->triggerEvent('onAfterCheckoutViewDisplay', array($layout, &$obj, &$ret));
 
 			$this->options = $previous_options;
 
 		} else {
 			$ret = '';
-			$app = JFactory::getApplication();
-			$obj =& $this;
 			$app->triggerEvent('onCheckoutStepDisplay', array($layout, &$ret, &$obj, $pos, $options));
 		}
 		if(!empty($options['process_content_tags'])) {

@@ -14,6 +14,10 @@ JFactory::getSession()->set('application_layout', 'mail');
                 	<?= JText::_('MESSAGES'); ?>
                 	<span class="label label-info"><?= count($this->messages); ?></span>
                 </h3>
+                <div class="btn-group pull-right">
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
+                </div>
 
             </div>
             <div class="panel-body em-container-mail-body">

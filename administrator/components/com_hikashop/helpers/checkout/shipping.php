@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -95,6 +95,17 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();
 		$shipping_price = $this->getShippingPrice($cart);
+
+		foreach($cart->shipping_groups as $group_id => $group_info) {
+			$group_check = false;
+			foreach($shipping_ids as $ship_group_id => $ship_id){
+				if($ship_group_id == $group_id)
+					$group_check = true;
+			}
+			if(!$group_check)
+				return false;
+		}
+
 
 		$selectionOnly = hikaInput::get()->getInt('selectionOnly', 0);
 		if($selectionOnly) {

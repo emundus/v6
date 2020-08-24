@@ -20,6 +20,10 @@
 
 	<config>
 		<fields name="params">
+			<fieldset name="basic">
+				<field name="intro" type="editor" width="50" filter="safehtml" hide="readmore,pagebreak" default="" label="Intro"/>
+				<field name="nb_suggestions" type="text" default="5" label="Numebr of suggestions"/>
+			</fieldset>
 		</fields>
 	</config>
 </extension>

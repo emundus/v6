@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
@@ -934,18 +934,15 @@ class FabrikFEModelForm extends FabModelForm
 	 *
 	 * @return  FabrikFEModelGroup[]  Group model objects with table row loaded
 	 */
-	public function getGroups()
-	{
-		if (!isset($this->groups))
-		{
+	public function getGroups() {
+		if (!isset($this->groups)) {
 			$this->groups = array();
 			$listModel = $this->getListModel();
 			$groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
 			$groupData = $this->getPublishedGroups();
 
-			foreach ($groupData as $id => $groupD)
-			{
-				$thisGroup = clone ($groupModel);
+			foreach ($groupData as $id => $groupD) {
+				$thisGroup = clone($groupModel);
 				$thisGroup->setId($id);
 				$thisGroup->setContext($this, $listModel);
 
@@ -955,8 +952,7 @@ class FabrikFEModelForm extends FabModelForm
 				$row->bind($groupD);
 				$thisGroup->setGroup($row);
 
-				if ($row->published == 1)
-				{
+				if ($row->published == 1) {
 					$this->groups[$id] = $thisGroup;
 				}
 			}

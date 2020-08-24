@@ -4,7 +4,7 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  * @since       3.1
  */
@@ -12,13 +12,16 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-$doc = JFactory::getDocument();
-$doc->addStyleSheet( 'media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css' );
-
 $form = $this->form;
 $model = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
 $active = ($form->error != '') ? '' : ' fabrikHide';
+
+$pageClass = $this->params->get('pageclass_sfx', '');
+
+if ($pageClass !== '') :
+	echo '<div class="' . $pageClass . '">';
+endif;
 
 if ($this->params->get('show_page_heading', 1)) : ?>
 	<div class="componentheading<?php echo $this->params->get('pageclass_sfx')?>">
@@ -29,7 +32,7 @@ endif;
 
 if ($this->params->get('show-title', 1)) :?>
 <div class="page-header">
-	<h1><?php $title = explode('-', $form->label); echo !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0])); ?></h1>
+	<h1><?php echo $form->label;?></h1>
 </div>
 <?php
 endif;
@@ -107,3 +110,7 @@ echo $this->loadTemplate('actions');
 echo $form->outro;
 echo $this->pluginend;
 echo FabrikHelperHTML::keepalive();
+
+if ($pageClass !== '') :
+	echo '</div>';
+endif;

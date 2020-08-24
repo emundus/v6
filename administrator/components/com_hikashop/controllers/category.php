@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,12 +22,16 @@ class CategoryController extends hikashopController {
 		$this->display[] = 'selectstatus';
 		$this->display[] = 'getTree';
 		$this->display[] = 'findList';
+		$this->display[] = 'form';
 		$this->modify_views[] = 'edit_translation';
 		$this->modify[] = 'save_translation';
 		$this->modify[] = 'rebuild';
 		$this->modify_views[] = 'selectparentlisting';
 		$this->modify_views[] = 'selectimage';
 		$this->modify[] = 'addimage';
+	}
+	function form(){
+		return $this->edit();
 	}
 
 	function addimage(){

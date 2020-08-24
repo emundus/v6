@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -135,8 +135,8 @@ class TaxationViewTaxation extends hikashopView{
 				if(!empty($row->taxation_date_start)){
 					$restrictions['START_DATE'] = hikashop_getDate($row->taxation_date_start,'%Y-%m-%d %H:%M');
 				}
-				if(!empty($row->taxation_end_start)){
-					$restrictions['END_DATE'] = hikashop_getDate($row->taxation_end_start,'%Y-%m-%d %H:%M');
+				if(!empty($row->taxation_date_end)){
+					$restrictions['END_DATE'] = hikashop_getDate($row->taxation_date_end,'%Y-%m-%d %H:%M');
 				}
 
 				$rows[$k]->restrictions = $restrictions;

@@ -12,8 +12,8 @@ defined('_JEXEC') or die;
 use Exception;
 use FOF30\Container\Container;
 use FOF30\Update\Update;
-use JFile;
-use JLoader;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\File;
 
 class Updates extends Update
 {
@@ -39,7 +39,7 @@ class Updates extends Update
 
 		$config['update_component'] = 'pkg_admintools';
 		$config['update_sitename']  = 'Admin Tools Core';
-		$config['update_site']      = 'https://cdn.akeebabackup.com/updates/pkgadmintoolscore.xml';
+		$config['update_site']      = 'https://cdn.akeeba.com/updates/pkgadmintoolscore.xml';
 		$config['update_paramskey'] = 'downloadid';
 		$config['update_container'] = $container;
 
@@ -48,7 +48,7 @@ class Updates extends Update
 		if ($isPro)
 		{
 			$config['update_sitename'] = 'Admin Tools Professional';
-			$config['update_site']     = 'https://cdn.akeebabackup.com/updates/pkgadmintoolspro.xml';
+			$config['update_site']     = 'https://cdn.akeeba.com/updates/pkgadmintoolspro.xml';
 		}
 
 		if (defined('ADMINTOOLS_VERSION') && !in_array(substr(ADMINTOOLS_VERSION, 0, 3), ['dev', 'rev']))
@@ -147,7 +147,7 @@ ENDBODY;
 
 		try
 		{
-			$mailer = \JFactory::getMailer();
+			$mailer = Factory::getMailer();
 
 			$mailfrom = $jconfig->get('mailfrom');
 			$fromname = $jconfig->get('fromname');
@@ -159,7 +159,7 @@ ENDBODY;
 
 			return $mailer->Send();
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			// Joomla! 3.5 is written by incompetent bonobos
 			return false;
@@ -398,7 +398,7 @@ ENDBODY;
 		{
 			$db->setQuery($query)->execute();
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			// Your database if FUBAR.
 			return;
@@ -421,16 +421,16 @@ ENDBODY;
 
 		$content = <<< XML
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.8.0" type="package" method="upgrade">
+<extension version="3.9.0" type="package" method="upgrade">
 	$dlid
     <name>Admin Tools package</name>
     <author>Nicholas K. Dionysopoulos</author>
     <creationDate>2016-06-01</creationDate>
     <packagename>admintools</packagename>
     <version>{$this->version}</version>
-    <url>https://www.akeebabackup.com</url>
+    <url>https://www.akeeba.com</url>
     <packager>Akeeba Ltd</packager>
-    <packagerurl>https://www.akeebabackup.com</packagerurl>
+    <packagerurl>https://www.akeeba.com</packagerurl>
     <copyright>Copyright (c)2006-2016 Akeeba Ltd / Nicholas K. Dionysopoulos</copyright>
     <license>GNU GPL v3 or later</license>
     <description>Admin Tools installation package v.3.9.999</description>
@@ -448,8 +448,7 @@ XML;
 
 		if (!@file_put_contents($content, $path))
 		{
-			JLoader::import('joomla.filesystem.file');
-			JFile::write($path, $content);
+			File::write($path, $content);
 		}
 	}
 }

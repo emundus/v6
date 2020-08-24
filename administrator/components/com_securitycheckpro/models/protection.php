@@ -60,7 +60,8 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
     'sts_options'    =>    0,
     'xss_options'    =>    0,
     'csp_policy'    =>    '',
-    'referrer_policy'    =>    ''
+    'referrer_policy'    =>    '',
+	'feature_policy'    =>    ''
     );
 
     var $ConfigApplied = array(
@@ -87,7 +88,8 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
     'sts_options'    =>    0,
     'xss_options'    =>    0,
     'csp_policy'    =>    '',
-    'referrer_policy'    =>    ''
+    'referrer_policy'    =>    '',
+	'feature_policy'    =>    ''
     );
 
     private $config = null;
@@ -261,6 +263,10 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
             /* 'referrer policy' habilitado? */
             if (stripos($rules_applied, "Referrer-Policy")) {
                 $this->ConfigApplied['referrer_policy'] = 1;
+            }
+			/* 'referrer policy' habilitado? */
+            if (stripos($rules_applied, "Feature-Policy")) {
+                $this->ConfigApplied['feature_policy'] = 1;
             }
             /* 'prevent_mime_attacks' habilitado? */
             if (stripos($rules_applied, 'set X-Content-Type-Options "nosniff"')) {
@@ -507,8 +513,8 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
         
             $rules .= PHP_EOL . "## Begin Securitycheck Pro Xframe-options protection";
             $rules .= PHP_EOL . "## Don't allow any pages to be framed - Defends against CSRF";
-            $rules .= PHP_EOL . "<IfModule mod_headers.c>";			
-            $rules .= PHP_EOL . 'Header always set X-Frame-Options "' . $this->getValue("xframe_options") . '"';            
+            $rules .= PHP_EOL . "<IfModule mod_headers.c>";
+            $rules .= PHP_EOL . 'Header always set X-Frame-Options "' . $this->getValue("xframe_options") . '"';         
             $rules .= PHP_EOL . "</IfModule>";
             $rules .= PHP_EOL . "## End Securitycheck Pro Xframe-options protection" . PHP_EOL;    
         
@@ -572,6 +578,19 @@ class SecuritycheckprosModelProtection extends JoomlaCompatModel
             $rules .= PHP_EOL . 'Header always set Referrer-Policy "' . $referrer_policy . '"';            
             $rules .= PHP_EOL . "</IfModule>";
             $rules .= PHP_EOL . "## End Securitycheck Pro Referrer policy protection" . PHP_EOL;    
+        
+        }
+		
+		/* Comprobamos si hay que establecer protección Feature-Policy */
+        $feature_policy = $this->getValue("feature_policy");
+        $feature_policy = str_replace('"', '', $feature_policy);
+        if (!empty($feature_policy)) {
+        
+            $rules .= PHP_EOL . "## Begin Securitycheck Pro Feature policy protection";
+            $rules .= PHP_EOL . "<IfModule mod_headers.c>";
+            $rules .= PHP_EOL . 'Header always set Feature-Policy "' . $feature_policy . '"';            
+            $rules .= PHP_EOL . "</IfModule>";
+            $rules .= PHP_EOL . "## End Securitycheck Pro Feature policy protection" . PHP_EOL;    
         
         }
     

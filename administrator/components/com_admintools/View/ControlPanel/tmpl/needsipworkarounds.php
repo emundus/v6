@@ -6,6 +6,9 @@
  */
 
 // Protect from unauthorized access
+use Akeeba\AdminTools\Admin\Model\ControlPanel;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die();
 
 // IP Workarounds are available on Pro version only
@@ -19,7 +22,7 @@ $display = false;
 // Prevent notices if we don't have any incoming return url
 $returnurl = isset($returnurl) ? $returnurl : '';
 
-/** @var \Akeeba\AdminTools\Admin\Model\ControlPanel $controlPanelModel */
+/** @var ControlPanel $controlPanelModel */
 $controlPanelModel = $this->container->factory->model('ControlPanel')->tmpInstance();
 $privateNetworks   = $controlPanelModel->needsIpWorkaroundsForPrivNetwork();
 $proxyHeader       = $controlPanelModel->needsIpWorkaroundsHeaders();
@@ -29,27 +32,29 @@ $display = ($privateNetworks || $proxyHeader);
 // No notices detected, let's stop here
 if (!$display)
 {
-    return;
+	return;
 }
 
 ?>
 
 <div class="akeeba-block--failure">
-    <?php if ($privateNetworks): ?>
-        <p>
-            <?php echo \JText::_('COM_ADMINTOOLS_CPANEL_ERR_PRIVNET_IPS')?>
-        </p>
-    <?php endif; ?>
+	<?php if ($privateNetworks): ?>
+		<p>
+			<?php echo Text::_('COM_ADMINTOOLS_CPANEL_ERR_PRIVNET_IPS') ?>
+		</p>
+	<?php endif; ?>
 
-    <?php if($proxyHeader): ?>
-        <p>
-		    <?php echo \JText::_('COM_ADMINTOOLS_CPANEL_ERR_PROXY_HEADER')?>
-        </p>
-    <?php endif; ?>
-	<a href="index.php?option=com_admintools&view=ControlPanel&task=IpWorkarounds&enable=1&returnurl=<?php echo $returnurl?>" class="akeeba-btn--green">
-		<?php echo \JText::_('COM_ADMINTOOLS_CPANEL_ERR_PRIVNET_ENABLE')?>
+	<?php if ($proxyHeader): ?>
+		<p>
+			<?php echo Text::_('COM_ADMINTOOLS_CPANEL_ERR_PROXY_HEADER') ?>
+		</p>
+	<?php endif; ?>
+	<a href="index.php?option=com_admintools&view=ControlPanel&task=IpWorkarounds&enable=1&returnurl=<?php echo $returnurl ?>"
+	   class="akeeba-btn--green">
+		<?php echo Text::_('COM_ADMINTOOLS_CPANEL_ERR_PRIVNET_ENABLE') ?>
 	</a>
-	<a href="index.php?option=com_admintools&view=ControlPanel&task=IpWorkarounds&enable=0&returnurl=<?php echo $returnurl?>" class="akeeba-btn--dark">
-		<?php echo \JText::_('COM_ADMINTOOLS_CPANEL_ERR_PRIVNET_IGNORE')?>
+	<a href="index.php?option=com_admintools&view=ControlPanel&task=IpWorkarounds&enable=0&returnurl=<?php echo $returnurl ?>"
+	   class="akeeba-btn--dark">
+		<?php echo Text::_('COM_ADMINTOOLS_CPANEL_ERR_PRIVNET_IGNORE') ?>
 	</a>
 </div>

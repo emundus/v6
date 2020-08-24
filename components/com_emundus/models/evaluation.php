@@ -184,7 +184,7 @@ class EmundusModelEvaluation extends JModelList {
                                         )
                                   ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
                     } else {
-                        $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
+                        $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where."=".$def_elmt->element_name." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
                     }
                     
                     $query = preg_replace('#{thistable}#', $from, $query);
@@ -1363,7 +1363,7 @@ class EmundusModelEvaluation extends JModelList {
 		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
 		$current_user = JFactory::getUser();
 
-		$query = 'select c.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class ';
+		$query = 'select c.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
 
 		$group_by = 'GROUP BY c.fnum ';
 
@@ -1679,13 +1679,20 @@ if (JFactory::getUser()->id == 63)
 
 	/*
 	* 	Get list of expert emails send by applicant for programme SU convergence
-	*	@param fnum 		Application File number
-	*	@param select 		Select elements
-	*	@param table 		table and join table
 	* 	@return array
 	*/
-	function getExperts($fnum, $select, $table) {
-		$query = "SELECT ".$select." FROM ".$table." WHERE `fnum` like ".$this->_db->Quote($fnum);
+	function getExperts() {
+
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select([$db->quoteName('c.last_name'), $db->quoteName('c.first_name'), $db->quoteName('c.email'), 'CONCAT(g.name) AS '.$db->quoteName('group')])
+			->from($db->quoteName('#__jcrm_contacts', 'c'))
+			->leftJoin($db->quoteName('#__jcrm_group_contact', 'gc').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('gc.contact_id'))
+			->leftJoin($db->quoteName('#__jcrm_groups', 'g').' ON '.$db->quoteName('gc.group_id').' = '.$db->quoteName('g.id'))
+			->where($db->quoteName('c.state').' = 1')
+			->andWhere($db->quoteName('c.email').' <> ""');
+
 		$this->_db->setQuery($query);
 		return $this->_db->loadAssocList();
 	}

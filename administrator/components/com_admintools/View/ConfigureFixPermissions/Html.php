@@ -78,11 +78,11 @@ class Html extends BaseView
 
 		// File lists
 		/** @var ConfigureFixPermissions $model */
-		$model = $this->getModel();
-		$listing = $model->getListing();
+		$model         = $this->getModel();
+		$listing       = $model->getListing();
 		$this->listing = $listing;
 
-		$relpath = $model->getState('filter_path', '');
+		$relpath       = $model->getState('filter_path', '');
 		$this->at_path = $relpath;
 
 		$this->perms_show_hidden = $params->getValue('perms_show_hidden', 0);
@@ -100,10 +100,10 @@ class Html extends BaseView
 
 	protected function renderUGID($uid, $gid)
 	{
-		static $users = array();
-		static $groups = array();
+		static $users = [];
+		static $groups = [];
 
-		$user = '&mdash;';
+		$user  = '&mdash;';
 		$group = '&mdash;';
 
 		if ($uid !== false)
@@ -114,7 +114,7 @@ class Html extends BaseView
 
 				if (function_exists('posix_getpwuid'))
 				{
-					$uArray = posix_getpwuid($uid);
+					$uArray      = posix_getpwuid($uid);
 					$users[$uid] = $uArray['name']; //." ($uid)";
 				}
 			}
@@ -130,7 +130,7 @@ class Html extends BaseView
 
 				if (function_exists('posix_getgrgid'))
 				{
-					$gArray = posix_getgrgid($gid);
+					$gArray       = posix_getgrgid($gid);
 					$groups[$gid] = $gArray['name']; //." ($gid)";
 				}
 			}

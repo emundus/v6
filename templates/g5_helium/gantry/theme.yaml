@@ -1,8 +1,8 @@
 details:
   name: Helium
-  version: '5.4.32'
+  version: '5.4.34'
   icon: paper-plane
-  date: 'January  2, 2020'
+  date: 'April 30, 2020'
   author:
     name: 'RocketTheme, LLC'
     email: 'support@rockettheme.com'
@@ -69,11 +69,13 @@ configuration:
       - helium
       - helium-joomla
       - custom
+      - global
     persistent:
       - helium
     overrides:
       - helium-joomla
       - custom
+      - global
 
   dependencies:
     gantry: 5.4.0

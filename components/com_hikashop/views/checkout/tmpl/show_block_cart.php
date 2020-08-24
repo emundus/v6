@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -172,10 +172,13 @@ defined('_JEXEC') or die('Restricted access');
 				echo ' <span class="hikashop_product_base_price">' . strip_tags($this->getDisplayProductPrice($product, true)) . '</span>';
 		}
 
-				?></p>
+?>
 <?php
 		$input = '';
 		$html = '';
+		$edit = false;
+		if(!empty($product->product_parent_id))
+			$edit = true;
 
 		if(hikashop_level(2) && !empty($this->extraFields['item'])) {
 			$item = $cart->cart_products[$i];
@@ -183,6 +186,7 @@ defined('_JEXEC') or die('Restricted access');
 				$namekey = $field->field_namekey;
 				if(empty($item->$namekey) || !strlen($item->$namekey))
 					continue;
+				$edit = true;
 				$html .= '<p class="hikashop_cart_item_'.$namekey.'">'.$this->fieldClass->getFieldName($field).': '.$this->fieldClass->show($field, $item->$namekey).'</p>';
 			}
 		}
@@ -208,9 +212,23 @@ defined('_JEXEC') or die('Restricted access');
 					$html .= ' x'.round($optionElement->cart_product_quantity / $product->cart_product_quantity, 2);
 				}
 				$html .= '</p>';
+				$edit = true;
 			}
 		}
 
+		if(empty($this->options['status']) && $edit) {
+			$popupHelper = hikashop_get('helper.popup');
+			echo ' '.$popupHelper->display(
+				'<i class="fas fa-pen"></i>',
+				'HIKASHOP_EDIT_CART_PRODUCT',
+				hikashop_completeLink('cart&task=product_edit&cart_id='.$cart->cart_id.'&cart_product_id='.$product->cart_product_id.'&tmpl=component&'.hikashop_getFormToken().'=1'),
+				'edit_cart_product',
+				576, 480, 'title="'.JText::_('EDIT_THE_OPTIONS_OF_THE_PRODUCT').'"', '', 'link'
+			);
+		}
+?>
+				</p>
+<?php
 		if(!empty($html))
 			echo '<div class="hikashop_cart_product_custom_item_fields">'.$html.'</div>';
 
@@ -355,7 +373,7 @@ defined('_JEXEC') or die('Restricted access');
 		}
 
 		if(!empty($this->options['show_price']) && !empty($cart->shipping)) {
-?> 
+?>
 		<tr>
 			<td colspan="<?php echo $row_count - 2; ?>" class="hikashop_cart_empty_footer"></td>
 			<td id="hikashop_checkout_cart_shipping_title" class="hikashop_cart_shipping_title hikashop_cart_title"><?php

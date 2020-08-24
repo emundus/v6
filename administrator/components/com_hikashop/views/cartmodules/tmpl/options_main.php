@@ -1,15 +1,16 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.2.2
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2019 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 $minicart_style = (!empty($this->element['small_cart']) && (int)$this->element['small_cart'] == 1) ? 'display: none;' : '';
 $dropdown_style = (empty($this->element['small_cart']) || (int)$this->element['small_cart'] != 2) ? 'display: none;' : '';
+$name_style = (empty($this->element['show_cart_product_name']) || (int)$this->element['show_cart_product_name'] == 0) ? 'display: none;' : '';
 ?>
 <div class="hkc-xl-6 hkc-md-6 hikashop_module_subblock hikashop_module_edit_general_part1">
 	<div class="hikashop_module_subblock_content">
@@ -49,9 +50,21 @@ $dropdown_style = (empty($this->element['small_cart']) || (int)$this->element['s
 				echo JText::_('HIKA_PRODUCT_NAME');
 			?></dt>
 			<dd class="hikashop_option_value"><?php
-				if(!isset($this->element['show_cart_product_name']))
-					$this->element['show_cart_product_name'] = 1;
-				echo JHTML::_('hikaselect.booleanlist', $this->name.'[show_cart_product_name]', '', $this->element['show_cart_product_name']);
+				$values = array(
+					1 => JHTML::_('select.option', 1, JText::_('JYES')),
+					0 => JHTML::_('select.option', 0, JText::_('JNO')),
+				);
+				echo JHTML::_('hikaselect.radiolist', $values, $this->name.'[show_cart_product_name]', 'data-control="name_cart"', 'value', 'text', (int)@$this->element['show_cart_product_name']);
+			?></dd>
+		</dl>
+		<dl class="hika_options" style="<?php echo $name_style; ?>" data-part="name_cart">
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('HIKA_LINK_TO_DETAIL_PAGE');
+			?></dt>
+			<dd class="hikashop_option_value"><?php
+				if(!isset($this->element['link_to_product_page']))
+					$this->element['link_to_product_page'] = 1;
+				echo JHTML::_('hikaselect.booleanlist', $this->name.'[link_to_product_page]', '', $this->element['link_to_product_page']);
 			?></dd>
 		</dl>
 		<dl class="hika_options">
@@ -166,6 +179,13 @@ $dropdown_style = (empty($this->element['small_cart']) || (int)$this->element['s
 <?php
 $js = '
 window.hikashop.ready(function(){
+	hkjQuery("[data-control=\'name_cart\']").change(function(){
+		if(hkjQuery(this).val() == "0")
+			hkjQuery("[data-part=\'name_cart\']").hide();
+		else
+			hkjQuery("[data-part=\'name_cart\']").show();
+	});
+
 	hkjQuery("[data-control=\'mini_cart\']").change(function(){
 		if(hkjQuery(this).val() == "1")
 			hkjQuery("[data-part=\'mini_cart\']").hide();
