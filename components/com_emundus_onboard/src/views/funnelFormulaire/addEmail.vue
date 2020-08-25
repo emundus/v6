@@ -17,7 +17,7 @@
       <a @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
     </div>
     <p>{{ TheCandidateDescription }}</p>
-    <transition :name="'slide-down'" type="transition">
+    <transition-group :name="'slide-down'" type="transition">
       <div v-for="(trigger, index) in triggers" :key="index" class="trigger-item" v-if="trigger.candidate == 1">
         <div style="max-width: 80%">
           <p>{{trigger.subject}}</p>
@@ -37,13 +37,13 @@
           <button type="button" @click="editTrigger(trigger)"><em class="fas fa-edit"></em></button>
         </div>
       </div>
-    </transition>
+    </transition-group>
     <div class="choices-buttons">
       <h2 style="margin-bottom: 0">{{ Manual }}</h2>
       <a @click="$modal.show('modalAddTriggermanual'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
     </div>
     <p>{{ ManualDescription }}</p>
-    <transition :name="'slide-down'" type="transition">
+    <transition-group :name="'slide-down'" type="transition">
       <div v-for="(trigger, index) in triggers" :key="index" class="trigger-item" v-if="trigger.manual == 1">
         <div style="max-width: 80%">
           <p>{{trigger.subject}}</p>
@@ -63,7 +63,7 @@
           <button type="button" @click="editTrigger(trigger)"><em class="fas fa-edit"></em></button>
         </div>
       </div>
-    </transition>
+    </transition-group>
   </div>
 </template>
 

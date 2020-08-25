@@ -29,9 +29,9 @@ class EmundusonboardModelform extends JModelList {
 		$query = $db->getQuery(true);
 
 		if ($filter == 'Unpublish') {
-			$filterCount = $db->quoteName('sp.published') . ' = 0';
+			$filterCount = $db->quoteName('sp.status') . ' = 0';
 		} else {
-            $filterCount = $db->quoteName('sp.published') . ' = 1';
+            $filterCount = $db->quoteName('sp.status') . ' = 1';
 		}
 
 		if (empty($recherche)) {
@@ -83,9 +83,9 @@ class EmundusonboardModelform extends JModelList {
 		$query = $db->getQuery(true);
 
 		if ($filter == 'Unpublish') {
-			$filterDate = $db->quoteName('sp.published') . ' = 0';
+			$filterDate = $db->quoteName('sp.status') . ' = 0';
 		} else {
-            $filterDate = $db->quoteName('sp.published') . ' = 1';
+            $filterDate = $db->quoteName('sp.status') . ' = 1';
 		}
 
 		$filterId = $db->quoteName('sp.id') . ' > 1000';
@@ -127,7 +127,7 @@ class EmundusonboardModelform extends JModelList {
             ->select('id')
             ->from($db->quoteName('#__emundus_setup_profiles'))
             ->where($db->quoteName('id') . ' > 1000')
-            ->andWhere($db->quoteName('published') . ' = 1');
+            ->andWhere($db->quoteName('status') . ' = 1');
         $db->setQuery($query);
         $access_profiles[] = $db->loadColumn();
 
@@ -179,7 +179,7 @@ class EmundusonboardModelform extends JModelList {
                 'sp.label AS form_label'
             ])
             ->from($db->quoteName('#__emundus_setup_profiles', 'sp'))
-            ->where($db->quoteName('sp.published') . ' = 1')
+            ->where($db->quoteName('sp.status') . ' = 1')
             ->andWhere($filterId);
 
         try {
@@ -488,7 +488,7 @@ class EmundusonboardModelform extends JModelList {
             }
 
 			try {
-				$fields = array($db->quoteName('published') . ' = 0');
+				$fields = array($db->quoteName('status') . ' = 0');
 				$se_conditions = array($db->quoteName('id') . ' IN (' . implode(", ", array_values($data)) . ')');
 
 				$query->update($db->quoteName('#__emundus_setup_profiles'))
@@ -517,7 +517,7 @@ class EmundusonboardModelform extends JModelList {
 			}
 
 			try {
-				$fields = array($db->quoteName('published') . ' = 1');
+				$fields = array($db->quoteName('status') . ' = 1');
 				$se_conditions = array($db->quoteName('id') . ' IN (' . implode(", ", array_values($data)) . ')');
 
 				$query->update($db->quoteName('#__emundus_setup_profiles'))

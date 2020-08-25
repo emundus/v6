@@ -8,7 +8,7 @@
 // - Laura.scss
 
 
-/* MODULE USER MENU - COULEURS */
+/* MODULE USER MENU/SWITCH FUNNEL - COULEURS */
 #g-navigation #header-c .header-right {
   a.btn.btn-danger {
     font-weight: 300 !important;
@@ -40,6 +40,15 @@
     text-decoration: underline;
   }
 }
+
+#header-c, #header-switch {
+  display: flex;
+  justify-content: center;
+  &.right-divider {
+    border-right: solid 1px #cecece;
+  }
+}
+
 
 /* BURGER MENU - DECONNECTE */
 .burger span {
@@ -199,9 +208,15 @@ footer#g-footer {
   height: 180px;
 }
 
-
 /* Branding */
 .g-branding{
   text-align: end;
   margin-right: 1em;
+}
+
+/* Header */
+#g-navigation .g-container {
+  padding: 10px !important;
+  width: 95%;
+  margin: 0 auto !important;
 }

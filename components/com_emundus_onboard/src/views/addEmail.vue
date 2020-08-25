@@ -72,6 +72,86 @@
             />
           </div>
         </div>
+        <div class="divider"></div>
+        <div class="sous-container last-container" v-if="email == ''">
+          <div class="heading-form">
+            <div class="icon-title"></div>
+            <h2 class="heading">{{ Trigger }}</h2>
+          </div>
+
+          <div class="form-group">
+            <label>{{Program}}</label>
+            <select v-model="trigger.program" class="dropdown-toggle w-select" @change="addTrigger">
+              <option :value="null"></option>
+              <option v-for="(program,index) in programs" :value="program.id">{{program.label}}</option>
+            </select>
+          </div>
+
+          <div v-if="triggered">
+            <div class="form-group">
+              <label>{{Actions}}*</label>
+              <select v-model="trigger.action_status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.action_status}">
+                <option value="to_current_user">{{TheCandidate}}</option>
+                <option value="to_applicant">{{Manual}}</option>
+              </select>
+              <p v-if="errors.trigger.action_status" class="error">
+                <span class="error">{{StatusRequired}}</span>
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label>{{Status}}*</label>
+              <select v-model="trigger.status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.status}">
+                <option v-for="(statu,index) in status" :key="index" :value="statu.step">{{statu.value}}</option>
+              </select>
+              <p v-if="errors.trigger.status" class="error">
+                <span class="error">{{StatusRequired}}</span>
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label>{{Target}}*</label>
+              <select v-model="trigger.target" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.target}">
+                <option value="5">{{Administrators}}</option>
+                <option value="6">{{Evaluators}}</option>
+                <option value="1000">{{Candidates}}</option>
+                <option value="0">{{DefinedUsers}}</option>
+              </select>
+              <p v-if="errors.trigger.target" class="error">
+                <span class="error">{{TargetRequired}}</span>
+              </p>
+            </div>
+            <div class="form-group" v-if="trigger.target == 0" style="align-items: baseline">
+              <label>{{ChooseUsers}}* :</label>
+              <div class="wrap">
+                <div class="search">
+                  <input type="text" class="searchTerm" :placeholder="Search" v-model="searchTerm" @keyup="searchUserByTerm">
+                  <button type="button" class="searchButton" @click="searchUserByTerm">
+                    <em class="fas fa-search"></em>
+                  </button>
+                </div>
+              </div>
+              <div class="select-all">
+                <input type="checkbox" class="form-check-input bigbox" @click="selectAllUsers" v-model="selectall">
+                <label>
+                  {{SelectAll}}
+                </label>
+              </div>
+              <div class="users-block" :class="{ 'is-invalid': errors.trigger.selectedUsers}">
+                <div v-for="(user, index) in users" :key="index" class="user-item">
+                  <input type="checkbox" class="form-check-input bigbox" v-model="selectedUsers[user.id]">
+                  <div class="ml-10px">
+                    <p>{{user.name}}</p>
+                    <p>{{user.email}}</p>
+                  </div>
+                </div>
+              </div>
+              <p v-if="errors.trigger.selectedUsers" class="error">
+                <span class="error">{{UsersRequired}}</span>
+              </p>
+            </div>
+          </div>
+        </div>
 
         <div class="section-sauvegarder-et-continuer">
           <div class="w-container">
@@ -121,6 +201,7 @@
 
       Advanced: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
       Informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
+      Trigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER"),
       emailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE"),
       emailCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
       retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
@@ -134,9 +215,32 @@
       EmailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILTYPE"),
       SubjectRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED"),
       BodyRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_BODY_REQUIRED"),
+      Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+      Model: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL"),
+      ModelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED"),
+      Status: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS"),
+      StatusRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
+      Target: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
+      TargetRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED"),
+      Administrators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS"),
+      Evaluators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS"),
+      Candidates: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES"),
+      DefinedUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS"),
+      ChooseUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS"),
+      UsersRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED"),
+      Search: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH_USERS"),
+      TheCandidate: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
+      Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
+      Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
 
       categories: [],
+      programs: [],
+      status: [],
+      users: [],
+      selectedUsers: [],
       enableTip: false,
+      searchTerm: '',
+      selectall: false,
 
       form: {
         lbl: "",
@@ -148,18 +252,94 @@
         category: "",
         published: 1
       },
+      trigger: {
+        model: null,
+        status: null,
+        action_status: null,
+        target: null,
+        program: null
+      },
+      triggered: false,
       errors: {
         subject: false,
-        message: false
+        message: false,
+        trigger: {
+          model: false,
+          status: false,
+          target: false,
+          selectedUsers: false,
+          action_status: false
+        }
       },
       submitted: false
     }),
 
     methods: {
+      getProgramsList() {
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=program&task=getallprogram",
+          params: {
+            filter: '',
+            sort: '',
+            recherche: '',
+            lim: 100,
+            page: 1,
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(response => {
+          this.programs = response.data.data;
+        });
+      },
+      getStatus() {
+        axios.get("index.php?option=com_emundus_onboard&controller=email&task=getstatus")
+            .then(response => {
+              this.status = response.data.data;
+            });
+      },
+      getUsers() {
+        axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserswithoutapplicants")
+            .then(response => {
+              this.users = response.data.data;
+            });
+      },
+      searchUserByTerm() {
+        axios.get("index.php?option=com_emundus_onboard&controller=program&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
+            .then(response => {
+              this.users = response.data.data;
+            });
+      },
+
+      addTrigger() {
+        if(this.trigger.program != null) {
+          this.triggered = true;
+        } else {
+          this.triggered = false;
+        }
+      },
+      selectAllUsers() {
+        this.users.forEach(element => {
+          if(!this.selectall) {
+            this.selectedUsers[element.id] = true;
+          } else {
+            this.selectedUsers[element.id] = false;
+          }
+        });
+        this.$forceUpdate();
+      },
+
       submit() {
         this.errors = {
           subject: false,
-          message: false
+          message: false,
+          trigger: {
+            model: false,
+            status: false,
+            target: false,
+            selectedUsers: false,
+          }
         };
 
         if(this.form.subject == ""){
@@ -169,6 +349,25 @@
         if(this.form.message == ""){
           this.errors.message = true;
           return 0;
+        }
+        if(this.trigger.program != null){
+          if(this.trigger.action_status == null){
+            this.errors.trigger.action_status = true;
+            return 0;
+          }
+          if(this.trigger.status == null){
+            this.errors.trigger.status = true;
+            return 0;
+          }
+          if(this.trigger.target == null){
+            this.errors.trigger.target = true;
+            return 0;
+          } else if (this.trigger.target == 0) {
+            if(this.selectedUsers.length === 0) {
+              this.errors.trigger.selectedUsers = true;
+              return 0;
+            }
+          }
         }
         this.submitted = true;
         this.form.lbl = this.form.subject;
@@ -183,10 +382,9 @@
             data: qs.stringify({ body: this.form, code: this.email })
           }).then(response => {
             window.location.href = '/configuration-emails'
-          })
-                  .catch(error => {
-                    console.log(error);
-                  });
+          }).catch(error => {
+            console.log(error);
+          });
         } else {
           axios({
             method: "post",
@@ -196,11 +394,23 @@
             },
             data: qs.stringify({ body: this.form })
           }).then(response => {
-                    window.location.href = '/configuration-emails'
-                  })
-                  .catch(error => {
-                    console.log(error);
-                  });
+            this.trigger.model = response.data.data;
+            axios({
+              method: "post",
+              url: 'index.php?option=com_emundus_onboard&controller=email&task=createtrigger',
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                trigger: this.trigger,
+                users: this.selectedUsers
+              })
+            }).then((rep) => {
+              window.location.href = '/configuration-emails'
+            });
+          }).catch(error => {
+            console.log(error);
+          });
         }
       },
 
@@ -266,6 +476,9 @@
       setTimeout(() => {
         this.enableVariablesTip();
       },2000);
+      this.getProgramsList();
+      this.getStatus();
+      this.getUsers();
     },
 
     mounted() {
@@ -288,9 +501,11 @@
     color: #1b1f3c !important;
   }
 
-  .w-input {
-    min-height: 55px;
+  .w-input,
+  .w-select {
+    min-height: 50px;
     padding: 12px;
+    font-weight: 300;
   }
 
   .bouton-sauvergarder-et-continuer {

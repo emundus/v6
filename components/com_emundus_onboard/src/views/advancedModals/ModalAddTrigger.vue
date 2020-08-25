@@ -214,6 +214,7 @@ export default {
       } else if (this.form.target == 0) {
         if(this.selectedUsers.length === 0) {
           this.errors.selectedUsers = true;
+          return 0;
         }
       }
 

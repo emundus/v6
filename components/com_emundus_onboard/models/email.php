@@ -339,7 +339,8 @@ class EmundusonboardModelemail extends JModelList {
 
             try {
                 $db->setQuery($query);
-                return $db->execute();
+                $db->execute();
+                return $db->insertid();
             } catch(Exception $e) {
                 JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();

@@ -1241,30 +1241,58 @@ class EmundusonboardModelformbuilder extends JModelList {
         $date = new Date();
         $eval = 0;
 
+        $query->select([
+            'el.name AS name',
+            'fl.db_table_name AS dbtable',
+            'el.params AS params'
+        ])
+            ->from($db->quoteName('#__fabrik_elements','el'))
+            ->leftJoin($db->quoteName('#__fabrik_formgroup','fg') . ' ON ' . $db->quoteName('fg.group_id') . ' = ' . $db->quoteName('el.group_id'))
+            ->leftJoin($db->quoteName('#__fabrik_lists','fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
+            ->where($db->quoteName('el.id') . ' = ' . $db->quote($element['id']));
+        $db->setQuery($query);
+        $db_element = $db->loadObject();
+        $old_params = json_decode($db_element->params, true);
+
         if ($element['FRequire'] === 'true') {
-            $element['params']['notempty-message'] = array("");
-            $element['params']['notempty-validation_condition'] = array("");
-            $element['params']['validations']= array("plugin"=>"notempty","plugin_published"=>"1","validate_in"=>"both","validation_on"=>"both","validate_hidden"=>"0","must_validate"=>"0","show_icon"=>"1");
+            $old_params['validations']['plugin'][] = "notempty";
+            $old_params['validations']['plugin_published'][] = "1";
+            $old_params['validations']['validate_in'][] = "both";
+            $old_params['validations']['validation_on'][] = "both";
+            $old_params['validations']['validate_hidden'][] = "1";
+            $old_params['validations']['must_validate'][] = "0";
+            $old_params['validations']['show_icon'][] = "1";
+            $old_params['notempty-message'] = array("");
+            $old_params['notempty-validation_condition'] = array("");
             $eval = 1;
         } else {
-            unset($element['params']['notempty-message']);
-            unset($element['params']['notempty-validation_condition']);
-            $element['params']['validations']= array();
+            //$element['params']['validations']['plugin'] = array_merge(array_diff($element['params']['validations']['plugin'], array("notempty")));
+            $key = array_search("notempty",$old_params['validations']['plugin']);
+            unset($old_params['validations']['plugin'][$key]);
+            unset($old_params['validations']['plugin_published'][$key]);
+            unset($old_params['validations']['validate_in'][$key]);
+            unset($old_params['validations']['validation_on'][$key]);
+            unset($old_params['validations']['validate_hidden'][$key]);
+            unset($old_params['validations']['must_validate'][$key]);
+            unset($old_params['validations']['show_icon'][$key]);
+            unset($old_params['notempty-message']);
+            unset($old_params['notempty-validation_condition']);
         }
 
-        foreach ($element['params'] as $key => $value) {
-            if (!is_array($element['params'][$key])) {
-                $element['params'][$key] = htmlspecialchars($element['params'][$key]);
+        foreach ($old_params as $key => $value) {
+            if (!is_array($old_params[$key])) {
+                $old_params[$key] = htmlspecialchars($old_params[$key]);
             }
         }
 
         $fields = array(
             $db->quoteName('eval'). ' = '.  $db->quote($eval),
-            $db->quoteName('params'). ' = '.  $db->quote(json_encode($element['params'])),
+            $db->quoteName('params'). ' = '.  $db->quote(json_encode($old_params)),
             $db->quoteName('modified_by'). ' = '. $db->quote($user),
             $db->quoteName('modified'). ' = '. $db->quote($date),
         );
-        $query->update($db->quoteName('#__fabrik_elements'))
+        $query->clear()
+            ->update($db->quoteName('#__fabrik_elements'))
             ->set($fields)
             ->where($db->quoteName('id'). '  ='. $element['id']);
 
@@ -1386,6 +1414,33 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $dbtype = 'VARCHAR(' . $element['params']['maxlength'] . ')';
             } else {
                 $dbtype = 'INT(' . $element['params']['maxlength'] . ')';
+            }
+            if ($element['params']['password'] == 3) {
+                $element['params']['isemail-message'] = array("");
+                $element['params']['isemail-validation_condition'] = array("");
+                $element['params']['isemail-allow_empty'] = array("1");
+                $element['params']['isemail-check_mx'] = array("0");
+                $element['params']['validations']['plugin'][] = "isemail";
+                $element['params']['validations']['plugin_published'][] = "1";
+                $element['params']['validations']['validate_in'][] = "both";
+                $element['params']['validations']['validation_on'][] = "both";
+                $element['params']['validations']['validate_hidden'][] = "1";
+                $element['params']['validations']['must_validate'][] = "0";
+                $element['params']['validations']['show_icon'][] = "1";
+            } else {
+                //$element['params']['validations']['plugin'] = array_merge(array_diff($element['params']['validations']['plugin'], array("isemail")));
+                $key = array_search("isemail",$element['params']['validations']['plugin']);
+                unset($element['params']['validations']['plugin'][$key]);
+                unset($element['params']['validations']['plugin_published'][$key]);
+                unset($element['params']['validations']['validate_in'][$key]);
+                unset($element['params']['validations']['validation_on'][$key]);
+                unset($element['params']['validations']['validate_hidden'][$key]);
+                unset($element['params']['validations']['must_validate'][$key]);
+                unset($element['params']['validations']['show_icon'][$key]);
+                unset($element['params']['isemail-message']);
+                unset($element['params']['isemail-validation_condition']);
+                unset($element['params']['isemail-allow_empty']);
+                unset($element['params']['isemail-check_mx']);
             }
 
             if ($element['params']['sub_options']) {

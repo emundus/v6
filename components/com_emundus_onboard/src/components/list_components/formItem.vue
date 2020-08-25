@@ -83,7 +83,7 @@ export default {
 
   computed: {
     isPublished() {
-      return this.data.published == 1;
+      return this.data.status == 1;
     },
 
     isActive() {
