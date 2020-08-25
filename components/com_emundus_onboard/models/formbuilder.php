@@ -450,11 +450,34 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->execute();
             $formid = $db->insertid();
 
+            // Set emundus plugin in params
             $query->clear();
+            $query->select('params')
+                ->from($db->quoteName('#__fabrik_forms'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($formid));
+            $db->setQuery($query);
+            $params = json_decode($db->loadResult(), true);
+            $params['emundusredirect_field_status'] = "-1";
+            $params['copy_form'] = "0";
+            $params['notify_complete_file'] = "0";
+            $params['applicationsent_status'] = "0";
+            $params['admission'] = "0";
+            $params['only_process_curl'] = array(
+                2 => "getEndContent"
+            );
+            $params['form_php_file'] = array(
+                2 => "-1"
+            );
+            $params['form_php_require_once'] = array(
+                2 => "0"
+            );
+            $params['plugins'] = array("emundusredirect","emundusisapplicationsent","php");
+            //
             $query->update($db->quoteName('#__fabrik_forms'));
 
             $query->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $prid . '_' . $formid));
             $query->set($db->quoteName('intro') . ' = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $formid . '</p>'));
+            $query->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
             $query->where($db->quoteName('id') . ' = ' . $db->quote($formid));
             $db->setQuery($query);
             $db->execute();
@@ -1969,6 +1992,30 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->execute();
             $newformid = $db->insertid();
 
+            // Set emundus plugin in params
+            $query->clear();
+            $query->select('params')
+                ->from($db->quoteName('#__fabrik_forms'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($formid));
+            $db->setQuery($query);
+            $params = json_decode($db->loadResult(), true);
+            $params['emundusredirect_field_status'] = "-1";
+            $params['copy_form'] = "0";
+            $params['notify_complete_file'] = "0";
+            $params['applicationsent_status'] = "0";
+            $params['admission'] = "0";
+            $params['only_process_curl'] = array(
+                2 => "getEndContent"
+            );
+            $params['form_php_file'] = array(
+                2 => "-1"
+            );
+            $params['form_php_require_once'] = array(
+                2 => "0"
+            );
+            $params['plugins'] = array("emundusredirect","emundusisapplicationsent","php");
+            //
+
             // Update translation files
             $query->clear();
             $query->update($db->quoteName('#__fabrik_forms'));
@@ -1981,6 +2028,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             $query->set('label = ' . $db->quote('FORM_' . $prid . '_' . $newformid));
             $query->set('intro = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $newformid . '</p>'));
+            $query->set('params = ' . $db->quote(json_encode($params)));
             $query->where('id =' . $newformid);
             $db->setQuery($query);
             $db->execute();
