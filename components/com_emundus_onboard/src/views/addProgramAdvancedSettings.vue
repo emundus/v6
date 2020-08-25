@@ -202,7 +202,7 @@
         if (this.menuHighlight < 3) {
           this.menuHighlight++;
         } else {
-          history.go(-1);
+          window.location.href = '/configuration-programs'
         }
       },
 
@@ -210,7 +210,7 @@
         if (this.menuHighlight > 0) {
           this.menuHighlight--;
         } else {
-          history.go(-1);
+          window.location.href = '/configuration-programs'
         }
       },
 

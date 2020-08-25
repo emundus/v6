@@ -100,7 +100,7 @@
 h1::after, .swal2-title:after {
   content: '';
   position: absolute;
-  margin-top: 6px !important;
+  bottom: -10px !important;
   width: 2.7rem;
   height: .2rem;
   background: $base-secondary-color !important;

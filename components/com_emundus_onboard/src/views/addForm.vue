@@ -201,7 +201,7 @@
 
       quitFunnelOrContinue(quit) {
         if (quit == 0) {
-          history.go(-1);
+          window.location.href = '/configuration-forms'
         }
         else if (quit == 1) {
           if(this.campaignId != null){

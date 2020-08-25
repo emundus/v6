@@ -144,7 +144,7 @@
         name: "",
         emailfrom: "",
         message: "",
-        type: 1,
+        type: 2,
         category: "",
         published: 1
       },
@@ -182,7 +182,7 @@
             },
             data: qs.stringify({ body: this.form, code: this.email })
           }).then(response => {
-            history.go(-1);
+            window.location.href = '/configuration-emails'
           })
                   .catch(error => {
                     console.log(error);
@@ -195,9 +195,8 @@
               "Content-Type": "application/x-www-form-urlencoded"
             },
             data: qs.stringify({ body: this.form })
-          })
-                  .then(response => {
-                    history.go(-1);
+          }).then(response => {
+                    window.location.href = '/configuration-emails'
                   })
                   .catch(error => {
                     console.log(error);

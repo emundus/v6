@@ -232,7 +232,7 @@
                 if (this.menuHighlight < 1) {
                     this.menuHighlight++;
                 } else {
-                    history.go(-1);
+                  window.location.href = '/configuration-campaigns'
                 }
             },
 
@@ -240,7 +240,7 @@
                 if (this.menuHighlight > 0) {
                     this.menuHighlight--;
                 } else {
-                    history.go(-1);
+                    window.location.href = '/configuration-campaigns'
                 }
             },
 

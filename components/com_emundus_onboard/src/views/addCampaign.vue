@@ -714,7 +714,7 @@ export default {
 
     quitFunnelOrContinue(quit) {
       if (quit == 0) {
-        history.go(-1);
+        window.location.href = '/configuration-campaigns'
       }
       else if (quit == 1) {
         this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.campaign + '&index=0')

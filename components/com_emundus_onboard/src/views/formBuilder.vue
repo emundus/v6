@@ -120,6 +120,7 @@
                     :key="builderKey"
                     :rgt="rgt"
                     :prid="prid"
+                    :eval="0"
                     :files="files"
                     ref="builder"
             />

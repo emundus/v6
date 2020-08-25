@@ -834,6 +834,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->where($db->quoteName('g.group_id') . ' = ' . $db->quote($group))
                 ->andWhere($db->quoteName('us.id') . ' != ' . $db->quote($user))
                 ->andWhere($db->quoteName('us.id') . ' != 62')
+                ->andWhere($db->quoteName('eus.profile') . ' IN (5,6)')
                 ->andWhere($db->quoteName('us.username') . ' != ' . $db->quote('sysemundus'))
                 ->andWhere($block_conditions);
         } else {
@@ -847,6 +848,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->where($db->quoteName('us.id') . ' != ' . $db->quote($user))
                 ->andWhere($db->quoteName('us.id') . ' != 62')
                 ->andWhere($db->quoteName('us.username') . ' != ' . $db->quote('sysemundus'))
+                ->andWhere($db->quoteName('eus.profile') . ' IN (5,6)')
                 ->andWhere($block_conditions);
         }
 
@@ -867,7 +869,8 @@ class EmundusonboardModelprogram extends JModelList {
             ->from($db->quoteName('#__emundus_users','eus'))
             ->leftJoin($db->quoteName('#__users', 'us'). ' ON '. $db->quoteName('eus.user_id').' = '.$db->quoteName('us.id'))
             ->where($db->quoteName('eus.user_id') . ' != 62')
-            ->andWhere($db->quoteName('us.username') . ' != ' . $db->quote('sysemundus'));
+            ->andWhere($db->quoteName('us.username') . ' != ' . $db->quote('sysemundus'))
+            ->andWhere($db->quoteName('eus.profile') . ' IN (5,6)');
 
         try {
             $db->setQuery($query);

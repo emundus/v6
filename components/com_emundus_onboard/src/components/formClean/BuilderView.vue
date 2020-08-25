@@ -56,7 +56,7 @@
               <div style="width: max-content" v-show="updateGroup && indexGroup == group.group_id">
                 <div class="input-can-translate">
                   <input v-model="group.label_fr" class="form-control" style="width: 400px;" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
-                  <button class="translate-icon" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="translate.label_group = !translate.label_group"></button>
+                  <button class="translate-icon" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationGroup(group.group_id)"></button>
                   <div class="d-flex actions-update-label" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
                     <a @click="updateGroup = false;translate.label_group = false" :title="Cancel">
                       <em class="fas fa-times ml-10px" data-toggle="tooltip" data-placement="top"></em>
@@ -79,7 +79,7 @@
                   <em class="fas fa-sort-down"></em>
                 </div>
                 <div class="form-group mb-1" v-if="translate.label_group">
-                  <input v-model="group.label_en" type="text" maxlength="40" class="form-control"/>
+                  <input v-model="group.label_en" type="text" maxlength="40" class="form-control" :id="'label_group_en_' + group.group_id"/>
                 </div>
               </div>
               <div v-if="group.group_intro" class="groupintro">{{group.group_intro}}</div>
@@ -123,13 +123,13 @@
                       <div class="w-100">
                         <div class="d-flex" style="align-items: baseline">
                           <span v-if="element.label" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''" v-html="element.label" v-show="element.labelsAbove != 2"></span>
-                          <a @click="enableLabelInput" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'" :title="Edit">
+                          <a @click="enableLabelInput(element.id)" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'" :title="Edit">
                             <em class="fas fa-pencil-alt ml-10px" data-toggle="tooltip" data-placement="top"></em>
                           </a>
                         </div>
                         <div class="input-can-translate" v-show="clickUpdatingLabel && indexHighlight == element.id">
-                          <input v-model="element.label_fr" class="form-control" :class="translate.label ? '' : 'mb-1'" @keyup.enter="updateLabelElement(element)"/>
-                          <button class="translate-icon" :class="translate.label ? 'translate-icon-selected': ' translate-builder'" type="button" @click="translate.label = !translate.label"></button>
+                          <input v-model="element.label_fr" class="form-control" :class="translate.label ? '' : 'mb-1'" @keyup.enter="updateLabelElement(element)" :id="'label_' + element.id"/>
+                          <button class="translate-icon" :class="translate.label ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationLabel(element.id)"></button>
                           <div class="d-flex actions-update-label" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
                             <a @click="clickUpdatingLabel = false;translate.label = false" :title="Cancel">
                               <em class="fas fa-times ml-20px" data-toggle="tooltip" data-placement="top"></em>
@@ -146,7 +146,7 @@
                           <em class="fas fa-sort-down"></em>
                         </div>
                         <div class="form-group mb-1" v-if="translate.label && clickUpdatingLabel && indexHighlight == element.id">
-                          <input v-model="element.label_en" type="text" maxlength="40" class="form__input field-general w-input"/>
+                          <input v-model="element.label_en" type="text" maxlength="40" class="form__input field-general w-input" :id="'label_en_' + element.id"/>
                         </div>
                         <div v-if="element.params.date_table_format">
                           <date-picker v-model="date" :config="options"></date-picker>
@@ -525,9 +525,9 @@ export default {
           }
         }).then(response => {
           if(response.data.plugin === 'databasejoin' && this.repeat === false){
+            // Check variables
             this.repeat = true;
             this.reloadElement(element)
-            this.repeat = false;
           } else{
             this.$set(element,'element',response.data.element);
             //element.element = response.data.element;
@@ -798,15 +798,42 @@ export default {
         this.translate.label = false;
       }
     },
-    enableLabelInput() {
+    enableLabelInput(eid) {
       this.clickUpdatingLabel = true;
+      setTimeout(() => {
+        document.getElementById('label_' + eid).focus();
+      },100);
+    },
+    enableTranslationLabel(eid) {
+      this.translate.label = !this.translate.label;
+      if(this.translate.label) {
+        setTimeout(() => {
+          document.getElementById('label_en_' + eid).focus();
+        },100);
+      } else {
+        setTimeout(() => {
+          document.getElementById('label_' + eid).focus();
+        },100);
+      }
     },
     enableUpdatingGroup(group) {
       this.updateGroup = true;
       this.indexGroup = group.group_id;
       setTimeout(() => {
         document.getElementById('update_input_' + group.group_id).focus();
-      }, 200);
+      }, 100);
+    },
+    enableTranslationGroup(gid) {
+      this.translate.label_group = !this.translate.label_group;
+      if(this.translate.label_group) {
+        setTimeout(() => {
+          document.getElementById('label_group_en_' + gid).focus();
+        },100);
+      } else {
+        setTimeout(() => {
+          document.getElementById('update_input_' + gid).focus();
+        },100);
+      }
     },
     enableGroupHover(group) {
       this.hoverGroup = true;

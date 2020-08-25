@@ -2149,7 +2149,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 } elseif ($key == 'menutype') {
                     $query->set($key . ' = ' . $db->quote($profile->menutype));
                 } elseif ($key == 'alias') {
-                    $query->set($key . ' = ' . $db->quote('form-' . $newformid . '-' . $val));
+                    $query->set($key . ' = ' . $db->quote('form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(),'-',strtolower($val))));
                 } elseif ($key == 'path') {
                     if($formid == 258){
                         $query->set($key . ' = ' . $db->quote('envoi-du-dossier-' . $profile->id));

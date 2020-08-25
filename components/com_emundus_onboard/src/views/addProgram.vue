@@ -309,7 +309,7 @@ export default {
 
     quitFunnelOrContinue(quit) {
       if (quit == 0) {
-        history.go(-1);
+        window.location.href = '/configuration-programs'
       }
       else if (quit == 1) {
         window.location.replace('index.php?option=com_emundus_onboard&view=program&layout=advancedsettings&pid=' + this.prog);

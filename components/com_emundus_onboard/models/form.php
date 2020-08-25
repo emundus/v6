@@ -698,6 +698,7 @@ class EmundusonboardModelform extends JModelList {
 		$query = $db->getQuery(true);
 
         $settings = JModelLegacy::getInstance('settings', 'EmundusonboardModel');
+        $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
 
         $modules = [93,102,168,170];
 
@@ -786,7 +787,7 @@ class EmundusonboardModelform extends JModelList {
                     } elseif ($key == 'title') {
                         $query->set($key . ' = ' . $db->quote($data['label']));
                     } elseif ($key == 'alias') {
-                        $query->set($key . ' = ' . $db->quote(str_replace(array(' '),'-',strtolower($data['label'])) . '-' . $newprofile));
+                        $query->set($key . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(),'-',strtolower($data['label'])) . '-' . $newprofile));
                     } elseif ($key == 'rgt') {
                         $query->set($key . ' = ' . $db->quote(1));
                     } elseif ($key == 'lft') {
@@ -797,7 +798,6 @@ class EmundusonboardModelform extends JModelList {
                 $db->execute();
 
 				// Create a first page
-                $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
                 $label = array(
                     'fr' => 'Ma première page',
                     'en' => 'My first page'
