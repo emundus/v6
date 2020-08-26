@@ -140,17 +140,20 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
 
 
                                         // Add the email template model.
-                                        if (!empty($trigger['tmpl']['template']))
+                                        if (!empty($trigger['tmpl']['template'])) {
                                             $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger['tmpl']['template']);
+                                        }
 
                                         $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
                                         $body = $m_email->setTagsFabrik($body, array($file['fnum']));
 
                                         // If the email sender has the same domain as the system sender address.
-                                        if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+                                        if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
                                             $mail_from_address = $from;
-                                        else
+                                        }
+                                        else {
                                             $mail_from_address = $email_from_sys;
+                                        }
 
                                         // Set sender
                                         $sender = [
@@ -195,13 +198,15 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
                                     $to         = $recipient['email'];
                                     $subject    = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
                                     $body       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
-                                    $body       = $m_email->setTagsFabrik($body, $validFnums);
+                                    $body       = $m_email->setTagsFabrik($body, [$fnum]);
 
                                     // If the email sender has the same domain as the system sender address.
-                                    if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1))
+                                    if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
                                         $mail_from_address = $from;
-                                    else
+                                    }
+                                    else {
                                         $mail_from_address = $email_from_sys;
+                                    }
 
                                     // Set sender
                                     $sender = [
