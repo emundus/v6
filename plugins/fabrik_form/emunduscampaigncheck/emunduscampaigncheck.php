@@ -74,6 +74,8 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
      */
     public function onBeforeStore() {
 
+	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.campaign-check.php'), JLog::ALL, array('com_emundus.campaign-check'));
 
@@ -104,6 +106,10 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
             $this->getModel()->getForm()->error = JText::_('LIMIT_OBTAINED');
             return false;
         }
+
+	    if (EmundusHelperAccess::asAccessAction(1, 'c')) {
+		    $applicant_can_renew = 1;
+	    }
 
 	    foreach ($user->emProfiles as $profile) {
 		    if (in_array($profile->id, $id_profiles)) {

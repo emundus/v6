@@ -18,6 +18,7 @@ include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.p
 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 
 $document = JFactory::getDocument();
@@ -110,12 +111,17 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 	$attachments = $m_application->getAttachmentsProgress($fnums);
 	$forms = $m_application->getFormsProgress($fnums);
 
+	if (EmundusHelperAccess::asAccessAction(1, 'c')) {
+		$applicant_can_renew = 1;
+	}
+
 	foreach ($user->emProfiles as $profile) {
 		if (in_array($profile->id, $id_profiles)) {
 			$applicant_can_renew = 1;
 			break;
 		}
 	}
+
 
 	// Check to see if the applicant meets the criteria to renew a file.
 	switch ($applicant_can_renew) {

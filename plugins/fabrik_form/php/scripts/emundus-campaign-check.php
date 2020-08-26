@@ -11,6 +11,7 @@ $id_profiles = $eMConfig->get('id_profiles', '0');
 $id_profiles = explode(',', $id_profiles);
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 $m_campaign = new EmundusModelCampaign;
 $isLimitObtained = $m_campaign->isLimitObtained($campaign_id);
 
@@ -20,6 +21,10 @@ if ($isLimitObtained === true) {
     $formModel->setFormErrorMsg("Campaign limit is obtained.");
     $formModel->getForm()->error = JText::_('ERROR');
     return false;
+}
+
+if (EmundusHelperAccess::asAccessAction(1, 'c')) {
+	$applicant_can_renew = 1;
 }
 
 foreach ($user->emProfiles as $profile) {

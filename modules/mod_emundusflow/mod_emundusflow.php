@@ -19,6 +19,7 @@ $user = JFactory::getSession()->get('emundusUser');
 if (isset($user->fnum) && !empty($user->fnum)) {
 
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
@@ -60,6 +61,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$scholarship_document = $params_emundus->get('scholarship_document_id', NULL);
 	$id_profiles = $params_emundus->get('id_profiles', '0');
 	$id_profiles = explode(',', $id_profiles);
+
+	if (EmundusHelperAccess::asAccessAction(1, 'c')) {
+		$applicant_can_renew = 1;
+	}
 
 	foreach ($user->emProfiles as $profile) {
 		if (in_array($profile->id, $id_profiles)) {
