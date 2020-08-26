@@ -456,11 +456,17 @@ class EmundusonboardModelemail extends JModelList {
     }
 
     function getTriggersByProgramId($pid) {
+        $lang = JFactory::getLanguage();
+        $lid = 2;
+        if ($lang->getTag() != 'fr-FR'){
+            $lid = 1;
+        }
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         $query
-            ->select(['DISTINCT(et.id) AS trigger_id','se.subject AS subject','ss.value AS status','ep.profile_id AS profile','et.to_current_user AS candidate','et.to_applicant AS manual'])
+            ->select(['DISTINCT(et.id) AS trigger_id','se.subject AS subject','ss.step AS status','ep.profile_id AS profile','et.to_current_user AS candidate','et.to_applicant AS manual'])
             ->from($db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id', 'etrp'))
             ->leftJoin($db->quoteName('#__emundus_setup_emails_trigger', 'et')
                 . ' ON ' .
@@ -481,6 +487,16 @@ class EmundusonboardModelemail extends JModelList {
             $triggers = $db->loadObjectList();
 
             foreach ($triggers as $trigger) {
+                $query->clear()
+                    ->select('value')
+                    ->from($db->quoteName('#__falang_content'))
+                    ->where($db->quoteName('reference_id') . ' = ' . $db->quote($trigger->status))
+                    ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'))
+                    ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote('value'))
+                    ->andWhere($db->quoteName('language_id') . ' = ' . $db->quote($lid));
+                $db->setQuery($query);
+                $trigger->status = $db->loadResult();
+
                 $query->clear()
                     ->select(['us.firstname','us.lastname'])
                     ->from($db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id','tu'))

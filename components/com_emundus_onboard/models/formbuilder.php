@@ -17,11 +17,6 @@ use Joomla\CMS\Date\Date;
 
 class EmundusonboardModelformbuilder extends JModelList {
 
-    /**
-     * Return special character to escape when insert into db
-     *
-     * @return string[]
-     */
     function getSpecialCharacters() {
         return array('=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%');
     }
@@ -31,6 +26,73 @@ class EmundusonboardModelformbuilder extends JModelList {
             if (!is_array($value)) { $value = htmlspecialchars($value); }
             else { $this->htmlspecial_array($value); }
         }
+    }
+
+    function prepareSubmittionPlugin($params) {
+        $params['applicationsent_status'] = "0";
+        $params['admission'] = "0";
+        $params['only_process_curl'] = array(
+            2 => "getEndContent"
+        );
+        $params['form_php_file'] = array(
+            2 => "-1"
+        );
+        $params['form_php_require_once'] = array(
+            2 => "0"
+        );
+        $params['thanks_message'] = array(
+            3 => "Votre candidature a bien été envoyé."
+        );
+        $params['save_insession'] = array(
+            3 => "0"
+        );
+        $params['redirect_conditon'] = array(
+            3 => "0"
+        );
+        $params['redirect_content_reset_form'] = array(
+            3 => "1"
+        );
+        $params['redirect_content_how'] = array(
+            3 => "popup"
+        );
+        $params['redirect_content_popup_width'] = array(
+            3 => ""
+        );
+        $params['redirect_content_popup_height'] = array(
+            3 => ""
+        );
+        $params['redirect_content_popup_x_offset'] = array(
+            3 => ""
+        );
+        $params['redirect_content_popup_y_offset'] = array(
+            3 => ""
+        );
+        $params['redirect_content_popup_title'] = array(
+            3 => ""
+        );
+        $params['plugins'] = array("emundusisapplicationsent", "emundusconfirmpost", "php", "redirect");
+
+        return $params;
+    }
+
+    function prepareFormPlugin($params) {
+        $params['emundusredirect_field_status'] = "-1";
+        $params['copy_form'] = "0";
+        $params['notify_complete_file'] = "0";
+        $params['applicationsent_status'] = "0";
+        $params['admission'] = "0";
+        $params['only_process_curl'] = array(
+            2 => "getEndContent"
+        );
+        $params['form_php_file'] = array(
+            2 => "-1"
+        );
+        $params['form_php_require_once'] = array(
+            2 => "0"
+        );
+        $params['plugins'] = array("emundusredirect", "emundusisapplicationsent", "php");
+
+        return $params;
     }
 
     function prepareElementParameters($plugin) {
@@ -457,21 +519,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->where($db->quoteName('id') . ' = ' . $db->quote($formid));
             $db->setQuery($query);
             $params = json_decode($db->loadResult(), true);
-            $params['emundusredirect_field_status'] = "-1";
-            $params['copy_form'] = "0";
-            $params['notify_complete_file'] = "0";
-            $params['applicationsent_status'] = "0";
-            $params['admission'] = "0";
-            $params['only_process_curl'] = array(
-                2 => "getEndContent"
-            );
-            $params['form_php_file'] = array(
-                2 => "-1"
-            );
-            $params['form_php_require_once'] = array(
-                2 => "0"
-            );
-            $params['plugins'] = array("emundusredirect","emundusisapplicationsent","php");
+            $params = $this->prepareFormPlugin($params);
             //
             $query->update($db->quoteName('#__fabrik_forms'));
 
@@ -1993,27 +2041,24 @@ class EmundusonboardModelformbuilder extends JModelList {
             $newformid = $db->insertid();
 
             // Set emundus plugin in params
-            $query->clear();
-            $query->select('params')
-                ->from($db->quoteName('#__fabrik_forms'))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($formid));
-            $db->setQuery($query);
-            $params = json_decode($db->loadResult(), true);
-            $params['emundusredirect_field_status'] = "-1";
-            $params['copy_form'] = "0";
-            $params['notify_complete_file'] = "0";
-            $params['applicationsent_status'] = "0";
-            $params['admission'] = "0";
-            $params['only_process_curl'] = array(
-                2 => "getEndContent"
-            );
-            $params['form_php_file'] = array(
-                2 => "-1"
-            );
-            $params['form_php_require_once'] = array(
-                2 => "0"
-            );
-            $params['plugins'] = array("emundusredirect","emundusisapplicationsent","php");
+            if($formid == 258) {
+                $query->clear();
+                $query->select('params')
+                    ->from($db->quoteName('#__fabrik_forms'))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($formid));
+                $db->setQuery($query);
+                $params = json_decode($db->loadResult(), true);
+                $params = $this->prepareSubmittionPlugin($params);
+
+            } else {
+                $query->clear();
+                $query->select('params')
+                    ->from($db->quoteName('#__fabrik_forms'))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($formid));
+                $db->setQuery($query);
+                $params = json_decode($db->loadResult(), true);
+                $params = $this->prepareFormPlugin($params);
+            }
             //
 
             // Update translation files

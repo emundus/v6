@@ -11,3 +11,10 @@ VALUES (0, 'footer (2)', '', '', 1, 'footer-b', 0, '2020-07-17 10:00:00', '2020-
 UPDATE jos_assets
 SET rules = '{"core.login.site":{"1":1,"6":1,"2":1},"core.login.offline":{"6":1},"core.admin":{"8":1},"core.manage":{"7":1},"core.create":{"6":1,"3":1},"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1},"core.edit.own":{"6":1,"3":1}}'
 WHERE name = 'root.1';
+
+# Cleanup status translations
+DELETE FROM jos_falang_content
+WHERE reference_id NOT IN (
+    SELECT step
+    FROM jos_emundus_setup_status
+) AND reference_table = 'emundus_setup_status';

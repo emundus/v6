@@ -28,7 +28,7 @@
                   required
                   :class="{ 'is-invalid': errors.label, 'mb-0': translate.label }"
                 />
-              <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" @click="translate.label = !translate.label"></button>
+              <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" @click="enableLabelTranslation"></button>
             </div>
             <transition :name="'slide-down'" type="transition">
             <div class="inlineflex" v-if="translate.label" style="margin: 10px">
@@ -43,6 +43,7 @@
                    type="text"
                    class="form__input field-general w-input"
                    v-model="form.label.en"
+                   :id="'label_en'"
             />
             </transition>
           </div>
@@ -146,7 +147,9 @@
             </div>
           </transition>
         </div>
+
         <div class="divider"></div>
+
         <div class="sous-container">
           <div class="heading-form">
             <div class="icon-title informations"></div>
@@ -187,7 +190,9 @@
             />
           </div>
         </div>
+
         <div class="divider"></div>
+
         <div class="sous-container last-container">
           <div class="heading-form">
             <div class="icon-title programme"></div>
@@ -290,7 +295,9 @@
             </div>
           </transition>
         </div>
+
         <div class="divider"></div>
+
         <div class="section-sauvegarder-et-continuer">
           <div class="w-container">
             <div class="container-evaluation w-clearfix">
@@ -324,7 +331,6 @@
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
 import axios from "axios";
 import { Datetime } from "vue-datetime";
 import { DateTime as LuxonDateTime, Settings } from "luxon";
@@ -458,15 +464,6 @@ export default {
     submitted: false
   }),
 
-  validations: {
-    form: {
-      label: { required },
-      start_date: { required },
-      training: { required },
-      year: { required },
-    }
-  },
-
   created() {
     Settings.defaultLocale = this.actualLanguage;
     if (this.campaign !== "") {
@@ -503,7 +500,9 @@ export default {
     axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
       .then(response => {
         this.programs = response.data.data;
-        this.programs.sort((a, b) => a.id - b.id);
+        if(Object.keys(this.programs).length !== 0) {
+          this.programs.sort((a, b) => a.id - b.id);
+        }
       }).catch(e => {
         console.log(e);
       });
@@ -536,16 +535,18 @@ export default {
     updateCode() {
       if(this.programForm.label !== ''){
         this.programForm.code = this.programForm.label.toUpperCase().replace(/[^a-zA-Z0-9]/g,'_').substring(0,10) + '_00';
-        this.programs.forEach((element, index) => {
-          if(this.programForm.code == element.code){
-            let newCode = parseInt(element.code.split('_')[1]) + 1;
-            if(newCode > 10) {
-              this.programForm.code = this.programForm.label.toUpperCase()  + '_' + newCode;
-            } else {
-              this.programForm.code = this.programForm.label.toUpperCase()  + '_0' + newCode;
+        if(Object.keys(this.programs).length !== 0) {
+          this.programs.forEach((element, index) => {
+            if (this.programForm.code == element.code) {
+              let newCode = parseInt(element.code.split('_')[1]) + 1;
+              if (newCode > 10) {
+                this.programForm.code = this.programForm.label.toUpperCase() + '_' + newCode;
+              } else {
+                this.programForm.code = this.programForm.label.toUpperCase() + '_0' + newCode;
+              }
             }
-          }
-        });
+          });
+        }
       } else {
         this.programForm.code = '';
       }
@@ -564,6 +565,15 @@ export default {
       });
     },
 
+    enableLabelTranslation(){
+      this.translate.label = !this.translate.label
+      if(this.translate.label){
+        setTimeout(() => {
+          document.getElementById('label_en').focus();
+        },100);
+      }
+    },
+
     getStatus() {
       axios.get("index.php?option=com_emundus_onboard&controller=settings&task=getstatus")
               .then(response => {
@@ -572,6 +582,7 @@ export default {
     },
 
     submit() {
+      // Checking errors
       this.errors = {
         label: false,
         progCode: false,
@@ -580,7 +591,6 @@ export default {
         limit_files_number: false,
         limit_status: false
       }
-
       if(this.form.label.fr == ""){
          window.scrollTo({ top: 0, behavior: 'smooth' });
          this.errors.label = true;
@@ -640,12 +650,7 @@ export default {
           return 0;
         }
       }
-
-      // stop here if form is invalid
-      this.$v.$touch();
-      if (this.$v.$invalid) {
-        return;
-      }
+      //
 
       // Set year object values
       this.year.label = this.form.label;
@@ -653,12 +658,13 @@ export default {
       this.year.schoolyear = this.form.year;
       this.year.published = this.form.published;
       this.year.profile_id = this.form.profile_id;
-
-      this.submitted = true;
+      //
 
       if(!this.translate.label){
         this.form.label.en = this.form.label.fr;
       }
+
+      this.submitted = true;
 
       axios({
         method: "post",
@@ -715,8 +721,7 @@ export default {
     quitFunnelOrContinue(quit) {
       if (quit == 0) {
         window.location.href = '/configuration-campaigns'
-      }
-      else if (quit == 1) {
+      } else if (quit == 1) {
         this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.campaign + '&index=0')
       }
     },

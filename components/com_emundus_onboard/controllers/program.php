@@ -48,7 +48,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 	        $page = $jinput->getInt('page');
             $programs = $m_prog->getAllPrograms($lim, $page, $filter, $sort, $recherche);
 
-            if (count($programs) > 0) {
+            if (count((array)$programs) > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $programs);
             } else {
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'), 'data' => $programs);

@@ -27,6 +27,7 @@
             @show="show"
             @UpdateUx="UpdateUXT"
             @UpdateName="UpdateName"
+            @UpdateIntro="UpdateIntro"
             @UpdateVue="updateFormObjectAndComponent"
             @removeMenu="removeMenu"
     />
@@ -403,6 +404,9 @@
       UpdateName(index, label) {
         this.formObjectArray[index].object.show_title.value = label;
       },
+      UpdateIntro(index, intro) {
+        this.formObjectArray[index].object.intro = intro;
+      },
       UpdateUXT() {
         this.UpdateUx = true;
       },
@@ -620,7 +624,7 @@
       },
 
       sendForm() {
-        if(this.cid != ""){
+        if(this.cid != 0){
           window.location.replace('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=1');
         } else {
           axios({

@@ -180,13 +180,20 @@
     methods: {
       beforeClose(event) {
         this.form = {
-          name: '',
-          description: '',
+          name: {
+            fr: '',
+            en: ''
+          },
+          description: {
+            fr: '',
+            en: ''
+          },
           nbmax: 1,
           selectedTypes: {
             pdf: false,
             'jpg;png;gif': false,
-            'doc;docx;odt;xls;xlsx;odf': false
+            'doc;docx;odt': false,
+            'xls;xlsx;odf': false,
           },
         };
       },

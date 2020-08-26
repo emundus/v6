@@ -157,6 +157,7 @@ export default {
       this.saveAsTemplate();
       this.element = JSON.parse(JSON.stringify(this.tempEl));
       this.$emit("UpdateName", this.index, this.label.fr);
+      this.$emit("UpdateIntro", this.index, this.intro.fr);
     },
     beforeClose(event) {
       if (this.changes != false) {

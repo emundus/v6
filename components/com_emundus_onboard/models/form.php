@@ -131,8 +131,6 @@ class EmundusonboardModelform extends JModelList {
         $db->setQuery($query);
         $access_profiles[] = $db->loadColumn();
 
-        $profiles_campaign_associated = [];
-
 	    $campaigns = $this->model_campaign->getAssociatedCampaigns('','','',100,'');
 	    $campaigns_id = [];
         $profiles_campaign_associated = [];

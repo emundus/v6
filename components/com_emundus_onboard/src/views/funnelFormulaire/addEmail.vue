@@ -49,10 +49,11 @@
           <p>{{trigger.subject}}</p>
           <p>
             <span style="font-weight: bold">{{Target}} : </span>
-            <span v-if="trigger.profile == null" v-for="(user, index) in trigger.users">
+            <span v-if="trigger.profile == null && trigger.users.length > 0" v-for="(user, index) in trigger.users">
               {{user.firstname}} {{user.lastname}}
               <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
             </span>
+            <span v-if="trigger.users.length == 0">{{TheCandidate}}</span>
             <span v-if="trigger.profile == 5">{{Administrators}}</span>
             <span v-if="trigger.profile == 6">{{Evaluators}}</span>
           </p>
