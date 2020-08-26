@@ -514,13 +514,12 @@ class EmundusonboardModelcampaign extends JModelList
                 if ($key == 'label') {
                     $label_fr = $data['label']['fr'];
                     $label_en = $data['label']['en'];
-                    $data['label'] = $data['label']['fr'];
-                }
-                if ($key == 'limit_status') {
+                    $fields[] = $db->quoteName($key) . ' = ' . $db->quote($data['label']['fr']);
+                } else if ($key == 'limit_status') {
                     $limit_status = $data['limit_status'];
                 }
-                if ($key !== 'profileLabel' && $key !== 'limit_status') {
-                    $insert = $db->quoteName(htmlspecialchars($key)) . ' = ' . $db->quote(htmlspecialchars($val));
+                else if ($key !== 'profileLabel') {
+                    $insert = $db->quoteName($key) . ' = ' . $db->quote($val);
                     $fields[] = $insert;
                 }
             }

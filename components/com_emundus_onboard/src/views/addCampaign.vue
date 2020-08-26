@@ -660,7 +660,7 @@ export default {
       this.year.profile_id = this.form.profile_id;
       //
 
-      if(!this.translate.label){
+      if(!this.translate.label && this.campaign == ""){
         this.form.label.en = this.form.label.fr;
       }
 

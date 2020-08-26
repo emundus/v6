@@ -337,8 +337,9 @@
             }).then(() => {}).catch(e => {
                 console.log(e);
             });
-
-            this.menuHighlight = this.index;
+            setTimeout(() => {
+                this.menuHighlight = this.index;
+            },500);
         },
     };
 </script>
