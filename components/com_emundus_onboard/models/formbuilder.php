@@ -47,7 +47,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             3 => "0"
         );
         $params['redirect_conditon'] = array(
-            3 => "0"
+            3 => ""
         );
         $params['redirect_content_reset_form'] = array(
             3 => "1"
