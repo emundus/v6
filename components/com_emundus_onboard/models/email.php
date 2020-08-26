@@ -578,27 +578,33 @@ class EmundusonboardModelemail extends JModelList {
                     ->insert($db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id'))
                     ->set($db->quoteName('parent_id') . ' = ' . $db->quote($trigger_id))
                     ->set($db->quoteName('profile_id') . ' = ' . $db->quote($trigger['target']));
-                try {
-                    $db->setQuery($query);
-                    $db->execute();
-                } catch(Exception $e) {
-                    JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                    return false;
-                }
+                $db->setQuery($query);
+                $db->execute();
             } elseif ($trigger['target'] == 0) {
                 foreach (array_keys($users) as $uid) {
                     $query->clear()
                         ->insert($db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
                         ->set($db->quoteName('parent_id') . ' = ' . $db->quote($trigger_id))
                         ->set($db->quoteName('user_id') . ' = ' . $db->quote($uid));
-                    try {
-                        $db->setQuery($query);
-                        $db->execute();
-                    } catch(Exception $e) {
-                        JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                        return false;
-                    }
+
+                    $db->setQuery($query);
+                    $db->execute();
                 }
+            } elseif ($trigger['target'] == 1000) {
+                $query->clear()
+                    ->select('sc.profile_id')
+                    ->from($db->quoteName('#__emundus_setup_programmes','sp'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.training').' = '.$db->quoteName('sp.training'))
+                    ->where($db->quoteName('sp.id') . ' = ' . $db->quote($trigger['program']));
+                $db->setQuery($query);
+                $prid = $db->loadResult();
+
+                $query->clear()
+                    ->insert($db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id'))
+                    ->set($db->quoteName('parent_id') . ' = ' . $db->quote($trigger_id))
+                    ->set($db->quoteName('profile_id') . ' = ' . $db->quote($prid));
+                $db->setQuery($query);
+                $db->execute();
             }
 
             $query->clear()
@@ -606,13 +612,8 @@ class EmundusonboardModelemail extends JModelList {
                 ->set($db->quoteName('parent_id') . ' = ' . $db->quote($trigger_id))
                 ->set($db->quoteName('programme_id') . ' = ' . $db->quote($trigger['program']));
 
-            try {
-                $db->setQuery($query);
-                return $db->execute();
-            } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                return false;
-            }
+            $db->setQuery($query);
+            return $db->execute();
         } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;

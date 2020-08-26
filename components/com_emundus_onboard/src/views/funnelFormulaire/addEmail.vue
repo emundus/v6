@@ -5,12 +5,14 @@
             :trigger="this.triggerSelected"
             :triggerAction="'candidate'"
             @UpdateTriggers="getTriggers"
+            :key="candidate_trigger"
     />
     <ModalAddTrigger
             :prog="this.prog"
             :trigger="this.triggerSelected"
             :triggerAction="'manual'"
             @UpdateTriggers="getTriggers"
+            :key="manual_trigger"
     />
     <div class="choices-buttons">
       <h2 style="margin-bottom: 0">{{ TheCandidate }}</h2>
@@ -84,6 +86,8 @@ export default {
     return {
       triggers: [],
       triggerSelected: null,
+      manual_trigger: 0,
+      candidate_trigger: 0,
       addTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER"),
       affectTriggers: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_AFFECTTRIGGERS"),
       ChooseEmailTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_EMAIL_TRIGGER"),
@@ -101,11 +105,15 @@ export default {
   methods: {
     editTrigger(trigger) {
       this.triggerSelected = trigger.trigger_id;
-      if(trigger.candidate == 1){
-        this.$modal.show('modalAddTriggercandidate');
-      } else {
-        this.$modal.show('modalAddTriggermanual');
-      }
+      this.manual_trigger += 1;
+      this.candidate_trigger += 1;
+      setTimeout(() => {
+        if(trigger.candidate == 1){
+          this.$modal.show('modalAddTriggercandidate');
+        } else {
+          this.$modal.show('modalAddTriggermanual');
+        }
+      },500);
     },
     removeTrigger(trigger) {
       axios({

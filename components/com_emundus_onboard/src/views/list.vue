@@ -17,7 +17,10 @@
 
     <ul class="form-section email-sections" v-if="type == 'email' && !loading">
       <li>
-        <a :class="menuEmail === 2 ? 'form-section__current' : ''" @click="menuEmail = 2">Modèles</a>
+        <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">Tous</a>
+      </li>
+      <li v-for="(cat, index) in email_categories" v-if="cat != ''">
+        <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
       </li>
       <li>
         <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">Systèmes</a>
@@ -77,8 +80,14 @@
         <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-md-6">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
-        <div v-if="type == 'email' && data.type == menuEmail" v-for="(data, index) in list" :key="index" class="col-md-6">
-            <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-md-6">
+          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+        </div>
+        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-md-6">
+          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+        </div>
+        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-md-6">
+          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
       </transition-group>
 
@@ -215,7 +224,8 @@ export default {
     pages: 1,
     countPages: 1,
 
-    menuEmail: 2,
+    menuEmail: 0,
+    email_categories: [],
   }),
 
   computed: {
@@ -315,6 +325,12 @@ export default {
                   list.commit("formsAccessUpdate", rep.data.forms_updating);
                 }
                 this.countPages = Math.ceil(this.total / this.limit);
+                if(this.type == 'email'){
+                  axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
+                    .then(catrep => {
+                      this.email_categories = catrep.data.data;
+                  });
+                }
                 this.loading = false;
               }).catch(e => {
                 console.log(e);

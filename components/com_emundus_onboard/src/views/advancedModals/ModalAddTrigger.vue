@@ -287,6 +287,8 @@ export default {
                   response.data.data.users.forEach(element => {
                     this.selectedUsers[element.user_id] = true;
                   });
+                } else if(response.data.data.target != 5 || response.data.data.target != 6) {
+                  this.form.target = 1000;
                 } else {
                   this.form.target = response.data.data.target;
                 }
