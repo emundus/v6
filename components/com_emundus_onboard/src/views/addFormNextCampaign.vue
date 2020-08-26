@@ -83,8 +83,7 @@
             </div>
         </div>
 
-        <div class="section-sauvegarder-et-continuer-funnel"
-             :class="menuHighlight == 5 ? 'big' : menuHighlight == 1 ? 'noShow' : ''">
+        <div class="section-sauvegarder-et-continuer-funnel">
             <div class="w-container">
                 <div class="container-evaluation w-clearfix">
                     <a @click="next()" class="bouton-sauvergarder-et-continuer-3">{{ Continuer }}</a>

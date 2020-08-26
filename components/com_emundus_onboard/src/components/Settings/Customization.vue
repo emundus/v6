@@ -196,7 +196,7 @@ export default {
       } else if (this.menuHighlight === 3) {
         this.updateStatus(this.$refs.status.$data.status);
       } else if (this.menuHighlight === 4) {
-        this.updateStatus(this.$refs.tags.$data.tags);
+        this.updateTags(this.$refs.tags.$data.tags);
       }
     },
 
