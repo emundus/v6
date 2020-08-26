@@ -1,15 +1,17 @@
 <?php
 
 $db = JFactory::getDBO();
-$user = JFactory::getUser();
+$user = JFactory::getSession()->get('emundusUser');
 
 $campaign_id = $data['jos_emundus_campaign_candidature___campaign_id_raw'][0];
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
+$id_profiles = $eMConfig->get('id_profiles', '0');
+$id_profiles = explode(',', $id_profiles);
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-$m_campaign     = new EmundusModelCampaign;
+$m_campaign = new EmundusModelCampaign;
 $isLimitObtained = $m_campaign->isLimitObtained($campaign_id);
 
 if ($isLimitObtained === true) {
@@ -19,6 +21,14 @@ if ($isLimitObtained === true) {
     $formModel->getForm()->error = JText::_('ERROR');
     return false;
 }
+
+foreach ($user->emProfiles as $profile) {
+	if (in_array($profile->id, $id_profiles)) {
+		$applicant_can_renew = 1;
+		break;
+	}
+}
+
 switch ($applicant_can_renew) {
 
     // Cannot create new campaigns at all.

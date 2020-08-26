@@ -15,7 +15,7 @@ defined('_JEXEC') or die();
 
 $db = JFactory::getDBO();
 $query = $db->getQuery(true);
-$current_user = JFactory::getUser();
+$current_user = JFactory::getSession()->get('emundusUser');
 $application = JFactory::getApplication();
 
 $campaign_id = $data['jos_emundus_campaign_candidature___campaign_id_raw'][0];
@@ -32,6 +32,15 @@ JLog::addLogger(array('text_file' => 'com_emundus.syncClaroline.php'), JLog::ALL
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
+$id_profiles = $eMConfig->get('id_profiles', '0');
+$id_profiles = explode(',', $id_profiles);
+
+foreach ($current_user->emProfiles as $profile) {
+	if (in_array($profile->id, $id_profiles)) {
+		$applicant_can_renew = 1;
+		break;
+	}
+}
 
 $query->select($db->quoteName('profile_id'))
 	->from($db->quoteName('#__emundus_setup_campaigns'))
