@@ -149,7 +149,11 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 ${"element".$o_element->id}->labelsAbove=$labelsAbove;
                 ${"element".$o_element->id}->plugin=$o_element->plugin;
                 if($el_parmas->validations->plugin != null){
-                    $FRequire = in_array('notempty',$el_parmas->validations->plugin);
+                    if(is_array($el_parmas->validations->plugin)) {
+                        $FRequire = in_array('notempty', $el_parmas->validations->plugin);
+                    } elseif ($el_parmas->validations->plugin == 'notempty') {
+                        $FRequire = true;
+                    }
                 } else {
                     $FRequire = false;
                 }

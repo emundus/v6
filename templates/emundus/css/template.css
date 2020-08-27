@@ -865,6 +865,7 @@ li.g-menu-item:hover ul.g-dropdown {
   -webkit-background-clip: padding-box;
   -moz-background-clip: padding;
   background-clip: padding-box;
+  width: auto;
 }
 
 #moduletable-b li a {
