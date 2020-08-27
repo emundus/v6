@@ -153,6 +153,8 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                         $FRequire = in_array('notempty', $el_parmas->validations->plugin);
                     } elseif ($el_parmas->validations->plugin == 'notempty') {
                         $FRequire = true;
+                    } else {
+                        $FRequire = false;
                     }
                 } else {
                     $FRequire = false;
@@ -187,8 +189,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                     if ($el_parmas->tipLocation == 'below') :
                         ${"element".$o_element->id}->tipBelow=$content_element->tipBelow;
                     endif;
-                }else
-                {
+                } else {
                     ${"element".$o_element->id}->label=$content_element->label;
 
                     if ($el_parmas->tipLocation == 'above') :
@@ -218,7 +219,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 ${"group_".$GroupProperties->id}->group_outro = $GroupProperties->outro;
             endif;
 
-            if(${"group_".$GroupProperties->id}->group_css !== ";display:none;"){
+            if(${"group_".$GroupProperties->id}->group_css !== ";display:none;") {
                 $Groups->{"group_".$GroupProperties->id} = ${"group_".$GroupProperties->id};
             }
         endforeach;
@@ -233,7 +234,6 @@ class EmundusonboardViewForm extends FabrikViewFormBase
          * @param returnObject
          * *Contient toute les informations
          */
-        // var_dump($returnObject).die();
         echo json_encode($returnObject);
     }
 }
