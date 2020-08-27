@@ -995,6 +995,7 @@ class EmundusonboardModelform extends JModelList {
 
 		$query->select('*')
 			->from($db->quoteName('#__emundus_setup_attachments'))
+			->where($db->quoteName('published') . ' = ' . 1)
 			->order($db->quoteName('ordering'));
 
 		$db->setQuery($query);
