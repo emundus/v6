@@ -70,49 +70,44 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 
 		$this->log = '';
 
-
 		$select = [
-			$db->quoteName('pd.email','adresseMailExterne'),
-			$db->quoteName('a.bac_year', 'anneeBac'),
-			$db->quoteName('a.parcours_sup_annee','anneeEnsSupInscription1'),
-			$db->quoteName('a.univ_year','anneeInscription1'),
+			$db->quoteName('pd.email','adresseMailExterne'), //NOTE: Required
+			'YEAR(a.bac_year) AS anneeBac',
+			'YEAR(a.parcours_sup_annee) AS anneeEnsSupInscription1', //NOTE: Required
+			'YEAR(a.univ_year) AS anneeInscription1', //NOTE: Required
 			$db->quoteName('a.bac_serie','codBac'),
 			$db->quoteName('pd.city_1','codCommuneAF'),
-			$db->quoteName('cc.id','codDossier'),
+			$db->quoteName('cc.id','codDossier'), //NOTE: Required
 			$db->quoteName('a.bac_department','codDptBac'),
-			$db->quoteName('a.univ_depatment','codDptInscription1'),
+			$db->quoteName('a.univ_depatment','codDptInscription1'), //NOTE: Required
 			$db->quoteName('pd.birth_department','codDptNaissance'),
-			'"EMUNDUS" AS codEtablissement',
-			$db->quoteName('a.univ_establishment','codEtbInscription1'),
-			'"" AS codEtbLycee',
-			'"1" AS codFamiliale',
+			'"EMUNDUS" AS codEtablissement', //NOTE: Required
+			$db->quoteName('a.univ_establishment_select','codEtbInscription1'), //NOTE: Required
 			$db->quoteName('a.bac_mention','codMention'),
-			'"N" AS codMilitaire',
-			$db->quoteName('c.scholarg_code','codNationalite'),
-			$db->quoteName('c2.scholarg_code','codPaysAF'),
-			$db->quoteName('c3.scholarg_code','codPaysNaissance'),
-			'"99" AS codPcsParent1',
+			'"N" AS codMilitaire', //NOTE: Required
+			$db->quoteName('c.scholarg_code','codNationalite'), //NOTE: Required
+			$db->quoteName('c2.scholarg_code','codPaysAF'), //NOTE: Required
+			$db->quoteName('c3.scholarg_code','codPaysNaissance'), //NOTE: Required
+			'"99" AS codPcsParent1', //NOTE: Required
 			$db->quoteName('pd.zipcode_1','codPostalAF'),
-			$db->quoteName('a.bac_establishment_type','codTypEtablissement'),
-			'"" AS codcommunenaissance',
-			'"99" AS codpcsParent2',
+			$db->quoteName('a.bac_establishment_type','codTypEtablissement'), //NOTE: Required
+			'"99" AS codpcsParent2', //NOTE: Required
 			$db->quoteName('pd.street_2','complementAF'),
 			$db->quoteName('pd.city_2','cpEtrangerAF'),
-			$db->quoteName('pd.birth_date','datNaissance'),
-			$db->quoteName('pd.birth_town','lieuNaissance'),
+			$db->quoteName('pd.birth_date','datNaissance'), //NOTE: Required
+			$db->quoteName('pd.birth_town','lieuNaissance'), //NOTE: Required
 			$db->quoteName('fc.name','localiteAF'),
-			'"0" AS nbrEnfants',
 			$db->quoteName('pd.last_name','nomUsuel'),
 			$db->quoteName('a.parcours_sup_ine','numIne'),
 			$db->quoteName('pd.telephone','numPortable'),
 			$db->quoteName('pd.telephone','numTelephoneAF'),
 			$db->quoteName('pd.street_1','numVoieAF'),
-			$db->quoteName('pd.nom_marital','patronyme'),
-			$db->quoteName('pd.first_name','prenom1'),
+			$db->quoteName('pd.nom_marital','patronyme'), //NOTE: Required
+			$db->quoteName('pd.first_name','prenom1'), //NOTE: Required
 			$db->quoteName('pd.second_name','prenom2'),
-			$db->quoteName('pd.gender','gender'),
-			$db->quoteName('fc.name','villeAF'),
-			$db->quoteName('pd.street_1','voieAF'),
+			$db->quoteName('pd.gender','sexe'), //NOTE: Required
+			$db->quoteName('fc.name','villeAF'), //NOTE: Required
+			$db->quoteName('pd.street_1','voieAF'), //NOTE: Required
 			$db->quoteName('cc.fnum')
 		];
 
@@ -148,22 +143,32 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 			// remove fnum from object being sent to API.
 			unset($file->fnum);
 
+			// Empty values for non-required fields don't need to be sent.
 			if (empty($file->codDptBac)) {
-				$file->codBac = "";
+				unset($file->codBac);
 			}
 			if (empty($file->codDptBac)) {
-				$file->codDptBac = "";
+				unset($file->codDptBac);
 			}
 			if (empty($file->codDptNaissance)) {
-				$file->codDptNaissance = "";
-			}
-			if (empty($file->codTypEtablissement)) {
-				$file->codTypEtablissement = "";
+				unset($file->codDptNaissance);
 			}
 
+			// Bac is a required field that not all have filled out, in that case : insert the value for OTHER.
+			if (empty($file->codTypEtablissement)) {
+				$file->codTypEtablissement = 9;
+			}
+
+			// Telephone numbers need to be without spaces
+			$file->numPortable = str_replace(' ', '', $file->numPortable);
+			$file->numTelephoneAF = str_replace(' ', '', $file->numTelephoneAF);
+
+			// Split address into street and number.
 			preg_match('/^\d+/', $file->numVoieAF, $matches);
 			$file->voieAF = trim(preg_replace('/^\d+/', '', $file->numVoieAF));
 			$file->numVoieAF = $matches[0];
+			
+			echo '<pre>'; var_dump(json_encode($file)); echo '</pre>'; die;
 
 			$response = $http->post($api_url.$api_route, json_encode($file), ['X-Auth-Token' => $token, 'Content-Type' => 'application/json']);
 			
