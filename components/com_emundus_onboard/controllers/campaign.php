@@ -40,7 +40,6 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-
 	        $m_camp = $this->model;
 
 	        $jinput = JFactory::getApplication()->input;
@@ -53,7 +52,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             if ($campaigns > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_CAMPAIGNS'), 'data' => $campaigns);
+                $tab = array('status' => 0, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $campaigns);
             }
         }
         echo json_encode((object)$tab);
@@ -70,7 +69,6 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-
 	        $m_camp = $this->model;
 
 	        $jinput = JFactory::getApplication()->input;
@@ -86,7 +84,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             if (count($campaigns) > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_CAMPAIGNS'), 'data' => $campaigns);
+                $tab = array('status' => 0, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $campaigns);
             }
         }
         echo json_encode((object)$tab);
@@ -114,7 +112,7 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             if (count($campaigns) > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_CAMPAIGNS'), 'data' => $campaigns);
+                $tab = array('status' => 0, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $campaigns);
             }
         }
         echo json_encode((object)$tab);
@@ -133,9 +131,9 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-
 	        $jinput = JFactory::getApplication()->input;
 	        $data = $jinput->getInt('id');
+
 	        $m_camp = $this->model;
 
             $result = $m_camp->deleteCampaign($data);
@@ -162,9 +160,9 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-
 	        $jinput = JFactory::getApplication()->input;
 	        $data = $jinput->getInt('id');
+
 	        $m_camp = $this->model;
 
             $result = $m_camp->unpublishCampaign($data);

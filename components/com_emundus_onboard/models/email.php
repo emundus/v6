@@ -16,14 +16,7 @@ jimport('joomla.application.component.model');
 
 class EmundusonboardModelemail extends JModelList {
 
-     /**
-     * @param $user int
-     * gets the amount of camapaigns
-     * @param int $offset
-     * @return integer
-     */
      function getEmailCount($filter, $recherche) {
-
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -45,7 +38,6 @@ class EmundusonboardModelemail extends JModelList {
             $fullRecherche = $rechercheSubject.' OR '.$rechercheMessage.' OR '.$rechercheEmail.' OR '.$rechercheType;
         }
 
-
         $query->select('COUNT(se.id)')
             ->from($db->quoteName('#__emundus_setup_emails', 'se'))
             ->where($filterCount)
@@ -55,17 +47,15 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadResult();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return 0;
         }
 
     }
 
-    /**
-	 * @return array
-	 * get list of declared emails
-	 */
      function getAllEmails($lim, $page, $filter, $sort, $recherche) {
+         $db = $this->getDbo();
+         $query = $db->getQuery(true);
 
         if (empty($lim)) {
             $limit = 25;
@@ -82,11 +72,7 @@ class EmundusonboardModelemail extends JModelList {
         if (empty($sort)) {
             $sort = 'DESC';
         }
-
         $sortDb = 'se.id ';
-
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
 
         if ($filter == 'Publish') {
             $filterDate = $db->quoteName('se.published') . ' = 1';
@@ -117,20 +103,12 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query, $offset, $limit);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return [];
         }
     }
 
-
-    /**
-     * @param   array $data the row to delete in table.
-     *
-     * @return boolean
-     * Delete email(s) in DB
-     */
      public function deleteEmail($data) {
-
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -140,30 +118,21 @@ class EmundusonboardModelemail extends JModelList {
                     $db->quoteName('id') . ' IN (' . implode(", ",array_values($data)) . ')',
                 );
 
-                $query->clear()
-                    ->delete($db->quoteName('#__emundus_setup_emails'))
+                $query->delete($db->quoteName('#__emundus_setup_emails'))
                     ->where($se_conditions);
 
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                return $e->getMessage();
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                return false;
             }
-
         } else {
             return false;
         }
     }
 
-    /**
-     * @param   array $data the row to unpublish in table.
-     *
-     * @return boolean
-     * Unpublish email(s) in DB
-     */
     public function unpublishEmail($data) {
-
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -187,23 +156,15 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                return $e->getMessage();
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                return false;
             }
-
         } else {
             return false;
         }
     }
 
-    /**
-     * @param   array $data the row to publish in table.
-     *
-     * @return boolean
-     * Publish email(s) in DB
-     */
     public function publishEmail($data) {
-
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -227,24 +188,15 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
-
         } else {
             return false;
         }
     }
 
-
-    /**
-     * @param array $data the row to copy in table.
-     *
-     * @return boolean
-     * Copy email(s) in DB
-     */
     public function duplicateEmail($data) {
-
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -282,29 +234,21 @@ class EmundusonboardModelemail extends JModelList {
                 return $db->execute();
 
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                return $e->getMessage();
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                return false;
             }
-
         } else {
             return false;
         }
     }
 
-    /**
-	 * @param $id
-	 *
-	 * @return array|boolean
-	 * get list of declared emails
-	 */
      public function getEmailById($id) {
+         $db = JFactory::getDbo();
+         $query = $db->getQuery(true);
 
         if (empty($id)) {
 	        return false;
         }
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
 
         $query->select('*')
             ->from ($db->quoteName('#__emundus_setup_emails'))
@@ -316,19 +260,12 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadObject();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
 
-    /**
-     * @param   array $data the row to add in table.
-     *
-     * @return boolean
-     * Add new email in DB
-     */
      public function createEmail($data) {
-
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -342,23 +279,14 @@ class EmundusonboardModelemail extends JModelList {
                 $db->execute();
                 return $db->insertid();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                return $e->getMessage();
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                return false;
             }
-
         } else {
             return false;
         }
     }
 
-    /**
-     * @param   int $id the email to update
-     * @param   array $data the row to add in table.
-     *
-     * @return boolean
-     * Update email in DB
-     */
-    //TODO UPDATE CAMPAIGN AND TU CODE
     public function updateEmail($id, $data) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -380,8 +308,8 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                return $e->getMessage();
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                return false;
             }
 
         } else {
@@ -389,11 +317,6 @@ class EmundusonboardModelemail extends JModelList {
         }
     }
 
-    /**
-     *
-     * @return array|boolean
-     * get list of declared emails
-     */
      public function getEmailTypes() {
 
         $db = JFactory::getDbo();
@@ -409,15 +332,11 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadColumn();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
 
-    /***
-     * @return array|boolean
-     * get list of declared emails
-     */
      public function getEmailCategories() {
 
         $db = JFactory::getDbo();
@@ -433,7 +352,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadColumn();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -450,7 +369,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -510,8 +429,8 @@ class EmundusonboardModelemail extends JModelList {
 
             return $triggers;
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-            return $e->getMessage();
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
         }
     }
 
@@ -542,8 +461,8 @@ class EmundusonboardModelemail extends JModelList {
 
             return $trigger;
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-            return $e->getMessage();
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
         }
     }
 
@@ -615,7 +534,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -684,7 +603,7 @@ class EmundusonboardModelemail extends JModelList {
                 }
             }
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -700,9 +619,8 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
-
     }
 }

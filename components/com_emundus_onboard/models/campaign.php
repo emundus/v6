@@ -108,12 +108,15 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             return $db->loadResult();
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return 0;
         }
     }
 
     function getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
         if (empty($lim)) {
             $limit = 25;
         } else {
@@ -129,11 +132,8 @@ class EmundusonboardModelcampaign extends JModelList
         if (empty($sort)) {
             $sort = 'DESC';
         }
-
         $sortDb = 'sc.id ';
 
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
         $date = new Date();
 
         // Get affected programs
@@ -235,7 +235,7 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query, $offset, $limit);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return new stdClass();
         }
     }
@@ -263,7 +263,7 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e){
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return new stdClass();
         }
     }
@@ -302,7 +302,7 @@ class EmundusonboardModelcampaign extends JModelList
                 return $db->execute();
 
             } catch (Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
         } else {
@@ -335,7 +335,7 @@ class EmundusonboardModelcampaign extends JModelList
                 $db->setQuery($query);
                 return $db->execute();
             } catch (Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
         } else {
@@ -363,7 +363,7 @@ class EmundusonboardModelcampaign extends JModelList
                 $db->setQuery($query);
                 return $db->execute();
             } catch (Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
         } else {
@@ -403,7 +403,7 @@ class EmundusonboardModelcampaign extends JModelList
                 $db->setQuery($query);
                 return $db->execute();
             } catch (Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
         } else {
@@ -425,7 +425,7 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return [];
         }
     }
@@ -489,7 +489,7 @@ class EmundusonboardModelcampaign extends JModelList
 
                 return $campaign_id;
             } catch (Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
         } else {
@@ -555,7 +555,7 @@ class EmundusonboardModelcampaign extends JModelList
 
                 return true;
             } catch (Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
         } else {
@@ -581,7 +581,7 @@ class EmundusonboardModelcampaign extends JModelList
                 $db->setQuery($query);
                 return $db->execute();
             } catch (Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
         } else {
@@ -620,7 +620,7 @@ class EmundusonboardModelcampaign extends JModelList
             }
             return $results;
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -641,7 +641,7 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             return $db->loadObject();
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -695,7 +695,7 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -721,7 +721,7 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -750,7 +750,7 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -806,7 +806,7 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return $e->getMessage();
         }
     }
