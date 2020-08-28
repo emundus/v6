@@ -6,6 +6,10 @@ WHERE tag IN ('APPLICANT_ID','USER_ID','APPLICANT_NAME','CURRENT_DATE','APPLICAN
 
 INSERT INTO jos_modules (asset_id, title, note, content, ordering, position, checked_out, checked_out_time, publish_up, publish_down, published, module, access, showtitle, params, client_id, language)
 VALUES (0, 'footer (2)', '', '', 1, 'footer-b', 0, '2020-07-17 10:00:00', '2020-07-17 10:00:00', '2099-07-17 10:00:00', 1, 'mod_custom', 1, 0, '{"prepare_content":0,"backgroundimage":"","layout":"_:default","moduleclass_sfx":"footer-legal","cache":1,"cache_time":900,"cachemode":"static","module_tag":"section","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}', 0, '*');
+SET @module_id := LAST_INSERT_ID();
+
+INSERT INTO jos_modules_menu (moduleid,menuid)
+VALUES (@module_id,0);
 
 # Remove the coordinator login to backoffice (check on old platforms)
 UPDATE jos_assets

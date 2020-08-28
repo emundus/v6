@@ -15,9 +15,13 @@ VALUES (1010, 0, 'Emails', 'emails', '<p>Une dernière étape afin d''améliorer
 
 INSERT INTO jos_modules (asset_id, title, note, content, ordering, position, checked_out, checked_out_time, publish_up, publish_down, published, module, access, showtitle, params, client_id, language)
 VALUES (321, 'mod_emundus_tutorial_saas_program', '', '', 1, 'content-tutorial-a', 0, '2020-06-08 15:26:47', '2020-06-08 15:26:47', '2099-06-08 15:26:47', 1, 'mod_emundus_tutorial', 7, 0, '{"artids":"1008,1009,1010","user_param":"first_program","layout":"_:saas","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}', 0, '*');
+SET @module_id := LAST_INSERT_ID();
+
+INSERT INTO jos_modules_menu (moduleid,menuid)
+VALUES (@module_id,0);
 
 INSERT INTO jos_fields (asset_id, context, group_id, title, name, label, default_value, type, note, description, state, required, checked_out, checked_out_time, ordering, params, fieldparams, language, created_time, created_user_id, modified_time, modified_by, access)
-VALUES (0, 'com_content.article', 0, 'params', 'params', 'params', '', 'text', '', '', 1, 0, 0, null, 0, '{"hint":"","class":"","label_class":"","show_on":"","render_class":"","showlabel":"1","label_render_class":"","display":"2","layout":"","display_readonly":"2"}', '{"filter":"","maxlength":""}', '*', '2020-08-21 10:36:53', 62, null, 0, 1);
+VALUES (0, 'com_content.article', 0, 'params', 'params', 'params', '', 'text', '', '', 1, 0, 0, '2020-06-08 15:26:47', 0, '{"hint":"","class":"","label_class":"","show_on":"","render_class":"","showlabel":"1","label_render_class":"","display":"2","layout":"","display_readonly":"2"}', '{"filter":"","maxlength":""}', '*', '2020-08-21 10:36:53', 62, '2020-08-21 10:36:53', 0, 1);
 SET @field_id := LAST_INSERT_ID();
 
 INSERT INTO jos_fields_values (field_id, item_id, value) VALUES (@field_id, '1002', '{"confirm_text":"MOD_EMUNDUS_TUTORIAL_CONTINUE"}');
@@ -31,3 +35,5 @@ INSERT INTO jos_fields_values (field_id, item_id, value) VALUES (@field_id, '100
 INSERT INTO jos_fields_values (field_id, item_id, value) VALUES (@field_id, '1008', '{"confirm_text":"MOD_EMUNDUS_TUTORIAL_CONTINUE","view":"program","layout":"advancedsettings"}');
 INSERT INTO jos_fields_values (field_id, item_id, value) VALUES (@field_id, '1009', '{"confirm_text":"MOD_EMUNDUS_TUTORIAL_CONTINUE","view":"program","layout":"advancedsettings"}');
 INSERT INTO jos_fields_values (field_id, item_id, value) VALUES (@field_id, '1010', '{"confirm_text":"MOD_EMUNDUS_TUTORIAL_CONTINUE","view":"program","layout":"advancedsettings"}');
+
+ALTER TABLE jos_emundus_setup_groups ADD IF NOT EXISTS parent_id int(11) NULL AFTER anonymize;

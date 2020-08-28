@@ -132,7 +132,11 @@
       dynamicComponent: false,
       categories: [],
       cats: [],
-      prog_group: null,
+      prog_group: {
+        prog: null,
+        evaluator: null,
+        manager: null,
+      },
 
       langue: 0,
 
@@ -272,7 +276,9 @@
                               );
                             }
                             this.dynamicComponent = true;
-                            this.prog_group = rep.data.data.group;
+                            this.prog_group.prog = rep.data.data.group;
+                            this.prog_group.evaluator = rep.data.data.evaluator_group;
+                            this.prog_group.manager = rep.data.data.manager_group;
                             this.menuHighlight = 0;
                           }).catch(e => {
                             console.log(e);
