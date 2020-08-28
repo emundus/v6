@@ -107,13 +107,10 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 			$db->quoteName('pd.second_name','prenom2'),
 			$db->quoteName('pd.gender','sexe'), //NOTE: Required
 			$db->quoteName('fc.name','villeAF'), //NOTE: Required
+			$db->quoteName('pd.city_2'),
 			$db->quoteName('pd.street_1','voieAF'), //NOTE: Required
 			$db->quoteName('cc.fnum')
 		];
-
-		// TODO : codNationalite needs to look at a different table, not the eMundus one, fuze this.
-		// TODO : localieAF, where does it come from ?
-		// TODO : Check villeAF
 
         // Get list of files to push
         $query = $db->getQuery(true);
@@ -158,9 +155,30 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 				$file->codTypEtablissement = 9;
 			}
 
+			// Foreigners have their VilleAF in city_2 and not in the list of jos_emundus_french_cities
+			if (empty($file->villeAF)) {
+				$file->villeAF = $file->city_2;
+			}
+			unset($file->city_2);
+
+			// codEtbInscription1 cannot be empty
+			if (empty($file->codEtbInscription1)) {
+				$file->codEtbInscription1 = '00000000';
+			}
+
+			// codDptInscription1 cannot be empty
+			if (empty($file->codDptInscription1)) {
+				$file->codDptInscription1 = '00';
+			}
+
+			// codPaysNaissance cannot be empty
+			if (empty($file->codPaysNaissance)) {
+				$file->codPaysNaissance = '000';
+			}
+
 			// Telephone numbers need to be without spaces
-			$file->numPortable = str_replace(' ', '', $file->numPortable);
-			$file->numTelephoneAF = str_replace(' ', '', $file->numTelephoneAF);
+			$file->numPortable = str_pad(trim(str_replace(' ', '', $file->numPortable), '_'), 10, "0", STR_PAD_LEFT);
+			$file->numTelephoneAF = str_pad(trim(str_replace(' ', '', $file->numTelephoneAF), '_'), 10, "0", STR_PAD_LEFT);
 
 			// Split address into street and number.
 			preg_match('/^\d+/', $file->numVoieAF, $matches);
