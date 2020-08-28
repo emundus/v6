@@ -65,10 +65,17 @@ try {
 
 $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$student->end_date));
 
+// Check campaign limit, if the limit is obtained, then we set the deadline to true
+$isLimitObtained = $m_campaign->isLimitObtained(@$student->fnums[$student->fnum]->campaign_id);
+
 // If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
-if ($is_dead_line_passed && !in_array($student->id, $id_applicants)) {
-	JError::raiseNotice('CANDIDATURE_PERIOD_TEXT', JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($student->start_date)), strftime("%d/%m/%Y %H:%M", strtotime($student->end_date))));
-	return null;
+if (($is_dead_line_passed || $isLimitObtained === true) && !in_array($student->id, $id_applicants)) {
+    if ($isLimitObtained === true) {
+        $formModel->formErrorMsg = JText::_('LIMIT_OBTAINED');
+    } else {
+        $formModel->formErrorMsg = JText::_('CANDIDATURE_PERIOD_TEXT');
+    }
+    return false;
 }
 
 // get current applicant course
