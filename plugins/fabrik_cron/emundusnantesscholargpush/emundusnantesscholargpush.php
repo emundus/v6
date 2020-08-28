@@ -97,12 +97,12 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 			$db->quoteName('pd.birth_date','datNaissance'), //NOTE: Required
 			$db->quoteName('pd.birth_town','lieuNaissance'), //NOTE: Required
 			$db->quoteName('fc.name','localiteAF'),
-			$db->quoteName('pd.last_name','nomUsuel'),
+			$db->quoteName('pd.nom_marital','nomUsuel'),
 			$db->quoteName('a.parcours_sup_ine','numIne'),
 			$db->quoteName('pd.telephone','numPortable'),
 			$db->quoteName('pd.telephone','numTelephoneAF'),
 			$db->quoteName('pd.street_1','numVoieAF'),
-			$db->quoteName('pd.nom_marital','patronyme'), //NOTE: Required
+			$db->quoteName('pd.last_name','patronyme'), //NOTE: Required
 			$db->quoteName('pd.first_name','prenom1'), //NOTE: Required
 			$db->quoteName('pd.second_name','prenom2'),
 			$db->quoteName('pd.gender','sexe'), //NOTE: Required
@@ -132,12 +132,11 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
         try {
         	$files = $db->loadObjectList('fnum');
         } catch (Exception $e) {
-        	echo '<pre>'; var_dump($e->getMessage()); echo '</pre>'; die;
         	JLog::add('Error getting files to be exported : '.$e->getMessage(), JLog::ERROR, 'com_emundus.emundusnantesscholargpush');
         	return false;
         }
 
-
+        $valid_fnums = [];
 		foreach ($files as $fnum => $file) {
 
 			// remove fnum from object being sent to API.
@@ -167,34 +166,40 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 			preg_match('/^\d+/', $file->numVoieAF, $matches);
 			$file->voieAF = trim(preg_replace('/^\d+/', '', $file->numVoieAF));
 			$file->numVoieAF = $matches[0];
-			
-			echo '<pre>'; var_dump(json_encode($file)); echo '</pre>'; die;
 
 			$response = $http->post($api_url.$api_route, json_encode($file), ['X-Auth-Token' => $token, 'Content-Type' => 'application/json']);
-			
+
 			if ($response->code === 200) {
 				$response->body = json_decode($response->body);
 
 				// If we get a litteral OK from the API, add the tag to our file.
-				if ($response->body->retour === "OK") {
-
-					// TODO: Refractor to be one big inset for all files instead of multiple.
-					$query->clear()
-						->insert($db->quoteName('jos_emundus_tag_assoc'))
-						->columns($db->quoteName(['id_tag', 'fnum']))
-						->values($db->quoteName([$tag, $fnum]));
-					$db->setQuery($query);
-
-					try {
-						$db->execute();
-					} catch (Exception $e) {
-						JLog::add('Error getting files to be exported : '.$e->getMessage(), JLog::ERROR, 'com_emundus.emundusnantesscholargpush');
-						return false;
-					}
+				if ($response->body->retour === "OK" || $response->body->retour === "POK") {
+					JLog::add('POST ok for file ID : '.$file->codDossier, JLog::INFO, 'com_emundus.emundusnantesscholargpush');
+					$valid_fnums[] = $fnum;
 				}
 
 			} else {
-				JLog::add('Error ('.$response->code.') from client API : '.$response->body);
+				JLog::add('Error ('.$response->code.') from client when pushing file ID '.$file->codDossier.'. API response : '.$response->body, JLog::ERROR, 'com_emundus.emundusnantesscholargpush');
+			}
+		}
+
+		// Do the insert after so we can do one big insert of tags.
+		if (!empty($valid_fnums)) {
+
+			$query->clear()
+				->insert($db->quoteName('jos_emundus_tag_assoc'))
+				->columns($db->quoteName(['id_tag', 'fnum']));
+
+			foreach ($valid_fnums as $fnum) {
+				$query->values($db->quote($tag).', '.$db->quote($fnum));
+			}
+
+			$db->setQuery($query);
+
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error setting file : '.$e->getMessage(), JLog::ERROR, 'com_emundus.emundusnantesscholargpush');
 			}
 		}
 
