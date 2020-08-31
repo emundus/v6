@@ -15,6 +15,18 @@
       :coordinatorAccess="coordinatorAccess"
     ></actions>
 
+    <ul class="form-section email-sections" v-if="type == 'email' && !loading">
+      <li>
+        <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{All}}</a>
+      </li>
+      <li v-for="(cat, index) in email_categories" v-if="cat != ''">
+        <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
+      </li>
+      <li>
+        <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
+      </li>
+    </ul>
+
     <transition :name="'slide-down'" type="transition">
       <h2 v-show="total > 0">{{ Total }} : {{ total }}</h2>
     </transition>
@@ -65,7 +77,16 @@
       </transition>
 
       <transition-group :name="'slide-down'" type="transition">
-        <div v-if="type != 'files'" v-for="(data, index) in list" :key="index">
+        <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-md-6">
+          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+        </div>
+        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-md-6">
+          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+        </div>
+        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-md-6">
+          <component v-bind:is="type" :data="data" :selectItem="selectItem" />
+        </div>
+        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-md-6">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
       </transition-group>
@@ -186,6 +207,8 @@ export default {
     noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
     noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
     noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
+    All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
+    System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
     total: 0,
     filtersCount: "",
     filters: "",
@@ -201,7 +224,10 @@ export default {
     search: "",
     limit: 25,
     pages: 1,
-    countPages: 1
+    countPages: 1,
+
+    menuEmail: 0,
+    email_categories: [],
   }),
 
   computed: {
@@ -301,6 +327,12 @@ export default {
                   list.commit("formsAccessUpdate", rep.data.forms_updating);
                 }
                 this.countPages = Math.ceil(this.total / this.limit);
+                if(this.type == 'email'){
+                  axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
+                    .then(catrep => {
+                      this.email_categories = catrep.data.data;
+                  });
+                }
                 this.loading = false;
               }).catch(e => {
                 console.log(e);
@@ -408,4 +440,9 @@ h2 {
   .loading-form{
     top: unset;
   }
+
+.email-sections{
+  width: 50%;
+  margin: 0 auto;
+}
 </style>

@@ -52,7 +52,7 @@ export default {
       this.formList.forEach(element => {
         let ellink = element.link.replace("fabrik","emundus_onboard");
         axios
-          .get(ellink + "&format=vue_json")
+          .get(ellink + "&format=vue_jsonclean")
           .then(response => {
             this.formNameArray.push({
               value: response.data.show_title.value,

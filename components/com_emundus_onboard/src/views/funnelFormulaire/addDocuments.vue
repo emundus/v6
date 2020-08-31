@@ -107,19 +107,6 @@
       </div>
     </div>
     </transition>
-
-    <div class="section-sauvegarder-et-continuer-funnel">
-      <div class="w-container">
-        <div class="container-evaluation w-clearfix">
-          <a @click="$parent.next()" class="bouton-sauvergarder-et-continuer-3">
-            {{Continuer }}
-          </a>
-          <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previousMenu()">
-            {{ Retour }}
-          </a>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 

@@ -74,7 +74,7 @@ export default {
   },
 
   created() {
-    list.getters.formsAccess.forEach(element => {
+    list.getters.formsAccess[0].forEach(element => {
       if(element === this.data.id){
         this.updateAccess = true;
       }
@@ -83,7 +83,7 @@ export default {
 
   computed: {
     isPublished() {
-      return this.data.published == 1;
+      return this.data.status == 1;
     },
 
     isActive() {
