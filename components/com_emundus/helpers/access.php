@@ -129,16 +129,17 @@ class EmundusHelperAccess {
 	}
 
 	/**
-	 * Get action acces right.
+	 * Get action access right.
 	 *
-	 * @param	int		$user_id	The user id.
-	 * @param	string	$fnum		File number of application
-	 * @param	int		$action_id	Id of the action.
-	 * @param	string	$crud		create/read/update/delete.
+	 * @param int    $action_id Id of the action.
+	 * @param string $crud      create/read/update/delete.
 	 *
-	 * @return	boolean	Has access or not
-	 * @since	6.0
-	*/
+	 * @param null   $user_id   The user id.
+	 * @param null   $fnum      File number of application
+	 *
+	 * @return    boolean    Has access or not
+	 * @since    6.0
+	 */
 	static function asAccessAction($action_id, $crud, $user_id = null, $fnum = null) {
 
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');

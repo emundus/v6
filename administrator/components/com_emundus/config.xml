@@ -84,6 +84,7 @@
 			<option value="2">COM_EMUNDUS_APPLICANT_CAN_RENEW_CAMPAIGN</option>
 			<option value="3">COM_EMUNDUS_APPLICANT_CAN_RENEW_YEAR</option>
 		</field>
+		<field name="id_profiles" type="text" size="50" default="" label="COM_EMUNDUS_ID_PROFILES" description="COM_EMUNDUS_ID_PROFILES_DESC" />
 		<field name="can_edit_until_deadline" menu="hide" type="list" default="1" label="COM_EMUNDUS_CAN_EDIT_UNTIL_DEADLINE" description="COM_EMUNDUS_CAN_EDIT_UNTIL_DEADLINE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
