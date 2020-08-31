@@ -161,6 +161,10 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 			}
 			unset($file->city_2);
 
+			if (empty($file->villeAF)) {
+				$file->villeAF = 'Ville Inconnue';
+			}
+
 			// codEtbInscription1 cannot be empty
 			if (empty($file->codEtbInscription1)) {
 				$file->codEtbInscription1 = '00000000';
