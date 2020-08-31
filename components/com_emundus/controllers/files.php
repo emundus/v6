@@ -827,7 +827,6 @@ class EmundusControllerFiles extends JControllerLegacy
             $code = array();
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
-                $step = $fnum['step'];
 
                 $row = array('applicant_id' => $fnum['applicant_id'],
                     'user_id' => $this->_user->id,
@@ -1195,56 +1194,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
-    /**
-     *
-
-    public function send_elements()
-    {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-        $current_user = JFactory::getUser();
-
-        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-            die (JText::_('RESTRICTED_ACCESS') );
-        }
-
-        $jinput = JFactory::getApplication()->input;
-
-        $m_files  = $this->getModel('Files');
-
-        $fnums_post = $jinput->getVar('fnums', null);
-        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
-
-        if ($fnums_array == 'all') {
-            $fnums = $m_files->getAllFnums();
-		} else {
-            $fnums = array();
-            foreach ($fnums_array as $key => $value) {
-                $fnums[] = $value->fnum;
-            }
-        }
-
-        $validFnums = array();
-        foreach ($fnums as $fnum) {
-            if (EmundusHelperAccess::asAccessAction(6, 'c', $this->_user->id, $fnum) && $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
-                $validFnums[] = $fnum;
-        }
-        $elts = $jinput->getString('elts', null);
-
-        $elts = (array) json_decode(stripcslashes($elts));
-
-        $objs = $jinput->getString('objs', null);
-        $objs = (array) json_decode(stripcslashes($objs));
-
-        $methode = $jinput->getString('methode', 0);
-
-        // export Excel
-        $name = $this->export_xls($validFnums, $objs, $elts, $methode);
-
-        $result = array('status' => true, 'name' => $name);
-        echo json_encode((object) $result);
-        exit();
-    }
-*/
+ 
     /**
      *
      */
