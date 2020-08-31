@@ -12,9 +12,9 @@ INSERT INTO jos_modules_menu (moduleid,menuid)
 VALUES (@module_id,0);
 
 # Remove the coordinator login to backoffice (check on old platforms)
-UPDATE jos_assets
-SET rules = '{"core.login.site":{"1":1,"6":1,"2":1},"core.login.offline":{"6":1},"core.admin":{"8":1},"core.manage":{"7":1},"core.create":{"6":1,"3":1},"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1},"core.edit.own":{"6":1,"3":1}}'
-WHERE name = 'root.1';
+#UPDATE jos_assets
+#SET rules = '{"core.login.site":{"1":1,"6":1,"2":1},"core.login.offline":{"6":1},"core.admin":{"8":1},"core.manage":{"7":1},"core.create":{"6":1,"3":1},"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1},"core.edit.own":{"6":1,"3":1}}'
+#WHERE name = 'root.1';
 
 # Cleanup status translations
 DELETE FROM jos_falang_content
