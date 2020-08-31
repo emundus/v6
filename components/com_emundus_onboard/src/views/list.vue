@@ -17,13 +17,13 @@
 
     <ul class="form-section email-sections" v-if="type == 'email' && !loading">
       <li>
-        <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">Tous</a>
+        <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{All}}</a>
       </li>
       <li v-for="(cat, index) in email_categories" v-if="cat != ''">
         <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
       </li>
       <li>
-        <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">Systèmes</a>
+        <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
       </li>
     </ul>
 
@@ -207,6 +207,8 @@ export default {
     noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
     noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
     noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
+    All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
+    System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
     total: 0,
     filtersCount: "",
     filters: "",
