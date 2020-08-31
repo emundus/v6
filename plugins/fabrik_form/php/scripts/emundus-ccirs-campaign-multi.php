@@ -39,13 +39,13 @@ $id_profiles = explode(',', $id_profiles);
 
 if (EmundusHelperAccess::asAccessAction(1, 'c')) {
 	$applicant_can_renew = 1;
-}
-
-foreach ($current_user->emProfiles as $profile) {
-	if (in_array($profile->id, $id_profiles)) {
-		$applicant_can_renew = 1;
-		break;
-	}
+} else {
+    foreach ($current_user->emProfiles as $profile) {
+        if (in_array($profile->id, $id_profiles)) {
+            $applicant_can_renew = 1;
+            break;
+        }
+    }
 }
 
 $query->select($db->quoteName('profile_id'))

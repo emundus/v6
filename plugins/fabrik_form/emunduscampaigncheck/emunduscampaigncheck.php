@@ -109,14 +109,14 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
 
 	    if (EmundusHelperAccess::asAccessAction(1, 'c')) {
 		    $applicant_can_renew = 1;
-	    }
-
-	    foreach ($user->emProfiles as $profile) {
-		    if (in_array($profile->id, $id_profiles)) {
-			    $applicant_can_renew = 1;
-			    break;
-		    }
-	    }
+	    } else {
+            foreach ($user->emProfiles as $profile) {
+                if (in_array($profile->id, $id_profiles)) {
+                    $applicant_can_renew = 1;
+                    break;
+                }
+            }
+        }
 
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);

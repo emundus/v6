@@ -64,14 +64,14 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 	if (EmundusHelperAccess::asAccessAction(1, 'c')) {
 		$applicant_can_renew = 1;
-	}
-
-	foreach ($user->emProfiles as $profile) {
-		if (in_array($profile->id, $id_profiles)) {
-			$applicant_can_renew = 1;
-			break;
-		}
-	}
+	} else {
+        foreach ($user->emProfiles as $profile) {
+            if (in_array($profile->id, $id_profiles)) {
+                $applicant_can_renew = 1;
+                break;
+            }
+        }
+    }
 
 	// Models
 	$m_checklist = new EmundusModelChecklist;

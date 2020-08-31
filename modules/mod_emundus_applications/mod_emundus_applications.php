@@ -113,14 +113,14 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
 
 	if (EmundusHelperAccess::asAccessAction(1, 'c')) {
 		$applicant_can_renew = 1;
-	}
-
-	foreach ($user->emProfiles as $profile) {
-		if (in_array($profile->id, $id_profiles)) {
-			$applicant_can_renew = 1;
-			break;
-		}
-	}
+	} else {
+        foreach ($user->emProfiles as $profile) {
+            if (in_array($profile->id, $id_profiles)) {
+                $applicant_can_renew = 1;
+                break;
+            }
+        }
+    }
 
 
 	// Check to see if the applicant meets the criteria to renew a file.
