@@ -268,6 +268,12 @@
             icon: 'far fa-square',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
           },
+          display: {
+            id: 6,
+            value: 'display',
+            icon: 'fas fa-paragraph',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
+          },
         },
         addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),

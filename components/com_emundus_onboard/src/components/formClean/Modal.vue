@@ -39,6 +39,7 @@
           <dropdownF v-if="plugin =='dropdown'" :element="element" :databases="databases" @subOptions="subOptions"></dropdownF>
           <radiobtnF v-if="plugin == 'radiobutton'" :element="element" @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
+          <displayF v-if="plugin =='display'" :element="element"></displayF>
         </div>
         <div class="loading-form" v-if="loading">
           <Ring-Loader :color="'#de6339'" />
@@ -66,6 +67,7 @@
   import dropdownF from "./Plugin/dropdown";
   import radiobtnF from "./Plugin/radiobtn";
   import textareaF from "./Plugin/textarea";
+  import displayF from "./Plugin/display";
   const qs = require("qs");
 
   export default {
@@ -77,7 +79,8 @@
       checkboxF,
       dropdownF,
       radiobtnF,
-      textareaF
+      textareaF,
+      displayF
     },
     data() {
       return {
@@ -118,6 +121,10 @@
           textarea: {
             value: 'textarea',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
+          },
+          display: {
+            value: 'display',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
         },
         databases: [],

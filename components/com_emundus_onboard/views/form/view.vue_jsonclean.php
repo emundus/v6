@@ -146,6 +146,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 ${"element".$o_element->id}->id = $o_element->id;
                 ${"element".$o_element->id}->group_id = $GroupProperties->id;
                 ${"element".$o_element->id}->hidden = $content_element->hidden;
+                ${"element".$o_element->id}->default = $o_element->default;
                 ${"element".$o_element->id}->labelsAbove=$labelsAbove;
                 ${"element".$o_element->id}->plugin=$o_element->plugin;
                 if($el_parmas->validations->plugin != null){

@@ -33,6 +33,7 @@
                     <em class="fas fa-grip-vertical handle"></em>
                   </span>
                   <legend
+                    @click="enableUpdatingGroup(group)"
                     v-if="group.group_showLegend"
                     class="legend ViewerLegend">
                     {{group.group_showLegend}}
@@ -122,7 +123,7 @@
                       </span>
                       <div class="w-100">
                         <div class="d-flex" style="align-items: baseline">
-                          <span v-if="element.label" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''" v-html="element.label" v-show="element.labelsAbove != 2"></span>
+                          <span v-if="element.label" @click="enableLabelInput(element.id)" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''" v-html="element.label" v-show="element.labelsAbove != 2"></span>
                           <a @click="enableLabelInput(element.id)" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'" :title="Edit">
                             <em class="fas fa-pencil-alt ml-10px" data-toggle="tooltip" data-placement="top"></em>
                           </a>

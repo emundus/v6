@@ -29,6 +29,7 @@
               {{user.firstname}} {{user.lastname}}
               <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
             </span>
+            <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{TheCandidate}}</span>
             <span v-if="trigger.profile == 5">{{Administrators}}</span>
             <span v-if="trigger.profile == 6">{{Evaluators}}</span>
           </p>
@@ -55,7 +56,7 @@
               {{user.firstname}} {{user.lastname}}
               <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
             </span>
-            <span v-if="trigger.users.length == 0">{{TheCandidate}}</span>
+            <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{TheCandidate}}</span>
             <span v-if="trigger.profile == 5">{{Administrators}}</span>
             <span v-if="trigger.profile == 6">{{Evaluators}}</span>
           </p>
