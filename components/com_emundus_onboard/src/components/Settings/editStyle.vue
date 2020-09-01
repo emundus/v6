@@ -58,6 +58,7 @@
                 imageLink: '/images/custom/logo.png',
                 primary: '',
                 secondary: '',
+                changes: false,
                 PrimaryColor: Joomla.JText._("COM_EMUNDUS_ONBOARD_PRIMARY_COLOR"),
                 SecondaryColor: Joomla.JText._("COM_EMUNDUS_ONBOARD_SECONDARY_COLOR"),
                 Colors: Joomla.JText._("COM_EMUNDUS_ONBOARD_COLORS"),
@@ -71,6 +72,7 @@
             },
 
             updateColor(type,color) {
+                this.$emit("LaunchLoading");
                 axios({
                     method: "post",
                     url:
@@ -83,6 +85,7 @@
                         color: color
                     })
                 }).then((rep) => {
+                  this.$emit("StopLoading");
                 });
             },
             /**
@@ -109,23 +112,31 @@
         },
 
         created() {
+            this.changes = false;
             axios({
                 method: "get",
                 url: 'index.php?option=com_emundus_onboard&controller=settings&task=getappcolors',
             }).then((rep) => {
                 this.primary = rep.data.primary;
                 this.secondary = rep.data.secondary;
+                setTimeout(() => {
+                  this.changes = true;
+                },1000);
             });
         },
 
         watch: {
             primary: function(value){
                 document.getElementById('primary').style.backgroundColor = value;
-                this.updateColor('primary',value);
+                if(this.changes) {
+                  this.updateColor('primary', value);
+                }
             },
             secondary: function(value){
                 document.getElementById('secondary').style.backgroundColor = value;
-                this.updateColor('secondary',value);
+                if(this.changes) {
+                  this.updateColor('secondary', value);
+                }
             }
         }
     };

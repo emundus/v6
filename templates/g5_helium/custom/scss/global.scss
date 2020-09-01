@@ -229,6 +229,11 @@ h1::after, .swal2-title:after {
   display: block !important;
 }
 
+/* Branding */
+.g-branding{
+  text-align: end;
+  margin-right: 1em;
+}
 
 /* HEADER */
 #g-navigation {
@@ -267,6 +272,7 @@ footer#g-footer {
   border-top: none;
   bottom: 0;
   width: 100vw;
+  position: relative;
 }
 
 #g-page-surround {
@@ -405,6 +411,15 @@ a {
     color: #ffffff;
   }
 }
+
+#header-c, #header-switch {
+  display: flex;
+  justify-content: center;
+  &.right-divider {
+    border-right: solid 1px #cecece;
+  }
+}
+
 
 /* BURGER MENU - DECONNECTE */
 .burger span {
@@ -1524,7 +1539,7 @@ div#em-appli-block {
 
 @media all and (max-width: 767px) {
 
-/* FOOTER */
+  /* FOOTER */
   .bas-footer {
     flex-direction: column !important;
     width: auto;
@@ -1539,9 +1554,10 @@ div#em-appli-block {
       align-self: center !important;
       width: 100%;
       margin: 10px 0;
-       .street {
-         text-align: center;
-       }
+
+      .street {
+        text-align: center;
+      }
     }
 
     img.logo {
@@ -1550,7 +1566,7 @@ div#em-appli-block {
     }
   }
 
-/* HEADER */
+  /* HEADER */
   #header-a .g-content {
     width: 70%;
     text-align: center;
@@ -1564,23 +1580,23 @@ div#em-appli-block {
     }
 
     #header-a .logo {
-        max-height: 60px;
-        margin-top: 0 !important;
-        margin-left: auto;
-        margin-right: auto;
-        text-align: center;
-        display: block;
+      max-height: 60px;
+      margin-top: 0 !important;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      display: block;
     }
   }
 
   img.logo {
-      height: 30px;
-      margin-top: 35px;
-      margin-left: 2%;
+    height: 30px;
+    margin-top: 35px;
+    margin-left: 2%;
   }
 
   ul.lang-inline {
-      text-align: right;
+    text-align: right;
   }
 
   #g-mobilemenu-container {
@@ -1794,7 +1810,6 @@ div#em-appli-block {
   #header-c {
     margin-top: 20px;
   }
-
 }
 
 @media all and (min-width: 768px) {
@@ -1910,3 +1925,4 @@ div#em-appli-block {
   }
 
 }
+

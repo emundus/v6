@@ -71,20 +71,16 @@ class EmundusModelProfile extends JModelList
         return $array_p;
     }
 
-    function getUserProfiles($uid)
-    {
+    function getUserProfiles($uid) {
         $db = JFactory::getDBO();
         $query = 'SELECT DISTINCT esp.id , esp.label
 		FROM #__emundus_setup_profiles esp
 		LEFT JOIN #__emundus_users_profiles eup on eup.profile_id = esp.id
 		WHERE eup.user_id = '.$uid;
-        try
-        {
+        try {
             $db->setQuery($query);
             return $db->loadObjectList();
-        }
-        catch(Exception $e)
-        {
+        } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
             JError::raiseError(500, $e->getMessage());
         }

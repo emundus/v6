@@ -5,19 +5,21 @@
             :trigger="this.triggerSelected"
             :triggerAction="'candidate'"
             @UpdateTriggers="getTriggers"
+            :key="candidate_trigger"
     />
     <ModalAddTrigger
             :prog="this.prog"
             :trigger="this.triggerSelected"
             :triggerAction="'manual'"
             @UpdateTriggers="getTriggers"
+            :key="manual_trigger"
     />
     <div class="choices-buttons">
       <h2 style="margin-bottom: 0">{{ TheCandidate }}</h2>
       <a @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
     </div>
     <p>{{ TheCandidateDescription }}</p>
-    <transition :name="'slide-down'" type="transition">
+    <transition-group :name="'slide-down'" type="transition">
       <div v-for="(trigger, index) in triggers" :key="index" class="trigger-item" v-if="trigger.candidate == 1">
         <div style="max-width: 80%">
           <p>{{trigger.subject}}</p>
@@ -37,22 +39,23 @@
           <button type="button" @click="editTrigger(trigger)"><em class="fas fa-edit"></em></button>
         </div>
       </div>
-    </transition>
+    </transition-group>
     <div class="choices-buttons">
       <h2 style="margin-bottom: 0">{{ Manual }}</h2>
       <a @click="$modal.show('modalAddTriggermanual'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
     </div>
     <p>{{ ManualDescription }}</p>
-    <transition :name="'slide-down'" type="transition">
+    <transition-group :name="'slide-down'" type="transition">
       <div v-for="(trigger, index) in triggers" :key="index" class="trigger-item" v-if="trigger.manual == 1">
         <div style="max-width: 80%">
           <p>{{trigger.subject}}</p>
           <p>
             <span style="font-weight: bold">{{Target}} : </span>
-            <span v-if="trigger.profile == null" v-for="(user, index) in trigger.users">
+            <span v-if="trigger.profile == null && trigger.users.length > 0" v-for="(user, index) in trigger.users">
               {{user.firstname}} {{user.lastname}}
               <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
             </span>
+            <span v-if="trigger.users.length == 0">{{TheCandidate}}</span>
             <span v-if="trigger.profile == 5">{{Administrators}}</span>
             <span v-if="trigger.profile == 6">{{Evaluators}}</span>
           </p>
@@ -63,7 +66,7 @@
           <button type="button" @click="editTrigger(trigger)"><em class="fas fa-edit"></em></button>
         </div>
       </div>
-    </transition>
+    </transition-group>
   </div>
 </template>
 
@@ -83,6 +86,8 @@ export default {
     return {
       triggers: [],
       triggerSelected: null,
+      manual_trigger: 0,
+      candidate_trigger: 0,
       addTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER"),
       affectTriggers: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_AFFECTTRIGGERS"),
       ChooseEmailTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_EMAIL_TRIGGER"),
@@ -100,11 +105,15 @@ export default {
   methods: {
     editTrigger(trigger) {
       this.triggerSelected = trigger.trigger_id;
-      if(trigger.candidate == 1){
-        this.$modal.show('modalAddTriggercandidate');
-      } else {
-        this.$modal.show('modalAddTriggermanual');
-      }
+      this.manual_trigger += 1;
+      this.candidate_trigger += 1;
+      setTimeout(() => {
+        if(trigger.candidate == 1){
+          this.$modal.show('modalAddTriggercandidate');
+        } else {
+          this.$modal.show('modalAddTriggermanual');
+        }
+      },500);
     },
     removeTrigger(trigger) {
       axios({

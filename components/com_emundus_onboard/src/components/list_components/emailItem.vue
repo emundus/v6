@@ -9,10 +9,10 @@
                 {{ isPublished ? publishedTag : unpublishedTag }}
               </div>
               <div class="block-label">
-                <a
-                        class="item-select w-inline-block"
-                        v-on:click="selectItem(data.id)"
-                        :class="{ active: isActive }"
+                <a v-if="data.type == 2"
+                   class="item-select w-inline-block"
+                   v-on:click="selectItem(data.id)"
+                   :class="{ active: isActive }"
                 ></a>
                 <h1 class="nom-campagne-block white">{{ data.subject }}</h1>
               </div>

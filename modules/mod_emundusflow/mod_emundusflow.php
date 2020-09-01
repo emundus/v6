@@ -19,27 +19,28 @@ $user = JFactory::getSession()->get('emundusUser');
 if (isset($user->fnum) && !empty($user->fnum)) {
 
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
 	// Load Joomla framework classes
-	$document 	= JFactory::getDocument();
-	$jinput 	= JFactory::getApplication()->input;
-	$db 		= JFactory::getDBO();
+	$document = JFactory::getDocument();
+	$jinput = JFactory::getApplication()->input;
+	$db = JFactory::getDBO();
 
 	// overide css
 	$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
 	$document->addStyleSheet("modules/mod_emundusflow/style/emundus.css" );
 	$header_class = $params->get('header_class', '');
-	if (!empty($header_class)){
+	if (!empty($header_class)) {
 		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
 	}
 
 	// Jinput
 	$option = $jinput->get('option');
-	$view 	= $jinput->get('view');
+	$view = $jinput->get('view');
 
 	// module params
 	$show_programme = $params->get('show_programme', 1);
@@ -54,18 +55,31 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $home_link = $params->get('home_link', 'index.php');
 
 	// eMundus params
-	$params_emundus 		= JComponentHelper::getParams('com_emundus');
-	$applicant_can_renew 	= $params_emundus->get('applicant_can_renew', 0);
-	$application_fee  		= $params_emundus->get('application_fee', 0);
-	$scholarship_document 	= $params_emundus->get('scholarship_document_id', NULL);
+	$params_emundus = JComponentHelper::getParams('com_emundus');
+	$applicant_can_renew = $params_emundus->get('applicant_can_renew', 0);
+	$application_fee = $params_emundus->get('application_fee', 0);
+	$scholarship_document = $params_emundus->get('scholarship_document_id', NULL);
+	$id_profiles = $params_emundus->get('id_profiles', '0');
+	$id_profiles = explode(',', $id_profiles);
+
+	if (EmundusHelperAccess::asAccessAction(1, 'c')) {
+		$applicant_can_renew = 1;
+	} else {
+        foreach ($user->emProfiles as $profile) {
+            if (in_array($profile->id, $id_profiles)) {
+                $applicant_can_renew = 1;
+                break;
+            }
+        }
+    }
 
 	// Models
-	$m_checklist 	= new EmundusModelChecklist;
-	$m_application 	= new EmundusModelApplication;
-	$m_files 		= new EmundusModelFiles;
-	$m_profile 		= new EmundusModelProfile;
+	$m_checklist = new EmundusModelChecklist;
+	$m_application = new EmundusModelApplication;
+	$m_files = new EmundusModelFiles;
+	$m_profile = new EmundusModelProfile;
 
-    $application_fee  		= (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
+    $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 	$paid = null;
 
 	if ($application_fee) {
@@ -112,7 +126,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 			}
 
-			//$checkout_url = $m_application->getHikashopCheckoutUrl($user->profile);
 			$orderCancelled = false;
 			$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document))).'&usekey=fnum&rowid='.$user->fnum;
 
@@ -140,7 +153,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 		$confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
 	}
-
 
 	require(JModuleHelper::getLayoutPath('mod_emundusflow', $layout));
 }

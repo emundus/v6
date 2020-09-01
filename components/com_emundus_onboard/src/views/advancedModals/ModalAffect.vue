@@ -61,7 +61,7 @@ const qs = require("qs");
 
 export default {
   name: "modalAffect",
-  props: { group: Number, groupProfile: String },
+  props: { group: Object, groupProfile: String },
   data() {
     return {
       users: [],
@@ -86,14 +86,22 @@ export default {
           users.push(element.id);
         }
       });
+      let groupToAffect = null;
+      if(this.groupProfile == 'manager') {
+        groupToAffect = this.group.manager;
+      } else {
+        groupToAffect = this.group.evaluator;
+      }
+
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=program&task=affectusersto' + this.groupProfile + 'group',
+        url: 'index.php?option=com_emundus_onboard&controller=program&task=affectuserstogroup',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          group: this.group,
+          group: groupToAffect,
+          prog_group: this.group.prog,
           users: users
         })
       }).then(() => {
@@ -103,13 +111,13 @@ export default {
       });
     },
     getUsers() {
-      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserstoaffect&group=" + this.group)
+      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserstoaffect&group=" + this.group.prog)
               .then(response => {
                 this.users = response.data.data;
               });
     },
     searchUserByTerm() {
-      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserstoaffectbyterm&group=" + this.group + "&term=" + this.searchTerm)
+      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserstoaffectbyterm&group=" + this.group.prog + "&term=" + this.searchTerm)
               .then(response => {
                 this.users = response.data.data;
               });

@@ -64,9 +64,6 @@ export default {
     this.msg =
             '<p style="color: white">' + this.placeholderHelp + '</p>' +
             '<img src="' + this.path + 'placeholder.gif" />'
-
-    this.element.params.maxlength = 255;
-    this.element.params.password = 0;
   }
 };
 </script>

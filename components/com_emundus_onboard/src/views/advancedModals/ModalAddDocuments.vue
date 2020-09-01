@@ -27,7 +27,7 @@
         <div class="form-group">
           <label for="name">{{Name}}* :</label>
           <div class="input-can-translate">
-            <input type="text" maxlength="40" class="form__input field-general w-input mb-0" v-model="form.name.fr" id="name" :class="{ 'is-invalid': errors.name}" />
+            <input type="text" maxlength="100" class="form__input field-general w-input mb-0" v-model="form.name.fr" id="name" :class="{ 'is-invalid': errors.name}" />
             <button class="translate-icon" :class="{'translate-icon-selected': translate.name}" type="button" @click="translate.name = !translate.name"></button>
           </div>
           <transition :name="'slide-down'" type="transition">
@@ -180,13 +180,20 @@
     methods: {
       beforeClose(event) {
         this.form = {
-          name: '',
-          description: '',
+          name: {
+            fr: '',
+            en: ''
+          },
+          description: {
+            fr: '',
+            en: ''
+          },
           nbmax: 1,
           selectedTypes: {
             pdf: false,
             'jpg;png;gif': false,
-            'doc;docx;odt;xls;xlsx;odf': false
+            'doc;docx;odt': false,
+            'xls;xlsx;odf': false,
           },
         };
       },
