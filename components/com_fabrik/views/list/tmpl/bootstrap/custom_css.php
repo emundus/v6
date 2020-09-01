@@ -39,7 +39,7 @@ echo <<<EOT
 
 .g-back-office-emundus-tableau.view-list #g-container-main .page-header, 
 .g-back-office-emundus-tableau.view-form #g-container-main .page-header, 
-g-back-office-emundus-tableau.view-details #g-container-main .page-header {
+.g-back-office-emundus-tableau.view-details #g-container-main .page-header {
     padding-bottom: 30px;
 }
 
