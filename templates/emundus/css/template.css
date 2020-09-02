@@ -76,7 +76,12 @@ a:hover {
   width: 9%;
 }
 
-.moduletable-c,.moduletable-d{
+.moduletable-c{
+  margin-top: -35px;
+  margin-right: 2%;
+}
+
+.moduletable-d,.moduletable-e{
   justify-content: center;
   display: flex;
 }

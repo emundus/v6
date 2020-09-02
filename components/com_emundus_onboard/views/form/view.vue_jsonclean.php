@@ -34,6 +34,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
     public function display($tpl = null)
     {
         JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
+        JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');
 
         error_reporting(E_ALL ^ E_NOTICE);
 
@@ -45,6 +46,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
         // Display the template
         $formid = $jinput->getString('formid', null);
 
+        $formbuilder  = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
         $form         = JModelLegacy::getInstance('Form', 'FabrikFEModel');
         $form->setId(intval($formid));
         $getParams		= $form->getParams();
@@ -69,11 +71,15 @@ class EmundusonboardViewForm extends FabrikViewFormBase
             $title = explode('-', $form->getLabel());
             $show_title->titleraw = $form->form->label;
             $show_title->value = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
+            $show_title->label_fr = $formbuilder->getTranslationFr($form->form->label);
+            $show_title->label_en = $formbuilder->getTranslationEn($form->form->label);
             $returnObject->show_title = $show_title;
         endif;
 
         if ($form->getIntro()) :
             $returnObject->intro = $form->getIntro();
+            $returnObject->intro_fr = $formbuilder->getTranslationFr($form->form->intro);
+            $returnObject->intro_en = $formbuilder->getTranslationEn($form->form->intro);
             $returnObject->intro_raw = $form->form->intro;
         endif;
 
@@ -86,9 +92,6 @@ class EmundusonboardViewForm extends FabrikViewFormBase
         endif;
 
         $Groups = new stdClass();
-
-        JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');
-        $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
 
         foreach ($getGroup as $group) :
             $this->group = $group;

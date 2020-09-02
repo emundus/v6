@@ -15,7 +15,7 @@
             :key="manual_trigger"
     />
     <div class="choices-buttons">
-      <h2 style="margin-bottom: 0">{{ TheCandidate }}</h2>
+      <h2 style="margin-bottom: 0">{{ CandidateAction }}</h2>
       <a @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
     </div>
     <p>{{ TheCandidateDescription }}</p>
@@ -42,7 +42,7 @@
       </div>
     </transition-group>
     <div class="choices-buttons">
-      <h2 style="margin-bottom: 0">{{ Manual }}</h2>
+      <h2 style="margin-bottom: 0">{{ ManagerAction }}</h2>
       <a @click="$modal.show('modalAddTriggermanual'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
     </div>
     <p>{{ ManualDescription }}</p>
@@ -100,6 +100,8 @@ export default {
       Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
       TheCandidateDescription: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE_DESCRIPTION"),
       ManualDescription: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL_DESCRIPTION"),
+      CandidateAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANDIDATE_ACTION"),
+      ManagerAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANAGER_ACTION"),
     };
   },
 

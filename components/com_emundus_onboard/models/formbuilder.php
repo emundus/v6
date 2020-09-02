@@ -751,6 +751,11 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             // Create hidden group
             $this->createHiddenGroup($formid);
+            $group_label = array(
+                'fr' => 'Nouveau groupe',
+                'en' => 'New group'
+            );
+            $this->createGroup($group_label,$formid);
             //
 
             // Save as template
