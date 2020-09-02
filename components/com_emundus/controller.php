@@ -1288,12 +1288,15 @@ class EmundusController extends JControllerLegacy {
 
         // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
         if (!empty(JFactory::getUser($uid)->id)) {
+
             $db = JFactory::getDBO();
             $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads WHERE user_id = ' . $uid . ' AND filename like ' . $db->Quote($file);
             $db->setQuery($query);
             $fileInfo = $db->loadObject();
-            if (empty($fileInfo)) {
-                $fileInfo->fnum = explode('_', $file)[0];
+
+            $first_part_of_filename = explode('_', $file)[0];
+            if (empty($fileInfo) && is_numeric($first_part_of_filename) && strlen($first_part_of_filename) === 21) {
+                $fileInfo->fnum = $first_part_of_filename;
             }
         }
 
