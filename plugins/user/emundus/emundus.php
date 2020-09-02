@@ -195,7 +195,18 @@ class plgUserEmundus extends JPlugin
                 }
             }
             if (JPluginHelper::getPlugin('authentication', 'externallogin') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
-                $details['name'] = $user["name"];
+                $username = explode(' ',$user["name"]);
+                $name = '';
+                if(count($username)>2){
+                    for($i=1;$i>count($username);$i++){
+                        $name .= ' '.$username[$i];
+                    }
+                }
+                else{
+                    $name= $username[1];
+                }
+                $details['lastname'] = $name;
+                $details['firstname'] = $username[0];
             }
         }
 
