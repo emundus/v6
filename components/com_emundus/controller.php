@@ -1277,6 +1277,12 @@ class EmundusController extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $url = $jinput->get->get('u', null, 'RAW');
 
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
+	    if (strpos($url, $applicant_files_path) !== 0) {
+		    die (JText::_('ACCESS_DENIED'));
+	    }
+        
         $urltab = explode('/', $url);
 
         // Split the URL into different parts.
