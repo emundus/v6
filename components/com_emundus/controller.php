@@ -1315,7 +1315,7 @@ class EmundusController extends JControllerLegacy {
 
         // Otherwise, open the file if it exists.
         $file = JPATH_BASE.DS.$url;
-        if (file_exists($file)) {
+        if (is_file($file)) {
             $mime_type = $this->get_mime_type($file);
 
             if (EmundusHelperAccess::isDataAnonymized($current_user->id) && $mime_type === 'application/pdf') {
@@ -1343,7 +1343,7 @@ class EmundusController extends JControllerLegacy {
 	            exit;
             }
         } else {
-            JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$file);
+            JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$url);
         }
     }
 
