@@ -35,15 +35,15 @@ button.btn-primary:hover{
 }
 .login form {
     border: none;
-    margin-bottom: 0 !important;
+    margin-bottom: 0;
     border-radius: 0;
     background: white;
     border-radius: 0;
-    padding: 20px !important;
+    padding: 20px;
     box-shadow: none;
-    width: 50% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 div.em-formRegistrationCenter, div.login {

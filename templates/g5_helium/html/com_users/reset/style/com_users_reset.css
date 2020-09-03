@@ -3,6 +3,7 @@
 }
 #user-registration fieldset  p {
     margin-bottom: 20px !important;
+    text-align: justify;
 }
 
 .view-reset #user-registration .controls {
@@ -29,9 +30,8 @@ form#user-registration.form-validate.form-horizontal.well label,
 .reset-complete .form-validate.form-horizontal.well  label
 {
     font-size: 14px;
-    color: #565656 !important;
     margin-bottom: 5px !important;
-    font-weight: bold !important;
+    font-weight: bold;
 }
 
 form#user-registration.form-validate.form-horizontal.well .control-group .controls button,
@@ -44,7 +44,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     margin-right:0;
     border-radius: 0px;
     padding: 8px 12px;
-    font-family: "Open Sans" !important;
+    font-family: "Open Sans";
     line-height: normal;
     font-weight: 300;
     font-size: 14px;
