@@ -522,8 +522,13 @@ class hikashopFileClass extends hikashopClass {
 					@set_time_limit(0);
 				}
 
+				if(empty($options['thumbnail_x']))
+					$options['thumbnail_x'] = 100;
+				if(empty($options['thumbnail_y']))
+					$options['thumbnail_y'] = 100;
+
 				$imageHelper = hikashop_get('helper.image');
-				$img = $imageHelper->getThumbnail($filename, array(100, 100), array(), false, false);
+				$img = $imageHelper->getThumbnail($filename, array($options['thumbnail_x'], $options['thumbnail_y']), array(), false, false);
 				if($img->success && !empty($img->data)) {
 					$format = $extension;
 					if($format == 'jpg') $format = 'jpeg';

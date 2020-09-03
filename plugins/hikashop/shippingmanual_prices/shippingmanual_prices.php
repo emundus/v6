@@ -191,7 +191,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 	function onAfterProductUpdate(&$product, $create = false) {
 
 		$request_target = 'shipping_prices';
-		if($product->product_type == 'variant') {
+		if(isset($product->product_type) && $product->product_type == 'variant') {
 			$request_target = 'variant_shipping_prices';
 		}
 		$vendor = null;
@@ -351,7 +351,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 				if ($v->shipping_published == 0)
 					continue;
 
-				$arrayKey = $v->shipping_name . ' ' . $v->shipping_price_id . ' ' . $v->shipping_price_ref_id;
+				$arrayKey = $v->shipping_price_id . '_' . $v->shipping_price_ref_id;
 				$shipData[$arrayKey] = array();
 
 				$shipParams = hikashop_unserialize($v->shipping_params);

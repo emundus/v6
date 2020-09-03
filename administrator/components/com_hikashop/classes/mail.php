@@ -132,18 +132,191 @@ class hikashopMailClass {
 	 }
 
 	public function saveForm() {
+		$app = JFactory::getApplication();
+		$mail = new stdClass();
+		$config =& hikashop_config();
+
+		$mail->mail_name = hikaInput::get()->getString('mail_name');
+		$formData = hikaInput::get()->get('data', array(), 'array');
+		jimport('joomla.filter.filterinput');
+		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
+
+		foreach($formData['mail'] as $column => $value) {
+			hikashop_secureField($column);
+			if(in_array($column, array('from_name', 'from_email', 'reply_name', 'reply_email')) && $config->get($column) == $value){
+				$value = '';
+			}
+			if($column == 'attachments')
+				continue;
+
+			if(in_array($column, array('params', 'body', 'altbody', 'preload'))) {
+				$mail->$column = $value;
+			} else {
+				$mail->$column = $safeHtmlFilter->clean(strip_tags($value), 'string');
+			}
+		}
+
+		$mail->attach = array();
+
+		$old = $config->get($mail->mail_name.'.attach');
+		if(!empty($old)) {
+			$oldAttachments = hikashop_unserialize($old);
+			foreach($oldAttachments as $oldAttachment) {
+				$mail->attach[] = $oldAttachment;
+			}
+
+			if(!empty($formData['mail']['attachments']) && is_array($formData['mail']['attachments'])) {
+				$mail->attach = array();
+				$attachments = array_combine($formData['mail']['attachments'], $formData['mail']['attachments']);
+				unset($attachments['']);
+				foreach($oldAttachments as $oldAttachment) {
+					if(!isset($attachments[$oldAttachment->filename]))
+						continue;
+					$mail->attach[] = $oldAttachment;
+				}
+			}
+		}
+
+		$this->saveAttachmentLegacy($mail);
+
+		return $this->save($mail);
 	}
 
+	protected function saveAttachmentLegacy(&$mail) {
+		$attachments = hikaInput::get()->files->getVar('attachments', array(), 'array');
+
+		if(empty($attachments) || (empty($attachments[0]['name'])))
+			return;
+
+		jimport('joomla.filesystem.file');
+		$allowedFiles = explode(',',strtolower($config->get('allowedfiles')));
+		$uploadFolder = JPath::clean(html_entity_decode($config->get('uploadfolder')));
+		if(!preg_match('#^([A-Z]:)?/.*#',$uploadFolder)) {
+			$uploadFolder = trim($uploadFolder,DS.' ').DS;
+			$uploadFolder = JPath::clean(HIKASHOP_ROOT.$uploadFolder);
+		}
+		if(!is_dir($uploadFolder)) {
+			jimport('joomla.filesystem.folder');
+			JFolder::create($uploadFolder);
+		}
+		if(!is_writable($uploadFolder)) {
+			@chmod($uploadFolder, '0755');
+			if(!is_writable($uploadFolder)) {
+				$app->enqueueMessage(JText::sprintf('WRITABLE_FOLDER', $uploadFolder), 'notice');
+			}
+		}
+
+		foreach($attachments as $id => $file) {
+			if(empty($file['name']))
+				continue;
+
+			$attachment = new stdClass();
+			$attachment->filename = strtolower(JFile::makeSafe($file['name']));
+			$attachment->size = $file['size'];
+			if(!preg_match('#\.('.str_replace(array(',','.'),array('|','\.'),$config->get('allowedfiles')).')$#Ui',$attachment->filename,$extension) || preg_match('#\.(php.?|.?htm.?|pl|py|jsp|asp|sh|cgi)$#Ui',$attachment->filename)) {
+				$app->enqueueMessage(JText::sprintf( 'ACCEPTED_TYPE',substr($attachment->filename,strrpos($attachment->filename,'.')+1),str_replace(',',', ',$config->get('allowedfiles'))), 'notice');
+				continue;
+			}
+
+			$attachment->filename = str_replace(array('.',' '),'_',substr($attachment->filename,0,strpos($attachment->filename,$extension[0]))).$extension[0];
+			if(!move_uploaded_file($file['tmp_name'], $uploadFolder . $attachment->filename)) {
+				if(!JFile::upload($file['tmp_name'], $uploadFolder . $attachment->filename)) {
+					$app->enqueueMessage(JText::sprintf( 'FAIL_UPLOAD',$file['tmp_name'],$uploadFolder . $attachment->filename), 'error');
+					continue;
+				}
+			}
+
+			$mail->attach[] = $attachment;
+		}
+	}
 
 	public function save(&$element) {
 		if(empty($element->mail_name))
 			return false;
+		$configData = array();
+		if(isset($element->body)) {
+			$this->saveEmail($element->mail_name, $element->body, 'html');
+		}
+		if(isset($element->altbody)) {
+			$this->saveEmail($element->mail_name, $element->altbody, 'text');
+		}
+		if(isset($element->preload)) {
+			$this->saveEmail($element->mail_name, $element->preload, 'preload');
+		}
+
+		$fields = array(
+			'from_name' => 'string',
+			'from_email' => 'string',
+			'reply_name' => 'string',
+			'reply_email' => 'string',
+			'bcc_email' => 'string',
+			'cc_email' => 'string',
+			'subject' => 'string',
+			'template' => 'string',
+			'html' => 'integer',
+			'attach' => 'serialize',
+			'published' => 'integer',
+			'email_log_published' => 'integer'
+		);
+		foreach($fields as $field => $field_type) {
+			if(!isset($element->$field))
+				continue;
+			$value = $element->$field;
+			switch($field_type) {
+				case 'serialize':
+					$value = serialize($value);
+					break;
+				case 'integer':
+					$value = (int)$value;
+					break;
+			}
+			$configData[$element->mail_name . '.' . $field] = $value;
+		}
+
+		$config =& hikashop_config();
+		$config->save($configData);
+		return $element->mail_name;
 	}
 
 	public function saveEmail($name, $data, $type = 'html') {
+		$path = $this->getMailPath($name, $type, true);
+		if(empty($path))
+			$path = $this->mail_folder . $name . '.' . $type . '.modified.php';
+
+		$data = trim($data);
+
+		$original_path = $this->getMailPath($name, $type, false);
+		if(!empty($original_path) && strpos($original_path, '.modified.php') !== false)
+			$original_path = str_replace('.modified.php', '.php', $original_path);
+		if(empty($original_path))
+			$original_path = $this->mail_folder . $name . '.' . $type . '.php';
+		$original_data = '';
+		if(file_exists($original_path))
+			$original_data = trim(file_get_contents($original_path));
+
+		$check = ($data == $original_data);
+		unset($original_data);
+
+		jimport('joomla.filesystem.file');
+		if(file_exists($path)) {
+			JFile::delete($path);
+		}
+
+		if($check)
+			return true;
+
+		return JFile::write($path, $data);
 	}
 
 	public function delete(&$mail_name, $type = '') {
+		$path = $this->getMailPath($mail_name, $type, true);
+		if(empty($path))
+			return false;
+
+		jimport('joomla.filesystem.file');
+		if(file_exists($path)) {
+			return JFile::delete($path);
+		}
 		return true;
 	}
 

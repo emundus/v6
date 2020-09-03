@@ -50,6 +50,18 @@ class hikashopOrder_productClass extends hikashopClass {
 			'order_product_shipping_params'
 		);
 
+		if(hikashop_level(2)) {
+			$element = null;
+			$fieldsClass = hikashop_get('class.field');
+			$itemFields = $fieldsClass->getFields('frontcomp', $products, 'item');
+			if(!empty($itemFields)) {
+				foreach($itemFields as $field){
+					if($field->field_type == 'customtext')
+						continue;
+					$fields[] = $field->field_namekey;
+				}
+			}
+		}
 
 		$productClass = hikashop_get('class.product');
 		$product_ids = array();
@@ -57,6 +69,9 @@ class hikashopOrder_productClass extends hikashopClass {
 			$product_ids[ (int)$product->product_id ] = (int)$product->product_id;
 		}
 
+		if(hikashop_level(1)) {
+			$this->handleProductBundles($product_ids, $products);
+		}
 
 		$query = 'SELECT product_id, product_type, product_parent_id FROM ' . hikashop_table('product') . ' WHERE product_id IN ('.implode(',', $product_ids).')';
 		unset($product_ids);
@@ -260,8 +275,121 @@ class hikashopOrder_productClass extends hikashopClass {
 		}
 	}
 
+	protected function handleProductBundles(&$product_ids, &$products) {
+		$bundle_product_ids = array();
+		foreach($products as $product) {
+			if(!empty($product->bundle_done))
+				continue;
+			$bundle_product_ids[ (int)$product->product_id ] = (int)$product->product_id;
+		}
+
+		if(empty($bundle_product_ids))
+			return;
+
+		$query = 'SELECT pr.product_id as `bundle_id`, pr.product_related_id as `product_id`, pr.product_related_quantity, p.product_name, p.product_code, p.product_tax_id '.
+			' FROM #__hikashop_product_related as pr '.
+			' LEFT JOIN #__hikashop_product as p ON pr.product_related_id = p.product_id '.
+			' WHERE pr.product_id IN ('.implode(',', $bundle_product_ids).') AND pr.product_related_type=\'bundle\' ORDER BY pr.product_related_ordering ASC';
+		$this->database->setQuery($query);
+		$bundles_data = $this->database->loadObjectList();
+
+		if(empty($bundles_data))
+			return;
+
+		$order_id = 0;
+		foreach($products as $product) {
+			$order_id = (int)$product->order_id;
+			break;
+		}
+
+		$bundle_product_ids = array();
+		foreach($bundles_data as $bundle_data) {
+			$bundle_product_ids[ (int)$bundle_data->product_id ] = (int)$bundle_data->product_id;
+		}
+		$config = hikashop_config();
+		$currencyClass = hikashop_get('class.currency');
+		$orderclass = hikashop_get('class.order');
+		$order = $orderclass->get($order_id);
+
+		$currency_id = (int)$order->order_currency_id;
+		$tax_zone_id = hikashop_getZone();
+		$main_currency = (int)$config->get('main_currency', 1);
+		$discount_before_tax = (int)$config->get('discount_before_tax', 0);
+		$currencyClass->getPrices($bundles_data, $bundle_product_ids, $currency_id, $main_currency, $tax_zone_id, $discount_before_tax);
+
+		$max_cart_product_id = 0;
+		foreach($products as $product) {
+			$max_cart_product_id = max($max_cart_product_id, (int)$product->cart_product_id);
+		}
+		$max_cart_product_id += 1;
+
+		$p = array();
+		foreach($products as $product) {
+			foreach($bundles_data as $bundle_data) {
+				if($product->product_id != $bundle_data->bundle_id)
+					continue;
+
+				if(empty($bundle_data->product_related_quantity))
+					$bundle_data->product_related_quantity = 1;
+
+				$b = new stdClass();
+				$b->product_id = $bundle_data->product_id;
+				$b->order_id = $product->order_id;
+				if(isset($product->no_update_qty))
+					$b->no_update_qty = $product->no_update_qty;
+				$b->order_product_quantity = 0;
+				$b->order_product_name = $bundle_data->product_name;
+				$b->order_product_code = $bundle_data->product_code;
+				$b->order_product_price = @$bundle_data->prices[0]->price_value;
+				$b->order_product_tax = '';
+				$b->order_product_options = array(
+					'type' => 'bundle',
+					'related_quantity' => (int)$bundle_data->product_related_quantity
+				);
+				$b->cart_product_id = $max_cart_product_id++;
+				$b->cart_product_option_parent_id = $product->cart_product_id;
+				$b->order_product_tax_info = '';
+				$b->order_product_wishlist_id = 0;
+				$b->order_product_wishlist_product_id = 0;
+				$b->order_product_shipping_id = 0;
+				$b->order_product_shipping_method = '';
+				$b->order_product_shipping_price = '';
+				$b->order_product_shipping_tax = '';
+				$b->order_product_shipping_params = '';
+
+				$p[] = $b;
+
+				$product_ids[ (int)$b->product_id ] = (int)$b->product_id;
+			}
+		}
+
+		$products = array_merge($products, $p);
+		unset($bundles_data);
+	}
 
 	protected function updateWishlistProducts($wishlistUpdates) {
+		if(empty($wishlistUpdates))
+			return;
+
+		foreach($wishlistUpdates as $k => $update) {
+			$filters = array(
+				'cart_id = '.(int)abs($update['cart']),
+				'product_id = '.(int)$update['product'],
+			);
+			if(!empty($update['cart_product']))
+				$filters[] = 'cart_product_id = '.(int)abs($update['cart_product']);
+
+			$query = 'UPDATE '.hikashop_table('cart_product').
+				' SET cart_product_quantity = GREATEST(0, cart_product_quantity - '.(int)$update['qty'].') '.
+				' WHERE ('.implode(') AND (', $filters).')';
+			$this->db->setQuery($query);
+			$this->db->execute();
+		}
+
+		$query = ' DELETE FROM '.hikashop_table('cart_product').
+			' WHERE cart_id = '.(int)abs($update['cart']).' AND cart_product_quantity = 0';
+		$this->db->setQuery($query);
+		$this->db->execute();
 	}
 
 	public function update(&$product) {
@@ -294,6 +422,25 @@ class hikashopOrder_productClass extends hikashopClass {
 			$updates = array($k => array((int)$product_id));
 			if(!empty($prod) && $prod->product_type == 'variant' && !empty($prod->product_parent_id)) {
 				$updates[$k][] = (int)$prod->product_parent_id;
+			}
+			if(hikashop_level(1) && !empty($old->order_id) && !empty($old->order_product_id)) {
+				$query = 'SELECT * FROM '.hikashop_table('order_product').' WHERE order_id = '.(int)$old->order_id.' AND order_product_option_parent_id = '.(int)$old->order_product_id;
+				$this->database->setQuery($query);
+				$items = $this->database->loadObjectList('order_product_id');
+				if(!empty($items)) {
+					foreach($items as $item) {
+						if(!empty($item->order_product_quantity) || empty($item->order_product_options))
+							continue;
+
+						$options = hikashop_unserialize($item->order_product_options);
+						if(!empty($options['type']) && $options['type'] == 'bundle' && !empty($options['related_quantity'])) {
+							$q = (int)$options['related_quantity'] * $k;
+							if(!isset($updates[$q]))
+								$updates[$q] = array();
+							$updates[$q][] = (int)$item->product_id;
+						}
+					}
+				}
 			}
 			$this->updateQuantityAndSales($updates);
 		}

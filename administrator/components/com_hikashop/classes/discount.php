@@ -240,6 +240,177 @@ class hikashopDiscountClass extends hikashopClass {
 		if($coupon->discount_end && $coupon->discount_end < time())
 			return JText::_('COUPON_EXPIRED');
 
+		if(hikashop_level(2) && !empty($coupon->discount_access) && $coupon->discount_access != 'all' && ($coupon->discount_access == 'none' || !hikashop_isAllowed($coupon->discount_access)))
+			return JText::_('COUPON_NOT_FOR_YOU');
+
+		if(hikashop_level(2) && !empty($coupon->discount_user_id)) {
+			$ids = explode(',', $coupon->discount_user_id);
+			$user_id = hikashop_loadUser();
+			if(empty($user_id) || !in_array($user_id, $ids))
+				return JText::_('COUPON_NOT_FOR_YOU');
+		}
+
+		if(empty($error_message) && hikashop_level(1) && !empty($coupon->discount_quota) && $coupon->discount_quota <= $coupon->discount_used_times)
+			return JText::_('QUOTA_REACHED_FOR_COUPON');
+
+		if(!empty($error_message) || !hikashop_level(1))
+			return $error_message;
+
+		if(!empty($coupon->discount_quota_per_user)) {
+			$user_id = hikashop_loadUser();
+			if($user_id){
+				$config =& hikashop_config();
+				$cancelled_order_status = explode(',', $config->get('cancelled_order_status'));
+				foreach($cancelled_order_status as &$order_status){
+					$order_status = $this->database->quote($order_status);
+				}
+				unset($order_status);
+
+				$query = 'SELECT COUNT(order_id) AS already_used FROM '.hikashop_table('order').' WHERE order_user_id = '.(int)$user_id.' AND order_status NOT IN ('.implode(',',$cancelled_order_status).') AND order_discount_code='.$this->database->quote($coupon->discount_code);
+				$this->database->setQuery($query);
+				$already_used = (int)$this->database->loadResult();
+				if((int)$coupon->discount_quota_per_user <= $already_used) {
+					return JText::_('QUOTA_REACHED_FOR_COUPON');
+				}
+			}
+		}
+
+		if(empty($error_message) && $coupon->discount_zone_id) {
+			if(!is_array($coupon->discount_zone_id))
+				$coupon->discount_zone_id = explode(',',trim($coupon->discount_zone_id,','));
+			$zoneClass = hikashop_get('class.zone');
+			$zone = $zoneClass->getZones($coupon->discount_zone_id,'zone_namekey','zone_namekey',true);
+			if($zone && !count(array_intersect($zone, $zones))){
+				return JText::_('COUPON_NOT_AVAILABLE_IN_YOUR_ZONE');
+			}
+		}
+
+		$ids = array();
+		$qty = 0;
+		foreach($products as $prod) {
+			$qty += (int)$prod->cart_product_quantity;
+			if(!empty($prod->product_parent_id))
+				$ids[$prod->product_parent_id] = (int)$prod->product_parent_id;
+			$ids[$prod->product_id] = (int)$prod->product_id;
+		}
+
+		if(empty($ids))
+			return JText::_('COUPON_NOT_FOR_EMPTY_CART');
+
+		if(!empty($coupon->discount_product_id) && is_string($coupon->discount_product_id))
+			$coupon->discount_product_id = explode(',', $coupon->discount_product_id);
+		if(empty($error_message) && !empty($coupon->discount_product_id) && count(array_intersect($ids, $coupon->discount_product_id)) == 0)
+			return JText::_('COUPON_NOT_FOR_THOSE_PRODUCTS');
+
+		if(empty($error_message) && $coupon->discount_category_id) {
+			if(!is_array($coupon->discount_category_id))
+				$coupon->discount_category_id = explode(',', trim($coupon->discount_category_id, ','));
+			if($coupon->discount_category_childs) {
+				$filters = array('b.category_type=\'product\'','a.product_id IN ('.implode(',',$ids).')');
+
+				$categoryClass = hikashop_get('class.category');
+				$categories = $categoryClass->getCategories($coupon->discount_category_id,'category_left, category_right');
+
+				if(!empty($categories)) {
+					$categoriesFilters = array();
+					foreach($categories as $category) {
+						$categoriesFilters[] = 'b.category_left >= '.$category->category_left.' AND b.category_right <= '.$category->category_right;
+					}
+					if(count($categoriesFilters)) {
+						$filters[] = '(('.implode(') OR (',$categoriesFilters).'))';
+						hikashop_addACLFilters($filters,'category_access','b');
+						$select = 'SELECT a.product_id FROM '.hikashop_table('category').' AS b LEFT JOIN '.hikashop_table('product_category').' AS a ON b.category_id=a.category_id WHERE '.implode(' AND ',$filters);
+						$this->database->setQuery($select);
+						$id = $this->database->loadRowList();
+						if(empty($id)) {
+							return JText::_('COUPON_NOT_FOR_PRODUCTS_IN_THOSE_CATEGORIES');
+						}
+					}
+				}
+			} else {
+				hikashop_toInteger($coupon->discount_category_id);
+				$filters = array('b.category_id IN ('.implode(',',$coupon->discount_category_id).')' ,'a.product_id IN ('.implode(',',$ids).')');
+				hikashop_addACLFilters($filters,'category_access','b');
+				$select = 'SELECT a.product_id FROM '.hikashop_table('category').' AS b LEFT JOIN '.hikashop_table('product_category').' AS a ON b.category_id=a.category_id WHERE '.implode(' AND ',$filters);
+				$this->database->setQuery($select);
+				$id = $this->database->loadRowList();
+				if(empty($id)) {
+					return JText::_('COUPON_NOT_FOR_PRODUCTS_IN_THOSE_CATEGORIES');
+				}
+			}
+		}
+
+		$coupon->products = array();
+		if(!empty($coupon->discount_product_id)) {
+			foreach ($products as $product) {
+				if(!in_array($product->product_id, $coupon->discount_product_id)) {
+					foreach ($products as $product2) {
+						if(isset($product->cart_product_parent_id) && $product2->cart_product_id == $product->cart_product_parent_id && in_array($product2->product_id, $coupon->discount_product_id)){
+							$coupon->products[] = $product;
+						}
+					}
+				} else {
+					$coupon->products[] = $product;
+				}
+			}
+		} else if(!empty($id)) {
+			foreach ($products as $product) {
+				foreach ($id as $productid) {
+					if($product->product_id !== $productid[0]) {
+						foreach ($products as $product2) {
+							if(!empty($product->cart_product_parent_id) && $product2->cart_product_id == $product->cart_product_parent_id && $product2->product_id == $productid[0]) {
+								$coupon->products[] = $product;
+								break 2;
+							}
+						}
+					} else {
+						$coupon->products[] = $product;
+						break;
+					}
+				}
+			}
+		} else {
+			foreach($products as $product) {
+				$coupon->products[] = $product;
+			}
+			$coupon->all_products = true;
+		}
+
+		if(empty($error_message) && bccomp($coupon->discount_minimum_order, 0, 5)) {
+
+			$currencyClass->convertCoupon($coupon, $total->prices[0]->price_currency_id);
+			$config =& hikashop_config();
+			$discount_before_tax = $config->get('coupon_before_tax');
+			$var = 'price_value_with_tax';
+			if($discount_before_tax) {
+				$var = 'price_value';
+			}
+
+			$total_amount = 0;
+			if(!empty($coupon->products)) {
+				foreach($coupon->products as $product) {
+					if($product->cart_product_quantity > 0)
+						$total_amount += @$product->prices[0]->$var;
+				}
+			}
+
+			if($coupon->discount_minimum_order > $total_amount) {
+				return JText::sprintf('ORDER_NOT_EXPENSIVE_ENOUGH_FOR_COUPON',$currencyClass->format($coupon->discount_minimum_order,$coupon->discount_currency_id));
+			}
+		}
+
+		if(empty($error_message) && (int)$coupon->discount_minimum_products > 0) {
+			$qty = 0;
+			if(!empty($coupon->products)) {
+				foreach($coupon->products as $product) {
+					$qty += $product->cart_product_quantity;
+				}
+			}
+
+			if((int)$coupon->discount_minimum_products > $qty) {
+				return JText::sprintf('NOT_ENOUGH_PRODUCTS_FOR_COUPON', (int)$coupon->discount_minimum_products);
+			}
+		}
 		return $error_message;
 	}
 

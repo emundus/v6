@@ -37,7 +37,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		'notification' => array('ALLOW_NOTIFICATIONS', 'boolean', 1),
 		'details' => array('SEND_DETAILS_OF_ORDER', 'boolean', 0),
 		'notes' => array('FEDEX_SHOW_NOTES', 'boolean', 0),
-		'validation' => array('ENABLE_VALIDATION', 'boolean', 1),
+		'validation' => array('ENABLE_VALIDATION', 'boolean', 0),
 		'debug' => array('DEBUG', 'boolean', 0),
 		'cancel_url' => array('CANCEL_URL', 'input'),
 		'return_url' => array('RETURN_URL', 'input'),

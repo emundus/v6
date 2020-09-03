@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<state>
+		<name>Affiliate program</name>
+	</state>
+	<layout title="COM_HIKASHOP_AFFILIATE_VIEW_DEFAULT_TITLE">
+		<message></message>
+	</layout>
+</metadata>
