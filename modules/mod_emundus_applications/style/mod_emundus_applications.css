@@ -134,8 +134,8 @@ button#back:hover, button#back:active, button#back:focus,
     margin: 5px 0 !important;
 }
 
-.list-group.candidacy-files-list i.icon-print, .list-group.candidacy-files-list i.icon-trash {
-    padding-left: 3px !important;
+.homepage #g-main-mainbody #content-bottom-a .platform-content i.icon-print, .homepage #g-main-mainbody #content-bottom-a .platform-content i.icon-trash {
+    padding-left: 2px;
 }
 
 .list-group .col-xs-6.col-md-4 a {

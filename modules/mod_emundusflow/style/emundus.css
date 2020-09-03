@@ -155,6 +155,7 @@
 
 .ui.bottom.attached.steps .step:first-child {
 	justify-content: center;
+	background: transparent;
 }
 
 .registration form > div {

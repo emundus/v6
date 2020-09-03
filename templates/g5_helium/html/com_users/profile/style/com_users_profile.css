@@ -22,11 +22,23 @@ a.btn:hover{
     color: #29d4ff !important;
     outline: none;
 }
+
+.form-horizontal .control-group .control-label {
+    text-align: left;
+}
+
+#member-profile > .control-group .controls {
+    margin-left: 0px;
+    text-align: center;
+    padding-top: 20px;
+}
+
 form#member-profile.form-validate.form-horizontal.well input {
     border-radius: 0px;
 }
 form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.validate {
     text-transform: capitalize;
+    margin-right: 10px !important;
 }
 form#member-profile.form-validate.form-horizontal.well a.btn {
     font-weight: 300;

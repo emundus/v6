@@ -87,7 +87,7 @@ echo <<<EOT
     box-shadow: none !important;
 }
 .calendarbutton, .timeButton {
-    height: 41px;
+    height: 41px !important;
 }
 
 .applicant-form main#g-main-mainbody {
@@ -353,7 +353,7 @@ form legend a, form legend a:hover, form legend a:focus {
 }
 /* ------ Rapport d'erreur -------- */
 #form_293 {
-    padding: 20px !important;
+    padding: 20px 0px 0px 0px !important;
 }
 
 #form_293 .nav {
@@ -1083,6 +1083,15 @@ body.em-formRegistrationCenter  {
 
 .applicant-form .fabrikElement select {
     height: 41px !important;
+  border-radius: 0px;
+}
+
+.applicant-form .fabrikElement div a.chzn-single {
+   border-radius: 0px; 
+}
+
+.applicant-form .fabrikElement div a.chzn-single span {
+   display: inline; 
 }
 
 /* AJOUT APRES MAJ */
@@ -1106,11 +1115,11 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
 
 .applicant-form .fabrikActions.form-actions .row-fluid button {
     font-weight: 300; 
-    height: 41px;
+    height: 41px !important; 
 }
 ​
 .applicant-form .sidebar-a a#print {
-    height: 41px;
+    height: 41px !important;
 }
 
 .applicant-form p em strong i.icon-star.small.obligatoire  {
@@ -1145,7 +1154,7 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
 }
 
  .applicant-form .fabrikForm select {
-    height: 38px;
+    height: 41px !important;
     background-position-x: 98%;
     background-position-y: 58%;
     -webkit-appearance: none;
@@ -1160,6 +1169,10 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
 
 .fb_el_jos_emundus_users___terms_and_conditions > label:after {
   content: '';
+}
+
+label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.small {
+  top: -9px; 
 }
 
 .view-login .form-horizontal,
@@ -1194,7 +1207,7 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
 }
 .form-horizontal .control-group .controls {
     margin: 0;
-    width: 70%;
+    width: 100%;
     display: inline-flex;
     align-items: center;
 }
@@ -1215,12 +1228,12 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
 }
 
 .applicant-form .fabrikForm fieldset > .row-fluid, .applicant-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
-  padding: 0 100px;
+  padding: 0 50px;
 }
 
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
   position: absolute;
-  top: 17px;
+  top: 0px;
   right: 10px;
 }
 
@@ -1323,7 +1336,6 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
 }
 
 .fabrikForm .row-fluid .control-group .control-label {
-  color: #565656 !important;
   margin-top: 10px;
 }
 
@@ -1364,6 +1376,7 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
 form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm label.radio {
   display: flex !important;
   align-items: center !important;
+  padding-left: 0px; 
 }
 
 .fabrikgrid_checkbox span {

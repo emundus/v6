@@ -135,8 +135,8 @@ div.mod-languages a {
     text-decoration:underline;
 }
 .view-login .form-horizontal .controls {
-     margin: 0 !important;
-     width: 25%;
+     margin: 0;
+     width: 100%;
      display: inline-flex;
      align-items: center;
  }
@@ -145,7 +145,7 @@ div.mod-languages a {
 }
 
 .view-login  .form-horizontal .control-label {
-    width: 15%;
+    width: 100%;
 }
 
 .view-login .form-horizontal .control-group {

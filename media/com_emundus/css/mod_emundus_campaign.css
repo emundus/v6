@@ -621,7 +621,8 @@ button.btn.btn-default.sch {
     background-color: #fff !important;
     border-radius: 0 !important;
     border-left: 1px solid #d5d5d5 !important;
-    padding-left: 20px !important;
+    padding-left: 10px !important;
+    min-height: 10em !important;
 }
 
 .right-side hr {
