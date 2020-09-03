@@ -205,7 +205,8 @@ class plgUserEmundus extends JPlugin
                 else{
                     $name= $username[1];
                 }
-                $details['lastname'] = $name;
+                $details['name'] = $name;
+                $details['emundus_profile']['lastname'] = $name;
                 $details['firstname'] = $username[0];
             }
         }
