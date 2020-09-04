@@ -13,9 +13,11 @@ defined('_JEXEC') or die();
  * @description This plugin combines campaign_check and campaign while allowing multiple users to be registered to a campaign at once by another.
  */
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+
 $db = JFactory::getDBO();
 $query = $db->getQuery(true);
-$current_user = JFactory::getUser();
+$current_user = JFactory::getSession()->get('emundusUser');
 $application = Jfactory::getApplication();
 
 $campaign_id = $data['jos_emundus_campaign_candidature___campaign_id_raw'][0];
@@ -31,6 +33,19 @@ JLog::addLogger(array('text_file' => 'com_emundus.emundus-campaign-multi.php'), 
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
+$id_profiles = $eMConfig->get('id_profiles', '0');
+$id_profiles = explode(',', $id_profiles);
+
+if (EmundusHelperAccess::asAccessAction(1, 'c')) {
+	$applicant_can_renew = 1;
+} else {
+    foreach ($current_user->emProfiles as $profile) {
+        if (in_array($profile->id, $id_profiles)) {
+            $applicant_can_renew = 1;
+            break;
+        }
+    }
+}
 
 $query->select($db->quoteName('profile_id'))
 	->from($db->quoteName('#__emundus_setup_campaigns'))
@@ -57,7 +72,7 @@ foreach ($users as $user) {
 	if (in_array($user_id, $users_registered)) {
 		continue;
 	}
-	
+
 	$users_registered[] = $user_id;
 	switch ($applicant_can_renew) {
 

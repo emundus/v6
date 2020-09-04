@@ -14,6 +14,8 @@
         @UpdateUxf="UpdateUXF"
         :key="builderViewKey"
         :files="files"
+        :prid="prid"
+        :eval="eval"
         ref="builder_viewer"
       />
     </div>
@@ -31,8 +33,8 @@ import Swal from "sweetalert2";
 const qs = require("qs");
 
 export default {
-  name: "FormBuilder",
-  props: { object: Object, UpdateUx: Boolean, rgt: Number, files: Number  },
+  name: "Builder",
+  props: { object: Object, UpdateUx: Boolean, rgt: Number, files: Number, prid: String, eval: Number  },
   components: {
     draggable,
     BuilderViewer,

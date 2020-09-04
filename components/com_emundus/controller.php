@@ -1277,6 +1277,12 @@ class EmundusController extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $url = $jinput->get->get('u', null, 'RAW');
 
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
+	    if (strpos($url, $applicant_files_path) !== 0) {
+		    die (JText::_('ACCESS_DENIED'));
+	    }
+        
         $urltab = explode('/', $url);
 
         // Split the URL into different parts.
@@ -1288,12 +1294,15 @@ class EmundusController extends JControllerLegacy {
 
         // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
         if (!empty(JFactory::getUser($uid)->id)) {
+
             $db = JFactory::getDBO();
             $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads WHERE user_id = ' . $uid . ' AND filename like ' . $db->Quote($file);
             $db->setQuery($query);
             $fileInfo = $db->loadObject();
-            if (empty($fileInfo)) {
-                $fileInfo->fnum = explode('_', $file)[0];
+
+            $first_part_of_filename = explode('_', $file)[0];
+            if (empty($fileInfo) && is_numeric($first_part_of_filename) && strlen($first_part_of_filename) === 21) {
+                $fileInfo->fnum = $first_part_of_filename;
             }
         }
 
@@ -1312,7 +1321,7 @@ class EmundusController extends JControllerLegacy {
 
         // Otherwise, open the file if it exists.
         $file = JPATH_BASE.DS.$url;
-        if (file_exists($file)) {
+        if (is_file($file)) {
             $mime_type = $this->get_mime_type($file);
 
             if (EmundusHelperAccess::isDataAnonymized($current_user->id) && $mime_type === 'application/pdf') {
@@ -1340,7 +1349,7 @@ class EmundusController extends JControllerLegacy {
 	            exit;
             }
         } else {
-            JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$file);
+            JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$url);
         }
     }
 

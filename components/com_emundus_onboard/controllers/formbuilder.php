@@ -112,6 +112,26 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 
+    public function duplicateelement() {
+        $user = JFactory::getUser();
+        $m_form = $this->model;
+
+        $jinput = JFactory::getApplication()->input;
+        $eid = $jinput->getInt('id');
+        $group = $jinput->getInt('group');
+        $old_group = $jinput->getInt('old_group');
+        $form_id = $jinput->getInt('form_id');
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $changeresponse = $m_form->duplicateElement($eid,$group,$old_group,$form_id);
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+
 
      public function SubLabelsxValues() {
         $user = JFactory::getUser();

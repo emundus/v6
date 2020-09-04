@@ -132,7 +132,11 @@
       dynamicComponent: false,
       categories: [],
       cats: [],
-      prog_group: null,
+      prog_group: {
+        prog: null,
+        evaluator: null,
+        manager: null,
+      },
 
       langue: 0,
 
@@ -202,7 +206,7 @@
         if (this.menuHighlight < 3) {
           this.menuHighlight++;
         } else {
-          history.go(-1);
+          window.location.href = '/configuration-programs'
         }
       },
 
@@ -210,7 +214,7 @@
         if (this.menuHighlight > 0) {
           this.menuHighlight--;
         } else {
-          history.go(-1);
+          window.location.href = '/configuration-programs'
         }
       },
 
@@ -272,7 +276,9 @@
                               );
                             }
                             this.dynamicComponent = true;
-                            this.prog_group = rep.data.data.group;
+                            this.prog_group.prog = rep.data.data.group;
+                            this.prog_group.evaluator = rep.data.data.evaluator_group;
+                            this.prog_group.manager = rep.data.data.manager_group;
                             this.menuHighlight = 0;
                           }).catch(e => {
                             console.log(e);

@@ -83,8 +83,7 @@
             </div>
         </div>
 
-        <div class="section-sauvegarder-et-continuer-funnel"
-             :class="menuHighlight == 5 ? 'big' : menuHighlight == 1 ? 'noShow' : ''">
+        <div class="section-sauvegarder-et-continuer-funnel">
             <div class="w-container">
                 <div class="container-evaluation w-clearfix">
                     <a @click="next()" class="bouton-sauvergarder-et-continuer-3">{{ Continuer }}</a>
@@ -232,7 +231,7 @@
                 if (this.menuHighlight < 1) {
                     this.menuHighlight++;
                 } else {
-                    history.go(-1);
+                  window.location.href = '/configuration-campaigns'
                 }
             },
 
@@ -240,7 +239,7 @@
                 if (this.menuHighlight > 0) {
                     this.menuHighlight--;
                 } else {
-                    history.go(-1);
+                    window.location.href = '/configuration-campaigns'
                 }
             },
 
@@ -337,8 +336,9 @@
             }).then(() => {}).catch(e => {
                 console.log(e);
             });
-
-            this.menuHighlight = this.index;
+            setTimeout(() => {
+                this.menuHighlight = this.index;
+            },500);
         },
     };
 </script>

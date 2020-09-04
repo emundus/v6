@@ -28,7 +28,9 @@
                     popover-x="left"
                     popover-y="top"
             ></v-swatches>
+          <button type="button" v-if="statu.step != 0 && statu.step != 1" @click="removeStatus(statu,index)" class="remove-tag"><i class="fas fa-trash"></i></button>
         </div>
+        <a @click="pushStatus" class="bouton-sauvergarder-et-continuer-3 create-tag">{{ addStatus }}</a>
     </div>
 </template>
 
@@ -58,6 +60,7 @@
                     '#DB0A5B', '#999999'
                 ],
                 TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+                addStatus: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_STATUS"),
             };
         },
 
@@ -67,19 +70,54 @@
                     .then(response => {
                         this.status = response.data.data;
                         setTimeout(() => {
-                            this.getHexColors();
+                          this.status.forEach(element => {
+                            this.getHexColors(element);
+                          });
                         }, 100);
                     });
             },
 
-            getHexColors() {
-                this.status.forEach(element => {
-                    element.translate = false;
-                    let status_class = document.querySelector('.label-' + element.class);
-                    let style = getComputedStyle(status_class);
-                    let rgbs = style.backgroundColor.split('(')[1].split(')')[0].split(',');
-                    element.class = this.rgbToHex(parseInt(rgbs[0]),parseInt(rgbs[1]),parseInt(rgbs[2]));
-                });
+            pushStatus() {
+              this.$emit("LaunchLoading");
+              axios({
+                method: "post",
+                url: 'index.php?option=com_emundus_onboard&controller=settings&task=createstatus',
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                },
+              }).then((newstatus) => {
+                this.status.push(newstatus.data);
+                setTimeout(() => {
+                  this.getHexColors(newstatus.data);
+                }, 100);
+                this.$emit("StopLoading");
+              });
+            },
+
+            removeStatus(status, index) {
+              this.$emit("LaunchLoading");
+              axios({
+                method: "post",
+                url: 'index.php?option=com_emundus_onboard&controller=settings&task=deletestatus',
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                },
+                data: qs.stringify({
+                  id: status.id,
+                  step: status.step
+                })
+              }).then(() => {
+                this.status.splice(index,1);
+                this.$emit("StopLoading");
+              });
+            },
+
+            getHexColors(element) {
+              element.translate = false;
+              let status_class = document.querySelector('.label-' + element.class);
+              let style = getComputedStyle(status_class);
+              let rgbs = style.backgroundColor.split('(')[1].split(')')[0].split(',');
+              element.class = this.rgbToHex(parseInt(rgbs[0]),parseInt(rgbs[1]),parseInt(rgbs[2]));
             },
 
             rgbToHex(r, g, b) {

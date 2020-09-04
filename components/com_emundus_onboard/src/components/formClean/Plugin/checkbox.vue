@@ -26,6 +26,7 @@
           <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input" style="height: 35px" :id="'suboption_' + i" @keyup.enter="add"/>
           <button @click.prevent="leave(i)" class="remove-option">-</button>
         </div>
+        </draggable>
         <select v-if="databasejoin" class="dropdown-toggle" v-model="databasejoin_data" style="margin: 20px 0 30px 0;">
           <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
         </select>

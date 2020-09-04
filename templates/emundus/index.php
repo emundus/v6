@@ -121,14 +121,29 @@ $doc = JFactory::getDocument();
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script>
-    let path = window.location.pathname.split('/');
-    let route = path[path.length - 1];
-    let menu = document.getElementById('moduletable-b');
     let found = false;
+
+    // Get route
+    const path = window.location.pathname.split('/');
+    const route = path[path.length - 1];
+    const menu = document.getElementById('moduletable-b');
+    //
+
+    // Get view params
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const view = urlParams.get('view')
+    //
+
     menu.childNodes[1].childNodes.forEach((element) => {
         element.childNodes.forEach((link) => {
             if(link.tagName == 'A' && !found) {
-                let find = link.attributes.href.nodeValue.search(route);
+                let find;
+                if(view != null) {
+                    find = link.attributes.href.nodeValue.search(view);
+                } else {
+                    find = link.attributes.href.nodeValue.search(route);
+                }
                 if(find !== -1){
                     link.className = 'menu-current-link';
                     found = true;

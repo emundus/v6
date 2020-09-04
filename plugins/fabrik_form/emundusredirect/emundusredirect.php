@@ -78,7 +78,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 	 * Before the record is stored, this plugin will see if it should process
 	 * and if so store the form data in the session.
 	 *
-	 * @return  bool  should the form model continue to save
+	 * @return void should the form model continue to save
 	 * @throws Exception
 	 */
 	public function onAfterProcess() {
@@ -133,7 +133,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			}
 
 			// Only if other application files found
-			if (count($fnums) > 0) {
+			if (!empty($fnums)) {
 
 				$query = 'SELECT * FROM '.$table_name.' WHERE id='.$data['rowid'];
 
@@ -160,7 +160,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 							$parent_id[] = $db->insertid();
 
 						} catch (Exception $e) {
-							$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+							$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 							JLog::add($error, JLog::ERROR, 'com_emundus');
 						}
 					}
@@ -180,11 +180,11 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 								$repeat_data = $db->loadAssocList();
 
 							} catch (Exception $e) {
-								$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+								$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 								JLog::add($error, JLog::ERROR, 'com_emundus');
 							}
 
-							if (count($repeat_data) > 0) {
+							if (!empty($repeat_data)) {
 
 								foreach ($parent_id as $parent) {
 
@@ -205,7 +205,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 										$db->execute();
 
 									} catch (Exception $e) {
-										$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+										$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 										JLog::add($error, JLog::ERROR, 'com_emundus');
 									}
 								}
@@ -232,25 +232,25 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 
 						try {
 
-							$res = $db->execute();
+							$db->execute();
 							$updated_fnum[] = $fnum;
 
 						} catch (Exception $e) {
-							$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+							$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 							JLog::add($error, JLog::ERROR, 'com_emundus');
 						}
 					}
 
-					if (count($updated_fnum) > 0) {
+					if (!empty($updated_fnum)) {
 						$query = 'SELECT id FROM `'.$table_name.'` WHERE fnum IN ('.implode(',', $db->Quote($updated_fnum)).')';
-						$db->setQuery( $query );
+						$db->setQuery($query);
 						$parent_id = $db->loadColumn();
 					}
 
 					// Repeated table
 					foreach ($fabrik_group_rowids_key as $key => $rowids) {
 
-						if (count($rowids) > 0) {
+						if (!empty($rowids)) {
 
 							$repeat_table_name = $table_name.'_'.$key.'_repeat';
 
@@ -262,36 +262,33 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 								$repeat_data = $db->loadAssocList('id');
 
 							} catch (Exception $e) {
-								$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+								$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 								JLog::add($error, JLog::ERROR, 'com_emundus');
 							}
 
-							if (count($parent_id) > 0) {
+							if (!empty($parent_id)) {
 
 								$query = 'DELETE FROM `'.$repeat_table_name.'` WHERE parent_id IN ('.implode(',', $parent_id).')';
 
 								$db->setQuery($query);
+
 								try {
-
-									$res = $db->execute();
-
+									$db->execute();
 								} catch (Exception $e) {
-									$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+									$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 									JLog::add($error, JLog::ERROR, 'com_emundus');
 								}
 
-								if (count($repeat_data) > 0) {
+								if (!empty($repeat_data)) {
 
 									foreach ($parent_id as $parent) {
 
 										$parent_data = array();
 										foreach ($repeat_data as $key => $d) {
-
 											unset($d['parent_id']);
 											unset($d['id']);
 											$columns = '`'.implode('`,`', array_keys($d)).'`';
 											$parent_data[] = '('.implode(',', $db->Quote($d)).', '.$parent.')';
-
 										}
 
 										$query = 'INSERT INTO `'.$repeat_table_name.'` ('.$columns.', `parent_id`) VALUES ';
@@ -299,11 +296,9 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 										$db->setQuery( $query );
 
 										try {
-
 											$db->execute();
-
 										} catch (Exception $e) {
-											$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$e->getMessage();
+											$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 											JLog::add($error, JLog::ERROR, 'com_emundus');
 										}
 									}
@@ -338,7 +333,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 				$db->execute();
 
 			} catch (Exception $e) {
-				JLog::add('Error updating file status at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+				JLog::add('Error updating file status : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 			}
 		}
 
@@ -371,7 +366,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 				$link = $db->loadResult();
 
 			} catch (Exception $e) {
-				$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+				$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 				JLog::add($error, JLog::ERROR, 'com_emundus');
 			}
 
@@ -393,7 +388,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 					$link = $db->loadResult();
 
 				} catch (Exception $e) {
-					$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+					$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 					JLog::add($error, JLog::ERROR, 'com_emundus');
 				}
 
@@ -408,8 +403,21 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 						$link = $db->loadResult();
 
 					} catch (Exception $e) {
-						$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+						$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 						JLog::add($error, JLog::ERROR, 'com_emundus');
+					}
+
+					if (empty($link)) {
+						try {
+							$query = 'SELECT CONCAT(link,"&Itemid=",id) 
+							FROM #__menu 
+							WHERE published=1 AND menutype = "'.$user->menutype.'" AND type LIKE "component" AND published=1 AND level = 1 ORDER BY id ASC';
+							$db->setQuery( $query );
+							$link = $db->loadResult();
+						} catch (Exception $e) {
+							$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
+							JLog::add($error, JLog::ERROR, 'com_emundus');
+						}
 					}
 				}
 			}
@@ -419,12 +427,11 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			try {
 
 				$query = 'SELECT db_table_name FROM `#__fabrik_lists` WHERE `form_id` ='.$formid;
-
 				$db->setQuery($query);
 				$db_table_name = $db->loadResult();
 
 			} catch (Exception $e) {
-				$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+				$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 				JLog::add($error, JLog::ERROR, 'com_emundus');
 			}
 
@@ -438,12 +445,11 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			try {
 
 				$query = 'UPDATE `'.$db_table_name.'` SET `user`='.$sid.' WHERE fnum like '.$db->Quote($fnum);
-
 				$db->setQuery($query);
 				$db->execute();
 
 			} catch (Exception $e) {
-				$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
+				$error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
 				JLog::add($error, JLog::ERROR, 'com_emundus');
 			}
 

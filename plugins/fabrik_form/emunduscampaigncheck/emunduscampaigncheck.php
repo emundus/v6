@@ -74,26 +74,30 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
      */
     public function onBeforeStore() {
 
+	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.campaign-check.php'), JLog::ALL, array('com_emundus.campaign-check'));
 
-        $user = JFactory::getUser();
+        $user = JFactory::getSession()->get('emundusUser');
         $app = JFactory::getApplication();
-        $formModel = $this->getModel();
         $jinput = $app->input;
+
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $id_profiles = $eMConfig->get('id_profiles', '0');
+	    $id_profiles = explode(',', $id_profiles);
 
         $campaign_id = is_array($jinput->get('jos_emundus_campaign_candidature___campaign_id_raw')) ? $jinput->get('jos_emundus_campaign_candidature___campaign_id_raw')[0] : $jinput->get('jos_emundus_campaign_candidature___campaign_id_raw');
 
         $applicant_can_renew = $this->getParam('applicant_can_renew', 'em_config');
 
         if ($applicant_can_renew === 'em_config') {
-            $eMConfig = JComponentHelper::getParams('com_emundus');
             $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
         }
 
         // Check if the campaign limit has been obtained
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-        $m_campaign     = new EmundusModelCampaign;
+        $m_campaign = new EmundusModelCampaign;
         $isLimitObtained = $m_campaign->isLimitObtained($campaign_id);
 
         if ($isLimitObtained === true) {
@@ -101,6 +105,17 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
             $this->getModel()->formErrorMsg = '';
             $this->getModel()->getForm()->error = JText::_('LIMIT_OBTAINED');
             return false;
+        }
+
+	    if (EmundusHelperAccess::asAccessAction(1, 'c')) {
+		    $applicant_can_renew = 1;
+	    } else {
+            foreach ($user->emProfiles as $profile) {
+                if (in_array($profile->id, $id_profiles)) {
+                    $applicant_can_renew = 1;
+                    break;
+                }
+            }
         }
 
         $db = JFactory::getDBO();

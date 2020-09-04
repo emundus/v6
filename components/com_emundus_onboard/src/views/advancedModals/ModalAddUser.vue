@@ -98,7 +98,7 @@ const qs = require("qs");
 export default {
   name: "modalAddUser",
   props: {
-    group: Number,
+    group: Object,
     coordinatorAccess: Number,
     userManage: Number
   },
@@ -227,7 +227,8 @@ export default {
                  return qs.stringify(params);
               }
             }).then(rep => {
-              rep.data.groups.forEach((group) => {
+              Object.values(rep.data.groups).forEach((group) => {
+                console.log(group)
                 this.affectUserToRole(group);
               })
             });
@@ -256,6 +257,13 @@ export default {
     },
 
     affectUserToRole(group) {
+      let grouptoaffect = null;
+      if(this.form.profile == 5){
+        grouptoaffect = group.manager;
+      } else {
+        grouptoaffect = group.evaluator;
+      }
+
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=program&task=affectusertogroup',
@@ -263,8 +271,8 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          profile: this.form.profile,
-          group: group,
+          group: grouptoaffect,
+          prog_group: group.prog,
           email: this.form.email
         })
       }).then((rep) => {

@@ -7,18 +7,28 @@
                 @UpdateUsers="getUsers"
         />
         <button class="create-user-admin__button bouton-sauvergarder-et-continuer-3" @click="$modal.show('modalAddUser')">{{ addUser }}</button>
-        <div class="d-flex mt-1" id="blocked_filter">
+        <div class="mt-1" id="blocked_filter">
             <div class="d-flex mr-2">
                 <input type="checkbox" class="mr-1" v-model="block" />
                 <p>{{BlockedUsers}}</p>
             </div>
-            <div class="d-flex mr-2">
+          <div class="d-flex mt-1">
+            <div class="d-flex">
                 <p class="mb-0 mr-1" style="white-space: nowrap">{{Program}} : </p>
                 <select class="dropdown-toggle" style="min-width: 80%" v-model="searchProgram">
                     <option selected value="-1"></option>
                     <option v-for="program in programs" :value="program.id">{{program.label}}</option>
                 </select>
             </div>
+            <div class="d-flex" style="margin-left: 5em">
+              <p class="mb-0 mr-1" style="white-space: nowrap">{{Role}} : </p>
+              <select class="dropdown-toggle" style="min-width: 80%" v-model="searchRole">
+                <option selected value="-1"></option>
+                <option value="5">{{Administrator}}</option>
+                <option value="6">{{Evaluator}}</option>
+              </select>
+            </div>
+          </div>
         </div>
         <table-component
                 :data="users"
@@ -33,6 +43,7 @@
             <table-column show="id" label="ID" data-type="numeric" hidden></table-column>
             <table-column show="name" :label="Name"></table-column>
             <table-column show="email" :label="Email"></table-column>
+            <table-column show="profile" :label="Role" :formatter="roleFormatter"></table-column>
             <table-column show="lastvisitDate" :label="LastConnected" :filterable="false" data-type="date:DD/MM/YYYY"></table-column>
             <table-column show="block" :label="Status" :filterable="false" :formatter="statusFormatter"></table-column>
             <table-column :label="Actions" :sortable="false" :filterable="false" cell-class="user-list__actions">
@@ -77,10 +88,12 @@
                 programs: [],
                 filters: {
                   block: false,
-                  searchProgram: -1
+                  searchProgram: -1,
+                  searchRole: -1,
                 },
                 block: false,
                 searchProgram: -1,
+                searchRole: -1,
                 table_users: 0,
                 Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),
                 Email: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL"),
@@ -97,6 +110,9 @@
                 ResetPassword: Joomla.JText._("COM_EMUNDUS_ONBOARD_RESET_PASSWORD"),
                 BlockedUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_BLOCKED_USERS"),
                 Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+                Role: Joomla.JText._("COM_EMUNDUS_ONBOARD_ROLE"),
+                Administrator: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATOR"),
+                Evaluator: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATOR"),
             };
         },
 
@@ -219,6 +235,13 @@
                     return '<i class="fas fa-minus-circle blocked col-md-2"></i><span class="ml-10px">' + this.Blocked + '</span>';
                 }
             },
+          roleFormatter(value, rowProperties) {
+            if(value == 5){
+              return '<span>' + this.Administrator + '</span>';
+            } else {
+              return '<span>' + this.Evaluator + '</span>';
+            }
+          }
             /*actionFormatter(value) {
                 let user = this.users.find(user => user.id == value);
                 let lockAction = '<a onclick="lockUser(' + user.id + ')"><i class="fas fa-unlock"></i></a>\n'
@@ -247,6 +270,11 @@
             searchProgram: function(value) {
                 this.filters.searchProgram = value;
                 this.getUsers();
+            },
+
+            searchRole: function(value) {
+              this.filters.searchRole = value;
+              this.getUsers();
             }
         }
     };
@@ -264,12 +292,13 @@
     }
     .user-list__actions{
         display: flex;
-        justify-content: space-between;
+        justify-content: start;
     }
 
     .user-list__actions a{
         cursor: pointer;
         color: #1b1f3c;
+        margin-right: 10px;
     }
 
     .user-infos__icon{

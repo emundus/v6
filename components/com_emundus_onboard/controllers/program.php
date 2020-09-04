@@ -48,7 +48,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 	        $page = $jinput->getInt('page');
             $programs = $m_prog->getAllPrograms($lim, $page, $filter, $sort, $recherche);
 
-            if (count($programs) > 0) {
+            if (count((array)$programs) > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $programs);
             } else {
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'), 'data' => $programs);
@@ -338,20 +338,16 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 	        $m_prog = $this->model;
 	        $jinput = JFactory::getApplication()->input;
 	        $group = $jinput->getInt('group');
-	        $profile = $jinput->getInt('profile');
+	        $prog_group = $jinput->getInt('prog_group');
 	        $email = $jinput->getString('email');
 
-            if ($profile == 5) {
-                $changeresponse = $m_prog->affectusertomanagergroups($group, $email);
-            } else {
-                $changeresponse = $m_prog->affectusertoevaluatorgroups($group, $email);
-            }
+	        $changeresponse = $m_prog->affectusertogroups($group, $email, $prog_group);
         }
         echo json_encode((object)$changeresponse);
         exit;
     }
 
-    public function affectuserstomanagergroup() {
+    public function affectuserstogroup() {
         $user = JFactory::getUser();
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -362,34 +358,16 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 	        $m_prog = $this->model;
 	        $jinput = JFactory::getApplication()->input;
 	        $group = $jinput->getInt('group');
+	        $prog_group = $jinput->getInt('prog_group');
 	        $managers = $jinput->getRaw('users');
 
-            $changeresponse = $m_prog->affectuserstomanagergroup($group, $managers);
+            $changeresponse = $m_prog->affectuserstogroup($group, $managers, $prog_group);
         }
         echo json_encode((object)$changeresponse);
         exit;
     }
 
-    public function affectuserstoevaluatorgroup() {
-        $user = JFactory::getUser();
-
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-
-	        $m_prog = $this->model;
-	        $jinput = JFactory::getApplication()->input;
-	        $group = $jinput->getInt('group');
-	        $evaluators = $jinput->getRaw('users');
-
-            $changeresponse = $m_prog->affectuserstoevaluatorgroup($group, $evaluators);
-        }
-        echo json_encode((object)$changeresponse);
-        exit;
-    }
-
-    public function removefrommanagergroup() {
+    public function removefromgroup() {
         $user = JFactory::getUser();
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -401,27 +379,9 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 	        $jinput = JFactory::getApplication()->input;
 	        $userid = $jinput->getInt('id');
 	        $group = $jinput->getInt('group');
+	        $prog_group = $jinput->getInt('prog_group');
 
-            $changeresponse = $m_prog->removefrommanagergroup($userid, $group);
-        }
-        echo json_encode((object)$changeresponse);
-        exit;
-    }
-
-    public function removefromevaluatorgroup() {
-        $user = JFactory::getUser();
-
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-
-	        $m_prog = $this->model;
-	        $jinput = JFactory::getApplication()->input;
-	        $userid = $jinput->getInt('id');
-	        $group = $jinput->getInt('group');
-
-            $changeresponse = $m_prog->removefromevaluatorgroup($userid, $group);
+            $changeresponse = $m_prog->removefromgroup($userid, $group, $prog_group);
         }
         echo json_encode((object)$changeresponse);
         exit;

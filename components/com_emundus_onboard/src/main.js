@@ -143,6 +143,7 @@ if (document.getElementById('em-formBuilder-vue')) {
           prid: this.$el.attributes.prid.value,
           index: this.$el.attributes.index.value,
           cid: this.$el.attributes.cid.value,
+          eval: this.$el.attributes.eval.value,
         }
       });
     }

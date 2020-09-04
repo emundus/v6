@@ -18,10 +18,6 @@ JFactory::getSession()->set('application_layout', 'assoc_files');
                                 <span class="glyphicon glyphicon-eye-open"></span>
                             </button>
                         <?php endif; ?>
-                        <div class="btn-group pull-right">
-                            <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
-                            <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
-                        </div>
                     </div>
 					<h6>
                         <em><?php echo $camp->year?></em> - <strong><?php echo $camp->label?></strong>

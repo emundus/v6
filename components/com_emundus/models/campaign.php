@@ -31,11 +31,11 @@ class EmundusModelCampaign extends JModelList {
 		$this->_user = JFactory::getSession()->get('emundusUser');
 
 		// Get pagination request variables
-		$filter_order			= $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'label', 'cmd' );
-        $filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
-        $limit 					= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-		$limitstart 			= $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
-        $limitstart 			= ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+		$filter_order = $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'label', 'cmd' );
+        $filter_order_Dir = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
+        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		$limitstart = $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
+        $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
  		$this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
@@ -43,14 +43,12 @@ class EmundusModelCampaign extends JModelList {
         $this->setState('limitstart', $limitstart);
 
         JLog::addLogger(['text_file' => 'com_emundus.error.php'], JLog::ERROR, array('com_emundus'));
-
     }
 
 	function getActiveCampaign() {
 		// Lets load the data if it doesn't already exist
 		$query = $this->_buildQuery();
 		$query .= $this->_buildContentOrderBy();
-		//echo str_replace('#_', 'jos',$query).'<br /><br />';
 		return $this->_getList( $query, $this->getState('limitstart'), $this->getState('limit'));
 	}
 
@@ -68,8 +66,6 @@ class EmundusModelCampaign extends JModelList {
 
 	function _buildContentOrderBy() {
         global $option;
-
-		$mainframe = JFactory::getApplication();
 
         $orderby = '';
 		$filter_order     = $this->getState('filter_order');
@@ -90,8 +86,22 @@ class EmundusModelCampaign extends JModelList {
             $uid = JFactory::getUser()->id;
         }
 
+
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+		$m_profile = new EmundusModelProfile();
+		$userProfiles = $m_profile->getUserProfiles($uid);
+
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
+		$id_profiles = $eMConfig->get('id_profiles', '0');
+		$id_profiles = explode(',', $id_profiles);
+
+		foreach ($userProfiles as $profile) {
+			if (in_array($profile->id, $id_profiles)) {
+				$applicant_can_renew = 1;
+				break;
+			}
+		}
 
 		$query = $this->_buildQuery();
 		switch ($applicant_can_renew) {
@@ -433,10 +443,9 @@ class EmundusModelCampaign extends JModelList {
      * @param   array $data The data to use as campaign definition.
      * @param   array $programmes The list of programmes who need a new campaign.
      *
-     * @return  json  Does it work.
+     * @return  String  Does it work.
      */
-    public function addCampaignsForProgrammes($data, $programmes)
-    {
+    public function addCampaignsForProgrammes($data, $programmes) {
         $db = JFactory::getDbo();
         $user = JFactory::getUser();
 
@@ -452,12 +461,12 @@ class EmundusModelCampaign extends JModelList {
 			$values = array();
 			$values_unity = array();
 			foreach ($programmes as $key => $v) {
-				try{
+				try {
 					$query = 'SELECT count(id) FROM `#__emundus_setup_campaigns` WHERE year LIKE '.$db->Quote($data['year']).' AND  training LIKE '.$db->Quote($v['code']);
 					$db->setQuery($query);
 					$cpt = $db->loadResult();
 
-					if($cpt == 0) {
+					if ($cpt == 0) {
 						$values[] = '('.$db->Quote($data['start_date']).', '.$db->Quote($data['end_date']).', '.$data['profile_id'].', '.$db->Quote($data['year']).', '.$db->Quote($data['short_description']).', '.$db->Quote($data['date_time']).', '.$data['user'].', '.$db->Quote($v['label']).', '.$db->Quote($v['code']).', '.$data['published'].')';
 						$values_unity[] = '('.$db->Quote($v['code']).', '.$db->Quote($v['label']).', '.$db->Quote($data['year']).', '.$data['profile_id'].', '.$db->Quote($v['programmes']).')';
 
@@ -465,16 +474,13 @@ class EmundusModelCampaign extends JModelList {
 					} else{
 						$result .= '<i class="orange remove circle outline icon"></i> '.$v['label'].' ['.$data['year'].'] ['.$v['code'].'] '. JText::_('ALREADY_EXIST').'<br>';
 					}
-				}
-				catch(Exception $e)
-	            {
+				} catch(Exception $e) {
 	                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
 	                return $e->getMessage();
 	            }
 			}
 
-			try
-			{
+			try {
 				if (count($values) > 0) {
 					$query = 'INSERT INTO `#__emundus_setup_campaigns` (`'.implode('`, `', $column).'`) VALUES '.implode(',', $values);
 					$db->setQuery($query);
@@ -484,9 +490,7 @@ class EmundusModelCampaign extends JModelList {
 	                $db->setQuery($query);
 	                $db->execute();
             	}
-			}
-			catch(Exception $e)
-			{
+			} catch(Exception $e) {
 	        	JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
 				return $e->getMessage();
 			}
@@ -518,7 +522,7 @@ class EmundusModelCampaign extends JModelList {
             return $db->loadResult();
 
         } catch (Exception $e) {
-            JLog::add('Error getting latest programme at model/campaign at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting latest programme at model/campaign at query :'.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundus');
             return '';
         }
 
@@ -544,7 +548,7 @@ class EmundusModelCampaign extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add('Error getting latest programme at model/campaign at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting latest programme at model/campaign at query :'.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundus');
 	        return [];
         }
     }
@@ -572,7 +576,7 @@ class EmundusModelCampaign extends JModelList {
 		    $db->setQuery($query);
 		    return $db->loadObjectList();
 	    } catch (Exception $e) {
-		    JLog::add('Error getting latest programme at model/campaign at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
+		    JLog::add('Error getting latest programme at model/campaign at query :'.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundus');
 		    return [];
 	    }
     }
@@ -602,7 +606,7 @@ class EmundusModelCampaign extends JModelList {
             return $db->loadObject();
 
         } catch (Exception $exception) {
-            JLog::add('Error getting campaign limit at query :'.str_replace('\n', $query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting campaign limit at query :'.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundus');
             return null;
         }
 
@@ -638,7 +642,7 @@ class EmundusModelCampaign extends JModelList {
 
             } catch (Exception $exception) {
 
-                JLog::add('Error checking obtained limit at query :'.str_replace('\n', $query->__toString()), JLog::ERROR, 'com_emundus');
+                JLog::add('Error checking obtained limit at query :'.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundus');
                 return null;
 
             }
