@@ -1790,7 +1790,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
                 ${"element".$o_element->id}->FRequire=$FRequire;
                 ${"element".$o_element->id}->params=$el_params;
-                ${"element".$o_element->id}->label_tag='ELEMENT_' . $gid . '_' . $o_element->id;
+                ${"element".$o_element->id}->label_tag = $o_element->label;
                 ${"element".$o_element->id}->label_fr = $this->getTranslationFr(${"element".$o_element->id}->label_tag);
                 ${"element".$o_element->id}->label_en = $this->getTranslationEn(${"element".$o_element->id}->label_tag);
                 ${"element".$o_element->id}->labelToFind=$group_elt->label;
