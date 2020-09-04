@@ -405,14 +405,14 @@ class EmundusViewApplication extends JViewLegacy {
 
 						// No call to EmundusModelLogs::log() because the logging in handled in a Fabrik script on form load.
 
-						$m_admission 	= new EmundusModelAdmission();
-                        $m_application 	= new EmundusModelApplication();
-						$m_files 		= new EmundusModelFiles();
+						$m_admission = new EmundusModelAdmission();
+                        $m_application = new EmundusModelApplication();
+						$m_files = new EmundusModelFiles();
 
-						$myEval 		= $m_admission->getAdmissionFnum($fnum);
-						$myAdmission 	= $m_files->getAdmissionFormidByFnum($fnum);
+						$myEval = $m_admission->getAdmissionFnum($fnum);
+						$myAdmission = $m_files->getAdmissionFormidByFnum($fnum);
                         // get admission form ID
-                        $formid = $m_admission->getAdmissionFormByProgramme($fnumInfos['training']);
+                        $admission_form = $m_admission->getAdmissionFormByProgramme($fnumInfos['training']);
 
                         if (empty($myEval)) {
 	                        $html_form = '<p>'.JText::_('COM_EMUNDUS_NO_USER_ADMISSION_FORM').'</p>';
@@ -421,21 +421,21 @@ class EmundusViewApplication extends JViewLegacy {
                         }
 
                         $url_form = '';
- 						if (!empty($formid)) {
-	                        if (count($myEval) > 0) {
+ 						if (!empty($admission_form->formid)) {
+	                        if (!empty($myEval)) {
 
 								if (EmundusHelperAccess::asAccessAction(32, 'u', $this->_user->id, $fnum)) {
-									$url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
+									$url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$admission_form->formid.'&rowid='.$myEval[0]->id.'&'.$admission_form->db_table_name.'___student_id[value]='.$student->id.'&'.$admission_form->db_table_name.'___campaign_id[value]='.$fnumInfos['campaign_id'].'&'.$admission_form->db_table_name.'___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
 								} elseif (EmundusHelperAccess::asAccessAction(32, 'r', $this->_user->id, $fnum)) {
-									$url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
+									$url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$admission_form->formid.'&rowid='.$myEval[0]->id.'&'.$admission_form->db_table_name.'___student_id[value]='.$student->id.'&'.$admission_form->db_table_name.'___campaign_id[value]='.$fnumInfos['campaign_id'].'&'.$admission_form->db_table_name.'___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
 								}
 
 							} else {
 
 	                            if (EmundusHelperAccess::asAccessAction(32, 'c', $this->_user->id, $fnum)) {
-		                            $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid=&jos_emundus_final_grade___student_id[value]='.$student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
+		                            $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$admission_form->formid.'&rowid=&'.$admission_form->db_table_name.'___student_id[value]='.$student->id.'&'.$admission_form->db_table_name.'___campaign_id[value]='.$fnumInfos['campaign_id'].'&'.$admission_form->db_table_name.'___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
 	                            } elseif (EmundusHelperAccess::asAccessAction(32, 'r', $this->_user->id, $fnum)) {
-		                            $url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$formid.'&rowid='.$myEval[0]->id.'&jos_emundus_final_grade___student_id[value]='.$student->id.'&jos_emundus_final_grade___campaign_id[value]='.$fnumInfos['campaign_id'].'&jos_emundus_final_grade___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
+		                            $url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$admission_form->formid.'&rowid='.$myEval[0]->id.'&'.$admission_form->db_table_name.'___student_id[value]='.$student->id.'&'.$admission_form->db_table_name.'___campaign_id[value]='.$fnumInfos['campaign_id'].'&'.$admission_form->db_table_name.'___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
 	                            }
 
 							}
@@ -446,7 +446,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('fnum', $fnum);
 						$this->assignRef('html_form',$html_form);
                         $this->assignRef('url_form', $url_form);
-                        $this->assignRef('$formid', $formid);
+                        $this->assignRef('$formid', $admission_form->formid);
 
 					} else {
                         echo JText::_("RESTRICTED_ACCESS");

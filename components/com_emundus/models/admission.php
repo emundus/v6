@@ -1677,32 +1677,30 @@ if (JFactory::getUser()->id == 63)
     * 	@return int 		The fabrik ID for the admission form
     */
     function getAdmissionFormByProgramme($code=null) {
-        if ($code === NULL) {
 
+        if ($code === NULL) {
 			$session = JFactory::getSession();
             if ($session->has('filt_params')) {
-
                 $filt_params = $session->get('filt_params');
-                if (count(@$filt_params['programme'])>0)
-                    $code = $filt_params['programme'][0];
+                if (!empty(@$filt_params['programme'])) {
+                	$code = $filt_params['programme'][0];
+                }
             }
 		}
 
 		try {
 
-            $query = 'SELECT ff.form_id
-					FROM #__fabrik_formgroup ff
-					WHERE ff.group_id IN (SELECT fabrik_admission_group_id FROM #__emundus_setup_programmes WHERE code like ' .
-                $this->_db->Quote($code) . ')';
+        	$query = $this->_db->getQuery(true);
+        	$query->select($this->_db->quoteName(['ff.form_id', 'l.db_table_name']))
+		        ->from($this->_db->quoteName('#__fabrik_formgroup', 'ff'))
+		        ->leftJoin($this->_db->quoteName('jos_fabrik_lists', 'l').' ON '.$this->_db->quoteName('l.form_id').' = '.$this->_db->quoteName('ff.form_id'))
+		        ->where('ff.group_id IN (SELECT fabrik_admission_group_id FROM #__emundus_setup_programmes WHERE code LIKE '.$this->_db->Quote($code).')');
             $this->_db->setQuery($query);
-
-            return $this->_db->loadResult();
+            return $this->_db->loadObject();
 
 		} catch(Exception $e) {
-
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-
 		}
     }
 
