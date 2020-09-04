@@ -88,28 +88,40 @@ class PlgFabrik_FormEmundusSendemail extends plgFabrik_Form {
 
 		$app = JFactory::getApplication();
 		$jinput = $app->input;
-		$current_user = JFactory::getUser();
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
 
 		$email_tmpl = $this->getParam('tmpl');
 		$to = $this->getParam('to');
+		$user_id = null;
+        $fnum = $jinput->get->get('rowid');
 
 		if (empty($email_tmpl)) {
 			JLog::add('No email template defined.', JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
-		$formModel = $this->getModel();
-		if (isset($formModel->data['fnum'])) {
-			$fnum = $formModel->data['fnum'];
-		}
-
 		if (!empty($to)) {
-			if ($to !== 'fnum' && !empty($jinput->post->getRaw($to))) {
-				$to = $jinput->post->getRaw($to);
+			if ($to !== 'fnum') {
+                $request = explode('___', $to);
+			    $query->select($request[1])
+                    ->from($request[0])
+                    ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+			    $db->setQuery($query);
+				$to = $db->loadResult();
+
+                $query->clear()
+                    ->select('user')
+                    ->from($request[0])
+                    ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+                $db->setQuery($query);
+                $user_id = $db->loadResult();
 			}
 		} else {
-			$to = $current_user->email;
+            JLog::add('No email address.', JLog::ERROR, 'com_emundus');
+            return false;
 		}
+
 
 		// Génération de l'id du prochain fichier qui devra être ajouté par le referent
 		$c_messages = new EmundusControllerMessages();
@@ -122,7 +134,7 @@ class PlgFabrik_FormEmundusSendemail extends plgFabrik_Form {
 				return $c_messages->sendEmail($fnum, $email_tmpl);
 			}
 		} else {
-			return $c_messages->sendEmailNoFnum($to, $email_tmpl);
+			return $c_messages->sendEmailNoFnum($to, $email_tmpl, null, $user_id, array(), $fnum);
 		}
 	}
 
