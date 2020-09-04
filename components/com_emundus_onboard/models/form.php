@@ -966,22 +966,46 @@ class EmundusonboardModelform extends JModelList {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
 		$query->select([
 				'sap.attachment_id AS id',
 				'sap.ordering',
 				'sap.mandatory AS need',
 				'sa.value',
-                'sa.allowed_types'
+                'sa.description',
+                'sa.allowed_types',
+                'sa.nbmax',
+                'sa.lbl'
 			])
 			->from($db->quoteName('#__emundus_setup_attachment_profiles', 'sap'))
 			->leftJoin($db->quoteName('#__emundus_setup_attachments', 'sa') . ' ON ' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('sap.attachment_id'))
 			->order($db->quoteName('sap.ordering'))
 			->where($db->quoteName('sap.published') . ' = 1')
-			->andWhere($db->quoteName('sap.campaign_id') . ' = ' . $cid);
+			->andWhere($db->quoteName('sap.campaign_id') . ' = ' . $cid)
+            ->orWhere($db->quoteName('sap.profile_id') . ' = ' . $prid);
 
 		try {
 			$db->setQuery($query);
-			return $db->loadObjectList();
+			$documents = $db->loadObjectList();
+
+			foreach ($documents as $document) {
+                if(strpos($document->lbl, '_em') === 0){
+                    $document->can_be_deleted = true;
+                } else {
+                    $document->can_be_deleted = false;
+                }
+
+                $f_values = $falang->getFalang($document->id,'emundus_setup_attachments','value');
+                $document->value_en = $f_values->en->value;
+                $document->value_fr = $f_values->fr->value;
+
+                $f_descriptions = $falang->getFalang($document->id,'emundus_setup_attachments','description');
+                $document->description_en = $f_descriptions->en->value;
+                $document->description_fr = $f_descriptions->fr->value;
+            }
+
+			return $documents;
 		} catch (Exception $e) {
             JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
 			return false;
@@ -992,6 +1016,9 @@ class EmundusonboardModelform extends JModelList {
 	public function getUnDocuments() {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
+
+
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
 		$query->select('*')
 			->from($db->quoteName('#__emundus_setup_attachments'))
@@ -1010,6 +1037,14 @@ class EmundusonboardModelform extends JModelList {
                 } else {
                     $undocument->can_be_deleted = false;
                 }
+
+                $f_values = $falang->getFalang($undocument->id,'emundus_setup_attachments','value');
+                $undocument->value_en = $f_values->en->value;
+                $undocument->value_fr = $f_values->fr->value;
+
+                $f_descriptions = $falang->getFalang($undocument->id,'emundus_setup_attachments','description');
+                $undocument->description_en = $f_descriptions->en->value;
+                $undocument->description_fr = $f_descriptions->fr->value;
             }
 
 			return $undocuments;

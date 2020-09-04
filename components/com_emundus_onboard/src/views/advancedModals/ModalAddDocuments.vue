@@ -84,7 +84,7 @@
             <div v-for="(type, index) in types" :key="index" class="user-item">
               <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]">
               <div class="ml-10px">
-                  <p>{{type.title}}</p>
+                  <p>{{type.title}} ({{type.value}})</p>
               </div>
             </div>
           </div>
@@ -116,6 +116,7 @@
     props: {
       cid: Number,
       pid: Number,
+      doc: Object
     },
     data() {
       return {
@@ -196,8 +197,26 @@
             'xls;xlsx;odf': false,
           },
         };
+
+        this.doc = null;
       },
       beforeOpen(event) {
+        if(this.doc != null) {
+          this.form.name.fr = this.doc.value_fr;
+          this.form.name.en = this.doc.value_en;
+          this.form.description.fr = this.doc.description_fr;
+          this.form.description.en = this.doc.description_en;
+          if(this.doc.allowed_types.includes('pdf')) {
+            this.form.selectedTypes.pdf = true;
+          }
+          if(this.doc.allowed_types.includes('jpg') || this.doc.allowed_types.includes('png') || this.doc.allowed_types.includes('gif')) {
+            this.form.selectedTypes['jpg;png;gif'] = true;
+          }
+          if(this.doc.allowed_types.includes('xls') || this.doc.allowed_types.includes('xlsx') || this.doc.allowed_types.includes('odf')) {
+            this.form.selectedTypes['xls;xlsx;odf'] = true;
+          }
+          this.form.nbmax = this.doc.nbmax;
+        }
       },
       createNewDocument() {
         this.errors = {
@@ -233,9 +252,13 @@
           }
         });
 
+        let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
+        if(this.doc != null) {
+          url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
+        }
         axios({
           method: "post",
-          url: 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument',
+          url: url,
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -243,7 +266,8 @@
             document: this.form,
             types: types,
             cid: this.cid,
-            pid: this.pid
+            pid: this.pid,
+            did: this.doc.id,
           })
         }).then((rep) => {
           this.$emit("UpdateDocuments");

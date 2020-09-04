@@ -110,6 +110,11 @@ class PlgFabrik_FormEmundusSendemail extends plgFabrik_Form {
 			    $db->setQuery($query);
 				$to = $db->loadResult();
 
+				if($to == '') {
+                    JLog::add('No email address.', JLog::ERROR, 'com_emundus');
+				    return false;
+                }
+
                 $query->clear()
                     ->select('user')
                     ->from($request[0])
