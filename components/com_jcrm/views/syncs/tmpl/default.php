@@ -35,7 +35,7 @@ $canDelete = $user->authorise('core.delete', 'com_jcrm');
 <div class="app-container" ng-app="syncApp">
 	<div ng-controller="mainCtrl">
 		<button class="btn btn-primary" ng-click="validAll()"><?= JText::_('JCRM_SYNC_VALID_ALL')?></button>
-		<button class="btn btn-primary" ng-click="ignoreAll()"><?= JText::_('JCRM_SYNC_IGNORE_ALL')?></button>
+		<button class="btn btn-primary ignore" ng-click="ignoreAll()"><?= JText::_('JCRM_SYNC_IGNORE_ALL')?></button>
 		<div class="my-alt-dime" ng-show="showDime"></div>
 		<table class="table table-stripped" >
 			<thead>

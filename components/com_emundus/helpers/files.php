@@ -1877,7 +1877,8 @@ class EmundusHelperFiles
         }
         $filters .= '</select>
 					
-						<button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="glyphicon glyphicon-trash"></i></button>
+						<button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="fas fa-trash"></i></button>
+						<input value="&#xf005" type="button" class="btn btn-sm btn-warning" id="save-filter" style="font-family: \'Font Awesome 5 Free\';" title="'.JText::_('SAVE_FILTER').'"/>
                             <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                                 <strong>'.JText::_('FILTER_SAVED').'</strong>

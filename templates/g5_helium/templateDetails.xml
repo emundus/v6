@@ -60,11 +60,9 @@
         <position>header-a</position>
         <position>header-b</position>
         <position>header-c</position>
-        <position>header-switch</position>
         <position>sidebar-a</position>
         <position>sidebar-b</position>
         <position>sidebar-c</position>
-        <position>top-a</position>
         <position>top-b</position>
         <position>top-c</position>
     </positions>

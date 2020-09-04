@@ -27,8 +27,8 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 					</div>
 					<div class="buttons" style="float:right; margin-top:0px">
                         <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: 'FontAwesome';" title="<?php echo JText::_('SEARCH_BTN');?>"/>&ensp;
-                        <input value="&#xf05e" type="button" class="btn btn-sm btn-danger" id="clear-search" style="font-family: 'FontAwesome';" title="<?php echo JText::_('CLEAR_BTN');?>"/>
-                        <input value="&#xf0c7" type="button" class="btn btn-sm btn-warning" id="save-filter" style="font-family: 'Font Awesome 5 Free';" title="<?php echo JText::_('SAVE_FILTER');?>"/>
+                        <input value="&#xf0e2" type="button" class="btn btn-sm btn-danger" id="clear-search" style="font-family: 'FontAwesome';" title="<?php echo JText::_('CLEAR_BTN');?>"/>
+                        <input value="&#xf005" type="button" class="btn btn-sm btn-warning" id="save-filter" style="font-family: 'Font Awesome 5 Free';" title="<?php echo JText::_('SAVE_FILTER');?>"/>
 					</div>
 				</div>
 				
