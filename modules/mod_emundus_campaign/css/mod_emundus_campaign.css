@@ -1,7 +1,7 @@
 /* Module Campagnes */
 
 .nav-tabs > li.active > a {
-    border-radius: 0px;
+    border-radius: 4px;
 }
 
 #navfilter .navsearch .navsearch-content .input-group-btn button {
@@ -21,10 +21,10 @@
     margin-left: -5px !important;
     height: 34px !important;
     margin-bottom: 0;
-    border-radius: 0px;
+    border-radius: 0px 4px 4px 0px !important;
 }
 #navfilter .navsearch .navsearch-content .input-group label input {
-   border-radius: 0px;
+    border-radius: 4px 0px 0px 4px !important;
 }
 .campaignbymonth {
     margin-top: 0 !important;

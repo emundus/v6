@@ -80,6 +80,10 @@ table {
     max-width: 30vw; 
 }
 
+.view-list .g-container {
+    width: 100vw; 
+}
+
 @media all and (max-width: 767px) {
   #listform_84_com_fabrik_84 {
     padding: 0 !important;

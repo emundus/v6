@@ -2,7 +2,7 @@ button.btn-primary{
     background: #e03c32;
     background-color: #e03c32 !important;
     border: 1px solid #e03c32 !important;
-    border-radius: 0!important;
+    border-radius: 4px !important;
     padding: 8px 12px!important;
 }
 button.btn-primary:hover{
@@ -14,7 +14,7 @@ a.btn{
     background: #29d4ff;
     background-color: #29d4ff !important;
     border: 1px solid #29d4ff !important;
-    border-radius: 0!important;
+    border-radius: 4px !important;
     padding: 8px 12px!important;
 }
 a.btn:hover{
@@ -27,10 +27,54 @@ a.btn:hover{
     text-align: left;
 }
 
+form#member-profile.well {
+    background: #fafafa;
+}
+
+form#member-profile  fieldset .em-heading-form {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+form#member-profile .icon-title.profile {
+    background-image: url(/components/com_emundus_onboard/src/assets/images/gear.svg);
+    background-size: contain;
+}
+
+form#member-profile fieldset:nth-child(2) .icon-title.profile {
+    background-image: url(/components/com_emundus_onboard/src/assets/images/user.svg);
+    background-size: contain;
+}
+
+form#member-profile .icon-title {
+    margin-right: 10px;
+    width: 42px;
+    height: 40px;
+    background-position: 0 0;
+    background-size: contain;
+    -webkit-filter: brightness(.5);
+    filter: brightness(.5);
+    fill: grey;
+}
+
 #member-profile > .control-group .controls {
     margin-left: 0px;
     text-align: center;
     padding-top: 20px;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+}
+
+form#member-profile.well legend {
+    color: #1b1f3c;
+    font-weight: 700;
+    margin: 0px !important;
 }
 
 form#member-profile.form-validate.form-horizontal.well input {

@@ -35,15 +35,8 @@ h1 {
   position: relative;
 }
 
-h1::after,
-.swal2-title:after {
-  content: '';
-  position: absolute;
-  margin-top: 45px;
-  width: 2.7rem;
-  height: .2rem;
-  background: $base-secondary-color !important;
-  left: 0;
+.page-header h1::after, .page-header .swal2-title:after {
+  display: none !important;
 }
 
 .swal2-title {
@@ -66,7 +59,7 @@ a:focus {
 }
 
 label {
-  color: $base-primary-color !important;
+  color: #000 !important;
   margin-bottom: 5px !important;
   font-weight: bold !important;
   display: inline;
@@ -100,7 +93,9 @@ label {
 
 select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
   margin-bottom: 0 !important;
-  border-radius: 0px !important;
+  border-radius: 4px !important;
+  border-color: #ccc;
+  height: 50px;
 }
 
 input[type="file"] {
@@ -217,19 +212,6 @@ input[type="text"],
   }
 }
 
-/* AFTER SOUS LES TITRES H1 */
-
-h1::after, .swal2-title:after {
-  content: '';
-  position: absolute;
-  margin-top: 6px !important;
-  width: 2.7rem;
-  height: .2rem;
-  background: $base-secondary-color !important;
-  left: 0;
-  display: block !important;
-}
-
 /* Branding */
 .g-branding{
   text-align: end;
@@ -237,6 +219,53 @@ h1::after, .swal2-title:after {
 }
 
 /* HEADER */
+
+#g-navigation {
+  .g-grid {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+  }
+
+  #header-c  {
+    max-width: 30rem;
+
+      .g-content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+
+        .platform-content {
+          margin: 0px 10px !important;
+          padding: 0px;
+        }
+      }
+    }
+}
+
+.g-back-office-emundus-tableau #g-navigation #header-c, .homepage #g-navigation #header-c, .view-profile #g-navigation #header-c , .error-report-page #g-navigation #header-c {
+  max-width: 30rem;
+  .g-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+
+    .platform-content {
+      margin: 0px 10px !important;
+      padding: 0px;
+    }
+
+    .platform-content:nth-child(2) {
+     order: 3;
+    }
+    .platform-content:nth-child(3) {
+      order: 2;
+    }
+  }
+}
+
 #g-navigation {
   border-bottom: 1px solid #eeeeee;
   width: 100vw;
@@ -257,13 +286,14 @@ h1::after, .swal2-title:after {
   }
 }
 
-#header-c, #header-switch {
-  display: flex;
-  justify-content: center;
-}
 
 .right-divider {
   border-right: solid 1px #cecece;
+}
+
+#top-a  {
+  display: flex;
+  justify-content: center;
 }
 
 /* FOOTER */
@@ -414,14 +444,6 @@ a {
   .active > a {
     background: $base-primary-color !important;
     color: #ffffff;
-  }
-}
-
-#header-c, #header-switch {
-  display: flex;
-  justify-content: center;
-  &.right-divider {
-    border-right: solid 1px #cecece;
   }
 }
 
@@ -888,7 +910,7 @@ body.error-page p {
 /* BOUTONS */
 
 .btn  {
-  border-radius: 0px !important;
+  border-radius: 4px !important;
 }
 
 .btnmarge {
@@ -1038,8 +1060,8 @@ a#em-doc-zip,
 .toggle-addoption.btn,
 .candidacy-files-list a#send,
 .choice-statut-btn {
-  background: $base-secondary-color !important;
-  border: 1px solid $base-secondary-color !important;
+  background: $base-primary-color !important;
+  border: 1px solid $base-primary-color !important;
   text-shadow: none;
   text-transform: none;
 }
@@ -1113,15 +1135,15 @@ a#em-doc-zip:focus,
 .choice-statut-btn:hover,
 .choice-statut-btn:active,
 .choice-statut-btn:focus {
-  background-color: transparent !important;
-  color: $base-secondary-color !important;
+  background-color: $base-primary-color !important;
+  color: #fff !important;
   outline: none;
 }
 
 .span4.offset1 > .btn-group > button.button {
   background: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
-  border-radius: 0 !important;
+  border-radius: 4px !important;
 
   &:hover {
     background-color: transparent !important;
@@ -1157,15 +1179,16 @@ button#back,
 .fabrikUploadDelete .btn,
 #em_select_filter #del-filter,
 .btn-toolbar .btn-group:nth-child(2) .btn {
-  background: $base-primary-color !important;
-  border: 1px solid $base-primary-color !important;
+  background: transparent !important;
+  border: 1px solid $base-secondary-color !important;
   text-shadow: none;
   text-transform: none;
+  color: $base-secondary-color !important;
 
   &:hover,
   &:focus {
-    background-color: transparent !important;
-    color: $base-primary-color !important;
+    background-color: $base-secondary-color !important;
+    color: #fff !important;
     outline: none;
   }
 }
@@ -1575,6 +1598,118 @@ div#em-appli-block {
   cursor: pointer;
 }
 
+/* MODULE EMUNDUS QUERY BUILDER */
+
+.indicateurs-page {
+  .informationStatistique {
+    background-color: $base-secondary-color;
+  }
+
+  .etiquette label {
+    color: $base-secondary-color !important;
+  }
+
+  .etiquette p {
+    color: $base-secondary-color;
+  }
+  .btnQueryBuilder, .swal2-confirm {
+    background: $base-secondary-color !important;
+    border: 1px solid $base-secondary-color !important;
+  }
+
+  .btnConsulter {
+    background: $base-secondary-color !important;
+    border: 1px solid $base-secondary-color !important;
+  }
+
+  .btnConsulter:hover {
+    color: $base-secondary-color !important;
+    border: 1px solid $base-secondary-color !important;
+    background:transparent!important;
+  }
+
+ .btnQueryBuilder:hover, .swal2-confirm:hover {
+    color: $base-secondary-color !important;
+    border: 1px solid $base-secondary-color !important;
+    background:transparent!important;
+  }
+
+  .btnExport, .swal2-cancel  {
+    color: $base-secondary-color !important;
+    border: 1px solid $base-secondary-color !important;
+    background:transparent!important;
+  }
+
+  .btnExport:hover, .swal2-cancel:hover {
+    color: #fff !important;
+    border: 1px solid $base-secondary-color !important;
+    background: $base-secondary-color!important;
+  }
+
+  .g-content h1::after, .swal2-title::after {
+    background: $base-secondary-color !important;
+  }
+
+  .swal2-progress-step, .swal2-progress-steps .swal2-progress-step-line, .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
+    background: $base-secondary-color !important;
+  }
+
+  .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step-line {
+    border-top: 1px solid $base-secondary-color !important;
+    border-bottom: 1px solid $base-secondary-color !important;
+  }
+
+  .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step {
+    color: $base-secondary-color !important;
+    border: 1px solid $base-secondary-color !important;
+  }
+
+  .input .modif, .input .delete {
+    color: $base-secondary-color !important;
+  }
+
+  .btnConsulter:hover a {
+    color: $base-secondary-color!important;
+  }
+}
+
+/* SYNCHRO CONTACTS */
+
+.experts-synchro-page button.btn.btn-primary.ignore  {
+  background: transparent !important;
+  border: 1px solid $base-secondary-color !important;
+  color: $base-secondary-color !important;
+}
+
+.experts-synchro-page button.btn.btn-primary.ignore:hover  {
+  background: $base-secondary-color !important;
+  border: 1px solid $base-secondary-color !important;
+  color: #fff !important;
+}
+
+/* EXPERTS */
+
+.experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="showForm()"], .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="showForm()"]:hover {
+  background: $base-secondary-color !important;
+  border: 1px solid $base-secondary-color !important;
+  color: #fff !important;
+  margin-left: 10px;
+}
+
+.experts-page div.btn.btn-primary.btn-xs.pull-right[ng-click="addGroup()"], .experts-page div.btn.btn-primary.btn-xs.pull-right[ng-click="addGroup()"]:hover {
+  background: $base-secondary-color !important;
+  border: 1px solid $base-secondary-color !important;
+  color: #fff !important;
+  margin-left: 10px;
+}
+
+.experts-page .panel-heading div.btn.btn-default.btn.xs.pull-right:first-of-type{
+  background: $base-secondary-color !important;
+  border: 1px solid $base-secondary-color !important;
+  color: #fff !important;
+  margin-left: 10px;
+}
+
 /******************************* RESPONSIVE ***********************************/
 
 @media all and (max-width: 767px) {
@@ -1607,6 +1742,7 @@ div#em-appli-block {
   }
 
   /* HEADER */
+
   #header-a .g-content {
     width: 70%;
     text-align: center;

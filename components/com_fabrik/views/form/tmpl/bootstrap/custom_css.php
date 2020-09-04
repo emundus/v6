@@ -965,7 +965,7 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
     background: #4e5b6d;
     background-color: #4e5b6d;
     border: 1px solid #4e5b6d;
-    border-radius: 0 !important;
+    border-radius: 4px !important;
     padding: 10px 12px !important;
 }
 .span4 > .btn-group > button.save-btn:hover, .span4 > .btn-group > button.save:hover {
@@ -1013,14 +1013,8 @@ footer#g-footer {
     font-weight: 300;
 }
 
-h1::after {
-    content: '';
-    position: absolute;
-    margin-top: 45px;
-    width: 2.7rem;
-    height: 0.2rem;
-    background: #de6339;
-    left: 0;
+.page-header h1 {
+    margin-top: 50px !important; 
 }
 
 ol {

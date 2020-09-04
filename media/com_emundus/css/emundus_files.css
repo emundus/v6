@@ -505,6 +505,12 @@ table#groups-table a:hover {
 
 /* MODALS */
 
+.g-back-office-emundus-tableau #em-modal-actions .modal-dialog, .g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg{
+    width: fit-content !important;
+    min-width: 40%;
+}
+
+
 /* Layout */
 div#data #exp-opt>label{
     display: block;
@@ -569,6 +575,10 @@ div#em-modal-actions h4#em-modal-actions-title {
 	position: sticky;
 	top: 0;
 	z-index: 1000;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .modal {
@@ -2027,7 +2037,17 @@ div#em-assoc-files .panel > .panel-heading {
     text-shadow: none;
     color: #FFFFFF;
     padding: 6px 8px !important;
-    border-radius: 5px !important;
+    border-radius: 4px !important;
+}
+
+.g-back-office-emundus-tableau #em_select_filter #del-filter {
+    font-size: 15px !important;
+    border-radius: 4px !important;
+}
+
+.g-back-office-emundus-tableau #em_select_filter button#del-filter:hover {
+    background: #0b0d19 !important;
+    color: #fff !important;
 }
 
 .g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {

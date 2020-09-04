@@ -58,7 +58,7 @@ div#em-panel .ui.grid {
 
 .emundus_home_page select#profile.form-control.form-control-sm {
     border: none;
-    border-radius: 0 !important;
+    border-radius: 4px !important;
 }
 #em-panel.emundus_home_page p {
     text-align: left;

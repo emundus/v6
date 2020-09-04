@@ -184,9 +184,12 @@ a {
 #header-b {
     display: flex;
     align-items: center;
-    justify-content: start;
+    justify-content: center;
     text-align: center;
+
+
 }
+
 
 @media screen and (max-width: 767px) {
     .g-parent.current > .g-menu-parent-indicator {
