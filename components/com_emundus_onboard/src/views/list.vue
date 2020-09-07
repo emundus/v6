@@ -15,7 +15,7 @@
       :coordinatorAccess="coordinatorAccess"
     ></actions>
 
-    <ul class="form-section email-sections" v-if="type == 'email' && !loading">
+    <ul class="form-section email-sections" v-if="type == 'email' && !loading && total != 0">
       <li>
         <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{All}}</a>
       </li>
@@ -164,7 +164,7 @@ import { list } from "../store";
 
 import "../assets/css/webflow.css";
 import "../assets/css/normalize.css";
-import "../assets/css/emundus-webflow.css";
+import "../assets/css/emundus-webflow.scss";
 import "../assets/css/codemirror.css";
 import "../assets/css/codemirror.min.css";
 import "../assets/css/views_emails.css";

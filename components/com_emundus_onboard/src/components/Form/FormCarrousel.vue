@@ -24,7 +24,7 @@
 import FormViewer from "../Form/FormViewer";
 import axios from "axios";
 const qs = require("qs");
-import "../../assets/css/formbuilder.css";
+import "../../assets/css/formbuilder.scss";
 
 export default {
   name: "FormCarrousel",

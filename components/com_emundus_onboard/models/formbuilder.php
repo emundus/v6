@@ -2482,9 +2482,9 @@ class EmundusonboardModelformbuilder extends JModelList {
 
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+        $formid = explode('=',explode('&',$link)[2])[1];
 
-        $query->clear()
-            ->select('id')
+        $query->select('id')
             ->from($db->quoteName('#__menu'))
             ->where($db->quoteName('link') . ' LIKE ' . $db->quote($link));
         $db->setQuery($query);

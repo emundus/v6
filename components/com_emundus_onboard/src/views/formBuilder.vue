@@ -160,7 +160,7 @@
   import "@fortawesome/fontawesome-free/css/all.css";
   import "@fortawesome/fontawesome-free/js/all.js";
 
-  import "../assets/css/formbuilder.css";
+  import "../assets/css/formbuilder.scss";
   import draggable from "vuedraggable";
 
   import Builder from "../components/formClean/Builder";

@@ -33,7 +33,7 @@
         <em class="fas fa-sort-down"></em>
       </div>
       <div class="form-group mb-1" v-if="translate.label_page">
-        <input v-model="object_json.show_title.label_en" type="text" maxlength="40" class="form-control" :id="'label_page_en_' + object_json.id"/>
+        <input v-model="object_json.show_title.label_en" type="text" maxlength="80" class="form-control" :id="'label_page_en_' + object_json.id"/>
       </div>
     </div>
     <p v-if="eval == 0 && !updatePage" class="introP" v-html="object_json.intro" />
@@ -126,7 +126,7 @@
                   <em class="fas fa-sort-down"></em>
                 </div>
                 <div class="form-group mb-1" v-if="translate.label_group">
-                  <input v-model="group.label_en" type="text" maxlength="40" class="form-control" :id="'label_group_en_' + group.group_id"/>
+                  <input v-model="group.label_en" type="text" maxlength="80" class="form-control" :id="'label_group_en_' + group.group_id"/>
                 </div>
               </div>
               <div v-if="group.group_intro" class="groupintro">{{group.group_intro}}</div>
@@ -193,7 +193,7 @@
                           <em class="fas fa-sort-down"></em>
                         </div>
                         <div class="form-group mb-1" v-if="translate.label && clickUpdatingLabel && indexHighlight == element.id">
-                          <input v-model="element.label_en" type="text" maxlength="40" class="form__input field-general w-input" :id="'label_en_' + element.id"/>
+                          <input v-model="element.label_en" type="text" maxlength="100" class="form__input field-general w-input" :id="'label_en_' + element.id"/>
                         </div>
                         <div v-if="element.params.date_table_format">
                           <date-picker v-model="date" :config="options"></date-picker>
@@ -1042,7 +1042,9 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "../../assets/variables";
+
   .hidden {
     display: none;
   }
