@@ -411,9 +411,10 @@ class EmundusViewApplication extends JViewLegacy {
 
 
                         $myAdmission_form_id = $m_files->getAdmissionFormidByFnum($fnum);
-                        $myAdmission_row_id = $m_admission->getAdmissionId($myAdmission_form_id->db_table_name,$fnum);
                         // get admission form ID
                         $admission_form = $m_admission->getAdmissionFormByProgramme($fnumInfos['training']);
+
+                        $admission_row_id = $m_admission->getAdmissionId($admission_form->db_table_name,$fnum);
 
                         if (empty($myAdmission_form_id)) {
                             $html_form = '<p>'.JText::_('COM_EMUNDUS_NO_USER_ADMISSION_FORM').'</p>';
@@ -424,9 +425,9 @@ class EmundusViewApplication extends JViewLegacy {
                         $url_form = '';
                         if (!empty($admission_form->formid)) {
                             if (EmundusHelperAccess::asAccessAction(32, 'u', $this->_user->id, $fnum)) {
-                                $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$admission_form->formid.'&rowid='.$myAdmission_row_id.'&'.$admission_form->db_table_name.'___student_id[value]='.$student->id.'&'.$admission_form->db_table_name.'___campaign_id[value]='.$fnumInfos['campaign_id'].'&'.$admission_form->db_table_name.'___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
+                                $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$admission_form->formid.'&rowid='.$admission_row_id.'&'.$admission_form->db_table_name.'___student_id[value]='.$student->id.'&'.$admission_form->db_table_name.'___campaign_id[value]='.$fnumInfos['campaign_id'].'&'.$admission_form->db_table_name.'___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
                             } elseif (EmundusHelperAccess::asAccessAction(32, 'r', $this->_user->id, $fnum)) {
-                                $url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$admission_form->formid.'&rowid='.$myAdmission_row_id.'&'.$admission_form->db_table_name.'___student_id[value]='.$student->id.'&'.$admission_form->db_table_name.'___campaign_id[value]='.$fnumInfos['campaign_id'].'&'.$admission_form->db_table_name.'___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
+                                $url_form = 'index.php?option=com_fabrik&c=form&view=details&formid='.$admission_form->formid.'&rowid='.$admission_row_id.'&'.$admission_form->db_table_name.'___student_id[value]='.$student->id.'&'.$admission_form->db_table_name.'___campaign_id[value]='.$fnumInfos['campaign_id'].'&'.$admission_form->db_table_name.'___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
                             } elseif (EmundusHelperAccess::asAccessAction(32, 'c', $this->_user->id, $fnum)) {
                                 $url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$admission_form->formid.'&rowid=&'.$admission_form->db_table_name.'___student_id[value]='.$student->id.'&'.$admission_form->db_table_name.'___campaign_id[value]='.$fnumInfos['campaign_id'].'&'.$admission_form->db_table_name.'___fnum[value]='.$fnum.'&student_id='.$student->id.'&tmpl=component&iframe=1';
                             }
