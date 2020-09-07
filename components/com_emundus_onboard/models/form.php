@@ -968,24 +968,40 @@ class EmundusonboardModelform extends JModelList {
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
-		$query->select([
-				'sap.attachment_id AS id',
-				'sap.ordering',
-				'sap.mandatory AS need',
-				'sa.value',
-                'sa.description',
-                'sa.allowed_types',
-                'sa.nbmax',
-                'sa.lbl'
-			])
-			->from($db->quoteName('#__emundus_setup_attachment_profiles', 'sap'))
-			->leftJoin($db->quoteName('#__emundus_setup_attachments', 'sa') . ' ON ' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('sap.attachment_id'))
-			->order($db->quoteName('sap.ordering'))
-			->where($db->quoteName('sap.published') . ' = 1')
-			->andWhere($db->quoteName('sap.campaign_id') . ' = ' . $cid)
-            ->orWhere($db->quoteName('sap.profile_id') . ' = ' . $prid);
+        try {
+            $query->select('count(*)')
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))
+                ->andWhere($db->quoteName('campaign_id') . ' IS NULL ');
+            $db->setQuery($query);
+            $nb_old_docs = $db->loadResult();
 
-		try {
+            if($nb_old_docs > 0){
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
+                    ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($cid))
+                    ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            $query->clear()
+                ->select([
+                    'sap.attachment_id AS id',
+                    'sap.ordering',
+                    'sap.mandatory AS need',
+                    'sa.value',
+                    'sa.description',
+                    'sa.allowed_types',
+                    'sa.nbmax',
+                    'sa.lbl'
+                ])
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles', 'sap'))
+                ->leftJoin($db->quoteName('#__emundus_setup_attachments', 'sa') . ' ON ' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('sap.attachment_id'))
+                ->order($db->quoteName('sap.ordering'))
+                ->where($db->quoteName('sap.published') . ' = 1')
+                ->andWhere($db->quoteName('sap.campaign_id') . ' = ' . $cid);
+
 			$db->setQuery($query);
 			$documents = $db->loadObjectList();
 
