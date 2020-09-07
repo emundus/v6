@@ -2185,6 +2185,11 @@ label.label__placeholder {
 .rte-autocomplete {
   width: auto;
 }
+
+.v--modal-overlay .v--modal-box{
+  padding: 10px;
+}
+
 @media (max-width: 991px) {
   .bouton-ajouter {
     margin-top: 10px;

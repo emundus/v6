@@ -969,18 +969,41 @@ class EmundusonboardModelform extends JModelList {
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
         try {
-            $query->select('count(*)')
+            $query->select('*')
                 ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
                 ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))
                 ->andWhere($db->quoteName('campaign_id') . ' IS NULL ');
             $db->setQuery($query);
-            $nb_old_docs = $db->loadResult();
+            $old_docs = $db->loadObjectList();
 
-            if($nb_old_docs > 0){
+            if(!empty($old_docs)){
                 $query->clear()
-                    ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
-                    ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($cid))
+                    ->select('id')
+                    ->from($db->quoteName('#__emundus_setup_campaigns'))
                     ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid));
+                $db->setQuery($query);
+                $campaignstoaffect = $db->loadObjectList();
+
+                foreach ($campaignstoaffect as $campaign) {
+                    foreach ($old_docs as $old_doc){
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
+                        foreach ($old_doc as $key => $value) {
+                            if ($key != 'id' && $key != 'campaign_id') {
+                                $query->set($key . ' = ' . $db->quote($value));
+                            } elseif ($key == 'campaign_id') {
+                                $query->set($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign->id));
+                            }
+                        }
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_setup_attachment_profiles'))
+                    ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))
+                    ->andWhere($db->quoteName('campaign_id') . ' IS NULL');
                 $db->setQuery($query);
                 $db->execute();
             }
