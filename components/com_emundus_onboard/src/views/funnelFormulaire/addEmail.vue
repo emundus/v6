@@ -15,7 +15,7 @@
             :key="manual_trigger"
     />
     <div class="choices-buttons">
-      <h2 style="margin-bottom: 0">{{ TheCandidate }}</h2>
+      <h2 style="margin-bottom: 0">{{ CandidateAction }}</h2>
       <a @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
     </div>
     <p>{{ TheCandidateDescription }}</p>
@@ -29,6 +29,7 @@
               {{user.firstname}} {{user.lastname}}
               <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
             </span>
+            <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{TheCandidate}}</span>
             <span v-if="trigger.profile == 5">{{Administrators}}</span>
             <span v-if="trigger.profile == 6">{{Evaluators}}</span>
           </p>
@@ -41,7 +42,7 @@
       </div>
     </transition-group>
     <div class="choices-buttons">
-      <h2 style="margin-bottom: 0">{{ Manual }}</h2>
+      <h2 style="margin-bottom: 0">{{ ManagerAction }}</h2>
       <a @click="$modal.show('modalAddTriggermanual'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
     </div>
     <p>{{ ManualDescription }}</p>
@@ -55,7 +56,7 @@
               {{user.firstname}} {{user.lastname}}
               <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
             </span>
-            <span v-if="trigger.users.length == 0">{{TheCandidate}}</span>
+            <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{TheCandidate}}</span>
             <span v-if="trigger.profile == 5">{{Administrators}}</span>
             <span v-if="trigger.profile == 6">{{Evaluators}}</span>
           </p>
@@ -99,6 +100,8 @@ export default {
       Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
       TheCandidateDescription: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE_DESCRIPTION"),
       ManualDescription: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL_DESCRIPTION"),
+      CandidateAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANDIDATE_ACTION"),
+      ManagerAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANAGER_ACTION"),
     };
   },
 

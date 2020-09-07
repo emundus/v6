@@ -160,7 +160,7 @@
   import "@fortawesome/fontawesome-free/css/all.css";
   import "@fortawesome/fontawesome-free/js/all.js";
 
-  import "../assets/css/formbuilder.css";
+  import "../assets/css/formbuilder.scss";
   import draggable from "vuedraggable";
 
   import Builder from "../components/formClean/Builder";
@@ -267,6 +267,12 @@
             value: 'textarea',
             icon: 'far fa-square',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
+          },
+          display: {
+            id: 6,
+            value: 'display',
+            icon: 'fas fa-paragraph',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
         },
         addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),

@@ -190,6 +190,9 @@ class EmundusonboardModelformbuilder extends JModelList {
             $params['list_age_format'] = 'no';
             $params['empty_is_null'] = 1;
             unset($params['bootstrap_class']);
+        } elseif ($plugin == 'display') {
+            $params['display_showlabel'] = 1;
+            unset($params['bootstrap_class']);
         }
 
         return $params;
@@ -748,6 +751,11 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             // Create hidden group
             $this->createHiddenGroup($formid);
+            $group_label = array(
+                'fr' => 'Nouveau groupe',
+                'en' => 'New group'
+            );
+            $this->createGroup($group_label,$formid);
             //
 
             // Save as template
@@ -1116,12 +1124,15 @@ class EmundusonboardModelformbuilder extends JModelList {
         // Default parameters
         $dbtype = 'VARCHAR(255)';
         $dbnull = 'NULL';
+        $default = '';
         //
 
         if ($plugin === 'birthday') {
             $dbtype = 'DATE';
         } elseif ($plugin === 'textarea') {
             $dbtype = 'TEXT';
+        } elseif ($plugin === 'display') {
+            $default = 'Ajoutez du texte personnalisé pour vos candidats';
         }
 
         // Prepare parameters
@@ -1157,7 +1168,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
                 ->set($db->quoteName('modified_by') . ' = 95')
                 ->set($db->quoteName('width') . ' = 0')
-                ->set($db->quoteName('default') . ' = ' . $db->quote(''))
+                ->set($db->quoteName('default') . ' = ' . $db->quote($default))
                 ->set($db->quoteName('hidden') . ' = 0')
                 ->set($db->quoteName('eval') . ' = 0')
                 ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
@@ -1532,6 +1543,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             $fields = array(
                 $db->quoteName('plugin') . ' = ' . $db->quote($element['plugin']),
+                $db->quoteName('default') . ' = ' . $db->quote($element['default']),
                 $db->quoteName('params') . ' = ' . $db->quote(json_encode($element['params'])),
                 $db->quoteName('modified_by') . ' = ' . $db->quote($user),
                 $db->quoteName('modified') . ' = ' . $db->quote($date),
@@ -1761,6 +1773,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ${"element".$o_element->id}->id = $o_element->id;
                 ${"element".$o_element->id}->group_id = $gid;
                 ${"element".$o_element->id}->hidden = $content_element->hidden;
+                ${"element".$o_element->id}->default = $o_element->default;
                 ${"element".$o_element->id}->labelsAbove=$labelsAbove;
                 ${"element".$o_element->id}->plugin=$o_element->plugin;
                 if (empty($el_params->validations)) {
@@ -1777,7 +1790,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
                 ${"element".$o_element->id}->FRequire=$FRequire;
                 ${"element".$o_element->id}->params=$el_params;
-                ${"element".$o_element->id}->label_tag='ELEMENT_' . $gid . '_' . $o_element->id;
+                ${"element".$o_element->id}->label_tag = $o_element->label;
                 ${"element".$o_element->id}->label_fr = $this->getTranslationFr(${"element".$o_element->id}->label_tag);
                 ${"element".$o_element->id}->label_en = $this->getTranslationEn(${"element".$o_element->id}->label_tag);
                 ${"element".$o_element->id}->labelToFind=$group_elt->label;
@@ -2469,9 +2482,9 @@ class EmundusonboardModelformbuilder extends JModelList {
 
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+        $formid = explode('=',explode('&',$link)[2])[1];
 
-        $query->clear()
-            ->select('id')
+        $query->select('id')
             ->from($db->quoteName('#__menu'))
             ->where($db->quoteName('link') . ' LIKE ' . $db->quote($link));
         $db->setQuery($query);

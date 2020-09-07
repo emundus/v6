@@ -336,7 +336,7 @@ class plgUserEmundus extends JPlugin
         } else {
             $previous_url = base64_decode($redirect);
         }
-        
+
         if (!$app->isAdmin()) {
 
 	        // Users coming from an OAuth system are immediately signed in and thus need to have their data entered in the eMundus table.
@@ -423,14 +423,24 @@ class plgUserEmundus extends JPlugin
 
         $campaign = $m_profile->getCurrentCampaignInfoByApplicant($user['id']);
 
-        $url = 'index.php';
+        // Get by position instead of id and type (2 mod_emundus_user_dropdown are present)
+        $modules = JModuleHelper::getModules('header-c');
+
+        foreach ($modules as $module) {
+            $params = new JRegistry($module->params);
+            $url = $params->get('url_logout','index.php');
+        }
+
+        if($url == '') {
+            $url = 'index.php';
+        }
 
         // Make sure we're a valid user first
         if ($user['id'] == 0 && !$my->get('tmp_user')) {
             return true;
         }
 
-        // Check if the user is using oAuth2 
+        // Check if the user is using oAuth2
         if (JFactory::getUser($user["id"])->getParam('OAuth2')) {
 
             JPluginHelper::importPlugin('authentication');
