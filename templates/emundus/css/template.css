@@ -77,8 +77,10 @@ a:hover {
 }
 
 .moduletable-c,.moduletable-d{
-  justify-content: center;
+  justify-content: space-around;
   display: flex;
+  flex-direction: row;
+  min-width: 36rem;
 }
 
 #g-navigation .g-container {

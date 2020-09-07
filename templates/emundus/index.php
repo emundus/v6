@@ -35,8 +35,8 @@ $doc = JFactory::getDocument();
     <div id="g-menu-overlay" class="g-menu-overlay"></div>
     <section id="g-navigation" class="g-navigation">
         <div id="g-container" class="g-container">
-            <div id="g-grid" class="g-grid size-22">
-                <div id="g-block-size-100" class="g-block-size-100">
+            <div id="g-grid" class="g-grid size-20">
+                <div id="g-block-size-100" class="g-block-size-20">
                     <div id="g-content" class="g-content">
                         <div id="platform-content" class="platform-content">
                             <div id="moduletable" class="moduletable">
@@ -51,7 +51,7 @@ $doc = JFactory::getDocument();
                     </div>
                 </div>
             </div>
-            <div id="moduletable-b" class="moduletable-b size-69">
+            <div id="moduletable-b" class="moduletable-b size-50">
                 <?php
                 $showcolumn = $this->countModules('header-onboarding');
                 ?>
@@ -67,7 +67,7 @@ $doc = JFactory::getDocument();
                     <jdoc:include type="modules" name="header-switch"/>
                 <?php endif; ?>
             </div>
-            <div id="moduletable-d" class="moduletable-d size-9">
+            <div id="moduletable-d" class="moduletable-d size-30">
                 <?php
                 $showcolumn = $this->countModules('header-c');
                 ?>
