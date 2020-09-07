@@ -106,7 +106,7 @@ button#back:hover, button#back:active, button#back:focus,
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: -65px;
+    margin-top: -30px;
 }
 
 .forget-mdp {

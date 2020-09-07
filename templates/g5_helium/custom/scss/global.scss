@@ -246,7 +246,7 @@ input[type="text"],
 }
 
 
-.g-back-office-emundus-tableau #g-navigation #header-c, .homepage #g-navigation #header-c, .view-profile #g-navigation #header-c , .error-report-page #g-navigation #header-c, .view-form #g-navigation #header-c{
+.g-back-office-emundus-tableau #g-navigation #header-c, .homepage #g-navigation #header-c, .view-profile #g-navigation #header-c , .error-report-page #g-navigation #header-c, .view-form #g-navigation #header-c, .view-checklist #g-navigation #header-c, .view-details #g-navigation #header-c {
   max-width: 30rem;
   .g-content {
     display: flex;
@@ -584,6 +584,17 @@ a {
       color: darken($base-secondary-color,8%) !important;
       border-color: darken($base-secondary-color,8%) !important;
     }
+}
+
+.homepage #g-main-mainbody #content-bottom-a .platform-content a.btn[title="Envoyer le dossier"] {
+  background: $base-secondary-color !important;
+  border: 1px solid $base-secondary-color !important;
+  color: #fff !important;
+  &:hover, &:active, &:focus {
+    background: transparent !important;
+    border: 1px solid $base-secondary-color !important;
+    color: $base-secondary-color !important;
+  }
 }
 
 
@@ -1019,7 +1030,7 @@ body.error-page p {
   &:active {
     color: $base-secondary-color !important;
     border: 1px solid $base-secondary-color !important;
-    background: transparent;
+    background: transparent !important;
   }
 }
 
