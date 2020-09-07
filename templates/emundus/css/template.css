@@ -81,12 +81,20 @@ a:hover {
   display: flex;
   flex-direction: row;
   min-width: 36rem;
+  align-items: center;
+}
+
+.moduletable-e {
+  display: none;
 }
 
 #g-navigation .g-container {
-  padding: 14px !important;
+  padding: 10px !important;
   position: relative;
   width: 95%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
 }
 
 .g-menu-overlay {
@@ -769,7 +777,7 @@ div.moduletable-b ul {
   display: flex;
   width: 150%;
   margin-right: 60px;
-  justify-content: start;
+  justify-content: center;
   padding-left: 0;
 }
 

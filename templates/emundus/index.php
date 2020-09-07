@@ -75,7 +75,7 @@ $doc = JFactory::getDocument();
                     <jdoc:include type="modules" name="header-c"/>
                 <?php endif; ?>
             </div>
-            <div id="moduletable-e" class="moduletable-e size-9">
+            <div id="moduletable-e" class="moduletable-e size-0">
                 <?php
                 $showcolumn = $this->countModules('top-a');
                 ?>
