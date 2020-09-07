@@ -20,6 +20,12 @@
     margin-top: -8px !important;
 }
 
+.em-containerFilter-heading div.buttons input {
+    background: #1b1f3c none !important;
+    border-color: #1B1F3c !important;
+    color: #fff !important;
+}
+
 button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn, .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save), .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
     background: #4e5b6d;
     border: 1px solid #4e5b6d;
@@ -2043,11 +2049,6 @@ div#em-assoc-files .panel > .panel-heading {
 .g-back-office-emundus-tableau #em_select_filter #del-filter {
     font-size: 15px !important;
     border-radius: 4px !important;
-}
-
-.g-back-office-emundus-tableau #em_select_filter button#del-filter:hover {
-    background: #0b0d19 !important;
-    color: #fff !important;
 }
 
 .g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {

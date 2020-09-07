@@ -11,7 +11,7 @@
 
 /* GENERAL */
 body {
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Lato", sans-serif;
   border-top: 5px solid $base-secondary-color;
   line-height: normal !important;
   p {
@@ -27,7 +27,7 @@ h1, h2, h3, h4, h5, h6  {
   margin-top: 50px;
   margin-bottom: 50px;
   font-weight: 700;
-  font-family: "Open Sans";
+  font-family: "Lato", sans-serif !important;
 }
 
 h1 {
@@ -35,7 +35,7 @@ h1 {
   position: relative;
 }
 
-.page-header h1::after, .page-header .swal2-title:after {
+.page-header h1::after, .page-header .swal2-title::after, .homepage h1::after, .modal-body h1::after{
   display: none !important;
 }
 
@@ -173,7 +173,7 @@ textarea,
 label,
 input[type="text"],
 .ui.warning.message {
-  font-family: "Open Sans";
+  font-family: "Lato", sans-serif;
 }
 
 p,
@@ -404,6 +404,7 @@ a {
     &.btn-creer-compte, &.inscription {
       background: $base-secondary-color !important;
       border: 1px solid $base-secondary-color !important;
+      color: #fff !important;
 
       &:hover, &:active, &:focus {
         background: transparent !important;
@@ -413,14 +414,18 @@ a {
     }
 
     &:not(btn-creer-compte) {
-      background: $base-primary-color !important;
+      background: transparent !important;
       border: 1px solid $base-primary-color !important;
+      color: $base-primary-color !important;
       &:hover, &:active, &:focus {
-        background: transparent !important;
-        color: $base-primary-color !important;
+        background: $base-primary-color !important;
+        color: #fff !important;
         border-color: $base-primary-color !important;
       }
     }
+  }
+  a:not(.btn) {
+    font-size: 14px;
   }
 }
 
@@ -525,14 +530,45 @@ a {
 
 /* PAGE PLUS D INFO - COULEUR BTN  CANDIDATER */
 
-.view-programme .em_period .btn.save-btn {
-  background-color: $base-secondary-color !important;
-  border-color: $base-secondary-color!important;
+.view-programme {
 
-  &:hover, &:active, &:focus {
-    background-color: #ffffff !important;
-    color: $base-secondary-color !important;
-    border-color: $base-secondary-color !important;
+  h1::after {
+    display: none !important;
+  }
+
+  .right-side.campaingapply {
+    padding-left: 0px !important;
+  }
+  .below-content {
+    width: 30%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0px;
+      .btn.btn-plein {
+
+        background-color: $base-secondary-color !important;
+        border-color: $base-secondary-color !important;
+        color: #fff !important;
+
+          &:hover, &:active, &:focus {
+            background-color: #ffffff !important;
+            color: $base-secondary-color !important;
+            border-color: $base-secondary-color !important;
+          }
+      }
+
+    .btn.btn-creux {
+        background-color: transparent !important;
+        border-color: $base-primary-color !important;
+        color: $base-primary-color !important;
+
+          &:hover, &:active, &:focus {
+            background-color: $base-primary-color !important;
+            color: #fff !important;
+            border-color: $base-primary-color !important;
+          }
+    }
   }
 }
 
@@ -570,10 +606,13 @@ a {
 .homepage {
   h1:first-child {
     margin-top: 10px;
+    margin-bottom: 25px !important;
+    font-family: "Lato", sans-serif;
   }
 
   .blog-featuredhomepage {
-    margin-bottom: 40px;
+    margin-bottom: 50px;
+    margin-top: 50px;
   }
 
  /* MODULE EMUNDUS CAMPAIGN */
@@ -581,21 +620,25 @@ a {
 
     /*COULEURS BTNS - PLUS D'INFO ET CANDIDATER */
     a.btn.btn-primary.btn-plein.btn-blue {
-      background-color: $base-secondary-color !important;
+      background-color: $base-secondary-color  !important;
       border-color: $base-secondary-color !important;
+      color: #fff !important;
+      font-family: "Lato", sans-serif !important;
       &:hover, &:active, &:focus {
-        background-color: #ffffff !important;
+        background-color: transparent !important;
         color: $base-secondary-color !important;
         border-color: $base-secondary-color !important;
       }
     }
 
     a.btn.btn-primary.btn-creux.btn-orange {
-      background-color: $base-primary-color !important;
+      background-color: transparent  !important;
       border-color: $base-primary-color !important;
+      color: $base-primary-color !important;
+      font-family: "Lato", sans-serif !important;
       &:hover, &:active, &:focus {
-        background-color: #ffffff !important;
-        color: $base-primary-color !important;
+        background-color: $base-primary-color !important;
+        color: #fff !important;
         border-color: $base-primary-color !important;
       }
     }
@@ -619,7 +662,8 @@ a {
   /* COULEURS TITRES  */
 
   .campaign-title {
-    color: $base-primary-color;
+    color: $base-primary-color !important;
+    font-family: "Lato", sans-serif !important;
   }
 
   h3.g-title  {
@@ -656,16 +700,29 @@ a {
 .com_users.view-reset {
   form#user-registration.form-validate.form-horizontal.well .control-group .controls button {
     width: 100%;
-    height: 41px;
+    height: 50px;
     text-transform: capitalize;
     margin-right: 0;
     border-radius: 0px;
     padding: 8px 12px;
-    font-family: "Open Sans";
+    font-family: "Lato", sans-serif;
     line-height: normal;
     font-weight: 300;
     font-size: 14px;
   }
+
+  button.btn.btn-primary.validate {
+    background-color: $base-secondary-color  !important;
+    border-color: $base-secondary-color !important;
+    color: #fff !important;
+    font-family: "Lato", sans-serif !important;
+    &:hover, &:active, &:focus {
+      background-color: transparent !important;
+      color: $base-secondary-color !important;
+      border-color: $base-secondary-color !important;
+    }
+  }
+
 }
 
 /* LISTES  */
@@ -1037,6 +1094,61 @@ p.readmore .btn,
   font-size: 14px;
 }
 
+.fabrikActions.form-actions .row-fluid {
+  .span4.offset1 button.btn.goback-btn {
+    background: transparent !important;
+    border: 1px solid $base-secondary-color !important;
+    border-radius: 4px !important;
+    color: $base-secondary-color !important;
+    margin-right: 10px;
+    font-weight: normal;
+    &:hover, &:active, :focus  {
+      background: $base-secondary-color !important;
+      border: 1px solid $base-secondary-color !important;
+      color: #fff !important;
+    }
+  }
+  .span4 button.btn.save-btn {
+    background: $base-primary-color !important;
+    border: 1px solid $base-primary-color !important;
+    border-radius: 4px !important;
+    color: #fff !important;
+    &:hover, &:active, :focus  {
+      background: transparent !important;
+      border: 1px solid $base-primary-color !important;
+      color: $base-primary-color !important;
+    }
+  }
+}
+
+.modal-header #can-val{
+   button.btn.btn-danger {
+    background: transparent !important;
+    border: 1px solid $base-secondary-color !important;
+    border-radius: 4px !important;
+    color: $base-secondary-color !important;
+    margin-right: 10px;
+    font-weight: normal;
+    &:hover, &:active, :focus  {
+      background: $base-secondary-color !important;
+      border: 1px solid $base-secondary-color !important;
+      color: #fff !important;
+    }
+  }
+   button.btn.btn-success, a.btn-success {
+    background: $base-primary-color !important;
+    border: 1px solid $base-primary-color !important;
+    border-radius: 4px !important;
+    color: #fff !important;
+    &:hover, &:active, :focus  {
+      background: transparent !important;
+      border: 1px solid $base-primary-color !important;
+      color: $base-primary-color !important;
+    }
+  }
+}
+
+
 button.save-btn,
 .btn-success,
 button.save,
@@ -1135,9 +1247,10 @@ a#em-doc-zip:focus,
 .choice-statut-btn:hover,
 .choice-statut-btn:active,
 .choice-statut-btn:focus {
-  background-color: $base-primary-color !important;
-  color: #fff !important;
+  background-color: transparent !important;
+  color: $base-primary-color !important;
   outline: none;
+  border: 1px solid $base-primary-color !important;
 }
 
 .span4.offset1 > .btn-group > button.button {
@@ -1177,7 +1290,6 @@ button#back,
 .emails-setup-page .form-actions button:not(.save),
 .documents-type-candidacy-page .fabrikDetails .btn,
 .fabrikUploadDelete .btn,
-#em_select_filter #del-filter,
 .btn-toolbar .btn-group:nth-child(2) .btn {
   background: transparent !important;
   border: 1px solid $base-secondary-color !important;
@@ -1193,11 +1305,40 @@ button#back,
   }
 }
 
-.pull-right #em-prev-file, .pull-right #em-next-file {
-  &:hover {
+#em_select_filter #del-filter,#em-delete-files.btn.btn-danger.btn-xs.pull-right {
+  background-color: $base-secondary-color !important;
+  color: #fff !important;
+  border-color: $base-secondary-color !important;
+
+  &:hover, &:active, &:focus {
+    background: #fff !important;
+    border: 1px solid $base-secondary-color !important;
     color: $base-secondary-color !important;
   }
 }
+
+#em-see-files.btn.btn-info.btn-xs.pull-right {
+  background-color: $base-primary-color !important;
+  color: #fff !important;
+  border-color: $base-primary-color !important;
+  &:hover, &:active, &:focus {
+    background: #fff !important;
+    border: 1px solid $base-primary-color !important;
+    color: $base-primary-color !important;
+  }
+}
+
+#em-prev-file.btn.btn-info.btn-xxl, #em-next-file.btn.btn-info.btn-xxl {
+  background-color: $base-primary-color !important;
+  color: #fff !important;
+  border-color: $base-primary-color !important;
+  &:hover, &:active, &:focus {
+    background: #fff !important;
+    border: 1px solid $base-primary-color !important;
+    color: $base-primary-color !important;
+  }
+}
+
 
 input[type="color"]:hover,
 input[type="date"]:hover,
@@ -1426,6 +1567,18 @@ ul.nav.nav-tabs.nav-stacked span {
   &:active,
   &:focus-within {
     color: $base-primary-color;
+  }
+}
+
+.view-login button.btn.btn-primary {
+  background-color: $base-secondary-color  !important;
+  border-color: $base-secondary-color !important;
+  color: #fff !important;
+  font-family: "Lato", sans-serif !important;
+  &:hover, &:active, &:focus {
+    background-color: transparent !important;
+    color: $base-secondary-color !important;
+    border-color: $base-secondary-color !important;
   }
 }
 

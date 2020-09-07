@@ -1161,6 +1161,10 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
 
 /* FORMULAIRE D'INSCRIPTION */
 
+.view-form .em-formRegistrationCenter h1::after {
+    display: none !important; 
+}
+
 .fb_el_jos_emundus_users___terms_and_conditions > label:after {
   content: '';
 }
@@ -1339,7 +1343,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 .fabrikForm .row-fluid .fabrikgrid_radio span {
-    color: #565656 !important;
+    color: #000 !important;
 }
 
 .fabrikForm .row-fluid .fabrikgrid_radio label span {
