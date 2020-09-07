@@ -239,12 +239,14 @@ input[type="text"],
         .platform-content {
           margin: 0px 10px !important;
           padding: 0px;
+
         }
       }
     }
 }
 
-.g-back-office-emundus-tableau #g-navigation #header-c, .homepage #g-navigation #header-c, .view-profile #g-navigation #header-c , .error-report-page #g-navigation #header-c {
+
+.g-back-office-emundus-tableau #g-navigation #header-c, .homepage #g-navigation #header-c, .view-profile #g-navigation #header-c , .error-report-page #g-navigation #header-c, .view-form #g-navigation #header-c{
   max-width: 30rem;
   .g-content {
     display: flex;
@@ -739,6 +741,20 @@ a {
 
 /* FORMULAIRE  */
 
+
+
+h1::after, .swal2-title:after {
+  content: '';
+  position: absolute;
+  margin-top: 45px;
+  width: 2.7rem;
+  height: .2rem;
+  background: $base-secondary-color !important;
+  left: 0;
+  display: block !important;
+  top: 4px;
+}
+
 .icon-calendar {
   color: #000;
 }
@@ -993,16 +1009,17 @@ body.error-page p {
   }
 }
 
-.em-send-button a {
-  background: $base-primary-color !important;
+.em-send-button a.btn.btn-success.btn-xs {
+  background: $base-secondary-color !important;
   color: #ffffff !important;
-  border: 1px solid $base-primary-color !important;
+  border: 1px solid $base-secondary-color !important;
 
   &:hover,
   &:focus,
   &:active {
-    color: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
+    color: $base-secondary-color !important;
+    border: 1px solid $base-secondary-color !important;
+    background: transparent;
   }
 }
 
@@ -1606,14 +1623,28 @@ ul.nav.nav-tabs.nav-stacked span {
 /* CONNEXION - CANDIDATER */
 
 ul.unstyled.em-linkForgot li a {
-  color: $base-primary-color;
+  color: $base-secondary-color;
   &:hover,
   &:focus,
   &:active,
   &:focus-within {
-    color: $base-primary-color;
+    color: $base-secondary-color;
+    text-decoration: none;
   }
 }
+
+form#login-form[action="/connexion-candidater"] #form-login-submit button {
+  background: $base-secondary-color !important;
+  border: 1px solid $base-secondary-color !important;
+  color: #fff !important;
+  height: 50px;
+    &:hover, &:active, &:focus {
+      background: transparent !important;
+      border: 1px solid $base-secondary-color !important;
+      color: $base-secondary-color !important;
+    }
+}
+
 
 /* PARTIE GESTIONNAIRE  */
 .em-personalInfo > a {

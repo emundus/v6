@@ -9,17 +9,6 @@ div.advanced-dropdown{
     width: max-content;
 }
 
-body:not(.g-back-office-emundus-tableau) div.advanced-dropdown {
-    position: relative;
-    top: -10px;
-}
-
-body.view-profile.homepage div.advanced-dropdown, body.view-featured.homepage div.advanced-dropdown, body.view-form div.advanced-dropdown, body.view-profile.layout-edit div.advanced-dropdown {
-    position: relative;
-    top: 0px !important;
-}
-
-
 div.mod-languages.advanced-dropdown ul{
     margin-left: 15px;
     width: 100%;
@@ -41,6 +30,10 @@ div.mod-languages a{
     align-items: baseline;
     margin-left: 5px;
     color: black;
+}
+
+.view-programme .caret {
+    margin-top: 0px !important;
 }
 
 div.mod-languages img{

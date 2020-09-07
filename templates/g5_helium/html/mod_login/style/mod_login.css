@@ -1,5 +1,7 @@
-.em_label-user, .em_label-passwd{
-    color:#565656!important;
+form[action="/connexion-candidater"] .em_label-user, .em_label-passwd{
+    color:#000!important;
+    font-size: 14px;
+
 }
 .login-button{
     text-transform: capitalize;
@@ -34,6 +36,10 @@
     margin-top: -4px!important;
 }
 
+form[action="/connexion-candidater"] i.icon-star.small  {
+    top: -10px!important;
+}
+
 /* CONNEXION - CANDIDATER */
 
 ul.unstyled.em-linkForgot{
@@ -42,8 +48,19 @@ ul.unstyled.em-linkForgot{
     justify-content: space-between;
     border: none;
     padding: 0px;
+    flex-direction: row-reverse;
 }
 
 ul.unstyled.em-linkForgot li {
     border: none;
+}
+
+ul.unstyled.em-linkForgot li a::before {
+    content: "\f101";
+    font-family: FontAwesome;
+    margin-right: 3px;
+}
+
+ul.unstyled.em-linkForgot li a span::before {
+  display: none;
 }

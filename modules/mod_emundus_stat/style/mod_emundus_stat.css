@@ -28,6 +28,12 @@
 	padding-left:1%;
 }
 
+.g-back-office-emundus-tableau.indicateurs-page #g-page-surround #g-navigation #header-c .platform-content  {
+	width: auto !important;
+}
+
+
+
 .btnConsulter {
 	border-radius:4px!important;
 	color:white!important;

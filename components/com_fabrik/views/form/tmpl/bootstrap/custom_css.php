@@ -76,6 +76,11 @@ echo <<<EOT
 }
 
 /* FORMULAIRE */
+
+.controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn:not(.active) {
+    background-color: #c6c6c6;
+}
+
 .modal {
     position: relative !important;
     background-color: #fff !important;
@@ -967,6 +972,7 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
     border: 1px solid #4e5b6d;
     border-radius: 4px !important;
     padding: 10px 12px !important;
+    font-family: "Lato", sans-serif; 
 }
 .span4 > .btn-group > button.save-btn:hover, .span4 > .btn-group > button.save:hover {
     background-color: transparent;
@@ -1028,7 +1034,7 @@ ol li {
 }
 
 #form_307 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
-    height: 41px !important;
+    height: 50px !important;
     text-transform: capitalize;
 }
 
