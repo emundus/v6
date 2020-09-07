@@ -1,0 +1,1 @@
+update jos_extensions set enabled=0 where element like "securitycheckpro_cron";
