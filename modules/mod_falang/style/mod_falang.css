@@ -51,6 +51,7 @@ div.advanced-dropdown a.langChoose:link, div.advanced-dropdown a.langChoose:visi
     background: #eeebeb;
     color: black;
     display: flex;
+    max-height: 38px;
 }
 
 .langChoose__img_label{

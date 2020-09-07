@@ -385,7 +385,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 	        $users = $jinput->getRaw('users');
 
             $status = $m_email->createTrigger($trigger, $users, $user);
-            if (!empty($status)) {
+            if ($status) {
                 $tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);
             } else {
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_CREATE_TRIGGER'), 'data' => $status);

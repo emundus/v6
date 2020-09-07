@@ -145,6 +145,10 @@ if(!empty($title) && hikaInput::get()->getVar('hikashop_front_end_main', 0) && (
 <?php
 }
 
+
+$val = hikaInput::get()->getVar('hikashop_front_end_main',0);
+hikaInput::get()->set('hikashop_front_end_main',0);
+
 if(($this->params->get('show_image') && !empty($this->element->file_path)) || ($this->params->get('show_description', !$this->module) && !empty($this->element->category_description))) {
 ?>
 		<div class="hikashop_category_description">
@@ -202,6 +206,7 @@ if(!empty($this->fields)) {
 <?php
 	}
 }
+hikaInput::get()->set('hikashop_front_end_main',$val);
 
 $mainInfo = ob_get_clean();
 ob_start();

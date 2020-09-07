@@ -60,14 +60,14 @@
                   :prog="this.prog"
           ></addEvaluationGrid>
 
-          <addEvalVisi
+<!--          <addEvalVisi
                   v-if="menuHighlight == 2"
                   :funnelCategorie="progCategories[langue][menuHighlight]"
                   :prog="this.prog"
-          ></addEvalVisi>
+          ></addEvalVisi>-->
 
           <addEmail
-                  v-if="menuHighlight == 3"
+                  v-if="menuHighlight == 2"
                   :funnelCategorie="progCategories[langue][menuHighlight]"
                   :prog="this.prog"
           ></addEmail>
@@ -144,13 +144,13 @@
         [
           Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTION"),
           Joomla.JText._("COM_EMUNDUS_ONBOARD_EVALUATIONGRIDDESCRIPTION"),
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_VISIBILITYDESCRIPTION"),
+          //Joomla.JText._("COM_EMUNDUS_ONBOARD_VISIBILITYDESCRIPTION"),
           Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILSDESCRIPTION"),
         ],
         [
           Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTION"),
           Joomla.JText._("COM_EMUNDUS_ONBOARD_EVALUATIONGRIDDESCRIPTION"),
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_VISIBILITYDESCRIPTION"),
+          //Joomla.JText._("COM_EMUNDUS_ONBOARD_VISIBILITYDESCRIPTION"),
           Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILSDESCRIPTION"),
         ]
       ],
@@ -159,13 +159,13 @@
         [
           "Utilisateurs",
           "Grille d'évaluation",
-          "Visibilité",
+          //"Visibilité",
           "Emails",
         ],
         [
           "Users",
           "Evaluation grid",
-          "Visibility",
+          //"Visibility",
           "Emails",
         ]
       ],

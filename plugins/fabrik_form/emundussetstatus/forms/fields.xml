@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundussetstatus" label="PLG_FABRIK_FORM_EMUNDUSSETSTATUS_FIELDS">
+			<field name="status" type="field" description="PLG_FABRIK_FORM_EMUNDUSSETSTATUS_STATUS_DESC" label="PLG_FABRIK_FORM_EMUNDUSSETSTATUS_STATUS_LABEL" />
+			<field name="email-trigger" type="list" default="0" description="PLG_FABRIK_FORM_EMUNDUSSETSTATUS_EMAIL_TRIGGER_DESC" label="PLG_FABRIK_FORM_EMUNDUSSETSTATUS_EMAIL_TRIGGER" >
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+		</fieldset>
+	</fields>
+</form>

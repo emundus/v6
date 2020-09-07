@@ -59,7 +59,15 @@ $doc = JFactory::getDocument();
                     <jdoc:include type="modules" name="header-onboarding"/>
                 <?php endif; ?>
             </div>
-            <div id="moduletable-c" class="moduletable-c size-8 right-divider">
+            <div id="moduletable-c" class="moduletable-c size-9">
+                <?php
+                $showcolumn = $this->countModules('top-a');
+                ?>
+                <?php if($showcolumn): ?>
+                    <jdoc:include type="modules" name="top-a"/>
+                <?php endif; ?>
+            </div>
+            <div id="moduletable-d" class="moduletable-d size-30">
                 <?php
                 $showcolumn = $this->countModules('header-switch');
                 ?>
@@ -67,20 +75,12 @@ $doc = JFactory::getDocument();
                     <jdoc:include type="modules" name="header-switch"/>
                 <?php endif; ?>
             </div>
-            <div id="moduletable-d" class="moduletable-d size-30">
+            <div id="moduletable-e" class="moduletable-e size-0">
                 <?php
                 $showcolumn = $this->countModules('header-c');
                 ?>
                 <?php if($showcolumn): ?>
                     <jdoc:include type="modules" name="header-c"/>
-                <?php endif; ?>
-            </div>
-            <div id="moduletable-e" class="moduletable-e size-0">
-                <?php
-                $showcolumn = $this->countModules('top-a');
-                ?>
-                <?php if($showcolumn): ?>
-                    <jdoc:include type="modules" name="top-a"/>
                 <?php endif; ?>
             </div>
         </div>

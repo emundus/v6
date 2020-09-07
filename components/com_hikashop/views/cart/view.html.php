@@ -179,6 +179,16 @@ class CartViewCart extends HikaShopView {
 			return false;
 		}
 
+		if($cart->cart_type == 'wishlist') {
+			if($cart->user_id != $user_id) {
+				$user = !empty($cart->user->username) ? $cart->user->username : $cart->user->user_email;
+				hikashop_setPageTitle( JText::sprintf('HIKASHOP_USER_WISHLIST', $user) );
+			}
+
+			$this->loadRef(array(
+				'cartShareType' => 'type.cart_share',
+			));
+		}
 
 		$manage = ($cart->cart_type == 'cart' || $cart->user_id == $user_id);
 		$this->assignRef('manage', $manage);
@@ -191,7 +201,115 @@ class CartViewCart extends HikaShopView {
 			$manage = false;
 		$this->assignRef('print_cart', $print_cart);
 
+		if(hikashop_level(2)) {
+			$fieldsClass = hikashop_get('class.field');
+			$this->assignRef('fieldsClass', $fieldsClass);
 
+			$null = null;
+			$itemFields = $fieldsClass->getFields('frontcomp', $null, 'item', 'checkout&task=state');
+			$this->assignRef('itemFields', $itemFields);
+
+			$null = null;
+			$productFields = $fieldsClass->getFields('display:front_cart_details=1', $null, 'product');
+			$this->assignRef('productFields', $productFields);
+
+			$usefulFields = array();
+			foreach($productFields as $field){
+				$fieldname = $field->field_namekey;
+				foreach($cart->products as $product) {
+					if(!empty($product->$fieldname)) {
+						$usefulFields[] = $field;
+						break;
+					}
+				}
+			}
+			$productFields = $usefulFields;
+		}
+
+		if($cart->cart_type == 'wishlist') {
+			$confirmed_status = $config->get('invoice_order_statuses', 'confirmed,shipped');
+			if(empty($confirmed_status))
+				$confirmed_status = 'confirmed,shipped';
+			$confirmed_status = explode(',', trim($confirmed_status, ','));
+			foreach($confirmed_status as &$status) {
+				$status = $db->Quote($status);
+			}
+			unset($status);
+
+			$filters = array(
+				'hk_order_product.order_product_wishlist_id = -' . (int)$cart_id
+			);
+
+			if(!empty($cart->cart_products)) {
+				$p = array_keys($cart->cart_products);
+				hikashop_toInteger($p);
+				if(in_array(0, $p))
+					$p = array_diff($p, array(0));
+				$filters[] = 'hk_order_product.order_product_wishlist_product_id IN ('.implode(',', $p).')';
+			}
+
+			$query = 'SELECT hk_order.order_id, hk_order.order_user_id, hk_user.user_email, hk_order.order_status, hk_order_product.* '.
+				' FROM '.hikashop_table('order').' AS hk_order '.
+				' LEFT JOIN '.hikashop_table('order_product').' AS hk_order_product ON hk_order.order_id = hk_order_product.order_id '.
+				' LEFT JOIN '.hikashop_table('user').' AS hk_user ON hk_user.user_id = hk_order.order_user_id '.
+				' WHERE hk_order.order_status IN ('.implode(',', $confirmed_status).') AND hk_order.order_type = '.$db->Quote('sale').' AND ('.implode(' OR ', $filters).')';
+			$db->setQuery($query);
+			$related_orders = $db->loadObjectList();
+
+			if(!empty($related_orders)) {
+
+				foreach($related_orders as &$related_order) {
+
+					if(!empty($related_order->order_product_wishlist_product_id) && isset($cart->products[(int)$related_order->order_product_wishlist_product_id])) {
+						$product =& $cart->products[(int)$related_order->order_product_wishlist_product_id];
+
+						if(empty($product->bought))
+							$product->bought = 0;
+						$product->bought += (int)$related_order->order_product_quantity;
+
+						if($manage) {
+							if(empty($product->buyers))
+								$product->related_orders = array();
+							$product->related_orders[] = $related_order;
+						}
+
+						unset($product);
+
+						$related_order->done = true;
+
+						continue;
+					}
+
+					if(empty($related_order->order_product_wishlist_product_id)) {
+						foreach($cart->products as &$product) {
+							if((int)$related_order->product_id != (int)$product->product_id)
+								continue;
+
+							if(empty($product->bought))
+								$product->bought = 0;
+							$product->bought += (int)$related_order->order_product_quantity;
+
+							if($manage) {
+								if(empty($product->buyers))
+									$product->related_orders = array();
+								$product->related_orders[] = $related_order;
+							}
+
+							$related_order->done = true;
+						}
+						unset($product);
+					}
+
+					if(!empty($related_order->done))
+						continue;
+
+				}
+				unset($related_order);
+			}
+
+			$cart_share_url = $this->cartClass->getShareUrl($cart);
+			$this->assignRef('cart_share_url', $cart_share_url);
+		}
 
 		$menuClass = hikashop_get('class.menus');
 		$url_checkout = $menuClass->getCheckoutURL();
@@ -210,6 +328,17 @@ class CartViewCart extends HikaShopView {
 		}
 		$this->assignRef('user_carts', $user_carts);
 
+		$user_wishlists = array();
+		if((int)$config->get('enable_wishlist')) {
+			$query = 'SELECT cart_id, cart_name, cart_modified, cart_current '.
+					' FROM '.hikashop_table('cart').' AS cart WHERE cart.user_id = '.(int)$user_id.' AND cart.cart_type = '.$db->Quote('wishlist').' AND cart.cart_id != '.(int)$cart->cart_id;
+			$db->setQuery($query);
+			$user_wishlists = $db->loadObjectList();
+		}
+		$this->assignRef('user_wishlists', $user_wishlists);
+
+		$multi_wishlist = (int)$config->get('enable_multiwishlist', 1);
+		$this->assignRef('multi_wishlist', $multi_wishlist);
 
 		$checkbox_column = ((int)$config->get('enable_multicart') || (int)$config->get('enable_wishlist')) && empty($print_cart);
 		$this->assignRef('checkbox_column', $checkbox_column);
@@ -223,6 +352,21 @@ class CartViewCart extends HikaShopView {
 		$this->assignRef('params', $params);
 
 		$toolbar = array();
+		if($cart->cart_type == 'wishlist' && !empty($this->manage)) {
+			$toolbar['share'] = array(
+				'icon' => 'email',
+				'name' => JText::_('SHARE'),
+				'url' => hikashop_completeLink('cart&task=share=&cart_id='.$cart->cart_id.'&Itemid='.$Itemid, true),
+				'popup' => array(
+					'id' => 'hikashop_share_cart',
+					'width' => 360,
+					'height' => 360
+					),
+				'fa' => array(
+					'html' => '<i class="fas fa-at"></i>',
+				),
+			);
+		}
 		if($config->get('print_cart')) {
 			$toolbar['print'] = array(
 				'icon' => 'print',
@@ -278,6 +422,50 @@ class CartViewCart extends HikaShopView {
 				),
 				'fa' => array('html' => '<i class="fas fa-cart-arrow-down"></i>')
 			);
+		}
+		if($config->get('enable_wishlist') && !$juser->guest) {
+			$dropData = array();
+			foreach($user_wishlists as $user_wishlist) {
+				$dropData[] = array(
+					'name' => '<i class="fa fa-arrow-right"></i> '. (!empty($user_wishlist->cart_name) ? $user_wishlist->cart_name : hikashop_getDate($user_wishlist->cart_modified)),
+					'link' => '#move-to-wishlist',
+					'click' => 'return window.cartMgr.moveProductsToWishlist('.(int)$user_wishlist->cart_id.');'
+				);
+			}
+
+			if($this->multi_wishlist || ($cart->cart_type != 'wishlist' && empty($user_wishlists))) {
+				$dropData[] = array(
+					'name' => '<i class="fa fa-plus"></i> ' . JText::_('NEW_WISHLIST'),
+					'link' => '#new-wishlist',
+					'click' => 'return window.cartMgr.moveProductsToWishlist(-1);'
+				);
+			}
+
+			if(empty($toolbar['move_to'])) {
+				if(count($dropData)) {
+					$toolbar['move_to'] = array(
+						'dropdown' => array(
+							'label' => !empty($manage) ? JText::_('HIKA_MOVE_TO') : JText::_('HIKA_ADD_TO'),
+							'data' => $dropData,
+							'options' => array('type' => 'link', 'right' => true, 'up' => false, 'hkicon' => 'icon-32-wishlist', 'main_class' => 'hikabtn')
+						),
+						'fa' => array(
+							'size' => 1,
+							'html' => array('<i class="fas fa-list-ul fa-stack-2x" style="top:15%"></i>','<i class="fas fa-star fa-stack-1x" style="left:-36%;top:-20%;"></i>'),
+						),
+					);
+				}
+			} else {
+				$cart_header = array(array(
+					'header' => true,
+					'name' => '<i class="fas fa-shopping-cart"></i> '.JText::_('HIKASHOP_CART')
+				));
+				$wishlist_header = array('-', array(
+					'header' => true,
+					'name' => '<i class="fas fa-star"></i> '.JText::_('WISHLIST')
+				));
+				$toolbar['move_to']['dropdown']['data'] = array_merge($cart_header, $toolbar['move_to']['dropdown']['data'], $wishlist_header, $dropData);
+			}
 		}
 		if(!empty($manage)) {
 			$toolbar['save'] = array(

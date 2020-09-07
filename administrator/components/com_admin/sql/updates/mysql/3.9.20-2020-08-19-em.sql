@@ -7,8 +7,7 @@ alter table jos_emundus_setup_campaigns
 alter table jos_emundus_setup_campaigns
     add limit_status int(2) null;
 
-create table if not exists jos_emundus_setup_campaigns_repeat_limit_status
-(
+create table if not exists jos_emundus_setup_campaigns_repeat_limit_status (
 	id int auto_increment
 		primary key,
 	parent_id int null,

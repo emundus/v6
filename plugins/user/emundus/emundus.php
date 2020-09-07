@@ -155,43 +155,60 @@ class plgUserEmundus extends JPlugin
 		$task = $jinput->get->get('task', null);
 
         // If the details are empty, we are probably signing in via LDAP for the first time.
-        if ($isnew && empty($details) && empty($fabrik) && JPluginHelper::getPlugin('authentication','ldap') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
+        if ($isnew && empty($details) && empty($fabrik)) {
+            require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+            $m_users = new EmundusModelusers();
+            if (JPluginHelper::getPlugin('authentication', 'ldap') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
 
-        	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-	        $m_users = new EmundusModelusers();
-	        $return = $m_users->searchLDAP($user['username']);
-	        if (!empty($return->users[0])) {
-		        $params = JComponentHelper::getParams('com_emundus');
-		        $ldapElements = explode(',', $params->get('ldapElements'));
+                $return = $m_users->searchLDAP($user['username']);
+                if (!empty($return->users[0])) {
+                    $params = JComponentHelper::getParams('com_emundus');
+                    $ldapElements = explode(',', $params->get('ldapElements'));
 
-		        $details['firstname'] = $return->users[0][trim($ldapElements[2])];
-		        $details['name'] = $return->users[0][trim($ldapElements[3])];
-		        if (is_array($details['firstname'])) {
-			        $details['firstname'] = $details['firstname'][0];
-		        }
-		        if (is_array($details['name'])) {
-			        $details['name'] = $details['name'][0];
-		        }
+                    $details['firstname'] = $return->users[0][trim($ldapElements[2])];
+                    $details['name'] = $return->users[0][trim($ldapElements[3])];
+                    if (is_array($details['firstname'])) {
+                        $details['firstname'] = $details['firstname'][0];
+                    }
+                    if (is_array($details['name'])) {
+                        $details['name'] = $details['name'][0];
+                    }
 
-		        // Give the user an LDAP param.
-		        $o_user = JFactory::getUser($user['id']);
+                    // Give the user an LDAP param.
+                    $o_user = JFactory::getUser($user['id']);
 
-		        // Store token in User's Parameters
-		        $o_user->setParam('ldap', '1');
+                    // Store token in User's Parameters
+                    $o_user->setParam('ldap', '1');
 
-		        // Get the raw User Parameters
-		        $params = $o_user->getParameters();
+                    // Get the raw User Parameters
+                    $params = $o_user->getParameters();
 
-		        // Set the user table instance to include the new token.
-		        $table = JTable::getInstance('user', 'JTable');
-		        $table->load($o_user->id);
-		        $table->params = $params->toString();
+                    // Set the user table instance to include the new token.
+                    $table = JTable::getInstance('user', 'JTable');
+                    $table->load($o_user->id);
+                    $table->params = $params->toString();
 
-		        // Save user data
-		        if (!$table->store()) {
-			        throw new RuntimeException($table->getError());
-		        }
-	        }
+                    // Save user data
+                    if (!$table->store()) {
+                        throw new RuntimeException($table->getError());
+                    }
+                }
+            }
+            if (JPluginHelper::getPlugin('authentication', 'externallogin') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
+                $username = explode(' ',$user["name"]);
+                $name = '';
+                if(count($username)>2){
+                    for($i=1;$i>count($username);$i++){
+                        $name .= ' '.$username[$i];
+                    }
+                }
+                else{
+                    $name= $username[1];
+                }
+                $details['name'] = $name;
+                $details['emundus_profile']['lastname'] = $name;
+                $details['firstname'] = $username[0];
+            }
         }
 
 	    if (is_array($details) && count($details) > 0) {
@@ -319,7 +336,7 @@ class plgUserEmundus extends JPlugin
         } else {
             $previous_url = base64_decode($redirect);
         }
-        
+
         if (!$app->isAdmin()) {
 
 	        // Users coming from an OAuth system are immediately signed in and thus need to have their data entered in the eMundus table.
@@ -406,14 +423,24 @@ class plgUserEmundus extends JPlugin
 
         $campaign = $m_profile->getCurrentCampaignInfoByApplicant($user['id']);
 
-        $url = 'index.php';
+        // Get by position instead of id and type (2 mod_emundus_user_dropdown are present)
+        $modules = JModuleHelper::getModules('header-c');
+
+        foreach ($modules as $module) {
+            $params = new JRegistry($module->params);
+            $url = $params->get('url_logout','index.php');
+        }
+
+        if($url == '') {
+            $url = 'index.php';
+        }
 
         // Make sure we're a valid user first
         if ($user['id'] == 0 && !$my->get('tmp_user')) {
             return true;
         }
 
-        // Check if the user is using oAuth2 
+        // Check if the user is using oAuth2
         if (JFactory::getUser($user["id"])->getParam('OAuth2')) {
 
             JPluginHelper::importPlugin('authentication');

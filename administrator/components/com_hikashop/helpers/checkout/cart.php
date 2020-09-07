@@ -57,6 +57,21 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 				'values' => array(0)
 			)
 		),
+		'show_shipping' => array(
+			'name' => 'HIKASHOP_CHECKOUT_SHIPPING_PRICE',
+			'type' => 'boolean',
+			'default' => 1
+		),
+		'show_payment' => array(
+			'name' => 'HIKASHOP_CHECKOUT_PAYMENT_PRICE',
+			'type' => 'boolean',
+			'default' => 1
+		),
+		'show_coupon' => array(
+			'name' => 'HIKASHOP_CHECKOUT_COUPON_PRICE',
+			'type' => 'boolean',
+			'default' => 1
+		),
 	);
 
 	public function getParams() {
@@ -138,6 +153,12 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 			$params['show_price'] = true;
 		if(!isset($params['show_delete']))
 			$params['show_delete'] = true;
+		if(!isset($params['show_shipping']))
+			$params['show_shipping'] = 1;
+		if(!isset($params['show_payment']))
+			$params['show_payment'] = 1;
+		if(!isset($params['show_coupon']))
+			$params['show_coupon'] = 1;
 
 		if(!isset($params['link_to_product_page']) || (int)$params['link_to_product_page'] === -1) {
 			$defaultParams = $view->config->get('default_params');

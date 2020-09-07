@@ -266,7 +266,7 @@ class hikashopVoteClass extends hikashopClass {
 		if($element->vote_type != 'product') {
 			$db = JFactory::getDBO();
 			$query = 'SELECT AVG(v.vote_rating) AS average, COUNT(v.vote_id) AS total FROM '.hikashop_table('vote').' AS v '.
-				' WHERE vote_ref_id = ' . (int)$element->vote_ref_id .' AND vote_type = ' . $db->Quote($element->vote_type).' AND v.vote_rating != 0';
+				' WHERE vote_ref_id = ' . (int)$element->vote_ref_id .' AND vote_type = ' . $db->Quote($element->vote_type).' AND v.vote_rating != 0 AND vote_published >= 1';
 			$db->setQuery($query);
 			$data = $db->loadObject();
 			if($data->total == 0) {
@@ -333,41 +333,38 @@ class hikashopVoteClass extends hikashopClass {
 	}
 
 	function updateAverage(&$element, $oldElement, &$data){
-		$addVote = false;
-		if(isset($oldElement->vote_published) && $oldElement->vote_published == '0' && $element->vote_published == '1'){
-			if($element->vote_rating == 0)
-				$element->vote_rating = $oldElement->vote_rating;
-			if($element->vote_rating == 0)
-				return $data;
-			$addVote = true;
+
+		$ref_id = 0;
+		if(!empty($element->vote_ref_id))
+			$ref_id = $element->vote_ref_id;
+		elseif(!empty($oldElement->vote_ref_id))
+			$ref_id = $oldElement->vote_ref_id;
+		elseif(!empty($data->product_id))
+			$ref_id = $data->product_id;
+
+		if(empty($ref_id))
+			return;
+
+		$query = 'SELECT * FROM #__hikashop_vote WHERE vote_ref_id = '.(int)$ref_id.' AND vote_type=\'product\' AND vote_rating != 0 AND vote_published >=1';
+		$db = JFactory::getDBO();
+		$db->setQuery($query);
+		$votes = $db->loadObjectList();
+
+		$count = 0;
+		$sum = 0;
+		if(!empty($votes)) {
+			foreach($votes as $vote)  {
+				if(empty($vote->vote_rating))
+					continue;
+				$count++;
+				$sum += $vote->vote_rating;
+			}
 		}
 
-		if(($element->vote_id == '0' && empty($oldElement->vote_published) && $element->vote_published == '1') || $addVote){
-			$data->product_average_score = (($data->product_total_vote * $data->product_average_score) + $element->vote_rating) / ($data->product_total_vote + 1);
-			$data->product_total_vote = $data->product_total_vote + 1;
-			return $data;
-		}
-		if(isset($oldElement->vote_published) && $oldElement->vote_published == '1' && $element->vote_published == '0'){
-			if($oldElement->vote_rating == 0)
-				return $data;
-			if($data->product_total_vote - 1 == 0){
-				$data->product_average_score = $data->product_total_vote = 0;
-				return $data;
-			}
-			$data->product_average_score = (($data->product_total_vote * $data->product_average_score) - $oldElement->vote_rating) / ($data->product_total_vote - 1);
-			$data->product_total_vote = $data->product_total_vote - 1;
-			return $data;
-		}
-		if($element->vote_published == '1'){
-			if($data->product_total_vote == 0){
-				$data->product_average_score = $data->product_total_vote = 0;
-				return $data;
-			}
-
-			$data->product_average_score = (($data->product_total_vote * $data->product_average_score) - $oldElement->vote_rating + $element->vote_rating) / $data->product_total_vote;
-			return $data;
-		}
+		$data->product_total_vote = $count;
+		$data->product_average_score = $sum / $count;
 		return $data;
+
 	}
 
 	function delete(&$elements){
@@ -398,7 +395,7 @@ class hikashopVoteClass extends hikashopClass {
 
 				if($result->vote_type == 'product'){
 					$oldResult = clone($result);
-					$result->vote_published = 0;
+					$result->vote_published = '0';
 					if($result->vote_rating != '0')
 						$this->updateAverage($result, $oldResult, $data);
 					unset($data->alias);
