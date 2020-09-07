@@ -1044,6 +1044,7 @@ span.btn {
   border: 1px solid $base-primary-color !important;
   border-radius: 0;
   padding: 8px 12px !important;
+  color: #fff !important;
 
   &:hover {
     background-color: transparent !important;
@@ -1095,7 +1096,7 @@ p.readmore .btn,
 }
 
 .fabrikActions.form-actions .row-fluid {
-  .span4.offset1 button.btn.goback-btn {
+  .span4.offset1 button.btn.goback-btn  {
     background: transparent !important;
     border: 1px solid $base-secondary-color !important;
     border-radius: 4px !important;
@@ -1108,6 +1109,22 @@ p.readmore .btn,
       color: #fff !important;
     }
   }
+
+  .span12 button.goback-btn[name="Goback"] {
+    background: transparent !important;
+    border: 1px solid $base-secondary-color !important;
+    border-radius: 4px !important;
+    color: $base-secondary-color !important;
+    margin-right: 10px;
+    font-weight: normal;
+    padding: 8px 35px;
+    &:hover, &:active, :focus  {
+      background: $base-secondary-color !important;
+      border: 1px solid $base-secondary-color !important;
+      color: #fff !important;
+    }
+  }
+
   .span4 button.btn.save-btn {
     background: $base-primary-color !important;
     border: 1px solid $base-primary-color !important;
@@ -1486,7 +1503,7 @@ textarea:hover {
 }
 
 /* MODULE EMUNDUS FLOW */
-.applicant-form .ui.attached.segment {
+.view-form .ui.attached.segment, .view-checklist .ui.attached.segment, .view-details .ui.attached.segment {
   background: $base-secondary-color;
   border: $base-secondary-color;
   color: #ffffff;
@@ -1494,6 +1511,10 @@ textarea:hover {
 
 .view-form .platform-content .ui.tablet.attached .step i, .view-form .platform-content .ui.tablet.attached .description  {
   color: $base-primary-color;
+}
+
+.view-form .platform-content .ui.tablet.attached .step i.arrow.left , .view-details .platform-content .ui.tablet.attached .step i.arrow.left {
+  color: $base-secondary-color;
 }
 
 .ui.yellow.segment:not(.inverted) {
