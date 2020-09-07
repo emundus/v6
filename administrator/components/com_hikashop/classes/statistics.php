@@ -530,6 +530,9 @@ class hikashopStatisticsClass extends hikashopClass {
 			case 'pie':
 				list($headerData, $chartData) = $this->processPieData($stat);
 				break;
+			case 'geo':
+				list($headerData, $chartData) = $this->processGeoData($stat);
+				break;
 			default:
 				$headerData = array();
 				$chartData = array();
@@ -1425,10 +1428,84 @@ window.localPage.chartsInit[window.localPage.chartsInit.length] = function() {
 	}
 
 	protected function displayGeo($data) {
+		$this->initJS(@$data['vendor_id']);
+		$id = uniqid();
+
+		list($headerData, $chartData) = $this->processGeoData($data);
+
+
+		$options = array();
+
+		$js = '
+window.localPage.chartsInit[window.localPage.chartsInit.length] = function() {
+	var data = google.visualization.arrayToDataTable(['.
+		'["' . implode('","', $headerData). '"]'.
+		(empty($chartData) ? '' : ',[') .
+		implode('],[', $chartData).
+		(empty($chartData) ? '' : ']') .
+	']);
+	var options = {'.implode(',', $options).'};
+	var chart = new google.visualization.GeoChart(document.getElementById("hikashop_chart_'.$id.'_div"));
+	chart.draw(data, options);
+
+	window.localPage.charts["'.$id.'"] = {chart:chart, options:options, data:data};
+};
+';
+
+		$doc = JFactory::getDocument();
+		$doc->addScriptDeclaration($js);
+
+		$dropdownHelper = hikashop_get('helper.dropdown');
+		$ranges = $this->getDateRangeList();
+		$dropData = array();
+		$currentRange = '';
+		if(isset($data['vars']['DATE_RANGE']))
+			$currentRange = JText::_($ranges[ $data['vars']['DATE_RANGE'] ]);
+		else if(isset($data['vars']['_DATE_RANGE']))
+			$currentRange = JText::_($ranges[ $data['vars']['_DATE_RANGE'] ]);
+		foreach($ranges as $k => $v) {
+			$dropData[] = array('name' => JText::_($v), 'link' => '#'.$k, 'click' => 'return window.localPage.changeChartData(\'geo\',\''.$id.'\',\''.$data['key'].'\',\''.$k.'\', this);');
+		}
+		$drop = $dropdownHelper->display($currentRange, $dropData, array('type' => '','right' => true,'up' => false, 'label-id' => 'hikashop_chart_'.$id.'_range'));
+
+		return '
+<div class="hikashop_chart_data_selector" style="float:right">'.$drop.'</div><div style="clear:both"></div>
+<div id="hikashop_chart_'.$id.'_div" style="width:100%; height: 250px;"><div class="hikashop_empty_chart">'.JText::_('HIKA_LOADING_CHART').'</div></div>';
 		return '';
 	}
 
 	protected function processGeoData($data) {
+		if(empty($data['type']) || $data['type'] != 'geo')
+			return array(false,false);
+
+		if(!empty($data['query']) && (!isset($data['value']) || $data['value'] === null)) {
+			if(!empty($data['vars'])) {
+				$data['value'] = $this->processQuery($data['query'], $data['vars']);
+			} else
+				$data['value'] = $this->processQuery($data['query']);
+		}
+
+		$headerData = array('Country','Value');
+		if(isset($data['geo']['header']))
+			$headerData = $data['geo']['header'];
+
+		$chartData = array();
+		$key = $data['geo']['key'];
+		foreach($data['value'] as $value) {
+			$chartData[ $value->$key ] = $value->value;
+		}
+		if(empty($chartData))
+			return array($headerData, $chartData);
+
+		foreach($chartData as $k => &$d) {
+			if(is_array($d))
+				$d = '"'.strip_tags(str_replace('"','\\"', $k)) . '",' . strip_tags(implode(',', $d));
+			else
+				$d = '"' . strip_tags(str_replace('"','\\"', $k)) . '",' . strip_tags($d);
+		}
+		unset($d);
+
+		return array($headerData, $chartData);
 		return array(false,false);
 	}
 

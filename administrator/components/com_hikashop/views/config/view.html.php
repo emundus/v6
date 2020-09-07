@@ -36,6 +36,10 @@ class configViewConfig extends hikashopView
 		$this->assignRef('config', $config);
 
 		hikaInput::get()->set('inherit', false);
+		if($config->get('website') != HIKASHOP_LIVE) {
+			$updateHelper = hikashop_get('helper.update');
+			$updateHelper->addUpdateSite();
+		}
 
 		hikashop_setTitle(JText::_('HIKA_CONFIGURATION'), 'wrench', 'config');
 
@@ -107,6 +111,48 @@ class configViewConfig extends hikashopView
 
 		$elements = new stdClass();
 
+		if(hikashop_level(1)) {
+			$cronTypeReport = hikashop_get('type.cronreport');
+			$elements->cron_sendreport = $cronTypeReport->display('config[cron_sendreport]', $config->get('cron_sendreport', 2));
+
+			$cronTypeReportSave = hikashop_get('type.cronreportsave');
+			$elements->cron_savereport = $cronTypeReportSave->display('config[cron_savereport]', $config->get('cron_savereport', 0));
+
+			$elements->deleteReport = $this->popup->display(
+				'<button type="button" class="btn" onclick="return false">'.JText::_('REPORT_DELETE').'</button>',
+				JText::_('REPORT_DELETE'),
+				hikashop_completeLink('config&task=cleanreport',true),
+				'deleteReport',
+				760, 480, '', '', 'link'
+			);
+			$elements->seeReport = $this->popup->display(
+				'<button type="button" class="btn" onclick="return false">'.JText::_('REPORT_SEE').'</button>',
+				JText::_('REPORT_SEE'),
+				hikashop_completeLink('config&task=seereport',true),
+				'seeReport',
+				760, 480, '', '', 'link'
+			);
+			$elements->editReportEmail = $this->popup->display(
+				'<button type="button" class="btn" onclick="return false">'.JText::_('REPORT_EDIT').'</button>',
+				'REPORT_EDIT',
+				hikashop_completeLink('email&task=edit&mail_name=cron_report',true),
+				'editReportEmail',
+				760, 480, '', '', 'link'
+			);
+
+			$elements->cron_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=cron';
+			$item = $config->get('itemid');
+			if(!empty($item))
+				$elements->cron_url .= '&Itemid='.$item;
+
+			$elements->cron_edit = $this->popup->display(
+				'<button type="button" class="btn" onclick="return false">'.JText::_('CREATE_CRON').'</button>',
+				'CREATE_CRON',
+				'https://www.hikashop.com/index.php?option=com_updateme&ctrl=launcher&task=edit&cronurl='.urlencode($elements->cron_url),
+				'cron_edit',
+				760, 480, '', '', 'link'
+			);
+		}
 
 		$this->assignRef('elements', $elements);
 
@@ -203,6 +249,17 @@ class configViewConfig extends hikashopView
 		$this->delayTypeOrder =& $this->delayType;
 		$this->delayTypeClick =& $this->delayType;
 
+		if(hikashop_level(1)) {
+			$this->loadRef(array(
+				'display_method' => 'type.display_method',
+				'default_registration_view' => 'type.default_registration_view',
+				'registration' => 'type.registration',
+			));
+		}
+		if(hikashop_level(2)) {
+			$filterButtonType = hikashop_get('type.filter_button_position');
+			$this->assignRef('filterButtonType', $filterButtonType);
+		}
 
 		$zoneClass = hikashop_get('class.zone');
 		$zone = $zoneClass->get($config->get('main_tax_zone'));

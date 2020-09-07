@@ -647,6 +647,7 @@ class hikashopUpdateHelper{
 		$object->name='Hikashop';
 		$object->type='extension';
 		if(hikashop_level(1)){
+			$object->location='http://www.hikashop.com/component/updateme/updatexml/component-hikashop/version-'.$config->get('version').'/level-'.$config->get('level').'/li-'.urlencode(base64_encode(HIKASHOP_LIVE)).'/file-extension.xml';
 		}else{
 			$object->location='http://www.hikashop.com/component/updateme/updatexml/component-hikashop/level-'.$config->get('level').'/file-extension.xml';
 		}

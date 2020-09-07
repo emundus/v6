@@ -81,6 +81,7 @@ class hikashopPluginClass extends hikashopClass {
 		);
 
 		if(empty($rows)) return;
+		$joomlaAcl = hikashop_get('type.joomla_acl');
 
 		$currency_field = $type.'_currency';
 		if($type == 'shipping')
@@ -137,6 +138,24 @@ class hikashopPluginClass extends hikashopClass {
 					$row->col_display_restriction['zone'] = array('name' => 'ZONE', 'value' => $zone->zone_name_english);
 				else
 					$row->col_display_restriction['zone'] = array('name' => 'ZONE', 'value' => 'INVALID');
+			}
+			if(hikashop_level(2) && !empty($row->{$type.'_access'}) && $row->{$type.'_access'} != 'all') {
+				$accesses = explode(',', $row->{$type.'_access'});
+				$list = array();
+				if(empty($groups))
+					$groups = $joomlaAcl->getList();
+				foreach($accesses as $access) {
+					if(empty($access))
+						continue;
+					foreach($groups as $group) {
+						if($group->id == $access) {
+							$list[$access] = $group->text;
+							break;
+						}
+					}
+				}
+				if(count($list))
+					$row->col_display_restriction['acl'] = array('name' => 'ACCESS_LEVEL', 'value' => implode(', ', $list));
 			}
 		}
 		unset($row);

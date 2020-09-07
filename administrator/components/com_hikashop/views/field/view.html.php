@@ -94,6 +94,69 @@ function setVisible(value) {
 		$this->assignRef('allowType', $allowType);
 
 		$displayOptions = array();
+		if($field->field_table == 'product') {
+			$displayOptions = array(
+			//	'field_product_show', //--> frontcomp
+				array('name' => 'compare', 'title' => JText::_('field_product_compare')), // (ex: field_product_compare)
+				array('name' => 'front_listing', 'title' => JText::_('field_product_frontend_listing')), // (ex: field_product_frontend_listing)
+				array('name' => 'back_invoice', 'title' => JText::_('field_product_invoice')), // only back ? (ex: field_product_invoice)
+				array('name' => 'back_shipping_invoice', 'title' => JText::_('field_product_shipping_invoice')), // only back ? (ex: field_product_shipping_invoice)
+				array('name' => 'order_form', 'title' => JText::_('field_product_order_form')), // back (ex: field_product_order_form)
+				array('name' => 'back_cart_details', 'title' => JText::_('field_product_backend_cart_details')), // (ex: field_product_backend_cart_details)
+				array('name' => 'front_cart_details', 'title' => JText::_('field_product_frontend_cart_details')), // (ex: field_product_frontend_cart_details)
+				array('name' => 'checkout', 'title' => JText::_('field_product_checkout')), // (ex: field_product_checkout)
+
+				array('name' => 'mail_order_notif', 'title' => JText::_('field_product_order_notification'), 'group' => 'mail'), // (ex: field_product_order_notification)
+				array('name' => 'mail_status_notif', 'title' => JText::_('field_product_order_status_notification'), 'group' => 'mail'), // (ex: field_product_order_status_notification)
+				array('name' => 'mail_order_creation', 'title' => JText::_('field_product_order_creation_notification'), 'group' => 'mail'), // (ex: field_product_order_creation_notification)
+				array('name' => 'mail_admin_notif', 'title' => JText::_('field_product_order_admin_notification'), 'group' => 'mail'), // (ex: field_product_order_admin_notification)
+				array('name' => 'mail_payment_notif', 'title' => JText::_('field_product_payment_notification'), 'group' => 'mail'), // (ex: field_product_payment_notification)
+			);
+		} elseif($field->field_table == 'item') {
+			$displayOptions = array(
+			//	'field_item_product_show', //--> frontcomp
+				array('name' => 'front_product_listing', 'title' => JText::_('FIELD_ITEM_PRODUCT_LISTING')), // (ex: field_item_product_listing)
+				array('name' => 'front_order', 'title' => JText::_('FIELD_ITEM_ORDER')), // front (ex: field_item_order)
+				array('name' => 'order_edit', 'title' => JText::_('FIELD_ITEM_EDIT_PRODUCT_ORDER')), // back (ex: field_item_edit_product_order)   ~~> backend ??
+				array('name' => 'back_invoice', 'title' => JText::_('FIELD_ITEM_INVOICE')), // only back ? (ex: field_item_invoice)
+				array('name' => 'back_shipping_invoice', 'title' => JText::_('FIELD_ITEM_SHIPPING_INVOICE')), // only back ? (ex: field_item_shipping_invoice)
+
+				array('name' => 'product_cart', 'title' => JText::_('field_item_product_cart'), 'group' => 'cart'), // (ex: field_item_product_cart)
+				array('name' => 'checkout', 'title' => JText::_('field_item_checkout'), 'group' => 'cart'), // (ex: field_item_checkout)
+				array('name' => 'cart_edit', 'title' => JText::_('field_item_cart_edit'), 'group' => 'cart'), // (ex: field_item_checkout)
+				array('name' => 'front_cart_details', 'title' => JText::_('field_item_show_cart'), 'group' => 'cart'), // (ex: field_item_show_cart)
+				array('name' => 'back_cart_details', 'title' => JText::_('field_item_backend_cart_details'), 'group' => 'cart'), // (ex: field_item_backend_cart_details)
+
+				array('name' => 'mail_order_notif', 'title' => JText::_('FIELD_ITEM_ORDER_NOTIFICATION'), 'group' => 'mail'), // (ex: field_item_order_notification)
+				array('name' => 'mail_status_notif', 'title' => JText::_('FIELD_ITEM_ORDER_STATUS_NOTIFICATION'), 'group' => 'mail'), // (ex: field_item_order_status_notification)
+				array('name' => 'mail_order_creation', 'title' => JText::_('FIELD_ITEM_ORDER_CREATION_NOTIFICATION'), 'group' => 'mail'), // (ex: field_item_order_creation_notification)
+				array('name' => 'mail_admin_notif', 'title' => JText::_('FIELD_ITEM_ORDER_ADMIN_NOTIFICATION'), 'group' => 'mail'), // (ex: field_item_order_admin_notification)
+				array('name' => 'mail_payment_notif', 'title' => JText::_('FIELD_ITEM_PAYMENT_NOTIFICATION'), 'group' => 'mail'), // (ex: field_item_payment_notification)
+			);
+			if($field->field_type == 'customtext') {
+				$displayOptions = array(
+					array('name' => 'front_product_listing', 'title' => JText::_('FIELD_ITEM_PRODUCT_LISTING')), // (ex: field_item_product_listing)
+					array('name' => 'front_order', 'title' => JText::_('FIELD_ITEM_ORDER')), // front (ex: field_item_order)
+					array('name' => 'back_invoice', 'title' => JText::_('FIELD_ITEM_INVOICE')), // only back ? (ex: field_item_invoice)
+				);
+			}
+		} elseif($field->field_table == 'order') {
+			$displayOptions = array(
+			//	'field_order_checkout', //--> frontcomp
+			//	'field_order_listing', //--> backend_listing
+			//	'field_order_form', //--> backend
+				array('name' => 'front_order', 'title' => JText::_('field_order_show')), // front (ex: field_order_show)
+				array('name' => 'invoice', 'title' => JText::_('field_order_invoice')), // front & back - WHY ?! (ex: field_order_invoice)
+				array('name' => 'back_shipping_invoice', 'title' => JText::_('field_order_shipping_invoice')), // only back ? (ex: field_order_shipping_invoice)
+				array('name' => 'order_edit', 'title' => JText::_('field_order_edit_fields')), // back (ex: field_order_edit_fields)
+
+				array('name' => 'mail_order_notif', 'title' => JText::_('field_order_notification'), 'group' => 'mail'), // (ex: field_order_notification)
+				array('name' => 'mail_status_notif', 'title' => JText::_('field_order_status_notification'), 'group' => 'mail'), // (ex: field_order_status_notification)
+				array('name' => 'mail_order_creation', 'title' => JText::_('field_order_creation_notification'), 'group' => 'mail'), // (ex: field_order_creation_notification)
+				array('name' => 'mail_admin_notif', 'title' => JText::_('field_order_admin_notification'), 'group' => 'mail'), // (ex: field_order_admin_notification)
+				array('name' => 'mail_payment_notif', 'title' => JText::_('field_order_payment_notification'), 'group' => 'mail'), // (ex: field_order_payment_notification)
+			);
+		}
 		$this->assignRef('displayOptions', $displayOptions);
 
 		$tabletype = hikashop_get('type.table');
