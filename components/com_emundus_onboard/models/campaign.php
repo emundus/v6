@@ -811,7 +811,7 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    public function updateDocument($document,$types,$cid,$pid,$did) {
+    public function updateDocument($document,$types,$did) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 

@@ -510,12 +510,10 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $document = $jinput->getRaw('document');
             $types = $jinput->getRaw('types');
-            $cid = $jinput->getInt('cid');
-            $pid = $jinput->getInt('pid');
             $did = $jinput->getInt('did');
             $m_camp = $this->model;
 
-            $result = $m_camp->updateDocument($document,$types,$cid,$pid,$did);
+            $result = $m_camp->updateDocument($document,$types,$did);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATED'), 'data' => $result);
