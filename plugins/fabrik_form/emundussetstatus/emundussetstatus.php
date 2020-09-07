@@ -76,11 +76,11 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 	public function onBeforeCalculations() {
 
 		jimport('joomla.log.log');
-		JLog::addLogger(['text_file' => 'com_emundus.setStatusPlugin.php'], JLog::ALL, ['com_emundus']);
+		JLog::addLogger(['text_file' => 'com_emundus.setStatusPlugin.php'], JLog::ALL, ['com_emundusSetStatus']);
 
 		$status = $this->getParam('status', null);
 		if ($status === null || $status === '') {
-			JLog::add('No status provided for plugin.', JLog::ERROR, 'com_emundus');
+			JLog::add('No status provided for plugin.', JLog::ERROR, 'com_emundusSetStatus');
 			return false;
 		}
 
@@ -88,7 +88,7 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 		$fnum = $jinput->get->get('rowid');
 
 		if (empty($fnum)) {
-			JLog::add('No fnum provided.', JLog::ERROR, 'com_emundus');
+			JLog::add('No fnum provided.', JLog::ERROR, 'com_emundusSetStatus');
 			return false;
 		}
 
@@ -102,7 +102,7 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 		try {
 			$current_status = $db->loadResult();
 		} catch (Exception $e) {
-			JLog::add('Could not get file status at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Could not get file status at query -> '.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundusSetStatus');
 			return false;
 		}
 
@@ -183,7 +183,7 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 
 									$send = $mailer->Send();
 									if ($send !== true) {
-										JLog::add($send->__toString(), JLog::ERROR, 'emundus-final-grade');
+										JLog::add(str_replace('\n', '', $send->__toString()), JLog::ERROR, 'com_emundusSetStatus');
 									} else {
 										$message = array(
 											'user_id_from' => $from_id,
@@ -192,7 +192,7 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 											'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
 										);
 										$m_email->logEmail($message);
-										JLog::add($to.' '.$body, JLog::INFO, 'emundus-final-grade');
+										JLog::add(str_replace('\n', '', $to.' '.$body), JLog::INFO, 'com_emundusSetStatus');
 									}
 								}
 							}
@@ -235,7 +235,7 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 
 								$send = $mailer->Send();
 								if ($send !== true) {
-									JLog::add($send->__toString(), JLog::ERROR, 'emundus-final-grade');
+									JLog::add(str_replace('\n', '', $send->__toString()), JLog::ERROR, 'com_emundusSetStatus');
 								} else {
 									$message = array(
 										'user_id_from' => $from_id,
@@ -244,7 +244,7 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 										'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
 									);
 									$m_email->logEmail($message);
-									JLog::add($to.' '.$body, JLog::INFO, 'emundus-final-grade');
+									JLog::add(str_replace('\n', '', $to.' '.$body), JLog::INFO, 'com_emundusSetStatus');
 								}
 							}
 						}
