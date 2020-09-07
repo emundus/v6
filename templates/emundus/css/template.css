@@ -76,20 +76,25 @@ a:hover {
   width: 9%;
 }
 
-.moduletable-c{
-  margin-top: -35px;
-  margin-right: 2%;
+.moduletable-c,.moduletable-d{
+  justify-content: space-around;
+  display: flex;
+  flex-direction: row;
+  min-width: 36rem;
+  align-items: center;
 }
 
-.moduletable-d,.moduletable-e{
-  justify-content: center;
-  display: flex;
+.moduletable-e {
+  display: none;
 }
 
 #g-navigation .g-container {
-  padding: 14px !important;
+  padding: 10px !important;
   position: relative;
   width: 95%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
 }
 
 .g-menu-overlay {
@@ -772,7 +777,7 @@ div.moduletable-b ul {
   display: flex;
   width: 150%;
   margin-right: 60px;
-  justify-content: start;
+  justify-content: center;
   padding-left: 0;
 }
 

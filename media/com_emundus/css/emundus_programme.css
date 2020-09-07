@@ -1,6 +1,6 @@
 h1.title.em-program-title {
     margin-top: 50px;
-    margin-bottom: 50px;
+    margin-bottom: 10px;
 }
 #g-navigation {
     height: 80.6px;
@@ -18,9 +18,7 @@ h1.title.em-program-title {
 #g-navigation .g-container {
     height: 80.6px;
 }
-#g-navigation .g-container img.logo {
-    padding-top : 14px;
-}
+
 div.content-bottom-a fieldset.em_period {
     margin-top: 20px;
 }
@@ -34,4 +32,8 @@ div.content-bottom-a fieldset.em_period {
     font-weight: normal;
     width: 170px;
     display: inline-block;
+}
+
+.view-programme fieldset {
+    background: transparent;
 }

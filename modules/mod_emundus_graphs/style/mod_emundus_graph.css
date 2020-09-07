@@ -41,3 +41,9 @@ footer#g-footer {
     background: transparent;
     border-top: 1px solid #bbb;
 }
+
+@media all and (max-width: 1239px) {
+    .explination {
+        width: 100%;
+    }
+}

@@ -919,7 +919,7 @@ fieldset {
 	margin-top: 10px;
 	margin-bottom: 10px;
 	border-radius: 5px 5px 5px 5px;
-	background: #FCFCFD;
+	background: #fff;
 }
 
 /* end */
@@ -1192,9 +1192,7 @@ fieldset {
 .select select:disabled ~ .select_arrow {
 	border-top-color: #CCCCCC;
 }
-footer#g-footer {
-	padding: 20px !important;
-}
+
 footer#g-footer {
 	background: transparent;
 	border-top: 1px solid #bbb;

@@ -54,3 +54,70 @@ li>a:hover {
     line-height: 1.15;
 }
 
+.em-user-dropdown-button {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+#g-navigation #header-c .header-right a.btn.btn-danger {
+    font-weight: 300 !important;
+    font-size: 14px !important;
+    margin-bottom: 5px !important;
+    text-shadow: none;
+    padding: 8px 12px;
+}
+
+#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte, #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription {
+     color: #fff;
+     border-radius: 0px;
+     margin-bottom: 5px;
+    line-height: normal;
+    letter-spacing: normal;
+}
+
+#g-navigation #header-c .header-right a.btn.btn-danger:not(btn-creer-compte) {
+     color: #fff;
+     border-radius: 0px;
+     margin-bottom: 5px !important;
+    line-height: normal;
+    letter-spacing: normal;
+}
+
+#g-navigation #header-c .header-right a:not(.btn):hover {
+    text-decoration: underline;
+}
+
+/* CORRECTION  */
+.login .btn, .logout .btn, .registration .btn, .profile-edit .btn, .remind .btn, .reset .btn {
+    margin-right: 0px !important;
+}
+
+@media all and (max-width: 767px) {
+    .header-right {
+        text-align: center !important;
+        margin-top: 10px;
+        margin-bottom: -70px;
+    }
+
+    .header-right {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .top-a .g-content, .header-c {
+        justify-content: center;
+    }
+
+    #header-c.size-29 {
+        -webkit-flex: 0 100% !important;
+        -moz-flex: 0 100% !important;
+        -ms-flex: 0 100% !important;
+        flex: 0 100% !important;
+        width: 100% !important;
+    }
+
+    div#userDropdownLabel {
+        display: none;
+    }
+}
