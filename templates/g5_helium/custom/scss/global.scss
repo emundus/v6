@@ -496,17 +496,18 @@ a {
 }
 
 /* BOUTON RADIO SELECTIONNE- COULEUR */
-.applicant-form input[type='radio']:checked  {
+.view-form input[type='radio']:checked  {
   background: $base-secondary-color;
   outline: none;
 }
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 
-.view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form #fabrikSubmit_307 {
+.view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form button.register {
   background-color:$base-secondary-color !important;
   color: #ffffff !important;
   border-color: $base-secondary-color !important;
+  text-transform: capitalize;
 
   &:hover, &active, &:focus {
     background-color: transparent !important;
@@ -806,7 +807,7 @@ h1::after, .swal2-title:after {
   border: 1px solid $base-secondary-color !important;
 }
 
-.applicant-form .fabrikForm legend {
+.fabrikForm legend {
   color: $base-primary-color;
   font-weight: 700;
 }
@@ -821,30 +822,30 @@ h1::after, .swal2-title:after {
   border: 1px solid $base-primary-color !important;
 }
 
-.applicant-form .form-horizontal .controls .em-deleteFile, .applicant-form .row-fluid .plg-emundus_fileupload .em-deleteFile {
+.view-checklist .form-horizontal .controls .em-deleteFile, .view-checklist .row-fluid .plg-emundus_fileupload .em-deleteFile {
   color: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
 }
 
-.applicant-form .form-horizontal .controls .em-deleteFile, .applicant-form .row-fluid .plg-emundus_fileupload .em-deleteFile:hover {
+.view-checklist .form-horizontal .controls .em-deleteFile, .view-checklist .row-fluid .plg-emundus_fileupload .em-deleteFile:hover {
   background: $base-primary-color;
   background-color: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
 }
 
-.applicant-form .fabrikElement button.calendarbutton {
+.fabrikElement button.calendarbutton {
   background-color: #F5F5F5;
+  height: 50px !important;
+    &:hover {
+      background-color: darken(#F5F5F5, 10%);
+    }
 }
 
-.applicant-form .fabrikElement button.calendarbutton:hover {
-  background-color: darken(#F5F5F5, 10%);
-}
-
-.applicant-form .fabrikGroupRepeater .pull-right .addGroup i:hover {
+.view-form .fabrikGroupRepeater .pull-right .addGroup i:hover {
   color: darken($base-primary-color, 10%) !important;
 }
 
-.applicant-form {
+.view-form {
 
   input[type='radio'] {
     border: 2px solid $base-secondary-color;

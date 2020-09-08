@@ -99,18 +99,18 @@ echo <<<EOT
     padding-right: 5%;
 }
 
-.applicant-form .fabrikForm .fabrikActions.form-actions {
+.view-form .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions{
     padding: 0;
 }
 
 .applicant-form .fabrikGroup {
-    background: #fcfcfc;
+    background: #fafafa;
     margin-bottom: 20px;
     border-radius: 0;
     padding: 20px;
 }
 
-.applicant-form .fabrikSubGroup > div[data-role="group-repeat-intro"] {
+.view-form .fabrikSubGroup > div[data-role="group-repeat-intro"] {
     font-size: 1.5rem;
 }
 
@@ -141,13 +141,13 @@ echo <<<EOT
     padding: 8px 0;
 }
 
-.applicant-form .ui.attached.segment {
+.view-details .ui.attached.segment, .view-form .ui.attached.segment, .view-checklist .ui.attached.segment  {
     background: #3e8ac5;
     border: #3e8ac5;
     color: #ffffff;
 }
 
-.applicant-form .ui.attached.segment > p:first-child {
+.view-details .ui.attached.segment > p:first-child, .view-form .ui.attached.segment > p:first-child, .view-checklist .ui.attached.segment > p:first-child {
     margin-bottom: 0;
     font-size: 18px;
 }
@@ -177,7 +177,7 @@ form .optional {
     margin: 0 !important;
 }
 
-.applicant-form textarea {
+.view-form textarea {
     margin: 10px 0 !important;
 }
 
@@ -228,9 +228,6 @@ fieldset {
     height: auto;
 }
 
-.applicant-form fieldset, .view-checklist fieldset, body:not(.g-back-office-emundus-tableau) .ui.attached.warning.message, body:not(.g-back-office-emundus-tableau) .ui.warning.message {
-    box-shadow: 2px 2px 10px 0px #c0c0c0;
-}
 
 form legend a, form legend a:hover, form legend a:focus {
     background: #fcfcfc;
@@ -316,7 +313,7 @@ form legend a, form legend a:hover, form legend a:focus {
     width: 100% !important;
 }
 
-.applicant-form .toggle-editor.btn-toolbar {
+.view-form .toggle-editor.btn-toolbar {
     display: none !important;
 }
 
@@ -1082,7 +1079,7 @@ body.em-formRegistrationCenter  {
 }
 
 .applicant-form .fabrikElement select {
-    height: 41px !important;
+    height: 50px !important;
   border-radius: 0px;
 }
 
@@ -1153,13 +1150,14 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
       width: 12px;
 }
 
- .applicant-form .fabrikForm select {
-    height: 41px !important;
+ .fabrikForm select {
+    height: 50px !important;
     background-position-x: 98%;
     background-position-y: 58%;
     -webkit-appearance: none;
     background: transparent url(images/custom/arrow-down.png) no-repeat 98% 52%;
     background-size: 10px;
+    background: #fff; 
     padding: 0 30px 0 10px;
 }
 
@@ -1223,16 +1221,13 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 /* Formulaire Fabrik */
 
-.applicant-form .fabrikForm legend {
-  font-weight: 700;
-}
-
+ 
 .applicant-form .fabrikForm fieldset {
   position: relative;
 }
 
 .applicant-form .fabrikForm fieldset > .row-fluid, .applicant-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
-  padding: 0 50px;
+  padding: 0 30px;
 }
 
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
@@ -1266,28 +1261,28 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   flex-direction: column;
 }
 
-.applicant-form .form-horizontal .controls {
+.form-horizontal .controls {
   margin-left: 0 !important;
 }
 
-.applicant-form .form-horizontal .controls .em-deleteFile, .applicant-form .row-fluid .plg-emundus_fileupload .em-deleteFile {
+.view-checklist .form-horizontal .controls .em-deleteFile, .view-checklist  .row-fluid .plg-emundus_fileupload .em-deleteFile {
   background-image: none;
 }
 
-.applicant-form .form-horizontal .controls .em-deleteFile, .applicant-form .row-fluid .plg-emundus_fileupload .em-deleteFile:hover {
+.view-checklist .form-horizontal .controls .em-deleteFile, .view-checklist .row-fluid .plg-emundus_fileupload .em-deleteFile:hover {
     color: white !important;
 }
 
-.applicant-form .form-horizontal .control-label {
+.view-form .form-horizontal .control-label {
   width: auto !important;
 }
 
-.applicant-form .fabrikElement button.calendarbutton {
+.view-form .fabrikElement button.calendarbutton {
   width: 41px !important;
 }
 
 
-.applicant-form .fabrikElement button.calendarbutton i {
+.view-form .fabrikElement button.calendarbutton i {
   color: white;
 }
 
@@ -1373,7 +1368,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   margin-right: 10px;
 }
 
-.applicant-form .fabrikGroupRepeater .pull-right .addGroup i {
+.view-form .fabrikGroupRepeater .pull-right .addGroup i {
   color: #37828e !important;
 }
 
@@ -1412,32 +1407,32 @@ form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
 
 /* BOUTONS + et - */
 
-.applicant-form .fabrikGroupRepeater .addGroup {
+.view-form .fabrikGroupRepeater .addGroup {
   cursor: pointer !important;
 }
 
-.applicant-form .fabrikGroupRepeater .addGroup .tooltip {
+.view-form .fabrikGroupRepeater .addGroup .tooltip {
     display: none !important;
 }
 
-.applicant-form .fabrikGroupRepeater .deleteGroup {
+.view-form .fabrikGroupRepeater .deleteGroup {
   cursor: pointer;
 }
 
-.applicant-form .fabrikGroupRepeater .deleteGroup .tooltip {
+.view-form.fabrikGroupRepeater .deleteGroup .tooltip {
     display: none !important;
 }
 
-.applicant-form .fabrikGroupRepeater .addGroup {
+.view-form .fabrikGroupRepeater .addGroup {
   text-align: right;
   padding: 8px 15px 0 0;
 }
 
-.applicant-form .fabrikGroupRepeater .addGroup:hover {
+.view-form .fabrikGroupRepeater .addGroup:hover {
     color: #26729B;
 }
 
-.applicant-form .fabrikGroupRepeater .deleteGroup {
+.view-form .fabrikGroupRepeater .deleteGroup {
   padding: 8px 16px 0 0;
 }
 
