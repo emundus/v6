@@ -1640,6 +1640,16 @@ ul.nav.nav-tabs.nav-stacked span {
   }
 }
 
+
+ul.nav.nav-tabs.nav-stacked li a  {
+  color: $base-primary-color;
+  &:hover,
+  &:focus,
+  &:active {
+    color: $base-primary-color;
+  }
+}
+
 .view-login button.btn.btn-primary {
   background-color: $base-secondary-color  !important;
   border-color: $base-secondary-color !important;
