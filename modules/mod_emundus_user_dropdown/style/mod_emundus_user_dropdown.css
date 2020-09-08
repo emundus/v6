@@ -54,6 +54,10 @@ li>a:hover {
     line-height: 1.15;
 }
 
+.view-reset #g-navigation .header-c header-right a.btn.btn-danger:not(btn-creer-compte) {
+    margin-right: 0px;
+}
+
 .em-user-dropdown-button {
     display: flex;
     justify-content: flex-end;

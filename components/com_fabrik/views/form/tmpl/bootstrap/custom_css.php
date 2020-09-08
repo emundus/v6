@@ -500,8 +500,8 @@ button.register {
 }
 
 .view-registration form {
-    background: #4e5b6d;
-    border: #4e5b6d;
+    background: #fff;
+    border: #fff;
     margin-top: 40px;
     margin-bottom: 0;
     border-radius: 0;
@@ -568,8 +568,8 @@ button.register {
 }
 
 .view-registration form {
-    background: #4e5b6d;
-    border: #4e5b6d;
+    background: #fff;
+    border: #fff;
     margin-top: 40px;
     margin-bottom: 0;
     border-radius: 0;
