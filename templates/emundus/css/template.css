@@ -84,8 +84,12 @@ a:hover {
   align-items: center;
 }
 
-.moduletable-e {
+div#moduletable-d  a[href="/configuration-settings"]  {
   display: none;
+}
+
+.moduletable-d div#userDropdown {
+  order: 3;
 }
 
 #g-navigation .g-container {

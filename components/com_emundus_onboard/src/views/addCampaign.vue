@@ -28,24 +28,9 @@
                   required
                   :class="{ 'is-invalid': errors.label, 'mb-0': translate.label }"
                 />
-              <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" @click="enableLabelTranslation"></button>
+              <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" v-if="actualLanguage != ''" type="button" @click="enableLabelTranslation"></button>
             </div>
-            <transition :name="'slide-down'" type="transition">
-            <div class="inlineflex" v-if="translate.label" style="margin: 10px">
-              <label class="translate-label">
-                {{TranslateEnglish}}
-              </label>
-              <em class="fas fa-sort-down"></em>
-            </div>
-            </transition>
-            <transition :name="'slide-down'" type="transition">
-            <input v-if="translate.label"
-                   type="text"
-                   class="form__input field-general w-input"
-                   v-model="form.label.en"
-                   :id="'label_en'"
-            />
-            </transition>
+            <translation :label="form.label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
           </div>
           <p v-if="errors.label" class="error col-md-12 mb-2">
             <span class="error">{{LabelRequired}}</span>
@@ -336,6 +321,7 @@ import { Datetime } from "vue-datetime";
 import { DateTime as LuxonDateTime, Settings } from "luxon";
 import Editor from "../components/editor";
 import Autocomplete from "../components/autocomplete";
+import Translation from "../components/translation"
 
 const qs = require("qs");
 
@@ -345,7 +331,8 @@ export default {
   components: {
     Datetime,
     Editor,
-    Autocomplete
+    Autocomplete,
+    Translation
   },
 
   directives: { focus: {
@@ -470,8 +457,13 @@ export default {
       axios.get(
           `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaign}`
         ).then(response => {
-          this.form.label.fr = response.data.data.label.fr.value;
-          this.form.label.en = response.data.data.label.en.value;
+          if(response.data.data.label.fr == null && response.data.data.label.en == null){
+            this.form.label.fr = response.data.data.campaign.label;
+            this.form.label.en = response.data.data.campaign.label;
+          } else {
+            this.form.label.fr = response.data.data.label.fr.value;
+            this.form.label.en = response.data.data.label.en.value;
+          }
           this.form.published = response.data.data.campaign.published;
           this.form.description = response.data.data.campaign.description;
           this.form.short_description = response.data.data.campaign.short_description;
@@ -889,12 +881,6 @@ h2 {
 .plus.w-inline-block {
   background-color: white;
   border-color: #cccccc;
-}
-
-.w-input,
-.w-select {
-  font-weight: 300;
-  min-height: 50px;
 }
 
 .bouton-sauvergarder-et-continuer {

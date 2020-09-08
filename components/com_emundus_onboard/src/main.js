@@ -144,6 +144,7 @@ if (document.getElementById('em-formBuilder-vue')) {
           index: this.$el.attributes.index.value,
           cid: this.$el.attributes.cid.value,
           eval: this.$el.attributes.eval.value,
+          actualLanguage: this.$el.attributes.actualLanguage.value
         }
       });
     }

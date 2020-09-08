@@ -123,6 +123,7 @@
                     :prid="prid"
                     :eval="0"
                     :files="files"
+                    :actualLanguage="actualLanguage"
                     ref="builder"
             />
           </div>
@@ -141,6 +142,7 @@
                     :prid="prid"
                     :eval="0"
                     :files="files"
+                    :actualLanguage="actualLanguage"
                     ref="builder_submit"
             />
           </div>
@@ -180,6 +182,7 @@
       prid: String,
       index: Number,
       cid: Number,
+      actualLanguage: String,
     },
     components: {
       List,

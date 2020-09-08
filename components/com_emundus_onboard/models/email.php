@@ -509,21 +509,6 @@ class EmundusonboardModelemail extends JModelList {
                     $db->setQuery($query);
                     $db->execute();
                 }
-            } elseif ($trigger['target'] == 1000) {
-                $query->clear()
-                    ->select('sc.profile_id')
-                    ->from($db->quoteName('#__emundus_setup_programmes', 'sp'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $db->quoteName('sc.training') . ' = ' . $db->quoteName('sp.code'))
-                    ->where($db->quoteName('sp.id') . ' = ' . $db->quote($trigger['program']));
-                $db->setQuery($query);
-                $prid = $db->loadResult();
-
-                $query->clear()
-                    ->insert($db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id'))
-                    ->set($db->quoteName('parent_id') . ' = ' . $db->quote($trigger_id))
-                    ->set($db->quoteName('profile_id') . ' = ' . $db->quote($prid));
-                $db->setQuery($query);
-                $db->execute();
             }
 
             $query->clear()

@@ -38,6 +38,7 @@
           <customization
                   v-if="menuHighlight == 0"
                   @updateLoading="updateLoading"
+                  :actualLanguage="actualLanguage"
                   ref="customization"
           ></customization>
 

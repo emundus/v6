@@ -61,8 +61,9 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             $status = $db->loadObjectList();
             foreach ($status as $statu){
-                $statu->value_en = '';
-                $statu->value_fr = '';
+                $statu->label = new stdClass;
+                $statu->label->en = '';
+                $statu->label->fr = '';
 
                 $query->clear()
                     ->select('value')
@@ -89,10 +90,10 @@ class EmundusonboardModelsettings extends JModelList {
                 $fr_value = $db->loadResult();
 
                 if ($en_value != null) {
-                    $statu->value_en = $en_value;
+                    $statu->label->en = $en_value;
                 }
                 if ($fr_value != null) {
-                    $statu->value_fr = $fr_value;
+                    $statu->label->fr = $fr_value;
                 }
             }
 
@@ -292,6 +293,8 @@ class EmundusonboardModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
         $classes = $this->getColorClasses();
         $results = [];
 
@@ -299,6 +302,7 @@ class EmundusonboardModelsettings extends JModelList {
             $class = array_search($statu['class'], $classes);
             $query->clear()
                 ->update('#__emundus_setup_status')
+                ->set($db->quoteName('value') . ' = ' . $db->quote($statu['label']['fr']))
                 ->set($db->quoteName('class') . ' = ' . $db->quote($class))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
             $db->setQuery($query);
@@ -316,29 +320,7 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             $results[] = $db->execute();
 
-            $query->clear()
-                ->update('#__falang_content')
-                ->set($db->quoteName('value') . ' = ' . $db->quote($statu['value_fr']))
-                ->where(array(
-                    $db->quoteName('reference_id') . ' = ' . $db->quote($statu['step']),
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('value'),
-                    $db->quoteName('language_id') . ' = 2'
-                ));
-            $db->setQuery($query);
-            $results[] = $db->execute();
-
-            $query->clear()
-                ->update('#__falang_content')
-                ->set($db->quoteName('value') . ' = ' . $db->quote($statu['value_en']))
-                ->where(array(
-                    $db->quoteName('reference_id') . ' = ' . $db->quote($statu['step']),
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('value'),
-                    $db->quoteName('language_id') . ' = 1'
-                ));
-            $db->setQuery($query);
-            $results[] = $db->execute();
+            $results[] = $falang->updateFalang($statu['label']['fr'],$statu['label']['en'],$statu['step'],'emundus_setup_status','value');
         }
 
         return $results;
