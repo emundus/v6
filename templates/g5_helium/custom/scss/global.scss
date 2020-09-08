@@ -576,27 +576,35 @@ a {
 }
 
 /* MODULE APPLICATIONS  - COULEUR BTN IMPRIMER*/
-.homepage #g-main-mainbody #content-bottom-a .platform-content .btn.btn-info {
-  background: darken($base-secondary-color,8%) !important;
-  border-color: darken($base-secondary-color,8%)  !important;
+.homepage #g-main-mainbody #content-bottom-a {
+  .platform-content .btn.btn-info {
+    background: darken($base-secondary-color,8%) !important;
+    border-color: darken($base-secondary-color,8%)  !important;
 
     &:hover, &:active, &:focus {
       background-color: transparent !important;
       color: darken($base-secondary-color,8%) !important;
       border-color: darken($base-secondary-color,8%) !important;
     }
-}
+  }
 
-.homepage #g-main-mainbody #content-bottom-a .platform-content a.btn[title="Envoyer le dossier"] {
-  background: $base-secondary-color !important;
-  border: 1px solid $base-secondary-color !important;
-  color: #fff !important;
-  &:hover, &:active, &:focus {
-    background: transparent !important;
+ .platform-content a.btn[title="Envoyer le dossier"] {
+    background: $base-secondary-color !important;
     border: 1px solid $base-secondary-color !important;
-    color: $base-secondary-color !important;
+    color: #fff !important;
+    &:hover, &:active, &:focus {
+      background: transparent !important;
+      border: 1px solid $base-secondary-color !important;
+      color: $base-secondary-color !important;
+    }
+  }
+
+  circle.circle {
+    stroke: $base-secondary-color;
   }
 }
+
+
 
 
 /* PAGE CHECKLIST - COULEURS BTNS AJOUT DOCUMENTS */
@@ -753,7 +761,17 @@ a {
 
 /* FORMULAIRE  */
 
+.controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active {
+  background-color: $base-secondary-color !important;
+  color: #fff !important;
+  border-color: $base-secondary-color !important;
 
+    &:hover, &:active, :focus {
+      background-color: transparent !important;
+      color: $base-secondary-color !important;
+      border-color: $base-secondary-color !important;
+    }
+}
 
 h1::after, .swal2-title:after {
   content: '';
@@ -1787,6 +1805,42 @@ div#em-appli-block {
 }
 
 /* TABLEAUX */
+
+.view-list {
+  .filtertable {
+    thead tr.fabrik___heading {
+      th, i, a {
+        color: $base-secondary-color !important;
+      }
+    }
+
+    tbody tr > td {
+      color: $base-secondary-color !important;
+    }
+  }
+
+  .fabrikButtonsContainer.row-fluid ul li {
+    a, i {
+      color: $base-secondary-color !important;
+    }
+
+    b.caret {
+      color: $base-secondary-color !important;
+    }
+  }
+
+  .fabrikDataContainer .tabData {
+    .fabrik_groupdata, thead {
+      border-color: $base-secondary-color !important;
+    }
+
+    thead tr.fabrik___heading {
+      th span a, th span a i {
+        color: $base-secondary-color !important;
+      }
+    }
+  }
+}
 
 .xclsform {
   table button {
