@@ -58,6 +58,10 @@ a:focus {
   outline: none !important;
 }
 
+a {
+  color: $base-secondary-color;
+}
+
 label {
   color: #000 !important;
   margin-bottom: 5px !important;
@@ -95,7 +99,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
   margin-bottom: 0 !important;
   border-radius: 4px !important;
   border-color: #ccc;
-  height: 50px;
+  height: 50px !important;
 }
 
 input[type="file"] {
@@ -233,7 +237,7 @@ input[type="text"],
       .g-content {
         display: flex;
         flex-direction: row;
-        justify-content: space-around;
+        justify-content: space-evenly;
         align-items: center;
 
         .platform-content {
@@ -251,7 +255,7 @@ input[type="text"],
   .g-content {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
 
     .platform-content {
@@ -261,9 +265,6 @@ input[type="text"],
 
     .platform-content:nth-child(2) {
      order: 3;
-    }
-    .platform-content:nth-child(3) {
-      order: 2;
     }
   }
 }
@@ -865,15 +866,8 @@ h1::after, .swal2-title:after {
   color: darken($base-primary-color, 10%) !important;
 }
 
-.view-form {
-
-  input[type='radio'] {
+.view-form  input[type='radio'] {
     border: 2px solid $base-secondary-color;
-
-    &:checked {
-      box-shadow: inset 0 0 0 3px $base-secondary-color;
-    }
-  }
 }
 
 /* STATUS ET ETIQUETTES */
@@ -1145,7 +1139,7 @@ p.readmore .btn,
 }
 
 .fabrikActions.form-actions .row-fluid {
-  .span4.offset1 button.btn.goback-btn  {
+  .span4.offset1 button.btn.goback-btn,  .span4.offset1 button.btn[name="Goback"]  {
     background: transparent !important;
     border: 1px solid $base-secondary-color !important;
     border-radius: 4px !important;
@@ -1589,8 +1583,7 @@ textarea:hover {
   }
 }
 
-i.inverted.bordered.blue.icon,
-i.inverted.circular.blue.icon {
+i.inverted.bordered.blue.icon, i.inverted.circular.blue.icon, i.inverted.bordered.orange.icon, i.inverted.circular.orange.icon {
   background: $base-secondary-color !important;
   margin: 0 0 10px 0;
 
@@ -1642,11 +1635,11 @@ ul.nav.nav-tabs.nav-stacked span {
 
 
 ul.nav.nav-tabs.nav-stacked li a  {
-  color: $base-primary-color;
+  color: $base-secondary-color;
   &:hover,
   &:focus,
   &:active {
-    color: $base-primary-color;
+    color: $base-secondary-color;
   }
 }
 
@@ -1689,6 +1682,11 @@ form#login-form[action="/connexion-candidater"] #form-login-submit button {
 
 
 /* PARTIE GESTIONNAIRE  */
+
+.buttons input {
+  background: $base-secondary-color !important;
+  border-color: $base-secondary-color !important;
+}
 .em-personalInfo > a {
   background-color: $base-primary-color !important;
 }

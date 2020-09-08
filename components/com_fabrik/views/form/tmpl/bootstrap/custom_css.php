@@ -317,6 +317,10 @@ form legend a, form legend a:hover, form legend a:focus {
     display: none !important;
 }
 
+.view-form a.btn.btn-info.toggle-addoption {
+    padding: 13px 12px !important; 
+}
+
 /* Fabrik application form details */
 .applicant-form .nav.nav-tabs {
     display: none;
