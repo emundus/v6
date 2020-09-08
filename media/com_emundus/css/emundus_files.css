@@ -44,6 +44,10 @@ button.save-btn, .btn-success, .trombi_download, button.save, button.save_contin
     text-shadow: none;
     text-transform: none;
 }
+
+#trombi_preview, #trombi_generate {
+    width: auto !important;
+}
 button.save-btn:hover, button.save-btn:active, .trombi_download:hover, button.save-btn:focus, .btn-success:hover, .btn-success:focus, .btn-success:active, button.save:hover, button.save:active, button.save:focus, button.save_continue:hover, button.save_continue:active, button.save_continue:focus, button.send:hover, button.send:active, button.send:focus, a.btn-attach:hover, a.btn-attach:active, a.btn-attach:focus, #trombi_preview:hover, #trombi_preview:active, #trombi_preview:focus, #trombi_generate:hover, #trombi_generate:active, #trombi_generate:focus, .indicateurs-page .btn:hover, .indicateurs-page .btn:active, .indicateurs-page .btn:focus, .fabrik_filter_submit:hover, .fabrik_filter_submit:active, .fabrik_filter_submit:focus, button.importation:hover, button.importation:active, button.importation:focus, a.btn-warning:hover, a.btn-warning:active, a.btn-warning:focus, a.btn-info:hover, a.btn-info:active, a.btn-info:focus, .header-right .btn-danger:hover, .header-right .btn-danger:focus, .header-right .btn-danger:active, button.btn-primary:hover, button.btn-primary:active, button.btn-primary:focus, .em-generated-docs .em-doc-zip:hover, .em-generated-docs .em-doc-zip:active, .em-generated-docs .em-doc-zip:focus, .xclsform .panel-body button#savefilter:hover, .xclsform .panel-body button#savefilter:active, .xclsform .panel-body button#savefilter:focus, .modal-dialog #chargement a.btn:hover, .modal-dialog #chargement a.btn:active, .modal-dialog #chargement a.btn:focus, a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus, .btn.advanced-search-apply:hover, .btn.advanced-search-apply:active, .btn.advanced-search-apply:focus, .toggle-addoption.btn:hover, .toggle-addoption.btn:active, .toggle-addoption.btn:focus, .candidacy-files-list a#send:hover, .candidacy-files-list a#send:active, .candidacy-files-list a#send:focus, .choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
     background-color: transparent;
     color: #ea9262;
@@ -2103,6 +2107,19 @@ div#em-assoc-files .panel > .panel-heading {
 .g-back-office-emundus-tableau .ct-view .panel-info > .panel-heading {
     border: none;
 }
+
+.g-back-office-emundus-tableau.view-files .em-container-attachment .panel-heading.em-container-form-heading {
+    padding-right: 11px;
+}
+
+.g-back-office-emundus-tableau.view-files .em-container-mail .panel-heading.em-container-form-heading {
+    padding-right: 11px;
+}
+
+.g-back-office-emundus-tableau.view-files .em-container-share .panel-heading.em-container-form-heading {
+    padding-right: 11px;
+}
+
 
 button#em-close-file {
     background: #4E5B6D !important;
