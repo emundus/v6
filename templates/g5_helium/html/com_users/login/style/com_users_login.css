@@ -115,7 +115,7 @@ body.view-reset label#jform_username-lbl::after,
 .control-group:nth-child(3) .controls button.btn.btn-primary {
     text-transform: capitalize;
     width: 100% !important;
-    height: 41px;
+    height: 50px;
     margin-right: 0px !important;
     font-weight: 300;
 }
