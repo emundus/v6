@@ -88,6 +88,10 @@ a:hover {
   display: none;
 }
 
+.moduletable-d a[href="/configuration-settings"]{
+  display: none;
+}
+
 #g-navigation .g-container {
   padding: 10px !important;
   position: relative;
