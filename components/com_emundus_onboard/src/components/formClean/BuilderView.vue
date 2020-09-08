@@ -16,7 +16,7 @@
     <div style="width: max-content" v-show="updatePage && indexPage == object_json.id">
       <div class="input-can-translate" style="margin-top: 40px">
         <input v-model="object_json.show_title.label_fr" class="form-control" style="width: 400px;" :class="translate.label_page ? '' : 'mb-1'" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
-        <button class="translate-icon" :class="translate.label_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPage(object_json.id)"></button>
+        <button class="translate-icon" v-if="actualLanguage != ''" :class="translate.label_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPage(object_json.id)"></button>
         <div class="d-flex actions-update-label" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
           <a @click="updatePage = false" :title="Cancel">
             <em class="fas fa-times ml-10px" data-toggle="tooltip" data-placement="top"></em>
@@ -103,7 +103,7 @@
               <div style="width: max-content" v-show="updateGroup && indexGroup == group.group_id">
                 <div class="input-can-translate">
                   <input v-model="group.label_fr" class="form-control" style="width: 400px;" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
-                  <button class="translate-icon" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationGroup(group.group_id)"></button>
+                  <button class="translate-icon" v-if="actualLanguage != ''" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationGroup(group.group_id)"></button>
                   <div class="d-flex actions-update-label" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
                     <a @click="updateGroup = false;translate.label_group = false" :title="Cancel">
                       <em class="fas fa-times ml-10px" data-toggle="tooltip" data-placement="top"></em>
@@ -176,7 +176,7 @@
                         </div>
                         <div class="input-can-translate" v-show="clickUpdatingLabel && indexHighlight == element.id">
                           <input v-model="element.label_fr" class="form-control" :class="translate.label ? '' : 'mb-1'" @keyup.enter="updateLabelElement(element)" :id="'label_' + element.id"/>
-                          <button class="translate-icon" :class="translate.label ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationLabel(element.id)"></button>
+                          <button class="translate-icon" v-if="actualLanguage != ''" :class="translate.label ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationLabel(element.id)"></button>
                           <div class="d-flex actions-update-label" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
                             <a @click="clickUpdatingLabel = false;translate.label = false" :title="Cancel">
                               <em class="fas fa-times ml-20px" data-toggle="tooltip" data-placement="top"></em>
@@ -277,7 +277,8 @@ export default {
     UpdateUx: Boolean,
     files: Number,
     eval: Number,
-    prid: String
+    prid: String,
+    actualLanguage: String
   },
   components: {
     datePicker,
