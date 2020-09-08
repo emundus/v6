@@ -562,7 +562,7 @@ textarea.w-select {
 }
 .column-inner-block.w-col.w-col-8 {
   min-height: 200px;
-  overflow: scroll;
+  overflow: auto;
 }
 .column-inner-block-2.w-clearfix.w-col.w-col-4 .button-programme {
   max-width: 200px;
