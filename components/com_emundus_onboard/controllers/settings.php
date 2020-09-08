@@ -471,5 +471,19 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
+    public function getactivelanguages() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $datas = JLanguageHelper::getLanguages();
+            $response = array('status' => '1', 'msg' => 'SUCCESS', 'data' => $datas);
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
 }
 

@@ -133,8 +133,16 @@ if($this->eval != 0){
     $vue = 'em-evaluationBuilder-vue';
 }
 
+$languages = JLanguageHelper::getLanguages();
+if(count($languages) > 1){
+    $lang = JFactory::getLanguage();
+    $actualLanguage = substr($lang->getTag(), 0 , 2);
+} else {
+    $actualLanguage = null;
+}
+
 ?>
 
-<div id="<?= $vue; ?>" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>" eval="<?= $this->eval; ?>"></div>
+<div id="<?= $vue; ?>" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>" eval="<?= $this->eval; ?>" actualLanguage="<?= $actualLanguage ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>
