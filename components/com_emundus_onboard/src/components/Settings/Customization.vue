@@ -37,6 +37,7 @@
                   @LaunchLoading="runLoading"
                   @StopLoading="stopLoading"
                   ref="status"
+                  :actualLanguage="actualLanguage"
           ></editStatus>
 
           <editTags

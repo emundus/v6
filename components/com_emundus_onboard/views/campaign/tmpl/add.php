@@ -51,9 +51,15 @@ JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER');
 JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS');
 JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED');
+JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
 
-$lang = JFactory::getLanguage();
-$actualLanguage = substr($lang->getTag(), 0 , 2);
+$languages = JLanguageHelper::getLanguages();
+if(count($languages) > 1){
+    $lang = JFactory::getLanguage();
+    $actualLanguage = substr($lang->getTag(), 0 , 2);
+} else {
+    $actualLanguage = null;
+}
 
 $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);

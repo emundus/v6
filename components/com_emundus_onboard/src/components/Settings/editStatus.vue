@@ -3,8 +3,9 @@
         <div v-for="(statu, index) in status" class="status-item">
             <div :style="{background: statu.class}" class="status-field">
                 <div style="width: 100%">
-                    <input type="text" v-model="statu.value_fr">
-                    <transition :name="'slide-down'" type="transition">
+                    <input type="text" v-model="statu.label.fr">
+                    <translation :label="statu.label" :actualLanguage="actualLanguage" v-if="statu.translate"></translation>
+                    <!--<transition :name="'slide-down'" type="transition">
                         <div class="translate-block" v-if="statu.translate">
                             <label class="translate-label">
                                 {{TranslateEnglish}}
@@ -13,10 +14,10 @@
                         </div>
                     </transition>
                     <transition :name="'slide-down'" type="transition">
-                        <input type="text" v-model="statu.value_en" v-if="statu.translate">
-                    </transition>
+                        <input type="text" v-model="statu.value.en" v-if="statu.translate">
+                    </transition>-->
                 </div>
-                <button class="translate-icon" style="height: 10%;margin-top: 10px;" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
+                <button class="translate-icon" style="height: 10%;margin-top: 10px;" v-if="actualLanguage != ''" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
                 <input type="hidden" :class="'label-' + statu.class">
             </div>
             <v-swatches
@@ -38,6 +39,7 @@
     import axios from "axios";
     import VSwatches from 'vue-swatches'
     import 'vue-swatches/dist/vue-swatches.css'
+    import Translation from "@/components/translation";
 
     const qs = require("qs");
 
@@ -45,10 +47,13 @@
         name: "editStatus",
 
         components: {
-            VSwatches
+          VSwatches,
+          Translation
         },
 
-        props: {},
+        props: {
+          actualLanguage: String,
+        },
 
         data() {
             return {
@@ -71,6 +76,10 @@
                         this.status = response.data.data;
                         setTimeout(() => {
                           this.status.forEach(element => {
+                            if(element.label.fr == ""){
+                              element.label.fr = element.value;
+                              element.label.en = element.value;
+                            }
                             this.getHexColors(element);
                           });
                         }, 100);
