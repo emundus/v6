@@ -84,11 +84,7 @@ a:hover {
   align-items: center;
 }
 
-.modulatable-d a[href="/configuration-settings"]  {
-  display: none;
-}
-
-.modulatable-b > a[href="/configuration-settings"]  {
+div#moduletable-d  a[href="/configuration-settings"]  {
   display: none;
 }
 
