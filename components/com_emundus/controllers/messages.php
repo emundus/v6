@@ -1195,15 +1195,16 @@ class EmundusControllerMessages extends JControllerLegacy {
 			];
 		}
 
-		if($user_id != null) {
-            $post = $m_email->setTags($user_id, $post);
+        if($user_id != null) {
+            $password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
+            $post = $m_email->setTags($user_id, $post, null, $password);
+        } else {
+            // Handle [] in post keys.
+            $keys = [];
+            foreach (array_keys($post) as $key) {
+                $keys[] = '/\['.$key.'\]/';
+            }
         }
-
-		// Handle [] in post keys.
-		$keys = [];
-		foreach (array_keys($post) as $key) {
-			$keys[] = '/\['.$key.'\]/';
-		}
 
 
 		// Tags are replaced with their corresponding values using the PHP preg_replace function.
@@ -1220,11 +1221,12 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         if($user_id != null) {
             $body = preg_replace($post['patterns'], $post['replacements'], $body);
-            if($fnum != null) {
-                $body = $m_email->setTagsFabrik($body, array($fnum));
-            }
         } else {
             $body = preg_replace($keys, $post, $body);
+        }
+
+        if($fnum != null) {
+            $body = $m_email->setTagsFabrik($body, array($fnum));
         }
 
 		// Configure email sender

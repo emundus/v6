@@ -98,24 +98,38 @@ class EmundusonboardModelfalang extends JModelList {
       $db = $this->getDbo();
       $query = $db->getQuery(true);
 
-      $query->update('#__falang_content')
-          ->set($db->quoteName('value') . ' = ' . $db->quote($texten))
+      $query
+          ->select('COUNT(*)')
+          ->from($db->quoteName('#__falang_content'))
           ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
           ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
           ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
           ->andWhere($db->quoteName('language_id') . ' = 1');
       $db->setQuery($query);
-      $db->execute();
+      if($db->loadResult() != 0) {
 
-      $query->clear()
-          ->update('#__falang_content')
-          ->set($db->quoteName('value') . ' = ' . $db->quote($textfr))
-          ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
-          ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-          ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
-          ->andWhere($db->quoteName('language_id') . ' = 2');
-      $db->setQuery($query);
-      $db->execute();
+          $query->update('#__falang_content')
+              ->set($db->quoteName('value') . ' = ' . $db->quote($texten))
+              ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+              ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+              ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+              ->andWhere($db->quoteName('language_id') . ' = 1');
+          $db->setQuery($query);
+          $db->execute();
+
+          $query->clear()
+              ->update('#__falang_content')
+              ->set($db->quoteName('value') . ' = ' . $db->quote($textfr))
+              ->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
+              ->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
+              ->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+              ->andWhere($db->quoteName('language_id') . ' = 2');
+          $db->setQuery($query);
+          $db->execute();
+
+      } else {
+          $this->insertFalang($textfr,$texten,$reference_id,$reference_table,$reference_field);
+      }
 
       return true;
   }
