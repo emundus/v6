@@ -313,7 +313,7 @@ footer#g-footer {
   display: flex;
   flex-direction: column;
   overflow-y: auto ;
-  min-height: 100vh !important;
+  min-height: 100% !important;
 }
 
 #g-page-surround >  .g-container:not(.g-flushed) {
@@ -1648,6 +1648,7 @@ ul.nav.nav-tabs.nav-stacked li a  {
   border-color: $base-secondary-color !important;
   color: #fff !important;
   font-family: "Lato", sans-serif !important;
+  text-transform: capitalize;
   &:hover, &:active, &:focus {
     background-color: transparent !important;
     color: $base-secondary-color !important;
@@ -1683,10 +1684,19 @@ form#login-form[action="/connexion-candidater"] #form-login-submit button {
 
 /* PARTIE GESTIONNAIRE  */
 
-.buttons input {
-  background: $base-secondary-color !important;
-  border-color: $base-secondary-color !important;
+.side-panel #em-files-filters .buttons input {
+  background: $base-primary-color !important;
+  border-color: $base-primary-color !important;
+
+    &:hover, &:active, &:focus {
+      background: #fff !important;
+      border: 1px solid $base-primary-color !important;
+      color: $base-primary-color !important;
+    }
 }
+
+
+
 .em-personalInfo > a {
   background-color: $base-primary-color !important;
 }
@@ -1991,6 +2001,9 @@ div#em-appli-block {
   margin-left: 10px;
 }
 
+.experts-page .panel-heading input[type="text"] {
+ height: 30px !important;
+}
 /******************************* RESPONSIVE ***********************************/
 
 @media all and (max-width: 767px) {
