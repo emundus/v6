@@ -83,7 +83,7 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
         $fnum = $formModel->formData['fnum_raw'];
         $status = is_array($formModel->formData['final_grade_raw']) ? $formModel->formData['final_grade_raw'][0] : $formModel->formData['final_grade_raw'];
 
-        if (!empty($status)) {
+        if (isset($status)) {
 
 
             $query = $db->getQuery(true);
