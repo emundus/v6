@@ -1,7 +1,7 @@
 /*boutons*/
 
 .em-user-personal-filter .btn-xs, *.btn, a.btn-attach, .xclsform .panel-body button, button.close {
-    border-radius: 0 !important;
+    border-radius: 4px !important;
     padding: 6px 8px;
     color: #fff;
     text-shadow: none !important;
@@ -518,6 +518,11 @@ table#groups-table a:hover {
 .g-back-office-emundus-tableau #em-modal-actions .modal-dialog, .g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg{
     width: fit-content !important;
     min-width: 40%;
+}
+
+.g-back-office-emundus-tableau #em-modal-actions .modal-dialog, .g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg .panel#exp {
+    min-width: 100%;
+    margin-top: 20px;
 }
 
 
@@ -2108,18 +2113,33 @@ div#em-assoc-files .panel > .panel-heading {
     border: none;
 }
 
-.g-back-office-emundus-tableau.view-files .em-container-attachment .panel-heading.em-container-form-heading {
-    padding-right: 11px;
+.g-back-office-emundus-tableau .em-container-attachment.em-container-form .panel-heading.em-container-form-heading, .g-back-office-emundus-tableau .em-container-mail .panel-heading.em-container-mail-heading, .g-back-office-emundus-tableau .em-container-comment .panel-heading.em-container-comment-heading, .g-back-office-emundus-tableau .em-container-share .panel-heading.em-container-share-heading {
+    padding: 11px;
 }
 
-.g-back-office-emundus-tableau.view-files .em-container-mail .panel-heading.em-container-form-heading {
-    padding-right: 11px;
+.g-back-office-emundus-tableau .em-container-mail .panel-heading.em-container-mail-heading h3 span, .g-back-office-emundus-tableau .em-container-comment .panel-heading.em-container-comment-heading h3 span, .g-back-office-emundus-tableau .em-container-share .panel-heading.em-container-share-heading h3 span, .g-back-office-emundus-tableau .em-container-attachment.em-container-form .panel-heading.em-container-form-heading h3 span  {
+    margin-top: 5px;
 }
 
-.g-back-office-emundus-tableau.view-files .em-container-share .panel-heading.em-container-form-heading {
-    padding-right: 11px;
+.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading .btn-group.pull-right {
+    position: relative;
+    top: -26px;
 }
 
+.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right {
+    position: relative;
+    top: 0px;
+}
+
+.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-comment-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-comment-heading .btn-group.pull-right {
+    position: relative;
+    top: 0px;
+}
+
+.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-tags-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-tags-heading .btn-group.pull-right {
+    position: relative;
+    top: 0px;
+}
 
 button#em-close-file {
     background: #4E5B6D !important;
