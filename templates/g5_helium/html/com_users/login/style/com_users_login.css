@@ -50,6 +50,7 @@ div.em-formRegistrationCenter, div.login {
     display: flex !important;
     flex-direction: column;
     align-items: center;
+    margin-top: 50px;
 }
 
 .invalid {

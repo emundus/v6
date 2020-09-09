@@ -95,11 +95,17 @@ label {
   padding-right: 0;
 }
 
-select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+ input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
   margin-bottom: 0 !important;
   border-radius: 4px !important;
   border-color: #ccc;
-  height: 50px !important;
+  height: 50px;
+}
+
+select {
+  margin-bottom: 0 !important;
+  border-radius: 4px !important;
+  border-color: #ccc;
 }
 
 textarea {
@@ -1248,7 +1254,7 @@ a#em-doc-zip,
   background: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
   text-shadow: none;
-  text-transform: none;
+  text-transform: capitalize !important;
 }
 
 button.save-btn:hover,
