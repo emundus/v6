@@ -504,7 +504,7 @@ input[type="checkbox"].check{
 .section-sub-menu {
   position: fixed;
   left: 0;
-  top: 98px;
+  top: 90px;
   right: 0;
   bottom: auto;
   z-index: 10;

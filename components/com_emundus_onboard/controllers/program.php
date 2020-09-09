@@ -398,7 +398,8 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
         	$m_prog = $this->model;
             $jinput = JFactory::getApplication()->input;
             $filters = $jinput->getRaw('filters');
-            $users = $m_prog->getusers($filters);
+            $page = $jinput->getRaw('page');
+            $users = $m_prog->getusers($filters,$page['page']);
 
             if (!empty($users)) {
                 $tab = array('status' => 1, 'msg' => JText::_('USERS_RETRIEVED'), 'data' => $users);

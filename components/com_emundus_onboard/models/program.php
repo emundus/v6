@@ -674,9 +674,17 @@ class EmundusonboardModelprogram extends JModelList {
         }
     }
 
-    function getusers($filters) {
+    function getusers($filters, $page = null) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+
+        $limit = 10;
+
+        if ($page == null) {
+            $offset = 0;
+        } else {
+            $offset = (intval($page) - 1) * $limit;
+        }
 
         $user = JFactory::getUser()->id;
 
@@ -725,7 +733,13 @@ class EmundusonboardModelprogram extends JModelList {
 
         try {
             $db->setQuery($query);
-            return $db->loadObjectList();
+            $users_count = count($db->loadObjectList());
+            $db->setQuery($query, $offset, $limit);
+            $users = $db->loadObjectList();
+            return array(
+                'users' => $users,
+                'users_count' => $users_count,
+            );
         } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return [];
