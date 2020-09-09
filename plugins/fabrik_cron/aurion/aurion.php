@@ -274,20 +274,21 @@ class PlgFabrik_Cronaurion extends PlgFabrik_Cron {
 						JLog::add('Could not publish rows that are present in both DB and XML -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 						return false;
 					}
-				}
 
-				// This request is only to log ID's that were unpublished.
-				$query->clear()
-					->select($db->quoteName('id'))
-					->from($db->quoteName($em_db_table_name))
-					->where($db->quoteName('id').' NOT IN ('.implode(',',$unchanged_ids).')');
-				$db->setQuery($query);
-				try {
-					$changed_ids = $db->loadColumn();
-					JLog::add('Unpublished Ids ('.implode(',',$changed_ids).') in table '.$em_db_table_name, JLog::INFO, 'com_emundus');
-				} catch (Exception $e) {
-					JLog::add('Could not get IDs that were unchanged. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-					return false;
+                    // This request is only to log ID's that were unpublished.
+                    $query->clear()
+                        ->select($db->quoteName('id'))
+                        ->from($db->quoteName($em_db_table_name))
+                        ->where($db->quoteName('id').' NOT IN ('.implode(',',$unchanged_ids).')');
+                    $db->setQuery($query);
+                    try {
+                        $changed_ids = $db->loadColumn();
+                        JLog::add('Unpublished Ids ('.implode(',',$changed_ids).') in table '.$em_db_table_name, JLog::INFO, 'com_emundus');
+                    } catch (Exception $e) {
+                        JLog::add('Could not get IDs that were unchanged. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                        return false;
+                    }
+
 				}
 
 				// Delete .lock file when done with this Aurion ID.
