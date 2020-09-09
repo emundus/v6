@@ -95,11 +95,17 @@ label {
   padding-right: 0;
 }
 
-select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
   margin-bottom: 0 !important;
   border-radius: 4px !important;
   border-color: #ccc;
   height: 50px !important;
+}
+
+textarea {
+  margin-bottom: 0 !important;
+  border-radius: 4px !important;
+  border-color: #ccc;
 }
 
 input[type="file"] {
@@ -144,6 +150,13 @@ ul {
 
 .alert-heading {
   display: none;
+}
+
+#system-message .alert.alert-message h1 {
+  margin: 0px;
+    &::after {
+      display: none;
+    }
 }
 
 legend {

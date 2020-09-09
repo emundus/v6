@@ -110,6 +110,16 @@ echo <<<EOT
     padding: 20px;
 }
 
+.view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
+    background: #fafafa;
+    box-shadow: none; 
+}
+
+.view-checklist #attachment_list_mand form .input-group .em-description input , .view-checklist #attachment_list_opt form .input-group .em-description input {
+   border: 1px solid #ccc; 
+   border-radius : 4px; 
+}
+
 .view-form .fabrikSubGroup > div[data-role="group-repeat-intro"] {
     font-size: 1.5rem;
 }

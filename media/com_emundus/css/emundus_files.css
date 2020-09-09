@@ -676,6 +676,10 @@ div#em-modal-actions .panel-heading h5 {
     height: 28px;
 }
 
+#filters #quick .selectize-input input {
+    height: 30px !important;
+}
+
 #filters #quick #input-tags-selectized {
     height: 26px;
 }
