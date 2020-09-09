@@ -225,11 +225,11 @@
                         </div>
                         <span class="ml-10px">{{Required}}</span>
                       </a>
-                      <a class="d-flex mr-2 text-orange" @click="repeat = false;$modal.show('modalEditElement' + element.id)">
+                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="repeat = false;$modal.show('modalEditElement' + element.id)">
                         <em class="fas fa-cog"></em>
                         <span class="ml-10px">{{Settings}}</span>
                       </a>
-                      <a class="d-flex mr-2 text-orange" @click="$modal.show('modalDuplicateElement' + element.id)">
+                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="$modal.show('modalDuplicateElement' + element.id)">
                         <em class="fas fa-copy"></em>
                         <span class="ml-10px">{{Duplicate}}</span>
                       </a>
@@ -531,29 +531,64 @@ export default {
           labelTofind: element.label_tag,
           NewSubLabel: labels
         })
-      }).then(() => {
-        axios({
-          method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
-          params: {
-            element: element.id,
-            gid: element.group_id
-          },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(response => {
-          element.label = response.data.label;
-          this.$emit(
+      }).then((rep) => {
+        if(!rep.data.scalar){
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateelementlabelwithouttranslation",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              eid: element.id,
+              label: element.label_fr
+            })
+          }).then(() => {
+            axios({
+              method: "get",
+              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+              params: {
+                element: element.id,
+                gid: element.group_id
+              },
+              paramsSerializer: params => {
+                return qs.stringify(params);
+              }
+            }).then(response => {
+              element.label = response.data.label;
+              this.$emit(
                   "show",
                   "foo-velocity",
                   "success",
                   this.updateSuccess,
                   this.update
-          );
-          this.translate.label = false;
-          this.clickUpdatingLabel = false;
-        });
+              );
+            });
+          });
+        } else {
+          axios({
+            method: "get",
+            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+            params: {
+              element: element.id,
+              gid: element.group_id
+            },
+            paramsSerializer: params => {
+              return qs.stringify(params);
+            }
+          }).then(response => {
+            element.label = response.data.label;
+            this.$emit(
+                "show",
+                "foo-velocity",
+                "success",
+                this.updateSuccess,
+                this.update
+            );
+            this.translate.label = false;
+          });
+        }
+        this.clickUpdatingLabel = false;
       }).catch(e => {
         this.$emit(
                 "show",
@@ -619,7 +654,21 @@ export default {
           labelTofind: group.group_tag,
           NewSubLabel: labels
         })
-      }).then(() => {
+      }).then((rep) => {
+        if(!rep.data.scalar){
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updategrouplabelwithouttranslation",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              gid: group.group_id,
+              label: group.label_fr
+            })
+          });
+        }
+
         this.$emit(
                 "show",
                 "foo-velocity",
@@ -823,7 +872,20 @@ export default {
           labelTofind: page.show_title.titleraw,
           NewSubLabel: labels
         })
-      }).then(() => {
+      }).then((rep) => {
+        if(!rep.data.scalar){
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepagelabelwithouttranslation",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              pid: page.id,
+              label: page.show_title.label_fr
+            })
+          });
+        }
             /*axios({
               method: "post",
               url:

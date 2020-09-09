@@ -19,7 +19,7 @@
               <em :class="group.visibility ? 'eye-slash-icon' : 'eye-icon'"></em>
             </button>
           </legend>
-          <div v-if="group.group_intro" class="groupintro">{{group.group_intro}}</div>
+          <div v-if="group.group_intro" class="groupintro" v-html="group.group_intro"></div>
 
           <div class="elements-block">
             <div

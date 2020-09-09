@@ -395,6 +395,12 @@ class EmundusonboardModelformbuilder extends JModelList {
         $ContentToAdd = str_replace($matches_en[0][0], $replacetexten, $en_content);
         file_put_contents($en_pathfile, $ContentToAdd . PHP_EOL);
         //
+
+        if(empty($matches_fr) && empty($matches_en)){
+            return false;
+        }
+
+        return true;
     }
 
     function deleteTranslation($text) {
@@ -468,7 +474,63 @@ class EmundusonboardModelformbuilder extends JModelList {
         $Content_Folder_EN = file_get_contents($path_to_file_en);
         //
 
-        $this->updateTranslation($labelTofind,$Content_Folder_FR,$Content_Folder_EN,$path_to_file_fr,$path_to_file_en,$NewSubLabel);
+        return $this->updateTranslation($labelTofind,$Content_Folder_FR,$Content_Folder_EN,$path_to_file_fr,$path_to_file_en,$NewSubLabel);
+    }
+
+    function updateElementWithoutTranslation($eid,$label) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update($db->quoteName('#__fabrik_elements'))
+                ->set($db->quoteName('label') . ' = ' . $db->quote($label))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($eid));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch(Exception $e) {
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function updateGroupWithoutTranslation($gid,$label) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update($db->quoteName('#__fabrik_groups'))
+                ->set($db->quoteName('name') . ' = ' . $db->quote($label))
+                ->set($db->quoteName('label') . ' = ' . $db->quote($label))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch(Exception $e) {
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function updatePageWithoutTranslation($pid,$label) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update($db->quoteName('#__fabrik_forms'))
+                ->set($db->quoteName('label') . ' = ' . $db->quote($label))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_lists'))
+                ->set($db->quoteName('label') . ' = ' . $db->quote($label))
+                ->where($db->quoteName('form_id') . ' = ' . $db->quote($pid));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch(Exception $e) {
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
     }
 
     /**

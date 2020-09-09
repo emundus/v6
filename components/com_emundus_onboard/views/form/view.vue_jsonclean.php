@@ -73,6 +73,12 @@ class EmundusonboardViewForm extends FabrikViewFormBase
             $show_title->value = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
             $show_title->label_fr = $formbuilder->getTranslationFr($form->form->label);
             $show_title->label_en = $formbuilder->getTranslationEn($form->form->label);
+            if($show_title->label_fr == ''){
+                $show_title->label_fr = $form->form->label;
+            }
+            if($show_title->label_en == ''){
+                $show_title->label_en = $form->form->label;
+            }
             $returnObject->show_title = $show_title;
         endif;
 
@@ -115,6 +121,12 @@ class EmundusonboardViewForm extends FabrikViewFormBase
             ${"group_".$GroupProperties->id}->group_tag = $GroupProperties->name;
             ${"group_".$GroupProperties->id}->label_fr = $formbuilder->getTranslationFr($GroupProperties->name);
             ${"group_".$GroupProperties->id}->label_en = $formbuilder->getTranslationEn($GroupProperties->name);
+            if (${"group_".$GroupProperties->id}->label_fr == ''){
+                ${"group_".$GroupProperties->id}->label_fr = $GroupProperties->name;
+            }
+            if (${"group_".$GroupProperties->id}->label_en == ''){
+                ${"group_".$GroupProperties->id}->label_en = $GroupProperties->name;
+            }
 
             if ($GroupProperties->class) :
                 ${"group_".$GroupProperties->id}->group_class = $GroupProperties->class;
@@ -140,7 +152,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 $this->element = $element;
                 $d_element = $this->element;
                 $o_element = $d_element->element;
-                if($o_element->plugin != 'calc') {
+                //if($o_element->plugin != 'calc') {
                     $el_parmas = json_decode($o_element->params);
                     $content_element = $element->preRender('0', '1', 'bootstrap');
                     ${"element" . $o_element->id} = new stdClass();
@@ -171,6 +183,12 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                     ${"element" . $o_element->id}->label_tag = $o_element->label;
                     ${"element" . $o_element->id}->label_fr = $formbuilder->getTranslationFr(${"element" . $o_element->id}->label_tag);
                     ${"element" . $o_element->id}->label_en = $formbuilder->getTranslationEn(${"element" . $o_element->id}->label_tag);
+                    if(${"element" . $o_element->id}->label_fr == ''){
+                        ${"element" . $o_element->id}->label_fr = $o_element->label;
+                    }
+                    if(${"element" . $o_element->id}->label_en == ''){
+                        ${"element" . $o_element->id}->label_en = $o_element->label;
+                    }
                     ${"element" . $o_element->id}->labelToFind = $element->label;
                     ${"element" . $o_element->id}->publish = $element->isPublished();
 
@@ -214,7 +232,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                     }
 
                     $elements->{"element" . $o_element->id} = ${"element" . $o_element->id};
-                }
+                //}
             endforeach;
             ${"group_".$GroupProperties->id}-> elements = $elements;
 

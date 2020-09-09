@@ -26,7 +26,7 @@
                       class="legend ViewerLegend"
               >{{group.group_showLegend}}</legend>
             </div>
-            <div v-if="group.group_intro" class="groupintro">{{group.group_intro}}</div>
+            <div v-if="group.group_intro" class="groupintro" v-html="group.group_intro"></div>
 
             <div class="elements-block">
                 <transition-group :name="'slide-down'" type="transition">
