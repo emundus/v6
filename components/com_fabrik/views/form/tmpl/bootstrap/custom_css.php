@@ -1367,6 +1367,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .fabrikForm .row-fluid .fabrikElement textarea {
   margin-top: 0 !important;
+  width: 100%; 
 }
 
 .fabrikForm .row-fluid .fabrikElement .fabrik_characters_left {

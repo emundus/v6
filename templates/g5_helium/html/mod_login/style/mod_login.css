@@ -20,7 +20,7 @@ form[action="/connexion-candidater"] .em_label-user, .em_label-passwd{
 }
 
 .g-title::after {
-    display: none;
+    display: none !important;
 }
 
 #login-form{
