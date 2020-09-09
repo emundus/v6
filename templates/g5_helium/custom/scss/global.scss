@@ -1688,7 +1688,7 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
-form#login-form[action="/connexion-candidater"] #form-login-submit button {
+.em-formRegistrationCenter button.login-button {
   background: $base-secondary-color !important;
   border: 1px solid $base-secondary-color !important;
   color: #fff !important;
@@ -1703,7 +1703,7 @@ form#login-form[action="/connexion-candidater"] #form-login-submit button {
 
 /* PARTIE GESTIONNAIRE  */
 
-.side-panel #em-files-filters .buttons input {
+.side-panel #em-files-filters .buttons input, .side-panel #em-user-filters .buttons input  {
   background: $base-primary-color !important;
   border-color: $base-primary-color !important;
 

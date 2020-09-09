@@ -13,11 +13,16 @@ form[action="/connexion-candidater"] .em_label-user, .em_label-passwd{
 }
 .g-title{
     margin-top: 50px!important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
 }
 
 .g-title::after {
     display: none;
 }
+
 #login-form{
     background: white;
     border: none;

@@ -520,12 +520,6 @@ table#groups-table a:hover {
     min-width: 40%;
 }
 
-.g-back-office-emundus-tableau #em-modal-actions .modal-dialog, .g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg .panel#exp {
-    min-width: 100%;
-    margin-top: 20px;
-}
-
-
 /* Layout */
 div#data #exp-opt>label{
     display: block;
@@ -2143,6 +2137,9 @@ div#em-assoc-files .panel > .panel-heading {
 .g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-tags-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-tags-heading .btn-group.pull-right {
     position: relative;
     top: 0px;
+}
+.g-back-office-emundus-tableau.evaluations-page .em-container-share-table .em-container-share-table-left, .g-back-office-emundus-tableau.decision-page .em-container-share-table .em-container-share-table-left {
+    margin-top: 5px;
 }
 
 button#em-close-file {
