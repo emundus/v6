@@ -252,12 +252,13 @@ input[type="text"],
 
   #header-c  {
     max-width: 30rem;
+    min-height: 67px;
 
       .g-content {
         display: flex;
         flex-direction: row;
-        justify-content: space-evenly;
-        align-items: baseline;
+        justify-content: space-between;
+        align-items: flex-start;
 
         .platform-content {
           margin: 0px 10px !important;
@@ -414,6 +415,7 @@ a {
   }
 
   .header-right {
+    margin-top: 12px;
     a.btn.btn-danger {
       &.btn-creer-compte, &.inscription {
         background: $base-secondary-color !important;
