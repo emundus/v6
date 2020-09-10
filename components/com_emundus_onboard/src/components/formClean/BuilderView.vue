@@ -516,7 +516,7 @@ export default {
         fr: element.label_fr,
         en: element.label_en
       }
-      if(labels.en === 'Unnamed item'){
+      if(labels.en === 'Unnamed item' || this.actualLanguage == null){
         labels.en = labels.fr;
         element.label_en = labels.fr;
       }
@@ -642,6 +642,9 @@ export default {
       let labels = {
         fr: group.label_fr,
         en: group.label_en
+      }
+      if(this.actualLanguage == null) {
+        labels.en = group.label_fr;
       }
       axios({
         method: "post",
@@ -860,6 +863,9 @@ export default {
       let intros = {
         fr: page.intro_fr,
         en: page.intro_en
+      }
+      if(this.actualLanguage == null) {
+        labels.en = page.show_title.label_fr;
       }
       axios({
         method: "post",
