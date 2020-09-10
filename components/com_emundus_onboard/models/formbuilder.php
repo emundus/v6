@@ -2353,17 +2353,17 @@ class EmundusonboardModelformbuilder extends JModelList {
                 } elseif ($key == 'menutype') {
                     $query->set($key . ' = ' . $db->quote($profile->menutype));
                 } elseif ($key == 'alias') {
-                    $query->set($key . ' = ' . $db->quote('form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(),'-',strtolower($val))));
+                    $query->set($key . ' = ' . $db->quote('form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(),'-',strtolower($menu_model->title))));
                 } elseif ($key == 'path') {
                     if($formid == 258){
                         $query->set($key . ' = ' . $db->quote('envoi-du-dossier-' . $profile->id));
                     } else {
-                        if(strpos($val,'/')){
+                        if(strpos($val,'/') !== false){
                             $newpath = explode('/', $val)[1];
+                            $query->set($key . ' = ' . $db->quote($menu_parent->path . '/' . $newpath));
                         } else {
-                            $newpath = $val;
+                            $query->set($key . ' = ' . $db->quote($val . '-' . $profile->id));
                         }
-                        $query->set($key . ' = ' . $db->quote($menu_parent->path . '/' . $newpath));
                     }
                 } elseif ($key == 'link') {
                     $query->set($key . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $newformid));
@@ -2377,13 +2377,21 @@ class EmundusonboardModelformbuilder extends JModelList {
                     if($formid == 258){
                         $query->set($key . ' = ' . $db->quote(111));
                     } else {
-                        $query->set($key . ' = ' . $db->quote(array_values($lfts)[strval(sizeof($lfts) - 1)] + 2));
+                        if(strpos($menu_model->path,'/') !== false) {
+                            $query->set($key . ' = ' . $db->quote(array_values($lfts)[strval(sizeof($lfts) - 1)] + 2));
+                        } else {
+                            $query->set($key . ' = ' . $db->quote(111));
+                        }
                     }
                 } elseif ($key == 'rgt') {
                     if($formid == 258){
                         $query->set($key . ' = ' . $db->quote(112));
                     } else {
-                        $query->set($key . ' = ' . $db->quote(array_values($rgts)[strval(sizeof($rgts) - 1)] + 2));
+                        if(strpos($menu_model->path,'/') !== false) {
+                            $query->set($key . ' = ' . $db->quote(array_values($rgts)[strval(sizeof($rgts) - 1)] + 2));
+                        } else {
+                            $query->set($key . ' = ' . $db->quote(112));
+                        }
                     }
                 }
             }
