@@ -413,32 +413,33 @@ a {
     color: $base-secondary-color;
     float: right;
   }
-    .header-right {
-      a.btn.btn-danger {
-        &.btn-creer-compte, &.inscription {
-          background: $base-secondary-color !important;
-          border: 1px solid $base-secondary-color !important;
-          color: #fff !important;
 
-          &:hover, &:active, &:focus {
-            background: transparent !important;
-            color: $base-secondary-color !important;
-            border-color: $base-secondary-color !important;
-          }
-        }
+  .header-right {
+    a.btn.btn-danger {
+      &.btn-creer-compte, &.inscription {
+        background: $base-secondary-color !important;
+        border: 1px solid $base-secondary-color !important;
+        color: #fff !important;
 
-        &:not(btn-creer-compte) {
+        &:hover, &:active, &:focus {
           background: transparent !important;
-          border: 1px solid $base-primary-color !important;
-          color: $base-primary-color !important;
-
-          &:hover, &:active, &:focus {
-            background: $base-primary-color !important;
-            color: #fff !important;
-            border-color: $base-primary-color !important;
-          }
+          color: $base-secondary-color !important;
+          border-color: $base-secondary-color !important;
         }
       }
+
+      &:not(btn-creer-compte) {
+        background: transparent !important;
+        border: 1px solid $base-primary-color !important;
+        color: $base-primary-color !important;
+
+        &:hover, &:active, &:focus {
+          background: $base-primary-color !important;
+          color: #fff !important;
+          border-color: $base-primary-color !important;
+        }
+      }
+    }
   }
 
   #userDropdownIcon {
@@ -464,7 +465,7 @@ a {
     }
   }
 
-
+}
   /* BURGER MENU - DECONNECTE */
 
   #g-page-surround .g-offcanvas-toggle {
@@ -2421,5 +2422,5 @@ a {
     }
 
   }
-}
+
 
