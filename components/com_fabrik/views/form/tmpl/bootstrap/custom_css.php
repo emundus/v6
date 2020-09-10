@@ -500,6 +500,34 @@ form#member-profile .form-horizontal .control-label {
 }
 /* Inscription */
 
+  /* TEST TITRE inscription */
+
+  .view-registration .login div.em-heading-registration {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    flex-direction: row;
+    width: 49%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.view-registration .login div.em-heading-registration  div.icon-title.registrationicon {
+      background-image: url(/components/com_emundus_onboard/src/assets/images/register.svg);
+      background-size: contain;
+}
+
+.view-registration .login div.em-heading-registration  div.icon-title  {
+      margin-right: 10px;
+      width: 40px;
+      height: 40px;
+      background-position: 0 0;
+      background-size: contain;
+      -webkit-filter: brightness(.5);
+      filter: brightness(.5);
+      fill: grey;
+    }
+  }
+
 form.fabrikForm label {
   width: 100% !important;
 }
