@@ -688,7 +688,8 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->select('*')
                 ->from('#__menu')
                 ->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
-                ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+                ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'))
+                ->orWhere($db->quoteName('type') . ' = ' . $db->quote('url'));
             $db->setQuery($query);
             $menu_parent = $db->loadObject();
             //
@@ -2071,7 +2072,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             ->select('*')
             ->from('#__menu')
             ->where($db->quoteName('menutype') . ' = ' . $db->quote($profile->menutype))
-            ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+            ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'))
+            ->orWhere($db->quoteName('type') . ' = ' . $db->quote('url'));
         $db->setQuery($query);
         $menu_parent = $db->loadObject();
         //

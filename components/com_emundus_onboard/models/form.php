@@ -581,7 +581,8 @@ class EmundusonboardModelform extends JModelList {
                         ->select('*')
                         ->from('#__menu')
                         ->where($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
-                        ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+                        ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'))
+                        ->orWhere($db->quoteName('type') . ' = ' . $db->quote('url'));
 
                     $db->setQuery($query);
                     $heading_to_duplicate = $db->loadObject();
