@@ -370,6 +370,12 @@ class EmundusonboardModelformbuilder extends JModelList {
         $ContentToAdd = str_replace($textWithoutTags, $newtag, $matches_en[0][0]);
         file_put_contents($en_pathfile, $ContentToAdd . PHP_EOL, FILE_APPEND | LOCK_EX);
         //
+
+        if(empty($matches_fr) && empty($matches_en)){
+            return false;
+        }
+
+        return true;
     }
 
     function updateTranslation($oldtext,$fr_content,$en_content,$fr_pathfile,$en_pathfile,$newtext) {
@@ -688,7 +694,8 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->select('*')
                 ->from('#__menu')
                 ->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
-                ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+                ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'))
+                ->orWhere($db->quoteName('type') . ' = ' . $db->quote('url'));
             $db->setQuery($query);
             $menu_parent = $db->loadObject();
             //
@@ -2071,7 +2078,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             ->select('*')
             ->from('#__menu')
             ->where($db->quoteName('menutype') . ' = ' . $db->quote($profile->menutype))
-            ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+            ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'))
+            ->orWhere($db->quoteName('type') . ' = ' . $db->quote('url'));
         $db->setQuery($query);
         $menu_parent = $db->loadObject();
         //
@@ -2244,7 +2252,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $this->addTransationFr('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . 'Confirmation d\'envoi de dossier' . "\"");
                     $this->addTransationEn('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . 'Confirmation of file sending' . "\"");
                 } else {
-                    $this->duplicateTranslation($group_model->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'GROUP_' . $newformid . '_' . $newgroupid);
+                    $duplicate_translation = $this->duplicateTranslation($group_model->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'GROUP_' . $newformid . '_' . $newgroupid);
+                    if(!$duplicate_translation){
+                        $this->addTransationFr('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . $group_model->label . "\"");
+                    }
                 }
                 //
 
@@ -2273,7 +2284,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                         if(($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options){
                             $sub_labels = [];
                             foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
-                                $this->duplicateTranslation($sub_label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index);
+                                $duplicate_translation = $this->duplicateTranslation($sub_label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index);
+                                if(!$duplicate_translation){
+                                    $this->addTransationFr('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index . '=' . "\"" . $sub_label . "\"");
+                                }
                                 $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
                             }
                             $el_params->sub_options->sub_labels = $sub_labels;
@@ -2284,7 +2298,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                             $this->addTransationFr('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . 'Confirmation' . "\"");
                             $this->addTransationEn('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . 'Confirmation' . "\"");
                         } else {
-                            $this->duplicateTranslation($element->element->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'ELEMENT_' . $newgroupid . '_' . $newelementid);
+                            $duplicate_translation = $this->duplicateTranslation($element->element->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'ELEMENT_' . $newgroupid . '_' . $newelementid);
+                            if(!$duplicate_translation){
+                                $this->addTransationFr('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . $element->element->label . "\"");
+                            }
                         }
                         //
 
@@ -2353,17 +2370,17 @@ class EmundusonboardModelformbuilder extends JModelList {
                 } elseif ($key == 'menutype') {
                     $query->set($key . ' = ' . $db->quote($profile->menutype));
                 } elseif ($key == 'alias') {
-                    $query->set($key . ' = ' . $db->quote('form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(),'-',strtolower($val))));
+                    $query->set($key . ' = ' . $db->quote('form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(),'-',strtolower($menu_model->title))));
                 } elseif ($key == 'path') {
                     if($formid == 258){
                         $query->set($key . ' = ' . $db->quote('envoi-du-dossier-' . $profile->id));
                     } else {
-                        if(strpos($val,'/')){
+                        if(strpos($val,'/') !== false){
                             $newpath = explode('/', $val)[1];
+                            $query->set($key . ' = ' . $db->quote($menu_parent->path . '/' . $newpath));
                         } else {
-                            $newpath = $val;
+                            $query->set($key . ' = ' . $db->quote($val . '-' . $profile->id));
                         }
-                        $query->set($key . ' = ' . $db->quote($menu_parent->path . '/' . $newpath));
                     }
                 } elseif ($key == 'link') {
                     $query->set($key . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $newformid));
@@ -2377,13 +2394,21 @@ class EmundusonboardModelformbuilder extends JModelList {
                     if($formid == 258){
                         $query->set($key . ' = ' . $db->quote(111));
                     } else {
-                        $query->set($key . ' = ' . $db->quote(array_values($lfts)[strval(sizeof($lfts) - 1)] + 2));
+                        if(strpos($menu_model->path,'/') !== false) {
+                            $query->set($key . ' = ' . $db->quote(array_values($lfts)[strval(sizeof($lfts) - 1)] + 2));
+                        } else {
+                            $query->set($key . ' = ' . $db->quote(111));
+                        }
                     }
                 } elseif ($key == 'rgt') {
                     if($formid == 258){
                         $query->set($key . ' = ' . $db->quote(112));
                     } else {
-                        $query->set($key . ' = ' . $db->quote(array_values($rgts)[strval(sizeof($rgts) - 1)] + 2));
+                        if(strpos($menu_model->path,'/') !== false) {
+                            $query->set($key . ' = ' . $db->quote(array_values($rgts)[strval(sizeof($rgts) - 1)] + 2));
+                        } else {
+                            $query->set($key . ' = ' . $db->quote(112));
+                        }
                     }
                 }
             }
