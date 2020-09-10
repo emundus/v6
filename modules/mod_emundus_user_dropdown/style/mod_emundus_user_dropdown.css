@@ -125,3 +125,7 @@ li>a:hover {
         display: none;
     }
 }
+
+div#userDropdown {
+    float: initial !important;
+}

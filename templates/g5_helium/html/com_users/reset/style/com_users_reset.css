@@ -71,10 +71,6 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     align-items:center;
 }
 
-.view-reset .reset {
-    margin-top: 50px;
-}
-
 #user-registration .required .star,
 .reset-confirm .required .star,
 .reset-complete .required .star
