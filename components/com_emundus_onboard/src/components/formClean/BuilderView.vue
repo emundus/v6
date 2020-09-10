@@ -516,7 +516,7 @@ export default {
         fr: element.label_fr,
         en: element.label_en
       }
-      if(labels.en === 'Unnamed item' || this.actualLanguage == null){
+      if(labels.en === 'Unnamed item' || this.actualLanguage == ''){
         labels.en = labels.fr;
         element.label_en = labels.fr;
       }
@@ -643,7 +643,7 @@ export default {
         fr: group.label_fr,
         en: group.label_en
       }
-      if(this.actualLanguage == null) {
+      if(this.actualLanguage == '') {
         labels.en = group.label_fr;
       }
       axios({
@@ -864,7 +864,7 @@ export default {
         fr: page.intro_fr,
         en: page.intro_en
       }
-      if(this.actualLanguage == null) {
+      if(this.actualLanguage == '') {
         labels.en = page.show_title.label_fr;
       }
       axios({
