@@ -500,7 +500,7 @@ form#member-profile .form-horizontal .control-label {
 }
 /* Inscription */
 
-  .view-registration .login.em-formRegistrationCenter {
+  .view-registration .login.em-formRegistrationCenter,  .view-form .em-formRegistrationCenter {
      display: flex !important;
     flex-direction: column;
     align-items: center;
@@ -553,7 +553,7 @@ button.register {
   height: 100% !important;
 }
 
-.view-registration form {
+.view-registration form, .view-form .em-formRegistrationCenter form {
   border: none;
     margin-bottom: 0 !important;
     border-radius: 0;
@@ -1588,6 +1588,34 @@ a.btn-attach:active {
   width: 100%;
 }
 
+
+/*** CONNEXION - CANDIDATER ***/
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    background: #fafafa;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+    padding-bottom: 50px;
+    margin-bottom: 100px;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {
+    border: none;
+    margin-bottom: 0 !important;
+    border-radius: 0;
+    background: #fafafa;
+    border-radius: 0;
+    padding: 0px;
+    box-shadow: none;
+    width: 58%;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 /*** MEDIA QUERY SECTION ***/
 
