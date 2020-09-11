@@ -23,7 +23,7 @@
                   type="text"
                   v-focus
                   class="form__input field-general w-input"
-                  v-model="form.label.fr"
+                  v-model="form.label[actualLanguage]"
                   @keyup="enableTranslationTip"
                   required
                   :class="{ 'is-invalid': errors.label, 'mb-0': translate.label }"
@@ -160,7 +160,7 @@
           <p v-if="errors.short_description" class="error col-md-12 mb-2">
             <span class="error">{{ResumeRequired}}</span>
           </p>
-          <div class="form-group campaign-label">
+          <!--<div class="form-group campaign-label">
             <label for="campDescription" style="top: 12em">{{Description}}</label>
             <textarea
               type="textarea"
@@ -173,7 +173,7 @@
               @keyup="checkMaxlength('campDescription')"
               @focusout="removeBorderFocus('campDescription')"
             />
-          </div>
+          </div>-->
         </div>
 
         <div class="divider"></div>
@@ -348,6 +348,7 @@ export default {
     campaign: Number,
     actualLanguage: String,
     coordinatorAccess: Number,
+    manyLanguages: Number,
   },
 
   data: () => ({
@@ -452,7 +453,11 @@ export default {
   }),
 
   created() {
+    // Configure datetime
     Settings.defaultLocale = this.actualLanguage;
+    //
+
+    //Check if we add or edit a campaign
     if (this.campaign !== "") {
       axios.get(
           `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaign}`
@@ -489,6 +494,7 @@ export default {
           console.log(e);
         });
     }
+    //
     axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
       .then(response => {
         this.programs = response.data.data;
@@ -652,7 +658,7 @@ export default {
       this.year.profile_id = this.form.profile_id;
       //
 
-      if(!this.translate.label && this.campaign == ""){
+      if(this.form.label.en == ""){
         this.form.label.en = this.form.label.fr;
       }
 
@@ -848,37 +854,7 @@ h2 {
   color: #1b1f3c !important;
 }
 
-.w-checkbox-input {
-  float: left;
-  margin: 0 10px 0 -20px;
-  line-height: normal;
-  width: 4% !important;
-  cursor: pointer;
-}
-
-.checkbox-label {
-  color: #696969;
-  font-size: 12px;
-  margin-top: 0 !important;
-}
-
-.w-form-label {
-  display: inline-block;
-  cursor: pointer;
-  font-weight: normal;
-  margin-bottom: 0;
-  margin-top: 5.5%;
-}
-
-.w-checkbox {
-  display: flex;
-  margin-bottom: 0;
-  align-items: center;
-  padding-left: 20px;
-}
-
-.w-select,
-.plus.w-inline-block {
+.w-select {
   background-color: white;
   border-color: #cccccc;
 }
@@ -995,14 +971,11 @@ h2 {
   }
 
   .translate-icon{
-    height: auto;
-    position: absolute;
-    right: 1em;
-    margin-bottom: 10px;
+    top: -5px;
   }
 
   .translate-icon-selected{
-    margin-bottom: 0;
+    top: 0;
   }
 
   .w-row{

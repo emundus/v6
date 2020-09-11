@@ -39,6 +39,7 @@
                   v-if="menuHighlight == 0"
                   @updateLoading="updateLoading"
                   :actualLanguage="actualLanguage"
+                  :manyLanguages="manyLanguages"
                   ref="customization"
           ></customization>
 
@@ -50,6 +51,8 @@
           <editDatas
                   v-if="menuHighlight == 2 && coordinatorAccess != 0"
                   ref="datas"
+                  :actualLanguage="actualLanguage"
+                  :manyLanguages="manyLanguages"
           ></editDatas>
         </transition>
       </div>
@@ -97,7 +100,8 @@ export default {
 
   props: {
     actualLanguage: String,
-    coordinatorAccess: Number
+    coordinatorAccess: Number,
+    manyLanguages: Number
   },
 
   data: () => ({

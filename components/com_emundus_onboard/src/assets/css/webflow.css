@@ -337,7 +337,7 @@ label {
   background-color: #ffffff;
   border: 1px solid #cccccc;
   font-weight: 300;
-  min-height: 50px;
+  min-height: 40px;
 }
 .w-input:-moz-placeholder,
 .w-select:-moz-placeholder {

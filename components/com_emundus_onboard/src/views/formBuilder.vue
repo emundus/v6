@@ -124,6 +124,7 @@
                     :eval="0"
                     :files="files"
                     :actualLanguage="actualLanguage"
+                    :manyLanguages="manyLanguages"
                     ref="builder"
             />
           </div>
@@ -143,6 +144,7 @@
                     :eval="0"
                     :files="files"
                     :actualLanguage="actualLanguage"
+                    :manyLanguages="manyLanguages"
                     ref="builder_submit"
             />
           </div>
@@ -183,6 +185,7 @@
       index: Number,
       cid: Number,
       actualLanguage: String,
+      manyLanguages: Number
     },
     components: {
       List,

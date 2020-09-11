@@ -56,9 +56,15 @@ JText::script('COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS');
 
 $lang = JFactory::getLanguage();
-$actualLanguage = substr($lang->getTag(), 0, 2);
+$actualLanguage = substr($lang->getTag(), 0 , 2);
+$languages = JLanguageHelper::getLanguages();
+if(count($languages) > 1){
+    $many_languages = '1';
+} else {
+    $many_languages = '0';
+}
 ?>
 
-<div id="em-addFormNextCampaign-vue" campaignId="<?= $this->cid ?>" actualLanguage="<?= $actualLanguage ?>" index="<?= $this->index ?>"></div>
+<div id="em-addFormNextCampaign-vue" campaignId="<?= $this->cid ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>" index="<?= $this->index ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>

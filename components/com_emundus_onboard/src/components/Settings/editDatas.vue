@@ -9,6 +9,8 @@
         />
         <ModalAddDatas
                 @updateDatabases="getDatabases"
+                :actualLanguage="actualLanguage"
+                :manyLanguages="manyLanguages"
         />
         <ModalImportDatas
                 @updateDatabases="getDatabases"
@@ -66,7 +68,8 @@
         },
 
         props: {
-            actualLanguage: String
+          actualLanguage: String,
+          manyLanguages: Number,
         },
 
         data() {

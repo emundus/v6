@@ -173,7 +173,8 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
 	        $result = 0;
 	        $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $changeresponse = $m_form->formsTrad($labelTofind, $newLabel);
+            $results = $m_form->formsTrad($labelTofind, $newLabel);
+            $changeresponse = array('status' => 1, 'msg' => 'Traductions effectués avec succès', 'data' => $results);
         }
 
         echo json_encode((object)$changeresponse);

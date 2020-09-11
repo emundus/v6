@@ -3,7 +3,7 @@
         <div v-for="(statu, index) in status" class="status-item">
             <div :style="{background: statu.class}" class="status-field">
                 <div style="width: 100%">
-                    <input type="text" v-model="statu.label.fr">
+                    <input type="text" v-model="statu.label[actualLanguage]">
                     <translation :label="statu.label" :actualLanguage="actualLanguage" v-if="statu.translate"></translation>
                     <!--<transition :name="'slide-down'" type="transition">
                         <div class="translate-block" v-if="statu.translate">
@@ -17,7 +17,7 @@
                         <input type="text" v-model="statu.value.en" v-if="statu.translate">
                     </transition>-->
                 </div>
-                <button class="translate-icon" style="height: 10%;margin-top: 10px;" v-if="actualLanguage != ''" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
+                <button class="translate-icon" style="height: 10%;margin-top: 10px;" v-if="manyLanguages !== '0'" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
                 <input type="hidden" :class="'label-' + statu.class">
             </div>
             <v-swatches
@@ -53,6 +53,7 @@
 
         props: {
           actualLanguage: String,
+          manyLanguages: Number,
         },
 
         data() {
@@ -160,5 +161,8 @@
         display: flex;
         margin: 10px;
         color: white
+    }
+    .translate-icon-selected{
+      top: 0;
     }
 </style>

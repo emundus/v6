@@ -378,6 +378,29 @@ class EmundusonboardModelformbuilder extends JModelList {
         return true;
     }
 
+    function updateFileTranslation($oldtext,$content,$pathfile,$newtext) {
+        $matches = [];
+
+        $textWithoutTags = str_replace('\'', '', strip_tags($oldtext));
+
+        $replacetext = $textWithoutTags . '=' . '"' . str_replace("\"",'',$newtext) . '"';
+
+        $textTofind = $textWithoutTags . "=";
+        $textTofind = "/^" . $textTofind . ".*/mi";
+
+        // FR
+        preg_match_all($textTofind, $content, $matches, PREG_SET_ORDER, 0);
+        $ContentToAdd = str_replace($matches[0][0], $replacetext, $content);
+        file_put_contents($pathfile, $ContentToAdd . PHP_EOL);
+        //
+
+        if(empty($matches)){
+            return false;
+        }
+
+        return true;
+    }
+
     function updateTranslation($oldtext,$fr_content,$en_content,$fr_pathfile,$en_pathfile,$newtext) {
         $matches_fr = [];
         $matches_en = [];
@@ -472,15 +495,24 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $NewSubLabel
      */
     function formsTrad($labelTofind, $NewSubLabel) {
-        // Prepare languages
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
-        $Content_Folder_FR = file_get_contents($path_to_file_fr);
-        $path_to_file_en = $path_to_file . 'en-GB.override.ini' ;
-        $Content_Folder_EN = file_get_contents($path_to_file_en);
-        //
+        $path_to_files = array();
+        $Content_Folder = array();
+        $results = array();
 
-        return $this->updateTranslation($labelTofind,$Content_Folder_FR,$Content_Folder_EN,$path_to_file_fr,$path_to_file_en,$NewSubLabel);
+        try {
+            $languages = JLanguageHelper::getLanguages();
+            foreach ($languages as $language) {
+                $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+                $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+                $results[] = $this->updateFileTranslation($labelTofind,$Content_Folder[$language->sef],$path_to_files[$language->sef],$NewSubLabel[$language->sef]);
+            }
+
+            return $results;
+        }  catch(Exception $e) {
+            JLog::add(str_replace("\n", "", $e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
     }
 
     function updateElementWithoutTranslation($eid,$label) {
@@ -1860,8 +1892,15 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ${"element".$o_element->id}->FRequire=$FRequire;
                 ${"element".$o_element->id}->params=$el_params;
                 ${"element".$o_element->id}->label_tag = $o_element->label;
-                ${"element".$o_element->id}->label_fr = $this->getTranslationFr(${"element".$o_element->id}->label_tag);
-                ${"element".$o_element->id}->label_en = $this->getTranslationEn(${"element".$o_element->id}->label_tag);
+                ${"element" . $o_element->id}->label = new stdClass;
+                ${"element".$o_element->id}->label->fr = $this->getTranslationFr(${"element".$o_element->id}->label_tag);
+                ${"element".$o_element->id}->label->en = $this->getTranslationEn(${"element".$o_element->id}->label_tag);
+                if(${"element" . $o_element->id}->label->fr == ''){
+                    ${"element" . $o_element->id}->label->fr = $o_element->label;
+                }
+                if(${"element" . $o_element->id}->label->en == ''){
+                    ${"element" . $o_element->id}->label->en = $o_element->label;
+                }
                 ${"element".$o_element->id}->labelToFind=$group_elt->label;
                 ${"element".$o_element->id}->publish=$group_elt->isPublished();
 
@@ -1884,7 +1923,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                         ${"element".$o_element->id}->tipBelow=$content_element->tipBelow;
                     endif;
                 } else {
-                    ${"element".$o_element->id}->label=$content_element->label;
+                    ${"element" . $o_element->id}->label_value = $content_element->label;
 
                     if ($el_params->tipLocation == 'above') :
                         ${"element".$o_element->id}->tipAbove=$content_element->tipAbove;
