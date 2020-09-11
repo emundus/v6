@@ -7,7 +7,7 @@
     />
     <h2 v-if="object_json.show_title" class="page_header" v-html="object_json.show_title.value" />
 
-    <p v-if="object_json.intro" class="introP" v-html="object_json.intro" />
+    <p v-if="object_json.intro_value" class="introP" v-html="object_json.intro_value" />
 
     <form method="post" object_json.attribs class="form-page">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
@@ -28,7 +28,7 @@
                     v-show="element.hidden === false"
                     class="builder-item-element"
             >
-              <span v-if="element.label" v-html="element.label" v-show="element.labelsAbove != 2"></span>
+              <span v-if="element.label_value" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
               <div v-if="element.params.date_table_format">
                 <date-picker v-model="date" :config="options"></date-picker>
               </div>

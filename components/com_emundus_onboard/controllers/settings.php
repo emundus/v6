@@ -253,6 +253,8 @@ class EmundusonboardControllersettings extends JControllerLegacy {
 
             if(isset($image)) {
                 $target_dir = "images/custom/";
+                unlink($target_dir . 'logo.png');
+
                 $target_file = $target_dir . basename('logo.png');
 
                 if (move_uploaded_file($image["tmp_name"], $target_file)) {

@@ -4,6 +4,8 @@
             :cid="this.campaignId"
             :pid="this.profileId"
             :doc="this.currentDoc"
+            :langue="langue"
+            :manyLanguages="manyLanguages"
             @UpdateDocuments="updateList"
     />
     <transition :name="'slide-down'" type="transition">
@@ -139,9 +141,10 @@ export default {
     obligatoireDoc: Number,
     profileId: Number,
     campaignId: Number,
-    langue: Number,
+    langue: String,
     formulaireEmundus: Number,
-    menuHighlight: Number
+    menuHighlight: Number,
+    manyLanguages: Number
   },
 
   data() {
@@ -151,10 +154,10 @@ export default {
       obligatoireDoc: 0,
       currentDoc: null,
 
-      inners: [
-        ["Non assigné", "Facultatif", "Obligatoire"],
-        ["Unassigned", "Optional", "Mandatory"]
-      ],
+      inners: {
+        fr: ["Non assigné", "Facultatif", "Obligatoire"],
+        en: ["Unassigned", "Optional", "Mandatory"]
+      },
 
       documents: [],
       undocuments: [],
