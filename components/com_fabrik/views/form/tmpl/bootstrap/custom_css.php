@@ -528,9 +528,10 @@ form#member-profile .form-horizontal .control-label {
     margin-left: auto;
     margin-right: auto;
 }
-.view-registration .login div.em-heading-registration  div.icon-title.registrationicon, .view-form .em-formRegistrationCenter div.em-heading-registration {
+.view-registration .login div.em-heading-registration  div.icon-title.registrationicon, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title.registrationicon {
       background-image: url(/components/com_emundus_onboard/src/assets/images/register.svg);
       background-size: contain;
+      background-repeat: no-repeat;
 }
 
 .view-registration .login div.em-heading-registration div.icon-title, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title {
