@@ -307,7 +307,7 @@ input[type="text"],
 /* FOOTER */
 
 footer#g-footer {
-  background-color: #eee;
+  background-color: #fafafa;
   border-top: none;
   bottom: 0;
   width: 100vw;
@@ -319,6 +319,7 @@ footer#g-footer {
   flex-direction: column;
   overflow-y: auto ;
   min-height: 100% !important;
+  width: 100%;
 }
 
 #g-page-surround >  .g-container:not(.g-flushed) {

@@ -500,6 +500,23 @@ form#member-profile .form-horizontal .control-label {
 }
 /* Inscription */
 
+  .view-registration .login.em-formRegistrationCenter {
+     display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    background: #fafafa;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+    padding-bottom: 50px;
+    margin-bottom: 100px;
+}
+
+  .view-registration .login.em-formRegistrationCenter .row-fluid {
+    background: #fafafa;
+}
+
   /* TEST TITRE inscription */
 
   .view-registration .login div.em-heading-registration {
@@ -507,7 +524,7 @@ form#member-profile .form-horizontal .control-label {
     justify-content: flex-start;
     align-items: flex-end;
     flex-direction: row;
-    width: 49%;
+    width: 57%;
     margin-left: auto;
     margin-right: auto;
 }
@@ -537,12 +554,16 @@ button.register {
 }
 
 .view-registration form {
-    background: #fff;
-    border: #fff;
-    margin-top: 40px;
-    margin-bottom: 0;
+  border: none;
+    margin-bottom: 0 !important;
     border-radius: 0;
-    color: #ffffff;
+    background: #fafafa;
+    border-radius: 0;
+    padding: 0px;
+    box-shadow: none;
+    width: 59%;
+    margin-left: auto;
+    margin-right: auto;
   }
 
 .view-registration fieldset {
@@ -605,7 +626,7 @@ button.register {
 }
 
 .view-registration form {
-    background: #fff;
+    background: #fafafa;
     border: #fff;
     margin-top: 40px;
     margin-bottom: 0;
@@ -1058,7 +1079,7 @@ footer#g-footer {
 }
 
 ol {
-    width: 50%;
+    width: 59%;
     text-align: justify;
     margin-left: 0px !important;
 }
@@ -1085,9 +1106,6 @@ ol li {
     height: 41px !important;
 }
 
-.view-registration form.fabrikForm {
-    width:50%;
-}
 .view-registration form .fabrikActions.form-actions{
     padding: 0 !important;
 }
@@ -1223,7 +1241,13 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 
 .view-registration form #jos_emundus_users___civility .row-fluid {
-  display: inline-block;
+     display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+}
+
+.view-registration form #jos_emundus_users___civility .row-fluid .fabrikgrid_radio:nth-child(1) {
+    margin-right: 26px;
 }
 
 .em-formRegistrationCenter {

@@ -20,13 +20,13 @@ form#user-registration.form-validate.form-horizontal.well,
 .reset-confirm .form-validate.form-horizontal.well,
 .reset-complete .form-validate.form-horizontal.well
 {
-    width: 50%;
+    width: 63%;
     margin-left: auto !important;
     margin-right: auto !important;
 }
 
 form#user-registration.form-validate.form-horizontal.well {
-    background: #fff;
+    background: #fafafa;
     border: none;
     margin-top: 20px !important;
 }
@@ -69,6 +69,19 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     flex-direction:column;
     justify-content:center;
     align-items:center;
+}
+
+.view-reset .reset {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    background: #fafafa;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+    padding-bottom: 50px;
+    margin-bottom: 100px;
 }
 
 #user-registration .required .star,
@@ -135,7 +148,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     justify-content: flex-start;
     align-items: flex-end;
     flex-direction: row;
-    width: 47%;
+    width: 59%;
     margin-left: auto;
     margin-right: auto;
 }
@@ -143,12 +156,13 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 .view-reset .reset .page-header div.icon-title.resetpwd {
     background-image: url(/components/com_emundus_onboard/src/assets/images/password.svg);
     background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .view-reset .reset .page-header div.icon-title {
     margin-right: 10px;
-    width: 40px;
-    height: 40px;
+    width: 33px;
+    height: 35px;
     background-position: 0 0;
     background-size: contain;
     -webkit-filter: brightness(.5);
