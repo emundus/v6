@@ -257,7 +257,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
     /**
      * Check Campaign Limit
      *
-     * @return Bool
+     * @return Bool|null
      * @throws Exception
      */
     public function onBeforeProcess() {
@@ -274,13 +274,13 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
             case 'user':
                 $campaign_id = is_array($jinput->getInt('jos_emundus_users___campaign_id_raw')) ? $jinput->getInt('jos_emundus_users___campaign_id_raw')[0] : $jinput->getInt('jos_emundus_users___campaign_id_raw');
                 if (empty($campaign_id)) {
-                    return false;
+                    return;
                 }
                 // Check if the campaign limit has been obtained
                 if ($m_campaign->isLimitObtained($campaign_id) === true) {
                     $this->getModel()->formErrorMsg = '';
                     $this->getModel()->getForm()->error= JText::_('LIMIT_OBTAINED');
-                    return false;
+                    return;
                 }
                 break;
 
