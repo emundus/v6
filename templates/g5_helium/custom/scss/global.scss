@@ -1852,6 +1852,46 @@ a {
 
   /* TABLEAUX */
 
+
+.view-list form.form-search table   {
+  thead th.fabrik_actions .btn-group {
+    a.delete {
+      background: $base-secondary-color !important;
+      border-color: $base-secondary-color !important;
+
+      &:hover, &:active, &:focus {
+        background: #fff !important;
+        border-color: $base-secondary-color !important;
+        color: $base-secondary-color !important;
+      }
+    }
+  }
+  tbody td.fabrik_actions .btn-group {
+    a.delete {
+      background: $base-secondary-color !important;
+      border-color: $base-secondary-color !important;
+
+      &:hover, &:active, &:focus {
+        background: #fff !important;
+        border-color: #fff !important;
+        color: $base-secondary-color !important;
+      }
+    }
+
+    a.fabrik_edit, a.fabrik_view, a.listplugin {
+      background: $base-primary-color !important;
+      border-color: $base-primary-color !important;
+
+      &:hover, &:active, &:focus {
+        background: #fff !important;
+        border-color: #fff !important;
+        color: $base-primary-color !important;
+      }
+    }
+  }
+}
+
+
   .view-list {
     .filtertable {
       thead tr.fabrik___heading {
