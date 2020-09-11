@@ -1279,7 +1279,7 @@ class EmundusController extends JControllerLegacy {
 
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
 	    $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
-	    if (strpos($url, $applicant_files_path) !== 0) {
+	    if (strpos($url, $applicant_files_path) !== 0 && strpos($url, 'tmp/') !== 0) {
 		    die (JText::_('ACCESS_DENIED'));
 	    }
         
