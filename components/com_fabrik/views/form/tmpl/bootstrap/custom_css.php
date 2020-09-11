@@ -500,7 +500,7 @@ form#member-profile .form-horizontal .control-label {
 }
 /* Inscription */
 
-  .view-registration .login.em-formRegistrationCenter,  .view-form .em-formRegistrationCenter {
+  .view-registration .login.em-formRegistrationCenter,  .view-form .em-formRegistrationCenter:not(.componentheading) {
      display: flex !important;
     flex-direction: column;
     align-items: center;
@@ -1088,7 +1088,7 @@ ol li {
    margin-bottom: 10px;
 }
 
-.view-registration form .button.btn.btn-primary.save-btn.sauvegarder.button.register {
+.view-registration form .button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form .em-formRegistrationCenter .button.btn.btn-primary.save-btn.sauvegarder.button.register {
     height: 50px !important;
     text-transform: capitalize;
 }
@@ -1240,13 +1240,13 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 
-.view-registration form #jos_emundus_users___civility .row-fluid {
+.view-registration form #jos_emundus_users___civility .row-fluid, .view-form .em-formRegistrationCenter form #jos_emundus_users___civility .row-fluid {
      display: flex;
     justify-content: flex-start;
     flex-direction: row;
 }
 
-.view-registration form #jos_emundus_users___civility .row-fluid .fabrikgrid_radio:nth-child(1) {
+.view-registration form #jos_emundus_users___civility .row-fluid .fabrikgrid_radio:nth-child(1), .view-form .em-formRegistrationCenter form #jos_emundus_users___civility .row-fluid .fabrikgrid_radio:nth-child(1) { 
     margin-right: 26px;
 }
 
@@ -1591,17 +1591,20 @@ a.btn-attach:active {
 
 /*** CONNEXION - CANDIDATER ***/
 
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter h1.g-title {
+    margin-bottom: 0px; 
+}
+
+
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
     display: flex !important;
     flex-direction: column;
     align-items: center;
     background: #fafafa;
     width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 50px;
-    padding-bottom: 50px;
-    margin-bottom: 100px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-bottom: 50px !important;
 }
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {

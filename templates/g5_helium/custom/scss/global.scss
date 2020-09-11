@@ -516,7 +516,7 @@ a {
 
   /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 
-  .view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form button.register {
+  .view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form .em-formRegistrationCenter .button.btn.btn-primary.save-btn.sauvegarder.button.register {
     background-color:$base-secondary-color !important;
     color: #ffffff !important;
     border-color: $base-secondary-color !important;
