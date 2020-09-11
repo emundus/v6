@@ -517,9 +517,9 @@ form#member-profile .form-horizontal .control-label {
     background: #fafafa;
 }
 
-  /* TEST TITRE inscription */
+  /* ICON  TITRE INSCRIPTION */
 
-  .view-registration .login div.em-heading-registration {
+  .view-registration .login div.em-heading-registration,  .view-form .em-formRegistrationCenter div.em-heading-registration  {
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;
@@ -528,12 +528,12 @@ form#member-profile .form-horizontal .control-label {
     margin-left: auto;
     margin-right: auto;
 }
-.view-registration .login div.em-heading-registration  div.icon-title.registrationicon {
+.view-registration .login div.em-heading-registration  div.icon-title.registrationicon, .view-form .em-formRegistrationCenter div.em-heading-registration {
       background-image: url(/components/com_emundus_onboard/src/assets/images/register.svg);
       background-size: contain;
 }
 
-.view-registration .login div.em-heading-registration  div.icon-title  {
+.view-registration .login div.em-heading-registration div.icon-title, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title {
       margin-right: 10px;
       width: 40px;
       height: 40px;
@@ -1101,9 +1101,8 @@ ol li {
   padding-left: 0px;
 }
 
-.view-registration form.fabrikForm .controls select {
-    border-radius : 0px; 
-    height: 41px !important;
+.view-registration form.fabrikForm .controls select, .view-form .em-formRegistrationCenter form .controls select {
+    height: 50px !important;
 }
 
 .view-registration form .fabrikActions.form-actions{
