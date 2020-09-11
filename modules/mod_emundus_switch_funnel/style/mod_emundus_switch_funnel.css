@@ -26,6 +26,10 @@
     border-radius: 5px;
 }
 
+.switch-link:focus{
+    text-decoration: none;
+}
+
 .switch-link-setting{
     height: 64px;
     display: flex;
