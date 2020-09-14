@@ -54,6 +54,7 @@ JText::script('COM_EMUNDUS_ONBOARD_PDF_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0 , 2);

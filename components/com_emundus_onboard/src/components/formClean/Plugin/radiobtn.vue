@@ -8,7 +8,6 @@
       </div>
       <div class="col-md-8 flex">
         <label class="require col-md-3">{{suboptions}} :</label>
-        <button @click.prevent="add" class="add-option">+</button>
       </div>
       <div class="col-md-10">
         <draggable
@@ -24,7 +23,8 @@
             <button @click.prevent="leave(i)" class="remove-option">-</button>
           </div>
         </draggable>
-    </div>
+        <button @click.prevent="add" class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">{{AddOption}}</button>
+      </div>
   </div>
   </div>
 </template>
@@ -46,6 +46,7 @@ export default {
       arraySubValues: [],
       helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
       suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
+      AddOption: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
     };
   },
   methods: {

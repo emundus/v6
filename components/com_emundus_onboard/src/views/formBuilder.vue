@@ -417,7 +417,7 @@
         this.formObjectArray[index].object.show_title.value = label;
       },
       UpdateIntro(index, intro) {
-        this.formObjectArray[index].object.intro = intro;
+        this.formObjectArray[index].object.intro_value = intro;
       },
       UpdateUXT() {
         this.UpdateUx = true;
@@ -639,7 +639,18 @@
 
       sendForm() {
         if(this.cid != 0){
-          window.location.replace('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=1');
+          axios({
+            method: "get",
+            url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+            params: {
+              link: 'index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=1',
+            },
+            paramsSerializer: params => {
+              return qs.stringify(params);
+            }
+          }).then(response => {
+            window.location.href = window.location.pathname + response.data.data;
+          });
         } else {
           axios({
             method: "get",
