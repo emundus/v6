@@ -74,10 +74,8 @@ class EmundusonboardViewForm extends FabrikViewFormBase
             $show_title->label = new stdClass;
             $show_title->label->fr = $formbuilder->getTranslationFr($form->form->label);
             $show_title->label->en = $formbuilder->getTranslationEn($form->form->label);
-            if($show_title->label->fr == ''){
+            if($show_title->label->fr == '' && $show_title->label->en == ''){
                 $show_title->label->fr = $form->form->label;
-            }
-            if($show_title->label->en == ''){
                 $show_title->label->en = $form->form->label;
             }
             $returnObject->show_title = $show_title;
@@ -130,10 +128,8 @@ class EmundusonboardViewForm extends FabrikViewFormBase
             ${"group_".$GroupProperties->id}->label = new stdClass;
             ${"group_".$GroupProperties->id}->label->fr = $formbuilder->getTranslationFr($GroupProperties->name);
             ${"group_".$GroupProperties->id}->label->en = $formbuilder->getTranslationEn($GroupProperties->name);
-            if (${"group_".$GroupProperties->id}->label->fr == ''){
+            if (${"group_".$GroupProperties->id}->label->fr == '' && ${"group_".$GroupProperties->id}->label->en == ''){
                 ${"group_".$GroupProperties->id}->label->fr = $GroupProperties->name;
-            }
-            if (${"group_".$GroupProperties->id}->label->en == ''){
                 ${"group_".$GroupProperties->id}->label->en = $GroupProperties->name;
             }
 
@@ -193,10 +189,8 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                     ${"element" . $o_element->id}->label = new stdClass;
                     ${"element" . $o_element->id}->label->fr = $formbuilder->getTranslationFr(${"element" . $o_element->id}->label_tag);
                     ${"element" . $o_element->id}->label->en = $formbuilder->getTranslationEn(${"element" . $o_element->id}->label_tag);
-                    if(${"element" . $o_element->id}->label->fr == ''){
+                    if(${"element" . $o_element->id}->label->fr == '' && ${"element" . $o_element->id}->label->en == ''){
                         ${"element" . $o_element->id}->label->fr = $o_element->label;
-                    }
-                    if(${"element" . $o_element->id}->label->en == ''){
                         ${"element" . $o_element->id}->label->en = $o_element->label;
                     }
                     ${"element" . $o_element->id}->labelToFind = $element->label;

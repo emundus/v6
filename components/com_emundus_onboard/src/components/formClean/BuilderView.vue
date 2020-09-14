@@ -14,21 +14,31 @@
       </span>
     </div>
     <div style="width: max-content" v-show="updatePage && indexPage == object_json.id">
-      <div class="input-can-translate" style="margin-top: 40px">
+      <div class="input-can-translate" style="margin-top: 40px; margin-left: 20px">
         <input v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_page ? '' : 'mb-1'" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
         <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPage(object_json.id)"></button>
         <div class="d-flex actions-update-label" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
-          <a @click="updatePage = false" :title="Cancel">
-            <em class="fas fa-times ml-10px" data-toggle="tooltip" data-placement="top"></em>
-          </a>
           <a @click="updateLabelPage(object_json)" :title="Validate">
-            <em class="fas fa-check ml-20px mr-1" data-toggle="tooltip" data-placement="top"></em>
+            <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
           </a>
         </div>
       </div>
       <translation v-if="object_json.show_title"  :label="object_json.show_title.label" :actualLanguage="actualLanguage" v-if="translate.label_page"></translation>
     </div>
-    <p v-if="eval == 0 && !updatePage" class="introP" v-html="object_json.intro_value" />
+
+    <p v-if="eval == 0 && !updateIntroPage" class="introP" v-html="object_json.intro_value" @click="enableUpdatingPageIntro(object_json)" />
+    <div style="width: max-content" v-show="updateIntroPage && indexPage == object_json.id">
+      <div class="input-can-translate" style="margin-top: 10px; margin-left: 20px">
+        <textarea v-if="object_json.intro" v-model="object_json.intro[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.intro_page ? '' : 'mb-1'" :id="'update_intro_' + object_json.id"/>
+        <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.intro_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPageIntro(object_json.id)"></button>
+        <div class="d-flex actions-update-label" :style="translate.intro_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+          <a @click="updateIntroValuePage(object_json)" :title="Validate">
+            <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
+          </a>
+        </div>
+      </div>
+      <translation v-if="object_json.intro"  :label="object_json.intro" :actualLanguage="actualLanguage" v-if="translate.intro_page"></translation>
+    </div>
 
     <form method="post" v-on:submit.prevent object_json.attribs class="form-page">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
@@ -74,11 +84,8 @@
                   <input v-model="group.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
                   <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationGroup(group.group_id)"></button>
                   <div class="d-flex actions-update-label" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
-                    <a @click="updateGroup = false;translate.label_group = false" :title="Cancel">
-                      <em class="fas fa-times ml-10px" data-toggle="tooltip" data-placement="top"></em>
-                    </a>
                     <a @click="updateLabelGroup(group)" :title="Validate">
-                      <em class="fas fa-check ml-20px mr-1" data-toggle="tooltip" data-placement="top"></em>
+                      <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
                     </a>
                     <a @click="enableRepatedGroup(group)" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon" :title="RepeatGroup">
                       <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
@@ -139,11 +146,8 @@
                           <input v-model="element.label[actualLanguage]" class="form__input field-general w-input" :class="translate.label ? '' : 'mb-1'" @keyup.enter="updateLabelElement(element)" :id="'label_' + element.id"/>
                           <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationLabel(element.id)"></button>
                           <div class="d-flex actions-update-label" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
-                            <a @click="clickUpdatingLabel = false;translate.label = false" :title="Cancel">
-                              <em class="fas fa-times ml-20px" data-toggle="tooltip" data-placement="top"></em>
-                            </a>
                             <a @click="updateLabelElement(element)" :title="Validate">
-                              <em class="fas fa-check ml-20px" data-toggle="tooltip" data-placement="top"></em>
+                              <em class="fas fa-check" data-toggle="tooltip" data-placement="top"></em>
                             </a>
                           </div>
                         </div>
@@ -248,6 +252,7 @@ export default {
 
       // Page trigger
       updatePage: false,
+      updateIntroPage: false,
       indexPage: -1,
 
       // Groups trigger
@@ -612,7 +617,7 @@ export default {
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(!rep.data.scalar){
+        if(rep.data.data.every(x => x = false)){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updategrouplabelwithouttranslation",
@@ -814,10 +819,6 @@ export default {
         fr: page.show_title.label.fr,
         en: page.show_title.label.en
       }
-      let intros = {
-        fr: page.intro_fr,
-        en: page.intro_en
-      }
       axios({
         method: "post",
         url:
@@ -830,7 +831,7 @@ export default {
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(!rep.data.scalar){
+        if(rep.data.data.every(x => x = false)){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepagelabelwithouttranslation",
@@ -843,29 +844,66 @@ export default {
             })
           });
         }
-            /*axios({
-              method: "post",
-              url:
-                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=formsTrad",
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-              },
-              data: qs.stringify({
-                labelTofind: page.intro_raw,
-                NewSubLabel: intros
-              })
-            }).then(() => {*/
-              this.$emit(
-                  "show",
-                  "foo-velocity",
-                  "success",
-                  this.updateSuccess,
-                  this.update
-              );
-              page.show_title.value = page.show_title.label.fr;
-              page.intro = page.intro_fr;
-              this.updatePage = false;
-            //});
+        this.$emit(
+            "show",
+            "foo-velocity",
+            "success",
+            this.updateSuccess,
+            this.update
+        );
+        page.show_title.value = page.show_title.label.fr;
+        this.updatePage = false;
+      }).catch(e => {
+        this.$emit(
+            "show",
+            "foo-velocity",
+            "error",
+            this.updateFailed,
+            this.updating
+        );
+        console.log(e);
+      });
+    },
+
+    updateIntroValuePage(page) {
+      let intros = {
+        fr: page.intro.fr,
+        en: page.intro.en
+      }
+      axios({
+        method: "post",
+        url:
+            "index.php?option=com_emundus_onboard&controller=formbuilder&task=formsTrad",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          labelTofind: page.intro_raw,
+          NewSubLabel: intros
+        })
+      }).then((rep) => {
+        if(rep.data.data.every(x => x = false)){
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepageintrowithouttranslation",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              pid: page.id,
+              intro: page.intro.fr
+            })
+          });
+        }
+        this.$emit(
+            "show",
+            "foo-velocity",
+            "success",
+            this.updateSuccess,
+            this.update
+        );
+        page.intro_value = page.intro.fr;
+        this.updateIntroPage = false;
       }).catch(e => {
         this.$emit(
             "show",
@@ -953,6 +991,13 @@ export default {
         document.getElementById('update_input_' + page.id).focus();
       }, 100);
     },
+    enableUpdatingPageIntro(page) {
+      this.updateIntroPage = true;
+      this.indexPage = page.id;
+      setTimeout(() => {
+        document.getElementById('update_intro_' + page.id).focus();
+      }, 100);
+    },
     enableTranslationPage(pid) {
       this.translate.label_page = !this.translate.label_page;
       if(this.translate.label_page) {
@@ -969,7 +1014,7 @@ export default {
       this.translate.intro_page = !this.translate.intro_page;
       if(this.translate.intro_page) {
         /*setTimeout(() => {
-          document.getElementById('intro_page_en_' + pid).focus();
+          document.getElementById('label_page_en_' + pid).focus();
         },100);*/
       } else {
         setTimeout(() => {
