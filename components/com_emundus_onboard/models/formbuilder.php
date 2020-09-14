@@ -383,6 +383,8 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         $textWithoutTags = str_replace('\'', '', strip_tags($oldtext));
 
+        $newtext = str_replace(array("\n","\r"),'',$newtext);
+
         $replacetext = $textWithoutTags . '=' . '"' . str_replace("\"",'',$newtext) . '"';
 
         $textTofind = $textWithoutTags . "=";
@@ -562,6 +564,29 @@ class EmundusonboardModelformbuilder extends JModelList {
             $query->clear()
                 ->update($db->quoteName('#__fabrik_lists'))
                 ->set($db->quoteName('label') . ' = ' . $db->quote($label))
+                ->where($db->quoteName('form_id') . ' = ' . $db->quote($pid));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch(Exception $e) {
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function updatePageIntroWithoutTranslation($pid,$intro) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update($db->quoteName('#__fabrik_forms'))
+                ->set($db->quoteName('intro') . ' = ' . $db->quote($intro))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_lists'))
+                ->set($db->quoteName('introduction') . ' = ' . $db->quote($intro))
                 ->where($db->quoteName('form_id') . ' = ' . $db->quote($pid));
             $db->setQuery($query);
             return $db->execute();

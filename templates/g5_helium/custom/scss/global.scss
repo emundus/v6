@@ -312,6 +312,11 @@ footer#g-footer {
   bottom: 0;
   width: 100vw;
   position: relative;
+  overflow: hidden;
+}
+
+footer#g-footer img{
+  max-width: 200px;
 }
 
 #g-page-surround {
