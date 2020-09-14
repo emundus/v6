@@ -1658,6 +1658,16 @@ class hikashopOrderClass extends hikashopClass {
 			} else if(!empty($product->order_product_options)) {
 				$order->products[$k]->order_product_options = hikashop_unserialize($order->products[$k]->order_product_options);
 			}
+			if(!empty($order->products[$k]->order_product_options['type']) && $order->products[$k]->order_product_options['type'] == 'bundle' && !empty($product->order_product_option_parent_id)) {
+				foreach($order->products as $j => $main_product) {
+					if($product->order_product_option_parent_id == $main_product->order_product_id) {
+						if(!isset($main_product->bundle))
+							$main_product->bundle = array();
+						$main_product->bundle[] = $product;
+						break;
+					}
+				}
+			}
 			if($product->order_product_quantity == 0) {
 				unset($order->products[$k]);
 			}

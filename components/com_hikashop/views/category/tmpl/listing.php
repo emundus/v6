@@ -40,6 +40,9 @@ if(!empty($title) && hikaInput::get()->getVar('hikashop_front_end_main', 0)){
 	<?php
 }
 if(!$this->module){
+	$val = hikaInput::get()->getVar('hikashop_front_end_main',0);
+	hikaInput::get()->set('hikashop_front_end_main',0);
+
 	if(isset($this->element->category_canonical) && !empty($this->element->category_canonical)){
 		$canonicalUrl = hikashop_cleanURL(hikashop_translate($this->element->category_canonical));
 
@@ -100,6 +103,7 @@ if(!$this->module){
 		</div>
 		<?php }
 	}
+	hikaInput::get()->set('hikashop_front_end_main',$val);
 }
 
 $layout_type = $this->params->get('layout_type');

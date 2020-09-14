@@ -42,11 +42,11 @@ class PlgFabrik_ValidationruleIslatin extends PlgFabrik_Validationrule
     {
         if ($data == '')
         {
-            return false;
+            return true;
         }
 
         // Not a latin character
-        preg_match("/[^A-zÀ-ÖØ-öø-ÿ[:punct:] ]/", $data, $matches);
+        preg_match("/[^A-zÀ-ÖØ-öø-ÿ[:punct:][:digit:] ]/", $data, $matches);
 
         return empty($matches) ? true : false;
     }

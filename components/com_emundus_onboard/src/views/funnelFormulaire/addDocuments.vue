@@ -3,6 +3,9 @@
     <ModalAddDocuments
             :cid="this.campaignId"
             :pid="this.profileId"
+            :doc="this.currentDoc"
+            :langue="langue"
+            :manyLanguages="manyLanguages"
             @UpdateDocuments="updateList"
     />
     <transition :name="'slide-down'" type="transition">
@@ -26,6 +29,9 @@
                   {{ document.value }}
                   <span class="document-allowed_types">({{ document.allowed_types }})</span>
                 </span>
+                <button type="button" class="buttonDeleteDoc" style="margin-left: 0" @click="openUpdateDoc(document)">
+                  <em class="fas fa-pencil-alt"></em>
+                </button>
                 <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
                   <em class="fas fa-times"></em>
                 </button>
@@ -91,6 +97,9 @@
               </button>
               <div style="display: inline;">
                 <span class="draggable">{{ undocument.value }} <span class="document-allowed_types">({{ undocument.allowed_types }})</span></span>
+                <button type="button" class="buttonDeleteDoc" style="margin-left: 0" @click="openUpdateDoc(undocument)">
+                  <em class="fas fa-pencil-alt"></em>
+                </button>
                 <div :id="'spanDoc' + undocument.id" class="text-no-assigned">
                   <span class="col-md-10">{{ inners[langue][0] }}</span>
                   <div v-show="undocument.can_be_deleted" class="ml-10px" @click="deleteDocument(undocument.id,indexUndoc)">
@@ -132,9 +141,10 @@ export default {
     obligatoireDoc: Number,
     profileId: Number,
     campaignId: Number,
-    langue: Number,
+    langue: String,
     formulaireEmundus: Number,
-    menuHighlight: Number
+    menuHighlight: Number,
+    manyLanguages: Number
   },
 
   data() {
@@ -142,11 +152,12 @@ export default {
       drag: false,
 
       obligatoireDoc: 0,
+      currentDoc: null,
 
-      inners: [
-        ["Non assigné", "Facultatif", "Obligatoire"],
-        ["Unassigned", "Optional", "Mandatory"]
-      ],
+      inners: {
+        fr: ["Non assigné", "Facultatif", "Obligatoire"],
+        en: ["Unassigned", "Optional", "Mandatory"]
+      },
 
       documents: [],
       undocuments: [],
@@ -198,6 +209,11 @@ export default {
                             var infos = {
                               id: unattachment.id,
                               value: unattachment.value,
+                              value_fr: unattachment.value_fr,
+                              value_en: unattachment.value_en,
+                              description_fr: unattachment.description_fr,
+                              description_en: unattachment.description_en,
+                              nbmax: unattachment.nbmax,
                               ordering: unattachment.ordering,
                               can_be_deleted: unattachment.can_be_deleted,
                               allowed_types: unattachment.allowed_types,
@@ -305,6 +321,13 @@ export default {
       this.documents.push(oldUndoc);
       this.updateDocuments();
     },
+
+    openUpdateDoc(document) {
+      this.currentDoc = document;
+      setTimeout(() => {
+        this.$modal.show('modalAddDocuments');
+      },100);
+    }
   },
 
   computed: {

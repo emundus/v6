@@ -85,6 +85,7 @@ if (document.getElementById('em-addCampaign-vue')) {
           campaign: this.$el.attributes.campaign.value,
           actualLanguage: this.$el.attributes.actualLanguage.value,
           coordinatorAccess: this.$el.attributes.coordinatorAccess.value,
+          manyLanguages: this.$el.attributes.manyLanguages.value,
         }
       });
     }
@@ -128,6 +129,7 @@ if (document.getElementById('em-addFormNextCampaign-vue')) {
           campaignId: this.$el.attributes.campaignId.value,
           actualLanguage: this.$el.attributes.actualLanguage.value,
           index: this.$el.attributes.index.value,
+          manyLanguages: this.$el.attributes.manyLanguages.value,
         }
       });
     }
@@ -144,6 +146,8 @@ if (document.getElementById('em-formBuilder-vue')) {
           index: this.$el.attributes.index.value,
           cid: this.$el.attributes.cid.value,
           eval: this.$el.attributes.eval.value,
+          actualLanguage: this.$el.attributes.actualLanguage.value,
+          manyLanguages: this.$el.attributes.manyLanguages.value
         }
       });
     }
@@ -174,6 +178,7 @@ if (document.getElementById('em-globalSettings-vue')) {
         props: {
           actualLanguage: this.$el.attributes.actualLanguage.value,
           coordinatorAccess: this.$el.attributes.coordinatorAccess.value,
+          manyLanguages: this.$el.attributes.manyLanguages.value,
         }
       });
     }

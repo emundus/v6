@@ -197,6 +197,24 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 				// If we get a litteral OK from the API, add the tag to our file.
 				if ($response->body->retour === "OK" || $response->body->retour === "POK") {
 					JLog::add('POST ok for file ID : '.$file->codDossier, JLog::INFO, 'com_emundus.emundusnantesscholargpush');
+
+					if (!empty($response->body->operationEffectuee->codeEtudiant)) {
+
+						$query->clear()
+							->update($db->quoteName('jos_emundus_academic'))
+							->set($db->quoteName('num_etudiant').' = '.$db->quote($response->body->operationEffectuee->codeEtudiant))
+							->set($db->quoteName('etudiant_nantes').' = '.$db->quote('oui'))
+							->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+						$db->setQuery($query);
+
+						try {
+							$db->execute();
+						} catch (Exception $e) {
+							JLog::add('Error updating student ID number : '.$e->getMessage(), JLog::ERROR, 'com_emundus.emundusnantesscholargpush');
+						}
+
+					}
+					
 					$valid_fnums[] = $fnum;
 				}
 

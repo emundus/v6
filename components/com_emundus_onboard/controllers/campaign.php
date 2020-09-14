@@ -500,5 +500,30 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         exit;
     }
 
+    public function updatedocument() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $document = $jinput->getRaw('document');
+            $types = $jinput->getRaw('types');
+            $did = $jinput->getInt('did');
+            $m_camp = $this->model;
+
+            $result = $m_camp->updateDocument($document,$types,$did);
+
+            if ($result) {
+                $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATED'), 'data' => $result);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => $result);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
 }
 

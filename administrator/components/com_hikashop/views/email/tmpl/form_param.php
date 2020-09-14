@@ -1,122 +1,108 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	2.6.4
+ * @version	4.3.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2016 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><div>
-	<?php echo $this->tabs->startPane( 'mail_tab');?>
-		<?php echo $this->tabs->startPanel(JText::_('MAIN_INFORMATION'),'mail_infos');?>
-			<table class="paramlist admintable table" width="100%">
-		<tr>
-			<td class="paramlist_key">
-					<?php echo JText::_( 'EMAIL_SUBJECT' ); ?>
-			</td>
-			<td>
-				<input type="text" name="data[mail][subject]" id="subject" class="inputbox" style="width:80%" value="<?php echo $this->escape(@$this->mail->subject); ?>" />
-			</td>
-		</tr>
-		<tr>
-			<td class="paramlist_key">
-				<?php echo JText::_( 'SEND_HTML' ); ?>
-			</td>
-			<td>
-				<?php echo JHTML::_('hikaselect.booleanlist', "data[mail][html]" , 'onchange="updateEditor(this.value)"',$this->mail->html); ?>
-			</td>
-		</tr>
-		<tr>
-			<td class="paramlist_key">
-				<?php echo JText::_( 'HIKA_PUBLISHED' ); ?>
-			</td>
-			<td>
-				<?php echo JHTML::_('hikaselect.booleanlist', "data[mail][published]" , '',$this->mail->published); ?>
-			</td>
-		</tr>
-		<?php
-		$emailPlugin = JPluginHelper::getPlugin('hikashop', 'email_history');
-		if($emailPlugin){ ?>
-		<tr>
-			<td class="paramlist_key">
-				<?php echo JText::_( 'EMAIL_HISTORY' ); ?>
-			</td>
-			<td>
-				<?php echo JHTML::_('hikaselect.booleanlist', "data[mail][email_log_published]" , '',$this->mail->email_log_published); ?>
-			</td>
-		</tr>
-		<?php } ?>
-	</table>
-		<?php echo $this->tabs->endPanel(); ?>
- 	<?php echo $this->tabs->startPanel(JText::_( 'ATTACHMENTS' ), 'mail_attachments');?>
-		<?php if(!empty($this->mail->attach)){?>
-		<fieldset class="adminform">
-		<legend><?php echo JText::_( 'ATTACHED_FILES' ); ?></legend>
-			<?php
-					foreach($this->mail->attach as $idAttach => $oneAttach){
-						$idDiv = 'attach_'.$idAttach;
-						echo '<div id="'.$idDiv.'">'.$oneAttach->filename.' ('.(round($oneAttach->size/1000,1)).' Ko)';
-						echo $this->toggleClass->delete($idDiv,$this->mail->mail_name.'_'.$idAttach,'email');
-				echo '</div>';
-					}
-		?>
-		</fieldset>
-		<?php } ?>
-		<div id="loadfile">
-			<input type="file" size="30" name="attachments[]" />
-		</div>
-		<a href="javascript:void(0);" onclick='addFileLoader()'><?php echo JText::_('ADD_ATTACHMENT'); ?></a>
-			<?php echo JText::sprintf('MAX_UPLOAD',$this->values->maxupload);?>
-		<?php echo $this->tabs->endPanel(); echo $this->tabs->startPanel(JText::_( 'SENDER_INFORMATIONS' ), 'mail_sender');?>
-		<table width="100%" class="paramlist admintable table">
-			<tr>
-					<td class="paramlist_key">
-						<?php echo JText::_( 'FROM_NAME' ); ?>
-					</td>
-					<td class="paramlist_value">
-						<input class="inputbox" type="text" name="data[mail][from_name]" size="40" value="<?php echo $this->escape($this->mail->from_name); ?>" />
-					</td>
-				</tr>
-			<tr>
-				<td class="paramlist_key">
-					<?php echo JText::_( 'FROM_ADDRESS' ); ?>
-				</td>
-				<td class="paramlist_value">
-					<input class="inputbox" type="text" name="data[mail][from_email]" size="40" value="<?php echo $this->escape($this->mail->from_email); ?>" />
-				</td>
-			</tr>
-			<tr>
-				<td class="paramlist_key">
-				<?php echo JText::_( 'REPLYTO_NAME' ); ?>
-				</td>
-				<td class="paramlist_value">
-					<input class="inputbox" type="text" name="data[mail][reply_name]" size="40" value="<?php echo $this->escape($this->mail->reply_name); ?>" />
-				</td>
-			</tr>
-			<tr>
-			<td class="paramlist_key">
-				<?php echo JText::_( 'REPLYTO_ADDRESS' ); ?>
-				</td>
-				<td class="paramlist_value">
-					<input class="inputbox" type="text" name="data[mail][reply_email]" size="40" value="<?php echo $this->escape($this->mail->reply_email); ?>" />
-				</td>
-			</tr>
-			<td class="paramlist_key">
-				<?php echo JText::_( 'BCC' ); ?>
-				</td>
-				<td class="paramlist_value">
-					<input class="inputbox" type="text" name="data[mail][bcc_email]" size="40" value="<?php echo $this->escape($this->mail->bcc_email); ?>" />
-				</td>
-			</tr>
+?><div class="hikashop_backend_tile_edition">
+	<div class="hk-container-fluid">
+		<div class="hkc-xl-6 hkc-lg-6 hikashop_tile_block hikashop_mail_edit_general"><div>
+			<div class="hikashop_tile_title"><?php echo JText::_('MAIN_INFORMATION'); ?></div>
+			<dl class="hika_options large">
+				<dt><?php echo JText::_('EMAIL_SUBJECT'); ?></dt>
+				<dd class="input_large">
+					<input type="text" name="data[mail][subject]" id="subject" class="inputbox" value="<?php echo $this->escape(@$this->mail->subject); ?>" />
+				</dd>
 
-			<td class="paramlist_key">
-				<?php echo JText::_( 'CC' ); ?>
-				</td>
-				<td class="paramlist_value">
-					<input class="inputbox" type="text" name="data[mail][cc_email]" size="40" value="<?php echo $this->escape($this->mail->cc_email); ?>" />
-				</td>
-			</tr>
-		</table>
-<?php echo $this->tabs->endPanel(); echo $this->tabs->endPane(); ?>
+				<dt><?php echo JText::_('SEND_HTML'); ?></dt>
+				<dd class=""><?php
+					echo JHTML::_('hikaselect.booleanlist', 'data[mail][html]' , 'onchange="updateEditor(this.value)"', $this->mail->html);
+				?></dd>
+
+				<dt><?php echo JText::_('HIKA_PUBLISHED'); ?></dt>
+				<dd class=""><?php
+					echo JHTML::_('hikaselect.booleanlist', 'data[mail][published]' , '', $this->mail->published);
+				?></dd>
+<?php if(!empty($this->email_history_plugin)) { ?>
+				<dt><?php echo JText::_('EMAIL_HISTORY'); ?></dt>
+				<dd class=""><?php
+					echo JHTML::_('hikaselect.booleanlist', 'data[mail][email_log_published]' , '', $this->mail->email_log_published);
+				?></dd>
+<?php } ?>
+
+				<dt><?php echo JText::_('EMAIL_TEMPLATE');  ?></dt>
+				<dd class=""><?php
+					echo $this->emailtemplateType->display('data[mail][template]', $this->mail->template, $this->mail->mail_name);
+				?></dd>
+
+				<dt><?php echo JText::_('ATTACHED_FILES'); ?></dt>
+				<dd class=""><?php
+	$options = array(
+		'classes' => array(
+			'mainDiv' => 'hikashop_main_file_div',
+			'contentClass' => 'hikashop_product_files',
+			'btn_upload' => 'fa fa-upload'
+		),
+		'upload' => true,
+		'tooltip' => true,
+		'text' => JText::_('HIKA_MAIL_FILES_EMPTY_UPLOAD'),
+		'uploader' => array('email', 'mail_file'),
+		'vars' => array(
+			'mail_name' => $this->mail->mail_name,
+			'file_type' => 'file'
+		)
+	);
+	$content = array();
+	if(!empty($this->mail->attach)) {
+		$js = null;
+		foreach($this->mail->attach as $k => $v) {
+			$v->uploader_id = 'hikashop_mail_files';
+			$v->field_name = 'data[mail][attachments][]';
+			$content[] = hikashop_getLayout('upload', 'file_entry', $v, $js);
+		}
+	}
+	echo $this->uploaderType->displayFileMultiple('hikashop_mail_files', $content, $options);
+				?><input type="hidden" name="data[mail][attachments][]" value=""/></dd>
+
+			</dl>
+		</div></div>
+
+		<div class="hkc-xl-6 hkc-lg-6 hikashop_tile_block hikashop_mail_edit_general"><div>
+			<div class="hikashop_tile_title"><?php echo JText::_('SENDER_INFORMATIONS'); ?></div>
+			<dl class="hika_options large">
+				<dt><?php echo JText::_('FROM_NAME'); ?></dt>
+				<dd class="input_large">
+					<input type="text" name="data[mail][from_name]" class="inputbox" value="<?php echo $this->escape(@$this->mail->from_name); ?>" placeholder="<?php echo $this->escape($this->mail->default_values->from_name); ?>"/>
+				</dd>
+
+				<dt><?php echo JText::_('FROM_ADDRESS'); ?></dt>
+				<dd class="input_large">
+					<input type="text" name="data[mail][from_email]" class="inputbox" value="<?php echo $this->escape(@$this->mail->from_email); ?>" placeholder="<?php echo $this->escape($this->mail->default_values->from_email); ?>"/>
+				</dd>
+
+				<dt><?php echo JText::_('REPLYTO_NAME'); ?></dt>
+				<dd class="input_large">
+					<input type="text" name="data[mail][reply_name]" class="inputbox" value="<?php echo $this->escape(@$this->mail->reply_name); ?>" placeholder="<?php echo $this->escape($this->mail->default_values->reply_name); ?>"/>
+				</dd>
+
+				<dt><?php echo JText::_('REPLYTO_ADDRESS'); ?></dt>
+				<dd class="input_large">
+					<input type="text" name="data[mail][reply_email]" class="inputbox" value="<?php echo $this->escape(@$this->mail->reply_email); ?>" placeholder="<?php echo $this->escape($this->mail->default_values->reply_email); ?>"/>
+				</dd>
+
+				<dt><?php echo JText::_('BCC'); ?></dt>
+				<dd class="input_large">
+					<input type="text" name="data[mail][bcc_email]" class="inputbox" value="<?php echo $this->escape(@$this->mail->bcc_email); ?>"/>
+				</dd>
+
+				<dt><?php echo JText::_('CC'); ?></dt>
+				<dd class="input_large">
+					<input type="text" name="data[mail][cc_email]" class="inputbox" value="<?php echo $this->escape(@$this->mail->cc_email); ?>"/>
+				</dd>
+			</dl>
+		</div></div>
 	</div>
+</div>

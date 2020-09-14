@@ -26,10 +26,12 @@
     border-radius: 5px;
 }
 
+.switch-link:focus{
+    text-decoration: none;
+}
+
 .switch-link-setting{
     height: 64px;
-    width: 64px;
-    padding: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -40,6 +42,10 @@
 .switch-link-setting:hover{
     background: #1b1f3c;
     border-radius: 5px;
+    text-decoration: none;
+}
+
+.switch-link-setting:focus{
     text-decoration: none;
 }
 

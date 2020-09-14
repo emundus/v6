@@ -156,6 +156,20 @@ class hikashopUserClass extends hikashopClass {
 		}
 
 		if($new) {
+			$plugin = JPluginHelper::getPlugin('system', 'hikashopgeolocation');
+			if(!empty($plugin) && hikashop_level(2)) {
+				jimport('joomla.html.parameter');
+				$params = new HikaParameter( $plugin->params );
+				if(!empty($params) && $params->get('user',1)) {
+					$geo = new stdClass();
+					$geo->geolocation_ref_id = $element->user_id;
+					$geo->geolocation_type = 'user';
+					$geo->geolocation_ip = $element->user_created_ip;
+					$geolocationClass = hikashop_get('class.geolocation');
+					$geolocationClass->params =& $params;
+					$geolocationClass->save($geo);
+				}
+			}
 			return $element->user_id;
 		}
 

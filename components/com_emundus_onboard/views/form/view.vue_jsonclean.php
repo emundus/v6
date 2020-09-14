@@ -34,6 +34,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
     public function display($tpl = null)
     {
         JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
+        JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');
 
         error_reporting(E_ALL ^ E_NOTICE);
 
@@ -45,6 +46,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
         // Display the template
         $formid = $jinput->getString('formid', null);
 
+        $formbuilder  = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
         $form         = JModelLegacy::getInstance('Form', 'FabrikFEModel');
         $form->setId(intval($formid));
         $getParams		= $form->getParams();
@@ -69,11 +71,27 @@ class EmundusonboardViewForm extends FabrikViewFormBase
             $title = explode('-', $form->getLabel());
             $show_title->titleraw = $form->form->label;
             $show_title->value = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
+            $show_title->label = new stdClass;
+            $show_title->label->fr = $formbuilder->getTranslationFr($form->form->label);
+            $show_title->label->en = $formbuilder->getTranslationEn($form->form->label);
+            if($show_title->label->fr == '' && $show_title->label->en == ''){
+                $show_title->label->fr = $form->form->label;
+                $show_title->label->en = $form->form->label;
+            }
             $returnObject->show_title = $show_title;
         endif;
 
         if ($form->getIntro()) :
-            $returnObject->intro = $form->getIntro();
+            $returnObject->intro_value = $form->getIntro();
+            $returnObject->intro = new stdClass;
+            $returnObject->intro->fr = $formbuilder->getTranslationFr($form->form->intro);
+            $returnObject->intro->en = $formbuilder->getTranslationEn($form->form->intro);
+            if($returnObject->intro->fr == ''){
+                $returnObject->intro->fr = $form->form->intro;
+            }
+            if($returnObject->intro->en == ''){
+                $returnObject->intro->en = $form->form->intro;
+            }
             $returnObject->intro_raw = $form->form->intro;
         endif;
 
@@ -86,9 +104,6 @@ class EmundusonboardViewForm extends FabrikViewFormBase
         endif;
 
         $Groups = new stdClass();
-
-        JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');
-        $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
 
         foreach ($getGroup as $group) :
             $this->group = $group;
@@ -110,8 +125,13 @@ class EmundusonboardViewForm extends FabrikViewFormBase
 
             ${"group_".$GroupProperties->id}->group_showLegend = $GroupProperties->title;
             ${"group_".$GroupProperties->id}->group_tag = $GroupProperties->name;
-            ${"group_".$GroupProperties->id}->label_fr = $formbuilder->getTranslationFr($GroupProperties->name);
-            ${"group_".$GroupProperties->id}->label_en = $formbuilder->getTranslationEn($GroupProperties->name);
+            ${"group_".$GroupProperties->id}->label = new stdClass;
+            ${"group_".$GroupProperties->id}->label->fr = $formbuilder->getTranslationFr($GroupProperties->name);
+            ${"group_".$GroupProperties->id}->label->en = $formbuilder->getTranslationEn($GroupProperties->name);
+            if (${"group_".$GroupProperties->id}->label->fr == '' && ${"group_".$GroupProperties->id}->label->en == ''){
+                ${"group_".$GroupProperties->id}->label->fr = $GroupProperties->name;
+                ${"group_".$GroupProperties->id}->label->en = $GroupProperties->name;
+            }
 
             if ($GroupProperties->class) :
                 ${"group_".$GroupProperties->id}->group_class = $GroupProperties->class;
@@ -137,80 +157,86 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 $this->element = $element;
                 $d_element = $this->element;
                 $o_element = $d_element->element;
-                $el_parmas = json_decode($o_element->params);
-                $content_element = $element->preRender('0','1','bootstrap');
-                ${"element".$o_element->id} = new stdClass();
+                //if($o_element->plugin != 'calc') {
+                    $el_parmas = json_decode($o_element->params);
+                    $content_element = $element->preRender('0', '1', 'bootstrap');
+                    ${"element" . $o_element->id} = new stdClass();
 
-                $labelsAbove = $content_element->labels;
+                    $labelsAbove = $content_element->labels;
 
-                ${"element".$o_element->id}->id = $o_element->id;
-                ${"element".$o_element->id}->group_id = $GroupProperties->id;
-                ${"element".$o_element->id}->hidden = $content_element->hidden;
-                ${"element".$o_element->id}->labelsAbove=$labelsAbove;
-                ${"element".$o_element->id}->plugin=$o_element->plugin;
-                if($el_parmas->validations->plugin != null){
-                    if(is_array($el_parmas->validations->plugin)) {
-                        $FRequire = in_array('notempty', $el_parmas->validations->plugin);
-                    } elseif ($el_parmas->validations->plugin == 'notempty') {
-                        $FRequire = true;
+                    ${"element" . $o_element->id}->id = $o_element->id;
+                    ${"element" . $o_element->id}->group_id = $GroupProperties->id;
+                    ${"element" . $o_element->id}->hidden = $content_element->hidden;
+                    ${"element" . $o_element->id}->default = $o_element->default;
+                    ${"element" . $o_element->id}->labelsAbove = $labelsAbove;
+                    ${"element" . $o_element->id}->plugin = $o_element->plugin;
+                    if ($el_parmas->validations->plugin != null) {
+                        if (is_array($el_parmas->validations->plugin)) {
+                            $FRequire = in_array('notempty', $el_parmas->validations->plugin);
+                        } elseif ($el_parmas->validations->plugin == 'notempty') {
+                            $FRequire = true;
+                        } else {
+                            $FRequire = false;
+                        }
                     } else {
                         $FRequire = false;
                     }
-                } else {
-                    $FRequire = false;
-                }
 
 
-                ${"element".$o_element->id}->FRequire=$FRequire;
-                ${"element".$o_element->id}->params=$el_parmas;
-                ${"element".$o_element->id}->label_tag='ELEMENT_' . $GroupProperties->id . '_' . $o_element->id;
-                ${"element".$o_element->id}->label_fr = $formbuilder->getTranslationFr(${"element".$o_element->id}->label_tag);
-                ${"element".$o_element->id}->label_en = $formbuilder->getTranslationEn(${"element".$o_element->id}->label_tag);
-                ${"element".$o_element->id}->labelToFind=$element->label;
-                ${"element".$o_element->id}->publish=$element->isPublished();
+                    ${"element" . $o_element->id}->FRequire = $FRequire;
+                    ${"element" . $o_element->id}->params = $el_parmas;
+                    ${"element" . $o_element->id}->label_tag = $o_element->label;
+                    ${"element" . $o_element->id}->label = new stdClass;
+                    ${"element" . $o_element->id}->label->fr = $formbuilder->getTranslationFr(${"element" . $o_element->id}->label_tag);
+                    ${"element" . $o_element->id}->label->en = $formbuilder->getTranslationEn(${"element" . $o_element->id}->label_tag);
+                    if(${"element" . $o_element->id}->label->fr == '' && ${"element" . $o_element->id}->label->en == ''){
+                        ${"element" . $o_element->id}->label->fr = $o_element->label;
+                        ${"element" . $o_element->id}->label->en = $o_element->label;
+                    }
+                    ${"element" . $o_element->id}->labelToFind = $element->label;
+                    ${"element" . $o_element->id}->publish = $element->isPublished();
 
 
+                    if ($labelsAbove == 2) {
+                        if ($el_parmas->tipLocation == 'above') :
+                            ${"element" . $o_element->id}->tipAbove = $content_element->tipAbove;
+                        endif;
+                        if ($content_element->element) :
+                            ${"element" . $o_element->id}->element = $content_element->element;
+                        endif;
+                        if ($content_element->error) :
+                            ${"element" . $o_element->id}->error = $content_element->error;
+                            ${"element" . $o_element->id}->errorClass = $el_parmas->class;
+                        endif;
+                        if ($el_parmas->tipLocation == 'side') :
+                            ${"element" . $o_element->id}->tipSide = $content_element->tipSide;
+                        endif;
+                        if ($el_parmas->tipLocation == 'below') :
+                            ${"element" . $o_element->id}->tipBelow = $content_element->tipBelow;
+                        endif;
+                    } else {
+                        ${"element" . $o_element->id}->label_value = $content_element->label;
 
-                if ($labelsAbove == 2)
-                {
-                    if ($el_parmas->tipLocation == 'above') :
-                        ${"element".$o_element->id}->tipAbove=$content_element->tipAbove;
-                    endif;
-                    if ($content_element->element) :
-                        ${"element".$o_element->id}->element=$content_element->element;
-                    endif;
-                    if ($content_element->error) :
-                        ${"element".$o_element->id}->error=$content_element->error;
-                        ${"element".$o_element->id}->errorClass=$el_parmas->class;
-                    endif;
-                    if ($el_parmas->tipLocation == 'side') :
-                        ${"element".$o_element->id}->tipSide=$content_element->tipSide;
-                    endif;
-                    if ($el_parmas->tipLocation == 'below') :
-                        ${"element".$o_element->id}->tipBelow=$content_element->tipBelow;
-                    endif;
-                } else {
-                    ${"element".$o_element->id}->label=$content_element->label;
+                        if ($el_parmas->tipLocation == 'above') :
+                            ${"element" . $o_element->id}->tipAbove = $content_element->tipAbove;
+                        endif;
+                        if ($content_element->element) :
+                            ${"element" . $o_element->id}->element = $content_element->element;
+                        endif;
+                        if ($content_element->error) :
+                            ${"element" . $o_element->id}->error = $content_element->error;
+                            ${"element" . $o_element->id}->errorClass = $el_parmas->class;
+                        endif;
+                        if ($el_parmas->tipLocation == 'side') :
+                            ${"element" . $o_element->id}->tipSide = $content_element->tipSide;
+                        endif;
+                        if ($el_parmas->tipLocation == 'below') :
+                            ${"element" . $o_element->id}->tipBelow = $content_element->tipBelow;
+                        endif;
+                    }
 
-                    if ($el_parmas->tipLocation == 'above') :
-                        ${"element".$o_element->id}->tipAbove=$content_element->tipAbove;
-                    endif;
-                    if ($content_element->element) :
-                        ${"element".$o_element->id}->element=$content_element->element;
-                    endif;
-                    if ($content_element->error) :
-                        ${"element".$o_element->id}->error=$content_element->error;
-                        ${"element".$o_element->id}->errorClass=$el_parmas->class;
-                    endif;
-                    if ($el_parmas->tipLocation == 'side') :
-                        ${"element".$o_element->id}->tipSide=$content_element->tipSide;
-                    endif;
-                    if ($el_parmas->tipLocation == 'below') :
-                        ${"element".$o_element->id}->tipBelow=$content_element->tipBelow;
-                    endif;
-                }
-
-                $elements-> {"element".$o_element->id} = ${"element".$o_element->id};
+                    $elements->{"element" . $o_element->id} = ${"element" . $o_element->id};
+                //}
             endforeach;
             ${"group_".$GroupProperties->id}-> elements = $elements;
 

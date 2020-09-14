@@ -32,6 +32,10 @@ div.mod-languages a{
     color: black;
 }
 
+.view-programme .caret {
+    margin-top: 0px !important;
+}
+
 div.mod-languages img{
     margin-right: 5px;
 }
@@ -43,10 +47,11 @@ div.advanced-dropdown a.langChoose:link, div.advanced-dropdown a.langChoose:visi
     justify-content: space-between;
     align-items: center;
     margin-left: 15px;
-    border-radius: 5px;
+    border-radius: 4px;
     background: #eeebeb;
     color: black;
     display: flex;
+    max-height: 38px;
 }
 
 .langChoose__img_label{
@@ -62,4 +67,3 @@ div.advanced-dropdown span.caret{
     margin-left: 5px;
     border-top: 4px solid #000;
 }
-

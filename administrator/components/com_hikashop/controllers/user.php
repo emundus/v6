@@ -16,16 +16,22 @@ class UserController extends hikashopController {
 
 		$this->modify_views = array_merge($this->modify_views, array(
 			'editaddress',
+			'pay',
+			'pay_process'
 		));
 
 		$this->modify = array_merge($this->modify, array(
 			'deleteaddress',
 			'saveaddress',
 			'setdefault',
+			'pay_confirm',
 		));
 
 		$this->display = array_merge($this->display, array(
 			'state',
+			'clicks',
+			'leads',
+			'sales',
 			'selection',
 			'useselection',
 			'getValues',
@@ -160,4 +166,158 @@ class UserController extends hikashopController {
 		exit;
 	}
 
+	public function pay_confirm(){
+		$user_id = hikashop_getCID('user_id');
+
+		if(empty($user_id)) {
+			$url = hikashop_completeLink('user&task=edit&user_id='.$user_id,false,true);
+			echo '<html><head><script type="text/javascript">parent.window.location.href=\''.$url.'\';</script></head><body></body></html>';
+			exit;
+		}
+
+		$userClass = hikashop_get('class.user');
+		$user = $userClass->get($user_id);
+
+		if(empty($user)) {
+			$url = hikashop_completeLink('user&task=edit&user_id='.$user_id,false,true);
+			echo '<html><head><script type="text/javascript">parent.window.location.href=\''.$url.'\';</script></head><body></body></html>';
+			exit;
+		}
+
+		$userClass->loadPartnerData($user);
+		if(!bccomp($user->accumulated['currenttotal'], 0, 5)) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage('No affiliate money accumulated');
+			return false;
+		}
+
+		$config =& hikashop_config();
+		if(!$config->get('allow_currency_selection',0) || empty($user->user_currency_id)) {
+			$user->user_currency_id =  $config->get('partner_currency', 1);
+		}
+
+		$method = hikaInput::get()->getCmd('pay_method');
+		$pay = hikaInput::get()->getInt('pay',0);
+
+		$order = new stdClass();
+		$order->order_currency_id = $user->user_currency_id;
+		$order->order_full_price = $user->accumulated['currenttotal'];
+
+		if(!empty($method) && $pay) {
+			$pluginClass = hikashop_get('class.plugins');
+			$methods = $pluginClass->getMethods('payment');
+			foreach($methods as $methodItem){
+				if($methodItem->payment_type==$method){
+					$order->order_payment_id = $methodItem->payment_id;
+					$order->order_payment_method = $methodItem->payment_type;
+					break;
+				}
+			}
+
+			if(empty($order->order_payment_id)) {
+				$app = JFactory::getApplication();
+				$app->enqueueMessage('Payment method not found');
+				return false;
+			}
+		}
+
+		$order->order_user_id = $user->user_id;
+		$order->order_status = $config->get('order_confirmed_status','confirmed');
+		$order->order_type = 'partner';
+
+		$order->history = new stdClass();
+		$order->history->history_reason = JText::sprintf('ORDER_CREATED');
+		$order->history->history_notified = 0;
+		$order->history->history_type = 'creation';
+
+		$product = new stdClass();
+		$product->order_product_name = JText::sprintf('PAYMENT_TO_PARTNER',@$user->name.' ('.$user->user_partner_email.')');
+		$product->order_product_code = '';
+		$product->order_product_price = $user->accumulated['currenttotal'];
+		$product->order_product_quantity = 1;
+		$product->order_product_tax = 0;
+		$product->order_product_options = '';
+		$product->product_id = 0;
+
+		$order->cart = new stdClass();
+		$order->cart->products = array($product);
+
+		$orderClass = hikashop_get('class.order');
+		$order->order_id = $orderClass->save($order);
+
+		if(!empty($order->order_id)) {
+			$minDelay = $config->get('affiliate_payment_delay', 0);
+			$maxTime = intval(time() - $minDelay);
+
+			$db = JFactory::getDBO();
+
+			$query = 'UPDATE '.hikashop_table('click').' SET click_partner_paid = 1 WHERE click_partner_id = '.$user->user_id.' AND click_created < '.$maxTime;
+			$db->setQuery($query);
+			$db->execute();
+
+			$query = 'UPDATE '.hikashop_table('order').' SET order_partner_paid = 1 WHERE order_type = \'sale\' AND order_partner_id = '.$user->user_id.' AND order_created < '.$maxTime;
+			$db->setQuery($query);
+			$db->execute();
+
+			$query = 'UPDATE '.hikashop_table('user').' SET user_partner_paid = 1 WHERE user_partner_id = '.$user->user_id.' AND user_created < '.$maxTime;
+			$db->setQuery($query);
+			$db->execute();
+
+			if(!empty($order->order_payment_id) && $pay) {
+				$url = hikashop_completeLink('user&task=pay_process&order_id='.$order->order_id,false,true);
+				echo '<html><head><script type="text/javascript">parent.window.location.href=\''.$url.'\';</script></head><body></body></html>';
+				exit;
+			}
+		}
+
+		$url = hikashop_completeLink('user&task=edit&user_id='.$user_id,false,true);
+		echo '<html><head><script type="text/javascript">parent.window.location.href=\''.$url.'\';</script></head><body></body></html>';
+		exit;
+	}
+
+	public function pay_process() {
+		$order_id = hikashop_getCID('order_id');
+		if(empty($order_id)){
+			return false;
+		}
+
+		$orderClass = hikashop_get('class.order');
+		$order = $orderClass->get($order_id);
+
+		$userClass = hikashop_get('class.user');
+		$user = $userClass->get($order->order_user_id);
+
+		$orderClass->loadProducts($order);
+		$order->cart->products =& $order->products;
+
+		$pluginClass = hikashop_get('class.plugins');
+		$methods = $pluginClass->getMethods('payment');
+
+		$methods[$order->order_payment_id]->payment_params->address_type = '';
+		$methods[$order->order_payment_id]->payment_params->cancel_url = HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=user&task=edit&user_id='.$user->user_id;
+		$methods[$order->order_payment_id]->payment_params->return_url = HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=user&task=edit&user_id='.$user->user_id;
+		$methods[$order->order_payment_id]->payment_params->email = $user->user_partner_email;
+
+		$data = hikashop_import('hikashoppayment', $order->order_payment_method);
+		$data->onAfterOrderConfirm($order, $methods, $order->order_payment_id);
+	}
+
+	public function clicks(){
+		hikaInput::get()->set('layout', 'clicks');
+		return parent::display();
+	}
+
+	public function leads(){
+		hikaInput::get()->set('layout', 'leads');
+		return parent::display();
+	}
+	public function sales(){
+		hikaInput::get()->set('layout', 'sales');
+		return parent::display();
+	}
+
+	public function pay(){
+		hikaInput::get()->set('layout', 'pay');
+		return parent::display();
+	}
 }

@@ -85,15 +85,22 @@ JText::script('COM_EMUNDUS_ONBOARD_SAVE');
 JText::script('COM_EMUNDUS_ONBOARD_SAVED');
 JText::script('COM_EMUNDUS_ONBOARD_COLUMN');
 JText::script('COM_EMUNDUS_ONBOARD_PREVIEW');
+JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
 
 
 $lang = JFactory::getLanguage();
-$actualLanguage = substr($lang->getTag(), 0, 2);
+$actualLanguage = substr($lang->getTag(), 0 , 2);
+$languages = JLanguageHelper::getLanguages();
+if(count($languages) > 1){
+    $many_languages = '1';
+} else {
+    $many_languages = '0';
+}
 
 $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
-<div id="em-globalSettings-vue" actualLanguage="<?= $actualLanguage ?>" coordinatorAccess="<?= $coordinator_access ?>"></div>
+<div id="em-globalSettings-vue" actualLanguage="<?= $actualLanguage ?>" coordinatorAccess="<?= $coordinator_access ?>" manyLanguages="<?= $many_languages ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>

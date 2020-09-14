@@ -534,6 +534,8 @@ class EmundusonboardModelform extends JModelList {
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 
+        $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
+
 		if (!is_array($data)) {
 		    $data = array($data);
         }
@@ -552,7 +554,7 @@ class EmundusonboardModelform extends JModelList {
                     // Create a new profile
                     $query->clear()
                         ->insert('#__emundus_setup_profiles')
-                        ->set($db->quoteName('label') . ' = ' . $db->quote($oldprofile->label))
+                        ->set($db->quoteName('label') . ' = ' . $db->quote($oldprofile->label. ' - Copy'))
                         ->set($db->quoteName('published') . ' = 1')
                         ->set($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
                         ->set($db->quoteName('acl_aro_groups') . ' = ' . $db->quote($oldprofile->acl_aro_groups))
@@ -564,7 +566,7 @@ class EmundusonboardModelform extends JModelList {
 
                     $newmenutype = 'menu-profile' . $newprofile;
 
-                    $this->createMenuType($newmenutype,$oldprofile->label);
+                    $this->createMenuType($newmenutype,$oldprofile->label . ' - Copy');
 
                     $query->clear()
                         ->update('#__emundus_setup_profiles')
@@ -572,62 +574,50 @@ class EmundusonboardModelform extends JModelList {
                         ->where($db->quoteName('id') . ' = ' . $db->quote($newprofile));
                     $db->setQuery($query);
                     $db->execute();
+                    //
 
+                    // Duplicate heading menu
                     $query->clear()
                         ->select('*')
                         ->from('#__menu')
-                        ->where($db->quoteName('alias') . ' = ' . $db->quote('applicationform'));
+                        ->where($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
+                        ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'))
+                        ->orWhere($db->quoteName('type') . ' = ' . $db->quote('url'));
 
                     $db->setQuery($query);
-                    $menu_model = $db->loadObject();
+                    $heading_to_duplicate = $db->loadObject();
 
                     $query->clear();
                     $query->insert($db->quoteName('#__menu'));
-                    foreach ($menu_model as $key => $val) {
-                        if ($key != 'id' && $key != 'menutype' && $key != 'title' && $key != 'alias' && $key != 'path') {
+                    foreach ($heading_to_duplicate as $key => $val) {
+                        if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path') {
                             $query->set($key . ' = ' . $db->quote($val));
-                        } elseif ($key == 'menutype' || $key == 'path') {
+                        } elseif ($key == 'menutype') {
                             $query->set($key . ' = ' . $db->quote($newmenutype));
-                        } elseif ($key == 'title') {
-                            $query->set($key . ' = ' . $db->quote($oldprofile->label));
+                        } elseif ($key == 'path') {
+                            $query->set($key . ' = ' . $db->quote($newmenutype));
                         } elseif ($key == 'alias') {
-                            $query->set($key . ' = ' . $db->quote(str_replace(array(' '),'-',strtolower($oldprofile->label . '-duplicate'))));
+                            $query->set($key . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($oldprofile->label . '-Copy')) . '-' . $newprofile));
                         }
                     }
                     $db->setQuery($query);
                     $db->execute();
+                    //
 
                     // Get fabrik_lists
                     $query->clear()
-                        ->select('form_id')
-                        ->from($db->quoteName('#__emundus_setup_formlist'))
-                        ->where($db->quoteName('profile_id') . ' = ' . $db->quote($pid));
-
+                        ->select('link')
+                        ->from('#__menu')
+                        ->where($db->quoteName('menutype') . ' = ' . $db->quote($oldprofile->menutype))
+                        ->andWhere($db->quoteName('type') . ' = ' . $db->quote('component'));
                     $db->setQuery($query);
-                    $lists = $db->loadObjectList();
-                    $listsid_arr = array();
-                    foreach (array_values($lists) as $list) {
-                        if (!in_array($list->form_id, $listsid_arr)) {
-                            $listsid_arr[] = $list->form_id;
+                    $links = $db->loadObjectList();
+
+                    foreach ($links as $link) {
+                        if(strpos($link->link,'formid') !== false){
+                            $formsid_arr[] = explode('=', $link->link)[3];
                         }
                     }
-
-                    // Get forms
-                    $query->clear()
-                        ->select('form_id')
-                        ->from($db->quoteName('#__fabrik_lists'))
-                        ->where($db->quoteName('id') . ' IN (' . implode(", ", array_values($listsid_arr)) . ')');
-
-                    $db->setQuery($query);
-                    $forms = $db->loadObjectList();
-                    $formsid_arr = array();
-                    foreach (array_values($forms) as $form) {
-                        if (!in_array($form->form_id, $formsid_arr)) {
-                            $formsid_arr[] = $form->form_id;
-                        }
-                    }
-
-                    $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
 
                     foreach ($formsid_arr as $formid) {
                         $query->clear()
@@ -646,6 +636,14 @@ class EmundusonboardModelform extends JModelList {
                             'fr' => $formbuilder->getTranslationFr($form->intro),
                             'en' => $formbuilder->getTranslationEn($form->intro),
                         );
+
+                        // Manage old platforms without translation
+                        if($label['fr'] == '') {
+                            $label['fr'] = $form->label;
+                        }
+                        if($label['en'] == '') {
+                            $label['en'] = $form->label;
+                        }
 
                         $formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
                     }
@@ -839,7 +837,7 @@ class EmundusonboardModelform extends JModelList {
 
 		// Insert values.
 		$values = array(
-			251,
+			0,
 			$menutype,
 			$title,
 			'',
@@ -966,22 +964,85 @@ class EmundusonboardModelform extends JModelList {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$query->select([
-				'sap.attachment_id AS id',
-				'sap.ordering',
-				'sap.mandatory AS need',
-				'sa.value',
-                'sa.allowed_types'
-			])
-			->from($db->quoteName('#__emundus_setup_attachment_profiles', 'sap'))
-			->leftJoin($db->quoteName('#__emundus_setup_attachments', 'sa') . ' ON ' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('sap.attachment_id'))
-			->order($db->quoteName('sap.ordering'))
-			->where($db->quoteName('sap.published') . ' = 1')
-			->andWhere($db->quoteName('sap.campaign_id') . ' = ' . $cid);
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
-		try {
+        try {
+            $query->select('*')
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))
+                ->andWhere($db->quoteName('campaign_id') . ' IS NULL ');
+            $db->setQuery($query);
+            $old_docs = $db->loadObjectList();
+
+            if(!empty($old_docs)){
+                $query->clear()
+                    ->select('id')
+                    ->from($db->quoteName('#__emundus_setup_campaigns'))
+                    ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid));
+                $db->setQuery($query);
+                $campaignstoaffect = $db->loadObjectList();
+
+                foreach ($campaignstoaffect as $campaign) {
+                    foreach ($old_docs as $old_doc){
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
+                        foreach ($old_doc as $key => $value) {
+                            if ($key != 'id' && $key != 'campaign_id') {
+                                $query->set($key . ' = ' . $db->quote($value));
+                            } elseif ($key == 'campaign_id') {
+                                $query->set($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign->id));
+                            }
+                        }
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_setup_attachment_profiles'))
+                    ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))
+                    ->andWhere($db->quoteName('campaign_id') . ' IS NULL');
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            $query->clear()
+                ->select([
+                    'sap.attachment_id AS id',
+                    'sap.ordering',
+                    'sap.mandatory AS need',
+                    'sa.value',
+                    'sa.description',
+                    'sa.allowed_types',
+                    'sa.nbmax',
+                    'sa.lbl'
+                ])
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles', 'sap'))
+                ->leftJoin($db->quoteName('#__emundus_setup_attachments', 'sa') . ' ON ' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('sap.attachment_id'))
+                ->order($db->quoteName('sap.ordering'))
+                ->where($db->quoteName('sap.published') . ' = 1')
+                ->andWhere($db->quoteName('sap.campaign_id') . ' = ' . $cid);
+
 			$db->setQuery($query);
-			return $db->loadObjectList();
+			$documents = $db->loadObjectList();
+
+			foreach ($documents as $document) {
+                if(strpos($document->lbl, '_em') === 0){
+                    $document->can_be_deleted = true;
+                } else {
+                    $document->can_be_deleted = false;
+                }
+
+                $f_values = $falang->getFalang($document->id,'emundus_setup_attachments','value');
+                $document->value_en = $f_values->en->value;
+                $document->value_fr = $f_values->fr->value;
+
+                $f_descriptions = $falang->getFalang($document->id,'emundus_setup_attachments','description');
+                $document->description_en = $f_descriptions->en->value;
+                $document->description_fr = $f_descriptions->fr->value;
+            }
+
+			return $documents;
 		} catch (Exception $e) {
             JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
 			return false;
@@ -992,6 +1053,9 @@ class EmundusonboardModelform extends JModelList {
 	public function getUnDocuments() {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
+
+
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
 		$query->select('*')
 			->from($db->quoteName('#__emundus_setup_attachments'))
@@ -1010,6 +1074,14 @@ class EmundusonboardModelform extends JModelList {
                 } else {
                     $undocument->can_be_deleted = false;
                 }
+
+                $f_values = $falang->getFalang($undocument->id,'emundus_setup_attachments','value');
+                $undocument->value_en = $f_values->en->value;
+                $undocument->value_fr = $f_values->fr->value;
+
+                $f_descriptions = $falang->getFalang($undocument->id,'emundus_setup_attachments','description');
+                $undocument->description_en = $f_descriptions->en->value;
+                $undocument->description_fr = $f_descriptions->fr->value;
             }
 
 			return $undocuments;

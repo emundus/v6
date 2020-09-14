@@ -197,7 +197,7 @@ textarea.form-control.add-contact
 }
 
 .btn.btn-default.xs.pull-right:hover {
-    background-color: #4e5b6d;
+    background-color: #1b1f3c;
 }
 
 .glyphicon.glyphicon-plus-sign {
@@ -215,9 +215,18 @@ textarea.form-control.add-contact
 }
 
 .btn.btn-primary.btn-xs.pull-right:hover {
-    background-color: #4e5b6d;
-    border-color: #1b1f3c;
+    background-color: #1b1f3c !important;
+    border-color: #1b1f3c !important;
 }
+
+.experts-page div.btn.btn-primary.btn-xs.pull-right[ng-click="addGroup()"], .experts-page div.btn.btn-primary.btn-xs.pull-right[ng-click="addGroup()"]:hover {
+    padding: 8px 12px;
+}
+.experts-page .panel-heading div.btn.btn-default.btn.xs.pull-right {
+    padding: 6px 12px;
+}
+
+
 
 .contact-main {
     display: flex;
@@ -323,4 +332,12 @@ form .btn.btn-danger:hover,
 
 .modal-body {
     max-height: 660px !important;
+}
+
+.g-back-office-emundus-tableau .panel-info > .panel-heading {
+    border-bottom: 2px #FFFFFF dashed;
+    height: 50px !important;
+    border-radius: 0;
+    background-color: #4e5b6d;
+    padding: 10px;
 }

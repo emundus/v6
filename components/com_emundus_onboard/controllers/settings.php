@@ -253,6 +253,8 @@ class EmundusonboardControllersettings extends JControllerLegacy {
 
             if(isset($image)) {
                 $target_dir = "images/custom/";
+                unlink($target_dir . 'logo.png');
+
                 $target_file = $target_dir . basename('logo.png');
 
                 if (move_uploaded_file($image["tmp_name"], $target_file)) {
@@ -466,6 +468,20 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $m_settings = $this->model;
 
             $datas = $m_settings->getEditorVariables();
+            $response = array('status' => '1', 'msg' => 'SUCCESS', 'data' => $datas);
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function getactivelanguages() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $datas = JLanguageHelper::getLanguages();
             $response = array('status' => '1', 'msg' => 'SUCCESS', 'data' => $datas);
         }
         echo json_encode((object)$response);

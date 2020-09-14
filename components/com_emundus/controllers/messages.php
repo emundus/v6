@@ -1144,10 +1144,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 * @param null $post
 	 * @param null $user_id
 	 * @param array $attachments
+     * @param array $fnum If we need to replace fabrik tags
 	 *
 	 * @return bool
 	 */
-	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = []) {
+	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null) {
 
         include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
         $m_email = new EmundusModelEmails;
@@ -1194,15 +1195,16 @@ class EmundusControllerMessages extends JControllerLegacy {
 			];
 		}
 
-		if($user_id != null) {
-            $post = $m_email->setTags($user_id, $post);
+        if($user_id != null) {
+            $password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
+            $post = $m_email->setTags($user_id, $post, null, $password);
+        } else {
+            // Handle [] in post keys.
+            $keys = [];
+            foreach (array_keys($post) as $key) {
+                $keys[] = '/\['.$key.'\]/';
+            }
         }
-
-		// Handle [] in post keys.
-		$keys = [];
-		foreach (array_keys($post) as $key) {
-			$keys[] = '/\['.$key.'\]/';
-		}
 
 
 		// Tags are replaced with their corresponding values using the PHP preg_replace function.
@@ -1221,6 +1223,10 @@ class EmundusControllerMessages extends JControllerLegacy {
             $body = preg_replace($post['patterns'], $post['replacements'], $body);
         } else {
             $body = preg_replace($keys, $post, $body);
+        }
+
+        if($fnum != null) {
+            $body = $m_email->setTagsFabrik($body, array($fnum));
         }
 
 		// Configure email sender

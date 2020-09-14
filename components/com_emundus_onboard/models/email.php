@@ -479,14 +479,14 @@ class EmundusonboardModelemail extends JModelList {
             $to_applicant = 1;
         }
 
-        $query->insert($db->quoteName('#__emundus_setup_emails_trigger'))
-            ->set($db->quoteName('user') . ' = ' . $db->quote($user->id))
-            ->set($db->quoteName('step') . ' = ' . $db->quote($trigger['status']))
-            ->set($db->quoteName('email_id') . ' = ' . $db->quote($trigger['model']))
-            ->set($db->quoteName('to_current_user') . ' = ' . $db->quote($to_current_user))
-            ->set($db->quoteName('to_applicant') . ' = ' . $db->quote($to_applicant));
-
         try {
+            $query->insert($db->quoteName('#__emundus_setup_emails_trigger'))
+                ->set($db->quoteName('user') . ' = ' . $db->quote($user->id))
+                ->set($db->quoteName('step') . ' = ' . $db->quote($trigger['status']))
+                ->set($db->quoteName('email_id') . ' = ' . $db->quote($trigger['model']))
+                ->set($db->quoteName('to_current_user') . ' = ' . $db->quote($to_current_user))
+                ->set($db->quoteName('to_applicant') . ' = ' . $db->quote($to_applicant));
+
             $db->setQuery($query);
             $db->execute();
 
@@ -509,21 +509,6 @@ class EmundusonboardModelemail extends JModelList {
                     $db->setQuery($query);
                     $db->execute();
                 }
-            } elseif ($trigger['target'] == 1000) {
-                $query->clear()
-                    ->select('sc.profile_id')
-                    ->from($db->quoteName('#__emundus_setup_programmes','sp'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.training').' = '.$db->quoteName('sp.training'))
-                    ->where($db->quoteName('sp.id') . ' = ' . $db->quote($trigger['program']));
-                $db->setQuery($query);
-                $prid = $db->loadResult();
-
-                $query->clear()
-                    ->insert($db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id'))
-                    ->set($db->quoteName('parent_id') . ' = ' . $db->quote($trigger_id))
-                    ->set($db->quoteName('profile_id') . ' = ' . $db->quote($prid));
-                $db->setQuery($query);
-                $db->execute();
             }
 
             $query->clear()

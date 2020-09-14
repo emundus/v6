@@ -73,6 +73,8 @@
                             :campaignId="campaignId"
                             :langue="langue"
                             :menuHighlight="menuHighlight"
+                            :langue="actualLanguage"
+                            :manyLanguages="manyLanguages"
                     ></addDocuments>
 
                     <!--          <addEvalEval
@@ -130,7 +132,8 @@
         props: {
             campaignId: Number,
             actualLanguage: String,
-            index: Number
+            index: Number,
+            manyLanguages: Number,
         },
 
         data: () => ({

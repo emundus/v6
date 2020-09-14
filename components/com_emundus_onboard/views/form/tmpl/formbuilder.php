@@ -91,6 +91,7 @@ JText::script('COM_EMUNDUS_ONBOARD_TYPE_CHECKBOX');
 JText::script('COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN');
 JText::script('COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON');
 JText::script('COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA');
+JText::script('COM_EMUNDUS_ONBOARD_TYPE_DISPLAY');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_MAXLENGTH');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER_HELP');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_MENUDELETED');
@@ -124,6 +125,8 @@ JText::script('COM_EMUNDUS_ONBOARD_GROUP');
 JText::script('COM_EMUNDUS_ONBOARD_REQUIRED_FORM');
 JText::script('COM_EMUNDUS_ONBOARD_REQUIRED_GROUP');
 JText::script('COM_EMUNDUS_ONBOARD_CHOOSE_TARGET');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_TEXT');
+JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
 ## END ##
 
 $vue = 'em-formBuilder-vue';
@@ -131,8 +134,17 @@ if($this->eval != 0){
     $vue = 'em-evaluationBuilder-vue';
 }
 
+$lang = JFactory::getLanguage();
+$actualLanguage = substr($lang->getTag(), 0 , 2);
+$languages = JLanguageHelper::getLanguages();
+if(count($languages) > 1){
+    $many_languages = '1';
+} else {
+    $many_languages = '0';
+}
+
 ?>
 
-<div id="<?= $vue; ?>" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>" eval="<?= $this->eval; ?>"></div>
+<div id="<?= $vue; ?>" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>" eval="<?= $this->eval; ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>

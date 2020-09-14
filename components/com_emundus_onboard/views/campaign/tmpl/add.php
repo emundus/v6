@@ -51,15 +51,22 @@ JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER');
 JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS');
 JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED');
+JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0 , 2);
+$languages = JLanguageHelper::getLanguages();
+if(count($languages) > 1){
+    $many_languages = '1';
+} else {
+    $many_languages = '0';
+}
 
 $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
 
-<div id="em-addCampaign-vue" campaign="<?= $this->id ;?>" actualLanguage="<?= $actualLanguage ?>" coordinatorAccess="<?= $coordinator_access ?>"></div>
+<div id="em-addCampaign-vue" campaign="<?= $this->id ;?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>" coordinatorAccess="<?= $coordinator_access ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>

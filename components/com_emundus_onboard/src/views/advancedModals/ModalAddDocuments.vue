@@ -27,24 +27,10 @@
         <div class="form-group">
           <label for="name">{{Name}}* :</label>
           <div class="input-can-translate">
-            <input type="text" maxlength="100" class="form__input field-general w-input mb-0" v-model="form.name.fr" id="name" :class="{ 'is-invalid': errors.name}" />
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.name}" type="button" @click="translate.name = !translate.name"></button>
+            <input type="text" maxlength="100" class="form__input field-general w-input mb-0" v-model="form.name[langue]" id="name" :class="{ 'is-invalid': errors.name}" />
+            <button class="translate-icon" :class="{'translate-icon-selected': translate.name}" v-if="manyLanguages !== '0'" type="button" @click="translate.name = !translate.name"></button>
           </div>
-          <transition :name="'slide-down'" type="transition">
-            <div class="inlineflex" v-if="translate.name" style="margin: 10px">
-              <label class="translate-label">
-                {{TranslateEnglish}}
-              </label>
-              <em class="fas fa-sort-down"></em>
-            </div>
-          </transition>
-          <transition :name="'slide-down'" type="transition">
-              <input v-if="translate.name"
-                     type="text"
-                     class="form__input field-general w-input"
-                     v-model="form.name.en"
-              />
-          </transition>
+          <translation :label="form.name" :actualLanguage="langue" v-if="translate.name"></translation>
           <p v-if="errors.name" class="error col-md-12 mb-2">
             <span class="error">{{NameRequired}}</span>
           </p>
@@ -52,24 +38,10 @@
         <div class="form-group">
           <label for="description">{{Description}} :</label>
           <div class="input-can-translate">
-            <textarea type="text" maxlength="200" class="form__input field-general w-input mb-0" v-model="form.description.fr" id="description" />
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.description}" type="button" @click="translate.description = !translate.description"></button>
+            <textarea type="text" maxlength="200" class="form__input field-general w-input mb-0" v-model="form.description[langue]" id="description" />
+            <button class="translate-icon" :class="{'translate-icon-selected': translate.description}" v-if="manyLanguages !== '0'" type="button" @click="translate.description = !translate.description"></button>
           </div>
-          <transition :name="'slide-down'" type="transition">
-            <div class="inlineflex" v-if="translate.description" style="margin: 10px">
-              <label class="translate-label">
-                {{TranslateEnglish}}
-              </label>
-              <em class="fas fa-sort-down"></em>
-            </div>
-          </transition>
-          <transition :name="'slide-down'" type="transition">
-              <input v-if="translate.description"
-                     type="text"
-                     class="form__input field-general w-input"
-                     v-model="form.description.en"
-              />
-          </transition>
+          <translation :label="form.description" :actualLanguage="langue" v-if="translate.description"></translation>
         </div>
         <div class="form-group">
           <label for="nbmax">{{MaxPerUser}}* :</label>
@@ -84,7 +56,7 @@
             <div v-for="(type, index) in types" :key="index" class="user-item">
               <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]">
               <div class="ml-10px">
-                  <p>{{type.title}}</p>
+                  <p>{{type.title}} ({{type.value}})</p>
               </div>
             </div>
           </div>
@@ -110,12 +82,19 @@
 <script>
   import axios from "axios";
   const qs = require("qs");
+  import Translation from "@/components/translation"
 
   export default {
     name: "modalAddDocuments",
     props: {
       cid: Number,
       pid: Number,
+      doc: Object,
+      manyLanguages: Number,
+      langue: String,
+    },
+    components: {
+      Translation
     },
     data() {
       return {
@@ -196,8 +175,26 @@
             'xls;xlsx;odf': false,
           },
         };
+
+        this.doc = null;
       },
       beforeOpen(event) {
+        if(this.doc != null) {
+          this.form.name.fr = this.doc.value_fr;
+          this.form.name.en = this.doc.value_en;
+          this.form.description.fr = this.doc.description_fr;
+          this.form.description.en = this.doc.description_en;
+          if(this.doc.allowed_types.includes('pdf')) {
+            this.form.selectedTypes.pdf = true;
+          }
+          if(this.doc.allowed_types.includes('jpg') || this.doc.allowed_types.includes('png') || this.doc.allowed_types.includes('gif')) {
+            this.form.selectedTypes['jpg;png;gif'] = true;
+          }
+          if(this.doc.allowed_types.includes('xls') || this.doc.allowed_types.includes('xlsx') || this.doc.allowed_types.includes('odf')) {
+            this.form.selectedTypes['xls;xlsx;odf'] = true;
+          }
+          this.form.nbmax = this.doc.nbmax;
+        }
       },
       createNewDocument() {
         this.errors = {
@@ -233,18 +230,26 @@
           }
         });
 
+        let params = {
+          document: this.form,
+          types: types,
+          cid: this.cid,
+          pid: this.pid,
+        }
+
+        let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
+        if(this.doc != null) {
+          url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
+          params.did = this.doc.id;
+        }
+
         axios({
           method: "post",
-          url: 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument',
+          url: url,
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
-          data: qs.stringify({
-            document: this.form,
-            types: types,
-            cid: this.cid,
-            pid: this.pid
-          })
+          data: qs.stringify(params)
         }).then((rep) => {
           this.$emit("UpdateDocuments");
           this.$modal.hide('modalAddDocuments')

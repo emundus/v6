@@ -3296,7 +3296,6 @@ if (JFactory::getUser()->id == 63)
 
             return $res;
         } catch(Exception $e) {
-            var_dump($query);
             throw $e;
         }
     }

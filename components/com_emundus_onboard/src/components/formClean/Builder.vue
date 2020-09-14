@@ -16,6 +16,8 @@
         :files="files"
         :prid="prid"
         :eval="eval"
+        :actualLanguage="actualLanguage"
+        :manyLanguages="manyLanguages"
         ref="builder_viewer"
       />
     </div>
@@ -34,7 +36,7 @@ const qs = require("qs");
 
 export default {
   name: "Builder",
-  props: { object: Object, UpdateUx: Boolean, rgt: Number, files: Number, prid: String, eval: Number  },
+  props: { object: Object, UpdateUx: Boolean, rgt: Number, files: Number, prid: String, eval: Number, actualLanguage: String, manyLanguages: Number  },
   components: {
     draggable,
     BuilderViewer,

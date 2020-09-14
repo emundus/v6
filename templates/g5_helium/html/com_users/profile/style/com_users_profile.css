@@ -2,7 +2,7 @@ button.btn-primary{
     background: #e03c32;
     background-color: #e03c32 !important;
     border: 1px solid #e03c32 !important;
-    border-radius: 0!important;
+    border-radius: 4px !important;
     padding: 8px 12px!important;
 }
 button.btn-primary:hover{
@@ -14,7 +14,7 @@ a.btn{
     background: #29d4ff;
     background-color: #29d4ff !important;
     border: 1px solid #29d4ff !important;
-    border-radius: 0!important;
+    border-radius: 4px !important;
     padding: 8px 12px!important;
 }
 a.btn:hover{
@@ -22,11 +22,70 @@ a.btn:hover{
     color: #29d4ff !important;
     outline: none;
 }
+
+.form-horizontal .control-group .control-label {
+    text-align: left;
+}
+
+form#member-profile.well {
+    background: #fafafa;
+    border: none;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+form#member-profile  fieldset .em-heading-form {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+form#member-profile .icon-title.profile {
+    background-image: url(/components/com_emundus_onboard/src/assets/images/gear.svg);
+    background-size: contain;
+}
+
+form#member-profile fieldset:nth-child(2) .icon-title.profile {
+    background-image: url(/components/com_emundus_onboard/src/assets/images/user.svg);
+    background-size: contain;
+}
+
+form#member-profile .icon-title {
+    margin-right: 10px;
+    width: 42px;
+    height: 40px;
+    background-position: 0 0;
+    background-size: contain;
+    -webkit-filter: brightness(.5);
+    filter: brightness(.5);
+    fill: grey;
+}
+
+#member-profile > .control-group .controls {
+    margin-left: 0px;
+    text-align: center;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+}
+
+form#member-profile.well legend {
+    color: #1b1f3c;
+    font-weight: 700;
+    margin: 0px !important;
+}
+
 form#member-profile.form-validate.form-horizontal.well input {
     border-radius: 0px;
 }
 form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.validate {
     text-transform: capitalize;
+    margin-right: 10px !important;
 }
 form#member-profile.form-validate.form-horizontal.well a.btn {
     font-weight: 300;
@@ -49,4 +108,10 @@ form#member-profile.form-validate.form-horizontal.well  label::after{
     position: relative;
     font-family: FontAwesome;
     font-size: 5px;
+}
+
+@media all and (max-width: 767px) {
+    form#member-profile {
+        padding: 2rem 3rem 1rem 3rem;
+    }
 }

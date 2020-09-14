@@ -77,14 +77,28 @@ a:hover {
 }
 
 .moduletable-c,.moduletable-d{
-  justify-content: center;
+  justify-content: space-around;
   display: flex;
+  flex-direction: row;
+  min-width: 36rem;
+  align-items: center;
+}
+
+div#moduletable-d  a[href$="/configuration-settings"]  {
+  display: none;
+}
+
+.moduletable-d div#userDropdown {
+  order: 3;
 }
 
 #g-navigation .g-container {
-  padding: 14px !important;
+  padding: 10px !important;
   position: relative;
   width: 95%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
 }
 
 .g-menu-overlay {
@@ -490,7 +504,7 @@ input[type="checkbox"].check{
 .section-sub-menu {
   position: fixed;
   left: 0;
-  top: 98px;
+  top: 90px;
   right: 0;
   bottom: auto;
   z-index: 10;
@@ -767,7 +781,7 @@ div.moduletable-b ul {
   display: flex;
   width: 150%;
   margin-right: 60px;
-  justify-content: start;
+  justify-content: center;
   padding-left: 0;
 }
 

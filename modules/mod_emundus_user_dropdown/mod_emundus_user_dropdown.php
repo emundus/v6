@@ -22,6 +22,7 @@ $primary_color = $params->get('primary_color', 'ECF0F1');
 $secondary_color = $params->get('secondary_color', 'F89406');
 $icon = $params->get('icon', 'big circular user outline icon');
 $show_logout = $params->get('show_logout', '1');
+$url_logout = $params->get('url_logout', 'index.php');
 $intro = $params->get('intro', '');
 
 $link_login = $params->get('link_login', 'index.php?option=com_users&view=login&Itemid=1135');

@@ -810,4 +810,33 @@ class EmundusonboardModelcampaign extends JModelList
             return $e->getMessage();
         }
     }
+
+    public function updateDocument($document,$types,$did) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
+        $types = implode(";", array_values($types));
+
+        $query
+            ->update($db->quoteName('#__emundus_setup_attachments'));
+        $query
+            ->set($db->quoteName('value') . ' = ' . $db->quote($document['name']['fr']))
+            ->set($db->quoteName('description') . ' = ' . $db->quote($document['description']['fr']))
+            ->set($db->quoteName('allowed_types') . ' = ' . $db->quote($types))
+            ->set($db->quoteName('nbmax') . ' = ' . $db->quote($document['nbmax']))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($did));
+
+        try{
+            $db->setQuery($query);
+            $db->execute();
+
+            $falang->updateFalang($document['name']['fr'],$document['name']['en'],$did,'emundus_setup_attachments','value');
+            $falang->updateFalang($document['description']['fr'],$document['description']['en'],$did,'emundus_setup_attachments','description');
+        } catch (Exception $e) {
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return $e->getMessage();
+        }
+    }
 }

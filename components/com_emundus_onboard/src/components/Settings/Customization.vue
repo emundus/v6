@@ -37,6 +37,8 @@
                   @LaunchLoading="runLoading"
                   @StopLoading="stopLoading"
                   ref="status"
+                  :actualLanguage="actualLanguage"
+                  :manyLanguages="manyLanguages"
           ></editStatus>
 
           <editTags
@@ -91,7 +93,8 @@ export default {
 
   props: {
     actualLanguage: String,
-    coordinatorAccess: Number
+    coordinatorAccess: Number,
+    manyLanguages: Number,
   },
 
   data: () => ({

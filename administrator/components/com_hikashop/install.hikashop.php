@@ -29,7 +29,7 @@ if(!function_exists('com_install')) {
 }
 
 class hikashopInstall {
-	var $level = 'Starter';
+	var $level = 'Business';
 	var $version = '4.3.0';
 	var $freshinstall = true;
 	var $update = false;

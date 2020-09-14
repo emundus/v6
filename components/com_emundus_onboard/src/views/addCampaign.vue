@@ -23,29 +23,14 @@
                   type="text"
                   v-focus
                   class="form__input field-general w-input"
-                  v-model="form.label.fr"
+                  v-model="form.label[actualLanguage]"
                   @keyup="enableTranslationTip"
                   required
                   :class="{ 'is-invalid': errors.label, 'mb-0': translate.label }"
                 />
-              <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" @click="enableLabelTranslation"></button>
+              <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" v-if="actualLanguage != ''" type="button" @click="enableLabelTranslation"></button>
             </div>
-            <transition :name="'slide-down'" type="transition">
-            <div class="inlineflex" v-if="translate.label" style="margin: 10px">
-              <label class="translate-label">
-                {{TranslateEnglish}}
-              </label>
-              <em class="fas fa-sort-down"></em>
-            </div>
-            </transition>
-            <transition :name="'slide-down'" type="transition">
-            <input v-if="translate.label"
-                   type="text"
-                   class="form__input field-general w-input"
-                   v-model="form.label.en"
-                   :id="'label_en'"
-            />
-            </transition>
+            <translation :label="form.label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
           </div>
           <p v-if="errors.label" class="error col-md-12 mb-2">
             <span class="error">{{LabelRequired}}</span>
@@ -175,7 +160,7 @@
           <p v-if="errors.short_description" class="error col-md-12 mb-2">
             <span class="error">{{ResumeRequired}}</span>
           </p>
-          <div class="form-group campaign-label">
+          <!--<div class="form-group campaign-label">
             <label for="campDescription" style="top: 12em">{{Description}}</label>
             <textarea
               type="textarea"
@@ -188,7 +173,7 @@
               @keyup="checkMaxlength('campDescription')"
               @focusout="removeBorderFocus('campDescription')"
             />
-          </div>
+          </div>-->
         </div>
 
         <div class="divider"></div>
@@ -336,6 +321,7 @@ import { Datetime } from "vue-datetime";
 import { DateTime as LuxonDateTime, Settings } from "luxon";
 import Editor from "../components/editor";
 import Autocomplete from "../components/autocomplete";
+import Translation from "../components/translation"
 
 const qs = require("qs");
 
@@ -345,7 +331,8 @@ export default {
   components: {
     Datetime,
     Editor,
-    Autocomplete
+    Autocomplete,
+    Translation
   },
 
   directives: { focus: {
@@ -361,6 +348,7 @@ export default {
     campaign: Number,
     actualLanguage: String,
     coordinatorAccess: Number,
+    manyLanguages: Number,
   },
 
   data: () => ({
@@ -465,13 +453,22 @@ export default {
   }),
 
   created() {
+    // Configure datetime
     Settings.defaultLocale = this.actualLanguage;
+    //
+
+    //Check if we add or edit a campaign
     if (this.campaign !== "") {
       axios.get(
           `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaign}`
         ).then(response => {
-          this.form.label.fr = response.data.data.label.fr.value;
-          this.form.label.en = response.data.data.label.en.value;
+          if(response.data.data.label.fr == null && response.data.data.label.en == null){
+            this.form.label.fr = response.data.data.campaign.label;
+            this.form.label.en = response.data.data.campaign.label;
+          } else {
+            this.form.label.fr = response.data.data.label.fr.value;
+            this.form.label.en = response.data.data.label.en.value;
+          }
           this.form.published = response.data.data.campaign.published;
           this.form.description = response.data.data.campaign.description;
           this.form.short_description = response.data.data.campaign.short_description;
@@ -497,6 +494,7 @@ export default {
           console.log(e);
         });
     }
+    //
     axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
       .then(response => {
         this.programs = response.data.data;
@@ -660,7 +658,7 @@ export default {
       this.year.profile_id = this.form.profile_id;
       //
 
-      if(!this.translate.label && this.campaign == ""){
+      if(this.form.label.en == ""){
         this.form.label.en = this.form.label.fr;
       }
 
@@ -856,45 +854,9 @@ h2 {
   color: #1b1f3c !important;
 }
 
-.w-checkbox-input {
-  float: left;
-  margin: 0 10px 0 -20px;
-  line-height: normal;
-  width: 4% !important;
-  cursor: pointer;
-}
-
-.checkbox-label {
-  color: #696969;
-  font-size: 12px;
-  margin-top: 0 !important;
-}
-
-.w-form-label {
-  display: inline-block;
-  cursor: pointer;
-  font-weight: normal;
-  margin-bottom: 0;
-  margin-top: 5.5%;
-}
-
-.w-checkbox {
-  display: flex;
-  margin-bottom: 0;
-  align-items: center;
-  padding-left: 20px;
-}
-
-.w-select,
-.plus.w-inline-block {
+.w-select {
   background-color: white;
   border-color: #cccccc;
-}
-
-.w-input,
-.w-select {
-  font-weight: 300;
-  min-height: 50px;
 }
 
 .bouton-sauvergarder-et-continuer {
@@ -1009,14 +971,11 @@ h2 {
   }
 
   .translate-icon{
-    height: auto;
-    position: absolute;
-    right: 1em;
-    margin-bottom: 10px;
+    top: -5px;
   }
 
   .translate-icon-selected{
-    margin-bottom: 0;
+    top: 0;
   }
 
   .w-row{
