@@ -626,7 +626,7 @@ button.register {
     width: 80%;
 }
 
-.view-registration form {
+.view-registration form.fabrikForm {
     background: #fafafa;
     border: #fff;
     margin-top: 40px;
@@ -1605,6 +1605,7 @@ a.btn-attach:active {
     margin-left: auto !important;
     margin-right: auto !important;
     padding-bottom: 50px !important;
+    margin-top: 50px !important; 
 }
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {

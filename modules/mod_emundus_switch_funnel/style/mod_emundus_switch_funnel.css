@@ -45,6 +45,10 @@
     text-decoration: none;
 }
 
+.switch-link-setting:focus{
+    text-decoration: none;
+}
+
 .switch-link-setting:hover > .setting-switch{
     color: #fff;
 }
