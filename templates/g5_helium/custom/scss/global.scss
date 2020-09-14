@@ -1009,10 +1009,6 @@ a {
 
     #g-container-main {
       padding: 0 20px;
-
-      h1 {
-        text-align: center;
-      }
     }
   }
 
@@ -2098,7 +2094,7 @@ a {
       h2 {
         text-align: center;
         font-weight: bold;
-        color: #1b1f3c;
+        color: $base-primary-color;
         font-size: 80px;
         margin-bottom: 10px;
       }
@@ -2106,11 +2102,17 @@ a {
       p {
         text-align: center;
         a {
-          background-color: #de6339;
+          background-color: $base-secondary-color;
           color: #fff;
-          border: 1px solid #de6339;
+          border: 1px solid $base-secondary-color;
           padding: 8px 12px;
           border-radius: 4px;
+            &:hover, &:active, &:focus {
+              background-color: transparent;
+              color: $base-secondary-color;
+              text-decoration: none;
+              border: 1px solid $base-secondary-color;
+            }
         }
       }
     }
