@@ -35,8 +35,20 @@ h1 {
   position: relative;
 }
 
-.page-header h1::after, .page-header .swal2-title::after, .homepage h1::after, .modal-body h1::after{
+.view-login h1::after, .view-registration h1::after, .view-reset h1::after {
   display: none !important;
+}
+
+ h1::after, .swal2-title::after {
+  content: '';
+  position: absolute;
+  margin-top: 45px;
+  width: 2.7rem;
+  height: 0.2rem;
+  background: $base-secondary-color !important;
+  left: 0;
+  display: block !important;
+  top: 4px;
 }
 
 .swal2-title {
@@ -551,10 +563,6 @@ a {
   /* PAGE PLUS D INFO - COULEUR BTN  CANDIDATER */
 
   .view-programme {
-
-    h1::after {
-      display: none !important;
-    }
 
     .right-side.campaingapply {
       padding-left: 0px !important;
