@@ -433,6 +433,7 @@ h3 {
   border-color: rgba(255, 5, 5, 0.2);
   display: -webkit-box;
   flex-wrap: wrap;
+  overflow: hidden;
 }
 .column-inner-block {
   height: 100%;
@@ -1759,6 +1760,14 @@ label.label__placeholder {
     position: static;
     margin-left: 5px;
     background-size: 13px;
+  }
+  &.success{
+    background: green !important;
+    border-left: 5px solid #1b1f3c;
+  }
+  &.error{
+    background: darkred !important;
+    border-left: 5px solid #1b1f3c;
   }
 }
 .MenuForm {

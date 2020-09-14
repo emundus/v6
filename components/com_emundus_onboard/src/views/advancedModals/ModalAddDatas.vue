@@ -39,10 +39,10 @@
         <div class="col-md-12">
           <div v-for="(sub_values, i) in form.db_values" :key="i" class="dpflex">
             <div class="input-can-translate">
-              <input type="text" v-model="form.db_values[i].fr" class="form__input field-general w-input db-values" :id="'values_fr_' + i" @keyup.enter="add"/>
-              <button class="translate-icon" :class="{'translate-icon-selected': form.db_values[i].translate}" type="button" :title="Translate" @click="form.db_values[i].translate = !form.db_values[i].translate"></button>
+              <input type="text" v-model="form.db_values[i][actualLanguage]" class="form__input field-general w-input db-values" :id="'values_fr_' + i" @keyup.enter="add"/>
+              <button class="translate-icon" :class="{'translate-icon-selected': form.db_values[i].translate}" v-if="manyLanguages !== '0'" type="button" :title="Translate" @click="form.db_values[i].translate = !form.db_values[i].translate"></button>
             </div>
-            <input v-if="form.db_values[i].translate" type="text" v-model="form.db_values[i].en" class="form__input field-general w-input db-values" style="width: auto;margin-left: 10px;" :id="'values_en_' + i" @keyup.enter="add"/>
+            <translation :label="form.db_values[i]" :actualLanguage="actualLanguage" v-if="form.db_values[i].translate"></translation>
             <button @click.prevent="leave(i)" class="remove-option">-</button>
           </div>
         </div>
@@ -66,11 +66,16 @@
   import Swal from "sweetalert2";
   import _ from "lodash";
   const qs = require("qs");
+  import Translation from "@/components/translation";
 
   export default {
     name: "modalAddDatas",
-    props: { },
+    props: {
+      actualLanguage: String,
+      manyLanguages: Number,
+    },
     components: {
+      Translation
     },
     data() {
       return {

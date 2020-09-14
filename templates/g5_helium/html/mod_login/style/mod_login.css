@@ -13,7 +13,16 @@ form[action="/connexion-candidater"] .em_label-user, .em_label-passwd{
 }
 .g-title{
     margin-top: 50px!important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
 }
+
+.g-title::after {
+    display: none !important;
+}
+
 #login-form{
     background: white;
     border: none;
@@ -22,6 +31,8 @@ form[action="/connexion-candidater"] .em_label-user, .em_label-passwd{
     padding: 20px !important;
     box-shadow: none;
     width: 50%;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 .em-linkForgot{
     margin-top: 40px!important;
@@ -43,12 +54,16 @@ form[action="/connexion-candidater"] i.icon-star.small  {
 /* CONNEXION - CANDIDATER */
 
 ul.unstyled.em-linkForgot{
-    background: #fff;
+    background: #fafafa;
     display: flex;
     justify-content: space-between;
     border: none;
     padding: 0px;
     flex-direction: row-reverse;
+}
+
+ul.unstyled.em-linkForgot span.icon-arrow-right {
+    display: none;
 }
 
 ul.unstyled.em-linkForgot li {

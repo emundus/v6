@@ -261,7 +261,8 @@ button#back:hover, button#back:active, button#back:focus,
 
 #attachment_list_mand fieldset,
 #attachment_list_opt fieldset {
-    background-color: #fcfcfc;
+    background-color: #fafafa;
+    box-shadow: none;
 }
 
 #attachment_list fieldset {
@@ -337,10 +338,10 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 #attachment_list_mand form .input-group .em-description input, #attachment_list_opt form .input-group .em-description input {
-    border: 0 solid #ffffff;
-    border-radius: 0 !important;
-    box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid #ccc;
+    border-radius: 4px !important;
     cursor: initial;
+    box-shadow: none;
 }
 
 #attachment_list_mand p.em-added-file, #attachment_list_opt p.em-added-file {

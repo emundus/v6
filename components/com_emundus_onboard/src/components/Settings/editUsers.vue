@@ -31,7 +31,7 @@
           </div>
         </div>
         <table-component
-                :data="users"
+                :data="fetchData"
                 sort-by="name"
                 sort-order="asc"
                 show-caption="false"
@@ -91,6 +91,10 @@
                   searchProgram: -1,
                   searchRole: -1,
                 },
+                pagination: {
+                  currentPage: 0,
+                  totalPages: 1
+                },
                 block: false,
                 searchProgram: -1,
                 searchRole: -1,
@@ -117,6 +121,30 @@
         },
 
         methods: {
+          fetchData({page}) {
+            return new Promise(resolve=>{
+                axios({
+                    method: "get",
+                    url: "index.php?option=com_emundus_onboard&controller=program&task=getusers",
+                    params: {
+                       filters : this.filters,
+                       page: {page}
+                    },
+                    paramsSerializer: params => {
+                        return qs.stringify(params);
+                    }
+                    }).then(response => resolve({
+                        data: response.data.data.users,
+                        pagination: {
+                          totalPages: response.data.data.users_count/10,
+                          currentPage: page,
+                          count: response.data.data.users_count
+                        },
+                        })
+                    )
+            })
+          },
+
             getUsers(){
                 axios({
                     method: "get",
@@ -128,7 +156,7 @@
                         return qs.stringify(params);
                     }
                     }).then(response => {
-                    this.users = response.data.data;
+                    this.users = response.data.data.users;
                     this.users.forEach((user,key) => {
                         user.lastvisitDate = new Date(user.lastvisitDate).toLocaleDateString(this.actualLanguage, this.options);
                     });

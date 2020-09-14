@@ -113,6 +113,18 @@ table {
   }
 }
 
+.view-list form.form-search table thead th.fabrik_actions .btn-group {
+    display: flex; 
+    justify-content: space-evenly; 
+}
+
+.view-list form.form-search table tbody td.fabrik_actions .btn-group {
+    display: flex; 
+    justify-content: space-evenly; 
+}
+
+
+
 /* END - Your CSS styling ends here */  
 
 

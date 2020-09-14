@@ -29,6 +29,9 @@ a.btn:hover{
 
 form#member-profile.well {
     background: #fafafa;
+    border: none;
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 form#member-profile  fieldset .em-heading-form {

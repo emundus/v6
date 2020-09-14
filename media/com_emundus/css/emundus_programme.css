@@ -3,7 +3,7 @@ h1.title.em-program-title {
     margin-bottom: 10px;
 }
 #g-navigation {
-    height: 80.6px;
+    height: auto;
 }
 .em_period .btn.save-btn {
     height: 34px;
@@ -15,8 +15,9 @@ h1.title.em-program-title {
     width: 165px;
     padding: 6px 12px !important;
 }
+
 #g-navigation .g-container {
-    height: 80.6px;
+    height: auto;
 }
 
 div.content-bottom-a fieldset.em_period {

@@ -126,6 +126,7 @@ JText::script('COM_EMUNDUS_ONBOARD_REQUIRED_FORM');
 JText::script('COM_EMUNDUS_ONBOARD_REQUIRED_GROUP');
 JText::script('COM_EMUNDUS_ONBOARD_CHOOSE_TARGET');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_TEXT');
+JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
 ## END ##
 
 $vue = 'em-formBuilder-vue';
@@ -133,16 +134,17 @@ if($this->eval != 0){
     $vue = 'em-evaluationBuilder-vue';
 }
 
+$lang = JFactory::getLanguage();
+$actualLanguage = substr($lang->getTag(), 0 , 2);
 $languages = JLanguageHelper::getLanguages();
 if(count($languages) > 1){
-    $lang = JFactory::getLanguage();
-    $actualLanguage = substr($lang->getTag(), 0 , 2);
+    $many_languages = '1';
 } else {
-    $actualLanguage = null;
+    $many_languages = '0';
 }
 
 ?>
 
-<div id="<?= $vue; ?>" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>" eval="<?= $this->eval; ?>" actualLanguage="<?= $actualLanguage ?>"></div>
+<div id="<?= $vue; ?>" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>" eval="<?= $this->eval; ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>

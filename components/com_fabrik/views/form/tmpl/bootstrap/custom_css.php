@@ -99,18 +99,23 @@ echo <<<EOT
     padding-right: 5%;
 }
 
-.applicant-form .fabrikForm .fabrikActions.form-actions {
+.view-form .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions{
     padding: 0;
 }
 
 .applicant-form .fabrikGroup {
-    background: #fcfcfc;
+    background: #fafafa;
     margin-bottom: 20px;
     border-radius: 0;
     padding: 20px;
 }
 
-.applicant-form .fabrikSubGroup > div[data-role="group-repeat-intro"] {
+.view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
+    background: #fafafa;
+    box-shadow: none; 
+}
+
+.view-form .fabrikSubGroup > div[data-role="group-repeat-intro"] {
     font-size: 1.5rem;
 }
 
@@ -141,13 +146,13 @@ echo <<<EOT
     padding: 8px 0;
 }
 
-.applicant-form .ui.attached.segment {
+.view-details .ui.attached.segment, .view-form .ui.attached.segment, .view-checklist .ui.attached.segment  {
     background: #3e8ac5;
     border: #3e8ac5;
     color: #ffffff;
 }
 
-.applicant-form .ui.attached.segment > p:first-child {
+.view-details .ui.attached.segment > p:first-child, .view-form .ui.attached.segment > p:first-child, .view-checklist .ui.attached.segment > p:first-child {
     margin-bottom: 0;
     font-size: 18px;
 }
@@ -177,7 +182,7 @@ form .optional {
     margin: 0 !important;
 }
 
-.applicant-form textarea {
+.view-form textarea {
     margin: 10px 0 !important;
 }
 
@@ -228,9 +233,6 @@ fieldset {
     height: auto;
 }
 
-.applicant-form fieldset, .view-checklist fieldset, body:not(.g-back-office-emundus-tableau) .ui.attached.warning.message, body:not(.g-back-office-emundus-tableau) .ui.warning.message {
-    box-shadow: 2px 2px 10px 0px #c0c0c0;
-}
 
 form legend a, form legend a:hover, form legend a:focus {
     background: #fcfcfc;
@@ -316,8 +318,12 @@ form legend a, form legend a:hover, form legend a:focus {
     width: 100% !important;
 }
 
-.applicant-form .toggle-editor.btn-toolbar {
+.view-form .toggle-editor.btn-toolbar {
     display: none !important;
+}
+
+.view-form a.btn.btn-info.toggle-addoption {
+    padding: 13px 12px !important; 
 }
 
 /* Fabrik application form details */
@@ -494,28 +500,78 @@ form#member-profile .form-horizontal .control-label {
 }
 /* Inscription */
 
+  .view-registration .login.em-formRegistrationCenter,  .view-form .em-formRegistrationCenter:not(.componentheading) {
+     display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    background: #fafafa;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+    padding-bottom: 50px;
+    margin-bottom: 100px;
+}
+
+  .view-registration .login.em-formRegistrationCenter .row-fluid {
+    background: #fafafa;
+}
+
+  /* ICON  TITRE INSCRIPTION */
+
+  .view-registration .login div.em-heading-registration,  .view-form .em-formRegistrationCenter div.em-heading-registration  {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    flex-direction: row;
+    width: 57%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.view-registration .login div.em-heading-registration  div.icon-title.registrationicon, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title.registrationicon {
+      background-image: url(/components/com_emundus_onboard/src/assets/images/register.svg);
+      background-size: contain;
+      background-repeat: no-repeat;
+}
+
+.view-registration .login div.em-heading-registration div.icon-title, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title {
+      margin-right: 10px;
+      width: 40px;
+      height: 40px;
+      background-position: 0 0;
+      background-size: contain;
+      -webkit-filter: brightness(.5);
+      filter: brightness(.5);
+      fill: grey;
+    }
+  }
+
 form.fabrikForm label {
   width: 100% !important;
 }
 
-#fabrikSubmit_307 {
+button.register {
   height: 100% !important;
 }
 
-.registration form {
-    background: #4e5b6d;
-    border: #4e5b6d;
-    margin-top: 40px;
-    margin-bottom: 0;
+.view-registration form, .view-form .em-formRegistrationCenter form {
+  border: none;
+    margin-bottom: 0 !important;
     border-radius: 0;
-    color: #ffffff;
+    background: #fafafa;
+    border-radius: 0;
+    padding: 0px;
+    box-shadow: none;
+    width: 59%;
+    margin-left: auto;
+    margin-right: auto;
   }
 
-.registration fieldset {
+.view-registration fieldset {
     background: #4e5b6F;
   }
 
-.registration button {
+.view-registration button {
     display: inline-block;
     font-weight: 600;
     font-size: 12px;
@@ -531,7 +587,7 @@ form.fabrikForm label {
     margin-right: 20px;
   }
 
-.registration button:hover {
+.view-registration button:hover {
   color: #ffffff;
   background: none;
 }
@@ -570,9 +626,9 @@ form.fabrikForm label {
     width: 80%;
 }
 
-.registration form {
-    background: #4e5b6d;
-    border: #4e5b6d;
+.view-registration form.fabrikForm {
+    background: #fafafa;
+    border: #fff;
     margin-top: 40px;
     margin-bottom: 0;
     border-radius: 0;
@@ -614,11 +670,11 @@ form.fabrikForm label {
     margin-left: 0 !important;
 }
 
-.registration fieldset {
-    background: #4e5b6F;
+.view-registration fieldset {
+    background: #fff;
 }
 
-.registration legend {
+.view-registration legend {
     display: none;
 }
 
@@ -1024,7 +1080,7 @@ footer#g-footer {
 }
 
 ol {
-    width: 50%;
+    width: 59%;
     text-align: justify;
     margin-left: 0px !important;
 }
@@ -1033,42 +1089,38 @@ ol li {
    margin-bottom: 10px;
 }
 
-#form_307 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
+.view-registration form .button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form .em-formRegistrationCenter .button.btn.btn-primary.save-btn.sauvegarder.button.register {
     height: 50px !important;
     text-transform: capitalize;
 }
 
-#form_307 form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input {
+.view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input {
    border-radius : 0px; 
 }
 
-#form_307 form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid:nth-child(4) .controls label.radio {
+.view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid:nth-child(4) .controls label.radio {
   padding-left: 0px;
 }
 
-#form_307.fabrikForm .controls select {
-    border-radius : 0px; 
-    height: 41px !important;
+.view-registration form.fabrikForm .controls select, .view-form .em-formRegistrationCenter form .controls select {
+    height: 50px !important;
 }
 
-#form_307.fabrikForm {
-    width:50%;
-}
-#form_307 .fabrikActions.form-actions{
+.view-registration form .fabrikActions.form-actions{
     padding: 0 !important;
 }
-#form_307 .span4{
+.view-registration form .span4{
     width:100% !important;
 }
-#form_307 .btn-group{
+.view-registration form .btn-group{
     width:100%;
 }
-#form_307 #fabrikSubmit_307{
+.view-registration form button.register{
     width:100% !important;
     font-weight: 300; 
 }
 
-#form_307 .row-fluid .controls input {
+.view-registration form .row-fluid .controls input {
     border-radius : 0px;
 }
 
@@ -1082,7 +1134,7 @@ body.em-formRegistrationCenter  {
 }
 
 .applicant-form .fabrikElement select {
-    height: 41px !important;
+    height: 50px !important;
   border-radius: 0px;
 }
 
@@ -1153,13 +1205,14 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
       width: 12px;
 }
 
- .applicant-form .fabrikForm select {
-    height: 41px !important;
+ .fabrikForm select {
+    height: 50px !important;
     background-position-x: 98%;
     background-position-y: 58%;
     -webkit-appearance: none;
     background: transparent url(images/custom/arrow-down.png) no-repeat 98% 52%;
     background-size: 10px;
+    background: #fff; 
     padding: 0 30px 0 10px;
 }
 
@@ -1180,15 +1233,21 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 .view-login .form-horizontal,
-#form_307 .row-fluid,
+.view-registration form .row-fluid,
 .form-validate .control-group {
   display: flex;
   flex-direction: column;
 }
 
 
-#form_307 #jos_emundus_users___civility .row-fluid {
-  display: inline-block;
+.view-registration form #jos_emundus_users___civility .row-fluid, .view-form .em-formRegistrationCenter form #jos_emundus_users___civility .row-fluid {
+     display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+}
+
+.view-registration form #jos_emundus_users___civility .row-fluid .fabrikgrid_radio:nth-child(1), .view-form .em-formRegistrationCenter form #jos_emundus_users___civility .row-fluid .fabrikgrid_radio:nth-child(1) { 
+    margin-right: 26px;
 }
 
 .em-formRegistrationCenter {
@@ -1223,16 +1282,13 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 /* Formulaire Fabrik */
 
-.applicant-form .fabrikForm legend {
-  font-weight: 700;
-}
-
+ 
 .applicant-form .fabrikForm fieldset {
   position: relative;
 }
 
 .applicant-form .fabrikForm fieldset > .row-fluid, .applicant-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
-  padding: 0 50px;
+  padding: 0 30px;
 }
 
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
@@ -1266,28 +1322,28 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   flex-direction: column;
 }
 
-.applicant-form .form-horizontal .controls {
+.form-horizontal .controls {
   margin-left: 0 !important;
 }
 
-.applicant-form .form-horizontal .controls .em-deleteFile, .applicant-form .row-fluid .plg-emundus_fileupload .em-deleteFile {
+.view-checklist .form-horizontal .controls .em-deleteFile, .view-checklist  .row-fluid .plg-emundus_fileupload .em-deleteFile {
   background-image: none;
 }
 
-.applicant-form .form-horizontal .controls .em-deleteFile, .applicant-form .row-fluid .plg-emundus_fileupload .em-deleteFile:hover {
+.view-checklist .form-horizontal .controls .em-deleteFile, .view-checklist .row-fluid .plg-emundus_fileupload .em-deleteFile:hover {
     color: white !important;
 }
 
-.applicant-form .form-horizontal .control-label {
+.view-form .form-horizontal .control-label {
   width: auto !important;
 }
 
-.applicant-form .fabrikElement button.calendarbutton {
+.view-form .fabrikElement button.calendarbutton {
   width: 41px !important;
 }
 
 
-.applicant-form .fabrikElement button.calendarbutton i {
+.view-form .fabrikElement button.calendarbutton i {
   color: white;
 }
 
@@ -1304,28 +1360,28 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   content: "";
 }
 
-#form_307 .row-fluid .span3 {
+.view-registration form.row-fluid .span3 {
   margin-right: 30px;
 }
 
-#form_307 .fabrikgrid_radio {
+.view-registration form .fabrikgrid_radio {
   margin-top: 10px;
 }
 
-#form_307 .fabrikgrid_checkbox {
+.view-registration form .fabrikgrid_checkbox {
   width: 106%;
 }
 
-#form_307 .row-fluid .control-group {
+.view-registration form .row-fluid .control-group {
   margin-bottom: 0 !important;
 }
 
-#form_307 .row-fluid .control-group, .form-validate .control-group {
+.view-registration form .row-fluid .control-group, .form-validate .control-group {
   display: flex;
   flex-direction: column;
 }
 
-#form_307 .row-fluid .control-group .controls, .form-validate .control-group .controls {
+.view-registration form .row-fluid .control-group .controls, .form-validate .control-group .controls {
   margin: 0 !important;
   width: 100%;
 }
@@ -1363,6 +1419,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .fabrikForm .row-fluid .fabrikElement textarea {
   margin-top: 0 !important;
+  width: 100%; 
 }
 
 .fabrikForm .row-fluid .fabrikElement .fabrik_characters_left {
@@ -1373,7 +1430,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   margin-right: 10px;
 }
 
-.applicant-form .fabrikGroupRepeater .pull-right .addGroup i {
+.view-form .fabrikGroupRepeater .pull-right .addGroup i {
   color: #37828e !important;
 }
 
@@ -1412,32 +1469,32 @@ form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
 
 /* BOUTONS + et - */
 
-.applicant-form .fabrikGroupRepeater .addGroup {
+.view-form .fabrikGroupRepeater .addGroup {
   cursor: pointer !important;
 }
 
-.applicant-form .fabrikGroupRepeater .addGroup .tooltip {
+.view-form .fabrikGroupRepeater .addGroup .tooltip {
     display: none !important;
 }
 
-.applicant-form .fabrikGroupRepeater .deleteGroup {
+.view-form .fabrikGroupRepeater .deleteGroup {
   cursor: pointer;
 }
 
-.applicant-form .fabrikGroupRepeater .deleteGroup .tooltip {
+.view-form.fabrikGroupRepeater .deleteGroup .tooltip {
     display: none !important;
 }
 
-.applicant-form .fabrikGroupRepeater .addGroup {
+.view-form .fabrikGroupRepeater .addGroup {
   text-align: right;
   padding: 8px 15px 0 0;
 }
 
-.applicant-form .fabrikGroupRepeater .addGroup:hover {
+.view-form .fabrikGroupRepeater .addGroup:hover {
     color: #26729B;
 }
 
-.applicant-form .fabrikGroupRepeater .deleteGroup {
+.view-form .fabrikGroupRepeater .deleteGroup {
   padding: 8px 16px 0 0;
 }
 
@@ -1532,6 +1589,38 @@ a.btn-attach:active {
 }
 
 
+/*** CONNEXION - CANDIDATER ***/
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter h1.g-title {
+    margin-bottom: 0px; 
+}
+
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    background: #fafafa;
+    width: 60%;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-bottom: 50px !important;
+    margin-top: 50px !important; 
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {
+    border: none;
+    margin-bottom: 0 !important;
+    border-radius: 0;
+    background: #fafafa;
+    border-radius: 0;
+    padding: 0px;
+    box-shadow: none;
+    width: 58%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /*** MEDIA QUERY SECTION ***/
 
 @media screen and (min-width: 960px) and (max-width: 1239px) {
@@ -1550,7 +1639,7 @@ a.btn-attach:active {
 }
 
 @media all and (max-width: 1239px) {
-    #form_307.fabrikForm {
+   .view-registration form.fabrikForm {
         width:60%;
     }
     
@@ -1690,12 +1779,12 @@ a.btn-attach:active {
             margin-bottom: 10px !important;
     }
 
-    .registration form {
+    .view-registration form {
           padding-left: 1rem;
           padding-right: 1rem;
     }
 
-    .registration .em-register-table {
+    .view-registration .em-register-table {
           border: none;
           text-align: left;
           width: 100% !important;
@@ -1703,7 +1792,7 @@ a.btn-attach:active {
           margin-bottom: 2rem;
     }
     
-    .registration .em-register-table td {
+    .view-registration .em-register-table td {
           border: none;
           text-align: left;
           width: 100% !important;
@@ -1716,7 +1805,7 @@ a.btn-attach:active {
         margin-left: 0px !important;
     }
 
-    #form_307.fabrikForm {
+    .view-registration form.fabrikForm {
         width:100%;
     }
     
@@ -1740,7 +1829,7 @@ a.btn-attach:active {
 }
 
 @media all and (min-width: 768px) and (max-width: 1023px) {
-    #form_307 .control-group.fabrikElementContainer.plg-radiobutton.fb_el_jos_emundus_users___civility.fabrikDataEmpty.span12 div.fabrikgrid_radio.span2 {
+    .view-registration form .control-group.fabrikElementContainer.plg-radiobutton.fb_el_jos_emundus_users___civility.fabrikDataEmpty.span12 div.fabrikgrid_radio.span2 {
         width:35%;
     }
 }
@@ -1778,7 +1867,7 @@ a.btn-attach:active {
     padding: 1rem 9rem 1rem 4rem;
   }
   
- .registration form {
+ .view-registration form {
     padding-right: 8rem;
   }
 }

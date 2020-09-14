@@ -167,6 +167,7 @@ class EmundusonboardModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
         $query->select('MAX(step)')
             ->from($db->quoteName('#__emundus_setup_status'));
@@ -215,29 +216,7 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             $results[] = $db->execute();
 
-            $query->clear()
-                ->insert('#__falang_content')
-                ->set(array(
-                    $db->quoteName('value') . ' = ' . $db->quote('Nouveau statut'),
-                    $db->quoteName('reference_id') . ' = ' . $db->quote($newstep),
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('value'),
-                    $db->quoteName('language_id') . ' = 2'
-                ));
-            $db->setQuery($query);
-            $results[] = $db->execute();
-
-            $query->clear()
-                ->insert('#__falang_content')
-                ->set(array(
-                    $db->quoteName('value') . ' = ' . $db->quote('New status'),
-                    $db->quoteName('reference_id') . ' = ' . $db->quote($newstep),
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('value'),
-                    $db->quoteName('language_id') . ' = 1'
-                ));
-            $db->setQuery($query);
-            $results[] = $db->execute();
+            $results[] = $falang->insertFalang('Nouveau statut', 'New status', $newstep, 'emundus_setup_status', 'value');
 
             $query->clear()
                 ->select('*')
@@ -247,42 +226,11 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             $status = $db->loadObject();
 
-            $status->value_en = '';
-            $status->value_fr = '';
-
-            $query->clear()
-                ->select('value')
-                ->from($db->quoteName('#__falang_content'))
-                ->where(array(
-                    $db->quoteName('reference_id') . ' = ' . $db->quote($status->step),
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('value'),
-                    $db->quoteName('language_id') . ' = 1'
-                ));
-            $db->setQuery($query);
-            $en_value = $db->loadResult();
-
-            $query->clear()
-                ->select('value')
-                ->from($db->quoteName('#__falang_content'))
-                ->where(array(
-                    $db->quoteName('reference_id') . ' = ' . $db->quote($status->step),
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('value'),
-                    $db->quoteName('language_id') . ' = 2'
-                ));
-            $db->setQuery($query);
-            $fr_value = $db->loadResult();
-
-            if ($en_value != null) {
-                $status->value_en = $en_value;
-            }
-            if ($fr_value != null) {
-                $status->value_fr = $fr_value;
-            }
+            $status->label = new stdClass;
+            $status->label->fr = 'Nouveau statut';
+            $status->label->en = 'New status';
 
             return $status;
-
         } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;

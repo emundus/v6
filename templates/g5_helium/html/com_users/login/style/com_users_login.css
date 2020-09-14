@@ -33,15 +33,15 @@ button.btn-primary:hover{
 .nav-stacked > li {
     display: inline-block;
 }
-.login form {
+.login form.form-validate.form-horizontal.well {
     border: none;
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
     border-radius: 0;
-    background: white;
+    background: #fafafa;
     border-radius: 0;
-    padding: 0px 20px;
+    padding: 0px;
     box-shadow: none;
-    width: 50%;
+    width: 58%;
     margin-left: auto;
     margin-right: auto;
 }
@@ -50,6 +50,11 @@ div.em-formRegistrationCenter, div.login {
     display: flex !important;
     flex-direction: column;
     align-items: center;
+    background: #fafafa;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
 }
 
 .invalid {
@@ -61,10 +66,15 @@ div.em-formRegistrationCenter, div.login {
     font-size: 14px;
 }
 ul.nav.nav-tabs.nav-stacked {
-    background: #fff;
+    background: #fafafa;
     border-radius: 0;
     display: flex;
     justify-content: space-around;
+    width: 60%;
+    margin-left: auto !important;
+    margin-right: auto !important;
+   padding-bottom: 50px !important;
+    margin-top: 0px;
 }
 
 ul.nav.nav-tabs.nav-stacked a::before {
@@ -115,7 +125,7 @@ body.view-reset label#jform_username-lbl::after,
 .control-group:nth-child(3) .controls button.btn.btn-primary {
     text-transform: capitalize;
     width: 100% !important;
-    height: 41px;
+    height: 50px;
     margin-right: 0px !important;
     font-weight: 300;
 }
@@ -294,4 +304,33 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     .view-login #g-page-surround {
         width: 100%;
     }
+}
+
+/* TEST TITRE LOGIN */
+
+.view-login .login.em-formRegistrationCenter .page-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    flex-direction: row;
+    width: 59%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.view-login .login.em-formRegistrationCenter .page-header div.icon-title.loginicon {
+    background-image: url(/components/com_emundus_onboard/src/assets/images/enter.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.view-login .login.em-formRegistrationCenter .page-header div.icon-title {
+    margin-right: 10px;
+    width: 35px;
+    height: 35px;
+    background-position: 0 0;
+    background-size: contain;
+    -webkit-filter: brightness(.5);
+    filter: brightness(.5);
+    fill: grey;
 }

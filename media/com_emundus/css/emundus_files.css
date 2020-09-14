@@ -1,7 +1,7 @@
 /*boutons*/
 
 .em-user-personal-filter .btn-xs, *.btn, a.btn-attach, .xclsform .panel-body button, button.close {
-    border-radius: 0 !important;
+    border-radius: 4px !important;
     padding: 6px 8px;
     color: #fff;
     text-shadow: none !important;
@@ -43,6 +43,10 @@ button.save-btn, .btn-success, .trombi_download, button.save, button.save_contin
     border: 1px solid #ea9262;
     text-shadow: none;
     text-transform: none;
+}
+
+#trombi_preview, #trombi_generate {
+    width: auto !important;
 }
 button.save-btn:hover, button.save-btn:active, .trombi_download:hover, button.save-btn:focus, .btn-success:hover, .btn-success:focus, .btn-success:active, button.save:hover, button.save:active, button.save:focus, button.save_continue:hover, button.save_continue:active, button.save_continue:focus, button.send:hover, button.send:active, button.send:focus, a.btn-attach:hover, a.btn-attach:active, a.btn-attach:focus, #trombi_preview:hover, #trombi_preview:active, #trombi_preview:focus, #trombi_generate:hover, #trombi_generate:active, #trombi_generate:focus, .indicateurs-page .btn:hover, .indicateurs-page .btn:active, .indicateurs-page .btn:focus, .fabrik_filter_submit:hover, .fabrik_filter_submit:active, .fabrik_filter_submit:focus, button.importation:hover, button.importation:active, button.importation:focus, a.btn-warning:hover, a.btn-warning:active, a.btn-warning:focus, a.btn-info:hover, a.btn-info:active, a.btn-info:focus, .header-right .btn-danger:hover, .header-right .btn-danger:focus, .header-right .btn-danger:active, button.btn-primary:hover, button.btn-primary:active, button.btn-primary:focus, .em-generated-docs .em-doc-zip:hover, .em-generated-docs .em-doc-zip:active, .em-generated-docs .em-doc-zip:focus, .xclsform .panel-body button#savefilter:hover, .xclsform .panel-body button#savefilter:active, .xclsform .panel-body button#savefilter:focus, .modal-dialog #chargement a.btn:hover, .modal-dialog #chargement a.btn:active, .modal-dialog #chargement a.btn:focus, a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus, .btn.advanced-search-apply:hover, .btn.advanced-search-apply:active, .btn.advanced-search-apply:focus, .toggle-addoption.btn:hover, .toggle-addoption.btn:active, .toggle-addoption.btn:focus, .candidacy-files-list a#send:hover, .candidacy-files-list a#send:active, .candidacy-files-list a#send:focus, .choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
     background-color: transparent;
@@ -516,7 +520,6 @@ table#groups-table a:hover {
     min-width: 40%;
 }
 
-
 /* Layout */
 div#data #exp-opt>label{
     display: block;
@@ -665,6 +668,10 @@ div#em-modal-actions .panel-heading h5 {
 
 #filters #quick .selectize-input {
     height: 28px;
+}
+
+#filters #quick .selectize-input input {
+    height: 30px !important;
 }
 
 #filters #quick #input-tags-selectized {
@@ -2102,6 +2109,37 @@ div#em-assoc-files .panel > .panel-heading {
 
 .g-back-office-emundus-tableau .ct-view .panel-info > .panel-heading {
     border: none;
+}
+
+.g-back-office-emundus-tableau .em-container-attachment.em-container-form .panel-heading.em-container-form-heading, .g-back-office-emundus-tableau .em-container-mail .panel-heading.em-container-mail-heading, .g-back-office-emundus-tableau .em-container-comment .panel-heading.em-container-comment-heading, .g-back-office-emundus-tableau .em-container-share .panel-heading.em-container-share-heading {
+    padding: 11px;
+}
+
+.g-back-office-emundus-tableau .em-container-mail .panel-heading.em-container-mail-heading h3 span, .g-back-office-emundus-tableau .em-container-comment .panel-heading.em-container-comment-heading h3 span, .g-back-office-emundus-tableau .em-container-share .panel-heading.em-container-share-heading h3 span, .g-back-office-emundus-tableau .em-container-attachment.em-container-form .panel-heading.em-container-form-heading h3 span  {
+    margin-top: 5px;
+}
+
+.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading .btn-group.pull-right {
+    position: relative;
+    top: -26px;
+}
+
+.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right {
+    position: relative;
+    top: 0px;
+}
+
+.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-comment-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-comment-heading .btn-group.pull-right {
+    position: relative;
+    top: 0px;
+}
+
+.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-tags-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-tags-heading .btn-group.pull-right {
+    position: relative;
+    top: 0px;
+}
+.g-back-office-emundus-tableau.evaluations-page .em-container-share-table .em-container-share-table-left, .g-back-office-emundus-tableau.decision-page .em-container-share-table .em-container-share-table-left {
+    margin-top: 5px;
 }
 
 button#em-close-file {
