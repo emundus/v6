@@ -2077,6 +2077,46 @@ a {
     height: 30px !important;
   }
 
+/* ERREUR 404 */
+
+.error-page {
+
+  #g-main-mainbody .g-grid .g-block {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+  .container-404 {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+    align-items: center;
+
+    .left-side-404 {
+      width: 50%;
+
+      h2 {
+        text-align: center;
+        font-weight: bold;
+        color: #1b1f3c;
+        font-size: 80px;
+        margin-bottom: 10px;
+      }
+
+      p {
+        text-align: center;
+        a {
+          background-color: #de6339;
+          color: #fff;
+          border: 1px solid #de6339;
+          padding: 8px 12px;
+          border-radius: 4px;
+        }
+      }
+    }
+  }
+}
 
   /******************************* RESPONSIVE ***********************************/
 
