@@ -1761,6 +1761,14 @@ label.label__placeholder {
     margin-left: 5px;
     background-size: 13px;
   }
+  &.success{
+    background: green !important;
+    border-left: 5px solid #1b1f3c;
+  }
+  &.error{
+    background: darkred !important;
+    border-left: 5px solid #1b1f3c;
+  }
 }
 .MenuForm {
   list-style: none;

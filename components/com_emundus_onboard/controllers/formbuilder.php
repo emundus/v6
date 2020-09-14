@@ -238,6 +238,25 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
          exit;
      }
 
+     public function updatepageintrowithouttranslation() {
+         $user = JFactory::getUser();
+         $m_form = $this->model;
+
+         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+             $result = 0;
+             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+         } else {
+             $jinput = JFactory::getApplication()->input;
+             $pid = $jinput->getInt('pid');
+             $intro = $jinput->getString('label');
+
+             $changeresponse = $m_form->updatePageIntroWithoutTranslation($pid,$intro);
+         }
+
+         echo json_encode((object)$changeresponse);
+         exit;
+     }
+
     /**
      * Return translation in current language of an array
      *
