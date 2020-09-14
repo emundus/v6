@@ -1092,6 +1092,7 @@ ol li {
 .view-registration form .button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form .em-formRegistrationCenter .button.btn.btn-primary.save-btn.sauvegarder.button.register {
     height: 50px !important;
     text-transform: capitalize;
+    width:100%;
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input {
