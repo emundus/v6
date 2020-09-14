@@ -341,3 +341,7 @@ form .btn.btn-danger:hover,
     background-color: #4e5b6d;
     padding: 10px;
 }
+
+h3.panel-title {
+    color: white !important;
+}
