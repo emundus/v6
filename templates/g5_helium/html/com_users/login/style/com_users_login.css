@@ -245,9 +245,15 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
 }
 @media all and (max-width: 767px) {
-    .form-validate.form-horizontal.well {
-        width: 100%;
+
+    .view-login .login.em-formRegistrationCenter  {
+         width: 100%;
     }
+
+    .view-login .login.em-formRegistrationCenter .page-header {
+        width: 100% !important;
+    }
+
     .em-formRegistrationCenter .form-horizontal fieldset .control-group {
         width: 100% !important;
     }
@@ -257,17 +263,16 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     }
 
     .login form {
-        padding-right: 3rem;
-        padding-left: 3rem;
-        width: 100% !important;
+        width: 90% !important;
     }
 
     ul.nav.nav-tabs.nav-stacked {
         justify-content: center;
         flex-direction: column;
+        width: 100%;
     }
 
-    ul.nav.nav-tabs.nav-stackedli {
+    ul.nav.nav-tabs.nav-stacked li {
         text-align: center;
     }
 
@@ -306,7 +311,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     }
 }
 
-/* TEST TITRE LOGIN */
+/* ICONE TITRE LOGIN */
 
 .view-login .login.em-formRegistrationCenter .page-header {
     display: flex;

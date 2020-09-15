@@ -79,3 +79,33 @@ ul.unstyled.em-linkForgot li a::before {
 ul.unstyled.em-linkForgot li a span::before {
   display: none;
 }
+
+
+/* ICONE TITRE LOGIN */
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter .page-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    flex-direction: row;
+    width: 52%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter .page-header  div.icon-title.applyicon {
+    background-image: url(/components/com_emundus_onboard/src/assets/images/enter.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter .page-header.page-header div.icon-title {
+    margin-right: 10px;
+    width: 35px;
+    height: 35px;
+    background-position: 0 0;
+    background-size: contain;
+    -webkit-filter: brightness(.5);
+    filter: brightness(.5);
+    fill: grey;
+}
