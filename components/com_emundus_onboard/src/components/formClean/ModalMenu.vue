@@ -326,14 +326,4 @@ export default {
     display: flex;
     align-items: center;
   }
-
-.translate-icon{
-  height: auto;
-  position: absolute;
-  right: 2em;
-}
-
-.translate-icon-selected{
-  margin-bottom: 0;
-}
 </style>

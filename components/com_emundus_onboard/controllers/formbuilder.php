@@ -315,13 +315,24 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $toJTEXT = $jinput->getString('toJTEXT');
 
+        // Prepare languages
+        $path_to_file = basename(__FILE__) . '/../language/overrides/';
+        $path_to_files = array();
+        $Content_Folder = array();
+
+        $languages = JLanguageHelper::getLanguages();
+        foreach ($languages as $language) {
+            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+        }
+
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $getJtext = new stdClass();
-            $getJtext->fr = $m_form->getTranslationFr($toJTEXT);
-            $getJtext->en = $m_form->getTranslationEn($toJTEXT);
+            $getJtext->fr = $m_form->getTranslation($toJTEXT,$Content_Folder['fr']);
+            $getJtext->en = $m_form->getTranslation($toJTEXT,$Content_Folder['en']);
         }
         echo json_encode((object)$getJtext);
         exit;

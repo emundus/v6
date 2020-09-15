@@ -290,6 +290,21 @@ class EmundusonboardModelformbuilder extends JModelList {
         return JText::_($toJTEXT);
     }
 
+    function copyFileToAdministration($langtag) {
+        $origin_file = basename(__FILE__) . '/../language/overrides/' . $langtag . '.override.ini' ;
+        $newfile = basename(__FILE__) . '/../administrator/language/overrides/' . $langtag . '.override.ini';
+
+        if(file_exists($newfile)) {
+            unlink($newfile);
+        }
+
+        if(!copy($origin_file,$newfile)){
+            return false;
+        }
+
+        return true;
+    }
+
     function removeEmptyLinesFr() {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
@@ -308,92 +323,39 @@ class EmundusonboardModelformbuilder extends JModelList {
         file_put_contents($path_to_file_en, $Content_Folder_EN);
     }
 
-    /**
-     * Get translation store in languages files instead of use JText to get the wanted language
-     *
-     * @param $text
-     * @return string|string[]
-     */
-    function getTranslationFr($text) {
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
-        $Content_Folder_FR = file_get_contents($path_to_file_fr);
-
-        $matches_fr = [];
-
-        $textWithoutTags = str_replace('\'', '', strip_tags($text));
-        $textTofind = $textWithoutTags . "=";
-        $textTofind = "/^" . $textTofind . ".*/mi";
-
-        // FR
-        preg_match_all($textTofind, $Content_Folder_FR, $matches_fr, PREG_SET_ORDER, 0);
-        return str_replace("\"",'',explode('=',$matches_fr[0][0])[1]);
-    }
-
-    /**
-     * Get translation store in languages files instead of use JText to get the wanted language
-     *
-     * @param $text
-     * @return string|string[]
-     */
-    function getTranslationEn($text) {
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_file_en = $path_to_file . 'en-GB.override.ini' ;
-        $Content_Folder_EN = file_get_contents($path_to_file_en);
-
-        $matches_en = [];
-
-        $textWithoutTags = str_replace('\'', '', strip_tags($text));
-        $textTofind = $textWithoutTags . "=";
-        $textTofind = "/^" . $textTofind . ".*/mi";
-
-        // EN
-        preg_match_all($textTofind, $Content_Folder_EN, $matches_en, PREG_SET_ORDER, 0);
-        return str_replace("\"",'',explode('=',$matches_en[0][0])[1]);
-        //
-    }
-
-    function duplicateTranslation($text,$fr_content,$en_content,$fr_pathfile,$en_pathfile,$newtag) {
-        $matches_fr = [];
-        $matches_en = [];
-        $textWithoutTags = str_replace('\'', '', strip_tags($text));
-        $textTofind = $textWithoutTags . "=";
-        $textTofind = "/^" . $textTofind . ".*/mi";
-        // FR
-        preg_match_all($textTofind, $fr_content, $matches_fr, PREG_SET_ORDER, 0);
-        $ContentToAdd = str_replace($textWithoutTags, $newtag, $matches_fr[0][0]);
-        file_put_contents($fr_pathfile, $ContentToAdd . PHP_EOL, FILE_APPEND | LOCK_EX);
-        //
-
-        // EN
-        preg_match_all($textTofind, $en_content, $matches_en, PREG_SET_ORDER, 0);
-        $ContentToAdd = str_replace($textWithoutTags, $newtag, $matches_en[0][0]);
-        file_put_contents($en_pathfile, $ContentToAdd . PHP_EOL, FILE_APPEND | LOCK_EX);
-        //
-
-        if(empty($matches_fr) && empty($matches_en)){
-            return false;
-        }
-
-        return true;
-    }
-
-    function updateFileTranslation($oldtext,$content,$pathfile,$newtext) {
+    function getTranslation($text,$content){
         $matches = [];
 
-        $textWithoutTags = str_replace('\'', '', strip_tags($oldtext));
-
-        $newtext = str_replace(array("\n","\r"),'',$newtext);
-
-        $replacetext = $textWithoutTags . '=' . '"' . str_replace("\"",'',$newtext) . '"';
-
+        $textWithoutTags = str_replace('\'', '', strip_tags($text));
         $textTofind = $textWithoutTags . "=";
         $textTofind = "/^" . $textTofind . ".*/mi";
 
-        // FR
+        // Search and return the translation
         preg_match_all($textTofind, $content, $matches, PREG_SET_ORDER, 0);
-        $ContentToAdd = str_replace($matches[0][0], $replacetext, $content);
-        file_put_contents($pathfile, $ContentToAdd . PHP_EOL);
+        return str_replace("\"",'',explode('=',$matches[0][0])[1]);
+        //
+    }
+
+    function duplicateFileTranslation($text,$content,$pathfile,$newtag,$codelang) {
+        $matches = [];
+
+        // Prepare new text
+        $textWithoutTags = str_replace('\'', '', strip_tags($text));
+        //
+
+        // Prepare text to find
+        $textTofind = $textWithoutTags . "=";
+        $textTofind = "/^" . $textTofind . ".*/mi";
+        //
+
+        // Search and duplicate
+        preg_match_all($textTofind, $content, $matches, PREG_SET_ORDER, 0);
+        $ContentToAdd = str_replace($textWithoutTags, $newtag, $matches[0][0]);
+        file_put_contents($pathfile, $ContentToAdd . PHP_EOL, FILE_APPEND | LOCK_EX);
+        //
+
+        // Replace the administration file for developers
+        $this->copyFileToAdministration($codelang);
         //
 
         if(empty($matches)){
@@ -403,33 +365,35 @@ class EmundusonboardModelformbuilder extends JModelList {
         return true;
     }
 
-    function updateTranslation($oldtext,$fr_content,$en_content,$fr_pathfile,$en_pathfile,$newtext) {
-        $matches_fr = [];
-        $matches_en = [];
+    function updateFileTranslation($oldtext,$content,$pathfile,$newtext,$codelang) {
+        $matches = [];
 
+        // Prepare new text
         $textWithoutTags = str_replace('\'', '', strip_tags($oldtext));
+        $newtext = str_replace(array("\n","\r"),'',$newtext);
+        $replacetext = $textWithoutTags . '=' . '"' . str_replace("\"",'',$newtext) . '"';
+        //
 
-        $replacetextfr = $textWithoutTags . '=' . '"' . str_replace("\"",'',$newtext['fr']) . '"';
-        $replacetexten = $textWithoutTags . '=' . '"' . str_replace("\"",'',$newtext['en']) . '"';
-
+        // Prepare text to find
         $textTofind = $textWithoutTags . "=";
         $textTofind = "/^" . $textTofind . ".*/mi";
-
-        // FR
-        preg_match_all($textTofind, $fr_content, $matches_fr, PREG_SET_ORDER, 0);
-        $ContentToAdd = str_replace($matches_fr[0][0], $replacetextfr, $fr_content);
-        file_put_contents($fr_pathfile, $ContentToAdd . PHP_EOL);
         //
 
-        // EN
-        preg_match_all($textTofind, $en_content, $matches_en, PREG_SET_ORDER, 0);
-        $ContentToAdd = str_replace($matches_en[0][0], $replacetexten, $en_content);
-        file_put_contents($en_pathfile, $ContentToAdd . PHP_EOL);
+        // Search and replace
+        preg_match_all($textTofind, $content, $matches, PREG_SET_ORDER, 0);
+        $ContentToAdd = str_replace($matches[0][0], $replacetext, $content);
+        file_put_contents($pathfile, $ContentToAdd . PHP_EOL);
         //
 
-        if(empty($matches_fr) && empty($matches_en)){
+        // Replace the administration file for developers
+        $this->copyFileToAdministration($codelang);
+        //
+
+        // Return false if translation not found in the file
+        if(empty($matches)){
             return false;
         }
+        //
 
         return true;
     }
@@ -457,6 +421,9 @@ class EmundusonboardModelformbuilder extends JModelList {
         $newContent = str_replace($matches_en[0][0],'',$Content_Folder_EN);
         file_put_contents($path_to_file_en, $newContent . PHP_EOL);
         //
+
+        $this->copyFileToAdministration('fr-FR');
+        $this->copyFileToAdministration('en-GB');
     }
 
     function addTransationFr($text) {
@@ -472,6 +439,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             file_put_contents($path_to_file_fr,$text . PHP_EOL, FILE_APPEND | LOCK_EX);
         }
         $this->removeEmptyLinesFr();
+
+        $this->copyFileToAdministration('fr-FR');
     }
 
     function addTransationEn($text) {
@@ -487,6 +456,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             file_put_contents($path_to_file_en,$text . PHP_EOL, FILE_APPEND | LOCK_EX);
         }
         $this->removeEmptyLinesEn();
+
+        $this->copyFileToAdministration('en-GB');
     }
 
     /**
@@ -507,7 +478,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             foreach ($languages as $language) {
                 $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
                 $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-                $results[] = $this->updateFileTranslation($labelTofind,$Content_Folder[$language->sef],$path_to_files[$language->sef],$NewSubLabel[$language->sef]);
+                $results[] = $this->updateFileTranslation($labelTofind,$Content_Folder[$language->sef],$path_to_files[$language->sef],$NewSubLabel[$language->sef],$language->lang_code);
             }
 
             return $results;
@@ -1080,6 +1051,17 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        // Prepare languages
+        $path_to_file = basename(__FILE__) . '/../language/overrides/';
+        $path_to_files = array();
+        $Content_Folder = array();
+
+        $languages = JLanguageHelper::getLanguages();
+        foreach ($languages as $language) {
+            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+        }
+
         // INSERT FABRIK_GROUP
         // Insert columns.
         $columns = array(
@@ -1182,8 +1164,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             'group_id' => $groupid,
             'group_tag' => $tag,
             'group_showLegend' => $this->getJTEXT("GROUP_" . $fid . "_" . $groupid),
-            'label_fr' => $this->getTranslationFr("GROUP_" . $fid . "_" . $groupid),
-            'label_en' => $this->getTranslationEn("GROUP_" . $fid . "_" . $groupid),
+            'label_fr' => $this->getTranslation("GROUP_" . $fid . "_" . $groupid,$Content_Folder['fr']),
+            'label_en' => $this->getTranslation("GROUP_" . $fid . "_" . $groupid,$Content_Folder['en']),
             'ordering' => $order,
             'formid' => $fid
         );
@@ -1699,10 +1681,13 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         // Prepare languages
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
-        $Content_Folder_FR = file_get_contents($path_to_file_fr);
-        $path_to_file_en = $path_to_file . 'en-GB.override.ini' ;
-        $Content_Folder_EN = file_get_contents($path_to_file_en);
+        $path_to_files = array();
+        $Content_Folder = array();
+        $languages = JLanguageHelper::getLanguages();
+        foreach ($languages as $language) {
+            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+        }
 
         try {
             foreach ($elements as $element) {
@@ -1718,14 +1703,18 @@ class EmundusonboardModelformbuilder extends JModelList {
                     if (($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options) {
                         $sub_labels = [];
                         foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
-                            $this->duplicateTranslation($sub_label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'SUBLABEL_' . $group . '_' . $newelementid . '_' . $index);
+                            foreach ($languages as $language) {
+                                $this->duplicateFileTranslation($sub_label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'SUBLABEL_' . $group . '_' . $newelementid . '_' . $index,$language->lang_code);
+                            }
                             $sub_labels[] = 'SUBLABEL_' . $group . '_' . $newelementid . '_' . $index;
                         }
                         $el_params->sub_options->sub_labels = $sub_labels;
                     }
                     $query->clear();
                     $query->update($db->quoteName('#__fabrik_elements'));
-                    $this->duplicateTranslation($element->element->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'ELEMENT_' . $group . '_' . $newelementid);
+                    foreach ($languages as $language) {
+                        $this->duplicateFileTranslation($element->element->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'ELEMENT_' . $group . '_' . $newelementid,$language->lang_code);
+                    }
                     //
 
                     $query->set('label = ' . $db->quote('ELEMENT_' . $group . '_' . $newelementid));
@@ -1886,6 +1875,16 @@ class EmundusonboardModelformbuilder extends JModelList {
         $group->setId(intval($gid));
         $elements = $group->getMyElements();
 
+        // Prepare languages
+        $path_to_file = basename(__FILE__) . '/../language/overrides/';
+        $path_to_files = array();
+        $Content_Folder = array();
+        $languages = JLanguageHelper::getLanguages();
+        foreach ($languages as $language) {
+            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+        }
+
         ${"element".$element} = new stdClass();
 
         foreach ($elements as $group_elt) {
@@ -1910,7 +1909,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
                 if ($el_params->sub_options) {
                     foreach ($el_params->sub_options->sub_labels as $key => $sub_label) {
-                        $el_params->sub_options->sub_labels[$key] = $this->getTranslationFr($sub_label);
+                        $el_params->sub_options->sub_labels[$key] = $this->getTranslation($sub_label,$Content_Folder['fr']);
                     }
                 }
 
@@ -1918,8 +1917,8 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ${"element".$o_element->id}->params=$el_params;
                 ${"element".$o_element->id}->label_tag = $o_element->label;
                 ${"element" . $o_element->id}->label = new stdClass;
-                ${"element".$o_element->id}->label->fr = $this->getTranslationFr(${"element".$o_element->id}->label_tag);
-                ${"element".$o_element->id}->label->en = $this->getTranslationEn(${"element".$o_element->id}->label_tag);
+                ${"element".$o_element->id}->label->fr = $this->getTranslation(${"element".$o_element->id}->label_tag,$Content_Folder['fr']);
+                ${"element".$o_element->id}->label->en = $this->getTranslation(${"element".$o_element->id}->label_tag,$Content_Folder['en']);
                 if(${"element" . $o_element->id}->label->fr == ''){
                     ${"element" . $o_element->id}->label->fr = $o_element->label;
                 }
@@ -2074,6 +2073,17 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        //Prepare languages
+        $path_to_file = basename(__FILE__) . '/../language/overrides/';
+        $path_to_files = array();
+        $Content_Folder = array();
+
+        $languages = JLanguageHelper::getLanguages();
+        foreach ($languages as $language) {
+            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+        }
+
         $query->select('*')
             ->from($db->quoteName('#__emundus_template_form'))
             ->order('form_id');
@@ -2084,12 +2094,12 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             foreach ($models as $model) {
                 $model->label = array(
-                    'fr' => $this->getTranslationFr($model->label),
-                    'en' => $this->getTranslationEn($model->label)
+                    'fr' => $this->getTranslation($model->label,$Content_Folder['fr']),
+                    'en' => $this->getTranslation($model->label,$Content_Folder['en'])
                 );
                 $model->intro = array(
-                    'fr' => $this->getTranslationFr($model->intro),
-                    'en' => $this->getTranslationEn($model->intro)
+                    'fr' => $this->getTranslation($model->intro,$Content_Folder['fr']),
+                    'en' => $this->getTranslation($model->intro,$Content_Folder['en'])
                 );
             }
 
@@ -2117,10 +2127,13 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         // Prepare languages
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
-        $Content_Folder_FR = file_get_contents($path_to_file_fr);
-        $path_to_file_en = $path_to_file . 'en-GB.override.ini' ;
-        $Content_Folder_EN = file_get_contents($path_to_file_en);
+        $path_to_files = array();
+        $Content_Folder = array();
+        $languages = JLanguageHelper::getLanguages();
+        foreach ($languages as $language) {
+            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+        }
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
         $modules = [93,102,168,170];
@@ -2316,9 +2329,11 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $this->addTransationFr('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . 'Confirmation d\'envoi de dossier' . "\"");
                     $this->addTransationEn('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . 'Confirmation of file sending' . "\"");
                 } else {
-                    $duplicate_translation = $this->duplicateTranslation($group_model->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'GROUP_' . $newformid . '_' . $newgroupid);
-                    if(!$duplicate_translation){
-                        $this->addTransationFr('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . $group_model->label . "\"");
+                    foreach ($languages as $language) {
+                        $duplicate_translation = $this->duplicateFileTranslation($group_model->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'GROUP_' . $newformid . '_' . $newgroupid,$language->lang_code);
+                        if(!$duplicate_translation){
+                            $this->addTransationFr('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . $group_model->label . "\"");
+                        }
                     }
                 }
                 //
@@ -2348,9 +2363,11 @@ class EmundusonboardModelformbuilder extends JModelList {
                         if(($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options){
                             $sub_labels = [];
                             foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
-                                $duplicate_translation = $this->duplicateTranslation($sub_label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index);
-                                if(!$duplicate_translation){
-                                    $this->addTransationFr('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index . '=' . "\"" . $sub_label . "\"");
+                                foreach ($languages as $language) {
+                                    $duplicate_translation = $this->duplicateFileTranslation($sub_label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index,$language->lang_code);
+                                    if(!$duplicate_translation){
+                                        $this->addTransationFr('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index . '=' . "\"" . $sub_label . "\"");
+                                    }
                                 }
                                 $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
                             }
@@ -2362,10 +2379,13 @@ class EmundusonboardModelformbuilder extends JModelList {
                             $this->addTransationFr('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . 'Confirmation' . "\"");
                             $this->addTransationEn('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . 'Confirmation' . "\"");
                         } else {
-                            $duplicate_translation = $this->duplicateTranslation($element->element->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'ELEMENT_' . $newgroupid . '_' . $newelementid);
-                            if(!$duplicate_translation){
-                                $this->addTransationFr('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . $element->element->label . "\"");
+                            foreach ($languages as $language) {
+                                $duplicate_translation = $this->duplicateFileTranslation($element->element->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'ELEMENT_' . $newgroupid . '_' . $newelementid,$language->lang_code);
+                                if(!$duplicate_translation){
+                                    $this->addTransationFr('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . $element->element->label . "\"");
+                                }
                             }
+
                         }
                         //
 

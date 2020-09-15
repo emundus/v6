@@ -8,18 +8,28 @@
       </div>
       <div class="col-md-8 flex">
         <label class="require col-md-3">{{suboptions}} :</label>
-        <button @click.prevent="add" class="add-option">+</button>
-        <button class="add-databasejoin" :class="{'databasejoin-active':databasejoin}" @click="databasejoin = !databasejoin">
-          <i class="fas fa-table"></i>
-        </button>
+      </div>
+      <div class="col-md-10 form-group flex">
+        <div class="toggle">
+          <input type="checkbox"
+                 true-value="1"
+                 false-value="0"
+                 class="check"
+                 id="databasejoin_check"
+                 name="'databasejoin_check'"
+                 v-model="databasejoin"
+          />
+          <strong class="b switch"></strong>
+          <strong class="b track"></strong>
+        </div>
+        <label for="databasejoin_check" class="ml-10px mb-0">{{ DataTables }}</label>
       </div>
       <div class="col-md-10">
         <draggable
                 v-model="arraySubValues"
-                v-if="!databasejoin"
+                v-if="databasejoin != 1"
                 @end="needtoemit()"
-                handle=".handle"
-                style="padding-bottom: 2em">
+                handle=".handle">
         <div v-for="(sub_values, i) in arraySubValues" :key="i" class="dpflex">
           <span class="icon-handle">
             <em class="fas fa-grip-vertical handle"></em>
@@ -28,7 +38,8 @@
           <button @click.prevent="leave(i)" class="remove-option">-</button>
         </div>
         </draggable>
-        <select v-if="databasejoin" class="dropdown-toggle" v-model="databasejoin_data" style="margin: 20px 0 30px 0;">
+        <button @click.prevent="add" v-if="databasejoin != 1" class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">{{AddOption}}</button>
+        <select v-if="databasejoin == 1" class="dropdown-toggle" v-model="databasejoin_data" style="margin: 20px 0 30px 0;">
           <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
         </select>
       </div>
@@ -56,6 +67,8 @@ export default {
       databasejoin_data: 0,
       helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
       suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
+      AddOption: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
+      DataTables: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
     };
   },
   methods: {
@@ -74,7 +87,7 @@ export default {
     },
     initialised: function() {
       if(this.element.plugin === 'databasejoin'){
-        this.databasejoin = true;
+        this.databasejoin = 1;
         this.databases.forEach((db,index) => {
           if(db.database_name == this.element.params.join_db_name){
             this.databasejoin_data = index;

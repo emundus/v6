@@ -13,8 +13,8 @@
         <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
       </span>
     </div>
-    <div style="width: max-content" v-show="updatePage && indexPage == object_json.id">
-      <div class="input-can-translate" style="margin-top: 40px; margin-left: 20px">
+    <div style="width: max-content;margin-left: 20px" v-show="updatePage && indexPage == object_json.id">
+      <div class="input-can-translate" style="margin-top: 40px">
         <input v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_page ? '' : 'mb-1'" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
         <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPage(object_json.id)"></button>
         <div class="d-flex actions-update-label" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
@@ -27,8 +27,8 @@
     </div>
 
     <p v-if="eval == 0 && !updateIntroPage" class="introP" v-html="object_json.intro_value" @click="enableUpdatingPageIntro(object_json)" />
-    <div style="width: max-content" v-show="updateIntroPage && indexPage == object_json.id">
-      <div class="input-can-translate" style="margin-top: 10px; margin-left: 20px">
+    <div style="width: max-content;margin-left: 20px" v-show="updateIntroPage && indexPage == object_json.id">
+      <div class="input-can-translate" style="margin-top: 10px">
         <textarea v-if="object_json.intro" v-model="object_json.intro[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.intro_page ? '' : 'mb-1'" :id="'update_intro_' + object_json.id"/>
         <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.intro_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPageIntro(object_json.id)"></button>
         <div class="d-flex actions-update-label" :style="translate.intro_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
@@ -955,8 +955,10 @@ export default {
 
     // Dynamic actions
     enableActionBar(index) {
-      this.hoverUpdating = true;
-      this.indexHighlight = index;
+      if(!this.clickUpdatingLabel) {
+        this.hoverUpdating = true;
+        this.indexHighlight = index;
+      }
     },
     disableActionBar() {
       if(!this.clickUpdatingLabel) {
@@ -1176,6 +1178,9 @@ export default {
     padding: 5px;
     border-radius: 5px;
     color: #1b1f3c;
+  }
+  .translate-icon-selected{
+    top: -5px;
   }
 </style>
 

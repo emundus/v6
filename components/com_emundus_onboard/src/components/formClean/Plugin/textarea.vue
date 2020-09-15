@@ -3,7 +3,7 @@
     <div class="row rowmodal">
       <div class="form-group dpflex">
         <input type="checkbox" class="form__input field-general w-input" value="1" v-model="wysiwyg" />
-        <label class="ml-10px">{{UseAdvancedEditor}}</label>
+        <label class="ml-10px mb-0">{{UseAdvancedEditor}}</label>
       </div>
       <div class="form-group">
         <label>{{heightext}} :</label>
@@ -36,7 +36,7 @@
       </div>
       <div class="form-group dpflex">
         <input type="checkbox" class="form__input field-general w-input" value="1" v-model="showmax" />
-        <label class="ml-10px">{{DisplayMaxLength}}</label>
+        <label class="ml-10px mb-0">{{DisplayMaxLength}}</label>
       </div>
     </div>
   </div>
@@ -73,6 +73,12 @@ export default {
     }
     if(this.element.params['textarea-showmax'] == '1'){
       this.showmax = true;
+    }
+    if(typeof this.element.params['height'] == "undefined"){
+      this.element.params['height'] = 6;
+    }
+    if(typeof this.element.params['textarea-maxlength'] == "undefined"){
+      this.element.params['textarea-maxlength'] = 255;
     }
   },
   watch: {
