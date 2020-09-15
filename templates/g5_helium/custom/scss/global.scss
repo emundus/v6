@@ -35,7 +35,7 @@ h1 {
   position: relative;
 }
 
-.view-login h1::after, .view-registration h1::after, .view-reset h1::after {
+.view-login h1::after, .view-registration h1::after, .view-reset h1::after, .view-form.em-formRegistrationCenter h1::after {
   display: none !important;
 }
 
