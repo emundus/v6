@@ -99,7 +99,7 @@
                     @end="SomethingChange"
             >
               <li v-for="(value, index) in formObjectArray" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-                <span class="icon-handle" v-show="grab && indexGrab == index">
+                <span class="icon-handle" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
                   <em class="fas fa-grip-vertical handle"></em>
                 </span>
                 <a @click="changeGroup(index,value.rgt)"
@@ -858,13 +858,6 @@
     height: auto;
     background: white;
   }
-
-
-  .draggables-list{
-    display: flex;
-    flex-direction: row;
-    align-self: baseline;
-  }
   .divider-menu{
     width: 100%;
     margin: 0em;
@@ -885,9 +878,9 @@
   }
   .icon-handle{
     color: #cecece;
-    position: absolute;
+    position: relative;
     cursor: grab;
-    top: 22px;
+    left: 5px;
   }
   .heading-actions{
     background: #1b1f3c;

@@ -3,7 +3,7 @@
     <div class="row rowmodal">
       <div class="form-group">
         <label>{{Text}} :</label>
-        <editor :text="element.default" v-if="element.default" :lang="'fr'" :id="'element_' + element.id" v-model="element.default"></editor>
+        <textarea v-if="element.default" :id="'element_' + element.id" v-model="element.default"></textarea>
       </div>
     </div>
   </div>

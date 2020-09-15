@@ -174,7 +174,7 @@
                         <span class="ml-10px" v-if="element.publish">{{Unpublish}}</span>
                         <span class="ml-10px" v-if="!element.publish">{{Publish}}</span>
                       </a>
-                      <a class="d-flex mr-2 text-orange">
+                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'display'">
                         <div class="toggle">
                           <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
                           <strong class="b switch"></strong>
@@ -371,7 +371,7 @@ export default {
               return qs.stringify(params);
             }
           }).then(response => {
-            element.label_value = response.data.label;
+            element.label_value = response.data.label_value;
             this.$emit(
                     "show",
                     "foo-velocity",
@@ -955,13 +955,13 @@ export default {
 
     // Dynamic actions
     enableActionBar(index) {
-      if(!this.clickUpdatingLabel) {
+      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
         this.hoverUpdating = true;
         this.indexHighlight = index;
       }
     },
     disableActionBar() {
-      if(!this.clickUpdatingLabel) {
+      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
         this.hoverUpdating = false;
         this.clickUpdatingLabel = false;
         this.indexHighlight = 0;
@@ -969,10 +969,12 @@ export default {
       }
     },
     enableLabelInput(eid) {
-      this.clickUpdatingLabel = true;
-      setTimeout(() => {
-        document.getElementById('label_' + eid).focus();
-      },100);
+      if(!this.updateGroup && !this.updateIntroPage && !this.updatePage) {
+        this.clickUpdatingLabel = true;
+        setTimeout(() => {
+          document.getElementById('label_' + eid).focus();
+        }, 100);
+      }
     },
     enableTranslationLabel(eid) {
       this.translate.label = !this.translate.label;
@@ -987,18 +989,22 @@ export default {
       }
     },
     enableUpdatingPage(page) {
-      this.updatePage = true;
-      this.indexPage = page.id;
-      setTimeout(() => {
-        document.getElementById('update_input_' + page.id).focus();
-      }, 100);
+      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage) {
+        this.updatePage = true;
+        this.indexPage = page.id;
+        setTimeout(() => {
+          document.getElementById('update_input_' + page.id).focus();
+        }, 100);
+      }
     },
     enableUpdatingPageIntro(page) {
-      this.updateIntroPage = true;
-      this.indexPage = page.id;
-      setTimeout(() => {
-        document.getElementById('update_intro_' + page.id).focus();
-      }, 100);
+      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updatePage) {
+        this.updateIntroPage = true;
+        this.indexPage = page.id;
+        setTimeout(() => {
+          document.getElementById('update_intro_' + page.id).focus();
+        }, 100);
+      }
     },
     enableTranslationPage(pid) {
       this.translate.label_page = !this.translate.label_page;
@@ -1025,11 +1031,13 @@ export default {
       }
     },
     enableUpdatingGroup(group) {
-      this.updateGroup = true;
-      this.indexGroup = group.group_id;
-      setTimeout(() => {
-        document.getElementById('update_input_' + group.group_id).focus();
-      }, 100);
+      if(!this.clickUpdatingLabel && !this.updateIntroPage && !this.updatePage) {
+        this.updateGroup = true;
+        this.indexGroup = group.group_id;
+        setTimeout(() => {
+          document.getElementById('update_input_' + group.group_id).focus();
+        }, 100);
+      }
     },
     enableTranslationGroup(gid) {
       this.translate.label_group = !this.translate.label_group;
@@ -1044,11 +1052,13 @@ export default {
       }
     },
     enableGroupHover(group) {
-      this.hoverGroup = true;
-      this.indexGroup = group;
+      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
+        this.hoverGroup = true;
+        this.indexGroup = group;
+      }
     },
     disableGroupHover() {
-      if(!this.updateGroup) {
+      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
         this.hoverGroup = false;
         this.updateGroup = false;
         this.indexGroup = -1;

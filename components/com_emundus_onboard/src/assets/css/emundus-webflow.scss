@@ -1773,7 +1773,7 @@ label.label__placeholder {
 .MenuForm {
   list-style: none;
   text-decoration: none;
-  margin: 10px 10px 30px 10px;
+  margin: 10px 0 20px 5px;
   width: auto;
 }
 .MenuFormItem {
@@ -1781,10 +1781,10 @@ label.label__placeholder {
   color: #fff;
   cursor: pointer;
   padding: 5px;
-  border-radius: 5px;
+  border-radius: 4px;
   white-space: nowrap;
   margin-left: 10px;
-  font-size: 18px;
+  font-size: 14px;
   &:not(.MenuFormItem_current) {
     &:hover {
       color: #de6339;
@@ -1795,7 +1795,7 @@ label.label__placeholder {
 .MenuFormItem_current {
   color: white;
   cursor: pointer;
-  background-color: transparent;
+  background-color: #de6339;
   &:after {
     opacity: 1 !important;
     width: 50% !important;
@@ -1820,7 +1820,7 @@ label.label__placeholder {
   overflow-x: scroll;
   overflow-y: hidden;
   background-color: #1b1f3c;
-  height: 60px;
+  height: auto;
   z-index: 10;
   position: relative;
   box-shadow: 0 0.7px 24.4px rgba(0, 0, 0, 0.013), 0 1.7px 46.9px rgba(0, 0, 0, 0.022), 0 3.1px 67.3px rgba(0, 0, 0, 0.029), 0 5.6px 84.7px rgba(0, 0, 0, 0.037), 0 10.4px 96.9px rgba(0, 0, 0, 0.048), 0 25px 80px rgba(0, 0, 0, 0.07);
@@ -1828,7 +1828,7 @@ label.label__placeholder {
     transition: all 0.2s ease-in-out;
     position: relative;
     &:after {
-      content: "";
+      content: none;
       position: absolute;
       bottom: -15px;
       width: 100% !important;
@@ -1842,6 +1842,12 @@ label.label__placeholder {
       right: 0;
     }
   }
+}
+.draggables-list{
+  display: flex;
+  flex-direction: row;
+  align-self: baseline;
+  flex-wrap: wrap;
 }
 .menu-block {
   margin-top: 2em;
