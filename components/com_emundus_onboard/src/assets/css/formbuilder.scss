@@ -21,6 +21,7 @@
     input.fabrikinput {
       position: relative !important;
       margin-right: 7px;
+      max-width: 15px;
     }
   }
 }
@@ -136,7 +137,7 @@ fieldset {
 .dpflex {
   display: flex;
   margin: 20px 0;
-  align-items: baseline;
+  align-items: center;
 }
 .toright {
   position: relative;
@@ -255,8 +256,11 @@ fieldset {
   cursor: pointer;
   color: #fff;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
+  label {
+    margin-right: 1em;
+  }
   &:hover {
     color: #de6339;
     text-decoration: none;
@@ -337,4 +341,12 @@ select.fabrikinput.form-control {
 }
 .js-editor-tinymce {
   display: grid;
+}
+
+.button-add-option{
+  float: none;
+  text-align: center;
+  width: 87%;
+  margin-left: 18px;
+  margin-bottom: 2em;
 }

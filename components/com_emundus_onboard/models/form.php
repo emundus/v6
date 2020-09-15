@@ -534,6 +534,17 @@ class EmundusonboardModelform extends JModelList {
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 
+        // Prepare languages
+        $path_to_file = basename(__FILE__) . '/../language/overrides/';
+        $path_to_files = array();
+        $Content_Folder = array();
+
+        $languages = JLanguageHelper::getLanguages();
+        foreach ($languages as $language) {
+            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+        }
+
         $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
 
 		if (!is_array($data)) {
@@ -628,13 +639,13 @@ class EmundusonboardModelform extends JModelList {
                         $form = $db->loadObject();
 
                         $label = array(
-                            'fr' => $formbuilder->getTranslationFr($form->label),
-                            'en' => $formbuilder->getTranslationEn($form->label),
+                            'fr' => $formbuilder->getTranslation($form->label,$Content_Folder['fr']),
+                            'en' => $formbuilder->getTranslation($form->label,$Content_Folder['en']),
                         );
 
                         $intro = array(
-                            'fr' => $formbuilder->getTranslationFr($form->intro),
-                            'en' => $formbuilder->getTranslationEn($form->intro),
+                            'fr' => $formbuilder->getTranslation($form->intro,$Content_Folder['fr']),
+                            'en' => $formbuilder->getTranslation($form->intro,$Content_Folder['en']),
                         );
 
                         // Manage old platforms without translation
