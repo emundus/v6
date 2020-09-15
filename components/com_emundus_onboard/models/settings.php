@@ -788,8 +788,7 @@ class EmundusonboardModelsettings extends JModelList {
 
         $lang = JFactory::getLanguage();
         $actualLanguage = substr($lang->getTag(), 0 , 2);
-
-        if($actualLanguage == 'fr-FR'){
+        if($actualLanguage == 'fr'){
             $language = 2;
         } else {
             $language = 1;
