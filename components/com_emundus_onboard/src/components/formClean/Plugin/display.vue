@@ -3,7 +3,7 @@
     <div class="row rowmodal">
       <div class="form-group">
         <label>{{Text}} :</label>
-        <textarea v-if="element.default" :id="'element_' + element.id" class="display_textarea" v-model="element.default"></textarea>
+        <editor :text="element.default" :lang="'fr'" :id="'element_' + element.id" v-model="element.default"></editor>
       </div>
     </div>
   </div>
@@ -43,12 +43,6 @@ export default {
     background: transparent;
   }
 #fieldF{
-  padding: 10px;
-}
-
-.display_textarea{
-  width: 100%;
-  height: 500px;
   padding: 10px;
 }
 </style>
