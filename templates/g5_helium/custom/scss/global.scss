@@ -349,6 +349,10 @@ footer#g-footer img{
   margin-top: auto !important;
 }
 
+footer#g-footer > .g-container {
+  width: 95%;
+}
+
  body > .g-container {
   width: 100vw;
 }
@@ -391,12 +395,12 @@ footer#g-footer img{
       text-align: left;
     }
   }
+}
 
-  .credits-emundus {
-    p, a {
-      color: $base-primary-color;
-      text-decoration: none !important;
-    }
+.credits-emundus {
+  p {
+    color: $base-primary-color;
+    float: right;
   }
 }
 
