@@ -1813,6 +1813,7 @@ label.label__placeholder {
 }
 .menus-row {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   padding-left: 0 !important;
   padding-top: 10px;
