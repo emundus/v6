@@ -1676,6 +1676,32 @@ a.btn-attach:active {
 
 @media all and (max-width: 767px) {
 
+/* INSCRIPTION */ 
+
+.view-registration .login.em-formRegistrationCenter, .view-form .em-formRegistrationCenter:not(.componentheading) {
+    width: 100%; 
+}
+
+.view-registration .login div.em-heading-registration, .view-form .em-formRegistrationCenter div.em-heading-registration {
+    width: 93% !important;     
+}
+
+ol {
+    width: 90%;
+    text-align: justify;
+    margin-left: 0px !important;
+}
+
+.view-registration form.fabrikForm {
+    width:100%;
+    padding: 5px; 
+}
+
+.fabrikActions.form-actions .row-fluid .span4 {
+    width: 98% !important;
+}
+
+    
     .applicant-form .btn.btn-primary.save-btn.sauvegarder.save_continue {
         margin-left: 0px !important;
         margin-bottom: 10px; 
@@ -1799,17 +1825,7 @@ a.btn-attach:active {
           width: 100% !important;
           display: inline-table;
     }
-
-    ol {
-        width: 100%;
-        text-align: justify;
-        margin-left: 0px !important;
-    }
-
-    .view-registration form.fabrikForm {
-        width:100%;
-    }
-    
+        
     /* APRES MAJ */
     .applicant-form .fabrikForm fieldset > .row-fluid {
         padding: 0px !important;

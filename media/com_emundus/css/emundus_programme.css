@@ -38,3 +38,14 @@ div.content-bottom-a fieldset.em_period {
 .view-programme fieldset {
     background: transparent;
 }
+
+@media all and (max-width: 767px) {
+    /* VIEW PROGRAMME _ MORE INFORMATION */
+    .view-programme .right-side.campaingapply {
+        width: 100% !important;
+    }
+
+    .view-programme .below-content {
+        width: 100% !important;
+    }
+}
