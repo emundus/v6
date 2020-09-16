@@ -2188,7 +2188,15 @@ a {
 
   /******************************* RESPONSIVE ***********************************/
 
-  @media all and (max-width: 767px) {
+@media all and (max-width: 767px) {
+
+.homepage h1::after {
+  display: none !important;
+}
+
+.view-form h1::after, .view-details h1::after {
+  display: none !important;
+}
 
   /* FOOTER */
 footer#g-footer {
