@@ -109,3 +109,26 @@ ul.unstyled.em-linkForgot li a span::before {
     filter: brightness(.5);
     fill: grey;
 }
+
+/* RESPONSIVE */
+
+@media all and (max-width: 767px) {
+    .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
+        width: 100%;
+    }
+
+    .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {
+        width: 100%;
+    }
+
+    .view-form.em-formRegistrationCenter ul.unstyled.em-linkForgot {
+        justify-content: center;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .view-login .login.em-formRegistrationCenter .page-header {
+       width: 100%;
+        padding: 15px;
+    }
+}

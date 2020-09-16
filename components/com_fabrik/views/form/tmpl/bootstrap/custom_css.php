@@ -1851,7 +1851,7 @@ ol {
     }
     
     /* INSCRIPTION */ 
-    .view-registration form.fabrikForm {
+    .view-registration form.fabrikForm,  .view-form .em-formRegistrationCenter {
         width: 70%;   
     }
     
