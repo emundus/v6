@@ -367,7 +367,7 @@ div#em-appli-block button.btn.btn-default {
     margin-bottom: 10px;
 }
 .toggle-addoption, .delete, .listplugin, .fabrik__rowlink, button#showhide, .btn-sm {
-    border-radius: 0 !important;
+    border-radius: 4px !important;
     padding: 5px 10px !important;
     color: initial;
     text-shadow: initial !important;

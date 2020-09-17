@@ -126,7 +126,7 @@
 }
 
 .campaigns-list .below-content a.btn {
-  border-radius: 0px;
+  border-radius: 4px;
   width: auto;
   padding: 8px 12px;
   text-transform: inherit;
