@@ -37,5 +37,5 @@ try {
     $db->execute();
 
 } catch (Exception $e) {
-    JLog::add('Error setting status in plugin at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+    JLog::add('Error setting status in plugin at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 }
