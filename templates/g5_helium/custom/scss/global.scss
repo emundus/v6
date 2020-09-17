@@ -27,7 +27,7 @@ h1, h2, h3, h4, h5, h6  {
   margin-top: 50px;
   margin-bottom: 50px;
   font-weight: 700;
-  font-family: "Lato", sans-serif !important;
+  font-family: "Lato", sans-serif;
 }
 
 h1 {
@@ -422,7 +422,7 @@ footer#g-footer > .g-container {
   margin : auto auto 0 auto !important;
 
 a {
-  color: #404B5A;
+  color: $base-secondary-color;
   text-decoration: underline;
 }
 }
@@ -657,9 +657,7 @@ a {
   /* PAGE ACCUEIL */
   .homepage {
     h1:first-child {
-      margin-top: 10px;
       margin-bottom: 25px !important;
-      font-family: "Lato", sans-serif;
     }
 
     .blog-featuredhomepage {
