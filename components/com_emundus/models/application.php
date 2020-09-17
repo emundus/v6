@@ -3121,11 +3121,7 @@ class EmundusModelApplication extends JModelList {
     function allowEmbed($url) {
 
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
-	    if ($eMConfig->get('headerCheck', '1') == 1) {
-		    $header = @get_headers($url, 1);
-	    } else {
-	    	$header = true;
-	    }
+        $header = $eMConfig->get('headerCheck', '0') == 1 ? @get_headers($url, 1) : true;
 
         // URL okay?
         if (!$header || stripos($header[0], '200 ok') === false) {
