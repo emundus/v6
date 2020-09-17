@@ -84,6 +84,10 @@ table {
     width: 100vw; 
 }
 
+.fabrik_actions.fabrik_element .btn-group > .btn {
+border-radius: 4px;
+}
+
 @media all and (max-width: 767px) {
   #listform_84_com_fabrik_84 {
     padding: 0 !important;

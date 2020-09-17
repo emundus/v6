@@ -27,7 +27,7 @@ h1, h2, h3, h4, h5, h6  {
   margin-top: 50px;
   margin-bottom: 50px;
   font-weight: 700;
-  font-family: "Lato", sans-serif !important;
+  font-family: "Lato", sans-serif;
 }
 
 h1 {
@@ -291,7 +291,7 @@ input[type="text"],
   width: 100vw;
 
   .g-container {
-    padding: 10px !important;
+    padding: 10px;
     width: 95%;
     margin: auto !important;
   }
@@ -422,7 +422,7 @@ footer#g-footer > .g-container {
   margin : auto auto 0 auto !important;
 
 a {
-  color: #404B5A;
+  color: $base-secondary-color;
   text-decoration: underline;
 }
 }
@@ -657,9 +657,7 @@ a {
   /* PAGE ACCUEIL */
   .homepage {
     h1:first-child {
-      margin-top: 10px;
-      margin-bottom: 25px !important;
-      font-family: "Lato", sans-serif;
+      margin-bottom: 25px;
     }
 
     .blog-featuredhomepage {
@@ -755,7 +753,7 @@ a {
       height: 50px;
       text-transform: capitalize;
       margin-right: 0;
-      border-radius: 0px;
+      border-radius: 4px;
       padding: 8px 12px;
       font-family: "Lato", sans-serif;
       line-height: normal;
@@ -1032,7 +1030,7 @@ a {
   /* BOUTONS */
 
   .btn  {
-    border-radius: 4px !important;
+    border-radius: 4px;
   }
 
   .btnmarge {
@@ -1094,7 +1092,7 @@ a {
   button.btn-primary {
     background: $base-secondary-color !important;
     border: 1px solid $base-secondary-color !important;
-    border-radius: 0;
+    border-radius: 4px;
     padding: 8px 12px !important;
 
     &:hover {
@@ -1108,7 +1106,7 @@ a {
   span.btn {
     background: $base-primary-color !important;
     border: 1px solid $base-primary-color !important;
-    border-radius: 0;
+    border-radius: 4px;
     padding: 8px 12px !important;
     color: #fff !important;
 
