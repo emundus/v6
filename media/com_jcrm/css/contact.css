@@ -191,7 +191,7 @@ textarea.form-control.add-contact
 .btn.btn-default.xs.pull-right {
     background-image: none;
     margin-left: 8px;
-    border-radius: 0;
+    border-radius: 4px;
     background-color: #1b1f3c;
     border: 1px solid #1b1f3c;
 }
@@ -211,7 +211,7 @@ textarea.form-control.add-contact
 }
 
 .btn.btn-primary.btn-xs.pull-right {
-    border-radius: 0;
+    border-radius: 4px;
 }
 
 .btn.btn-primary.btn-xs.pull-right:hover {
