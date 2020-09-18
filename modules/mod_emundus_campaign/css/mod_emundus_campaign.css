@@ -134,7 +134,7 @@
 }
 
 .campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {
-    text-transform: capitalize;
+    text-transform: initial;
 }
 
 .campaign-title {

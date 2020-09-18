@@ -211,7 +211,7 @@ textarea.form-control.add-contact
 }
 
 .btn.btn-primary.btn-xs.pull-right {
-    border-radius: 0;
+    border-radius: 4px !important;
 }
 
 .btn.btn-primary.btn-xs.pull-right:hover {
