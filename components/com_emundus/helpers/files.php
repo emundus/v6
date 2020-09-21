@@ -1635,89 +1635,7 @@ class EmundusHelperFiles
 
 		    $filters .= $group_assoc;
 	    }
-        
-        //Advance filter builtin
-        if (@$params['adv_filter'] !== NULL) {
-            $filters .= '</fieldset><fieldset class="em_filters_adv_filter">';
-            $elements = $h_files->getElements();
-
-            // the button is disabled by default. It needs a selected campaign ->> look at em_files.js at the #select_multiple_campaigns on change function
-	        $disabled = empty($current_campaign) ? 'disabled' : "";
-
-	        $search_nb = !empty($search)?count($search):0;
-            $adv_filter = '<div class="em_filters em-filter" id="em_adv_filters">
-								<label class="control-label editlinktip hasTip em_filters_adv_filter_label" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</label>
-								<div class="em_filters_adv_filter_addColumn" title="'.JText::_('SELECT_CAMPAIGN').'">
-									<button class="btn btn-default btn-sm" type="button" id="add-filter" '.$disabled.' ><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button>
-								</div>
-								<br/>
-								<input type="hidden" value="'.$search_nb.'" id="nb-adv-filter" />
-								<div id="advanced-filters" class="form-group">';
-
-            if (!empty($search)) {
-
-                $i = 1;
-                $selected_adv = "";
-                foreach ($search as $key => $val) {
-
-                	if (isset($val['value'])) {
-                		$val = $val['value'];
-	                }
-
-                	$adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding">
-										<select class="chzn-select em-filt-select" id="elements" name="elements">
-                                            <option value="">'.JText::_('PLEASE_SELECT').'</option>';
-                    $menu = "";
-                    $groupe = "";
-
-                    foreach ($elements as $element) {
-                        $menu_tmp = $element->title;
-
-                        if ($menu != $menu_tmp) {
-                            $adv_filter .= '<optgroup label="________________________________"><option disabled class="emundus_search_elm" value="-">'.strtoupper($menu_tmp).'</option></optgroup>';
-                            $menu = $menu_tmp;
-                        }
-
-                        if (isset($groupe_tmp) && ($groupe != $groupe_tmp)) {
-	                        $adv_filter .= '</optgroup>';
-                        }
-
-                        $groupe_tmp = $element->group_label;
-
-                        if ($groupe != $groupe_tmp) {
-                            $adv_filter .= '<optgroup label=">> '.$groupe_tmp.'">';
-                            $groupe = $groupe_tmp;
-                        }
-
-                        $adv_filter .= '<option class="emundus_search_elm" value="'.$element->id.'"';
-                        $table_name = (isset($element->table_join)?$element->table_join:$element->table_name);
-                        if ($table_name.'.'.$element->element_name == $key) {
-                            $selected_adv = $element;
-                            $adv_filter .= ' selected=true ';
-                        }
-                        $adv_filter .= '>'.$element->element_label.'</option>';
-                    }
-                    $adv_filter .= '</select> ';
-
-                    if ($selected_adv != "") {
-	                    $adv_filter .= $h_files->setSearchBox($selected_adv, $val, $key, $i);
-                    }
-                        
-                    $adv_filter .= '<button class="btn btn-danger btn-xs" id="suppr-filt"><span class="fas fa-trash" ></span></button>';
-                    $i++;
-                    $adv_filter .= '</fieldset>';
-                }
-            }
-            $adv_filter .= '</div> 
-   
-            <div class="em_save_filter">
-                <input value="'.JText::_('SAVE_FILTER').'" class="btn btn-sm btn-warning" title="'.JText::_('SAVE_FILTER').'" type="button" id="save-filter">
-            </div>
-            </div>';
-
-            $filters .= $adv_filter;
-        }
-
+	    
         //Other filters builtin
         if (@$params['other'] !== NULL && !empty($tables) && $tables[0] != "") {
 
@@ -1903,6 +1821,87 @@ class EmundusHelperFiles
                         </select>
                     </div>
                 </div>';
+        }
+        //Advance filter builtin
+        if (@$params['adv_filter'] !== NULL) {
+            $filters .= '</fieldset><fieldset class="em_filters_adv_filter">';
+            $elements = $h_files->getElements();
+
+            // the button is disabled by default. It needs a selected campaign ->> look at em_files.js at the #select_multiple_campaigns on change function
+            $disabled = empty($current_campaign) ? 'disabled' : "";
+
+            $search_nb = !empty($search)?count($search):0;
+            $adv_filter = '<div class="em_filters em-filter" id="em_adv_filters">
+								<label class="control-label editlinktip hasTip em_filters_adv_filter_label" title="'.JText::_('NOTE').'::'.JText::_('FILTER_HELP').'">'.JText::_('ELEMENT_FILTER').'</label>
+								<div class="em_filters_adv_filter_addColumn" title="'.JText::_('SELECT_CAMPAIGN').'">
+									<button class="btn btn-default btn-sm" type="button" id="add-filter" '.$disabled.' ><span class="glyphicon glyphicon-th-list"></span> '.JText::_('ADD_FILTER_COLUMN').'</button>
+								</div>
+								<br/>
+								<input type="hidden" value="'.$search_nb.'" id="nb-adv-filter" />
+								<div id="advanced-filters" class="form-group">';
+
+            if (!empty($search)) {
+
+                $i = 1;
+                $selected_adv = "";
+                foreach ($search as $key => $val) {
+
+                    if (isset($val['value'])) {
+                        $val = $val['value'];
+                    }
+
+                    $adv_filter .= '<fieldset id="em-adv-father-'.$i.'" class="em-nopadding">
+										<select class="chzn-select em-filt-select" id="elements" name="elements">
+                                            <option value="">'.JText::_('PLEASE_SELECT').'</option>';
+                    $menu = "";
+                    $groupe = "";
+
+                    foreach ($elements as $element) {
+                        $menu_tmp = $element->title;
+
+                        if ($menu != $menu_tmp) {
+                            $adv_filter .= '<optgroup label="________________________________"><option disabled class="emundus_search_elm" value="-">'.strtoupper($menu_tmp).'</option></optgroup>';
+                            $menu = $menu_tmp;
+                        }
+
+                        if (isset($groupe_tmp) && ($groupe != $groupe_tmp)) {
+                            $adv_filter .= '</optgroup>';
+                        }
+
+                        $groupe_tmp = $element->group_label;
+
+                        if ($groupe != $groupe_tmp) {
+                            $adv_filter .= '<optgroup label=">> '.$groupe_tmp.'">';
+                            $groupe = $groupe_tmp;
+                        }
+
+                        $adv_filter .= '<option class="emundus_search_elm" value="'.$element->id.'"';
+                        $table_name = (isset($element->table_join)?$element->table_join:$element->table_name);
+                        if ($table_name.'.'.$element->element_name == $key) {
+                            $selected_adv = $element;
+                            $adv_filter .= ' selected=true ';
+                        }
+                        $adv_filter .= '>'.$element->element_label.'</option>';
+                    }
+                    $adv_filter .= '</select> ';
+
+                    if ($selected_adv != "") {
+                        $adv_filter .= $h_files->setSearchBox($selected_adv, $val, $key, $i);
+                    }
+
+                    $adv_filter .= '<button class="btn btn-danger btn-xs" id="suppr-filt"><span class="fas fa-trash" ></span></button>';
+                    $i++;
+                    $adv_filter .= '</fieldset>';
+                }
+            }
+            $adv_filter .= '</div> 
+   
+            <div class="em_save_filter">
+                <input value="'.JText::_('SAVE_FILTER').'" class="btn btn-sm btn-warning" title="'.JText::_('SAVE_FILTER').'" type="button" id="save-filter">
+            </div>
+            </div>';
+
+            $filters .= $adv_filter;
         }
        
         // Buttons
