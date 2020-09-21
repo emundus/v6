@@ -242,7 +242,7 @@
                 </div>
 
                 <div class="form-group controls">
-                  <editor :text="programForm.notes" v-model="programForm.notes" :placeholder="ProgramResume" :id="'program_campaign'"></editor>
+                  <editor :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="ProgramResume" :id="'program_campaign'"></editor>
                 </div>
 
                 <div class="form-group d-flex">

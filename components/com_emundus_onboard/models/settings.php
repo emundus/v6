@@ -786,9 +786,21 @@ class EmundusonboardModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('tag,description')
-            ->from($db->quoteName('#__emundus_setup_tags'))
-            ->where($db->quoteName('published') . ' = ' . $db->quote(1));
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
+        if($actualLanguage == 'fr'){
+            $language = 2;
+        } else {
+            $language = 1;
+        }
+
+        $query->select('st.id as id,st.tag as tag,fc.value as description')
+            ->from($db->quoteName('#__emundus_setup_tags','st'))
+            ->leftJoin($db->quoteName('#__falang_content','fc').' ON '.$db->quoteName('fc.reference_id').' = '.$db->quoteName('st.id'))
+            ->where($db->quoteName('st.published') . ' = ' . $db->quote(1))
+            ->andWhere($db->quoteName('fc.reference_field') . ' = ' . $db->quote('description'))
+            ->andWhere($db->quoteName('fc.language_id') . ' = ' . $db->quote($language))
+            ->andWhere($db->quoteName('fc.reference_table') . ' = ' . $db->quote('emundus_setup_tags'));
 
         try {
             $db->setQuery($query);

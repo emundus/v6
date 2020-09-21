@@ -21,6 +21,7 @@ templates/g5_helium/templatesDetails.xml
 /images/emundus/files/*
 /images/emundus/letters/*
 /image/logo.png
+/images/custom/logo.png
 #_bdd/*
 components/com_emundus.*
 components/com_emundus/*.bak
