@@ -5,9 +5,6 @@
         <div class="column-blocks w-row">
           <div class="column-inner-block w-col w-col-8 pl-30px">
             <div class="list-item-header">
-              <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
-                {{ isPublished ? publishedTag : unpublishedTag }}
-              </div>
               <div class="block-label">
                 <a v-if="data.type == 2"
                    class="item-select w-inline-block"
@@ -20,7 +17,10 @@
             <p class="description-block white"><span v-html="data.message"></span></p>
           </div>
           <div class="column-inner-block-2 w-clearfix w-col w-col-4" style="min-height: 150px !important">
-            <a href="#" class="button-programme">{{ type[langue][data.type - 1] }}</a>
+            <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
+              {{ isPublished ? publishedTag : unpublishedTag }}
+            </div>
+            <a href="#" class="button-programme ml-10px">{{ type[langue][data.type - 1] }}</a>
             <div class="container-gerer-modifier-visualiser">
               <a class="cta-block pointer"
                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
@@ -102,31 +102,6 @@ export default {
 </script>
 
 <style scoped>
-.publishedTag,
-.unpublishedTag {
-  position: absolute;
-  top: 5%;
-  right: 2%;
-  color: #fff;
-  font-weight: 700;
-  border-radius: 10px;
-  width: 18%;
-  padding: 5px;
-  text-align: center;
-}
-
-.unpublishedTag {
-  background: #c3c3c3;
-}
-
-.publishedTag {
-  background: #44d421;
-}
-
-.unpublishedBlock {
-  background: #4b4b4b;
-}
-
 a.button-programme:hover {
   color: white;
   cursor: default;

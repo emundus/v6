@@ -56,7 +56,10 @@ $doc = JFactory::getDocument();
                 $showcolumn = $this->countModules('header-onboarding');
                 ?>
                 <?php if($showcolumn): ?>
+                <nav id="siteNav">
+                    <a href="#" id="menuToggler" class="show-on-small">&#9776;</a>
                     <jdoc:include type="modules" name="header-onboarding"/>
+                </nav>
                 <?php endif; ?>
             </div>
             <div id="moduletable-d" class="moduletable-d size-30">
@@ -104,7 +107,17 @@ $doc = JFactory::getDocument();
     <?php } ?>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-<script>
+<script type="text/javascript">
+    (function($){
+        $(document).ready(function(){
+            $('#menuToggler').on('click', function(e){
+                console.log('here')
+                e.preventDefault;
+                $('#siteNav ul').toggleClass('menuIsActive');
+            });
+        });
+    })(jQuery);
+
     let found = false;
 
     // Get route
