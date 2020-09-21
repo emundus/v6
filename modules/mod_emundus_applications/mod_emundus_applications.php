@@ -58,6 +58,7 @@ $show_progress_color_forms = $params->get('show_progress_color_forms', '#EA5012'
 $show_progress_documents = $params->get('show_progress_documents', '#EA5012');
 $admission_status = explode(',', $params->get('admission_status'));
 $add_admission_prefix = $params->get('add_admission_prefix', 1);
+$absolute_urls = $params->get('absolute_urls', 1);
 
 $show_remove_files = $params->get('show_remove_files', 1);
 $show_archive_files = $params->get('show_archived_files', 1);
