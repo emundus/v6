@@ -31,7 +31,7 @@
 
             <div class="form-group controls forms-emails-editor">
               <label>{{emailBody}} *</label>
-              <editor :text="form.message" v-if="dynamicComponent" :lang="actualLanguage" v-model="form.message" :id="'email'" :placeholder="EmailResume" :class="{ 'is-invalid': errors.message}"></editor>
+              <editor :text="form.message" v-if="dynamicComponent" :lang="actualLanguage" :enable_variables="true" v-model="form.message" :id="'email'" :placeholder="EmailResume" :class="{ 'is-invalid': errors.message}"></editor>
             </div>
             <p v-if="errors.message" class="error col-md-12 mb-2">
               <span class="error">{{BodyRequired}}</span>

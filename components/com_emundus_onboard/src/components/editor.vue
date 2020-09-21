@@ -35,7 +35,8 @@ export default {
     text: String,
     lang: String,
     placeholder: String,
-    id: String
+    id: String,
+    enable_variables: Boolean
   },
 
   data() {
@@ -66,7 +67,6 @@ export default {
         this.variables = response.data.data;
     });
     var baseUrl = window.location.protocol + '//' + window.location.host + '/media/com_emundus_onboard/';
-    var vm = this;
 
     let options = {
       selector: '#tiny_' + this.selector_id,
@@ -88,7 +88,7 @@ export default {
       mentions: {
         delimiter: '/',
         source: (query, process, delimiter) => {
-          if (delimiter === '/') {
+          if (delimiter === '/' && this.enable_variables == true) {
             process(this.variables);
           }
         },

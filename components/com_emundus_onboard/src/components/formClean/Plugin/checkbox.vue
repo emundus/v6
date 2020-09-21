@@ -8,7 +8,7 @@
       <div class="col-md-8 flex">
         <label class="require col-md-3">{{suboptions}} :</label>
       </div>
-      <div class="col-md-10 form-group flex">
+      <!--<div class="col-md-10 form-group flex">
         <div class="toggle">
           <input type="checkbox"
                  true-value="1"
@@ -22,19 +22,18 @@
           <strong class="b track"></strong>
         </div>
         <label for="databasejoin_check" class="ml-10px mb-0">{{ DataTables }}</label>
-      </div>
+      </div>-->
       <div class="col-md-10">
         <draggable
                 v-model="arraySubValues"
                 v-if="databasejoin != 1"
                 @end="needtoemit()"
-                handle=".handle"
-                style="padding-bottom: 2em">
+                handle=".handle">
         <div v-for="(sub_values, i) in arraySubValues" :key="i" class="dpflex">
           <span class="icon-handle">
             <em class="fas fa-grip-vertical handle"></em>
           </span>
-          <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input" style="height: 35px" :id="'suboption_' + i" @keyup.enter="add"/>
+          <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input" style="height: 35px" :id="'suboption_' + i"/>
           <button @click.prevent="leave(i)" class="remove-option">-</button>
         </div>
         </draggable>
@@ -87,7 +86,7 @@ export default {
     },
     initialised: function() {
       if(this.element.plugin === 'databasejoin'){
-        this.databasejoin = true;
+        this.databasejoin = 1;
         this.databases.forEach((db,index) => {
           if(db.database_name == this.element.params.join_db_name){
             this.databasejoin_data = index;
@@ -107,7 +106,8 @@ export default {
           }).then(response => {
             Object.values(response.data).forEach(rep => {
               this.arraySubValues.push(rep);
-            })
+            });
+            this.needtoemit();
           }).catch(e => {
             console.log(e);
           });

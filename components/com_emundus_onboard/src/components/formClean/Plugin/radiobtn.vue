@@ -1,6 +1,5 @@
 <template>
   <div id="radiobtnF">
-
     <div class="row rowmodal">
       <div class="form-group">
         <label>{{helptext}} :</label>
@@ -19,7 +18,7 @@
             <span class="icon-handle">
               <em class="fas fa-grip-vertical handle"></em>
             </span>
-            <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input" style="height: 35px" :id="'suboption_' + i" @keyup.enter="add"/>
+            <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input" style="height: 35px" :id="'suboption_' + i"/>
             <button @click.prevent="leave(i)" class="remove-option">-</button>
           </div>
         </draggable>
@@ -77,7 +76,8 @@ export default {
       }).then(response => {
           Object.values(response.data).forEach(rep => {
             this.arraySubValues.push(rep);
-          })
+          });
+        this.needtoemit();
         }).catch(e => {
           console.log(e);
         });
