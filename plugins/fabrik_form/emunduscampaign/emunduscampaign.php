@@ -173,7 +173,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
             $dispatcher->trigger('onCreateNewFile', [$user->id, $fnum, $campaign_id]);
 
         } catch (Exception $e) {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             JError::raiseError(500, $query->__toString());
         }
 

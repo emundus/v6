@@ -54,7 +54,7 @@ class EmundusModelMessages extends JModelList {
             return $db->loadObjectList();
 
         } catch (Exception $e) {
-            JLog::add('Error getting emails in model/messages at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting emails in model/messages at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -83,7 +83,7 @@ class EmundusModelMessages extends JModelList {
             return $db->loadColumn();
 
         } catch (Exception $e) {
-            JLog::add('Error getting email categories in model/messages at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting email categories in model/messages at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -139,7 +139,7 @@ class EmundusModelMessages extends JModelList {
             return $db->loadObjectList();
 
         } catch (Exception $e) {
-            JLog::add('Error getting attachments in model/messages at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting attachments in model/messages at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -186,7 +186,7 @@ class EmundusModelMessages extends JModelList {
             return $db->loadObjectList();
 
         } catch (Exception $e) {
-            JLog::add('Error getting letters in model/messages at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting letters in model/messages at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -242,7 +242,7 @@ class EmundusModelMessages extends JModelList {
             return $db->loadObject();
 
         } catch (Exception $e) {
-            JLog::add('Error getting template in model/messages at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting template in model/messages at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -273,7 +273,7 @@ class EmundusModelMessages extends JModelList {
             return $db->loadObjectList();
 
         } catch (Exception $e) {
-            JLog::add('Error getting emails by category in model/messages at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting emails by category in model/messages at query '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -367,7 +367,7 @@ class EmundusModelMessages extends JModelList {
             return $db->loadObject();
 
         } catch (Exception $e) {
-            JLog::add('Error getting upload filename in model/messages at query '.$query->__toString(), JLog::ERROR, 'com_emudus');
+            JLog::add('Error getting upload filename in model/messages at query '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emudus');
             return false;
         }
 
@@ -396,7 +396,7 @@ class EmundusModelMessages extends JModelList {
             return $db->loadObjectList();
 
         } catch (Exception $e) {
-            JLog::add('Error getting candidate file attachment name in model/messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting candidate file attachment name in model/messages at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -425,7 +425,7 @@ class EmundusModelMessages extends JModelList {
             return $db->loadObjectList();
 
         } catch (Exception $e) {
-            JLog::add('Error getting letter attachment name in model/messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting letter attachment name in model/messages at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -653,7 +653,7 @@ class EmundusModelMessages extends JModelList {
                   ORDER BY date_time DESC";
 
         try {
-			
+
             $db->setQuery($query);
             return $db->loadObjectList();
 
@@ -694,7 +694,7 @@ class EmundusModelMessages extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error loading messages at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -724,12 +724,12 @@ class EmundusModelMessages extends JModelList {
 			$db->setQuery($query);
 			return $db->loadResult();
 		} catch (Exception $e) {
-			JLog::add('Error loading unread messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error loading unread messages at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
 
-	
+
 	/** load messages between two users ( messages with folder_id 2 )
 	 *
 	 * @param      $user1
@@ -755,7 +755,7 @@ class EmundusModelMessages extends JModelList {
             $db->setQuery($query);
             $db->execute();
         } catch (Exception $e) {
-            JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error loading messages at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -765,17 +765,17 @@ class EmundusModelMessages extends JModelList {
 	        ->where('('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.' AND '.$db->quoteName('folder_id').' = 2) OR ('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.' AND '.$db->quoteName('folder_id').' IN (2,3))')
 	        ->order($db->quoteName('date_time').' ASC')
             ->setLimit('100');
-        
+
         try {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error loading messages at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
 
-    
+
 	/** sends message folder_id=2 from user_from to user_to and sets stats to 1
 	 *
 	 * @param      $receiver
@@ -815,7 +815,7 @@ class EmundusModelMessages extends JModelList {
             return true;
 
         } catch (Exception $e) {
-            JLog::add('Error sending message at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error sending message at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -837,9 +837,9 @@ class EmundusModelMessages extends JModelList {
             return true;
 
         } catch (Exception $e) {
-            JLog::add('Error deleting messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error deleting messages at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
-        } 
+        }
 
 
     }
@@ -1020,7 +1020,7 @@ class EmundusModelMessages extends JModelList {
 			$db->setQuery($query);
 			return $db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Error loading messages at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error loading messages at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 

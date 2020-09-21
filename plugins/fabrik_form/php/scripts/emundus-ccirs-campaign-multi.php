@@ -55,7 +55,7 @@ $db->setQuery($query);
 try {
 	$profile = $db->loadResult();
 } catch(Exception $e) {
-	JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	JError::raiseError(500, $query);
 }
 
@@ -71,7 +71,7 @@ $db->setQuery($query);
 try {
 	$session = $db->loadObject();
 } catch(Exception $e) {
-	JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	JError::raiseError(500, $query);
 }
 
@@ -137,7 +137,7 @@ foreach ($users as $user) {
 					continue 2;
 				}
 			} catch(Exception $e) {
-				JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+				JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 				JError::raiseError(500, $query);
 			}
 			break;
@@ -156,7 +156,7 @@ foreach ($users as $user) {
 					continue 2;
 				}
 			} catch (Exception $e) {
-				JLog::add('plugin/emundus_campaign SQL error at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+				JLog::add('plugin/emundus_campaign SQL error at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			}
 			break;
 
@@ -233,7 +233,7 @@ foreach ($users as $user) {
 	try {
 		$inClaro = !empty($dbClaro->loadResult());
 	} catch (Exception $e) {
-		JLog::add('Error getting user from Claroline DB. \n query -> '.$query->__toString().' \n returns the following error -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_claro');
+		JLog::add('Error getting user from Claroline DB. \n query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()).' \n returns the following error -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_claro');
 		$inClaro = false;
 	}
 
@@ -255,7 +255,7 @@ foreach ($users as $user) {
 		try {
 			$dbClaro->execute();
 		} catch (Exception $e) {
-			JLog::add('Error updating user to Claroline DB. \n query -> '.$query->__toString().' \n returns the following error -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_claro');
+			JLog::add('Error updating user to Claroline DB. \n query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()).' \n returns the following error -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_claro');
 		}
 	} else {
 
@@ -276,7 +276,7 @@ foreach ($users as $user) {
 		try {
 			$dbClaro->execute();
 		} catch (Exception $e) {
-			JLog::add('Error inserting user to Claroline DB. \n query -> '.$query->__toString().' \n returns the following error -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_claro');
+			JLog::add('Error inserting user to Claroline DB. \n query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()).' \n returns the following error -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_claro');
 		}
 	}
 
@@ -298,7 +298,7 @@ if (!empty($profile_values)) {
 	try {
 		$db->execute();
 	} catch(Exception $e) {
-		JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		JError::raiseError(500, 'Could not assign profiles to users.');
 	}
 }
@@ -323,7 +323,7 @@ if (!empty($values)) {
 			$db->execute();
 			$cc_ids[] = $db->insertid();
 		} catch(Exception $e) {
-			JLog::add('Error inserting candidatures in plugin/emundus-campaign-multi in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error inserting candidatures in plugin/emundus-campaign-multi in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			JError::raiseError(500, 'Could not create candidatures.');
 		}
 	}
@@ -342,7 +342,7 @@ if (!empty($rights_values)) {
 	try {
 		$db->execute();
 	} catch(Exception $e) {
-		JLog::add('Error inserting rights in plugin/emundus-campaign-multi in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		JLog::add('Error inserting rights in plugin/emundus-campaign-multi in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		JError::raiseError(500, 'Could not create rights.');
 	}
 
