@@ -171,7 +171,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $params['options_split_str'] = '';
             $params['dropdown_populate'] = '';
         } elseif ($plugin === 'radiobutton') {
-            $params['options_per_row'] = 3;
+            $params['options_per_row'] = 1;
             $params['btnGroup'] = 0;
             $params['rad-allowadd-onlylabel'] = 0;
             $params['rad-savenewadditions'] = 0;
@@ -221,7 +221,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $params['join_popupwidth'] = '';
         $params['databasejoin_readonly_link'] = 0;
         $params['fabrikdatabasejoin_frontend_select'] = 0;
-        $params['dbjoin_options_per_row'] = 4;
+        $params['dbjoin_options_per_row'] = 3;
         $params['dbjoin_multiselect_max'] = 0;
         $params['dbjoin_multilist_size'] = 6;
         $params['dbjoin_autocomplete_size'] = 20;
