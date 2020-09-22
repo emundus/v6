@@ -1622,9 +1622,9 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $element['params']['validations']['plugin_published'][] = "1";
                     $element['params']['validations']['validate_in'][] = "both";
                     $element['params']['validations']['validation_on'][] = "both";
-                    $element['params']['validations']['validate_hidden'][] = "1";
+                    $element['params']['validations']['validate_hidden'][] = "0";
                     $element['params']['validations']['must_validate'][] = "0";
-                    $element['params']['validations']['show_icon'][] = "1";
+                    $element['params']['validations']['show_icon'][] = "0";
                 } else {
                     //$element['params']['validations']['plugin'] = array_merge(array_diff($element['params']['validations']['plugin'], array("isemail")));
                     $key = array_search("isemail", $element['params']['validations']['plugin']);
