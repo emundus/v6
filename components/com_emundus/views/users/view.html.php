@@ -147,9 +147,8 @@ class EmundusViewUsers extends JViewLegacy {
 		$this->assignRef('groups', $g);
 	}
 
-	private function _loadGroupRights() {
+	private function _loadGroupRights($gid) {
 		$m_users = new EmundusModelUsers();
-		$gid = JFactory::getApplication()->input->getInt('rowid', null);
 		$group = $m_users->getGroupProgs($gid);
 		$g[0]['label'] = $group[0]['group_label'];
 		$g[0]['progs'] = $m_users->getGroupProgs($gid);
@@ -193,8 +192,9 @@ class EmundusViewUsers extends JViewLegacy {
 			case 'showgrouprights':
 				// We are running the group Sync code here, this makes sure that group rights are always present, no matter if groups are made in some other way.
 				require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'actions.php');
-				$m_actions = new EmundusModelActions;
-				$m_actions->syncAllActions(false);
+                $gid = JFactory::getApplication()->input->getInt('rowid', null);
+                $m_actions = new EmundusModelActions;
+				$m_actions->syncAllActions(false, $gid);
 				$this->_loadGroupRights();
 				break;
 			default :
