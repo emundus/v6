@@ -27,7 +27,7 @@
         </div>
         <div class="form-group mb-2">
           <label>{{Page}}* :</label>
-          <select id="select_page" class="dropdown-toggle" v-model="page" @change="getGroupsByForm" :class="{ 'is-invalid': errors.page}">
+          <select id="select_page" class="dropdown-toggle" v-model="page" :class="{ 'is-invalid': errors.page}">
             <option v-for="(page, index) in pages" :key="index" :value="page.id">
               {{page.label}}
             </option>
@@ -37,7 +37,7 @@
           <span class="error">{{PageRequired}}</span>
         </p>
         <transition :name="'slide-down'" type="transition">
-          <div class="form-group mb-2" v-if="page !== -1">
+          <div class="form-group mb-2" v-if="page !== -1 && groups.length > 1">
             <label>{{Group}}* :</label>
             <select id="select_group" class="dropdown-toggle" v-model="group" :class="{ 'is-invalid': errors.group}">
               <option v-for="(group, index) in groups" :key="index" :value="group.id">
@@ -77,6 +77,7 @@ export default {
     ID: Number,
     prid: String,
     currentGroup: Number,
+    currentPage: Number,
   },
   data() {
     return {
@@ -167,6 +168,7 @@ export default {
         }
       }).then(response => {
           this.pages = response.data.data;
+          this.page = this.currentPage;
       });
     },
 
@@ -182,9 +184,19 @@ export default {
         }
       }).then(response => {
         this.groups = response.data.data;
+        console.log(this.groups.length)
+        if(this.groups.length <= 1){
+          this.group = this.groups[0].id;
+        }
       });
     }
   },
+
+  watch: {
+    page: function() {
+      this.getGroupsByForm();
+    }
+  }
 };
 </script>
 
