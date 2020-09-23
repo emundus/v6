@@ -131,6 +131,12 @@
                             @reloadElement="reloadElement(element)"
                             :key="keyElements['element' + element.id]"
                     />
+                    <modalConditionnalElement
+                        :ID="element.id"
+                        :id="element.id"
+                        @reloadElement="reloadElement(element)"
+                        :key="keyElements['element' + element.id]"
+                    />
                     <div class="d-flex builder-item-element__properties">
                       <span :class="element.publish ? 'icon-handle' : 'icon-handle-unpublished'" v-show="hoverUpdating && indexHighlight == element.id">
                         <em class="fas fa-grip-vertical handle"></em>
@@ -190,6 +196,10 @@
                         <em class="fas fa-copy"></em>
                         <span class="ml-10px">{{Duplicate}}</span>
                       </a>
+                      <a class="d-flex mr-2 text-orange" @click="$modal.show('modalConditionnalElement' + element.id)">
+                        <em class="fas fa-code-branch"></em>
+                        <span class="ml-10px">{{Condition}}</span>
+                      </a>
                       <a class="d-flex mr-2" style="color: black" @click="deleteElement(element,index)" v-if="files == 0">
                         <em class="fas fa-trash-alt"></em>
                         <span class="ml-10px">{{Delete}}</span>
@@ -216,6 +226,7 @@ import datePicker from "vue-bootstrap-datetimepicker";
 import draggable from "vuedraggable";
 import modalEditElement from "./Modal";
 import modalDuplicateElement from "./ModalDuplicateElement";
+import modalConditionnalElement from "./ModalConditionnalElement";
 import Translation from "@/components/translation";
 
 const qs = require("qs");
@@ -244,6 +255,7 @@ export default {
     draggable,
     modalEditElement,
     modalDuplicateElement,
+    modalConditionnalElement,
     Translation
   },
   data() {
@@ -302,6 +314,7 @@ export default {
       RepeatGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
       RepeatedGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEATED_GROUP"),
       Duplicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_DUPLICATE"),
+      Condition: Joomla.JText._("COM_EMUNDUS_ONBOARD_CONDITION"),
     };
   },
   methods: {
