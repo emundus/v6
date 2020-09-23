@@ -554,7 +554,7 @@ button.register {
   height: 100% !important;
 }
 
-.view-registration form, .view-form .em-formRegistrationCenter form {
+.view-registration form.fabrikForm , .view-form .em-formRegistrationCenter form.fabrikForm {
   border: none;
     margin-bottom: 0 !important;
     border-radius: 0;

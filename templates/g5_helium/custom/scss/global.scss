@@ -299,10 +299,6 @@ input[type="text"],
   #header-a {
     display: flex;
     align-items: center;
-
-    .logo {
-      width: 12rem;
-    }
   }
 }
 
@@ -1754,7 +1750,7 @@ a {
 
   /* Editer & Ajouter*/
 
-  .g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn.btn-info.btn-sm {
+  .g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn.btn-info.btn-sm, .g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn.btn-default.btn-sm {
     height: 40px;
     background-color: $base-secondary-color !important;
     border: 1px solid $base-secondary-color !important;
