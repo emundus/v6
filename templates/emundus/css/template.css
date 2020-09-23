@@ -119,6 +119,10 @@ div#moduletable-d  a[href$="/configuration-settings"]  {
   display: none;
 }
 
+.lang-inline a[href$="/configuration-settings"] {
+  display: inherit !important;
+}
+
 .moduletable-d div#userDropdown {
   order: 3;
 }
