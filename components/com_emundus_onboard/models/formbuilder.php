@@ -1289,6 +1289,15 @@ class EmundusonboardModelformbuilder extends JModelList {
             }
 
             $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__fabrik_groups'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $fabrik_group = $db->loadObject();
+
+            $group_params = json_decode($fabrik_group->params);
+
+            $query->clear()
                 ->insert($db->quoteName('#__fabrik_elements'))
                 ->set($db->quoteName('name') . ' = ' . $db->quote('element'))
                 ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
@@ -1347,6 +1356,12 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $query = "ALTER TABLE " . $dbtable . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
                 $db->setQuery($query);
                 $db->execute();
+                if($group_params->repeat_group_button == 1){
+                    $repeat_table_name = $dbtable . "_" . $gid . "_repeat";
+                    $query = "ALTER TABLE " . $repeat_table_name . " ADD e_" . $formid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+                    $db->setQuery($query);
+                    $db->execute();
+                }
                 $name = 'e_' . $formid . '_' . $elementId;
             }
             //
@@ -1705,6 +1720,22 @@ class EmundusonboardModelformbuilder extends JModelList {
         $elements = $groupModel->getMyElements();
         //
 
+        $query->select('*')
+            ->from($db->quoteName('#__fabrik_groups'))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($old_group));
+        $db->setQuery($query);
+        $old_group = $db->loadObject();
+
+        $query->clear()
+            ->select('*')
+            ->from($db->quoteName('#__fabrik_groups'))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($group));
+        $db->setQuery($query);
+        $new_group = $db->loadObject();
+
+        $old_group_params = json_decode($old_group->params);
+        $new_group_params = json_decode($new_group->params);
+
         // Prepare languages
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_files = array();
@@ -1770,6 +1801,13 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $query = "ALTER TABLE " . $dbtable . " ADD e_" . $form_id . "_" . $newelementid . " " . $dbtype . " NULL";
                     $db->setQuery($query);
                     $db->execute();
+
+                    if($new_group_params->repeat_group_button == 1){
+                        $repeat_table_name = $dbtable . "_" . $group . "_repeat";
+                        $query = "ALTER TABLE " . $repeat_table_name . " ADD e_" . $form_id . "_" . $newelementid . " " . $dbtype . " NULL";
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
 
                     return  $newelementid;
                 }
@@ -2624,23 +2662,71 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('*')
-            ->from($db->quoteName('#__fabrik_groups'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
-        $db->setQuery($query);
-        $group = $db->loadObject();
-
-        $group_params = json_decode($group->params);
-        $group_params->repeat_group_button = 1;
-
-        $query->clear()
-            ->update($db->quoteName('#__fabrik_groups'))
-            ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
-        $db->setQuery($query);
-
+        // Prepare Fabrik API
+        JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
+        $groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
+        $groupModel->setId(intval($gid));
+        $elements = $groupModel->getMyElements();
+        //
         try {
-            return $db->execute();
+            $query->select('*')
+                ->from($db->quoteName('#__fabrik_groups'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $group = $db->loadObject();
+
+            $query->clear()
+                ->select('fl.db_table_name as dbtable, fl.form_id as formid')
+                ->from($db->quoteName('#__fabrik_formgroup', 'fg'))
+                ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
+                ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $object = $db->loadObject();
+            $db_table = $object->dbtable;
+            $form_id = $object->formid;
+
+            $group_params = json_decode($group->params);
+            $group_params->repeat_group_button = 1;
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_groups'))
+                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $db->execute();
+
+            $newtablename = $db_table . "_" . $gid . "_repeat";
+
+            $query = "CREATE TABLE IF NOT EXISTS " . $newtablename . " (
+            id int(11) NOT NULL AUTO_INCREMENT,
+            PRIMARY KEY (id)
+            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+            $db->setQuery($query);
+            $db->execute();
+
+            $query = "ALTER TABLE " . $newtablename . " ADD COLUMN parent_id int(11) NULL AFTER id";
+            $db->setQuery($query);
+            $db->execute();
+
+            $query = "CREATE INDEX fb_parent_fk_parent_id_INDEX ON " . $newtablename . " (parent_id);";
+            $db->setQuery($query);
+            $db->execute();
+
+            foreach ($elements as $element) {
+                if ($element->element->plugin === 'birthday') {
+                    $dbtype = 'DATE';
+                } elseif ($element->element->plugin === 'textarea') {
+                    $dbtype = 'TEXT';
+                } else {
+                    $dbtype = 'VARCHAR(255)';
+                }
+
+                $query = "ALTER TABLE " . $newtablename . " ADD e_" . $form_id . "_" . $element->element->id . " " . $dbtype . " NULL";
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            return true;
         } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;
@@ -2651,22 +2737,35 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('*')
-            ->from($db->quoteName('#__fabrik_groups'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
-        $db->setQuery($query);
-        $group = $db->loadObject();
-
-        $group_params = json_decode($group->params);
-        $group_params->repeat_group_button = 0;
-
-        $query->clear()
-            ->update($db->quoteName('#__fabrik_groups'))
-            ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
-        $db->setQuery($query);
-
         try {
+            $query->select('*')
+                ->from($db->quoteName('#__fabrik_groups'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $group = $db->loadObject();
+
+            $query->clear()
+                ->select('fl.db_table_name as dbtable')
+                ->from($db->quoteName('#__fabrik_formgroup','fg'))
+                ->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('fg.form_id'))
+                ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $db_table = $db->loadObject()->dbtable;
+
+            $group_params = json_decode($group->params);
+            $group_params->repeat_group_button = 0;
+
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_groups'))
+                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $db->execute();
+
+            $repeat_table_name = $db_table . "_" . $gid . "_repeat";
+
+            $query = "DROP TABLE IF EXISTS " . $repeat_table_name;
+            $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');

@@ -52,7 +52,7 @@
                @mouseover="enableGroupHover(group.group_id)"
                @mouseleave="disableGroupHover()">
             <fieldset :class="[group.group_class]" :id="'group_'+group.group_id" :style="group.group_css" style="background-size: 20px; width: 100%">
-              <div class="d-flex justify-content-between" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%" @click="handleGroup(group.group_id)">
+              <div class="d-flex justify-content-between" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%">
                 <div class="d-flex">
                   <span v-show="hoverGroup && indexGroup == group.group_id" class="icon-handle-group">
                     <em class="fas fa-grip-vertical handle"></em>
@@ -66,7 +66,7 @@
                   <a @click="enableUpdatingGroup(group)" style="margin-left: 1em" :title="Edit">
                     <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
                   </a>
-                  <a v-if="group.repeat_group" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px" :title="RepeatedGroup">
+                  <a v-if="group.repeat_group" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px pointer" :title="RepeatedGroup" @click="enableRepatedGroup(group)">
                     <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
                   </a>
                 </div>
@@ -638,7 +638,7 @@ export default {
                 this.updateSuccess,
                 this.update
         );
-        group.group_showLegend = group.label.fr;
+        group.group_showLegend = group.label[this.actualLanguage];
         this.translate.label_group = false;
         this.updateGroup = false;
       }).catch(e => {
@@ -764,7 +764,7 @@ export default {
                         this.updateSuccess,
                         this.update
                 );
-                group.group_showLegend = group.label_fr;
+                group.group_showLegend = group.label[this.actualLanguage];
                 this.translate.label_group = false;
                 this.updateGroup = false;
               }
@@ -802,7 +802,7 @@ export default {
                         this.updateSuccess,
                         this.update
                 );
-                group.group_showLegend = group.label.fr;
+                group.group_showLegend = group.label[this.actualLanguage];
                 this.translate.label_group = false;
                 this.updateGroup = false;
               }
@@ -851,7 +851,7 @@ export default {
             this.updateSuccess,
             this.update
         );
-        page.show_title.value = page.show_title.label.fr;
+        page.show_title.value = page.show_title.label[this.actualLanguage];
         this.updatePage = false;
       }).catch(e => {
         this.$emit(
@@ -1070,9 +1070,9 @@ export default {
       }
     },
     startGroupDrag() {
-      Object.keys(this.openGroup).forEach((group,key) => {
+      /*Object.keys(this.openGroup).forEach((group,key) => {
         this.openGroup[group] = false;
-      });
+      });*/
       this.draggable = true;
     },
     //
