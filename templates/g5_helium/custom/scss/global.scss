@@ -1728,24 +1728,13 @@ a {
   }
 
 
-  /* PARTIE GESTIONNAIRE  */
+  /* PARTIE GESTIONNAIRE - FILTRES */
 
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
   background: $base-secondary-color;
 }
 
-  .side-panel #em-files-filters .buttons input, .side-panel #em-user-filters .buttons input {
-    background: $base-primary-color !important;
-    border-color: $base-primary-color !important;
-
-    &:hover, &:active, &:focus {
-      background: #fff !important;
-      color: $base-primary-color !important;
-      border-color: #fff !important;
-    }
-  }
-
-.side-panel #em-files-filters .buttons input {
+.side-panel #em-files-filters .buttons input, .side-panel #em-user-filters .buttons input {
   background: transparent !important;
   color: #fff !important;
   border-color: transparent !important;
@@ -1755,13 +1744,12 @@ a {
   }
 }
 
-#em_filters #filters > p  {
+#em_filters #filters > p , #em-user-filters #filters > p {
  color: $base-secondary-color ;
 }
 
-#em_filters fieldset.em_filters_filedset > p  {
+#em_filters fieldset.em_filters_filedset > p, #em-user-filters fieldset.em_filters_filedset > p {
   color: $base-secondary-color;
-
 }
 
 #em-files-filters #em_filters fieldset input#save-filter {
