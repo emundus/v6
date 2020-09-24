@@ -927,7 +927,7 @@ input:not([type]).mce-textbox {
 }
 
 .btn {
-	border-radius: 0 !important;
+	border-radius: 4px !important;
 }
 
 .form-horizontal .control-group .btn-group label.btn-default {

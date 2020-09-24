@@ -32,6 +32,9 @@
   float: left !important;
   margin: 20px 120px 20px 0;
   height: 12px;
+  label.checkbox {
+    padding-left: 20px;
+  }
 }
 .row-fluid {
   display: inline-block;

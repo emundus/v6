@@ -38,7 +38,7 @@
                   <div class="d-flex builder-item-element__properties">
                     <div class="w-100">
                       <div class="d-flex" style="align-items: baseline">
-                        <span v-if="element.label" v-html="element.label" v-show="element.labelsAbove != 2"></span>
+                        <span v-if="element.label_value" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
                       </div>
                       <div v-if="element.params.date_table_format">
                         <date-picker v-model="date" :config="options"></date-picker>

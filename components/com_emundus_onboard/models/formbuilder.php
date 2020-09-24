@@ -567,6 +567,33 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
     }
 
+    function createHeadingMenu($menutype,$title,$prid) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->insert($db->quoteName('#__menu'));
+            $query->set($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
+                ->set($db->quoteName('title') . ' = ' . $db->quote($title))
+                ->set($db->quoteName('alias') . ' = ' . $db->quote(str_replace($this->getSpecialCharacters(),'-',strtolower($title)) . '-' . $prid))
+                ->set($db->quoteName('path') . ' = ' . $db->quote($menutype))
+                ->set($db->quoteName('link') . ' = ' . $db->quote(''))
+                ->set($db->quoteName('type') . ' = ' . $db->quote('heading'))
+                ->set($db->quoteName('published') . ' = ' . $db->quote(1))
+                ->set($db->quoteName('level') . ' = ' . $db->quote(1))
+                ->set($db->quoteName('access') . ' = ' . $db->quote(1))
+                ->set($db->quoteName('template_style_id') . ' = ' . $db->quote(22))
+                ->set($db->quoteName('params') . ' = ' . $db->quote('{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_image_css":"","menu_text":1,"menu_show":1}'))
+                ->set($db->quoteName('rgt') . ' = ' . $db->quote(1))
+                ->set($db->quoteName('language') . ' = ' . $db->quote('*'));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
     /**
      * Create a new page associate to the profile
      *
@@ -722,8 +749,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->select('*')
                 ->from('#__menu')
                 ->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
-                ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'))
-                ->orWhere($db->quoteName('type') . ' = ' . $db->quote('url'));
+                ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
             $db->setQuery($query);
             $menu_parent = $db->loadObject();
             //
@@ -2155,8 +2181,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             ->select('*')
             ->from('#__menu')
             ->where($db->quoteName('menutype') . ' = ' . $db->quote($profile->menutype))
-            ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'))
-            ->orWhere($db->quoteName('type') . ' = ' . $db->quote('url'));
+            ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
         $db->setQuery($query);
         $menu_parent = $db->loadObject();
         //
@@ -2449,10 +2474,12 @@ class EmundusonboardModelformbuilder extends JModelList {
             $query->clear();
             $query->insert($db->quoteName('#__menu'));
             foreach ($menu_model as $key => $val) {
-                if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path' && $key != 'link' && $key != 'parent_id' && $key != 'lft' && $key != 'rgt') {
+                if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path' && $key != 'link' && $key != 'parent_id' && $key != 'lft' && $key != 'rgt'  && $key != 'title') {
                     $query->set($key . ' = ' . $db->quote($val));
                 } elseif ($key == 'menutype') {
                     $query->set($key . ' = ' . $db->quote($profile->menutype));
+                } elseif ($key == 'title') {
+                    $query->set($key . ' = ' . $db->quote('FORM_' . $profile->id . '_' . $newformid));
                 } elseif ($key == 'alias') {
                     $query->set($key . ' = ' . $db->quote('form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(),'-',strtolower($menu_model->title))));
                 } elseif ($key == 'path') {
@@ -2461,7 +2488,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     } else {
                         if(strpos($val,'/') !== false){
                             $newpath = explode('/', $val)[1];
-                            $query->set($key . ' = ' . $db->quote($menu_parent->path . '/' . $newpath));
+                            $query->set($key . ' = ' . $db->quote($menu_parent->path . '/' . $newpath . '-' . $newformid));
                         } else {
                             $query->set($key . ' = ' . $db->quote($val . '-' . $profile->id));
                         }

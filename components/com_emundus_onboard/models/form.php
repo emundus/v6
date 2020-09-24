@@ -769,33 +769,7 @@ class EmundusonboardModelform extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
 
-                $query->clear()
-                    ->select('*')
-                    ->from('#__menu')
-                    ->where($db->quoteName('alias') . ' = ' . $db->quote('applicationform'));
-
-                $db->setQuery($query);
-                $menu_model = $db->loadObject();
-
-                $query->clear();
-                $query->insert($db->quoteName('#__menu'));
-                foreach ($menu_model as $key => $val) {
-                    if ($key != 'id' && $key != 'menutype' && $key != 'title' && $key != 'alias' && $key != 'path' && $key != 'rgt' && $key != 'lft') {
-                        $query->set($key . ' = ' . $db->quote($val));
-                    } elseif ($key == 'menutype' || $key == 'path') {
-                        $query->set($key . ' = ' . $db->quote('menu-profile' . $newprofile));
-                    } elseif ($key == 'title') {
-                        $query->set($key . ' = ' . $db->quote($data['label']));
-                    } elseif ($key == 'alias') {
-                        $query->set($key . ' = ' . $db->quote(str_replace($formbuilder->getSpecialCharacters(),'-',strtolower($data['label'])) . '-' . $newprofile));
-                    } elseif ($key == 'rgt') {
-                        $query->set($key . ' = ' . $db->quote(1));
-                    } elseif ($key == 'lft') {
-                        $query->set($key . ' = ' . $db->quote(0));
-                    }
-                }
-                $db->setQuery($query);
-                $db->execute();
+                $formbuilder->createHeadingMenu('menu-profile' . $newprofile,$data['label'],$newprofile);
 
 				// Create a first page
                 $label = array(
