@@ -17,7 +17,7 @@
       <div class="input-can-translate" style="margin-top: 40px">
         <input v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_page ? '' : 'mb-1'" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
         <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPage(object_json.id)"></button>
-        <div class="d-flex actions-update-label" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+        <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
           <a @click="updateLabelPage(object_json)" :title="Validate">
             <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
           </a>
@@ -31,7 +31,7 @@
       <div class="input-can-translate" style="margin-top: 10px">
         <textarea v-if="object_json.intro" v-model="object_json.intro[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.intro_page ? '' : 'mb-1'" :id="'update_intro_' + object_json.id"/>
         <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.intro_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPageIntro(object_json.id)"></button>
-        <div class="d-flex actions-update-label" :style="translate.intro_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+        <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.intro_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
           <a @click="updateIntroValuePage(object_json)" :title="Validate">
             <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
           </a>
@@ -83,7 +83,7 @@
                 <div class="input-can-translate">
                   <input v-model="group.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
                   <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationGroup(group.group_id)"></button>
-                  <div class="d-flex actions-update-label" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+                  <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
                     <a @click="updateLabelGroup(group)" :title="Validate">
                       <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
                     </a>
@@ -145,7 +145,7 @@
                         <div class="input-can-translate" v-show="clickUpdatingLabel && indexHighlight == element.id">
                           <input v-model="element.label[actualLanguage]" class="form__input field-general w-input" :class="translate.label ? '' : 'mb-1'" @keyup.enter="updateLabelElement(element)" :id="'label_' + element.id"/>
                           <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationLabel(element.id)"></button>
-                          <div class="d-flex actions-update-label" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+                          <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
                             <a @click="updateLabelElement(element)" :title="Validate">
                               <em class="fas fa-check" data-toggle="tooltip" data-placement="top"></em>
                             </a>

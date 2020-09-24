@@ -1720,12 +1720,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         $elements = $groupModel->getMyElements();
         //
 
-        $query->select('*')
-            ->from($db->quoteName('#__fabrik_groups'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($old_group));
-        $db->setQuery($query);
-        $old_group = $db->loadObject();
-
         $query->clear()
             ->select('*')
             ->from($db->quoteName('#__fabrik_groups'))
@@ -1733,7 +1727,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db->setQuery($query);
         $new_group = $db->loadObject();
 
-        $old_group_params = json_decode($old_group->params);
         $new_group_params = json_decode($new_group->params);
 
         // Prepare languages
@@ -2040,41 +2033,55 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query->clear()
-            ->select('*')
-            ->from($db->quoteName('#__fabrik_elements'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($elt));
-        $db->setQuery($query);
-        $fabrik_element = $db->loadObject();
-        $gid = $fabrik_element->group_id;
-        $label = $fabrik_element->label;
-        $name = $fabrik_element->name;
-        $params = json_decode($fabrik_element->params, true);
-        if ($params['sub_options']) {
-            $sub_labels = json_decode($fabrik_element->params, true)['sub_options']['sub_labels'];
-            foreach ($sub_labels as $sub_label) {
-                $this->deleteTranslation($sub_label);
-            }
-        }
-
-        $this->deleteTranslation($label);
-
-        $query->clear()
-            ->select([
-                'fl.db_table_name AS dbtable',
-                'fl.form_id AS formid',
-            ])
-            ->from($db->quoteName('#__fabrik_formgroup', 'fg'))
-            ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
-            ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
-        $db->setQuery($query);
-        $dbtable = $db->loadObject()->dbtable;
-
-        $query = "ALTER TABLE " . $dbtable . " DROP COLUMN " . $name;
-
         try {
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__fabrik_elements'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($elt));
+            $db->setQuery($query);
+            $fabrik_element = $db->loadObject();
+            $gid = $fabrik_element->group_id;
+            $label = $fabrik_element->label;
+            $name = $fabrik_element->name;
+            $params = json_decode($fabrik_element->params, true);
+            if ($params['sub_options']) {
+                $sub_labels = json_decode($fabrik_element->params, true)['sub_options']['sub_labels'];
+                foreach ($sub_labels as $sub_label) {
+                    $this->deleteTranslation($sub_label);
+                }
+            }
+
+            $this->deleteTranslation($label);
+
+            $query->clear()
+                ->select([
+                    'fl.db_table_name AS dbtable',
+                    'fl.form_id AS formid',
+                ])
+                ->from($db->quoteName('#__fabrik_formgroup', 'fg'))
+                ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
+                ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $dbtable = $db->loadObject()->dbtable;
+
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__fabrik_groups'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $group = $db->loadObject();
+            $group_params = json_decode($group->params);
+
+            $query = "ALTER TABLE " . $dbtable . " DROP COLUMN " . $name;
             $db->setQuery($query);
             $db->execute();
+
+            if($group_params->repeat_group_button == 1){
+                $repeat_table_name = $dbtable . "_" . $gid . "_repeat";
+                $query = "ALTER TABLE " . $repeat_table_name . " DROP COLUMN " . $name;
+                $db->setQuery($query);
+                $db->execute();
+            }
 
             $query = $db->getQuery(true);
             $query->clear()
