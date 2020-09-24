@@ -13,9 +13,9 @@
 body {
   font-family: "Lato", sans-serif;
   border-top: 5px solid $base-secondary-color;
-  line-height: normal !important;
+  line-height: normal;
   p {
-    margin: 0 !important;
+    margin: 0;
     a:hover {
       text-decoration: underline;
     }
@@ -23,7 +23,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6  {
-  color: $base-primary-color !important;
+  color: $base-primary-color;
   margin-top: 50px;
   margin-bottom: 50px;
   font-weight: 700;
@@ -52,8 +52,8 @@ h1 {
 }
 
 .swal2-title {
-  color: #000 !important;
-  margin: 10px 0 20px 0 !important;
+  color: #000;
+  margin: 10px 0 20px 0;
 }
 
 h2 {
@@ -67,7 +67,7 @@ a, p, ul, li, label, input, span, div, legend {
 }
 
 a:focus {
-  outline: none !important;
+  outline: none;
 }
 
 a {
@@ -75,14 +75,14 @@ a {
 }
 
 label {
-  color: #000 !important;
-  margin-bottom: 5px !important;
-  font-weight: bold !important;
+  color: #000;
+  margin-bottom: 5px;
+  font-weight: bold;
   display: inline;
 }
 
 .hidden {
-  display: none !important;
+  display: none;
 }
 
 .moduletable .nav li {
@@ -108,21 +108,21 @@ label {
 }
 
  input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
-  margin-bottom: 0 !important;
-  border-radius: 4px !important;
+  margin-bottom: 0;
+  border-radius: 4px;
   border-color: #ccc;
   height: 50px;
 }
 
 select {
-  margin-bottom: 0 !important;
-  border-radius: 4px !important;
+  margin-bottom: 0;
+  border-radius: 4px;
   border-color: #ccc;
 }
 
 textarea {
-  margin-bottom: 0 !important;
-  border-radius: 4px !important;
+  margin-bottom: 0;
+  border-radius: 4px;
   border-color: #ccc;
 }
 
@@ -132,7 +132,7 @@ input[type="file"] {
 }
 
 .row {
-  margin: 0 !important;
+  margin: 0;
 }
 
 hr {
@@ -178,7 +178,7 @@ ul {
 }
 
 legend {
-  margin: 10px 0 20px 0 !important;
+  margin: 10px 0 20px 0;
 }
 
 #g-drawer,
@@ -222,11 +222,11 @@ input[type="text"],
 }
 
 #g-container-main .g-container {
-  padding: 0 10px !important;
+  padding: 0 10px;
 }
 
 .row-fluid .span3 {
-  display: flex !important;
+  display: flex;
   align-items: center;
 }
 
@@ -273,7 +273,7 @@ input[type="text"],
         align-items: flex-start;
 
         .platform-content {
-          margin: 0px 10px !important;
+          margin: 0px 10px;
           padding: 0px;
 
         }
@@ -291,7 +291,7 @@ input[type="text"],
   width: 100vw;
 
   .g-container {
-    padding: 10px !important;
+    padding: 10px;
     width: 95%;
     margin: auto !important;
   }
@@ -339,7 +339,7 @@ footer#g-footer img{
 }
 
 #g-page-surround >  .g-container:not(.g-flushed) {
-  width: 100vw !important;
+  width: 100vw;
   margin-top: auto;
   height: 140px;
 }
@@ -439,26 +439,26 @@ a {
     margin-top: 12px;
     a.btn.btn-danger {
       &.btn-creer-compte, &.inscription {
-        background: $base-secondary-color !important;
-        border: 1px solid $base-secondary-color !important;
-        color: #fff !important;
+        background: $base-secondary-color;
+        border: 1px solid $base-secondary-color;
+        color: #fff;
 
         &:hover, &:active, &:focus {
-          background: transparent !important;
-          color: $base-secondary-color !important;
-          border-color: $base-secondary-color !important;
+          background: transparent;
+          color: $base-secondary-color;
+          border-color: $base-secondary-color;
         }
       }
 
       &:not(btn-creer-compte) {
-        background: transparent !important;
-        border: 1px solid $base-primary-color !important;
-        color: $base-primary-color !important;
+        background: transparent;
+        border: 1px solid $base-primary-color;
+        color: $base-primary-color;
 
         &:hover, &:active, &:focus {
-          background: $base-primary-color !important;
-          color: #fff !important;
-          border-color: $base-primary-color !important;
+          background: $base-primary-color;
+          color: #fff;
+          border-color: $base-primary-color;
         }
       }
     }
@@ -578,28 +578,29 @@ a {
       justify-content: space-between;
       padding: 0px;
       margin-bottom: 50px;
+
       .btn.btn-plein {
 
-        background-color: $base-secondary-color !important;
-        border-color: $base-secondary-color !important;
-        color: #fff !important;
+        background-color: $base-secondary-color;
+        border-color: $base-secondary-color;
+        color: #fff;
 
         &:hover, &:active, &:focus {
-          background-color: #ffffff !important;
-          color: $base-secondary-color !important;
-          border-color: $base-secondary-color !important;
+          background-color: #ffffff;
+          color: $base-secondary-color;
+          border-color: $base-secondary-color;
         }
       }
 
       .btn.btn-creux {
-        background-color: transparent !important;
-        border-color: $base-primary-color !important;
-        color: $base-primary-color !important;
+        background-color: transparent;
+        border-color: $base-primary-color;
+        color: $base-primary-color;
 
         &:hover, &:active, &:focus {
-          background-color: $base-primary-color !important;
-          color: #fff !important;
-          border-color: $base-primary-color !important;
+          background-color: $base-primary-color;
+          color: #fff;
+          border-color: $base-primary-color;
         }
       }
     }
@@ -634,21 +635,18 @@ a {
     }
   }
 
-
-
-
   /* PAGE CHECKLIST - COULEURS BTNS AJOUT DOCUMENTS */
 
   .view-checklist {
     #attachment_list_mand, #attachment_list_opt {
       .em-added-files a.btn.btn-success.btn-xs {
-        background: $base-secondary-color !important;
-        border-color: $base-secondary-color !important;
+        background: $base-secondary-color;
+        border-color: $base-secondary-color;
 
         &:hover, &:active, &:focus {
-          background-color: #ffffff !important;
-          color: $base-secondary-color !important;
-          border-color: $base-secondary-color !important;
+          background-color: #ffffff ;
+          color: $base-secondary-color;
+          border-color: $base-secondary-color;
         }
       }
     }
@@ -672,7 +670,7 @@ a {
       a.btn.btn-primary.btn-plein.btn-blue {
         background-color: $base-secondary-color;
         border-color: $base-secondary-color;
-        color: #fff !important;
+        color: #fff;
         font-family: "Lato", sans-serif;
         &:hover, &:active, &:focus {
           background-color: transparent;
@@ -688,7 +686,7 @@ a {
         font-family: "Lato", sans-serif;
         &:hover, &:active, &:focus {
           background-color: $base-primary-color;
-          color: #fff !important;
+          color: #fff;
           border-color: $base-primary-color;
         }
       }
@@ -712,8 +710,8 @@ a {
     /* COULEURS TITRES  */
 
     .campaign-title {
-      color: $base-primary-color !important;
-      font-family: "Lato", sans-serif !important;
+      color: $base-primary-color;
+      font-family: "Lato", sans-serif;
     }
 
     h3.g-title  {
@@ -762,14 +760,14 @@ a {
     }
 
     button.btn.btn-primary.validate {
-      background-color: $base-secondary-color  !important;
-      border-color: $base-secondary-color !important;
-      color: #fff !important;
-      font-family: "Lato", sans-serif !important;
+      background-color: $base-secondary-color;
+      border-color: $base-secondary-color;
+      color: #fff;
+      font-family: "Lato", sans-serif;
       &:hover, &:active, &:focus {
-        background-color: transparent !important;
-        color: $base-secondary-color !important;
-        border-color: $base-secondary-color !important;
+        background-color: transparent;
+        color: $base-secondary-color;
+        border-color: $base-secondary-color;
       }
     }
 
@@ -778,8 +776,8 @@ a {
   /* LISTES  */
 
   .nav .dropdown-toggle .caret {
-    border-top-color: $base-secondary-color !important;
-    border-bottom-color: $base-secondary-color !important;
+    border-top-color: $base-secondary-color;
+    border-bottom-color: $base-secondary-color;
   }
 
   /* DOCUMENTS OBLIGATOIRES */
@@ -790,27 +788,15 @@ a {
   /* FORMULAIRE  */
 
   .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active {
-    background-color: $base-secondary-color !important;
-    color: #fff !important;
-    border-color: $base-secondary-color !important;
+    background-color: $base-secondary-color;
+    color: #fff;
+    border-color: $base-secondary-color;
 
     &:hover, &:active, :focus {
-      background-color: transparent !important;
-      color: $base-secondary-color !important;
-      border-color: $base-secondary-color !important;
+      background-color: transparent;
+      color: $base-secondary-color;
+      border-color: $base-secondary-color;
     }
-  }
-
-  h1::after, .swal2-title:after {
-    content: '';
-    position: absolute;
-    margin-top: 45px;
-    width: 2.7rem;
-    height: .2rem;
-    background: $base-secondary-color !important;
-    left: 0;
-    display: block !important;
-    top: 4px;
   }
 
   .icon-calendar {
@@ -843,14 +829,14 @@ a {
 
   .fabrikForm .controls .btn-danger:hover,
   #em-modal-actions .modal-content .modal-header .btn-danger:hover {
-    color: $base-primary-color !important;
-    background-color: transparent !important;
-    border-color: darken($base-primary-color, 10%) !important;
+    color: $base-primary-color;
+    background-color: transparent;
+    border-color: darken($base-primary-color, 10%);
   }
 
   .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit {
-    background: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
+    background: $base-secondary-color;
+    border: 1px solid $base-secondary-color;
   }
 
   .fabrikForm legend {
@@ -864,19 +850,19 @@ a {
   }
 
   .form-actions .row-fluid .span4 .btn-group .register:hover {
-    background-color: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
+    background-color: $base-primary-color;
+    border: 1px solid $base-primary-color;
   }
 
   .view-checklist .form-horizontal .controls .em-deleteFile, .view-checklist .row-fluid .plg-emundus_fileupload .em-deleteFile {
-    color: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
+    color: $base-primary-color;
+    border: 1px solid $base-primary-color;
   }
 
   .view-checklist .form-horizontal .controls .em-deleteFile, .view-checklist .row-fluid .plg-emundus_fileupload .em-deleteFile:hover {
     background: $base-primary-color;
-    background-color: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
+    background-color: $base-primary-color;
+    border: 1px solid $base-primary-color;
   }
 
   .fabrikElement button.calendarbutton {
@@ -898,92 +884,92 @@ a {
   /* STATUS ET ETIQUETTES */
 
   .label-lightpurple {
-    background-color: #DCC6E0 !important;
+    background-color: #DCC6E0;
     text-shadow: none;
   }
 
   .label-purple {
-    background-color: #947CB0 !important;
+    background-color: #947CB0;
     text-shadow: none;
   }
 
   .label-darkpurple {
-    background-color: #663399 !important;
+    background-color: #663399;
     text-shadow: none;
   }
 
   .label-lightblue {
-    background-color: #6bb9F0 !important;
+    background-color: #6bb9F0;
     text-shadow: none;
   }
 
   .label-blue {
-    background-color: #19B5FE !important;
+    background-color: #19B5FE;
     text-shadow: none;
   }
 
   .label-darkblue {
-    background-color: #013243 !important;
+    background-color: #013243;
     text-shadow: none;
   }
 
   .label-lightgreen {
-    background-color: #7befb2 !important;
+    background-color: #7befb2;
     text-shadow: none;
   }
 
   .label-green {
-    background-color: #3FC380 !important;
+    background-color: #3FC380;
     text-shadow: none;
   }
 
   .label-darkgreen {
-    background-color: #1E824C !important;
+    background-color: #1E824C;
     text-shadow: none;
   }
 
   .label-lightyellow {
-    background-color: #FFFD7E !important;
+    background-color: #FFFD7E;
     text-shadow: none;
   }
 
   .label-yellow {
-    background-color: #FFFD54 !important;
+    background-color: #FFFD54;
     text-shadow: none;
   }
 
   .label-darkyellow {
-    background-color: #F7CA18 !important;
+    background-color: #F7CA18;
     text-shadow: none;
   }
 
   .label-lightorange {
-    background-color: #FABE58 !important;
+    background-color: #FABE58;
     text-shadow: none;
   }
 
   .label-orange {
-    background-color: #E87E04 !important;
+    background-color: #E87E04;
     text-shadow: none;
   }
 
   .label-darkorange {
-    background-color: #D35400 !important;
+    background-color: #D35400;
     text-shadow: none;
   }
 
   .label-lightred {
-    background-color: #EC644B !important;
+    background-color: #EC644B;
     text-shadow: none;
   }
 
   .label-red {
-    background-color: #CF000F !important;
+    background-color: #CF000F;
     text-shadow: none;
   }
 
   .label-darkred {
-    background-color: #e5283b !important;
+    background-color: #e5283b;
     text-shadow: none;
   }
 
@@ -1107,7 +1093,7 @@ a {
     background: $base-primary-color;
     border: 1px solid $base-primary-color;
     border-radius: 4px;
-    padding: 8px 12px;
+    padding: 8px 12px !important;
     color: #fff;
 
     &:hover, &:focus, &:active {
@@ -1177,7 +1163,7 @@ a {
     .span12 button.goback-btn[name="Goback"] {
       background: transparent;
       border: 1px solid $base-secondary-color;
-      border-radius: 4px !important;
+      border-radius: 4px;
       color: $base-secondary-color;
       margin-right: 10px;
       font-weight: normal;
@@ -1204,27 +1190,27 @@ a {
 
   .modal-header #can-val{
     button.btn.btn-danger {
-      background: transparent !important;
-      border: 1px solid $base-secondary-color !important;
-      border-radius: 4px !important;
-      color: $base-secondary-color !important;
+      background: transparent;
+      border: 1px solid $base-secondary-color;
+      border-radius: 4px;
+      color: $base-secondary-color;
       margin-right: 10px;
       font-weight: normal;
       &:hover, &:active, :focus  {
-        background: $base-secondary-color !important;
-        border: 1px solid $base-secondary-color !important;
-        color: #fff !important;
+        background: $base-secondary-color;
+        border: 1px solid $base-secondary-color;
+        color: #fff;
       }
     }
     button.btn.btn-success, a.btn-success {
-      background: $base-primary-color !important;
-      border: 1px solid $base-primary-color !important;
-      border-radius: 4px !important;
-      color: #fff !important;
+      background: $base-primary-color;
+      border: 1px solid $base-primary-color;
+      border-radius: 4px ;
+      color: #fff ;
       &:hover, &:active, :focus  {
-        background: transparent !important;
-        border: 1px solid $base-primary-color !important;
-        color: $base-primary-color !important;
+        background: transparent;
+        border: 1px solid $base-primary-color;
+        color: $base-primary-color ;
       }
     }
   }
@@ -1403,13 +1389,13 @@ a {
 
 
 .btn-group.pull-right #em-close-file.btn.btn-danger.btn-xxl {
-  background: transparent !important;
-  border: none !important;
-  color: white !important;
+  background: transparent;
+  border: none;
+  color: white;
   &:hover,
   &:focus {
-    background-color: $base-secondary-color !important;
-    color: #fff !important;
+    background-color: $base-secondary-color;
+    color: #fff;
     outline: none;
   }
 }
@@ -1420,9 +1406,9 @@ a {
     border-color: $base-secondary-color;
 
     &:hover, &:active, &:focus {
-      background: #fff !important;
-      border-color: $base-secondary-color !important;
-      color: $base-secondary-color !important;
+      background: #fff;
+      border-color: $base-secondary-color;
+      color: $base-secondary-color ;
       background: #fff;
       border-color: #fff;
       color: $base-secondary-color;
@@ -1430,14 +1416,14 @@ a {
   }
 
 #filters #quick.form-group input.btn.btn-sm.btn-info {
-  background-color: $base-primary-color !important;
+  background-color: $base-primary-color;
   color: #fff !important;
-  border: 1px solid $base-primary-color !important;
+  border: 1px solid $base-primary-color;
 
   &:hover, &:active, &:focus {
-    background: #fff !important;
-    border-color: $base-primary-color !important;
-    color: $base-primary-color !important;
+    background: #fff;
+    border-color: $base-primary-color;
+    color: $base-primary-color;
   }
 }
 
@@ -1508,7 +1494,7 @@ a {
   #em-appli-menu .panel-body .list-group-item:hover,
   #em-appli-menu .panel-body .list-group-item:active,
   #em-appli-menu .panel-body .list-group-item:focus {
-    color: $base-primary-color !important;
+    color: $base-primary-color;
   }
 
   .glyphicon-ban-circle {
@@ -1554,8 +1540,8 @@ a {
       position: relative;
       float: right;
       right: unset;
-      background: transparent !important;
-      color: $base-primary-color !important;
+      background: transparent;
+      color: $base-primary-color;
     }
 
     h4 {
@@ -1583,29 +1569,29 @@ a {
     .checkbox,
     .radio-inline,
     .checkbox-inline {
-      color: #b94a48 !important;
+      color: #b94a48;
     }
 
     .form-control {
-      border-color: #b94a48 !important;
-      -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) !important;
-      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) !important;
+      border-color: #b94a48;
+      -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 
       &:focus {
-        border-color: #953b39 !important;
-        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392 !important;
-        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392 !important;
+        border-color: #953b39;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
       }
     }
 
     .input-group-addon {
-      color: #b94a48 !important;
-      border-color: #b94a48 !important;
-      background-color: #f2dede !important;
+      color: #b94a48;
+      border-color: #b94a48;
+      background-color: #f2dede;
     }
 
     .form-control-feedback {
-      color: #b94a48 !important;
+      color: #b94a48;
     }
   }
 
@@ -1625,14 +1611,14 @@ a {
   }
 
   .ui.yellow.segment:not(.inverted) {
-    border-top: 2px solid $base-primary-color !important;
+    border-top: 2px solid $base-primary-color;
   }
 
   .step.completed i.icon.file.text.outline::before,
   .step.completed i.icon.attach::before,
   .step.completed i.icon.add.to.cart::before,
   .step.completed i.icon.time::before {
-    color: $base-primary-color !important;
+    color: $base-primary-color;
   }
 
   /* 3 Cercles Accueil Coordinateur */
@@ -1664,7 +1650,7 @@ a {
     &:focus,
     &:active,
     &:focus-within {
-      color: $base-primary-color !important;
+      color: $base-primary-color;
     }
   }
 
@@ -1674,7 +1660,7 @@ a {
 
   .g-main-nav .g-toplevel > li.active .g-menu-parent-indicator::after,
   .g-main-nav .g-toplevel > li:hover .g-menu-parent-indicator::after {
-    color: $base-primary-color !important;
+    color: $base-primary-color;
   }
 
   #header-b #em_user_menu {
@@ -1708,15 +1694,15 @@ a {
   }
 
   .view-login button.btn.btn-primary {
-    background-color: $base-secondary-color  !important;
-    border-color: $base-secondary-color !important;
-    color: #fff !important;
-    font-family: "Lato", sans-serif !important;
+    background-color: $base-secondary-color;
+    border-color: $base-secondary-color;
+    color: #fff;
+    font-family: "Lato", sans-serif;
     text-transform: capitalize;
     &:hover, &:active, &:focus {
-      background-color: transparent !important;
-      color: $base-secondary-color !important;
-      border-color: $base-secondary-color !important;
+      background-color: transparent;
+      color: $base-secondary-color;
+      border-color: $base-secondary-color;
     }
   }
 
@@ -1734,42 +1720,54 @@ a {
   }
 
   .em-formRegistrationCenter button.login-button {
-    background: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
-    color: #fff !important;
+    background: $base-secondary-color;
+    border: 1px solid $base-secondary-color;
+    color: #fff;
     height: 50px;
     &:hover, &:active, &:focus {
-      background: transparent !important;
-      border: 1px solid $base-secondary-color !important;
-      color: $base-secondary-color !important;
+      background: transparent;
+      border: 1px solid $base-secondary-color;
+      color: $base-secondary-color;
     }
   }
 
 
   /* PARTIE GESTIONNAIRE  */
 
+.view-form.fabrik-boards .form-horizontal .control-group .btn-group label.btn-default {
+  background: $base-primary-color;
+}
+
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
+  background: #f2F2F2;
+}
+
+.g-back-office-emundus-tableau.files-page .panel-info > .panel-heading {
   background: $base-secondary-color;
 }
 
+.g-back-office-emundus-tableau.experts-page .panel-info > .panel-heading h3.panel-title {
+  color: $base-secondary-color !important;
+}
+
   .side-panel #em-files-filters .buttons input, .side-panel #em-user-filters .buttons input {
-    background: $base-primary-color !important;
-    border-color: $base-primary-color !important;
+    background: $base-primary-color;
+    border-color: $base-primary-color;
 
     &:hover, &:active, &:focus {
-      background: #fff !important;
-      color: $base-primary-color !important;
-      border-color: #fff !important;
+      background: #fff;
+      color: $base-primary-color;
+      border-color: #fff;
     }
   }
 
 .side-panel #em-files-filters .buttons input {
-  background: transparent !important;
-  color: #fff !important;
-  border-color: transparent !important;
+  background: transparent;
+  color: #fff ;
+  border-color: transparent;
 
   &:hover, &:active, &:focus {
-    color: $base-primary-color !important;
+    color: $base-primary-color;
   }
 }
 
@@ -1785,34 +1783,32 @@ a {
 #em-files-filters #em_filters fieldset input#save-filter {
     margin-top: 10px;
     background: $base-secondary-color;
-    border: 1px solid $base-secondary-color !important;
+    border: 1px solid $base-secondary-color;
       width: 100%;
       width: -moz-available;
       width: -webkit-fill-available;
       width: fill-available;
     &:focus, &:hover, &:active {
       background: #fff;
-      border-color: $base-secondary-color !important;
-      color: $base-secondary-color !important;
+      border-color: $base-secondary-color;
+      color: $base-secondary-color;
     }
 }
 
 #advanced-filters button.btn.btn-danger.btn-xs#suppr-filt {
-  background: $base-secondary-color !important;
-  border-color: $base-secondary-color !important;
-  color: #fff !important;
-  padding: 6px 10px !important;
+  background: $base-secondary-color;
+  border-color: $base-secondary-color;
+  color: #fff;
+  padding: 6px 10px;
   &:focus, &:hover, &:active {
-    background: #fff !important;
-    border-color: $base-secondary-color !important;
-    color: $base-secondary-color !important;
+    background: #fff;
+    border-color: $base-secondary-color;
+    color: $base-secondary-color;
   }
 }
 
-
-
   .em-personalInfo > a {
-    background-color: $base-primary-color !important;
+    background-color: $base-primary-color;
   }
 
   /* FILTRES */
@@ -1833,18 +1829,16 @@ a {
 
   /* Editer & Ajouter*/
 
-  .g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn.btn-info.btn-sm,  .g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn-default.btn-sm.em-actions-form  {
+  .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,  .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm.em-actions-form  {
     height: 40px;
-    background-color: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
-    &:hover {
-      background-color: darken($base-secondary-color, 10%) !important;
-      color: #fff !important;
-      border: 1px solid darken($base-secondary-color, 10%) !important;
+    background-color: $base-secondary-color;
+    border: 1px solid $base-secondary-color;
+    &:hover, &:active, &:focus {
+      background-color: darken($base-secondary-color, 10%);
+      color: #fff;
+      border: 1px solid darken($base-secondary-color, 10%);
     }
   }
-
-
 
   #em-see-files,
   #em-delete-files,
@@ -1870,7 +1864,7 @@ a {
 
     button.btn.btn-default {
       background-color: $base-secondary-color;
-      border: none !important;
+      border: none;
 
       &:hover {
         background-color: darken($base-secondary-color, 10%);
@@ -1879,19 +1873,19 @@ a {
 
     span.label.label-info {
       background: #ffffff !important;
-      text-shadow: none !important;
+      text-shadow: none;
       color: $base-primary-color !important;
     }
   }
 
   /* PAGE INDICATEUR */
   .indicateurs-page .btn a {
-    color: #fff !important;
+    color: #fff;
 
     &:hover,
     &:focus,
     &:active {
-      color: $base-secondary-color !important;
+      color: $base-secondary-color;
     }
   }
 
@@ -1934,11 +1928,11 @@ a {
       &#search,
       &#clear-search,
       &#add-filter {
-        background: $base-primary-color none !important;
+        background: $base-primary-color none;
         &:hover,
         &:focus,
         &:active {
-          background: darken($base-primary-color, 10%) none !important;
+          background: darken($base-primary-color, 10%) none;
         }
       }
 
@@ -1955,7 +1949,7 @@ a {
   .btn:hover .caret,
   .btn:focus .caret,
   .btn:hover .active {
-    border-top: 4px solid $base-secondary-color !important;
+    border-top: 4px solid $base-secondary-color;
   }
 
   /* TABLEAUX */
@@ -1964,36 +1958,36 @@ a {
 .view-list form.form-search table   {
   thead th.fabrik_actions .btn-group {
     a.delete {
-      background: $base-secondary-color !important;
-      border-color: $base-secondary-color !important;
+      background: $base-secondary-color;
+      border-color: $base-secondary-color;
 
       &:hover, &:active, &:focus {
-        background: #fff !important;
-        border-color: $base-secondary-color !important;
-        color: $base-secondary-color !important;
+        background: #fff;
+        border-color: $base-secondary-color;
+        color: $base-secondary-color;
       }
     }
   }
   tbody td.fabrik_actions .btn-group {
     a.delete {
-      background: $base-secondary-color !important;
-      border-color: $base-secondary-color !important;
+      background: $base-secondary-color;
+      border-color: $base-secondary-color;
 
       &:hover, &:active, &:focus {
-        background: #fff !important;
-        border-color: #fff !important;
-        color: $base-secondary-color !important;
+        background: #fff;
+        border-color: #fff;
+        color: $base-secondary-color;
       }
     }
 
     a.fabrik_edit, a.fabrik_view, a.listplugin {
-      background: $base-primary-color !important;
-      border-color: $base-primary-color !important;
+      background: $base-primary-color;
+      border-color: $base-primary-color;
 
       &:hover, &:active, &:focus {
-        background: #fff !important;
-        border-color: #fff !important;
-        color: $base-primary-color !important;
+        background: #fff;
+        border-color: #fff;
+        color: $base-primary-color;
       }
     }
   }
@@ -2004,33 +1998,33 @@ a {
     .filtertable {
       thead tr.fabrik___heading {
         th, i, a {
-          color: $base-secondary-color !important;
+          color: $base-secondary-color;
         }
       }
 
       tbody tr > td {
-        color: $base-secondary-color !important;
+        color: $base-secondary-color;
       }
     }
 
     .fabrikButtonsContainer.row-fluid ul li {
       a, i {
-        color: $base-secondary-color !important;
+        color: $base-secondary-color;
       }
 
       b.caret {
-        color: $base-secondary-color !important;
+        color: $base-secondary-color;
       }
     }
 
     .fabrikDataContainer .tabData {
       .fabrik_groupdata, thead {
-        border-color: $base-secondary-color !important;
+        border-color: $base-secondary-color ;
       }
 
       thead tr.fabrik___heading {
         th span a, th span a i {
-          color: $base-secondary-color !important;
+          color: $base-secondary-color;
         }
       }
     }
@@ -2059,7 +2053,7 @@ a {
   }
 
   .files-board  .table-hover thead th:hover {
-    background-color: #eceff3;
+    background-color: #fafafa;
     cursor: pointer;
   }
 
@@ -2071,44 +2065,45 @@ a {
     }
 
     .etiquette label {
-      color: $base-secondary-color !important;
+      color: $base-secondary-color;
     }
 
     .etiquette p {
       color: $base-secondary-color;
     }
     .btnQueryBuilder, .swal2-confirm {
-      background: $base-secondary-color !important;
-      border: 1px solid $base-secondary-color !important;
+      background: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
     }
 
     .btnConsulter {
-      background: $base-secondary-color !important;
-      border: 1px solid $base-secondary-color !important;
+      background: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
     }
 
     .btnConsulter:hover {
-      color: $base-secondary-color !important;
-      border: 1px solid $base-secondary-color !important;
-      background:transparent!important;
+      color: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
+      background:transparent;
+
     }
 
     .btnQueryBuilder:hover, .swal2-confirm:hover {
-      color: $base-secondary-color !important;
-      border: 1px solid $base-secondary-color !important;
-      background:transparent!important;
+      color: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
+      background:transparent;
     }
 
     .btnExport, .swal2-cancel  {
-      color: $base-secondary-color !important;
-      border: 1px solid $base-secondary-color !important;
-      background:transparent!important;
+      color: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
+      background:transparent;
     }
 
     .btnExport:hover, .swal2-cancel:hover {
-      color: #fff !important;
-      border: 1px solid $base-secondary-color !important;
-      background: $base-secondary-color!important;
+      color: #fff;
+      border: 1px solid $base-secondary-color;
+      background: $base-secondary-color;
     }
 
     .g-content h1::after, .swal2-title::after {
@@ -2116,108 +2111,108 @@ a {
     }
 
     .swal2-progress-step, .swal2-progress-steps .swal2-progress-step-line, .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
-      background: $base-secondary-color !important;
+      background: $base-secondary-color;
     }
 
     .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step-line {
-      border-top: 1px solid $base-secondary-color !important;
-      border-bottom: 1px solid $base-secondary-color !important;
+      border-top: 1px solid $base-secondary-color;
+      border-bottom: 1px solid $base-secondary-color;
     }
 
     .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step {
-      color: $base-secondary-color !important;
-      border: 1px solid $base-secondary-color !important;
+      color: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
     }
 
     .input .modif, .input .delete {
-      color: $base-secondary-color !important;
+      color: $base-secondary-color;
     }
 
     .btnConsulter:hover a {
-      color: $base-secondary-color!important;
+      color: $base-secondary-color;
     }
   }
 
   /* SYNCHRO CONTACTS */
 
   .experts-synchro-page button.btn.btn-primary.ignore  {
-    background: transparent !important;
-    border: 1px solid $base-secondary-color !important;
-    color: $base-secondary-color !important;
+    background: transparent;
+    border: 1px solid $base-secondary-color ;
+    color: $base-secondary-color;
   }
 
   .experts-synchro-page button.btn.btn-primary.ignore:hover  {
-    background: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
-    color: #fff !important;
+    background: $base-secondary-color;
+    border: 1px solid $base-secondary-color;
+    color: #fff;
   }
 
   /* EXPERTS */
 
   .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="showForm()"]{
-    background: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
-    color: #fff !important;
+    background: $base-secondary-color;
+    border: 1px solid $base-secondary-color;
+    color: #fff;
     margin-left: 10px;
     &:hover, &:active, &:focus {
-      color: $base-secondary-color !important;
-      border: 1px solid $base-secondary-color !important;
-      background: #fff !important;
+      color: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
+      background: #fff;
     }
   }
 
   .experts-page div.btn.btn-primary.btn-xs.pull-right[ng-click="addGroup()"] {
-    background: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
-    color: #fff !important;
+    background: $base-secondary-color;
+    border: 1px solid $base-secondary-color;
+    color: #fff;
     margin-left: 10px;
     &:hover, &:active, &:focus {
-      color: $base-secondary-color !important;
-      border: 1px solid $base-secondary-color !important;
-      background: #fff !important;
+      color: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
+      background: #fff;
     }
   }
 
 .experts-page .ct-view.contact .panel-heading div.btn.btn-default.btn.xs.pull-right:nth-child(3) {
-  background: $base-primary-color !important;
-  border: 1px solid $base-primary-color !important;
-  color: #fff !important;
+  background: $base-primary-color;
+  border: 1px solid $base-primary-color;
+  color: #fff;
   margin-left: 10px;
 
     &:hover, &:active, &:focus {
-      color: $base-primary-color !important;
-      border: 1px solid $base-primary-color !important;
-      background: #fff !important;
+      color: $base-primary-color;
+      border: 1px solid $base-primary-color;
+      background: #fff;
     }
 }
 
   .experts-page .panel-heading div.btn.btn-default.btn.xs.pull-right:first-of-type{
-    background: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
-    color: #fff !important;
+    background: $base-secondary-color;
+    border: 1px solid $base-secondary-color;
+    color: #fff;
     margin-left: 10px;
     &:hover, &:active, &:focus {
-      color: $base-secondary-color !important;
-      border: 1px solid $base-secondary-color !important;
-      background: #fff !important;
+      color: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
+      background: #fff;
     }
   }
 
 .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="switchSearch()"] {
-  background: $base-primary-color !important;
-  border: 1px solid $base-primary-color !important;
-  color: #fff !important;
+  background: $base-primary-color;
+  border: 1px solid $base-primary-color;
+  color: #fff;
   margin-left: 10px;
 
   &:hover, &:active, &:focus {
-    color: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
-    background: #fff !important;
+    color: $base-primary-color;
+    border: 1px solid $base-primary-color;
+    background: #fff;
   }
 }
 
   .experts-page .panel-heading input[type="text"] {
-    height: 30px !important;
+    height: 30px;
   }
 
 /* ERREUR 404 */
