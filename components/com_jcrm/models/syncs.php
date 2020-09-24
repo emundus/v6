@@ -360,7 +360,7 @@ class JcrmModelSyncs extends JModelList
             $db->setQuery($query);
             return $db->loadAssoc();
         } catch (Exception $e) {
-            JLog::add('Error in model/syncs at function getReferent, QUERY: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_jcrm');
+            JLog::add('Error in model/syncs at function getReferent, QUERY: '.str_replace("\n", '' , $query->__toString()), JLog::ERROR, 'com_jcrm');
             return false;
         }
     }
@@ -405,7 +405,7 @@ class JcrmModelSyncs extends JModelList
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('Error in model/syncs at function syncRef, QUERY: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_jcrm');
+            JLog::add('Error in model/syncs at function syncRef, QUERY: '.str_replace("\n", ' ', $query->__toString()), JLog::ERROR, 'com_jcrm');
             return false;
         }
     }

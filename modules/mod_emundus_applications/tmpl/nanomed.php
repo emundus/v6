@@ -28,7 +28,7 @@ $first_page = $m_application->getFirstPage('index.php', $fnums);
                 <div class="row" id="row<?= $application->fnum; ?>">
                     <div class="col-md-12 main-page-application-title">
                         <p class="">
-                            <a href="<?= JRoute::_((($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>" >
+                            <a href="<?= JRoute::_('index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link'])); ?>" >
                                 <?= (!empty($user->fnum) && $application->fnum == $user->fnum)?'<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <b>'.$application->label.'</b>':$application->label; ?>
                             </a>
                     </div>
@@ -37,7 +37,7 @@ $first_page = $m_application->getFirstPage('index.php', $fnums);
                         <p>
                             <?= JText::_('FILE_NUMBER'); ?> : <i><?= $application->fnum; ?></i>
                         </p>
-                        <a class="btn btn-warning" href="<?= JRoute::_((($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>"  role="button">
+                        <a class="btn btn-warning" href="<?= JRoute::_('index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode("index.php?fnum=".$application->fnum).'&Itemid='.$Itemid.'#em-panel'); ?>"  role="button">
                             <i class="folder open outline icon"></i> <?= JText::_('OPEN_APPLICATION'); ?>
                         </a>
 

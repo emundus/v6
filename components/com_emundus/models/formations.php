@@ -41,7 +41,7 @@ class EmundusModelFormations extends JModelLegacy {
         try {
             return $db->loadResult();
         } catch(Exception $e) {
-            JLog::add('Error checking HR at m/formation in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error checking HR at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -58,7 +58,7 @@ class EmundusModelFormations extends JModelLegacy {
         try {
             $db->execute();
         } catch(Exception $e) {
-            JLog::add('Error deleting company at m/formation in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error deleting company at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
         }
     }
 
@@ -89,7 +89,7 @@ class EmundusModelFormations extends JModelLegacy {
 			    $db->execute();
 			    return true;
 		    } catch(Exception $e) {
-			    JLog::add('Error deleting associate at m/formation in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+			    JLog::add('Error deleting associate at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 		    }
 	    }
 
@@ -185,7 +185,7 @@ class EmundusModelFormations extends JModelLegacy {
 		try {
 			return $db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Error getting sessions for DRH at m/formation in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting sessions for DRH at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return null;
 		}
 
@@ -217,7 +217,7 @@ class EmundusModelFormations extends JModelLegacy {
 		try {
 			return $db->loadColumn();
 		} catch (Exception $e) {
-			JLog::add('Error getting user companies at m/formation in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting user companies at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -261,7 +261,7 @@ class EmundusModelFormations extends JModelLegacy {
         try {
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add('Error getting user companies at m/formation in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting user companies at m/formation in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return null;
         }
 

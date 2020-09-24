@@ -154,10 +154,6 @@
 					<option
 							value="1">JYes</option>
 				</field>
-				<field name="absolute_urls" type="radio" default="1" label="MOD_EMUNDUS_ABSOLUTE_URLS" description="MOD_EMUNDUS_ABSOLUTE_URLS_DESC">
-					<option value="0">JNo</option>
-					<option value="1">JYes</option>
-				</field>
 				<field
 						name="show_state_files"
 						type="radio"

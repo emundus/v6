@@ -124,13 +124,13 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             $res = $db->execute();
 
             if ($res) {
-                JLog::add('Order '. $order_id .' update -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::INFO, 'com_emundus');
+                JLog::add('Order '. $order_id .' update -> '. $query->__toString(), JLog::INFO, 'com_emundus');
                 return true;
             }
             return $res;
 
         } catch (Exception $exception) {
-            JLog::add('Error SQL -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error SQL -> '. $query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -138,4 +138,4 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     public function onAfterOrderUpdate(&$order){
         $this->onAfterOrderCreate($order);
     }
-}
+}   

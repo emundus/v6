@@ -118,7 +118,7 @@ function getThematic($id) {
     try {
         return $db->loadObject();
     } catch (Exception $e) {
-        JLog::add('Error getting programme codes in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+        JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
     }
 }
 
@@ -233,7 +233,7 @@ try {
     $apiData = poleEmploi($token);
 
 } catch (Exception $e) {
-    JLog::add('Error getting programme codes in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+    JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 }
 
 

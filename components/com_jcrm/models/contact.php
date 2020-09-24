@@ -500,7 +500,7 @@ class JcrmModelContact extends JModelItem {
 			$db->setQuery($query);
 			return $db->loadColumn();
 		} catch(Exception $e) {
-			JLog::add('Error in model/contacts at function getGroups, QUERY: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_jcrm');
+			JLog::add('Error in model/contacts at function getGroups, QUERY: '.str_replace('\n', ' ', $query->__toString()), JLog::ERROR, 'com_jcrm');
 			return [];
 		}
 	}
@@ -525,7 +525,7 @@ class JcrmModelContact extends JModelItem {
 			$db->setQuery($query);
 			$gid = $db->loadColumn();
 		} catch (Exception $e) {
-			JLog::add('Error in model/contacts at function getGroupByLabel, QUERY: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_jcrm');
+			JLog::add('Error in model/contacts at function getGroupByLabel, QUERY: '.str_replace('\n', ' ', $query->__toString()), JLog::ERROR, 'com_jcrm');
 			return null;
 		}
 
@@ -539,7 +539,7 @@ class JcrmModelContact extends JModelItem {
 				$db->execute();
 				$gid = [$db->insertid()];
 			} catch (Exception $e) {
-				JLog::add('Error in model/contacts at function getGroupByLabel, QUERY: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_jcrm');
+				JLog::add('Error in model/contacts at function getGroupByLabel, QUERY: '.str_replace('\n', ' ', $query->__toString()), JLog::ERROR, 'com_jcrm');
 				return null;
 			}
 		}

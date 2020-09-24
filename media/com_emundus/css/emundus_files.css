@@ -15,11 +15,9 @@
 }
 
 /* BTNS ACTIONS- GESTIONNAIRE - DOSSIERS */
-
-
 .em-containerFilter-heading div.buttons {
     display: flex;
-    margin-top: -6px !important;
+    margin-top: -8px !important;
 }
 
 .em-containerFilter-heading div.buttons input {
@@ -272,7 +270,6 @@ fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-
     margin: 0;
     display: flex;
     align-items: center;
-    color: #fff;
 }
 .navbar.navbar-inverse {
     height: auto;
@@ -389,7 +386,7 @@ div#em-appli-block button.btn.btn-default {
 }
 /* Synthesis panel */
 #em-synthesis a{
-    color:#000;
+    color:#fff;
 }
 
 #em-synthesis a:hover{
@@ -489,7 +486,7 @@ div#em-appli-block td {
 }
 
 div#em-appli-block tr:nth-child(odd) {
-    background-color: #fafafa;
+    background-color: aliceblue;
 }
 
 table#groups-table a {
@@ -669,41 +666,8 @@ div#em-modal-actions .panel-heading h5 {
     margin-top: 5px;
 }
 
-#filters #quick .selectize-control  {
-    height: 28px;
-    width: 85%;
-}
-
 #filters #quick .selectize-input {
-    border: 1px solid #ccc !important;
-    box-shadow: none;
-}
-
-#em_filters #filters > p  {
-    margin-bottom: 10px !important;
-    font-weight: 600;
-}
-
-#em_filters fieldset.em_filters_filedset > p  {
-    margin-bottom: 10px !important;
-    margin-top: 30px !important;
-    font-weight: 600;
-}
-
-#filters #quick.form-group {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-}
-
-.g-back-office-emundus-tableau .panel-body div#select_filter_chosen {
-    width: 85% !important;
-}
-
-.em_select_filter_rapid_search {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
+    height: 28px;
 }
 
 #filters #quick .selectize-input input {
@@ -725,15 +689,19 @@ div#em-modal-actions .panel-heading h5 {
 .g-back-office-emundus-tableau button#add-filter {
     width: 100%;
     justify-content: center;
-    height: 35px;
 }
 
 .g-back-office-emundus-tableau button#add-filter .glyphicon-th-list {
     margin-right:5px;
 }
 
+
+.g-back-office-emundus-tableau .panel-info > .panel-heading, .g-back-office-emundus-tableau .panel-body {
+    /*border-bottom: 1px solid #ddd;*/
+}
+
 .g-back-office-emundus-tableau .panel-body {
-    background-color: #fafafa;
+    background-color: #4e5b6d;
 }
 
 .g-back-office-emundus-tableau.view-export_select_columns .panel-body {
@@ -741,13 +709,15 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
+    border-bottom: 2px #FFFFFF dashed;
     height: 50px !important;
     border-radius: 0;
+    background-color: #4e5b6d;
     padding: 10px;
 }
 
 .g-back-office-emundus-tableau .panel-body .em_label label, .g-back-office-emundus-tableau div#em_adv_filters label {
-    color: #000 !important;
+    color: #ffffff !important;
     margin: 5px 0 5px 5px !important;
 }
 .g-back-office-emundus-tableau .em_filters_filedset .em-filter{
@@ -761,13 +731,15 @@ div#em-modal-actions .panel-heading h5 {
 }
 .g-back-office-emundus-tableau .em_filters_adv_filter .em_filters.em-filter .em_filters_adv_filter_addColumn{
     margin-top: 5px;
-    height: 35px;
 }
 
 .g-back-office-emundus-tableau div#filters .selectize-control.input-tags.demo-default.multi.plugin-remove_button .selectize-input.items.not-full {
     padding: 0 1rem;
 }
 
+.g-back-office-emundus-tableau .g-back-office-emundus-tableau .panel-info {
+    border-color: #4E5B6D;
+}
 
 .g-back-office-emundus-tableau div#em_filters .chosen-container.chosen-with-drop .chosen-drop {
     background: #ffffff;
@@ -776,7 +748,8 @@ div#em-modal-actions .panel-heading h5 {
     box-shadow: none;
 }
 
-.g-back-office-emundus-tableau #em_filters .chosen-container-active.chosen-with-drop .chosen-single {
+.g-back-office-emundus-tableau #em_filters .chosen-container-active.chosen-with-drop .chosen-single,
+#em_filters .chosen-container-single .chosen-single {
     background: #ffffff;
     border: 1px solid #ffffff;
     box-shadow: none;
@@ -784,17 +757,8 @@ div#em-modal-actions .panel-heading h5 {
     margin-top: 1px;
 }
 
-#em_filters .chosen-container-single .chosen-single {
-    background: #ffffff;
-    border: 1px solid #ccc !important;
-    box-shadow: none;
-    padding: 10px;
-    margin-top: 1px;
-    height: 31px;
-}
-
 #em-files-filters #em_select_filter label {
-    color: #000 !important;
+    color: #ffffff !important;
     margin: 5px 0 5px 5px !important;
 }
 
@@ -811,17 +775,9 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .g-back-office-emundus-tableau .panel-info {
+    border-color: #4E5B6D;
     box-shadow: none;
     border-radius:0;
-    border-right: 2px solid #eee;
-    border-left:none;
-    border-bottom:none;
-}
-
-.g-back-office-emundus-tableau .panel-body .SumoSelect > .CaptionCont {
-    border: 1px solid #ccc;
-    background-color: #fff;
-    border-radius: 5px;
 }
 
 .g-back-office-emundus-tableau .em-dropdown {
@@ -832,7 +788,7 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 #em_filters .chosen-container-single .chosen-single span {
-    margin-top: -3.5px;
+    margin-top: -8px;
 }
 
 #em-files-filters td,
@@ -924,7 +880,7 @@ div#em-synthesis .panel-heading h3 {
 
 .col-md-3.side-panel div#em-synthesis .panel-body>ul>li:first-child {
     text-transform: capitalize;
-    color: #000;
+    color: #ffffff;
 }
 
 .g-back-office-emundus-tableau div#em-appli-menu .panel-body {
@@ -954,13 +910,13 @@ div#em-assoc-files .panel.panel-default ul {
 }
 
 div#em-assoc-files .panel-collapse.collapse {
-    border: 2px solid #fafafa;
+    border: 2px solid #404B5A;
     border-top: 0 !important;
 }
 
 div#em-assoc-files .panel-body .panel-body {
     border: none !important;
-    background: #fafafa;
+    background: #6E7887;
     padding-bottom: 5px !important;
     padding-top: 5px !important;
 }
@@ -1015,7 +971,7 @@ div#em-appli-block .panel-body {
     padding-right: 20px;
 }
 #quick .selectize-input{
-    border-radius: 5px;
+    border-radius: 5px 5px 0 0;
 }
 #exp1 form {
     margin: 0 !important;
@@ -1039,8 +995,6 @@ p {
 .navbar-brand{
     padding: 0;
     height: 37px;
-    font-size: 16px;
-    font-weight: bold;
     /*margin-top: 5px;*/
 }
 .navbar-collapse.collapse{
@@ -2058,19 +2012,10 @@ footer#g-footer {
     border: none !important;
 }
 
-#em-last-open .list-group-item{
-    background-color: #fafafa !important;
-    border: 1px solid #fafafa;
-}
-
-.list-group a.list-group-item.active, .list-group a.list-group-item.active:hover, .list-group a.list-group-item.active:focus {
-    color: #000;
-}
-
 div#em-assoc-files .panel.panel-primary, div#em-assoc-files .panel.panel-default {
     border: none;
-    color: #000;
-    background: #fafafa;
+    color: #ffffff;
+    background: #6E7887;
 }
 
 div#em-assoc-files  .panel.panel-primary ul,  div#em-assoc-files .panel.panel-default ul {
@@ -2078,21 +2023,21 @@ div#em-assoc-files  .panel.panel-primary ul,  div#em-assoc-files .panel.panel-de
 }
 
 div#em-assoc-files .panel-collapse.collapse {
-    border: 2px solid #fafafa !important;
+    border: 2px solid #404B5A !important;
     border-top: 0 !important;
 }
 
 div#em-assoc-files  .panel-body .panel-body {
     border: none !important;
-    background: #fafafa;
+    background: #6E7887;
     padding-bottom: 5px !important;
     padding-top: 5px !important;
 }
 
 div#em-assoc-files .panel > .panel-heading {
-    background: #fafafa;
+    background: #404B5A;
     border-radius: 5px 5px 0 0;
-    border-bottom: 1px solid #fafafa;
+    border-bottom: 1px solid #404B5A;
 }
 
 .glyphicon {
@@ -2104,7 +2049,7 @@ div#em-assoc-files .panel > .panel-heading {
     box-shadow: none !important;
     text-shadow: none;
     color: #FFFFFF;
-    padding: 6px 12px !important;
+    padding: 6px 8px !important;
     border-radius: 4px !important;
 }
 
@@ -2141,6 +2086,10 @@ div#em-assoc-files .panel > .panel-heading {
     justify-content: center;
 }
 
+.g-back-office-emundus-tableau .panel-body {
+    background-color: #4e5b6d;
+}
+
 .g-back-office-emundus-tableau .ct-list .panel-body {
     background-color: white;
 }
@@ -2149,6 +2098,7 @@ div#em-assoc-files .panel > .panel-heading {
 }
 
 .g-back-office-emundus-tableau  .panel-info {
+    border-color: #4E5B6D;
     box-shadow: none;
     border-radius: 0;
 }
@@ -2193,8 +2143,10 @@ div#em-assoc-files .panel > .panel-heading {
 }
 
 button#em-close-file {
+    background: #4E5B6D !important;
     color: #ffffff;
     box-shadow: none;
+    border: 1px solid #4E5B6D !important;
     text-shadow: none;
     background-image: none;
     margin-top: -3px;
@@ -2234,14 +2186,14 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .list-group-item:nth-last-child(even) {
-    background-color: #fafafa;
-    color: #000;
+    background-color: #404B5A;
+    color: #ffffff;
     border: 0;
 }
 
 .list-group-item:nth-last-child(odd) {
-    background: #fafafa;
-    color: #000;
+    background: #4E5B6D;
+    color: #ffffff;
     border: 0;
 }
 
@@ -2261,6 +2213,7 @@ table#groups-table a:hover {
 /* MENU ACTIONS */
 .navbar.navbar-inverse {
     border-radius: 0;
+    background: #4E5B6D;
     padding: 10px;
 }
 

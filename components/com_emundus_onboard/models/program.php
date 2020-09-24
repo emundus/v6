@@ -1075,13 +1075,10 @@ class EmundusonboardModelprogram extends JModelList {
 
         // Prepare languages
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_files = array();
-        $Content_Folder = array();
-        $languages = JLanguageHelper::getLanguages();
-        foreach ($languages as $language) {
-            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-        }
+        $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
+        $Content_Folder_FR = file_get_contents($path_to_file_fr);
+        $path_to_file_en = $path_to_file . 'en-GB.override.ini' ;
+        $Content_Folder_EN = file_get_contents($path_to_file_en);
 
         $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
         //
@@ -1184,12 +1181,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->clear();
                 $query->update($db->quoteName('#__fabrik_groups'));
 
-                foreach ($languages as $language) {
-                    $duplicate_translation = $formbuilder->duplicateFileTranslation($group_model->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'GROUP_' . $formid . '_' . $newgroupid,$language->lang_code);
-                    if(!$duplicate_translation){
-                        $formbuilder->addTransationFr('GROUP_' . $formid . '_' . $newgroupid . '=' . "\"" . $group_model->label . "\"");
-                    }
-                }
+                $formbuilder->duplicateTranslation($group_model->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'GROUP_' . $formid . '_' . $newgroupid);
                 //
 
                 $query->set('label = ' . $db->quote('GROUP_' . $formid . '_' . $newgroupid));
@@ -1222,24 +1214,14 @@ class EmundusonboardModelprogram extends JModelList {
                         if(($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options){
                             $sub_labels = [];
                             foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
-                                foreach ($languages as $language) {
-                                    $duplicate_translation = $formbuilder->duplicateFileTranslation($sub_label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index,$language->lang_code);
-                                    if(!$duplicate_translation){
-                                        $formbuilder->addTransationFr('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index . '=' . "\"" . $sub_label . "\"");
-                                    }
-                                }
+                                $this->duplicateTranslation($sub_label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index);
                                 $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
                             }
                             $el_params->sub_options->sub_labels = $sub_labels;
                         }
                         $query->clear();
                         $query->update($db->quoteName('#__fabrik_elements'));
-                        foreach ($languages as $language) {
-                            $duplicate_translation = $formbuilder->duplicateFileTranslation($element->element->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'ELEMENT_' . $newgroupid . '_' . $newelementid,$language->lang_code);
-                            if(!$duplicate_translation){
-                                $formbuilder->addTransationFr('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . $element->element->label . "\"");
-                            }
-                        }
+                        $formbuilder->duplicateTranslation($element->element->label, $Content_Folder_FR, $Content_Folder_EN, $path_to_file_fr, $path_to_file_en, 'ELEMENT_' . $newgroupid . '_' . $newelementid);
                         //
 
                         $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
@@ -1312,22 +1294,22 @@ class EmundusonboardModelprogram extends JModelList {
 
         $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
 
-        try {
-            // INSERT FABRIK_FORMS
-            $query->clear()
-                ->select('*')
-                ->from('#__fabrik_forms')
-                ->where($db->quoteName('id') . ' = 270');
-            $db->setQuery($query);
-            $form_model = $db->loadObject();
+        // INSERT FABRIK_FORMS
+        $query->clear()
+            ->select('*')
+            ->from('#__fabrik_forms')
+            ->where($db->quoteName('id') . ' = 270');
+        $db->setQuery($query);
+        $form_model = $db->loadObject();
 
-            $query->clear();
-            $query->insert($db->quoteName('#__fabrik_forms'));
-            foreach ($form_model as $key => $val) {
-                if ($key != 'id') {
-                    $query->set($key . ' = ' . $db->quote($val));
-                }
+        $query->clear();
+        $query->insert($db->quoteName('#__fabrik_forms'));
+        foreach ($form_model as $key => $val) {
+            if ($key != 'id') {
+                $query->set($key . ' = ' . $db->quote($val));
             }
+        }
+        try {
             $db->setQuery($query);
             $db->execute();
             $formid = $db->insertid();

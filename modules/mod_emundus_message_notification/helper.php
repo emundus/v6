@@ -31,7 +31,7 @@ class modEmundusMessageNotificationHelper {
             return $db->loadResult();
 
         } catch (Exception $e) {
-            JLog::add('Error getting account type stats from mod_graphs helper at query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting account type stats from mod_graphs helper at query: ' . $query->__toString(), JLog::ERROR, 'com_emundus');
         }
 
     }

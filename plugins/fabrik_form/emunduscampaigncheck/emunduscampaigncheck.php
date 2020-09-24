@@ -165,7 +165,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                     }
 
                 } catch (Exception $e) {
-                    JLog::add('plugin/emundus_campaign SQL error at query :'. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.campaign-check');
+                    JLog::add('plugin/emundus_campaign SQL error at query :'. str_replace('\n', $query->__toString()), JLog::ERROR, 'com_emundus.campaign-check');
                     $this->getModel()->formErrorMsg = '';
                     $this->getModel()->getForm()->error = JText::_('ERROR');
                 }
@@ -209,7 +209,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form {
                     }
 
                 } catch (Exception $e) {
-                    JLog::add('plugin/emundus_campaign SQL error at query :'. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.campaign-check');
+                    JLog::add('plugin/emundus_campaign SQL error at query :'. str_replace('\n', $query->__toString()), JLog::ERROR, 'com_emundus.campaign-check');
                     $this->getModel()->formErrorMsg = '';
                     $this->getModel()->getForm()->error = JText::_('ERROR');
                 }

@@ -45,7 +45,7 @@ if ($all == 'oui') {
     $db->setQuery($query);
     $regions = $db->loadColumn();
     try {
-
+        
         foreach ($regions as $region) {
             $query->clear();
 
@@ -93,7 +93,7 @@ if ($all == 'oui') {
         }
 
     } catch (Exection $e) {
-        JLog::add('Error at query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+        JLog::add('Error at query: ' . $query->__toString(), JLog::ERROR, 'com_emundus');
     }
 
 }

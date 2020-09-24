@@ -111,7 +111,7 @@ class plgEmundusLimit_obtained_alert extends JPlugin {
 
             } catch (Exception $exception) {
 
-                JLog::add('Error checking obtained limit at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+                JLog::add('Error checking obtained limit at query :'.str_replace('\n', $query->__toString()), JLog::ERROR, 'com_emundus');
                 return null;
 
             }

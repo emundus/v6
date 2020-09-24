@@ -1164,7 +1164,7 @@ class EmundusModelEmails extends JModelList {
             $this->_db->execute();
 
         } catch (Exception $e) {
-            JLog::add('Error logging email in model/emails : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error logging email in model/emails : '.$query->__toString(), JLog::ERROR, 'com_emundus');
         }
 
     }

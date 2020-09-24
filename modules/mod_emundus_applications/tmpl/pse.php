@@ -21,7 +21,7 @@ $first_page = $m_application->getFirstPage('index.php', $fnums);
 <div class="<?php echo $moduleclass_sfx ?>"> 
  <?php foreach($applications as $application) : ?>
   <fieldset>
-  <a href="<?php echo (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link']); ?>" class="list-group-item<?php echo (!empty($user->fnum) && $application->fnum == $user->fnum)?'-active':''; ?>">
+  <a href="<?php echo 'index.php?option=com_emundus&task=openfile&fnum='.$application->fnum.'&redirect='.base64_encode($first_page[$application->fnum]['link']); ?>" class="list-group-item<?php echo (!empty($user->fnum) && $application->fnum == $user->fnum)?'-active':''; ?>">
     <h4><?php echo $application->label; ?></h4>
     	<span class="label label-<?php echo $application->class; ?>"> <?php echo $application->value; ?></span> 
     	<?php if (!empty($user->fnum) && $application->fnum == $user->fnum) : ?>

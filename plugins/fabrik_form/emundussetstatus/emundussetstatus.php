@@ -102,7 +102,7 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 		try {
 			$current_status = $db->loadResult();
 		} catch (Exception $e) {
-			JLog::add('Could not get file status at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundusSetStatus');
+			JLog::add('Could not get file status at query -> '.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundusSetStatus');
 			return false;
 		}
 

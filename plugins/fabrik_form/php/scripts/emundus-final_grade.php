@@ -30,11 +30,11 @@ if (!empty($status)) {
 			->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
 
 	try {
-
+	
 		$db->setQuery($query);
 		$db->execute();
-
+	
 	} catch(Exception $e) {
-		JLog::add('Unable to set status in plugin/emundusFinalGrade at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+		JLog::add('Unable to set status in plugin/emundusFinalGrade at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	}
 }

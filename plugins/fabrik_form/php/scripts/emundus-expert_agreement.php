@@ -120,7 +120,7 @@ if ($uid > 0) {
 		$db->execute();
 	} catch (Exception $e) {
 		echo $e->getMessage();
-		JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+		JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
 		return false;
 	}
 
@@ -235,7 +235,7 @@ if ($uid > 0) {
 		$db->execute();
 	} catch (Exception $e) {
 		echo $e->getMessage();
-		JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+		JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
 		return false;
 	}
 

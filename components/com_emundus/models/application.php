@@ -422,7 +422,7 @@ class EmundusModelApplication extends JModelList {
         if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
             return false;
         }
-
+        
         $session = JFactory::getSession();
         $current_user = $session->get('emundusUser');
 
@@ -3121,7 +3121,11 @@ class EmundusModelApplication extends JModelList {
     function allowEmbed($url) {
 
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
-        $header = $eMConfig->get('headerCheck', '0') == 1 ? @get_headers($url, 1) : true;
+	    if ($eMConfig->get('headerCheck', '1') == 1) {
+		    $header = @get_headers($url, 1);
+	    } else {
+	    	$header = true;
+	    }
 
         // URL okay?
         if (!$header || stripos($header[0], '200 ok') === false) {
@@ -3168,7 +3172,7 @@ class EmundusModelApplication extends JModelList {
 	        try {
 		        return $db->loadAssocList('fnum');
 	        } catch (Exception $e) {
-		        JLog::add('Error getting first page of application at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+		        JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
 		        return $redirect;
 	        }
 
@@ -3188,7 +3192,7 @@ class EmundusModelApplication extends JModelList {
 		        $res = $db->loadObject();
 		        return $res->link.'&Itemid='.$res->id;
 	        } catch (Exception $e) {
-		        JLog::add('Error getting first page of application at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+		        JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
 		        return $redirect;
 	        }
 
@@ -3232,7 +3236,7 @@ class EmundusModelApplication extends JModelList {
             try {
                 return $db->loadAssocList('fnum');
             } catch (Exception $e) {
-                JLog::add('Error getting confirm URLs in model/application at query -> ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+                JLog::add('Error getting confirm URLs in model/application at query -> ' . $query->__toString(), JLog::ERROR, 'com_emundus');
                 return false;
             }
         } else {
@@ -3251,7 +3255,7 @@ class EmundusModelApplication extends JModelList {
                 $res = $db->loadObject();
                 return $res->link.'&Itemid='.$res->id;
             } catch (Exception $e) {
-                JLog::add('Error getting first page of application at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+                JLog::add('Error getting first page of application at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
                 return false;
             }
         }
@@ -3325,7 +3329,7 @@ class EmundusModelApplication extends JModelList {
             return true;
 
         } catch (Exception $e ) {
-	        JLog::add('Error checking if repeat group is empty at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+	        JLog::add('Error checking if repeat group is empty at model/application in query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	        return false;
         }
     }

@@ -161,7 +161,7 @@ class modemundusApplicationsHelper {
 					AND p.apply_online = 1
 					AND c.end_date >= NOW()
 					AND c.start_date <= NOW()';
-
+		
 		try {
 
 			$db->setQuery($query);
@@ -199,7 +199,7 @@ class modemundusApplicationsHelper {
             $db->setQuery($query);
             return $db->loadAssocList('fnum');
         } catch (Exception $e) {
-            JLog::add("Error at query : ".preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add("Error at query : ".$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -218,7 +218,7 @@ class modemundusApplicationsHelper {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
 		$m_cifre = new EmundusModelCifre();
 		$m_messages = new EmundusModelMessages();
-
+		
 		$fnums = $m_cifre->getContactsByFnums($fnums);
 
 		// Here we organize fnums by profile in order to have the split contact cards in HESAM.
@@ -227,7 +227,7 @@ class modemundusApplicationsHelper {
 
 	    	foreach ($offers as $key => $data) {
 			    $data['unread'] = $m_messages->getUnread($data['applicant_id']);
-
+				
 			    if ($data['favorite'] === '1') {
 				    // Place favorite at the front of the array.
 				    $return[$fnum][$data['profile_id']][0] = $data;

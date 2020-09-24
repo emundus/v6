@@ -118,7 +118,7 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 		try {
 			$attachment_label = $db->loadResult();
 		} catch (Exception $e) {
-			JLog::add('Error getting attachment label in plugin/docusign at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting attachment label in plugin/docusign at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
 			return;
 		}
 
@@ -140,9 +140,9 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 			$signer_email_1 = $m_emails->setTagsFabrik($signer_email_1, array($student->fnum));
 
 			$signer = new DocuSign\eSign\Model\Signer([
-				'email' => $signer_email_1,
-				'name' => $signer_name_1,
-				'recipient_id' => "1",
+				'email' => $signer_email_1, 
+				'name' => $signer_name_1, 
+				'recipient_id' => "1", 
 				'routing_order' => "1"
 			]);
 
@@ -169,9 +169,9 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 			$signer_email_2 = $m_emails->setTagsFabrik($signer_email_2, array($student->fnum));
 
 			$signer = new DocuSign\eSign\Model\Signer([
-				'email' => $signer_email_2,
-				'name' => $signer_name_2,
-				'recipient_id' => "2",
+				'email' => $signer_email_2, 
+				'name' => $signer_name_2, 
+				'recipient_id' => "2", 
 				'routing_order' => "2"
 			]);
 
@@ -198,9 +198,9 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 			$signer_email_3 = $m_emails->setTagsFabrik($signer_email_3, array($student->fnum));
 
 			$signer = new DocuSign\eSign\Model\Signer([
-				'email' => $signer_email_3,
-				'name' => $signer_name_3,
-				'recipient_id' => "3",
+				'email' => $signer_email_3, 
+				'name' => $signer_name_3, 
+				'recipient_id' => "3", 
 				'routing_order' => "3"
 			]);
 
@@ -323,7 +323,7 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 				try {
 					$db->execute();
 				} catch (Exception $e) {
-					JLog::add('Error adding upload to table in plugin/docusign at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+					JLog::add('Error adding upload to table in plugin/docusign at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
 				}
 
 				$query->clear()
@@ -334,7 +334,7 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 				try {
 					$db->execute();
 				} catch (Exception $e) {
-					JLog::add('Error adding file_request to table in plugin/docusign at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+					JLog::add('Error adding file_request to table in plugin/docusign at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
 				}
 			}
 		}

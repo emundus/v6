@@ -44,7 +44,7 @@ if (empty($user)) {
         $user = $db->loadResult();
     }
     catch (Exception $e) {
-        JLog::add('Error in plugin/CCIRS-DRH-create-associate at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+        JLog::add('Error in plugin/CCIRS-DRH-create-associate at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
     }
 
     $post = [
@@ -98,7 +98,7 @@ $db->setQuery($query);
 try {
     $db->execute();
 } catch (Exception $e) {
-	JLog::add('Error setting status in plugin/CCIRS-DRH-create-associate at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+	JLog::add('Error setting status in plugin/CCIRS-DRH-create-associate at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
 }
 
 // Send the email.
@@ -126,7 +126,7 @@ if ($redirect) {
 	try {
 		$db->execute();
 	} catch (Exception $e) {
-		JLog::add('Error setting user information in plugin/CCIRS-DRH-create-associate at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+		JLog::add('Error setting user information in plugin/CCIRS-DRH-create-associate at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	}
 
     $mainframe->redirect('/mon-espace-decideur-rh');

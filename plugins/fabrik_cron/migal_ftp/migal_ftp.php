@@ -90,7 +90,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 				try {
 					$db_array = $db->loadAssocList();
 				} catch (Exception $e) {
-					JLog::add('Error getting teaching units in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+					JLog::add('Error getting teaching units in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					return false;
 				}
 
@@ -155,9 +155,9 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					try {
 						$db->execute();
 					} catch (Exception $e) {
-						JLog::add('Error unpublishing teaching units in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+						JLog::add('Error unpublishing teaching units in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
-					JLog::add('DELETED teaching units in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::INFO, 'com_emundus');
+					JLog::add('DELETED teaching units in query: '.$query->__toString(), JLog::INFO, 'com_emundus');
 					$rows_updated += $db->getAffectedRows();
 
 					// Unpublish registration period.
@@ -170,10 +170,10 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					try {
 						$db->execute();
 					} catch (Exception $e) {
-						JLog::add('Error unpublishing campaigns in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+						JLog::add('Error unpublishing campaigns in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
 					$rows_updated += $db->getAffectedRows();
-					JLog::add('DELETED campaigns in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::INFO, 'com_emundus');
+					JLog::add('DELETED campaigns in query: '.$query->__toString(), JLog::INFO, 'com_emundus');
 
 				}
 
@@ -196,7 +196,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					try {
 						$db_array = $db->loadAssocList();
 					} catch (Exception $e) {
-						JLog::add('Error getting data for update comparisons at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+						JLog::add('Error getting data for update comparisons at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
 
 					// Get the list of categories.
@@ -208,7 +208,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					try {
 						$categories = $db->loadAssocList('id','title');
 					} catch (Exception $e) {
-						JLog::add('Error getting programme codes in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+						JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 						$categories = null;
 					}
 
@@ -267,7 +267,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 											$category = $db->insertid();
 											$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace([' ','/','\''],'-', $t))));
 										} catch (Exception $e) {
-											JLog::add('Error inserting category in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+											JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 										}
 									}
 								} else {
@@ -280,7 +280,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 									try {
 										$category = $db->loadResult();
 									} catch (Exception $e) {
-										JLog::add('Error getting programme codes in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+										JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 									}
 								}
 								array_push($category_concat, $category);
@@ -439,7 +439,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						if ($db_item['intervenant'] != $update_item['typeintervenant']) {
 							$fields[] = $db->quoteName('t.intervenant').' = '.$db->quote($update_item['typeintervenant']);
 						}
-
+						
 						// Partner
 						if ($db_item['partner'] != $update_item['produit9'] || $db_item['partner'] != $update_item['produit8']) {
 							if (!empty($update_item['produit9']) && $db_item['partner'] != $update_item['produit9']) {
@@ -495,7 +495,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					try {
 						$campaign_id = $db->loadResult();
 					} catch (Exception $e) {
-						JLog::add('Error getting max ID in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+						JLog::add('Error getting max ID in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
 
 					if (empty($campaign_id)) {
@@ -512,7 +512,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					try {
 						$programme_codes = $db->loadAssocList('code');
 					} catch (Exception $e) {
-						JLog::add('Error getting programme codes in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+						JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
 
 					// Get the list of programmes allowed to be imported form the table.
@@ -524,7 +524,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					try {
 						$programmes_to_import = $db->loadColumn();
 					} catch (Exception $e) {
-						JLog::add('Error getting programme codes in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+						JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 						$programmes_to_import = null;
 					}
 
@@ -537,7 +537,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					try {
 						$categories = $db->loadAssocList('id','title');
 					} catch (Exception $e) {
-						JLog::add('Error getting programme codes in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+						JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 						$categories = null;
 					}
 
@@ -580,7 +580,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 										$category = $db->insertid();
 										$categories[$category] = str_replace(['é','è','ê'],'e', html_entity_decode(mb_strtolower(str_replace([' ','/','\''],'-', $t))));
 									} catch (Exception $e) {
-										JLog::add('Error inserting category in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+										JLog::add('Error inserting category in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 									}
 								}
 							} else {
@@ -593,7 +593,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 								try {
 									$category = $db->loadResult();
 								} catch (Exception $e) {
-									JLog::add('Error getting programme codes in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+									JLog::add('Error getting programme codes in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 								}
 							}
 							array_push($category_concat, $category);
@@ -692,7 +692,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						try {
 							$db->execute();
 						} catch (Exception $e) {
-							JLog::add('Error inserting programme data in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+							JLog::add('Error inserting programme data in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 						}
 
 						$query->clear()
@@ -703,11 +703,11 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						try {
 							$db->execute();
 						} catch (Exception $e) {
-							JLog::add('Error inserting programme code in all rights group: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+							JLog::add('Error inserting programme code in all rights group: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 						}
 
 						$rows_updated += $db->getAffectedRows();
-						JLog::add('INSERT programme data with query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::INFO, 'com_emundus');
+						JLog::add('INSERT programme data with query: '.$query->__toString(), JLog::INFO, 'com_emundus');
 					}
 
 					// Create a new registration period for the session.
@@ -721,10 +721,10 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					try {
 						$db->execute();
 					} catch (Exception $e) {
-						JLog::add('Error inserting session data in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+						JLog::add('Error inserting session data in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
 					$rows_updated += $db->getAffectedRows();
-					JLog::add('INSERT session data with query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::INFO, 'com_emundus');
+					JLog::add('INSERT session data with query: '.$query->__toString(), JLog::INFO, 'com_emundus');
 
 					// Here we add the meatiest part of the data to the teaching_unity table.
 					// This will contain things like occupants, location, price, etc...
@@ -737,10 +737,10 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 					try {
 						$db->execute();
 					} catch (Exception $e) {
-						JLog::add('Error inserting teaching unit data in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+						JLog::add('Error inserting teaching unit data in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 					}
 					$rows_updated += $db->getAffectedRows();
-					JLog::add('INSERT teaching unit data with query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::INFO, 'com_emundus');
+					JLog::add('INSERT teaching unit data with query: '.$query->__toString(), JLog::INFO, 'com_emundus');
 
 				}
 			}

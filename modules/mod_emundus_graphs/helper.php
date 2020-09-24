@@ -12,7 +12,7 @@ class modEmundusGraphsHelper {
         try {
             return $db->loadResult();
         } catch(Exception $e) {
-            JLog::add('Error getting account type stats from mod_graphs helper at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting account type stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return 0;
         }
     }
@@ -28,7 +28,7 @@ class modEmundusGraphsHelper {
         try {
             return $db->loadAssocList();
         } catch(Exception $e) {
-            JLog::add('Error getting account type stats from mod_graphs helper at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting account type stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -45,7 +45,7 @@ class modEmundusGraphsHelper {
         try {
 	        return $db->loadAssocList();
         } catch(Exception $e) {
-	        JLog::add('Error getting offer consultation stats from mod_graphs helper at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+	        JLog::add('Error getting offer consultation stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	        return false;
         }
     }
@@ -61,7 +61,7 @@ class modEmundusGraphsHelper {
         try {
 	        return $db->loadAssocList();
         } catch(Exception $e) {
-	        JLog::add('Error getting offer candidacy stats from mod_graphs helper at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+	        JLog::add('Error getting offer candidacy stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	        return false;
         }
     }
@@ -77,7 +77,7 @@ class modEmundusGraphsHelper {
         try {
 	        return $db->loadAssocList();
         } catch(Exception $e) {
-	        JLog::add('Error getting connection stats from mod_graphs helper at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+	        JLog::add('Error getting connection stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 	        return false;
         }
     }
@@ -93,7 +93,7 @@ class modEmundusGraphsHelper {
 	    try {
 		    return $db->loadAssocList();
 	    } catch(Exception $e) {
-		    JLog::add('Error getting relationship stats from mod_graphs helper at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+		    JLog::add('Error getting relationship stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
 		    return false;
 	    }
     }
@@ -109,7 +109,7 @@ class modEmundusGraphsHelper {
         try {
             return $db->loadAssoc();
         } catch(Exception $e) {
-            JLog::add('Error getting relationship stats from mod_graphs helper at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting relationship stats from mod_graphs helper at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

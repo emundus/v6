@@ -72,7 +72,7 @@ foreach ($tmp as $customField)
 	                                try {
 		                                $field->value = $this->db->loadResult();
 	                                } catch (Exception $e) {
-		                                Jlog::add('Error retrieving emundus user profile info at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_profile');
+		                                Jlog::add('Error retrieving emundus user profile info at query -> '.$query->__toString(), JLog::ERROR, 'com_profile');
 	                                }
                                 }
 
