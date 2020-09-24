@@ -1039,7 +1039,7 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
     background: #4e5b6d;
     background-color: #4e5b6d;
     border: 1px solid #4e5b6d;
-    border-radius: 0 !important;
+    border-radius: 4px;
     padding: 8px 12px !important;
 }
 .span4.offset1 > .btn-group > button.button:hover{
@@ -1096,7 +1096,7 @@ ol li {
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input {
-   border-radius : 0px; 
+   border-radius : 4px; 
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid:nth-child(4) .controls label.radio {

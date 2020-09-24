@@ -23,9 +23,9 @@
 }
 
 .em-containerFilter-heading div.buttons input {
-    background: #1b1f3c none !important;
-    border-color: #1B1F3c !important;
-    color: #fff !important;
+    background: #1b1f3c none;
+    border-color: #1B1F3c;
+    color: #fff;
 }
 
 button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn, .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save), .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
@@ -59,7 +59,7 @@ button.save-btn:hover, button.save-btn:active, .trombi_download:hover, button.sa
     padding: 8px 12px;
 }
 .modal-header .btn-danger, .modal-header .btn-success{
-    border-radius: 0 !important;
+    border-radius: 4px !important;
 }
 .em-user-personal-filter .btn-xs{
     padding: 8px 12px !important;
@@ -2055,7 +2055,7 @@ footer#g-footer {
 }
 
 .em-personalInfo > a {
-    border: none !important;
+    border: none;
 }
 
 #em-last-open .list-group-item{
@@ -2114,9 +2114,9 @@ div#em-assoc-files .panel > .panel-heading {
 }
 
 .g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {
-    box-shadow: none !important;
+    box-shadow: none;
     text-shadow: none;
-    color: #ffffff !important;
+    color: #ffffff;
 }
 
 .g-back-office-emundus-tableau button#search:active ,  .g-back-office-emundus-tableau button#clear-search:active, .g-back-office-emundus-tableau button#save-filter:active , .g-back-office-emundus-tableau button#add-filter:active,  .g-back-office-emundus-tableau input#search:active ,  .g-back-office-emundus-tableau input#clear-search:active, .g-back-office-emundus-tableau input#save-filter:active , .g-back-office-emundus-tableau input#add-filter:active  {
@@ -2202,12 +2202,12 @@ button#em-close-file {
 }
 
 button#em-close-file:hover, button#em-close-file:focus, button#em-close-file:active {
-    background: #404B5A !important;
-    border-color: #404B5A !important;
+    background: #404B5A;
+    border-color: #404B5A;
 }
 
 #em_select_filter #del-filter i {
-    margin: 0 !important;
+    margin: 0;
 }
 
 .btn:hover .caret {

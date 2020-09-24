@@ -130,7 +130,7 @@ body.view-reset label#jform_username-lbl::after,
     font-weight: 300;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
-    border-radius :0px;
+    border-radius :4px;
 }
 h1.em-titre-connectez-vous::after {
     content: '';
