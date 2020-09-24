@@ -12,6 +12,8 @@
     />
     <ModalMenu
             :profileId="prid"
+            :actualLanguage="actualLanguage"
+            :manyLanguages="manyLanguages"
             @AddMenu="pushMenu"
     />
     <ModalSide
