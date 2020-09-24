@@ -844,15 +844,28 @@ export default {
             })
           });
         }
-        this.$emit(
-            "show",
-            "foo-velocity",
-            "success",
-            this.updateSuccess,
-            this.update
-        );
-        page.show_title.value = page.show_title.label.fr;
-        this.updatePage = false;
+            axios({
+              method: "post",
+              url:
+                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatemenulabel",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                pid: page.id,
+                label: labels
+              })
+            }).then(() => {
+              this.$emit(
+                  "show",
+                  "foo-velocity",
+                  "success",
+                  this.updateSuccess,
+                  this.update
+              );
+              page.show_title.value = page.show_title.label.fr;
+              this.updatePage = false;
+            });
       }).catch(e => {
         this.$emit(
             "show",

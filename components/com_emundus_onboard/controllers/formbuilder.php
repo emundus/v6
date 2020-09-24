@@ -720,9 +720,9 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
             $label = $jinput->getRaw('label');
-            $link = $jinput->getString('link');
+            $pid = $jinput->getString('pid');
 
-            $state = $m_form->updateMenuLabel($label,$link);
+            $state = $m_form->updateMenuLabel($label,$pid);
 
             $tab = array('status' => $state, 'msg' => 'worked');
         }
