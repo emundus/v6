@@ -1309,7 +1309,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 .form-actions .row-fluid .span4 .btn-group .register {
-  background-color: transparent !important;
+  background-color: transparent;
   outline: none;
 }
 

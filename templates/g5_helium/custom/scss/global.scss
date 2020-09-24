@@ -334,7 +334,7 @@ footer#g-footer img{
   display: flex;
   flex-direction: column;
   overflow-y: auto ;
-  min-height: 100% !important;
+  min-height: 100%;
   width: 100%;
 }
 
@@ -345,7 +345,7 @@ footer#g-footer img{
 }
 
 .g-container > #g-footer {
-  width: 100vw !important;
+  width: 100vw;
   margin-top: auto !important;
 }
 
@@ -418,8 +418,8 @@ footer#g-footer > .g-container {
 }
 
 #g-footer {
-  padding: 20px !important;
-  margin : auto auto 0 auto !important;
+  padding: 20px;
+  margin : auto auto 0 auto;
 
 a {
   color: $base-secondary-color;
@@ -428,14 +428,14 @@ a {
 }
 
 /* MODULE USER DROPDOWN */
-#g-navigation #header-c {
+#g-navigation .g-container #header-c {
   a.forgotten_password_header {
     font-size: 14px;
     color: $base-secondary-color;
     float: right;
   }
 
-  .header-right {
+  .moduletable .header-right {
     margin-top: 12px;
     a.btn.btn-danger {
       &.btn-creer-compte, &.inscription {
@@ -465,16 +465,16 @@ a {
   }
 
   #userDropdownIcon {
-    background-color: $base-primary-color !important;
-    border: 2px solid $base-primary-color !important;
-    color: #ffffff !important;
-    box-shadow: none !important;
+    background-color: $base-primary-color;
+    border: 2px solid $base-primary-color;
+    color: #ffffff;
+    box-shadow: none;
 
     &:hover,
     &.active,
     &:hover:active {
-      background-color: transparent !important;
-      color: $base-primary-color !important;
+      background-color: transparent;
+      color: $base-primary-color;
     }
   }
 
@@ -482,7 +482,7 @@ a {
 
     li > a:hover,
     .active > a {
-      background: $base-primary-color !important;
+      background: $base-primary-color;
       color: #ffffff;
     }
   }
@@ -491,7 +491,7 @@ a {
   /* BURGER MENU - DECONNECTE */
 
   #g-page-surround .g-offcanvas-toggle {
-    top: 1.8rem !important;
+    top: 1.8rem;
   }
 
   .burger span {
@@ -536,16 +536,16 @@ a {
 
   /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 
-  .view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form .em-formRegistrationCenter .button.btn.btn-primary.save-btn.sauvegarder.button.register {
-    background-color:$base-secondary-color !important;
-    color: #ffffff !important;
-    border-color: $base-secondary-color !important;
-    text-transform: capitalize;
+  view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form .em-formRegistrationCenter .row-fluid .span4  .button.btn.btn-primary.save-btn.sauvegarder.button.register {
+    background-color:$base-secondary-color;
+    color: #ffffff;
+    border-color: $base-secondary-color;
+    text-transform: initial;
 
     &:hover, &active, &:focus {
-      background-color: transparent !important;
-      color: $base-secondary-color !important;
-      border-color: $base-secondary-color !important;
+      background-color: transparent;
+      color: $base-secondary-color;
+      border-color: $base-secondary-color;
     }
   }
 
@@ -608,24 +608,24 @@ a {
   /* MODULE APPLICATIONS  - COULEUR BTN IMPRIMER*/
   .homepage #g-main-mainbody #content-bottom-a {
     .platform-content .btn.btn-info {
-      background: darken($base-secondary-color,8%) !important;
-      border-color: darken($base-secondary-color,8%)  !important;
+      background: darken($base-secondary-color,8%);
+      border-color: darken($base-secondary-color,8%);
 
       &:hover, &:active, &:focus {
-        background-color: transparent !important;
-        color: darken($base-secondary-color,8%) !important;
-        border-color: darken($base-secondary-color,8%) !important;
+        background-color: transparent;
+        color: darken($base-secondary-color,8%);
+        border-color: darken($base-secondary-color,8%);
       }
     }
 
     .platform-content a.btn[title="Envoyer le dossier"] {
-      background: $base-secondary-color !important;
-      border: 1px solid $base-secondary-color !important;
-      color: #fff !important;
+      background: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
+      color: #fff;
       &:hover, &:active, &:focus {
-        background: transparent !important;
-        border: 1px solid $base-secondary-color !important;
-        color: $base-secondary-color !important;
+        background: transparent;
+        border: 1px solid $base-secondary-color;
+        color: $base-secondary-color;
       }
     }
 
@@ -670,26 +670,26 @@ a {
 
       /*COULEURS BTNS - PLUS D'INFO ET CANDIDATER */
       a.btn.btn-primary.btn-plein.btn-blue {
-        background-color: $base-secondary-color  !important;
-        border-color: $base-secondary-color !important;
+        background-color: $base-secondary-color;
+        border-color: $base-secondary-color;
         color: #fff !important;
-        font-family: "Lato", sans-serif !important;
+        font-family: "Lato", sans-serif;
         &:hover, &:active, &:focus {
-          background-color: transparent !important;
-          color: $base-secondary-color !important;
-          border-color: $base-secondary-color !important;
+          background-color: transparent;
+          color: $base-secondary-color;
+          border-color: $base-secondary-color;
         }
       }
 
       a.btn.btn-primary.btn-creux.btn-orange {
-        background-color: transparent  !important;
-        border-color: $base-primary-color !important;
-        color: $base-primary-color !important;
-        font-family: "Lato", sans-serif !important;
+        background-color: transparent;
+        border-color: $base-primary-color;
+        color: $base-primary-color;
+        font-family: "Lato", sans-serif;
         &:hover, &:active, &:focus {
-          background-color: $base-primary-color !important;
+          background-color: $base-primary-color;
           color: #fff !important;
-          border-color: $base-primary-color !important;
+          border-color: $base-primary-color;
         }
       }
     }
@@ -859,8 +859,8 @@ a {
   }
 
   .form-actions .row-fluid .span4 .btn-group .register {
-    color: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
+    color: $base-primary-color;
+    border: 1px solid $base-primary-color;
   }
 
   .form-actions .row-fluid .span4 .btn-group .register:hover {
@@ -1043,30 +1043,30 @@ a {
 
   /* PRINT AND SEND FILE */
 
-  .em-print-button a {
-    border: 1px solid $base-secondary-color !important;
-    color: #fff !important;
-    background: $base-secondary-color !important;
+  #sidebar-a .em-print-button a#print {
+    border: 1px solid $base-secondary-color;
+    color: #fff;
+    background: $base-secondary-color;
 
     &:hover,
     &:focus,
     &:active {
-      border: 1px solid $base-secondary-color !important;
-      color: $base-secondary-color !important;
+      border: 1px solid $base-secondary-color;
+      color: $base-secondary-color;
     }
   }
 
   .em-send-button a.btn.btn-success.btn-xs {
-    background: $base-secondary-color !important;
-    color: #ffffff !important;
-    border: 1px solid $base-secondary-color !important;
+    background: $base-secondary-color;
+    color: #ffffff;
+    border: 1px solid $base-secondary-color;
 
     &:hover,
     &:focus,
     &:active {
-      color: $base-secondary-color !important;
-      border: 1px solid $base-secondary-color !important;
-      background: transparent !important;
+      color: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
+      background: transparent ;
     }
   }
 
@@ -1090,29 +1090,29 @@ a {
   }
 
   button.btn-primary {
-    background: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
+    background: $base-secondary-color;
+    border: 1px solid $base-secondary-color;
     border-radius: 4px;
-    padding: 8px 12px !important;
+    padding: 8px 12px;
 
     &:hover {
-      background-color: transparent !important;
-      color: $base-secondary-color !important;
+      background-color: transparent;
+      color: $base-secondary-color;
       outline: none;
     }
   }
 
   a.btn,
   span.btn {
-    background: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
+    background: $base-primary-color;
+    border: 1px solid $base-primary-color;
     border-radius: 4px;
-    padding: 8px 12px !important;
-    color: #fff !important;
+    padding: 8px 12px;
+    color: #fff;
 
-    &:hover {
-      background-color: transparent !important;
-      color: $base-primary-color !important;
+    &:hover, &:focus, &:active {
+      background-color: transparent;
+      color: $base-primary-color;
       outline: none;
     }
   }
@@ -1121,7 +1121,7 @@ a {
   a.btn-attach,
   .xclsform .panel-body button,
   button.close {
-    color: #fff !important;
+    color: #fff;
   }
 
   .btn-warning.active.focus,
@@ -1161,43 +1161,43 @@ a {
 
   .fabrikActions.form-actions .row-fluid {
     .span4.offset1 button.btn.goback-btn,  .span4.offset1 button.btn[name="Goback"]  {
-      background: transparent !important;
-      border: 1px solid $base-secondary-color !important;
-      border-radius: 4px !important;
-      color: $base-secondary-color !important;
+      background: transparent;
+      border: 1px solid $base-secondary-color;
+      border-radius: 4px;
+      color: $base-secondary-color;
       margin-right: 10px;
       font-weight: normal;
       &:hover, &:active, :focus  {
-        background: $base-secondary-color !important;
-        border: 1px solid $base-secondary-color !important;
-        color: #fff !important;
+        background: $base-secondary-color;
+        border: 1px solid $base-secondary-color;
+        color: #fff;
       }
     }
 
     .span12 button.goback-btn[name="Goback"] {
-      background: transparent !important;
-      border: 1px solid $base-secondary-color !important;
+      background: transparent;
+      border: 1px solid $base-secondary-color;
       border-radius: 4px !important;
-      color: $base-secondary-color !important;
+      color: $base-secondary-color;
       margin-right: 10px;
       font-weight: normal;
       padding: 8px 35px;
       &:hover, &:active, :focus  {
-        background: $base-secondary-color !important;
-        border: 1px solid $base-secondary-color !important;
-        color: #fff !important;
+        background: $base-secondary-color;
+        border: 1px solid $base-secondary-color;
+        color: #fff;
       }
     }
 
     .span4 button.btn.save-btn {
-      background: $base-primary-color !important;
-      border: 1px solid $base-primary-color !important;
-      border-radius: 4px !important;
-      color: #fff !important;
+      background: $base-primary-color;
+      border: 1px solid $base-primary-color;
+      border-radius: 4px;
+      color: #fff;
       &:hover, &:active, :focus  {
-        background: transparent !important;
-        border: 1px solid $base-primary-color !important;
-        color: $base-primary-color !important;
+        background: transparent;
+        border: 1px solid $base-primary-color;
+        color: $base-primary-color;
       }
     }
   }
@@ -1253,10 +1253,10 @@ a {
   .toggle-addoption.btn,
   .candidacy-files-list a#send,
   .choice-statut-btn {
-    background: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
+    background: $base-primary-color;
+    border: 1px solid $base-primary-color;
     text-shadow: none;
-    text-transform: initial !important;
+    text-transform: initial;
   }
 
   button.save-btn:hover,
@@ -1328,24 +1328,38 @@ a {
   .choice-statut-btn:hover,
   .choice-statut-btn:active,
   .choice-statut-btn:focus {
-    background-color: transparent !important;
-    color: $base-primary-color !important;
+    background-color: transparent;
+    color: $base-primary-color;
     outline: none;
-    border: 1px solid $base-primary-color !important;
+    border: 1px solid $base-primary-color;
   }
 
   .span4.offset1 > .btn-group > button.button {
-    background: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
-    border-radius: 4px !important;
+    background: $base-primary-color;
+    border: 1px solid $base-primary-color;
+    border-radius: 4px;
 
-    &:hover {
-      background-color: transparent !important;
-      color: $base-primary-color !important;
+    &:hover,  &:focus,  &:active {
+      background-color: transparent;
+      color: $base-primary-color ;
       outline: none;
     }
-
   }
+
+.span4 > .btn-group > button.save-btn, .span4 > .btn-group > button.save {
+  background: $base-primary-color;
+  background-color: $base-primary-color;
+  border: 1px solid $base-primary-color;
+  border-radius: 4px;
+  border-radius: 4px;
+
+  &:hover,  &:focus,  &:active {
+    background-color: transparent;
+    color: $base-primary-color;
+    border: 1px solid $base-primary-color;
+    outline: none;
+  }
+}
 
   .trombi_download {
     background-color: $base-secondary-color !important;
@@ -1372,16 +1386,17 @@ a {
   .documents-type-candidacy-page .fabrikDetails .btn,
   .fabrikUploadDelete .btn,
   .btn-toolbar .btn-group:nth-child(2) .btn {
-    background: transparent !important;
-    border: 1px solid $base-secondary-color !important;
+    background: transparent;
+    border: 1px solid $base-secondary-color;
     text-shadow: none;
     text-transform: none;
-    color: $base-secondary-color !important;
+    color: $base-secondary-color;
+    border-radius: 4px;
 
     &:hover,
     &:focus {
-      background-color: $base-secondary-color !important;
-      color: #fff !important;
+      background-color: $base-secondary-color ;
+      color: #fff;
       outline: none;
     }
   }
@@ -1400,14 +1415,17 @@ a {
 }
 
   #em_select_filter #del-filter,#em-delete-files.btn.btn-danger.btn-xs.pull-right {
-    background-color: $base-secondary-color !important;
-    color: #fff !important;
-    border-color: $base-secondary-color !important;
+    background-color: $base-secondary-color;
+    color: #fff;
+    border-color: $base-secondary-color;
 
     &:hover, &:active, &:focus {
       background: #fff !important;
       border-color: $base-secondary-color !important;
       color: $base-secondary-color !important;
+      background: #fff;
+      border-color: #fff;
+      color: $base-secondary-color;
     }
   }
 
@@ -1424,24 +1442,24 @@ a {
 }
 
   #em-see-files.btn.btn-info.btn-xs.pull-right {
-    background-color: $base-primary-color !important;
-    color: #fff !important;
-    border-color: $base-primary-color !important;
+    background-color: $base-primary-color;
+    color: #fff;
+    border-color: $base-primary-color;
     &:hover, &:active, &:focus {
-      background: #fff !important;
-      border: 1px solid $base-primary-color !important;
-      color: $base-primary-color !important;
+      background: #fff;
+      border: 1px solid $base-primary-color;
+      color: $base-primary-color;
     }
   }
 
   #em-prev-file.btn.btn-info.btn-xxl, #em-next-file.btn.btn-info.btn-xxl {
-    background-color: $base-primary-color !important;
-    color: #fff !important;
-    border-color: $base-primary-color !important;
+    background-color: $base-primary-color ;
+    color: #fff;
+    border-color: $base-primary-color;
     &:hover, &:active, &:focus {
-      background: #fff !important;
-      border: 1px solid $base-primary-color !important;
-      color: $base-primary-color !important;
+      background: #fff;
+      border: 1px solid $base-primary-color;
+      color: $base-primary-color;
     }
   }
 
@@ -1471,9 +1489,9 @@ a {
   .btn-info:active,
   .btn-info.active,
   .open .dropdown-toggle.btn-info {
-    color: #ffffff !important;
-    background-color: $base-secondary-color !important;
-    border-color: $base-secondary-color !important;
+    color: #ffffff;
+    background-color: $base-secondary-color;
+    border-color: $base-secondary-color;
   }
 
   /* EM PANEL */
@@ -1832,13 +1850,13 @@ a {
   #em-delete-files,
   .panel-body .content .btn-info,
   .panel-body .content .btn-sm {
-    background-color: $base-primary-color !important;
+    background-color: $base-primary-color;
     border: 1px solid darken($base-primary-color, 10%);
 
     &:hover {
-      background-color: darken($base-primary-color, 10%) !important;
-      color: #fff !important;
-      border: 1px solid darken($base-primary-color, 10%) !important;
+      background-color: darken($base-primary-color, 10%);
+      color: #fff;
+      border: 1px solid darken($base-primary-color, 10%);
     }
   }
 

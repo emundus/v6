@@ -64,14 +64,14 @@ button#back:hover, button#back:active, button#back:focus,
     outline: none;
 }
 .em-print-button a {
-    text-shadow: none !important;
-    width: 100% !important;
-    padding: 8px 12px !important;
-    font-size: 1rem !important;
-    border: 1px solid  #29d4ff !important;
-    color: #fff !important;
-    background:  #29d4ff !important;
-    display: flex !important;
+    text-shadow: none;
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 1rem;
+    border: 1px solid  #29d4ff;
+    color: #fff;
+    background:  #29d4ff;
+    display: flex;
     justify-content: center;
 }
 .em_module.need_ok a::before {
