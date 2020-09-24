@@ -47,7 +47,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadResult();
         } catch(Exception $e) {
-            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return 0;
         }
 
@@ -103,7 +103,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query, $offset, $limit);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return [];
         }
     }
@@ -124,7 +124,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return false;
             }
         } else {
@@ -156,7 +156,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return false;
             }
         } else {
@@ -188,7 +188,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return $e->getMessage();
             }
         } else {
@@ -234,7 +234,7 @@ class EmundusonboardModelemail extends JModelList {
                 return $db->execute();
 
             } catch(Exception $e) {
-                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return false;
             }
         } else {
@@ -260,7 +260,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadObject();
         } catch(Exception $e) {
-            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -279,7 +279,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->execute();
                 return $db->insertid();
             } catch(Exception $e) {
-                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return false;
             }
         } else {
@@ -308,7 +308,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return false;
             }
 
@@ -332,7 +332,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadColumn();
         } catch(Exception $e) {
-            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -352,7 +352,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadColumn();
         } catch(Exception $e) {
-            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -369,7 +369,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -429,7 +429,7 @@ class EmundusonboardModelemail extends JModelList {
 
             return $triggers;
         } catch(Exception $e) {
-            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -461,7 +461,7 @@ class EmundusonboardModelemail extends JModelList {
 
             return $trigger;
         } catch(Exception $e) {
-            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -519,7 +519,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
-            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -588,7 +588,7 @@ class EmundusonboardModelemail extends JModelList {
                 }
             }
         } catch(Exception $e) {
-            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -604,7 +604,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
-            JLog::add(str_replace("\n", "", $query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }

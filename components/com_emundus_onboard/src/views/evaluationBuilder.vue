@@ -63,6 +63,8 @@
                   :rgt="rgt"
                   :eval="1"
                   :files="files"
+                  :actualLanguage="actualLanguage"
+                  :manyLanguages="manyLanguages"
                   ref="builder"
           />
         </div>
@@ -102,6 +104,8 @@
       index: Number,
       cid: Number,
       eval: Number,
+      actualLanguage: String,
+      manyLanguages: Number
     },
     components: {
       List,
@@ -152,11 +156,11 @@
             icon: 'fas fa-font',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
           },
-          birthday: {
-            id: 1,
-            value: 'birthday',
-            icon: 'far fa-calendar-alt',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY")
+          textarea: {
+            id: 5,
+            value: 'textarea',
+            icon: 'far fa-square',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
           },
           checkbox: {
             id: 2,
@@ -164,23 +168,29 @@
             icon: 'far fa-check-square',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_CHECKBOX")
           },
-          dropdown: {
-            id: 3,
-            value: 'dropdown',
-            icon: 'fas fa-th-list',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN")
-          },
           radiobutton: {
             id: 4,
             value: 'radiobutton',
             icon: 'fas fa-list-ul',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON")
           },
-          textarea: {
-            id: 5,
-            value: 'textarea',
-            icon: 'far fa-square',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
+          dropdown: {
+            id: 3,
+            value: 'dropdown',
+            icon: 'fas fa-th-list',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN")
+          },
+          birthday: {
+            id: 1,
+            value: 'birthday',
+            icon: 'far fa-calendar-alt',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY")
+          },
+          display: {
+            id: 6,
+            value: 'display',
+            icon: 'fas fa-paragraph',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
         },
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
@@ -306,8 +316,10 @@
               elts: [],
               group_id: group.group_id,
               group_showLegend: group.group_showLegend,
-              label_fr: group.label_fr,
-              label_en: group.label_en,
+              label: {
+                fr: group.label_fr,
+                en: group.label_en,
+              },
               group_tag: group.group_tag,
               ordering: group.ordering
             };
