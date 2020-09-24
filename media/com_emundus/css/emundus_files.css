@@ -28,9 +28,9 @@
 }
 
 .em-containerFilter-heading div.buttons input {
-    background: #1b1f3c none !important;
-    border-color: #1B1F3c !important;
-    color: #fff !important;
+    background: #1b1f3c none;
+    border-color: #1B1F3c;
+    color: #fff;
 }
 
 button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-content a, #member-profile .controls a, .toggle-editor .btn, .xclsform .panel-body button#delfilter, button#back, .btn.advanced-search-clearall, .emails-setup-page .form-actions button:not(.save), .documents-type-candidacy-page .fabrikDetails .btn, .fabrikUploadDelete .btn, #em_select_filter #del-filter, .btn-toolbar .btn-group:nth-child(2) .btn {
@@ -116,6 +116,20 @@ button.close {
     cursor: pointer;
 }
 /*TABLEAUX*/
+
+.files-board table.table-bordered thead th {
+    background: #ebebeb;
+}
+
+.em-personalDetail-table-multiplleLine.table-striped tbody tr:nth-child(2n+1) td, .em-personalDetail-table-multiplleLine.table-striped tbody tr:nth-child(2n+1) th {
+    background: #fafafa;
+}
+
+.em-data-container .table-hover.table-striped tbody tr:nth-child(2n+1) td, .em-data-container .table-hover.table-striped tbody tr:nth-child(2n+1) th {
+    background: #F2F2F2 !important;
+}
+
+
 td:first-child > .em-cell {
     display: flex;
     align-items: center;
@@ -756,6 +770,10 @@ div#em-modal-actions .panel-heading h5 {
 .g-back-office-emundus-tableau .em_filters_filedset .em-filter .em_label{
     margin-bottom: 5px;
 }
+.g-back-office-emundus-tableau #group .em_label {
+    margin-bottom: 5px;
+}
+
 .g-back-office-emundus-tableau .em_filters_adv_filter .em_filters.em-filter{
     margin-bottom: 10px;
 }
@@ -1960,6 +1978,19 @@ label[for="em-file_to_upload"]:hover {
 .swal2-container{
     z-index: 99999 !important;
 }
+
+.g-back-office-emundus-tableau.files-board .em-utilitize input#em-searchbar {
+    border-bottom-right-radius: 0px !important;
+    border-top-right-radius: 0px !important;
+}
+
+.g-back-office-emundus-tableau.files-board .em-utilitize button#btn-em-searchbar {
+    border-bottom-left-radius: 0px !important;
+    border-top-left-radius: 0px !important;
+    padding: 11px;
+}
+
+
 @media screen and (max-width: 991px){
     .download{
         display: inline !important;

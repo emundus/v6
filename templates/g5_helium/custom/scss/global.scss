@@ -1393,7 +1393,7 @@ a {
   color: white !important;
   &:hover,
   &:focus {
-    background-color: $base-secondary-color !important;
+    background-color: darken($base-primary-color, 10%) !important;
     color: #fff !important;
     outline: none;
   }
@@ -1734,14 +1734,25 @@ a {
   background: $base-secondary-color;
 }
 
-.side-panel #em-files-filters .buttons input, .side-panel #em-user-filters .buttons input {
-  background: transparent !important;
+.g-back-office-emundus-tableau .side-panel #em-files-filters .buttons input#clear-search, .g-back-office-emundus-tableau .side-panel #em-user-filters .buttons input#clear-search {
+  background: transparent;
   color: #fff !important;
-  border-color: transparent !important;
+  border-color: transparent;
 
   &:hover, &:active, &:focus {
-    color: $base-primary-color !important;
+    color: #fff;
+    background: darken($base-secondary-color, 10%) !important;
   }
+}
+
+.g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
+  background: $base-secondary-color !important;
+  color: #fff !important;
+
+    &:hover, &:active, &:focus {
+      background: #fff !important;
+      color: $base-secondary-color !important;
+    }
 }
 
 #em_filters #filters > p , #em-user-filters #filters > p {
@@ -1904,11 +1915,11 @@ a {
       &#search,
       &#clear-search,
       &#add-filter {
-        background: $base-primary-color none !important;
+        background: $base-primary-color none;
         &:hover,
         &:focus,
         &:active {
-          background: darken($base-primary-color, 10%) none !important;
+          background: darken($base-primary-color, 10%) none;
         }
       }
 
@@ -2016,10 +2027,6 @@ a {
     }
   }
 
-  .table-hover tbody tr:nth-child(2n+1) td, .table-hover tbody tr:nth-child(2n+1) th {
-    background: #f2f2f2 !important;
-  }
-
   .table-hover tbody tr:hover td {
     background: #ECEFF3 !important;
   }
@@ -2029,7 +2036,7 @@ a {
   }
 
   .files-board  .table-hover thead th:hover {
-    background-color: #eceff3;
+    background-color: #fafafa;
     cursor: pointer;
   }
 
