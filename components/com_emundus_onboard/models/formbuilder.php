@@ -945,37 +945,6 @@ class EmundusonboardModelformbuilder extends JModelList {
             $this->addTransationEn('FORM_' . $prid . '_INTRO_' . $formid . '=' . "\"" . $intro['en'] . "\"");
             //
 
-            // CREATE TABLE
-            $query = "CREATE TABLE IF NOT EXISTS jos_emundus_" . $prid . "_declare (
-            id int(11) NOT NULL AUTO_INCREMENT,
-            time_date datetime NULL DEFAULT current_timestamp(),
-            fnum varchar(28) CHARSET UTF8 NOT NULL,
-            user int(11) NULL,
-            PRIMARY KEY (id),
-            UNIQUE KEY fnum (fnum)
-            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
-            $db->setQuery($query);
-            $db->execute();
-
-            // Add constraints
-            $query = "ALTER TABLE jos_emundus_" . $prid . "_declare
-            ADD CONSTRAINT jos_emundus_" . $prid . "_declare_ibfk_1
-            FOREIGN KEY (user) REFERENCES jos_emundus_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE;";
-            $db->setQuery($query);
-            $db->execute();
-
-            $query = "ALTER TABLE jos_emundus_" . $prid . "_declare
-            ADD CONSTRAINT jos_emundus_" . $prid . "_declare_ibfk_2
-            FOREIGN KEY (fnum) REFERENCES jos_emundus_campaign_candidature (fnum) ON DELETE CASCADE ON UPDATE CASCADE;";
-            $db->setQuery($query);
-            $db->execute();
-
-            $query = "CREATE INDEX user
-            ON jos_emundus_" . $prid . "_declare (user);";
-            $db->setQuery($query);
-            $db->execute();
-            //
-
             // INSERT FABRIK LIST
             $query = $db->getQuery(true);
             $query->select('*')
@@ -992,9 +961,9 @@ class EmundusonboardModelformbuilder extends JModelList {
                 } elseif ($key == 'form_id') {
                     $query->set($key . ' = ' . $db->quote($formid));
                 } elseif ($key == 'db_table_name') {
-                    $query->set($key . ' = ' . $db->quote('jos_emundus_' . $prid . '_declare'));
+                    $query->set($key . ' = ' . $db->quote('jos_emundus_declaration'));
                 } elseif ($key == 'db_primary_key') {
-                    $query->set($key . ' = ' . $db->quote('jos_emundus_' . $prid . '_declare.id'));
+                    $query->set($key . ' = ' . $db->quote('jos_emundus_declaration.id'));
                 }
             }
             $db->setQuery($query);
