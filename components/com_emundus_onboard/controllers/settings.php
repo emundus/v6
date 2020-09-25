@@ -502,11 +502,17 @@ class EmundusonboardControllersettings extends JControllerLegacy {
                 $config = JFactory::getConfig();
                 $sitename = strtolower(str_replace(array('=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%'),'_',$config->get('sitename')));
 
+                $path = $image["name"];
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
+
                 $target_dir = "images/custom/" . $sitename . "/";
                 if(!file_exists($target_dir)){
                     mkdir($target_dir);
                 }
-                $target_file = $target_dir . $image["name"];
+
+                do{
+                    $target_file = $target_dir . rand(1000,90000) . '.' . $ext;
+                } while (file_exists($target_file));
 
                 if (move_uploaded_file($image["tmp_name"], $target_file)) {
                     echo json_encode(array('location' => $target_file));
