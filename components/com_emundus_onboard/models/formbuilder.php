@@ -156,7 +156,31 @@ class EmundusonboardModelformbuilder extends JModelList {
             'show_label_in_rss_feed' => 0,
             'use_as_rss_enclosure' => 0,
             'rollover' => '',
-            'validations' => array(),
+            'validations' => array(
+                'plugin' => array(
+                    "notempty",
+                ),
+                'plugin_published' => array(
+                    "1",
+                ),
+                'validate_in' => array(
+                    "both",
+                ),
+                'validation_on' => array(
+                    "both",
+                ),
+                'validate_hidden' => array(
+                    "1",
+                ),
+                'must_validate' => array(
+                    "0",
+                ),
+                'show_icon' => array(
+                    "1",
+                ),
+            ),
+            'notempty-message' => array(),
+            'notempty-validation_condition' => array(),
             'tipseval' => 0,
             'tiplocation' => 'top-left',
             'labelindetails' => 0,
@@ -1463,7 +1487,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->set($db->quoteName('width') . ' = 0')
                 ->set($db->quoteName('default') . ' = ' . $db->quote($default))
                 ->set($db->quoteName('hidden') . ' = 0')
-                ->set($db->quoteName('eval') . ' = 0')
+                ->set($db->quoteName('eval') . ' = 1')
                 ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
                 ->set($db->quoteName('parent_id') . ' = 0')
                 ->set($db->quoteName('published') . ' = 1')
