@@ -306,7 +306,7 @@ export default {
   },
   methods: {
     // Elements update
-    async updateElementsOrder(group, list) {
+    async updateElementsOrder(group, list, elt) {
       var elements = list.map((element, index) => {
         return { id: element.id, order: index + 1 };
       });
@@ -335,15 +335,16 @@ export default {
               this.$set(this.object_json.Groups['group_' + grp.group_id], 'elements', r.data.Groups['group_' + grp.group_id].elements)
           });
         });
+        elt.group_id = group;
       }).catch(e => {
-        this.$emit(
+        /*this.$emit(
                 "show",
                 "foo-velocity",
                 "error",
                 this.orderFailed,
                 this.updating
         );
-        console.log(e);
+        console.log(e);*/
       });
     },
 
@@ -1083,7 +1084,7 @@ export default {
       this.groups.forEach(group => {
         group.elts.forEach(element => {
           if(element.id == elt_id){
-            this.updateElementsOrder(group.group_id,group.elts);
+            this.updateElementsOrder(group.group_id,group.elts, element);
           }
         })
       });
