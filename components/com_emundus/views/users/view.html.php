@@ -167,8 +167,6 @@ class EmundusViewUsers extends JViewLegacy {
 			die("ACCESS_DENIED");
 		}
 
-
-
 		$layout = JFactory::getApplication()->input->getString('layout', null);
 		switch ($layout) {
 			case 'user':
@@ -195,7 +193,7 @@ class EmundusViewUsers extends JViewLegacy {
                 $gid = JFactory::getApplication()->input->getInt('rowid', null);
                 $m_actions = new EmundusModelActions;
 				$m_actions->syncAllActions(false, $gid);
-				$this->_loadGroupRights();
+				$this->_loadGroupRights($gid);
 				break;
 			default :
 				@EmundusHelperFiles::clear();
