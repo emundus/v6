@@ -173,7 +173,7 @@ class PlgFabrik_FormEmundusAssignToUsers extends plgFabrik_Form {
 		}
 
 		// Get the value in a comma separated format.
-		$fk_value = $jinput->post->get($fk_field.'_raw') ?: (is_array($jinput->post->get($fk_field)) ? implode(',',$jinput->post->get($fk_field)): $jinput->post->get($fk_field));
+		$fk_value = $jinput->post->getString($fk_field.'_raw') ?: (is_array($jinput->post->getString($fk_field)) ? implode(',',$jinput->post->getString($fk_field)): $jinput->post->getString($fk_field));
 
 		// The list of users to assign can come from 3 different methods based on how we build the Fabrik form.
 		switch ($assignment_rule) {
