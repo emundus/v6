@@ -29,20 +29,22 @@ class EmundusViewProgramme extends JViewLegacy
 
         $app = JFactory::getApplication();
         $jinput = $app->input;
-        $itemid = $jinput->get('Itemid', 0, 'int');
-        $menu_params = $model->getParams($itemid);
+        $menu_params = $app->getMenu()->getActive()->params;
+
 
         $this->com_emundus_programme_progdesc_class = '';
         $this->com_emundus_programme_campdesc_class = '';
         $this->com_emundus_programme_showcampaign = '0';
         $this->com_emundus_programme_showprogramme ='1';
         $this->com_emundus_programme_showlink ='0';
-        $this->com_emundus_programme_showprogramme = $menu_params['com_emundus_programme_showprogramme'];
-        $this->com_emundus_programme_showcampaign = $menu_params['com_emundus_programme_showcampaign'];
-        $this->com_emundus_programme_progdesc_class = $menu_params['com_emundus_programme_progdesc_class'];
-        $this->com_emundus_programme_campdesc_class = $menu_params['com_emundus_programme_campdesc_class'];
-        $this->com_emundus_programme_showlink = $menu_params['com_emundus_programme_showlink'];
-        $this->com_emundus_programme_showlink_class = $menu_params['com_emundus_programme_showlink_class'];
+        $this->com_emundus_programme_showprogramme = $menu_params->get('com_emundus_programme_showprogramme');
+        $this->com_emundus_programme_showcampaign = $menu_params->get('com_emundus_programme_showcampaign');
+        $this->com_emundus_programme_progdesc_class = $menu_params->get('com_emundus_programme_progdesc_class');
+        $this->com_emundus_programme_campdesc_class = $menu_params->get('com_emundus_programme_campdesc_class');
+        $this->com_emundus_programme_showlink = $menu_params->get('com_emundus_programme_showlink');
+        $this->com_emundus_programme_showlink_class = $menu_params->get('com_emundus_programme_showlink_class');
+        $this->com_emundus_programme_candidate_link = $menu_params->get('com_emundus_programme_candidate_link', 'index.php?option=com_fabrik&amp;view=form&amp;formid=307&amp;Itemid=2700');
+
 
         $idcampaign = $jinput->get('id', 0, 'int');
         $campaign = $model->getCampaign($idcampaign);

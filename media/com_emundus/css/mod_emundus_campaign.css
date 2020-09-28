@@ -130,7 +130,7 @@
     .campaingapply {
         float: right !important;
         background-color: #e1edfa;
-        color: #5476a4;
+        color: #000;
         border: 1px #5476a4;
     }
 
@@ -142,13 +142,13 @@
 
     .campaingapply.blue {
         background-color: #e1edfa;
-        color: #5476a4;
+        color: #000;
         border: #5476a4;
     }
 
     .campaingapply.orange {
         background-color: #e1edfa;
-        color: #E87E04;
+        color: #000;
         border: #E87E04;
     }
 
@@ -409,7 +409,7 @@ ul, ol {
 }
 
 .navorder p {
-    padding-top: 10px;
+    padding-top: 0px;
     text-align: right;
 }
 
@@ -621,7 +621,8 @@ button.btn.btn-default.sch {
     background-color: #fff !important;
     border-radius: 0 !important;
     border-left: 1px solid #d5d5d5 !important;
-    padding-left: 20px !important;
+    padding-left: 10px !important;
+    min-height: 10em !important;
 }
 
 .right-side hr {
@@ -629,7 +630,7 @@ button.btn.btn-default.sch {
 }
 
 .campaigns-list .below-content a {
-    width: 14.3%;
+    width: auto;
     font-size: 14px;
     justify-content: center;
     font-weight: 400;
@@ -668,17 +669,18 @@ button.btn.btn-default.sch {
     }
 
     .campaigns-list .campaignbymonth .campaign-month-label .position-me {
-        top: 0px;
+        top: 0px !important;
     }
 
-    .campaigns-list .campaignbymonth .campaign-month-label .position-me .rotate-me.blue {
-        width: calc(100% - 16px);
+    .campaigns-list .campaignbymonth .campaign-month-label .position-me .rotate-me.blue,   .campaigns-list .campaignbymonth .campaign-month-label .position-me .rotate-me.orange {
+        transform: rotate(180deg) !important;
+        padding-left: 60px !important;
         margin: 0 auto;
     }
 
-    .left-side,
-    .right-side {
-        width: 100%;
+    .campaign-content .left-side,
+    .campaign-content .right-side {
+        width: 100% !important;
     }
 
     .right-side {

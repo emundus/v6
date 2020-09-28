@@ -25,7 +25,7 @@ try {
 	if (!empty($db->loadResult()))
 		return false;
 } catch (Exception $e) {
-	JLog::add('Error adding catid to the new municipality at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	JLog::add('Error adding catid to the new municipality at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	return false;
 }
 
@@ -65,5 +65,5 @@ $db->setQuery($query);
 try {
 	$db->execute();
 } catch (Exception $e) {
-	JLog::add('Error adding catid to the new municipality at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	JLog::add('Error adding catid to the new municipality at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 }

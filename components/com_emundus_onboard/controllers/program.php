@@ -41,14 +41,14 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 	        $m_prog = $this->model;
 
 	        $jinput = JFactory::getApplication()->input;
-	        $filter = $jinput->get->get('filter');
-	        $sort = $jinput->get->get('sort');
-	        $recherche = $jinput->get->get('recherche');
-	        $lim = $jinput->get->get('lim');
-	        $page = $jinput->get->get('page');
-            $programs = $m_prog->getAllPrograms($user->id, $lim, $page, $filter, $sort, $recherche);
+	        $filter = $jinput->getString('filter');
+	        $sort = $jinput->getString('sort');
+	        $recherche = $jinput->getString('recherche');
+	        $lim = $jinput->getInt('lim');
+	        $page = $jinput->getInt('page');
+            $programs = $m_prog->getAllPrograms($lim, $page, $filter, $sort, $recherche);
 
-            if (count($programs) > 0) {
+            if (count((array)$programs) > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $programs);
             } else {
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'), 'data' => $programs);
@@ -68,10 +68,10 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 
         	$m_prog = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $filterCount = $jinput->get->get('filterCount');
-	        $rechercheCount = $jinput->get->get('rechercheCount');
+	        $filterCount = $jinput->getString('filterCount');
+	        $rechercheCount = $jinput->getString('rechercheCount');
 
-            $programs = $m_prog->getProgramCount($user->id, $filterCount, $rechercheCount);
+            $programs = $m_prog->getProgramCount($filterCount, $rechercheCount);
 
             $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $programs);
         }
@@ -88,7 +88,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $id = $jinput->get->get('id');
+	        $id = $jinput->getInt('id');
 	        $m_prog = $this->model;
             $program = $m_prog->getProgramById($id);
 
@@ -105,7 +105,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
     public function createprogram() {
         $user = JFactory::getUser();
 
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusonboardHelperAccess::isCoordinator($user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
@@ -136,7 +136,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
         } else {
 	        $jinput = JFactory::getApplication()->input;
 	        $data = $jinput->getRaw('body');
-	        $code = $jinput->getRaw('code');
+	        $code = $jinput->getString('code');
 	        $m_prog = $this->model;
             $result = $m_prog->updateProgram($code, $data);
 
@@ -159,7 +159,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->getRaw('id');
+	        $data = $jinput->getInt('id');
 	        $m_prog = $this->model;
             $result = $m_prog->deleteProgram($data);
 
@@ -181,7 +181,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->getRaw('id');
+	        $data = $jinput->getInt('id');
 	        $m_prog = $this->model;
             $result = $m_prog->unpublishProgram($data);
 
@@ -203,7 +203,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->getRaw('id');
+	        $data = $jinput->getInt('id');
 	        $m_prog = $this->model;
             $result = $m_prog->publishProgram($data);
 
@@ -245,7 +245,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
         } else {
 	        $jinput = JFactory::getApplication()->input;
 	        $m_prog = $this->model;
-	        $group = $jinput->get->get('group');
+	        $group = $jinput->getInt('group');
             $users = $m_prog->getuserstoaffect($group);
             if (!empty($users)) {
                 $tab = array('status' => 1, 'msg' => JText::_('MANAGERS_RETRIEVED'), 'data' => $users);
@@ -267,8 +267,8 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 
         	$jinput = JFactory::getApplication()->input;
 	        $m_prog = $this->model;
-	        $group = $jinput->get->get('group');
-	        $term = $jinput->get->get('term');
+	        $group = $jinput->getInt('group');
+	        $term = $jinput->getString('term');
             $users = $m_prog->getuserstoaffectbyterm($group,$term);
 
             if (!empty($users)) {
@@ -291,7 +291,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 
 	        $jinput = JFactory::getApplication()->input;
 	        $m_prog = $this->model;
-	        $group = $jinput->get->get('group');
+	        $group = $jinput->getInt('group');
             $managers = $m_prog->getManagers($group);
 
             if (!empty($managers)) {
@@ -314,7 +314,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 
 	        $jinput = JFactory::getApplication()->input;
 	        $m_prog = $this->model;
-	        $group = $jinput->get->get('group');
+	        $group = $jinput->getInt('group');
             $evaluators = $m_prog->getEvaluators($group);
 
             if (!empty($evaluators)) {
@@ -337,21 +337,17 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 
 	        $m_prog = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $group = $jinput->getRaw('group');
-	        $profile = $jinput->getInt('profile');
-	        $email = $jinput->getRaw('email');
+	        $group = $jinput->getInt('group');
+	        $prog_group = $jinput->getInt('prog_group');
+	        $email = $jinput->getString('email');
 
-            if ($profile == 5) {
-                $changeresponse = $m_prog->affectusertomanagergroups($group, $email);
-            } else {
-                $changeresponse = $m_prog->affectusertoevaluatorgroups($group, $email);
-            }
+	        $changeresponse = $m_prog->affectusertogroups($group, $email, $prog_group);
         }
         echo json_encode((object)$changeresponse);
         exit;
     }
 
-    public function affectuserstomanagergroup() {
+    public function affectuserstogroup() {
         $user = JFactory::getUser();
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -361,16 +357,17 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 
 	        $m_prog = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $group = $jinput->getRaw('group');
+	        $group = $jinput->getInt('group');
+	        $prog_group = $jinput->getInt('prog_group');
 	        $managers = $jinput->getRaw('users');
 
-            $changeresponse = $m_prog->affectuserstomanagergroup($group, $managers);
+            $changeresponse = $m_prog->affectuserstogroup($group, $managers, $prog_group);
         }
         echo json_encode((object)$changeresponse);
         exit;
     }
 
-    public function affectuserstoevaluatorgroup() {
+    public function removefromgroup() {
         $user = JFactory::getUser();
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -380,48 +377,11 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 
 	        $m_prog = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $group = $jinput->getRaw('group');
-	        $evaluators = $jinput->getRaw('users');
+	        $userid = $jinput->getInt('id');
+	        $group = $jinput->getInt('group');
+	        $prog_group = $jinput->getInt('prog_group');
 
-            $changeresponse = $m_prog->affectuserstoevaluatorgroup($group, $evaluators);
-        }
-        echo json_encode((object)$changeresponse);
-        exit;
-    }
-
-    public function removefrommanagergroup() {
-        $user = JFactory::getUser();
-
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-
-	        $m_prog = $this->model;
-	        $jinput = JFactory::getApplication()->input;
-	        $userid = $jinput->getRaw('id');
-	        $group = $jinput->getRaw('group');
-
-            $changeresponse = $m_prog->removefrommanagergroup($userid, $group);
-        }
-        echo json_encode((object)$changeresponse);
-        exit;
-    }
-
-    public function removefromevaluatorgroup() {
-        $user = JFactory::getUser();
-
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-
-	        $m_prog = $this->model;
-	        $jinput = JFactory::getApplication()->input;
-	        $userid = $jinput->getRaw('id');
-	        $group = $jinput->getRaw('group');
-
-            $changeresponse = $m_prog->removefromevaluatorgroup($userid, $group);
+            $changeresponse = $m_prog->removefromgroup($userid, $group, $prog_group);
         }
         echo json_encode((object)$changeresponse);
         exit;
@@ -436,7 +396,10 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
         } else {
 
         	$m_prog = $this->model;
-            $users = $m_prog->getusers();
+            $jinput = JFactory::getApplication()->input;
+            $filters = $jinput->getRaw('filters');
+            $page = $jinput->getRaw('page');
+            $users = $m_prog->getusers($filters,$page['page']);
 
             if (!empty($users)) {
                 $tab = array('status' => 1, 'msg' => JText::_('USERS_RETRIEVED'), 'data' => $users);
@@ -477,7 +440,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $term = $jinput->get->get('term');
+	        $term = $jinput->getString('term');
 	        $m_prog = $this->model;
 
             $users = $m_prog->searchuserbytermwithoutapplicants($term);
@@ -501,9 +464,9 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 
 	        $m_prog = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $visibility = $jinput->getRaw('visibility');
-	        $cid = $jinput->getRaw('cid');
-	        $gid = $jinput->getRaw('gid');
+	        $visibility = $jinput->getBool('visibility');
+	        $cid = $jinput->getInt('cid');
+	        $gid = $jinput->getInt('gid');
 
             $changeresponse = $m_prog->updateVisibility($cid,$gid,$visibility);
         }
@@ -521,7 +484,7 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 
 	        $jinput = JFactory::getApplication()->input;
 	        $m_prog = $this->model;
-	        $pid = $jinput->get->get('pid');
+	        $pid = $jinput->getInt('pid');
 
             $grid = $m_prog->getEvaluationGrid($pid);
             if ($grid) {
@@ -565,11 +528,11 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 
 	        $m_prog = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $label = $jinput->getRaw('label');
-	        $intro = $jinput->getRaw('intro');
-	        $modelid = $jinput->getRaw('modelid');
-	        $template = $jinput->getRaw('template');
-	        $pid = $jinput->getRaw('pid');
+	        $label = $jinput->getString('label');
+	        $intro = $jinput->getString('intro');
+	        $modelid = $jinput->getInt('modelid');
+	        $template = $jinput->getBool('template');
+	        $pid = $jinput->getInt('pid');
 
             if ($modelid != -1) {
                 $changeresponse = $m_prog->createGridFromModel($label, $intro, $modelid, $pid);
@@ -591,8 +554,8 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 
 	        $m_prog = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $group = $jinput->getRaw('group');
-	        $pid = $jinput->getRaw('pid');
+	        $group = $jinput->getInt('group');
+	        $pid = $jinput->getInt('pid');
 
             $changeresponse = $m_prog->affectGroupToProgram($group, $pid);
         }
@@ -611,12 +574,31 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
 
 	        $m_prog = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $group = $jinput->getRaw('group');
-	        $pid = $jinput->getRaw('pid');
+	        $group = $jinput->getInt('group');
+	        $pid = $jinput->getInt('pid');
 
             $changeresponse = $m_prog->deleteGroupFromProgram($group, $pid);
         }
         echo json_encode((object)$changeresponse);
+        exit;
+    }
+
+    public function getgroupsbyprograms() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_prog = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $programs = $jinput->getRaw('programs');
+            $groups = $m_prog->getGroupsByPrograms($programs);
+
+            $tab = array('status' => 1, 'msg' => JText::_('GRID_RETRIEVED'), 'groups' => $groups);
+        }
+        echo json_encode((object)$tab);
         exit;
     }
 }

@@ -46,7 +46,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			$state = $this->db->loadResult();
 		} catch (Exception $e) {
-			JLog::add('Error getting cifre links in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting cifre links in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		}
 
 		if (!empty($state)) {
@@ -63,7 +63,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			$state = $this->db->loadResult();
 		} catch (Exception $e) {
-			JLog::add('Error getting cifre links in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting cifre links in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -98,7 +98,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			return $this->db->loadObject();
 		} catch (Exception $e) {
-			JLog::add('Error getting offers by user in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting offers by user in m/cifre at query '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -111,7 +111,7 @@ class EmundusModelCifre extends JModelList {
 	 * @return Mixed An array of objects, indexed by fnum in order to avoid duplicates.
 	 */
 	function getOffersByUser($user_id, $fnum = null) {
-		
+
 		// This is custom code, we need to make this able to work for everyone.
 		$query = $this->db->getQuery(true);
 
@@ -167,7 +167,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			$contact = $this->db->loadAssocList();
 		} catch (Exception $e) {
-			JLog::add('Error getting cifre links in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting cifre links in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			$contact = [];
 		}
 
@@ -186,7 +186,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			$contact = array_merge($contact, $this->db->loadAssocList());
 		} catch (Exception $e) {
-			JLog::add('Error getting cifre links in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting cifre links in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -229,7 +229,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			return $this->db->loadAssocList();
 		} catch (Exception $e) {
-			JLog::add('Error getting cifre links in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting cifre links in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -260,7 +260,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Error getting offers to user in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting offers to user in m/cifre at query '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -291,7 +291,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Error getting offers to user in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting offers to user in m/cifre at query '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -324,7 +324,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Error getting offers between two users in m/cifre at query '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting offers between two users in m/cifre at query '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -371,7 +371,7 @@ class EmundusModelCifre extends JModelList {
 			$dispatcher->trigger('onAfterNewContactRequest', [$user_to, $user_from, $fnum_to, $fnum_from]);
 			return true;
 		} catch (Exception $e) {
-			JLog::add('Error adding cifre link in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error adding cifre link in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -398,7 +398,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			return $this->db->loadResult();
 		} catch (Exception $e) {
-			JLog::add('Error getting cifre link in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting cifre link in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -430,7 +430,7 @@ class EmundusModelCifre extends JModelList {
 			$dispatcher->trigger('onAfterAcceptContactRequest', [$user1, $user2, $fnum]);
 			return true;
 		} catch (Exception $e) {
-			JLog::add('Error updating cifre link in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error updating cifre link in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -461,7 +461,7 @@ class EmundusModelCifre extends JModelList {
 			$dispatcher->trigger('onAfterDeleteContactRequest', [$user1, $user2, $fnum]);
 			return true;
 		} catch (Exception $e) {
-			JLog::add('Error deleting cifre link in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error deleting cifre link in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -488,7 +488,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			$user = $this->db->loadObject();
 		} catch (Exception $e) {
-			JLog::add('Error getting emundus user info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting emundus user info in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -506,7 +506,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			return $this->db->loadObject();
 		} catch (Exception $e) {
-			JLog::add('Error getting lab info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting lab info in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -541,7 +541,7 @@ class EmundusModelCifre extends JModelList {
 			}
 
 		} catch (Exception $e) {
-			JLog::add('Error getting emundus user info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting emundus user info in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -569,7 +569,7 @@ class EmundusModelCifre extends JModelList {
         try {
             return $this->db->loadResult();
         } catch (Exception $e) {
-            JLog::add('Error getting emundus user info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting emundus user info in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -596,7 +596,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			$user = $this->db->loadObject();
 		} catch (Exception $e) {
-			JLog::add('Error getting emundus user info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting emundus user info in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -614,7 +614,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			return $this->db->loadObject();
 		} catch (Exception $e) {
-			JLog::add('Error getting lab info in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting lab info in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -637,7 +637,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			return $this->db->loadObject();
 		} catch (Exception $e) {
-			JLog::add('Error getting CIFRE link by ID in m/CIFRE at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting CIFRE link by ID in m/CIFRE at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -664,7 +664,7 @@ class EmundusModelCifre extends JModelList {
 			$this->db->execute();
 			return true;
 		} catch (Exception $e) {
-			JLog::add('Error updating CIFRE link state in m/CIFRE at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error updating CIFRE link state in m/CIFRE at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -851,7 +851,7 @@ class EmundusModelCifre extends JModelList {
 			->from($this->db->quoteName('#__emundus_cifre_links'))
 			->where($this->db->quoteName('user_from').' = '.$sender.' AND '.$this->db->quoteName('user_to').' = '.$receiver.' AND '.$this->db->quoteName('user_to_notify').' = 1');
 		$this->db->setQuery($query);
-		
+
 		try {
 			$res = $this->db->loadResult();
 		} catch (Exception $e) {
@@ -908,7 +908,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			$departments = $this->db->loadColumn();
 		} catch (Exception $e) {
-			JLog::add('Error getting departments in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting departments in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		}
 
 		$query->clear()
@@ -921,7 +921,7 @@ class EmundusModelCifre extends JModelList {
 		try {
 			$thematics = $this->db->loadColumn();
 		} catch (Exception $e) {
-			JLog::add('Error getting thematics in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting thematics in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		}
 
 		// Dynamically build a WHERE based on information about the user.
@@ -972,7 +972,7 @@ class EmundusModelCifre extends JModelList {
 			$results = $this->db->loadObjectList();
 			shuffle($results);
 		} catch (Exception $e) {
-			JLog::add('Error getting cifre suggestions in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting cifre suggestions in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			$results = [];
 		}
 
@@ -1016,7 +1016,7 @@ class EmundusModelCifre extends JModelList {
 				shuffle($res);
 				$results = array_merge($results, $res);
 			} catch (Exception $e) {
-				JLog::add('Error getting cifre suggestions in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+				JLog::add('Error getting cifre suggestions in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1047,7 +1047,7 @@ class EmundusModelCifre extends JModelList {
         try {
             return $this->db->loadObject();
         } catch (Exception $e) {
-            JLog::add('Error getting cifre suggestions in m/cifre at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting cifre suggestions in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return false;
         }
 	}

@@ -28,20 +28,22 @@
 	padding-left:1%;
 }
 
+.g-back-office-emundus-tableau.indicateurs-page #g-page-surround #g-navigation #header-c .platform-content  {
+	width: auto !important;
+}
+
+
+
 .btnConsulter {
-	border-radius:0px!important;
-	background:#de6339!important;
+	border-radius:4px!important;
 	color:white!important;
-	border:1px solid #de6339!important;
 	padding:4px 12px!important;
 	white-space: normal;
 	display:inline-block;
 }
 .btnConsulter:hover {
-	border-radius:0px!important;
+	border-radius:4px!important;
 	background:transparent!important;
-	color:#de6339!important;
-	border:1px solid #de6339!important;
 	padding:4px 12px!important;
 	white-space: normal;
 	display:inline-block;
@@ -54,6 +56,10 @@
 	color:white!important;
 	font-size:12px;
 }
-.btnConsulter:hover a {
-	color:#de6339!important;
+
+
+@media all and (max-width: 959px) {
+	.indicateurs-page #g-main-mainbody {
+		padding: 0;
+	}
 }

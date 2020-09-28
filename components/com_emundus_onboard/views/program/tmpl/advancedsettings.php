@@ -13,6 +13,8 @@ $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_onboard/chunk-vendors.js');
 $document->addStyleSheet('media/com_emundus_onboard/app.css');
 
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+
 ## GLOBAL ##
 JText::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
 JText::script('COM_EMUNDUS_ONBOARD_ADD_CONTINUER');
@@ -20,6 +22,8 @@ JText::script('COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER');
 JText::script('COM_EMUNDUS_ONBOARD_ADD_QUITTER');
 JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_ADVANCED_SETTINGS');
 JText::script('COM_EMUNDUS_ONBOARD_MODIFY');
+JText::script('COM_EMUNDUS_ONBOARD_OK');
+JText::script('COM_EMUNDUS_ONBOARD_CANCEL');
 ## END ##
 
 ## FORMS ##
@@ -85,6 +89,8 @@ JText::script('COM_EMUNDUS_ONBOARD_EMAIL_PREVIEWMODEL');
 JText::script('COM_EMUNDUS_ONBOARD_THE_CANDIDATE');
 JText::script('COM_EMUNDUS_ONBOARD_MANUAL');
 JText::script('COM_EMUNDUS_ONBOARD_CHANGED_ACTION_STATUS');
+JText::script('COM_EMUNDUS_ONBOARD_CANDIDATE_ACTION');
+JText::script('COM_EMUNDUS_ONBOARD_MANAGER_ACTION');
 ## END ##
 
 ## USERS ##
@@ -159,12 +165,18 @@ JText::script('COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_WIDTH');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_HEIGHT');
 JText::script('COM_EMUNDUS_ONBOARD_TYPE_COMMENT');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_USE_ADVANCED_EDITOR');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_MAXLENGTH');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_CREATEDGROUPSUCCES');
 ## END ##
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0, 2);
+
+$user = JFactory::getUser();
+$coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
-<div id="em-addProgramAdvancedSettings-vue" prog="<?= $this->id ;?>" actualLanguage="<?= $actualLanguage ?>"></div>
+<div id="em-addProgramAdvancedSettings-vue" prog="<?= $this->id ;?>" actualLanguage="<?= $actualLanguage ?>" coordinatorAccess="<?= $coordinator_access ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>

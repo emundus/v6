@@ -1,33 +1,44 @@
-#g-navigation {
-    height: 80.6px;
+#user-registration fieldset  {
+    background: transparent;
+}
+#user-registration fieldset  p {
+    margin-bottom: 20px !important;
+    text-align: justify;
 }
 
-#g-navigation .g-container {
-    height: 80.6px;
+.view-reset #user-registration .controls {
+ width: 100%;
+    margin-left: 0px !important;
 }
 
-#g-navigation .g-container img.logo {
-    padding-top : 14px;
+.view-reset #user-registration .control-label {
+    width: 100%;
+   text-align: left !important;
 }
 
 form#user-registration.form-validate.form-horizontal.well,
 .reset-confirm .form-validate.form-horizontal.well,
 .reset-complete .form-validate.form-horizontal.well
 {
-    width: 50%;
+    width: 63%;
     margin-left: auto !important;
     margin-right: auto !important;
 }
 
+form#user-registration.form-validate.form-horizontal.well {
+    background: #fafafa;
+    border: none;
+    margin-top: 20px !important;
+}
 
 form#user-registration.form-validate.form-horizontal.well label,
 .reset-confirm .form-validate.form-horizontal.well label,
 .reset-complete .form-validate.form-horizontal.well  label
 {
     font-size: 14px;
+    margin-bottom: 5px !important;
+    font-weight: bold;
 }
-
-
 
 form#user-registration.form-validate.form-horizontal.well .control-group .controls button,
 .reset-confirm .form-validate.form-horizontal.well .control-group .controls button,
@@ -37,6 +48,12 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     height: 41px;
     text-transform: capitalize;
     margin-right:0;
+    border-radius: 0px;
+    padding: 8px 12px;
+    font-family: "Open Sans";
+    line-height: normal;
+    font-weight: 300;
+    font-size: 14px;
 }
 
 form#user-registration.form-validate.form-horizontal.well .control-group .controls input,
@@ -45,6 +62,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 {
     border-radius: 0px;
 }
+
 .view-reset .reset .page-header,
 .view-reset .reset-complete .page-header{
     display:flex;
@@ -52,17 +70,19 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     justify-content:center;
     align-items:center;
 }
-/*h1 {
-    width: 50%;
-    margin-right: auto !important;
-    margin-left: auto !important;
-    text-align: center;
+
+.view-reset .reset {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    background: #fafafa;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+    margin-bottom: 100px;
 }
-​
-​
-h1::after {
-    left: 146px !important;
-}*/
+
 #user-registration .required .star,
 .reset-confirm .required .star,
 .reset-complete .required .star
@@ -91,17 +111,84 @@ h1::after {
     }
 }
 @media all and (max-width: 767px) {
-    /*h1 {
-        width: 100%;
-    }*/
-    h1::after{
-        width:2.7rem!important;
+
+    .view-reset .reset .page-header {
+        width: 100% !important;
+        padding: 0px 15px;
     }
+
+    .view-reset .reset {
+        width: 100% !important;
+        padding-bottom: 0px !important;
+    }
+
     form#user-registration.form-validate.form-horizontal.well,
     .reset-confirm .form-validate.form-horizontal.well,
-    .reset-complete .form-validate.form-horizontal.well
-    {
+    .reset-complete .form-validate.form-horizontal.well {
         width: 100%;
     }
-    ​
+
+    .view-reset #g-navigation {
+        height: auto !important;
+    }
+
+    .view-reset #g-navigation .g-container {
+        height: auto !important;
+    }
+
+    .reset .form-validate.form-horizontal.well {
+        padding: 20px !important;
+    }
+
+    .remind .form-validate.form-horizontal.well, .reset .form-validate.form-horizontal.well  {
+        padding: 2rem 4rem 2rem 4rem;
+    }
+
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+    .view-reset .reset .page-header {
+        width: 78% !important;
+    }
+
+    form#user-registration.form-validate.form-horizontal.well,
+    .reset-confirm .form-validate.form-horizontal.well,
+    .reset-complete .form-validate.form-horizontal.well {
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 979px) {
+    .view-reset .reset .page-header {
+        width: 70% !important;
+    }
+}
+
+/* TEST TITRE MDPO */
+
+.view-reset .reset .page-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    flex-direction: row;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.view-reset .reset .page-header div.icon-title.resetpwd {
+    background-image: url(/components/com_emundus_onboard/src/assets/images/password.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.view-reset .reset .page-header div.icon-title {
+    margin-right: 10px;
+    width: 33px;
+    height: 35px;
+    background-position: 0 0;
+    background-size: contain;
+    -webkit-filter: brightness(.5);
+    filter: brightness(.5);
+    fill: grey;
 }

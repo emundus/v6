@@ -120,7 +120,7 @@ class PlgFabrik_FormEmunduscompletefilestatuschange extends plgFabrik_Form {
 		try {
 			$current_status = $db->loadResult();
 		} catch (Exception $e) {
-			JLog::add('Could not get file status at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Could not get file status at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -134,7 +134,7 @@ class PlgFabrik_FormEmunduscompletefilestatuschange extends plgFabrik_Form {
 				$db->execute();
 				return true;
 			} catch (Exception $e) {
-				JLog::add('Could not update file status at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+				JLog::add('Could not update file status at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 				return false;
 			}
 		}

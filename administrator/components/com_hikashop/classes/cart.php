@@ -658,6 +658,17 @@ class hikashopCartClass extends hikashopClass {
 			$query = 'INSERT INTO ' . hikashop_table('cart_product') . ' ('.implode(',', $columns).') VALUES ('.implode('), (', $sql_data).')';
 			$this->db->setQuery($query);
 			$this->db->execute();
+			if($product_options > 0) {
+				$query = 'UPDATE ' . hikashop_table('cart_product') . ' AS cp '.
+					' INNER JOIN ' . hikashop_table('cart_product') . ' AS cpp ON cp.cart_product_option_parent_id = cpp.cart_product_parent_id AND cp.cart_id = cpp.cart_id '.
+					' SET cp.cart_product_option_parent_id = cpp.cart_product_id, cpp.cart_product_parent_id = 0 '.
+					' WHERE cp.cart_product_option_parent_id > 0 '.
+						' AND cp.cart_product_option_parent_id < ' . (int)($product_options + 1) .
+						' AND cp.cart_id = ' . (int)$status .
+						' AND cp.cart_product_modified = ' . (int)$insert_timestamp;
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
 		}
 
 		$app->triggerEvent('onAfterCartSave', array( &$element ) );
@@ -1101,6 +1112,30 @@ class hikashopCartClass extends hikashopClass {
 			unset($product);
 		}
 
+		if(hikashop_level(2)) {
+			$fieldsClass = hikashop_get('class.field');
+			if(!empty($cart->cart_fields) && is_string($cart->cart_fields))
+				$cart->cart_fields = json_decode($cart->cart_fields);
+
+			$cart_fields = new stdClass();
+			if(!empty($cart->cart_fields))
+				$cart_fields = clone($cart->cart_fields);
+			$cart_fields->products =& $cart->products;
+
+			$cart->order_fields = $fieldsClass->getFields('frontcomp', $cart_fields, 'order');
+			unset($cart_fields->products);
+
+			$cart->item_fields = $this->loadFieldsForProducts($ids);
+			foreach($cart->item_fields as $field) {
+				$namekey = $field->field_namekey;
+				foreach($cart->products as $k => &$product) {
+					if(isset($product->$namekey) || !isset($cart->cart_products[$k]) || !isset($cart->cart_products[$k]->$namekey))
+						continue;
+					$product->$namekey = $cart->cart_products[$k]->$namekey;
+				}
+				unset($product);
+			}
+		}
 
 		foreach($cart->products as &$product) {
 			$product->cart_product_total_quantity = $product_quantities[$product->product_id];
@@ -1226,6 +1261,9 @@ class hikashopCartClass extends hikashopClass {
 			}
 		}
 
+		if(hikashop_level(1) && empty($cart->cart_coupon) && (empty($cart->cart_type) || $cart->cart_type != 'wishlist')) {
+			$this->loadAutoCoupon($cart);
+		}
 
 		if(!empty($cart->cart_coupon) && $cart->cart_type != 'wishlist') {
 			if(empty($discountClass))
@@ -1239,6 +1277,9 @@ class hikashopCartClass extends hikashopClass {
 
 			$cart->coupon = $discountClass->loadAndCheck($cart->cart_coupon, $cart->full_total, $parent_zones, $cart->products, true);
 
+			if(empty($cart->coupon) && hikashop_level(1) && $this->loadAutoCoupon($cart)) {
+				$cart->coupon = $discountClass->loadAndCheck($cart->cart_coupon, $cart->full_total, $parent_zones, $cart->products, true);
+			}
 			if(!empty($cart->coupon)) {
 				$cart->full_total =& $cart->coupon->total;
 			} else {
@@ -1417,6 +1458,69 @@ class hikashopCartClass extends hikashopClass {
 			unset($total->prices[0]->taxes);
 	}
 
+	protected function loadAutoCoupon(&$cart) {
+		if(!hikashop_level(1))
+			return false;
+		if(!empty($cart->cart_type) && $cart->cart_type == 'wishlist')
+			return false;
+
+		$zone_id = $cart->package['zone'];
+
+		if(!empty($cart->cart_coupon)) {
+			if(empty($cart->cart_params->coupon_autoloaded))
+				return false;
+
+			$auto_coupon_key = $this->generateHash($cart->products, $zone_id);
+			if($cart->cart_params->coupon_autoloaded == $auto_coupon_key)
+				return false;
+		}
+
+		$filters = array(
+			'discount_type = ' . $this->db->Quote('coupon'),
+			'discount_published = 1',
+			'discount_auto_load = 1'
+		);
+		hikashop_addACLFilters($filters, 'discount_access');
+
+		$query = 'SELECT * '.
+			' FROM ' . hikashop_table('discount').
+			' WHERE (' . implode(') AND (', $filters) . ')'.
+			' ORDER BY discount_minimum_order DESC, discount_minimum_products DESC';
+		$this->db->setQuery($query);
+		$coupons = $this->db->loadObjectList();
+		if(empty($coupons))
+			return;
+
+		$discountClass = hikashop_get('class.discount');
+		$zoneClass = hikashop_get('class.zone');
+		$zones = $zoneClass->getZoneParents($zone_id);
+
+		foreach($coupons as $coupon) {
+			if(!$discountClass->check($coupon, $cart->total, $zones, $cart->products, false))
+				continue;
+
+			$auto_coupon_key = $this->generateHash($cart->products, $zone_id);
+
+			$cart->cart_params->coupon_autoloaded = $auto_coupon_key;
+
+			$this->app->setUserState(HIKASHOP_COMPONENT.'.auto_coupon_key', $auto_coupon_key);
+			$this->app->setUserState(HIKASHOP_COMPONENT.'.coupon_code', '');
+
+			$query = 'UPDATE '.hikashop_table('cart') .
+				' SET cart_coupon = '.$this->db->Quote($coupon->discount_code).', cart_params = '.$this->db->Quote(json_encode($cart->cart_params)) .
+				' WHERE cart_id = '.(int)$cart->cart_id;
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			self::$cache['get'][$cart->cart_id]->cart_coupon = $coupon->discount_code;
+			self::$cache['get'][$cart->cart_id]->cart_params->coupon_autoloaded = $auto_coupon_key;
+
+			$cart->cart_coupon = $coupon->discount_code;
+			break;
+		}
+
+		return !empty($cart->cart_coupon);
+	}
 
 	public function &loadFullCart($additionalInfos = false, $keepEmptyCart = false, $skipChecks = false) {
 		return $this->getFullCart(0);
@@ -1608,8 +1712,97 @@ class hikashopCartClass extends hikashopClass {
 		$this->loadRefPrices($ref_prices, $currency_id, $product_ids);
 
 		$fields = null;
+		if(hikashop_level(2)) {
+			$fields = $this->loadFieldsForProducts($product_ids, $options['fields_area']);
+			foreach($fields as $k => $field){
+				if($field->field_type == 'customtext')
+					unset($fields[$k]);
+			}
+
+			foreach($products as $k => &$p) {
+				if(empty($p['id']))
+					continue;
+
+				$oldData = new stdClass();
+				$oldData->product_id = $p['id'];
+
+				if(!empty($p['fields'])) {
+					foreach($p['fields'] as $k => $v) {
+						$oldData->$k = $v;
+					}
+				}
+
+
+				$data = new stdClass();
+				$ok = $this->fieldClass->checkFieldsData($fields, $p['fields'], $data, 'item', $oldData);
+
+				if(!$ok) {
+					unset($p['fields']);
+					if(!empty($this->fieldClass->error_fields)) {
+						foreach($this->fieldClass->error_fields as $error_field){
+							if(!empty($error_field->field_options['errormessage']))
+								$message = $this->fieldClass->trans($error_field->field_options['errormessage']);
+							else
+								$message = JText::sprintf('FIELD_VALID', $this->fieldClass->trans($error_field->field_realname));
+							$this->addMessage($cart, array(
+								'msg' => $message,
+								'product_id' => $p['id'],
+								'type' => 'error'
+							));
+						}
+					}
+					$p['qty'] = 0;
+
+					unset($p['options']);
+				} else
+					$p['fields'] = get_object_vars($data);
+
+				unset($data);
+				unset($oldData);
+			}
+			unset($p);
+		}
 
 		$cart_product_options = array();
+		$product_option_ids = array();
+		if((int)$this->config->get('group_options', 0) == 1) {
+			foreach($cart->cart_products as $cart_product) {
+				if(empty($cart_product->cart_product_id) || (is_string($cart_product->cart_product_id) && substr($cart_product->cart_product_id, 0, 1) == 'p'))
+					continue;
+
+				$cpopid = $cart_product->cart_product_option_parent_id;
+				if(empty($cpopid))
+					continue;
+				if(empty($cart_product_options[$cpopid]))
+					$cart_product_options[$cpopid] = array();
+				$parent_qty = isset($cart->cart_products[$cpopid]) ? (int)$cart->cart_products[$cpopid]->cart_product_quantity : 0;
+				$cart_product_options[$cpopid][$cart_product->cart_product_id] = array(
+					'id' => $cart_product->product_id,
+					'qty' => $cart_product->cart_product_quantity,
+					'coef' => ($cart_product->cart_product_quantity / max($parent_qty, 1))
+				);
+				$product_option_ids[] = $cart_product->product_id;
+			}
+		} else {
+			$extracted_options = array();
+			foreach($products as $k => &$p) {
+				if(empty($p['options']))
+					continue;
+				foreach($p['options'] as $o) {
+					if(isset($extracted_options[$o['id']]))
+						$extracted_options[$o['id']]['qty'] += $o['qty'];
+					else
+						$extracted_options[$o['id']] = $o;
+				}
+				$p['options'] = array();
+			}
+			unset($p);
+			if(!empty($extracted_options))
+				$products = array_merge($products, array_values($extracted_options));
+			$product_option_ids = array_keys($extracted_options);
+		}
+		if(!empty($product_option_ids))
+			$this->loadRefPrices($ref_prices, $currency_id, $product_option_ids);
 
 		foreach($products as $k => $p) {
 			if(!empty($cart->cart_products)) {
@@ -1642,6 +1835,18 @@ class hikashopCartClass extends hikashopClass {
 				$cart_product->cart_product_ref_price = null;
 
 				unset($cart_product);
+				if(empty($cart_product_options[ $p['pid'] ]))
+					continue;
+
+				foreach($cart_product_options[ $p['pid'] ] as $option_pid => $option) {
+					$cart_product =& $cart->cart_products[$option_pid];
+
+					$cart_product->cart_product_quantity += (int)$p['qty'] * (int)$option['coef'];
+					$cart_product->cart_product_modified = time();
+					$cart_product->cart_product_ref_price = @$ref_prices[ $p['id'] ];
+
+					unset($cart_product);
+				}
 				continue;
 			}
 
@@ -1653,6 +1858,38 @@ class hikashopCartClass extends hikashopClass {
 			$cart_product->cart_product_quantity = (int)$p['qty']; //$product_data;
 			$cart_product->cart_product_modified = time();
 			$cart_product->cart_product_ref_price = @$ref_prices[ $p['id'] ];
+			if(hikashop_level(2) && !empty($p['fields'])) {
+				foreach($p['fields'] as $k => $v) {
+					$cart_product->$k = $v;
+				}
+			}
+			if(!empty($p['options'])) {
+				$cart_product->options = array();
+				foreach($p['options'] as $opt) {
+					if(empty($opt['qty']) || (int)$opt['qty'] <= 0)
+						$opt['qty'] = 1;
+
+					$product_option = new stdClass();
+					$product_option->product_id = (int)$opt['id'];
+					if(!empty($opt['coef']) && (int)$opt['coef'] > 0)
+						$product_option->cart_product_quantity = (int)$p['qty'] * (int)$opt['coef'];
+					else
+						$product_option->cart_product_quantity = (int)$opt['qty'];
+					$product_option->cart_product_modified = time();
+					$cart_product->cart_product_ref_price = @$ref_prices[ $opt['id'] ];
+
+					$cart_product->options[] = $product_option;
+				}
+			}
+
+			if(!empty($p['wishlist'])) {
+				$wishlist = $this->get( (int)$p['wishlist'] );
+				if(!empty($wishlist) && $wishlist->cart_type == 'wishlist') {
+					$cart_product->cart_product_wishlist_id = -(int)$p['wishlist'];
+					if(!empty($p['wishlist_product']) && isset($wishlist->cart_products[(int)$p['wishlist_product']]))
+						$cart_product->cart_product_wishlist_product_id = (int)$p['wishlist_product'];
+				}
+			}
 			if(!empty($p['extra']))
 				$cart_product->extra = $p['extra'];
 			$cart->cart_products[] = $cart_product;
@@ -1664,12 +1901,61 @@ class hikashopCartClass extends hikashopClass {
 	protected function compareCartProducts($p, $cart_product, $cart_product_options = null, $fields = null) {
 		if(!isset($p['id']) || $cart_product->product_id != $p['id'])
 			return false;
+		if(!empty($p['fields']) || !empty($fields)) {
+			if(!empty($p['fields'])){
+				foreach($p['fields'] as $k => $v) {
+					if($cart_product->$k != $v)
+						return false;
+				}
+			}
+
+			if(!empty($fields)){
+				foreach($fields as $field) {
+					$namekey = $field->field_namekey;
+					if(!empty($cart_product->$namekey) && (!isset($p['fields'][$namekey]) || $cart_product->$namekey != $p['fields'][$namekey]))
+						return false;
+				}
+			}
+		}
 		if(!empty($p['extra'])) {
 			$do = true;
 			JPluginHelper::importPlugin('hikashop');
 			$app = JFactory::getApplication();
 			$app->triggerEvent('onCompareCartProducts', array( $p, $cart_product, &$do ) );
 			if(!$do)
+				return false;
+		}
+		if(!hikashop_level(1) || (int)$this->config->get('group_options', 0) == 0)
+			return true;
+
+		if(empty($p['options']) && empty($cart_product_options[$cart_product->cart_product_id]))
+			return true;
+
+
+		if(empty($p['options']) || empty($cart_product_options[$cart_product->cart_product_id]))
+			return false;
+
+		if(count($p['options']) != count($cart_product_options[$cart_product->cart_product_id]))
+			return false;
+
+		foreach($p['options'] as $opt) {
+			$f = false;
+			$coef = 1;
+			if(isset($opt['coef']))
+				$coef = (int)$opt['coef'];
+			elseif(isset($opt['qty']))
+				$coef = ($opt['qty'] / max($p['qty'], 1));
+
+			foreach($cart_product_options[$cart_product->cart_product_id] as $cart_opt) {
+				if($opt['id'] != $cart_opt['id'])
+					continue;
+				if($coef != $cart_opt['coef'])
+					return false;
+
+				$f = true;
+				break;
+			}
+			if(!$f)
 				return false;
 		}
 		return true;
@@ -1695,6 +1981,82 @@ class hikashopCartClass extends hikashopClass {
 
 	public function loadFieldsForProducts($product_ids, $area = 'frontcomp') {
 		$fields = array();
+		if(!hikashop_level(2))
+			return $fields;
+
+		if(empty($this->fieldClass))
+			$this->fieldClass = hikashop_get('class.field');
+
+		if(empty($product_ids))
+			return array();
+
+		hikashop_toInteger($product_ids);
+
+		$query = 'SELECT product_id, product_parent_id '.
+			' FROM '.hikashop_table('product').
+			' WHERE product_type = '.$this->db->Quote('variant').' AND product_parent_id > 0 AND product_id IN ('.implode(',', $product_ids).')';
+		$this->db->setQuery($query);
+		$product_parents = $this->db->loadObjectList('product_id');
+
+		$all_product_ids = array();
+		$oldData = array();
+
+		foreach($product_ids as $product_id) {
+			$e = new stdClass();
+			$e->product_id = $product_id;
+			$e->product_parent_id = 0;
+			$e->product_type = 'main';
+
+			$all_product_ids[$product_id] = 0;
+			if(isset($product_parents[$product_id])) {
+				$all_product_ids[$product_id] = (int)$product_parents[$product_id]->product_parent_id;
+				$e->product_parent_id = $all_product_ids[$product_id];
+				$e->product_type = 'variant';
+			}
+
+			$oldData[] = $e;
+		}
+		unset($product_parents);
+
+		if(count($oldData) == 1)
+			$oldData = reset($oldData);
+		unset($p);
+		$allCat = $this->fieldClass->getCategories('item', $oldData);
+
+		$fields =& $this->fieldClass->getData($area, 'item', false, $allCat);
+		$this->fieldClass->populateItemFieldValues($fields, $all_product_ids);
+
+		$haveCategories = false;
+		foreach($fields as $namekey => $field) {
+			$c = trim(trim($field->field_categories, ','));
+			if(!empty($c)) {
+				$haveCategories = true;
+				break;
+			}
+		}
+		if($haveCategories) {
+			$query = 'SELECT product_id, category_id FROM '.hikashop_table('product_category').' WHERE product_id IN ('.implode(',', array_keys($all_product_ids)).')';
+			$this->db->setQuery($query);
+			$product_categories = $this->db->loadObjectList();
+		}
+
+		foreach($fields as $namekey => &$field) {
+			if(!empty($field->field_options) && is_string($field->field_options))
+				$field->field_options = hikashop_unserialize($field->field_options);
+
+			$c = trim(trim($field->field_categories, ','));
+			if(empty($c))
+				continue;
+			$c = explode(',', $c);
+			$field->field_categories_products = array();
+			foreach($product_categories as $pc) {
+				if(!in_array((int)$pc->category_id, $c))
+					continue;
+				$field->field_categories_products[(int)$pc->product_id] = (int)$pc->product_id;
+			}
+		}
+		unset($field);
+		unset($allCat);
 		return $fields;
 	}
 
@@ -1789,6 +2151,93 @@ class hikashopCartClass extends hikashopClass {
 
 	public function addProductEntry($cart_id, &$entriesData) {
 		$ret = false;
+
+		$fieldClass = hikashop_get('class.field');
+		$fields =& $fieldClass->getData('frontcomp', 'entry');
+
+		$productsToAdd = array();
+		$coupons = array();
+
+		foreach($entriesData as $entryData) {
+			foreach($fields as $field) {
+				$n = $field->field_namekey;
+				if(!isset($entryData->$n))
+					continue;
+
+				$value = $entryData->$n;
+
+				if(!empty($field->field_options) && !is_array($field->field_options))
+					$field->field_options = hikashop_unserialize($field->field_options);
+
+				if($field->field_type == 'coupon' && !empty($field->coupon[$value])) {
+					$coupons[] = $field->coupon[$value];
+				}
+
+				if(empty($field->field_options['product_id']))
+					continue;
+
+				$ok = false;
+				if(is_numeric($value) && is_numeric($field->field_options['product_value'])) {
+					if($value === $field->field_options['product_value']) {
+						$ok = true;
+					}
+				} elseif(is_string($value) && !empty($field->field_options['product_value']) && is_array($field->field_options['product_value']) && in_array($value,$field->field_options['product_value'])) {
+					$ok = true;
+				} elseif($value == $field->field_options['product_value']) {
+					$ok = true;
+				}
+
+				if($ok) {
+					$id = (int)$field->field_options['product_id'];
+					if(empty($productsToAdd[$id]))
+						$productsToAdd[$id] = array('id' => $id, 'qty' => 0);
+					$productsToAdd[$id]['qty']++;
+				}
+			}
+		}
+		unset($fields);
+
+		if(!empty($productsToAdd)) {
+			$ret = $this->addProduct($cart_id, $productsToAdd);
+		}
+
+		if(is_array($coupons) && count($coupons) > 1) {
+			$total = 0.0;
+			$currency = hikashop_getCurrency();
+			$currencyClass = hikashop_get('class.currency');
+			$coupon_ids = array();
+			foreach($coupons as $item) {
+				$currencyClass->convertCoupon($item, $currency);
+				$total += $item->discount_flat_amount;
+				$coupon_ids[ (int)$item->discount_id ] = (int)$item->discount_id;
+			}
+
+			if(!empty($coupon_ids)) {
+				$query = 'UPDATE '.hikashop_table('discount').' SET discount_used_times=discount_used_times+1 WHERE discount_id IN (' . implode(',', $coupon_ids) . ')';
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
+			$coupon = new stdClass();
+			$coupon->discount_type = 'coupon';
+			$coupon->discount_currency_id = $currency;
+			$coupon->discount_flat_amount = $total;
+			$coupon->discount_quota = 1;
+			$coupon->discount_published = 1;
+			jimport('joomla.user.helper');
+			$coupon->discount_code = JUserHelper::genRandomPassword(30);
+
+			$discountClass = hikashop_get('class.discount');
+			if(!empty($total))
+				$discountClass->save($coupon);
+		}
+
+		if(is_array($coupons) && count($coupons) == 1)
+			$coupon = reset($coupons);
+
+		if(!empty($coupon) && !empty($coupon->discount_code)) {
+			$ret = $this->addCoupon($cart_id, $coupon->discount_code);
+		}
 
 		return $ret;
 	}
@@ -2137,7 +2586,34 @@ class hikashopCartClass extends hikashopClass {
 				}
 			}
 		}
+		$options = hikaInput::get()->get('hikashop_product_option', array(), 'array');
+		$options_qty = hikaInput::get()->get('hikashop_product_option_qty', array(), 'array');
+		if(!empty($options) && is_array($options)) {
+			$data[0]['options'] = array();
+			foreach($options as $k => $option) {
+				if(empty($option) || (int)$option == 0)
+					continue;
+				if(isset($options_qty[$k]) && empty($options_qty[$k]))
+					continue;
+				if(!isset($options_qty[$k]) || (int)$options_qty[$k] < 0) $options_qty[$k] = 0;
+				$qty = !empty($options_qty[$k]) ? (int)$options_qty[$k] : $quantity;
+				$coef = !empty($options_qty[$k]) ? 0 : 1;
+				$data[0]['options'][] = array(
+					'id' => (int)$option,
+					'qty' => $qty,
+					'coef' => $coef
+				);
+			}
+			if(empty($data[0]['options']))
+				unset($data[0]['options']);
+		}
 		$formData = hikaInput::get()->get('data', array(), 'array');
+		if(!empty($formData['item'])) {
+			foreach($data as &$d) {
+				$d['fields'] = $formData['item'];
+			}
+			unset($d);
+		}
 		if(!empty($formData['extra'])) {
 			foreach($data as &$d) {
 				$d['extra'] = $formData['extra'];
@@ -2146,12 +2622,27 @@ class hikashopCartClass extends hikashopClass {
 		}
 
 
+		$from_id = hikaInput::get()->getInt('from_id', 0);
+		if(!empty($from_id)) {
+			foreach($data as &$d) {
+				$d['wishlist'] = $from_id;
+			}
+			unset($d);
+		}
 
 		if($type == 'product' && !empty($data) && !empty($add))
 			return $this->addProduct($cart_id, $data);
 		if($type == 'product' && is_int($product_id) && empty($add)) {
 			$p = reset($data);
 			$fields = null;
+			if(hikashop_level(2)) {
+				$product_ids = array($p['id']);
+				$fields = $this->loadFieldsForProducts($product_ids, 'frontcomp');
+				foreach($fields as $k => $field){
+					if($field->field_type == 'customtext')
+						unset($fields[$k]);
+				}
+			}
 			$cart = $this->get($cart_id);
 			foreach($cart->cart_products as &$cart_product) {
 				if($cart_product->cart_product_quantity == 0 || (is_string($cart_product->cart_product_id) && substr($cart_product->cart_product_id, 0, 1) == 'p'))
@@ -2365,6 +2856,13 @@ class hikashopCartClass extends hikashopClass {
 
 		hikashop_toInteger($cart_product_ids);
 
+		if(hikashop_level(1) && (int)$this->config->get('group_options', 0)) {
+			foreach($cart->cart_products as $cart_product) {
+				if(empty($cart_product->cart_product_option_parent_id) || !in_array((int)$cart_product->cart_product_option_parent_id, $cart_product_ids))
+					continue;
+				$cart_product_ids[] = $cart_product->cart_product_id;
+			}
+		}
 
 		$do = true;
 		JPluginHelper::importPlugin('hikashop');
@@ -2407,6 +2905,18 @@ class hikashopCartClass extends hikashopClass {
 	public function cartProductsToArray(&$cart_products, $options = array()) {
 		$ret = array();
 
+		$haveOptions = false;
+		$product_ids = array();
+		foreach($cart_products as $cart_product) {
+			if(!empty($cart_product->product_id))
+				$product_ids[ (int)$cart_product->product_id ] = (int)$cart_product->product_id;
+
+			if(empty($cart_product->cart_product_option_parent_id) && empty($cart_product->order_product_option_parent_id))
+				continue;
+			$haveOptions = true;
+			break;
+		}
+		$fields = $this->loadFieldsForProducts($product_ids, 'frontcomp');
 
 		foreach($cart_products as $cart_product) {
 			$qty = !empty($cart_product->cart_product_quantity) ? (int)$cart_product->cart_product_quantity : (int)@$cart_product->order_product_quantity;
@@ -2420,6 +2930,39 @@ class hikashopCartClass extends hikashopClass {
 				'id' => $cart_product->product_id,
 				'qty' => $qty
 			);
+			if(!empty($options['wishlist'])) {
+				$o['wishlist'] = (int)$options['wishlist'];
+				$o['wishlist_product'] = (int)$cart_product->cart_product_id;
+			}
+
+			if($haveOptions && hikashop_level(1)) {
+				foreach($cart_products as $option_product) {
+					if(empty($option_product->cart_product_option_parent_id) && empty($option_product->order_product_option_parent_id))
+						continue;
+					if(!empty($option_product->cart_product_option_parent_id) && (int)$option_product->cart_product_option_parent_id != $cart_product->cart_product_id)
+						continue;
+					if(!empty($option_product->order_product_option_parent_id) && (int)$option_product->order_product_option_parent_id != $cart_product->order_product_id)
+						continue;
+
+					if(empty($o['options']))
+						$o['options'] = array();
+
+					$o['options'][] = array(
+						'id' => (int)$option_product->product_id,
+						'qty' => !empty($option_product->cart_product_quantity) ? (int)$option_product->cart_product_quantity : (int)@$option_product->order_product_quantity
+					);
+				}
+			}
+			if(!empty($fields) && hikashop_level(2)) {
+				$o['fields'] = array();
+				foreach($fields as $namekey => $field) {
+					if(empty($cart_product->$namekey))
+						continue;
+					$o['fields'][$namekey] = $cart_product->$namekey;
+				}
+				if(empty($o['fields']))
+					unset($o['fields']);
+			}
 
 			$ret[] = $o;
 		}
@@ -2653,8 +3196,33 @@ class hikashopCartClass extends hikashopClass {
 			$product['data'] =& $db_products[ $id ];
 			if($product['data']->product_type == 'variant')
 				$product['data']->product_name = trim($product['data']->parent_product_name .' '. $product['data']->product_name);
+			$b_ids[] = $id;
 		}
 		unset($product);
+		if(!$wishlist && hikashop_level(1) && !empty($b_ids)) {
+			$query = 'SELECT pr.product_id, pr.product_related_id, pr.product_related_quantity, FLOOR(p.product_quantity / pr.product_related_quantity) as bundle_quantity '.
+				' FROM '.hikashop_table('product_related').' AS pr '.
+				' INNER JOIN '.hikashop_table('product').' AS p ON pr.product_related_id = p.product_id '.
+				' WHERE (pr.product_id IN (' . implode(',', $b_ids).') OR pr.product_related_id IN (' . implode(',', $b_ids).')) AND pr.product_related_type = ' . $this->db->Quote('bundle') . ' AND p.product_quantity >= 0';
+			$this->db->setQuery($query);
+			$bundles = $this->db->loadObjectList();
+
+			if(!empty($bundles)) {
+				foreach($bundles as $k => $bundle) {
+					if( isset($db_products[ $bundle->product_id ]) && ($db_products[ $bundle->product_id ]->product_quantity < 0 || $db_products[ $bundle->product_id ]->product_quantity > (int)$bundle->bundle_quantity))
+						$db_products[ $bundle->product_id ]->product_quantity = (int)$bundle->bundle_quantity;
+					if(!isset($db_products[ $bundle->product_related_id ]))
+						continue;
+					$qty_already_in_cart = 0;
+					foreach($cart->cart_products as $cart_product) {
+						if($cart_product->product_id == $bundle->product_id && $cart_product->cart_product_quantity > 0)
+							$qty_already_in_cart += $cart_product->cart_product_quantity * $bundle->product_related_quantity;
+					}
+					$db_products[ $bundle->product_related_id ]->product_quantity = max(0, $db_products[ $bundle->product_related_id ]->product_quantity - $qty_already_in_cart);
+				}
+			}
+		}
+
 		unset($b_ids);
 
 		JPluginHelper::importPlugin('hikashop');
@@ -2700,6 +3268,15 @@ class hikashopCartClass extends hikashopClass {
 
 				if(empty($msg) && empty($product['data']->parent_product_published)) {
 					$msg = JText::sprintf('PRODUCT_NOT_AVAILABLE', $id);
+				}
+				if(empty($msg) && !in_array($product['data']->parent_product_access, array('', 'all')) && hikashop_level(2)) {
+					$userClass = hikashop_get('class.user');
+					$user_groups = $userClass->getGroups( (int)$cart->user_id );
+					$parent_product_groups = explode(',', $product['data']->parent_product_access);
+					hikashop_toInteger($parent_product_groups);
+					$intersect = array_intersect($user_groups, $parent_product_groups);
+					if(empty($intersect))
+						$msg = JText::sprintf('PRODUCT_NOT_AVAILABLE', $id);
 				}
 
 				if(!$wishlist && empty($msg) && (empty($product['data']->product_sale_start) && $product['data']->parent_product_sale_start > 0 && (int)$product['data']->parent_product_sale_start > $now)) {
@@ -2821,6 +3398,16 @@ class hikashopCartClass extends hikashopClass {
 			unset($product);
 		}
 
+		if(hikashop_level(1)) {
+			$limitClass = hikashop_get('class.limit');
+			$limits = $limitClass->getCart($cart, $products);
+
+			$limit_errors = $limitClass->checkLimits($limits, $cart, $products);
+			if($limit_errors !== true) {
+				$ret = false;
+			}
+			unset($limit_errors);
+		}
 
 
 		$cart_products = array();
@@ -2909,6 +3496,47 @@ class hikashopCartClass extends hikashopClass {
 
 		$wishlist = (!empty($cart->cart_type) && $cart->cart_type == 'wishlist');
 
+		if(hikashop_level(1)) {
+			$b_ids = array();
+			foreach($cart->products as $cart_product_id => $product) {
+				if(empty($product->product_id))
+					continue;
+				$b_ids[] = (int)$product->product_id;
+			}
+			if(!empty($b_ids)) {
+				$query = 'SELECT pr.product_id, pr.product_related_id, pr.product_related_quantity, FLOOR(p.product_quantity / pr.product_related_quantity) as bundle_quantity '.
+					' FROM '.hikashop_table('product_related').' AS pr '.
+					' INNER JOIN '.hikashop_table('product').' AS p ON pr.product_related_id = p.product_id '.
+					' WHERE pr.product_id IN (' . implode(',', $b_ids).') AND pr.product_related_type = ' . $this->db->Quote('bundle') . ' AND p.product_quantity >= 0';
+				$this->db->setQuery($query);
+				$bundles = $this->db->loadObjectList();
+				if(!empty($bundles)) {
+					foreach($cart->products as &$product) {
+						if(empty($product->product_id))
+							continue;
+						$min_bundle_quantity = null;
+						foreach($bundles as $bundle) {
+							if($bundle->product_id != $product->product_id)
+								continue;
+							if(is_null($min_bundle_quantity) || $min_bundle_quantity > $bundle->bundle_quantity)
+								$min_bundle_quantity = $bundle->bundle_quantity;
+
+							foreach($cart->products as &$product2) {
+								if(empty($product2->product_id))
+									continue;
+								if( $product2->product_id != $bundle->product_related_id)
+									continue;
+								$product2->bundle_quantity = $product2->product_quantity - $bundle->product_related_quantity*$product->cart_product_quantity;
+							}
+						}
+						if($product->product_quantity < 0 && !is_null($min_bundle_quantity))
+							$product->bundle_quantity = (int)$min_bundle_quantity;
+					}
+					unset($product);
+				}
+			}
+			unset($b_ids);
+		}
 
 		$app->triggerEvent('onBeforeCheckCartQuantities', array(&$cart, &$parent_products) );
 
@@ -2945,6 +3573,11 @@ class hikashopCartClass extends hikashopClass {
 			}
 
 			if(!$wishlist && (int)$product->product_quantity != -1 && (int)$product->product_quantity < (int)$product->cart_product_quantity) {
+				$notUsable[$cart_product_id] = array('id' => $cart_product_id, 'qty' => 0);
+				$cart->messages[] = array('msg' => JText::sprintf('NOT_ENOUGH_STOCK_FOR_PRODUCT', $errorMessagesProductNames[$cart_product_id]), 'product_id' => $product->product_id, 'type' => 'notice');
+				continue;
+			}
+			if(!$wishlist && isset($product->bundle_quantity) && (int)$product->bundle_quantity < (int)$product->cart_product_quantity) {
 				$notUsable[$cart_product_id] = array('id' => $cart_product_id, 'qty' => 0);
 				$cart->messages[] = array('msg' => JText::sprintf('NOT_ENOUGH_STOCK_FOR_PRODUCT', $errorMessagesProductNames[$cart_product_id]), 'product_id' => $product->product_id, 'type' => 'notice');
 				continue;
@@ -2993,6 +3626,19 @@ class hikashopCartClass extends hikashopClass {
 					continue;
 				}
 
+				if(!in_array($parent_product->product_access, array('', 'all')) && hikashop_level(2)) {
+					if(empty($userClass))
+						$userClass = hikashop_get('class.user');
+					$user_groups = $userClass->getGroups( (int)$cart->user_id );
+					$parent_product_groups = explode(',', $parent_product->product_access);
+					hikashop_toInteger($parent_product_groups);
+					$intersect = array_intersect($user_groups, $parent_product_groups);
+					if(empty($intersect)){
+						$notUsable[$cart_product_id] = array('id' => $cart_product_id, 'qty' => 0);
+						$cart->messages[] = array('msg' => JText::sprintf('PRODUCT_NOT_AVAILABLE', $errorMessagesProductNames[$cart_product_id]), 'product_id' => $product->product_id, 'type' => 'notice');
+						continue;
+					}
+				}
 
 				if(!$wishlist && empty($limits['max']) && (int)$parent_product->product_quantity > 0 && (int)$product->product_quantity == -1)
 					$limits['max'] = true;
@@ -3097,6 +3743,15 @@ class hikashopCartClass extends hikashopClass {
 			$ret = false;
 		}
 
+		if(!$wishlist && hikashop_level(1)) {
+			if(!$this->limitCartProducts($cart))
+				$ret = false;
+
+			$limitClass = hikashop_get('class.limit');
+			$limits = $limitClass->getCart($cart);
+			if(!$limitClass->checkLimits($limits, $cart))
+				$ret = false;
+		}
 
 		$product_keys = array_reverse(array_keys($cart->cart_products));
 		foreach($product_keys as $k) {
@@ -3416,6 +4071,8 @@ class hikashopCartClass extends hikashopClass {
 		$remove = $current_items - $item_limit;
 
 		$product_cart_ids = array_reverse(array_keys($cart->cart_products));
+		$id_changed = 0;
+		$name_changed = '';
 		foreach($product_cart_ids as $k) {
 			if(!is_numeric($k) && substr($k, 0, 1) == 'p')
 				continue;
@@ -3425,15 +4082,29 @@ class hikashopCartClass extends hikashopClass {
 				$remove -= $q;
 				$cart->cart_products[$k]->cart_product_quantity = 0;
 				$cart->products[$k]->cart_product_quantity = 0;
+				if(empty($id_changed)) {
+					$id_changed = $cart->products[$k]->product_id;
+					$name_changed = $cart->products[$k]->product_name;
+				}
 			} else {
 				$q -= $remove;
 				$cart->cart_products[$k]->cart_product_quantity = $q;
 				$cart->products[$k]->cart_product_quantity = $q;
 				$remove = 0;
+				if(empty($id_changed)) {
+					$id_changed = $cart->products[$k]->product_id;
+					$name_changed = $cart->products[$k]->product_name;
+			}
 			}
 			if(empty($remove))
 				break;
 		}
+
+		$cart->messages[] = array(
+			'msg' => JText::sprintf('LIMIT_REACHED_REMOVED', $name_changed),
+			'product_id' => $id_changed,
+			'type' => 'notice'
+		);
 
 		return false;
 	}

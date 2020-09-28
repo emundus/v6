@@ -89,6 +89,11 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 
 		$group = $this->getParam('group');
 		$profile_id = $this->getParam('profile_id');
+		$pick_fnums = $this->getParam('pick_fnums', 0);
+
+		if ($pick_fnums) {
+			$files_picked = $jinput->get('jos_emundus_files_request___your_files');
+		}
 
 		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
@@ -116,16 +121,21 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		$db->setQuery($query);
 		$fnums = $db->loadColumn();
 
+		if ($pick_fnums) {
+			// Only get fnums that are found in BOTH arrays, this both allows filtering (only accept files which were picked by the user) and prevents the user from cheating and entering someone else's fnum.
+			$fnums = array_intersect($fnums, $files_picked);
+		}
+
 		try {
 			$query->clear()
 				->update($db->quoteName('#__emundus_files_request'))
 				->set([$db->quoteName('uploaded').'=1', $db->quoteName('firstname').'='.$db->quote($firstname), $db->quoteName('lastname').'='.$db->quote($lastname), $db->quoteName('modified_date').'=NOW()'])
-				->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id));
+				->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id).' AND '.$db->quoteName('fnum').' IN ("'.implode('","', $fnums).'")');
 			$db->setQuery($query);
 			$db->execute();
 		} catch (Exception $e) {
             echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
         }
 
 		// 2. Vérification de l'existance d'un compte utilisateur avec email de l'expert
@@ -138,7 +148,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			$uid = $db->loadResult();
 		} catch (Exception $e) {
             echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
         }
 
 		$acl_aro_groups = $m_users->getDefaultGroup($profile_id);
@@ -158,7 +168,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 				$is_evaluator = $db->loadResult();
 			} catch (Exception $e) {
 	            echo $e->getMessage();
-	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	        }
 
 			// Ajout d'un nouveau profil dans #__emundus_users_profiles + #__emundus_users_profiles_history
@@ -173,9 +183,9 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 					$db->execute();
 				} catch (Exception $e) {
 		            echo $e->getMessage();
-		            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		        }
-		        
+
 				// Modification du profil courant en profil Expert
 				$user->groups = $acl_aro_groups;
 
@@ -196,7 +206,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 					$db->execute();
 				} catch (Exception $e) {
 		            echo $e->getMessage();
-		            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		        }
 			}
 
@@ -208,7 +218,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			// 2.1.2. Envoie des identifiants à l'expert + Envoie d'un message d'invitation à se connecter pour evaluer le dossier
 			$email = $m_emails->getEmail('expert_accept');
 			$body = $m_emails->setBody($user, $email->message);
-			
+
 			$email_from_sys = $app->getCfg('mailfrom');
 			$sender = [
 				$email_from_sys,
@@ -408,7 +418,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			$db->execute();
 		} catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -422,7 +432,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 				$db->setQuery($query);
 			} catch (Exception $e) {
 				echo $e->getMessage();
-				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 				return false;
 			}
 
@@ -436,7 +446,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 					$db->execute();
 				} catch (Exception $e) {
 					echo $e->getMessage();
-					JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+					JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 					return false;
 				}
 			}

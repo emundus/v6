@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" method="upgrade" group="editors-xtd">
 	<name>HikaShop Product TAG insertion</name>
-	<creationDate>18 juin 2020</creationDate>
+	<creationDate>10 août 2020</creationDate>
 	<version>4.3.0</version>
 	<author>Hikari Software</author>
 	<authorEmail>dev@hikashop.com</authorEmail>

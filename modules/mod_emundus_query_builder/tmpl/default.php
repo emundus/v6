@@ -5,7 +5,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 
 <center>
-	<button id="buttonOpen" class="btnQueryBuilder" onclick="openCloseGraphManager()"><?php if(isset($_GET['gOpen'])) { echo "&#708; ".JText::_('CLOSE_QUERY_BUILDER'); } else { echo "&#709; ".JText::_('OPEN_QUERY_BUILDER'); } ?></button>
+	<button id="buttonOpen" class="btnQueryBuilder" onclick="openCloseGraphManager()"><?php if(isset($_GET['gOpen'])) { echo JText::_('CLOSE_QUERY_BUILDER'); } else { echo JText::_('OPEN_QUERY_BUILDER'); } ?></button>
 	<br /><br />
 	<div class="queryBuilder" style="display:<?php if(isset($_GET['gOpen'])) { echo "block;"; } else { echo "none;"; } ?>" >
 		<form action="" method="POST" onsubmit="return false;">
@@ -47,9 +47,11 @@ header('Content-Type: text/html; charset=utf-8');
 				</div>
 				<div id="errorCreateModule"></div>
 			</div>
-				<input type="button" name="validation" class="btnQueryBuilder" id="validation" style="float:right;display:none;" value="<?php echo JText::_('VALIDATION'); ?>" onclick="createModule()"/>
-			<input type="button" id="createButton" class="btnQueryBuilder" style="float:right;" value="+ <?php echo JText::_('CREATE_MODULE'); ?>" onclick="buttonCreateModule()"/>
-			<button onclick="getExport()" class="btnExport" style="float:left;">&#10515; <?php echo JText::_('EXPORT_MODULE'); ?></button>
+            <input type="button" name="validation" class="btnQueryBuilder" id="validation" style="float:right;display:none;" value="<?php echo JText::_('VALIDATION'); ?>" onclick="createModule()"/>
+			<input type="button" id="createButton" class="btnQueryBuilder" style="float:right;" value="<?php echo JText::_('CREATE_MODULE'); ?>" onclick="buttonCreateModule()"/>
+            <?php if (!empty($gotenberg_activation)) :?>
+			    <button onclick="getExport()" class="btnExport" style="float:left;"> <?php echo JText::_('EXPORT_MODULE'); ?></button>
+            <?php endif; ?>
 		</form>
 	</div>
 </center>
@@ -71,15 +73,15 @@ jQuery(document).ready(function(){
 	var wrapper2 = document.createElement('div');
 	wrapper1.parentNode.insertBefore(wrapper2, wrapper1);
 	wrapper2.classList.add("informationStatistique");
-	wrapper2.innerHTML = "<a class='closeButtonWelcomeStat' onclick='deleteWelcomeStat()'>&#10006;</a><?php echo JText::_('TEXT_WELCOME_STAT'); ?>";
+	wrapper2.innerHTML = "<a class='closeButtonWelcomeStat' onclick='deleteWelcomeStat()'></a><?php echo JText::_('TEXT_WELCOME_STAT'); ?>";
 	
 	jQuery('.g-content').has('.etiquette').attr('style', 'margin:auto!important');
 	jQuery('.g-content').has('.etiquette').attr('style', 'display:grid;grid-column-gap:15px;grid-row-gap:15px;grid-template-columns:repeat(3, 1fr);margin-bottom:15px!important;');
 	jQuery('.platform-content').attr('style', 'width:100%!important');
-	jQuery('.platform-content').has('.container-stat').attr('style', 'margin:0!important;background-color:white;padding-bottom:1%;box-shadow: 0px 0px 5px 0px lightgrey;');
+	jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: 0px 0px 47px -13px rgba(163,163,163,1);');
 	jQuery('.etiquette').attr('style', 'grid-column-end:span 3;');
 	jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;');
-	jQuery('#g-container-main').attr('style', 'padding-left:5%!important;padding-right:5%!important;background-color:#eeeeee');
+	jQuery('#g-container-main').attr('style', 'padding-left:5%!important;padding-right:5%!important;background-color:#fff');
 	
 	taillerEtiquette();
 });
@@ -254,13 +256,13 @@ jQuery(document).ready(function(){
 	// Display or not the statistics module manager
 	function openCloseGraphManager() {
 		if(document.getElementsByClassName('queryBuilder')[0].style.display === 'none') {
-			document.getElementById('buttonOpen').innerHTML = "&#708; <?php echo JText::_('CLOSE_QUERY_BUILDER'); ?>";
+			document.getElementById('buttonOpen').innerHTML = "<?php echo JText::_('CLOSE_QUERY_BUILDER'); ?>";
 			document.getElementsByClassName('queryBuilder')[0].style.display = 'block';
 		} else {
-			document.getElementById("createButton").value = "+ <?php echo JText::_('CREATE_MODULE'); ?>";
+			document.getElementById("createButton").value = "<?php echo JText::_('CREATE_MODULE'); ?>";
 			document.getElementById("createButton").classList.replace("btnExport", "btnQueryBuilder");
 			document.getElementById("createButton").style.float = "right";
-			document.getElementById('buttonOpen').innerHTML = "&#709; <?php echo JText::_('OPEN_QUERY_BUILDER'); ?>";
+			document.getElementById('buttonOpen').innerHTML = "<?php echo JText::_('OPEN_QUERY_BUILDER'); ?>";
 			document.getElementsByClassName('queryBuilder')[0].style.display = 'none';
 			document.getElementById('createModule').style.display = "none";
 			document.getElementById('validation').style.display = "none";
@@ -328,7 +330,7 @@ jQuery(document).ready(function(){
 			button.style.float = "left";
 		} else {
 			elt.style.display = "none";
-			button.value = "+ <?php echo JText::_('CREATE_MODULE'); ?>";
+			button.value = "<?php echo JText::_('CREATE_MODULE'); ?>";
 			button.classList.replace("btnExport", "btnQueryBuilder");
 			document.getElementById('sortable').style.display = "block";
 			document.getElementById('validation').style.display = "none";

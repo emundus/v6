@@ -92,7 +92,7 @@ HTACCESS;
 #
 # Prevents a 404 error when trying to access your site's administrator directory
 #
-# See https://www.akeebabackup.com/documentation/admin-tools/admin-pw-protection.html#id604127
+# See https://www.akeeba.com/documentation/admin-tools/admin-pw-protection.html#id604127
 #
 ErrorDocument 401 default
 ErrorDocument 403 default

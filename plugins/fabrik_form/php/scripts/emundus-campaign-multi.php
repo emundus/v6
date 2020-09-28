@@ -13,9 +13,11 @@ defined('_JEXEC') or die();
  * @description This plugin combines campaign_check and campaign while allowing multiple users to be registered to a campaign at once by another.
  */
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+
 $db = JFactory::getDBO();
 $query = $db->getQuery(true);
-$current_user = JFactory::getUser();
+$current_user = JFactory::getSession()->get('emundusUser');
 $application = Jfactory::getApplication();
 
 $campaign_id = $data['jos_emundus_campaign_candidature___campaign_id_raw'][0];
@@ -31,6 +33,19 @@ JLog::addLogger(array('text_file' => 'com_emundus.emundus-campaign-multi.php'), 
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
+$id_profiles = $eMConfig->get('id_profiles', '0');
+$id_profiles = explode(',', $id_profiles);
+
+if (EmundusHelperAccess::asAccessAction(1, 'c')) {
+	$applicant_can_renew = 1;
+} else {
+    foreach ($current_user->emProfiles as $profile) {
+        if (in_array($profile->id, $id_profiles)) {
+            $applicant_can_renew = 1;
+            break;
+        }
+    }
+}
 
 $query->select($db->quoteName('profile_id'))
 	->from($db->quoteName('#__emundus_setup_campaigns'))
@@ -39,7 +54,7 @@ $db->setQuery($query);
 try {
 	$profile = $db->loadResult();
 } catch(Exception $e) {
-	JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	JError::raiseError(500, $query);
 }
 
@@ -57,7 +72,7 @@ foreach ($users as $user) {
 	if (in_array($user_id, $users_registered)) {
 		continue;
 	}
-	
+
 	$users_registered[] = $user_id;
 	switch ($applicant_can_renew) {
 
@@ -73,7 +88,7 @@ foreach ($users as $user) {
 				    continue 2;
 			    }
 		    } catch(Exception $e) {
-			    JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			    JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			    JError::raiseError(500, $query);
 		    }
 	        break;
@@ -92,7 +107,7 @@ foreach ($users as $user) {
 					continue 2;
 				}
 			} catch (Exception $e) {
-				JLog::add('plugin/emundus_campaign SQL error at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+				JLog::add('plugin/emundus_campaign SQL error at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			}
 			break;
 
@@ -174,7 +189,7 @@ if (!empty($profile_values)) {
 	try {
 		$db->execute();
 	} catch(Exception $e) {
-		JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		JLog::add(JUri::getInstance().' :: USER ID : '.$current_user->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		JError::raiseError(500, 'Could not assign profiles to users.');
 	}
 }
@@ -196,7 +211,7 @@ if (!empty($values)) {
 	try {
 		$db->execute();
 	} catch(Exception $e) {
-		JLog::add('Error inserting candidatures in plugin/emundus-campaign-multi in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		JLog::add('Error inserting candidatures in plugin/emundus-campaign-multi in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		JError::raiseError(500, 'Could not create candidatures.');
 	}
 }
@@ -214,7 +229,7 @@ if (!empty($rights_values)) {
 	try {
 	    $db->execute();
 	} catch(Exception $e) {
-	    JLog::add('Error inserting rights in plugin/emundus-campaign-multi in query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	    JLog::add('Error inserting rights in plugin/emundus-campaign-multi in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	    JError::raiseError(500, 'Could not create rights.');
 	}
 

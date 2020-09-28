@@ -408,6 +408,32 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 		$params['registration_registration'] = true;
 		$params['registration_count'] = 1;
 
+		$params['display_method'] = (hikashop_level(1) ? (int)$view->config->get('display_method', 0) : 0);
+
+		$simplified_registration = $view->config->get('simplified_registration', 0);
+		if(strlen($simplified_registration)) {
+			$registration_list = array(
+				0 => 'registration_registration',
+				1 => 'registration_simplified',
+				2 => 'registration_guest',
+				3 => 'registration_password',
+			);
+
+			foreach($registration_list as $k) {
+				$params[$k] = false;
+			}
+			$params['registration_count'] = 0;
+
+			$simplified_registration = explode(',', $simplified_registration);
+			hikashop_toInteger($simplified_registration);
+			foreach($simplified_registration as $registration_value) {
+				$params[$registration_list[$registration_value]] = true;
+				$params['registration_count']++;
+			}
+		}
+
+		if(!in_array($params['default_registration_view'], array('login','0','1','2','3')))
+			$params['default_registration_view'] = 'login';
 
 		if($params['registration_registration'] || $params['registration_simplified'] || $params['registration_password']) {
 			$userClass = hikashop_get('class.user');
@@ -419,6 +445,16 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			}
 		}
 
+		if(!empty($params['registration_guest'])) {
+			$userClass = hikashop_get('class.user');
+			$privacy = $userClass->getPrivacyConsentSettings('contact');
+
+			if($privacy) {
+				$params['privacy_guest'] = true;
+				$params['privacy_guest_id'] = $privacy['id'];
+				$params['privacy_guest_text'] = $privacy['text'];
+			}
+		}
 	}
 
 	protected function initRegistration(&$view, &$params) {

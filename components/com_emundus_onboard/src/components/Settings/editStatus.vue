@@ -3,16 +3,21 @@
         <div v-for="(statu, index) in status" class="status-item">
             <div :style="{background: statu.class}" class="status-field">
                 <div style="width: 100%">
-                    <input type="text" v-model="statu.value_fr">
-                    <div class="translate-block" v-if="statu.translate">
-                        <label class="translate-label">
-                            {{TranslateEnglish}}
-                        </label>
-                        <em class="fas fa-sort-down"></em>
-                    </div>
-                    <input type="text" v-model="statu.value_en" v-if="statu.translate">
+                    <input type="text" v-model="statu.label[actualLanguage]">
+                    <translation :label="statu.label" :actualLanguage="actualLanguage" v-if="statu.translate"></translation>
+                    <!--<transition :name="'slide-down'" type="transition">
+                        <div class="translate-block" v-if="statu.translate">
+                            <label class="translate-label">
+                                {{TranslateEnglish}}
+                            </label>
+                            <em class="fas fa-sort-down"></em>
+                        </div>
+                    </transition>
+                    <transition :name="'slide-down'" type="transition">
+                        <input type="text" v-model="statu.value.en" v-if="statu.translate">
+                    </transition>-->
                 </div>
-                <button class="translate-icon" style="height: 10%;margin-top: 10px;" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
+                <button class="translate-icon" style="height: 10%;margin-top: 10px;" v-if="manyLanguages !== '0'" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
                 <input type="hidden" :class="'label-' + statu.class">
             </div>
             <v-swatches
@@ -24,7 +29,9 @@
                     popover-x="left"
                     popover-y="top"
             ></v-swatches>
+          <button type="button" v-if="statu.step != 0 && statu.step != 1" @click="removeStatus(statu,index)" class="remove-tag"><i class="fas fa-trash"></i></button>
         </div>
+        <a @click="pushStatus" class="bouton-sauvergarder-et-continuer-3 create-tag">{{ addStatus }}</a>
     </div>
 </template>
 
@@ -32,6 +39,7 @@
     import axios from "axios";
     import VSwatches from 'vue-swatches'
     import 'vue-swatches/dist/vue-swatches.css'
+    import Translation from "@/components/translation";
 
     const qs = require("qs");
 
@@ -39,10 +47,14 @@
         name: "editStatus",
 
         components: {
-            VSwatches
+          VSwatches,
+          Translation
         },
 
-        props: {},
+        props: {
+          actualLanguage: String,
+          manyLanguages: Number,
+        },
 
         data() {
             return {
@@ -54,6 +66,7 @@
                     '#DB0A5B', '#999999'
                 ],
                 TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+                addStatus: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_STATUS"),
             };
         },
 
@@ -63,19 +76,58 @@
                     .then(response => {
                         this.status = response.data.data;
                         setTimeout(() => {
-                            this.getHexColors();
+                          this.status.forEach(element => {
+                            if(element.label.fr == ""){
+                              element.label.fr = element.value;
+                              element.label.en = element.value;
+                            }
+                            this.getHexColors(element);
+                          });
                         }, 100);
                     });
             },
 
-            getHexColors() {
-                this.status.forEach(element => {
-                    element.translate = false;
-                    let status_class = document.querySelector('.label-' + element.class);
-                    let style = getComputedStyle(status_class);
-                    let rgbs = style.backgroundColor.split('(')[1].split(')')[0].split(',');
-                    element.class = this.rgbToHex(parseInt(rgbs[0]),parseInt(rgbs[1]),parseInt(rgbs[2]));
-                });
+            pushStatus() {
+              this.$emit("LaunchLoading");
+              axios({
+                method: "post",
+                url: 'index.php?option=com_emundus_onboard&controller=settings&task=createstatus',
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                },
+              }).then((newstatus) => {
+                this.status.push(newstatus.data);
+                setTimeout(() => {
+                  this.getHexColors(newstatus.data);
+                }, 100);
+                this.$emit("StopLoading");
+              });
+            },
+
+            removeStatus(status, index) {
+              this.$emit("LaunchLoading");
+              axios({
+                method: "post",
+                url: 'index.php?option=com_emundus_onboard&controller=settings&task=deletestatus',
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                },
+                data: qs.stringify({
+                  id: status.id,
+                  step: status.step
+                })
+              }).then(() => {
+                this.status.splice(index,1);
+                this.$emit("StopLoading");
+              });
+            },
+
+            getHexColors(element) {
+              element.translate = false;
+              let status_class = document.querySelector('.label-' + element.class);
+              let style = getComputedStyle(status_class);
+              let rgbs = style.backgroundColor.split('(')[1].split(')')[0].split(',');
+              element.class = this.rgbToHex(parseInt(rgbs[0]),parseInt(rgbs[1]),parseInt(rgbs[2]));
             },
 
             rgbToHex(r, g, b) {
@@ -109,5 +161,8 @@
         display: flex;
         margin: 10px;
         color: white
+    }
+    .translate-icon-selected{
+      top: 0;
     }
 </style>

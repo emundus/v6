@@ -191,11 +191,6 @@ table {
     display: none;
 }
 
-.well {
-    background-color: #fcfcfc;
-    border: none;
-}
-
 legend {
     margin: 10px 0 20px 0 !important;
 }
@@ -231,17 +226,6 @@ body {
             text-decoration: underline;
         }
     }
-}
-
-h1::after,
-.swal2-title:after {
-    content: '';
-    position: absolute;
-    margin-top: 45px;
-    width: 2.7rem;
-    height: .2rem;
-    background: $base-secondary-color !important;
-    left: 0;
 }
 
 /***************** BOUTONS *****************/
@@ -698,6 +682,8 @@ p.readmore .btn,
 
     .g-container {
         padding: 10px !important;
+        width: 95%;
+        margin: auto !important;
     }
 }
 
@@ -722,8 +708,17 @@ p.readmore .btn,
     text-align: center;
 }
 
+#header-c, #header-switch {
+    display: flex;
+    justify-content: center;
+}
+
 .header-right a {
     color: #4E5B6D;
+}
+
+.right-divider{
+    border-right: solid 1px #cecece;
 }
 
 
@@ -739,16 +734,27 @@ p.readmore .btn,
     transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
     top: 0;
 
-    &::before,
-    &::after {
-        border-radius: 1px;
-        height: 5px;
-        width: 32px;
-        background: $base-primary-color;
-        position: absolute;
-        display: block;
-        content: '';
-    }
+       &::after {
+            border-radius: 1px;
+            height: 5px;
+            width: 32px;
+            background: $base-primary-color;
+            position: absolute;
+            display: block;
+            content: '';
+            top: 20px;
+        }
+
+        &::before {
+            border-radius: 1px;
+            height: 5px;
+            width: 32px;
+            background: $base-primary-color;
+            position: absolute;
+            display: block;
+            content: '';
+            top: 10px;
+        }
 }
 
 /* USER MENU */
@@ -854,7 +860,6 @@ ul.nav.nav-tabs.nav-stacked span {
 
 /* Module Campagnes */
 .campaign-title {
-    color: #292929;
     font-weight: 600;
     margin-bottom: 20px !important;
     padding-left: 0;
@@ -1060,7 +1065,7 @@ form#member-registration div a {
         border: none;
         margin-bottom: 0 !important;
         border-radius: 0;
-        padding: 20px !important;
+        padding: 20px;
         box-shadow: none;
         width: 50%;
     }
@@ -2119,7 +2124,6 @@ div:not(.header-right) > .btn-danger {
     background-color: transparent !important;
     color: $base-primary-color !important;
     outline: none;
-    text-transform: uppercase;
     border: 1px solid $base-primary-color !important;
 
     &:hover {
@@ -2127,7 +2131,6 @@ div:not(.header-right) > .btn-danger {
         border: 1px solid $base-primary-color !important;
         text-shadow: none;
         color: white !important;
-        text-transform: uppercase;
     }
 }
 
@@ -3416,32 +3419,6 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
     }
 }
 
-/****** Couleur btn module campagne ****/
-
-.below-content a.btn.btn-primary.btn-plein.btn-blue {
-    background-color: $base-secondary-color !important;
-    border-color: $base-secondary-color!important;
-}
-
-
-.below-content a.btn.btn-primary.btn-plein.btn-blue:hover {
-    background-color: #ffffff !important;
-    color: $base-secondary-color !important;
-    border-color: $base-secondary-color !important;
-}
-
-/****** Couleur btns module login ****/
-.header-right a.btn.btn-danger.inscription {
-    background-color: $base-primary-color !important;
-    border-color: $base-primary-color!important;
-}
-
-.header-right a.btn.btn-danger.inscription:hover {
-    background-color: #ffffff !important;
-    color: $base-primary-color !important;
-    border-color: $base-primary-color !important;
-}
-
 /****** Longueur btns module login ****/
 
 .header-right a.btn.btn-danger.connexion {
@@ -3458,57 +3435,26 @@ form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm
     margin-bottom: 5px;
 }
 
-/****** Mot de passe oublié  ****/
 
-.header-right a.em-resetPassword:hover {
-    text-decoration: underline;
-}
-
-/****** Couleur btns +d'info  ****/
-
-.view-programme .em_period .btn.save-btn {
-    background-color: $base-secondary-color !important;
-    border-color: $base-secondary-color!important;
-}
-
-
-.view-programme .em_period .btn.save-btn:hover {
-    background-color: #ffffff !important;
-    color: $base-secondary-color !important;
-    border-color: $base-secondary-color !important;
-}
-
-/****** Couleur btn inscription ****/
-
-.view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form #fabrikSubmit_307{
-    background-color:$base-secondary-color !important;
-    color: #ffffff !important;
-    border-color: $base-secondary-color !important;
-
-}
-
-.view-form.view-registration.login .fabrikActions.form-actions button.btn.btn-primary.save-btn.sauvegarder.button.register:hover,  .view-form #fabrikSubmit_307:hover{
-    background-color: #ffffff !important;
-    color: $base-secondary-color !important;
-    border-color: $base-secondary-color !important;
-}
 /****** Footer ****/
 
 footer#g-footer {
     background-color: #eee;
     border-top: none;
-    position: absolute;
     bottom: 0;
     width: 100vw;
 }
 
 #g-page-surround {
-    min-height:100vh;
+    min-height:100vh !important;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 #g-page-surround >  .g-container:not(.g-flushed) {
     width: 100vw !important;
-    margin-top: 100px;
+    margin-top: auto;
     height: 180px;
 }
 
@@ -3550,9 +3496,4 @@ footer#g-footer {
             text-decoration:none!important;
         }
     }
-}
-
-/* AJOUT APRES MAJ */
-.applicant-form input[type='radio']:checked  {
-    background: $base-secondary-color;
 }

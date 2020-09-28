@@ -16,20 +16,19 @@ $title = (count($shippings) > 1) ? JText::_('SEVERAL_SHIPPING_METHOD_PER_PRODUCT
 <?php
 foreach($shipData as $key => $value) {
 
-	if ( ($shipData[$key]['minQtity'] > 1) && ($display == 1) ) {
-?>				
-		<div id="shipping_per_product_<?php $key; ?>">
-			<span class="shipping_per_product_<?php $key; ?>">
+	if ( !empty($shipData[$key]['several']) && $display == 1 ) {
+?>
+		<div id="shipping_per_product_<?php echo $key; ?>">
+			<span class="shipping_per_product_<?php echo $key; ?>">
 				<?php echo JText::sprintf('HIKA_FOR_AN_ORDER_OF',$shipData[$key]['name'],$shipData[$key]['minQtity'],$view->element->product_name);?>
 				<span class="price_per_product"><?php echo $shipData[$key]['price']; ?></span>
 			</span>
 		</div>
 <?php
-	} 
-	if ($shipData[$key]['minQtity'] == 0) {
+	} elseif ($shipData[$key]['minQtity'] <= 1) {
 ?>
-		<div id="shipping_per_product_<?php $key; ?>">
-			<span class="shipping_per_product_<?php $key; ?>"> <?php echo $shipData[$key]['name'] . ' : ';?>
+		<div id="shipping_per_product_<?php echo $key; ?>">
+			<span class="shipping_per_product_<?php echo $key; ?>"> <?php echo $shipData[$key]['name'] . ' : ';?>
 				<span class="price_per_product"><?php echo $shipData[$key]['price']; ?></span>
 			</span>
 		</div>

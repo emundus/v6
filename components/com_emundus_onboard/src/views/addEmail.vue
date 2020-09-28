@@ -1,46 +1,41 @@
 <template>
   <div class="section-principale">
+    <notifications
+        group="foo-velocity"
+        position="bottom left"
+        animation-type="velocity"
+        :speed="500"
+        :classes="'vue-notification-custom'"
+    />
     <div class="w-container">
       <form id="program-form" @submit.prevent="submit">
         <div class="sous-container">
+          <p class="required">{{RequiredFieldsIndicate}}</p>
           <div class="heading-form">
             <div class="icon-title informations"></div>
             <h2 class="heading">{{ Informations }}</h2>
           </div>
-          <p class="paragraphe-sous-titre">
-            {{ InformationsDesc }}
-          </p>
           <div class="w-form">
             <div class="form-group">
               <label>{{emailName}} *</label>
               <input
-                type="text"
-                class="form__input field-general w-input"
-                v-model="form.subject"
+                      type="text"
+                      class="form__input field-general w-input"
+                      v-model="form.subject"
+                      :class="{ 'is-invalid': errors.subject}"
               />
             </div>
-
-            <div class="form-group">
-              <label>{{receiverName}} *</label>
-              <input
-                type="text"
-                class="form__input field-general w-input"
-                v-model="form.name"
-              />
-            </div>
-
-            <div class="form-group">
-              <label>{{emailAddress}} *</label>
-              <input
-                type="text"
-                class="form__input field-general w-input"
-                v-model="form.emailfrom"
-              />
-            </div>
+            <p v-if="errors.subject" class="error col-md-12 mb-2">
+              <span class="error">{{SubjectRequired}}</span>
+            </p>
 
             <div class="form-group controls forms-emails-editor">
-              <editor :text="form.message" v-if="dynamicComponent" v-model="form.message" :placeholder="EmailResume"></editor>
+              <label>{{emailBody}} *</label>
+              <editor :text="form.message" v-if="dynamicComponent" :lang="actualLanguage" :enable_variables="true" v-model="form.message" :id="'email'" :placeholder="EmailResume" :class="{ 'is-invalid': errors.message}"></editor>
             </div>
+            <p v-if="errors.message" class="error col-md-12 mb-2">
+              <span class="error">{{BodyRequired}}</span>
+            </p>
           </div>
         </div>
 
@@ -48,50 +43,114 @@
         <div class="sous-container last-container">
           <div class="heading-form">
             <div class="icon-title"></div>
-            <h2 class="heading">{{ Parameter }}</h2>
+            <h2 class="heading">{{ Advanced }}</h2>
           </div>
-          <p class="paragraphe-sous-titre">
-            {{ ParameterDesc }}
-          </p>
-          <div class="form-group container-flexbox-choisir-ou-plus w-clearfix">
-            <select class="dropdown-toggle w-select" v-model="form.type">
-              <option disabled value="">{{ emailType }}</option>
-              <option
-                v-for="(item, index) in this.types"
-                v-bind:value="item"
-                :key="index"
-                :selected="form.type"
-                >{{ emailtype[langue][item - 1] }}</option
-              >
+          <div class="form-group">
+            <label>{{receiverName}}</label>
+            <input
+                    type="text"
+                    class="form__input field-general w-input"
+                    v-model="form.name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>{{emailAddress}}</label>
+            <input
+                    type="text"
+                    class="form__input field-general w-input"
+                    v-model="form.emailfrom"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>{{ emailCategory }}</label>
+            <autocomplete
+                    @searched="onSearchCategory"
+                    :items="this.categories"
+                    :year="this.form.category"
+            />
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="sous-container last-container" v-if="email == ''">
+          <div class="heading-form">
+            <div class="icon-title"></div>
+            <h2 class="heading">{{ Trigger }}</h2>
+          </div>
+
+          <div class="form-group">
+            <label>{{Program}}</label>
+            <select v-model="trigger.program" class="dropdown-toggle w-select" @change="addTrigger">
+              <option :value="null"></option>
+              <option v-for="(program,index) in programs" :value="program.id">{{program.label}}</option>
             </select>
           </div>
 
-          <div class="form-group container-flexbox-choisir-ou-plus w-clearfix">
-            <select class="dropdown-toggle w-select" v-model="form.category" :disabled="isHiddenCategory">
-              <option disabled value="">{{ emailCategory }}</option>
-              <option
-                v-for="(item, index) in this.categories"
-                v-bind:value="item"
-                :key="index"
-                :selected="form.category"
-                >{{ item }}</option
-              >
-            </select>
-            <div
-                    @click="displayCategory"
-                    id="add-category"
-                    class="addCampProgEmail"
-            >
+          <div v-if="triggered">
+            <div class="form-group">
+              <label>{{Actions}}*</label>
+              <select v-model="trigger.action_status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.action_status}">
+                <option value="to_current_user">{{TheCandidate}}</option>
+                <option value="to_applicant">{{Manual}}</option>
+              </select>
+              <p v-if="errors.trigger.action_status" class="error">
+                <span class="error">{{StatusRequired}}</span>
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label>{{Status}}*</label>
+              <select v-model="trigger.status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.status}">
+                <option v-for="(statu,index) in status" :key="index" :value="statu.step">{{statu.value}}</option>
+              </select>
+              <p v-if="errors.trigger.status" class="error">
+                <span class="error">{{StatusRequired}}</span>
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label>{{Target}}*</label>
+              <select v-model="trigger.target" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.target}">
+                <option value="5">{{Administrators}}</option>
+                <option value="6">{{Evaluators}}</option>
+                <option value="1000">{{Candidates}}</option>
+                <option value="0">{{DefinedUsers}}</option>
+              </select>
+              <p v-if="errors.trigger.target" class="error">
+                <span class="error">{{TargetRequired}}</span>
+              </p>
+            </div>
+            <div class="form-group" v-if="trigger.target == 0" style="align-items: baseline">
+              <label>{{ChooseUsers}}* :</label>
+              <div class="wrap">
+                <div class="search">
+                  <input type="text" class="searchTerm" :placeholder="Search" v-model="searchTerm" @keyup="searchUserByTerm">
+                  <button type="button" class="searchButton" @click="searchUserByTerm">
+                    <em class="fas fa-search"></em>
+                  </button>
+                </div>
+              </div>
+              <div class="select-all">
+                <input type="checkbox" class="form-check-input bigbox" @click="selectAllUsers" v-model="selectall">
+                <label>
+                  {{SelectAll}}
+                </label>
+              </div>
+              <div class="users-block" :class="{ 'is-invalid': errors.trigger.selectedUsers}">
+                <div v-for="(user, index) in users" :key="index" class="user-item">
+                  <input type="checkbox" class="form-check-input bigbox" v-model="selectedUsers[user.id]">
+                  <div class="ml-10px">
+                    <p>{{user.name}}</p>
+                    <p>{{user.email}}</p>
+                  </div>
+                </div>
+              </div>
+              <p v-if="errors.trigger.selectedUsers" class="error">
+                <span class="error">{{UsersRequired}}</span>
+              </p>
             </div>
           </div>
-          <transition name="slide-fade">
-            <label v-if="isHiddenCategory">{{CategoryName}} *</label>
-            <input v-if="isHiddenCategory"
-              type="text"
-              class="form__input field-general w-input"
-              v-model="new_category"
-            />
-          </transition>
         </div>
 
         <div class="section-sauvegarder-et-continuer">
@@ -101,9 +160,9 @@
                 {{ continuer }}
               </button>
               <button
-                type="button"
-                class="bouton-sauvergarder-et-continuer w-retour w-button"
-                onclick="history.go(-1)"
+                      type="button"
+                      class="bouton-sauvergarder-et-continuer w-retour w-button"
+                      onclick="history.go(-1)"
               >
                 {{ retour }}
               </button>
@@ -116,322 +175,366 @@
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
-import axios from "axios";
-import Editor from "../components/editor";
+  import Autocomplete from "../components/autocomplete";
+  import axios from "axios";
+  import Editor from "../components/editor";
 
-const qs = require("qs");
+  const qs = require("qs");
 
-export default {
-  name: "addEmail",
+  export default {
+    name: "addEmail",
 
-  components: {
-    Editor
-  },
-
-  props: {
-    email: Number,
-    actualLanguage: String
-  },
-
-  data: () => ({
-    langue: 0,
-
-    dynamicComponent: false,
-    isHiddenCategory: false,
-
-    Parameter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
-    Informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
-    emailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE"),
-    emailCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
-    retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-    continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-    emailName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME"),
-    receiverName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER"),
-    emailAddress: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS"),
-    EmailResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME"),
-    CategoryName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_CATEGORY"),
-
-    new_category: "",
-
-    types: [],
-    categories: [],
-
-    emailtype: [
-      ['Système', 'Modèle'],
-      ['System', 'Model']
-    ],
-
-    form: {
-      lbl: "",
-      subject: "",
-      name: "",
-      emailfrom: "",
-      message: "",
-      type: "",
-      category: "",
-      published: 1
-    },
-    submitted: false
-  }),
-
-  validations: {
-    form: {
-      subject: { required },
-      message: { required },
-      type: { required },
-      category: { required }
-    }
-  },
-
-  methods: {
-    submit() {
-      this.submitted = true;
-
-      this.form.lbl = this.form.subject;
-
-      if (this.new_category !== "") {
-        this.form.category = this.new_category;
-      }
-
-      // stop here if form is invalid
-      this.$v.$touch();
-
-      if (this.$v.$invalid) {
-        return;
-      }
-      if (this.email !== "") {
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=email&task=updateemail",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({ body: this.form, code: this.email })
-        })
-          .then(response => {
-            window.location.replace("emails");
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      } else {
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=email&task=createemail",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({ body: this.form })
-        })
-          .then(response => {
-            window.location.replace("emails");
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      }
+    components: {
+      Editor,
+      Autocomplete
     },
 
-    displayCategory() {
-      this.isHiddenCategory ? document.getElementById('add-category').style = 'transform: rotate(0)' : document.getElementById('add-category').style = 'transform: rotate(135deg)';
-      this.isHiddenCategory = !this.isHiddenCategory;
-    }
-  },
+    props: {
+      email: Number,
+      actualLanguage: String
+    },
 
-  created() {
-    axios
-      .get("index.php?option=com_emundus_onboard&controller=email&task=getemailtypes")
-      .then(response => {
-        this.types = response.data.data;
-        axios
-          .get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
-          .then(rep => {
-            this.categories = rep.data.data;
-            if (this.email !== "") {
-              axios
-                .get(
-                  `index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`
-                )
-                .then(resp => {
-                  this.form.subject = resp.data.data.subject;
-                  this.form.name = resp.data.data.name;
-                  this.form.emailfrom = resp.data.data.emailfrom;
-                  this.form.message = resp.data.data.message;
-                  this.form.type = resp.data.data.type;
-                  this.form.category = resp.data.data.category;
-                  this.form.published = resp.data.data.published;
-                  this.dynamicComponent = true;
-                })
-                .catch(e => {
-                  console.log(e);
-                });
-            } else {
-              this.dynamicComponent = true;
+    data: () => ({
+      langue: 0,
+
+      dynamicComponent: false,
+
+      Advanced: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
+      Informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
+      Trigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER"),
+      emailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE"),
+      emailCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
+      retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+      emailName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME"),
+      emailBody: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY"),
+      receiverName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER"),
+      emailAddress: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS"),
+      EmailResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME"),
+      RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
+      EmailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILTYPE"),
+      SubjectRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED"),
+      BodyRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_BODY_REQUIRED"),
+      Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+      Model: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL"),
+      ModelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED"),
+      Status: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS"),
+      StatusRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
+      Target: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
+      TargetRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED"),
+      Administrators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS"),
+      Evaluators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS"),
+      Candidates: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES"),
+      DefinedUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS"),
+      ChooseUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS"),
+      UsersRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED"),
+      Search: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH_USERS"),
+      TheCandidate: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
+      Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
+      Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
+
+      categories: [],
+      programs: [],
+      status: [],
+      users: [],
+      selectedUsers: [],
+      enableTip: false,
+      searchTerm: '',
+      selectall: false,
+
+      form: {
+        lbl: "",
+        subject: "",
+        name: "",
+        emailfrom: "",
+        message: "",
+        type: 2,
+        category: "",
+        published: 1
+      },
+      trigger: {
+        model: null,
+        status: null,
+        action_status: null,
+        target: null,
+        program: null
+      },
+      triggered: false,
+      errors: {
+        subject: false,
+        message: false,
+        trigger: {
+          model: false,
+          status: false,
+          target: false,
+          selectedUsers: false,
+          action_status: false
+        }
+      },
+      submitted: false
+    }),
+
+    methods: {
+      getProgramsList() {
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=program&task=getallprogram",
+          params: {
+            filter: '',
+            sort: '',
+            recherche: '',
+            lim: 100,
+            page: 1,
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(response => {
+          this.programs = response.data.data;
+        });
+      },
+      getStatus() {
+        axios.get("index.php?option=com_emundus_onboard&controller=email&task=getstatus")
+            .then(response => {
+              this.status = response.data.data;
+            });
+      },
+      getUsers() {
+        axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserswithoutapplicants")
+            .then(response => {
+              this.users = response.data.data;
+            });
+      },
+      searchUserByTerm() {
+        axios.get("index.php?option=com_emundus_onboard&controller=program&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
+            .then(response => {
+              this.users = response.data.data;
+            });
+      },
+
+      addTrigger() {
+        if(this.trigger.program != null) {
+          this.triggered = true;
+        } else {
+          this.triggered = false;
+        }
+      },
+      selectAllUsers() {
+        this.users.forEach(element => {
+          if(!this.selectall) {
+            this.selectedUsers[element.id] = true;
+          } else {
+            this.selectedUsers[element.id] = false;
+          }
+        });
+        this.$forceUpdate();
+      },
+
+      submit() {
+        this.errors = {
+          subject: false,
+          message: false,
+          trigger: {
+            model: false,
+            status: false,
+            target: false,
+            selectedUsers: false,
+          }
+        };
+
+        if(this.form.subject == ""){
+          this.errors.subject = true;
+          return 0;
+        }
+        if(this.form.message == ""){
+          this.errors.message = true;
+          return 0;
+        }
+        if(this.trigger.program != null){
+          if(this.trigger.action_status == null){
+            this.errors.trigger.action_status = true;
+            return 0;
+          }
+          if(this.trigger.status == null){
+            this.errors.trigger.status = true;
+            return 0;
+          }
+          if(this.trigger.target == null){
+            this.errors.trigger.target = true;
+            return 0;
+          } else if (this.trigger.target == 0) {
+            if(this.selectedUsers.length === 0) {
+              this.errors.trigger.selectedUsers = true;
+              return 0;
             }
-          });
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  },
+          }
+        }
+        this.submitted = true;
+        this.form.lbl = this.form.subject;
 
-  mounted() {
-    if (this.actualLanguage == "en") {
-      this.langue = 1;
+        if (this.email !== "") {
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=email&task=updateemail",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({ body: this.form, code: this.email })
+          }).then(response => {
+            window.location.href = '/configuration-emails'
+          }).catch(error => {
+            console.log(error);
+          });
+        } else {
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=email&task=createemail",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({ body: this.form })
+          }).then(response => {
+            this.trigger.model = response.data.data;
+            axios({
+              method: "post",
+              url: 'index.php?option=com_emundus_onboard&controller=email&task=createtrigger',
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                trigger: this.trigger,
+                users: this.selectedUsers
+              })
+            }).then((rep) => {
+              window.location.href = '/configuration-emails'
+            });
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      },
+
+      onSearchCategory(value) {
+        this.form.category = value;
+      },
+
+      enableVariablesTip() {
+        if(!this.enableTip){
+          this.enableTip = true;
+          this.tip();
+        }
+      },
+
+      /**
+       * ** Methods for notify
+       */
+      tip(){
+        this.show(
+            "foo-velocity",
+            Joomla.JText._("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
+            Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+        );
+      },
+
+      show(group, text = "", title = "Information") {
+        this.$notify({
+          group,
+          title: `${title}`,
+          text,
+          duration: 10000
+        });
+      },
+      clean(group) {
+        this.$notify({ group, clean: true });
+      },
+    },
+
+    created() {
+      axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
+              .then(rep => {
+                this.categories = rep.data.data;
+                if (this.email !== "") {
+                  axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
+                          .then(resp => {
+                            this.form.subject = resp.data.data.subject;
+                            this.form.name = resp.data.data.name;
+                            this.form.emailfrom = resp.data.data.emailfrom;
+                            this.form.message = resp.data.data.message;
+                            this.form.type = resp.data.data.type;
+                            this.form.category = resp.data.data.category;
+                            this.form.published = resp.data.data.published;
+                            this.dynamicComponent = true;
+                          }).catch(e => {
+                            console.log(e);
+                          });
+                } else {
+                  this.dynamicComponent = true;
+                }
+              }).catch(e => {
+                console.log(e);
+              });
+      setTimeout(() => {
+        this.enableVariablesTip();
+      },2000);
+      this.getProgramsList();
+      this.getStatus();
+      this.getUsers();
+    },
+
+    mounted() {
+      if (this.actualLanguage == "en") {
+        this.langue = 1;
+      }
     }
-  }
-};
+  };
 </script>
 
 <style scoped>
-.is-invalid {
-  border-color: #dc3545 !important;
-}
-.is-invalid:hover,
-.is-invalid:focus {
-  border-color: #dc3545 !important;
-  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
-}
+  .container-evaluation {
+    position: relative;
+    width: 85%;
+    margin-right: auto;
+    margin-left: auto;
+  }
 
-.container-evaluation {
-  position: relative;
-  width: 85%;
-  margin-right: auto;
-  margin-left: auto;
-}
+  h2 {
+    color: #1b1f3c !important;
+  }
 
-h2 {
-  color: #1b1f3c !important;
-}
+  .w-input,
+  .w-select {
+    min-height: 50px;
+    padding: 12px;
+    font-weight: 300;
+  }
 
-.w-checkbox-input {
-  float: left;
-  margin-bottom: 0px;
-  margin-left: -20px;
-  margin-right: 0px;
-  margin-top: 4px;
-  line-height: normal;
-  width: 4% !important;
-}
+  .bouton-sauvergarder-et-continuer {
+    position: relative;
+    padding: 10px 30px;
+    float: right;
+    border-radius: 4px;
+    background-color: #1b1f3c;
+    -webkit-transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  }
 
-.checkbox-label {
-  color: #696969;
-  font-size: 12px;
-}
+  .last-container {
+    padding-bottom: 30px;
+  }
 
-.w-form-label {
-  display: inline-block;
-  cursor: pointer;
-  font-weight: normal;
-  margin-bottom: 0;
-  margin-top: 5.3%;
-}
+  .section-principale {
+    padding-bottom: 0;
+  }
 
-.w-checkbox {
-  display: block;
-  margin-bottom: 5px;
-  padding-left: 20px;
-}
+  .check:checked ~ .track {
+    box-shadow: inset 0 0 0 20px #4bd863;
+  }
 
-.w-select,
-.plus.w-inline-block {
-  background-color: white;
-  border-color: #cccccc;
-}
-
-.w-input,
-.w-select {
-  min-height: 55px;
-  padding: 12px;
-}
-
-.bouton-sauvergarder-et-continuer {
-  position: relative;
-  padding: 10px 30px;
-  float: right;
-  border-radius: 4px;
-  background-color: #1b1f3c;
-  -webkit-transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
-  transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
-}
-
-.last-container {
-  padding-bottom: 30px;
-}
-
-.section-principale {
-  padding-bottom: 0;
-}
-
-.toggle > b {
-  display: block;
-}
-
-.toggle {
-  position: relative;
-  width: 40px;
-  height: 20px;
-  border-radius: 100px;
-  background-color: #ddd;
-  overflow: hidden;
-  box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.05);
-}
-
-.check {
-  position: absolute;
-  display: block;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  z-index: 6;
-}
-
-.check:checked ~ .track {
-  box-shadow: inset 0 0 0 20px #4bd863;
-}
-
-.check:checked ~ .switch {
-  right: 2px;
-  left: 22px;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition-property: left, right;
-  transition-delay: 0.05s, 0s;
-}
-
-.switch {
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  bottom: 2px;
-  right: 22px;
-  background-color: #fff;
-  border-radius: 36px;
-  z-index: 1;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition-property: left, right;
-  transition-delay: 0s, 0.05s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.track {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.05);
-  border-radius: 40px;
-}
-
-#add-category{
-  width: 32px;
-  height: 30px;
-  cursor: pointer;
-  transition: transform 0.5s ease-in-out;
-}
+  .check:checked ~ .switch {
+    right: 2px;
+    left: 22px;
+    transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+    transition-property: left, right;
+    transition-delay: 0.05s, 0s;
+  }
 </style>

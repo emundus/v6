@@ -49,6 +49,174 @@ class ProductViewProduct extends HikaShopView {
 	}
 
 	public function filter() {
+		if(!hikashop_level(2))
+			return true;
+
+		$config =& hikashop_config();
+		$filterClass = hikashop_get('class.filter');
+		$filterTypeClass = hikashop_get('class.filterType');
+		$cartHelper = hikashop_get('helper.cart');
+		$option = hikaInput::get()->getVar('option','');
+		$ctrl = hikaInput::get()->getVar('ctrl','product');
+		$task = hikaInput::get()->getVar('task','listing');
+		global $Itemid;
+
+		if(empty($this->params)) {
+			$module_id = hikaInput::get()->getInt('module_id');
+			if($module_id) {
+				$modulesClass = hikashop_get('class.modules');
+				$module = $modulesClass->get($module_id);
+				$this->params = new HikaParameter($module->params);
+				if($module) {
+					foreach(get_object_vars($module) as $k => $v){
+						if(!is_object($v) && $this->params->get($k,null) == null){
+							$this->params->set($k,$v);
+						}
+					}
+					$option = hikaInput::get()->getVar('from_option');
+					$ctrl = hikaInput::get()->getVar('from_ctrl');
+					$task = hikaInput::get()->getVar('from_task');
+					$Itemid = hikaInput::get()->getVar('from_itemid');
+				}
+				if(!empty($_SESSION['com_hikashop.listingQuery']))
+					$this->listingQuery = $_SESSION['com_hikashop.listingQuery'];
+			} else {
+				$this->params = new HikaParameter();
+			}
+		}
+
+		$displayedFilters = '';
+		$ajax = false;
+		$showButton = $config->get('show_filter_button', 1);
+		$showResetButton = $config->get('show_reset_button', 0);
+		$maxColumn = $config->get('filter_column_number', 2);
+		$maxFilter = $config->get('filter_limit');
+		$heightConfig = $config->get('filter_height', 100);
+		$displayFieldset = $config->get('display_fieldset', 1);
+		$buttonPosition = $config->get('filter_button_position', 'right');
+		$collapsable=$config->get('filter_collapsable',1);
+		$scrollToTop = false;
+		$cid = 0;
+
+		if(!empty($this->params) && $this->params->get('module') == 'mod_hikashop_filter'){
+			if($config->get('ajax_filters', 1)) {
+				if(!$this->params->get('force_redirect',0) || ($Itemid == $this->params->get('itemid') && $task == 'listing')) {
+					$ajax = (int)$this->params->get('id');
+				}
+			}
+			$this->params->set('main_div_name','module_'.(int)$this->params->get('id'));
+			$showButton=$this->params->get('show_filter_button',1);
+			$showResetButton=$config->get('show_reset_button',0);
+			$maxColumn=$this->params->get('filter_column_number',1);
+			$maxFilter=$this->params->get('filter_limit');
+			$heightConfig=$this->params->get('filter_height',100);
+			$displayFieldset=$this->params->get('display_fieldset',0);
+			$buttonPosition=$this->params->get('filter_button_position','right');
+			$displayedFilters=trim($this->params->get('filters'));
+			$collapsable=$this->params->get('filter_collapsable',1);
+			if(!empty($displayedFilters)){
+				$displayedFilters = explode(',',$displayedFilters);
+			}
+			$scrollToTop = $this->params->get('scroll_to_top', 0);
+
+			$cid = 0;
+			if(!$this->params->get('force_redirect',0)) {
+				if($option == 'com_hikashop') {
+					$cid = hikaInput::get()->getInt('cid');
+					if($cid){
+						if($ctrl != 'product') {
+							if($ctrl != 'category' || $task != 'listing') {
+								$cid = 0;
+							}
+						}elseif($task != 'listing'){
+							$cid = 0;
+						}
+					}elseif(in_array($ctrl, array('product','category')) && $task == 'listing') {
+						global $Itemid;
+						$app = JFactory::getApplication();
+						$menus	= $app->getMenu();
+						$menu	= $menus->getActive();
+						if(empty($menu)){
+							if(!empty($Itemid)){
+								$menus->setActive($Itemid);
+								$menu	= $menus->getItem($Itemid);
+							}
+						}
+						if(!empty($menu->id)){
+							if(isset($menu->params)){
+								$hkParams = $menu->params->get('hk_category',false);
+								if(!empty($hkParams->category))
+									$cid = (int)$hkParams->category;
+								else{
+									$hkParams = $menu->params->get('hk_product',false);
+									if(!empty($hkParams->category))
+										$cid = (int)$hkParams->category;
+								}
+							}
+							if(empty($cid)){
+								$menuClass = hikashop_get('class.menus');
+								$menuData = $menuClass->get($menu->id);
+								if(@$menuData->hikashop_params['content_type']=='manufacturer'){
+									$new_id = 'manufacturer';
+									$class = hikashop_get('class.category');
+									$class->getMainElement($new_id);
+									$menuData->hikashop_params['selectparentlisting']=$new_id;
+								}
+								if(!empty($menuData->hikashop_params['selectparentlisting'])){
+									$cid = $menuData->hikashop_params['selectparentlisting'];
+								}
+							}
+						}
+					}
+				}
+
+				if(empty($cid)) {
+					$ajax = false;
+				}
+			}
+		} else {
+			if($config->get('ajax_filters', 1)) {
+				$ajax = true;
+			}
+			if(!empty($this->pageInfo->filter->cid))
+				$cid = reset($this->pageInfo->filter->cid);
+		}
+
+		$filters = $filterClass->getFilters($cid);
+
+		if(empty($maxFilter)) {
+			$maxFilter = count($filters)-1;
+		}
+		if(empty($maxColumn)) {
+			$maxColumn = 1;
+		}
+
+		$this->assignRef('option',$option);
+		$this->assignRef('ctrl',$ctrl);
+		$this->assignRef('task',$task);
+		$this->assignRef('itemid',$Itemid);
+		$this->assignRef('ajax',$ajax);
+		$this->assignRef('currentId',$cid);
+		$this->assignRef('displayedFilters',$displayedFilters);
+		$this->assignRef('cart',$cartHelper);
+		$this->assignRef('maxFilter',$maxFilter);
+		$this->assignRef('maxColumn',$maxColumn);
+		$this->assignRef('filters',$filters);
+		$this->assignRef('filterClass',$filterClass);
+		$this->assignRef('filterTypeClass',$filterTypeClass);
+		$this->assignRef('heightConfig',$heightConfig);
+		$this->assignRef('showResetButton',$showResetButton);
+		$this->assignRef('showButton',$showButton);
+		$this->assignRef('displayFieldset',$displayFieldset);
+		$this->assignRef('buttonPosition',$buttonPosition);
+		$this->assignRef('collapsable',$collapsable);
+		$this->assignRef('config', $config);
+		$this->assignRef('scrollToTop', $scrollToTop);
+
+		if(!isset($this->listingQuery) && $config->get('hikashopListingQuery','') != '') {
+			$this->listingQuery = $config->get('hikashopListingQuery', '');
+		}
+
 	}
 
 	public function listing() {

@@ -43,7 +43,7 @@ if (!$user->guest) {
 			// Attach logger.
 			jimport('joomla.log.log');
 			JLog::addLogger(array('text_file' => 'com_emundus.me-user-check.php'), JLog::ALL, array('com_emundus'));
-			JLog::add('Error creating missing emundus_user in plugin/em-user-check at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error creating missing emundus_user in plugin/em-user-check at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		}
 	}
 }

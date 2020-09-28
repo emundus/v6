@@ -23,6 +23,7 @@ class CpanelController extends JControllerLegacy  {
         //FalangControllerHelper::_checkDBCacheStructure();
 		FalangControllerHelper::_checkDBStructure();
 		FalangControllerHelper::_checkPlugin();
+		FalangControllerHelper::_checkAdvancedRouter();
 
 	}
 

@@ -6,9 +6,11 @@
 </template>
 
 <script>
+  import axios from "axios";
   // Import TinyMCE
   import tinymce from 'tinymce/tinymce';
   import _ from 'lodash'
+  import $ from 'jquery'
 
   // Any plugins you want to use has to be imported
   import 'tinymce/plugins/paste';
@@ -33,12 +35,15 @@ export default {
     text: String,
     lang: String,
     placeholder: String,
-    id: String
+    id: String,
+    enable_variables: Boolean
   },
 
   data() {
     return {
-      selector_id: this.id + _.random(10000, 99999)
+      selector_id: this.id + _.random(10000, 99999),
+      variables: {},
+      data: null
     };
   },
 
@@ -55,25 +60,82 @@ export default {
   },
 
   mounted() {
-    var getUrl = window.location;
-    var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+    axios({
+      method: "get",
+      url: "index.php?option=com_emundus_onboard&controller=settings&task=geteditorvariables"
+    }).then(response => {
+        this.variables = response.data.data;
+    });
+    var baseUrl = window.location.protocol + '//' + window.location.host + '/media/com_emundus_onboard/';
 
     let options = {
       selector: '#tiny_' + this.selector_id,
-      plugins: 'paste link media preview image code anchor advlist hr emoticons lists searchreplace charmap quickbars imagetools pagebreak autolink print',
-      toolbar: 'undo redo | forecolor bold italic underline strikethrough | fontselect fontsizeselect formatselect | preview | alignleft aligncenter alignright alignjustify hr pagebreak | bullist numlist | outdent indent | link image insertfile media anchor| charmap emoticons backcolor | searchreplace print',
+      images_upload_url: 'index.php?option=com_emundus_onboard&controller=settings&task=uploadimages',
+      plugins: 'paste link media preview image code anchor advlist hr emoticons lists searchreplace charmap quickbars imagetools pagebreak autolink print mention',
+      toolbar: 'undo redo | forecolor bold italic underline strikethrough | fontsizeselect formatselect | image link | alignleft aligncenter alignright alignjustify hr | bullist numlist | outdent indent | insertfile media anchor| charmap emoticons backcolor | searchreplace print',
       fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
-      content_css: baseUrl + '/media/com_emundus_onboard/skins/ui/oxide/content.min.css',
+      content_css: baseUrl + 'skins/ui/oxide/content.min.css',
       height: '30em',
       branding: false,
       elementpath: false,
       statusbar: false,
       menubar: false,
-      a11y_advanced_options: true,
-      toolbar_sticky: true,
+      a11y_advanced_options: false,
+      toolbar_sticky: false,
+      quickbars_insert_toolbar: '',
       quickbars_selection_toolbar: 'bold italic underline | quicklink h2 h3 blockquote',
       toolbar_mode: 'sliding',
       placeholder: this.placeholder,
+      file_picker_types: 'image',
+      file_picker_callback: function(cb, value, meta) {
+        var input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+
+        input.onchange = function() {
+          var file = this.files[0];
+          var reader = new FileReader();
+
+          reader.onload = function () {
+            var id = 'blobid' + (new Date()).getTime();
+            var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+            var base64 = reader.result.split(',')[1];
+            var blobInfo = blobCache.create(id, file, base64);
+            blobCache.add(blobInfo);
+
+            // call the callback and populate the Title field with the file name
+            cb(blobInfo.blobUri(), { title: file.name });
+          };
+          reader.readAsDataURL(file);
+        };
+
+        input.click();
+      },
+      mentions: {
+        delimiter: '/',
+        source: (query, process, delimiter) => {
+          if (delimiter === '/' && this.enable_variables == true) {
+            process(this.variables);
+          }
+        },
+        queryBy: 'tag',
+        delay: 200,
+        insert: (item) => {
+          setTimeout(() => {
+            this.$emit("input", tinymce.activeEditor.getContent());
+          },500);
+          return '<span>[' + item.tag + ']</span>';
+        },
+        render: function(item) {
+          return '<li>' +
+              '<a href="javascript:;"><span>' + item.tag + '</span><p>' + item.description + '</p></a>' +
+              '</li>';
+        },
+        renderDropdown: function() {
+          //add twitter bootstrap dropdown-menu class
+          return '<ul class="rte-autocomplete dropdown-menu"></ul>';
+        }
+      },
       setup: (editor) => {
         editor.on('keyup', () => {
           this.$emit("input", tinymce.activeEditor.getContent());
@@ -85,7 +147,7 @@ export default {
     };
     if(this.lang == 'fr'){
       options.language = 'fr_FR';
-      options.language_url = baseUrl + '/media/com_emundus_onboard/languages/fr_FR.js';
+      options.language_url = baseUrl + 'languages/fr_FR.js';
       tinymce.init(options);
     } else {
       tinymce.init(options);
@@ -93,7 +155,7 @@ export default {
 
     this.$forceUpdate();
 
-    //setInterval(this.saveText, 3000);
+    setInterval(this.saveText, 3000);
   },
 };
 </script>

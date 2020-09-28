@@ -55,9 +55,12 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 				<fieldset>
 					<?php // If the fieldset has a label set, display it as the legend. ?>
 					<?php if (isset($fieldset->label)) : ?>
+                        <div class="em-heading-form">
+                        <div class="icon-title profile"></div>
 						<legend>
 							<?php echo JText::_($fieldset->label); ?>
 						</legend>
+                        </div>
 					<?php endif; ?>
 					<?php if (isset($fieldset->description) && trim($fieldset->description)) : ?>
 						<p>

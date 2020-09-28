@@ -75,7 +75,7 @@ button#back:hover, button#back:active, button#back:focus,
     margin-bottom: 0;
     width: 100%;
 }
-/* HOMEPAGE */
+
 .blog-featuredhomepage a:hover {
     text-decoration: underline;
 }
@@ -106,7 +106,7 @@ button#back:hover, button#back:active, button#back:focus,
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: -65px;
+    margin-top: -30px;
 }
 
 .forget-mdp {
@@ -134,7 +134,100 @@ button#back:hover, button#back:active, button#back:focus,
     margin: 5px 0 !important;
 }
 
-.list-group.candidacy-files-list i.icon-print, .list-group.candidacy-files-list i.icon-trash {
-    padding-left: 3px !important;
+.homepage #g-main-mainbody #content-bottom-a .platform-content i.icon-print, .homepage #g-main-mainbody #content-bottom-a .platform-content i.icon-trash {
+    padding-left: 2px;
 }
-​
+
+.list-group .col-xs-6.col-md-4 a {
+    margin-bottom: 2px;
+}
+
+a.btn.btn-success:not(.btn-xs) {
+    width: auto;
+    text-align: initial;
+}
+
+/*** Progression bar percentage ***/
+.main-page-file-progress text.timer {
+    color: #000 !important;
+    font-size: 30px !important;
+    font-weight: 600;
+    fill: #000 !important;
+}
+.g-block.size-100.content-bottom-a hr:last-child {
+    display: none !important;
+}
+
+@media all and (max-width: 767px) {
+    .main-page-application-title {
+        text-align: center;
+    }
+
+    .main-page-file-info a {
+        margin-bottom: 4px;
+    }
+
+}
+
+@media all and (max-width: 768px) and (max-width: 959px) {
+    .view-featured .candidacy-files-list .row {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .view-featured .candidacy-files-list .row .main-page-application-title {
+        width: 100%;
+    }
+
+    .view-featured .candidacy-files-list .row .main-page-file-info {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .main-page-file-info {
+        width: auto;
+    }
+
+    .main-page-file-progress {
+        width: 50%;
+    }
+}
+
+@media screen and (max-width: 958px) {
+
+    .candidacy-files-list .btn-warning {
+        z-index: 5;
+        position: relative;
+    }
+
+    .candidacy-files-list .main-page-file-progress {
+        top: 40px;
+        padding-bottom: 40px;
+    }
+}
+
+@media all and (max-width: 959px) {
+    .main-page-application-title {
+        text-align: center;
+    }
+
+    .main-page-file-progress {
+        margin-top: 0;
+    }
+
+    .main-page-file-info {
+        text-align: center;
+    }
+
+    .view-featured .candidacy-files-list .row .col-md-4 {
+        text-align: center;
+    }
+    .view-featured .candidacy-files-list .row .col-md-4:nth-child(3) {
+        display: inline-flex;
+        align-items: center;
+    }
+}
+
+

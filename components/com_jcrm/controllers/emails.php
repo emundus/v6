@@ -21,8 +21,7 @@ class JcrmControllerEmails extends JcrmController
 	 * Proxy for getModel.
 	 * @since	1.6
 	 */
-	public function &getModel($name = 'Emails', $prefix = 'JcrmModel')
-	{
+	public function &getModel($name = 'Emails', $prefix = 'JcrmModel') {
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;
 	}

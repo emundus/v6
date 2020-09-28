@@ -36,17 +36,13 @@ class JcrmViewContact extends JViewLegacy {
         $this->params = $app->getParams('com_jcrm');
 
         if (!empty($this->item)) {
-
-		$this->form		= $this->get('Form');
+        	$this->form	= $this->get('Form');
         }
-
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
-
-
 
         if ($this->_layout == 'edit') {
 
@@ -58,7 +54,6 @@ class JcrmViewContact extends JViewLegacy {
         }
 
         $this->_prepareDocument();
-
         parent::display($tpl);
     }
 
@@ -78,6 +73,7 @@ class JcrmViewContact extends JViewLegacy {
         } else {
             $this->params->def('page_heading', JText::_('COM_JCRM_DEFAULT_PAGE_TITLE'));
         }
+
         $title = $this->params->get('page_title', '');
         if (empty($title)) {
             $title = $app->getCfg('sitename');

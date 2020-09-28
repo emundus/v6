@@ -155,6 +155,7 @@
 
 .ui.bottom.attached.steps .step:first-child {
 	justify-content: center;
+	background: transparent;
 }
 
 .registration form > div {
@@ -162,8 +163,39 @@
 	justify-content: center;
 	align-items: center;
 }
-.applicant-form .ui.attached.segment {
-	background: #e03c32;
-	border: #e03c32;
-	color: #ffffff;
+
+.step.completed i.icon.file.text.outline::before,
+.step.completed i.icon.attach::before,
+.step.completed i.icon.add.to.cart::before,
+.step.completed i.icon.time::before {
+	background: none !important;
 }
+
+.ui.attached.segment {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	flex-direction: row;
+}
+
+.view-form .attached p, .view-details .attached p {
+	color: white;
+}
+@media all and (max-width: 767px) {
+	 .ui.attached.segment p {
+		text-align: center !important;
+	}
+
+	.ui.attached.segment  {
+		flex-direction: column;
+	}
+}
+
+@media all and (min-width: 768px) {
+	 .ui.attached.segment {
+		display: flex !important;
+		align-items: center !important;
+		justify-content: space-between !important;
+	}
+}
+

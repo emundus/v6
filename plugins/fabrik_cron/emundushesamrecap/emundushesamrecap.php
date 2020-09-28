@@ -74,7 +74,7 @@ class PlgFabrik_Cronemundushesamrecap extends PlgFabrik_Cron{
 		try {
             $users = $db->loadObjectList();
         } catch (Exception $e) {
-		    JLog::add('Error getting list of applicants to notify in plugin/emundusHesamRecap at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		    JLog::add('Error getting list of applicants to notify in plugin/emundusHesamRecap at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
         }
 
 
@@ -116,7 +116,7 @@ class PlgFabrik_Cronemundushesamrecap extends PlgFabrik_Cron{
 				];
 
 				// Send the email.
-				$c_messages->sendEmailNoFnum($user->email, $reminder_mail_lbl, $post);
+				$c_messages->sendEmailNoFnum($user->email, $reminder_mail_lbl, $post, $user->id);
 			}
 		}
 

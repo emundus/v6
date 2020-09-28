@@ -1034,25 +1034,25 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    $mailer->Encoding = 'base64';
 	    $mailer->setBody($body);
 
-        
+
         // Get any candidate files included in the message.
         if (!empty($template->candidate_file)) {
             foreach ($template->candidate_file as $candidate_file) {
 
                 $filename = $m_messages->get_upload($fnum['fnum'], $candidate_file);
-    
+
                 if ($filename) {
-    
+
                     // Build the path to the file we are searching for on the disk.
                     $path = EMUNDUS_PATH_ABS.$fnum['applicant_id'].DS.$filename;
-    
+
                     if (file_exists($path)) {
                         $toAttach[] = $path;
                     }
                 }
             }
         }
-	    
+
 
 	    // Files generated using the Letters system. Requires attachment creation and doc generation rights.
         // Get from DB and generate using the tags.
@@ -1060,40 +1060,40 @@ class EmundusControllerMessages extends JControllerLegacy {
             foreach ($template->setup_letters as $setup_letter) {
 
                 $letter = $m_messages->get_letter($setup_letter);
-    
+
                 // We only get the letters if they are for that particular programme.
                 if ($letter && in_array($fnum['training'], explode('","', $letter->training))) {
-    
+
                     // Some letters are only for files of a certain status, this is where we check for that.
                     if ($letter->status != null && !in_array($fnum['step'], explode(',', $letter->status))) {
 	                    continue;
                     }
-    
+
                     // A different file is to be generated depending on the template type.
                     switch ($letter->template_type) {
-    
+
                         case '1':
                             // This is a static file, we just need to find its path add it as an attachment.
                             if (file_exists(JPATH_BASE.$letter->file)) {
                                 $toAttach[] = JPATH_BASE.$letter->file;
                             }
                             break;
-    
+
                         case '2':
                             // This is a PDF to be generated from HTML.
                             require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-    
+
                             $path = generateLetterFromHtml($letter, $fnum['fnum'], $fnum['applicant_id'], $fnum['training']);
-    
+
                             if ($path && file_exists($path)) {
 	                            $toAttach[] = $path;
                             }
                             break;
-    
+
                         case '3':
                             // This is a DOC template to be completed with applicant information.
                             $path = $m_messages->generateLetterDoc($letter, $fnum['fnum']);
-    
+
                             if ($path && file_exists($path)) {
 	                            $toAttach[] = $path;
                             }
@@ -1101,7 +1101,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	                    default:
                         break;
-    
+
                     }
                 }
             }
@@ -1112,14 +1112,14 @@ class EmundusControllerMessages extends JControllerLegacy {
         }
 	    // Send and log the email.
         $send = $mailer->Send();
-        
+
 	    if ($send !== true) {
 
 		    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
 		    return false;
 
 	    } else {
-            
+
 		    $sent[] = $fnum['email'];
 		    $log = [
 			    'user_id_from'  => $user->id,
@@ -1142,12 +1142,16 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 * @param String $email_address
 	 * @param Mixed $email If a numeric ID is provided, use that, if a string is provided, get the email with that label.
 	 * @param null $post
+	 * @param null $user_id
 	 * @param array $attachments
+     * @param array $fnum If we need to replace fabrik tags
 	 *
 	 * @return bool
 	 */
-	function sendEmailNoFnum($email_address, $email, $post = null, $attachments = []) {
+	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null) {
 
+        include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        $m_email = new EmundusModelEmails;
 		$m_messages = new EmundusModelMessages();
 
 		$user   = JFactory::getUser();
@@ -1191,19 +1195,39 @@ class EmundusControllerMessages extends JControllerLegacy {
 			];
 		}
 
-		// Handle [] in post keys.
-		$keys = [];
-		foreach (array_keys($post) as $key) {
-			$keys[] = '/\['.$key.'\]/';
-		}
+        if($user_id != null) {
+            $password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
+            $post = $m_email->setTags($user_id, $post, null, $password);
+        } else {
+            // Handle [] in post keys.
+            $keys = [];
+            foreach (array_keys($post) as $key) {
+                $keys[] = '/\['.$key.'\]/';
+            }
+        }
+
 
 		// Tags are replaced with their corresponding values using the PHP preg_replace function.
-		$subject = preg_replace($keys, $post, $template->subject);
+        if($user_id != null) {
+            $subject = preg_replace($post['patterns'], $post['replacements'], $template->subject);
+        } else {
+            $subject = preg_replace($keys, $post, $template->subject);
+        }
+
 		$body = $template->message;
 		if ($template != false) {
 			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 		}
-		$body = preg_replace($keys, $post, $body);
+
+        if($user_id != null) {
+            $body = preg_replace($post['patterns'], $post['replacements'], $body);
+        } else {
+            $body = preg_replace($keys, $post, $body);
+        }
+
+        if($fnum != null) {
+            $body = $m_email->setTagsFabrik($body, array($fnum));
+        }
 
 		// Configure email sender
 		$mailer = JFactory::getMailer();
@@ -1251,6 +1275,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         // Get receiver info
 	    $m_profile = new EmundusModelProfile();
 	    $receiver_profile = $m_profile->getProfileByApplicant($receiver);
+	    $user_id = JFactory::getUser($receiver)->id;
 	    $email = JFactory::getUser($receiver)->email;
 
         // Send notification email to the receiver
@@ -1267,7 +1292,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    $m_cifre = new EmundusModelCifre();
 		    $notify = $m_cifre->checkNotify($user->id, $receiver);
 		    if (!empty($notify)) {
-			    $this->sendEmailNoFnum($email, 'notification_mail', $post);
+			    $this->sendEmailNoFnum($email, 'notification_mail', $post, $user_id);
 		    }
 
 
@@ -1277,7 +1302,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    $m_user = new EmundusModelUsers();
 		    $online_users = $m_user->getOnlineUsers();
 		    if (!in_array($receiver, $online_users)) {
-			    $this->sendEmailNoFnum($email, 'notification_mail', $post);
+			    $this->sendEmailNoFnum($email, 'notification_mail', $post, $user_id);
 		    }
 	    }
 
@@ -1305,7 +1330,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 			$m_cifre = new EmundusModelCifre();
 			$m_profile = new EmundusModelProfile();
-			
+
 			$users = $m_messages->getChatroomUsersId($chatroom);
 			$current_user = JFactory::getSession()->get('emundusUser');
 			foreach ($users as $receiver) {
@@ -1325,7 +1350,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 				// Find out if we should notify the receiver using the CIFRE notification system.
 				$notify = $m_cifre->checkNotify($current_user->id, $receiver);
 				if (!empty($notify)) {
-					$this->sendEmailNoFnum(JFactory::getUser($receiver)->email, 'notification_mail', $post);
+					$this->sendEmailNoFnum(JFactory::getUser($receiver)->email, 'notification_mail', $post, JFactory::getUser($receiver)->id);
 				}
 			}
 

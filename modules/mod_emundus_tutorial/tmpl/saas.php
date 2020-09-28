@@ -15,35 +15,17 @@ $document->addStyleSheet("modules/mod_emundus_tutorial/style/mod_emundus_tutoria
 if (!empty($articles)) :?>
 
     <script>
-
         function tip<?= $user_param->name; ?>() {
 
-            let path = window.location.href.split('/');
-            let route = path[path.length - 1];
-            let url = route.split('&');
-            let parameters = [];
-            let view = '';
-            let layout = '';
-            let cid = '';
-            if(url.length > 1){
-                url.forEach(parameter => {
-                    parameters.push({
-                        parameter: parameter.split('=')[0],
-                        value: parameter.split('=')[1]
-                    });
-                });
-            }
-            Object.values(parameters).forEach((parameter) => {
-                if(parameter.parameter ==  'view'){
-                    view = parameter.value;
-                } else if(parameter.parameter ==  'layout'){
-                    layout = parameter.value;
-                } else if(parameter.parameter ==  'cid'){
-                    cid = parameter.value;
-                }
-            });
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
 
-            let queue = []
+            const view = urlParams.get('view')
+            const layout = urlParams.get('layout')
+            const cid = urlParams.get('cid')
+
+            let queue = [];
+
 
             <?php foreach ($articles as $key => $article) :?>
                 <?php
@@ -135,26 +117,31 @@ if (!empty($articles)) :?>
                     <?php endif; ?>
                 <?php endforeach; ?>
 
-            Swal.mixin({
-                confirmButtonColor: '#de6339',
-                showCloseButton: true,
-                allowOutsideClick: false
-            }).queue(queue).then((result) => {
-                <?php if ($run) :?>
-                if(result.value) {
-                    if (result.value.length > 0) {
-                        jQuery.ajax({
-                            type: 'POST',
-                            url: 'index.php?option=com_ajax&module=emundus_tutorial&method=markRead&format=json',
-                            data: {
-                                param: "<?= $user_param->name; ?>",
-                                paramType: "<?= $user_param->load_once; ?>"
-                            }
-                        });
+            if(queue.length > 0) {
+                Swal.mixin({
+                    confirmButtonColor: '#de6339',
+                    showCloseButton: true,
+                    allowOutsideClick: false,
+                    customClass: {
+                        popup: 'swal-popup-custom',
                     }
-                }
-                <?php endif; ?>
-            })
+                }).queue(queue).then((result) => {
+                    <?php if ($run) :?>
+                    if (result.value) {
+                        if (result.value.length > 0) {
+                            jQuery.ajax({
+                                type: 'POST',
+                                url: 'index.php?option=com_ajax&module=emundus_tutorial&method=markRead&format=json',
+                                data: {
+                                    param: "<?= $user_param->name; ?>",
+                                    paramType: "<?= $user_param->load_once; ?>"
+                                }
+                            });
+                        }
+                    }
+                    <?php endif; ?>
+                })
+            }
         }
 
         <?php if ($run) :?>

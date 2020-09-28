@@ -181,6 +181,11 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
      * @var File name for malware log 
      */
     private $filemalware_log_name = null;
+	
+	/**
+     * @var object Pagination 
+     */
+    var $global_model = null;
 
     function __construct($config = array())
     {
@@ -198,6 +203,9 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
     
         // Establecemos la ruta donde se almacenarán los escaneos
         $this->folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans';
+		
+		require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'model.php';
+		$this->global_model = new SecuritycheckproModel();
     
         // Establecemos el tamaño máximo de memoria que el script puede consumir
         $params = JComponentHelper::getParams('com_securitycheckpro');
@@ -1364,6 +1372,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
 				}                     
             }
         }
+		
+		$timestamp = $this->global_model->get_Joomla_timestamp();
     
         if ($opcion == "permissions") {        
             // Borramos el fichero del escaneo anterior...
@@ -1399,7 +1409,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                 ->where($db->quoteName('storage_key').' = '.$db->quote('filemanager_resume'));
             $db->setQuery($query);
             $db->execute();
-        
+			        
             $object = (object)array(
             'storage_key'    => 'filemanager_resume',
             'storage_value'    => utf8_encode(
@@ -1407,7 +1417,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                     array(
                     'files_scanned'        => $this->files_scanned,
                     'files_with_incorrect_permissions'    => $this->files_with_incorrect_permissions,
-                    'last_check'    => $this->currentDateTime_func(),
+                    'last_check'    => $timestamp,
                     'filename'        => $filename
                     )
                 )
@@ -1464,7 +1474,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                 ->where($db->quoteName('storage_key').' = '.$db->quote('fileintegrity_resume'));
             $db->setQuery($query);
             $db->execute();
-        
+			        
             $object = (object)array(
             'storage_key'    => 'fileintegrity_resume',
             'storage_value'    => utf8_encode(
@@ -1472,7 +1482,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                     array(
                     'files_scanned_integrity'        => $this->files_scanned_integrity,
                     'files_with_incorrect_integrity'    => $this->files_with_incorrect_integrity,
-                    'last_check_integrity'    => $this->currentDateTime_func(),
+                    'last_check_integrity'    => $timestamp,
                     'filename'        => $filename
                     )
                 )
@@ -1528,7 +1538,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                 ->where($db->quoteName('storage_key').' = '.$db->quote('malwarescan_resume'));
             $db->setQuery($query);
             $db->execute();
-        
+			        
             $object = (object)array(
             'storage_key'    => 'malwarescan_resume',
             'storage_value'    => utf8_encode(
@@ -1536,7 +1546,7 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
                     array(
                     'files_scanned_malwarescan'        => $this->files_scanned_malwarescan,
                     'suspicious_files'    => $this->suspicious_files,
-                    'last_check_malwarescan'    => $this->currentDateTime_func(),
+                    'last_check_malwarescan'    => $timestamp,
                     'filename'        => $filename
                     )
                 )
@@ -1957,13 +1967,6 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
 
     }
 
-    /* Función que devuelve la hora y fecha actuales */
-    public function currentDateTime_func()
-    {
-        return (date('Y-m-d H:i:s'));
-    }
-
-
     /* Destruye y crea la tabla '#__securitycheckpro_file_permissions' */
     function initialize_database()
     {
@@ -2062,39 +2065,46 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
         switch ($opcion) 
         {
         case "integrity":
-            $last_check_integrity_start_time = new DateTime(date('Y-m-d H:i:s', strtotime($this->get_campo_filemanager('last_check_integrity'))));
-            $now = new DateTime($this->currentDateTime_func());
-            $interval = date_diff($last_check_integrity_start_time, $now);
+            $last_check_integrity_start_time = $this->get_campo_filemanager('last_check_integrity');
+            $now = $this->global_model->get_Joomla_timestamp();
+            $seconds = strtotime($now) - strtotime($last_check_integrity_start_time);
+			$days = intval($seconds/86400);
+			$hours = intval($seconds/3600);
             // Extraemos el número total de días entre las dos fechas. Si es cero, no ha transcurrido ningún día, por lo que devolvemos la diferencia de horas. Si ha transcurrido un día o más, devolvemos un valor suficientemente alto para activar los disparadores necesarios
-            if ($interval->format('%a') == 0) {
+            if ($days == 0) {
                 // Extraemos el número total de horas que han pasado desde el último chequeo
-                $interval = $interval->format('%h');
+                $interval = $hours;
             } else
             {
                 $interval = 20000;
             }    
             break;
         case "permissions":
-            $last_check_start_time = new DateTime(date('Y-m-d H:i:s', strtotime($this->get_campo_filemanager('last_check'))));
-            $now = new DateTime($this->currentDateTime_func());
-            $interval = date_diff($last_check_start_time, $now);
+			$last_check_start_time = $this->get_campo_filemanager('last_check');
+            $now = $this->global_model->get_Joomla_timestamp();
+            $seconds = strtotime($now) - strtotime($last_check_start_time);
+			$days = intval($seconds/86400);
+			$hours = intval($seconds/3600);            
             // Extraemos el número total de días entre las dos fechas. Si es cero, no ha transcurrido ningún día, por lo que devolvemos la diferencia de horas. Si ha transcurrido un día o más, devolvemos un valor suficientemente alto para activar los disparadores necesarios
-            if ($interval->format('%a') == 0) {
+            if ($days == 0) {
                 // Extraemos el número total de horas que han pasado desde el último chequeo
-                $interval = $interval->format('%h');
+                $interval = $hours;
             } else
             {
                 $interval = 20000;
             }    
             break;
         case "malwarescan":
-            $last_check_malwarescan_start_time = new DateTime(date('Y-m-d H:i:s', strtotime($this->get_campo_filemanager('last_check_malwarescan'))));
-            $now = new DateTime($this->currentDateTime_func());
-            $interval = date_diff($last_check_malwarescan_start_time, $now);
+			$last_check_malwarescan_start_time = $this->get_campo_filemanager('last_check_malwarescan');
+            $now = $this->global_model->get_Joomla_timestamp();
+            $seconds = strtotime($now) - strtotime($last_check_malwarescan_start_time);
+			$days = intval($seconds/86400);
+			$hours = intval($seconds/3600);
+			
             // Extraemos el número total de días entre las dos fechas. Si es cero, no ha transcurrido ningún día, por lo que devolvemos la diferencia de horas. Si ha transcurrido un día o más, devolvemos un valor suficientemente alto para activar los disparadores necesarios
-            if ($interval->format('%a') == 0) {
+            if ($days == 0) {
                 // Extraemos el número total de horas que han pasado desde el último chequeo
-                $interval = $interval->format('%h');
+                $interval = $hours;
             } else 
             {
                 $interval = 20000;
@@ -2986,7 +2996,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
             
                 // Actualizamos los valores de los campos relacionados con el analisis online
                 $this->set_campo_filemanager('online_checked_files', $this->analized_files_last_hour);
-                $this->set_campo_filemanager('last_online_check_malwarescan', date('Y-m-d H:i:s'));        
+				$timestamp = $this->global_model->get_Joomla_timestamp();
+                $this->set_campo_filemanager('last_online_check_malwarescan', $timestamp);        
 
                 // Buscamos el resultado de los análisis. Para ello preguntamos al servicio Metadefender Cloud sobre cada 'result_id' devuelto.
                 $this->look_for_results($apikey, $malwarescan_data, "files");    
@@ -3076,17 +3087,13 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
 
         // Inicializamos las variables
         $analyzed = 0;
-    
-        // Import Securitycheckpros model
-        JLoader::import('joomla.application.component.model');
-        JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
-        $model = JModelLegacy::getInstance('filemanager', 'SecuritycheckprosModel');
-    
-        $last_check = new DateTime(date('Y-m-d', strtotime($this->get_campo_filemanager('last_online_check_malwarescan'))));
-        $now = new DateTime(date('Y-m-d', strtotime($model->currentDateTime_func())));
+        
+		$last_check = $this->get_campo_filemanager('last_online_check_malwarescan');
+        $now = $this->global_model->get_Joomla_timestamp();
+		$seconds = strtotime($now) - strtotime($last_time_launched);
                     
         // Calculamos las horas que han pasado desde el último chequeo
-        (int) $interval = $now->diff($last_check)->format("%h");
+        $interval = intval($seconds/3600);	
         
         // Si ha pasado una hora o más desde el último escaneo, inicializamos el valor almacenado en la BBDD. De lo contrario devolvemos el valor almacenado en la BBDD.
         if ($interval >= 1) {
@@ -3282,7 +3289,8 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
         if ($opcion == "hashes") {
             // Actualizamos los valores de los campos relacionados con el analisis online
             $this->set_campo_filemanager('online_checked_hashes', $this->analized_hashes_last_hour);
-            $this->set_campo_filemanager('last_online_check_malwarescan', date('Y-m-d H:i:s'));    
+			$timestamp = $this->global_model->get_Joomla_timestamp();
+            $this->set_campo_filemanager('last_online_check_malwarescan', $timestamp);    
         }
     
         // Borramos el fichero del escaneo anterior...
@@ -3474,16 +3482,17 @@ class SecuritycheckprosModelFileManager extends SecuritycheckproModel
     {
 
         // Último escaneo
-        $last_check = new DateTime($this->get_campo_filemanager("last_online_check_malwarescan"));
+        $last_check = $this->get_campo_filemanager("last_online_check_malwarescan");
 
         // Ahora
-        $now = new DateTime(date('Y-m-d H:i:s'));
+        $now = $this->global_model->get_Joomla_timestamp();	
 
         // Diferencia
-        $difference = $last_check->diff($now);
+        $seconds = strtotime($now) - strtotime($last_check);
+		$hours = intval($seconds/3600);	
 
         // Si ha pasado más de una hora, inicializamos la variable
-        if ((($difference->h)>=1) || ((($difference->h)==0) && (($difference->d)>=1))) {
+        if ( $hours >= 1) {
             $this->set_campo_filemanager("online_checked_files", 0);
         }
 

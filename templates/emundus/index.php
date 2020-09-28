@@ -35,39 +35,34 @@ $doc = JFactory::getDocument();
     <div id="g-menu-overlay" class="g-menu-overlay"></div>
     <section id="g-navigation" class="g-navigation">
         <div id="g-container" class="g-container">
-            <div id="g-grid" class="g-grid size-22">
-                <div id="g-block-size-100" class="g-block-size-100">
+            <div id="g-grid" class="g-grid size-20">
+                <div id="g-block-size-100" class="g-block-size-20">
                     <div id="g-content" class="g-content">
                         <div id="platform-content" class="platform-content">
                             <div id="moduletable" class="moduletable">
                                 <?php
-                                $showcolumn = $this->countModules('header-a');
+                                $showcolumn = $this->countModules('header-a-saas');
                                 ?>
                                 <?php if($showcolumn): ?>
-                                    <jdoc:include type="modules" name="header-a" style="<?php if(($this->params->get('header-a') == 'block') || ($this->params->get('header-a') == Null)): echo "block"; else: echo "xhtml"; endif;?>"/>
+                                    <jdoc:include type="modules" name="header-a-saas" style="<?php if(($this->params->get('header-a-saas') == 'block') || ($this->params->get('header-a-saas') == Null)): echo "block"; else: echo "xhtml"; endif;?>"/>
                                 <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div id="moduletable-b" class="moduletable-b size-69">
+            <div id="moduletable-b" class="moduletable-b size-50">
                 <?php
                 $showcolumn = $this->countModules('header-onboarding');
                 ?>
                 <?php if($showcolumn): ?>
+                <nav id="siteNav">
+                    <a href="#" id="menuToggler" class="show-on-small">&#9776;</a>
                     <jdoc:include type="modules" name="header-onboarding"/>
+                </nav>
                 <?php endif; ?>
             </div>
-            <div id="moduletable-c" class="moduletable-c size-8 right-divider">
-                <?php
-                $showcolumn = $this->countModules('header-switch');
-                ?>
-                <?php if($showcolumn): ?>
-                    <jdoc:include type="modules" name="header-switch"/>
-                <?php endif; ?>
-            </div>
-            <div id="moduletable-d" class="moduletable-d size-9">
+            <div id="moduletable-d" class="moduletable-d size-30">
                 <?php
                 $showcolumn = $this->countModules('header-c');
                 ?>
@@ -79,7 +74,7 @@ $doc = JFactory::getDocument();
     </section>
     <section id="g-feature" class="g-feature">
         <div id="g-container" class="g-container">
-            <div id="moduletable-e" class="moduletable-e size-9">
+            <div id="moduletable-f" class="moduletable-f size-9">
                 <?php
                 $showcolumn = $this->countModules('content-tutorial-a');
                 ?>
@@ -112,15 +107,39 @@ $doc = JFactory::getDocument();
     <?php } ?>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-<script>
-    let path = window.location.pathname.split('/');
-    let route = path[path.length - 1];
-    let menu = document.getElementById('moduletable-b');
+<script type="text/javascript">
+    (function($){
+        $(document).ready(function(){
+            $('#menuToggler').on('click', function(e){
+                e.preventDefault;
+                $('#siteNav ul').toggleClass('menuIsActive');
+            });
+        });
+    })(jQuery);
+
     let found = false;
+
+    // Get route
+    const path = window.location.pathname.split('/');
+    const route = path[path.length - 1];
+    const menu = document.getElementById('moduletable-b');
+    //
+
+    // Get view params
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const view = urlParams.get('view')
+    //
+
     menu.childNodes[1].childNodes.forEach((element) => {
         element.childNodes.forEach((link) => {
             if(link.tagName == 'A' && !found) {
-                let find = link.attributes.href.nodeValue.search(route);
+                let find;
+                if(view != null) {
+                    find = link.attributes.href.nodeValue.search(view);
+                } else {
+                    find = link.attributes.href.nodeValue.search(route);
+                }
                 if(find !== -1){
                     link.className = 'menu-current-link';
                     found = true;

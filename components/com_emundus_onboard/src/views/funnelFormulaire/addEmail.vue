@@ -5,61 +5,69 @@
             :trigger="this.triggerSelected"
             :triggerAction="'candidate'"
             @UpdateTriggers="getTriggers"
+            :key="candidate_trigger"
     />
     <ModalAddTrigger
             :prog="this.prog"
             :trigger="this.triggerSelected"
             :triggerAction="'manual'"
             @UpdateTriggers="getTriggers"
+            :key="manual_trigger"
     />
     <div class="choices-buttons">
-      <h2 style="margin-bottom: 0">{{ TheCandidate }}</h2>
+      <h2 style="margin-bottom: 0">{{ CandidateAction }}</h2>
       <a @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
     </div>
     <p>{{ TheCandidateDescription }}</p>
-    <div v-for="(trigger, index) in triggers" :key="index" class="trigger-item" v-if="trigger.candidate == 1">
-      <div style="max-width: 80%">
-        <p>{{trigger.subject}}</p>
-        <p>
-          <span style="font-weight: bold">{{Target}} : </span>
-          <span v-if="trigger.profile == null" v-for="(user, index) in trigger.users">
-            {{user.firstname}} {{user.lastname}}
-            <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
-          </span>
-          <span v-if="trigger.profile == 5">{{Administrators}}</span>
-          <span v-if="trigger.profile == 6">{{Evaluators}}</span>
-        </p>
-        <p>{{Status}} {{trigger.status}}</p>
+    <transition-group :name="'slide-down'" type="transition">
+      <div v-for="(trigger, index) in triggers" :key="index" class="trigger-item" v-if="trigger.candidate == 1">
+        <div style="max-width: 80%">
+          <p>{{trigger.subject}}</p>
+          <p>
+            <span style="font-weight: bold">{{Target}} : </span>
+            <span v-if="trigger.profile == null" v-for="(user, index) in trigger.users">
+              {{user.firstname}} {{user.lastname}}
+              <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
+            </span>
+            <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{TheCandidate}}</span>
+            <span v-if="trigger.profile == 5">{{Administrators}}</span>
+            <span v-if="trigger.profile == 6">{{Evaluators}}</span>
+          </p>
+          <p>{{Status}} {{trigger.status}}</p>
+        </div>
+        <div>
+          <button type="button" @click="removeTrigger(trigger.trigger_id)" class="remove-user"><em class="fas fa-times"></em></button>
+          <button type="button" @click="editTrigger(trigger)"><em class="fas fa-edit"></em></button>
+        </div>
       </div>
-      <div>
-        <button type="button" @click="removeTrigger(trigger.trigger_id)" class="remove-user"><em class="fas fa-times"></em></button>
-        <button type="button" @click="editTrigger(trigger)"><em class="fas fa-edit"></em></button>
-      </div>
-    </div>
+    </transition-group>
     <div class="choices-buttons">
-      <h2 style="margin-bottom: 0">{{ Manual }}</h2>
+      <h2 style="margin-bottom: 0">{{ ManagerAction }}</h2>
       <a @click="$modal.show('modalAddTriggermanual'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
     </div>
     <p>{{ ManualDescription }}</p>
-    <div v-for="(trigger, index) in triggers" :key="index" class="trigger-item" v-if="trigger.manual == 1">
-      <div style="max-width: 80%">
-        <p>{{trigger.subject}}</p>
-        <p>
-          <span style="font-weight: bold">{{Target}} : </span>
-          <span v-if="trigger.profile == null" v-for="(user, index) in trigger.users">
-            {{user.firstname}} {{user.lastname}}
-            <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
-          </span>
-          <span v-if="trigger.profile == 5">{{Administrators}}</span>
-          <span v-if="trigger.profile == 6">{{Evaluators}}</span>
-        </p>
-        <p>{{Status}} {{trigger.status}}</p>
+    <transition-group :name="'slide-down'" type="transition">
+      <div v-for="(trigger, index) in triggers" :key="index" class="trigger-item" v-if="trigger.manual == 1">
+        <div style="max-width: 80%">
+          <p>{{trigger.subject}}</p>
+          <p>
+            <span style="font-weight: bold">{{Target}} : </span>
+            <span v-if="trigger.profile == null && trigger.users.length > 0" v-for="(user, index) in trigger.users">
+              {{user.firstname}} {{user.lastname}}
+              <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
+            </span>
+            <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{TheCandidate}}</span>
+            <span v-if="trigger.profile == 5">{{Administrators}}</span>
+            <span v-if="trigger.profile == 6">{{Evaluators}}</span>
+          </p>
+          <p>{{Status}} {{trigger.status}}</p>
+        </div>
+        <div>
+          <button type="button" @click="removeTrigger(trigger.trigger_id)" class="remove-user"><em class="fas fa-times"></em></button>
+          <button type="button" @click="editTrigger(trigger)"><em class="fas fa-edit"></em></button>
+        </div>
       </div>
-      <div>
-        <button type="button" @click="removeTrigger(trigger.trigger_id)" class="remove-user"><em class="fas fa-times"></em></button>
-        <button type="button" @click="editTrigger(trigger)"><em class="fas fa-edit"></em></button>
-      </div>
-    </div>
+    </transition-group>
   </div>
 </template>
 
@@ -79,6 +87,8 @@ export default {
     return {
       triggers: [],
       triggerSelected: null,
+      manual_trigger: 0,
+      candidate_trigger: 0,
       addTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER"),
       affectTriggers: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_AFFECTTRIGGERS"),
       ChooseEmailTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_EMAIL_TRIGGER"),
@@ -90,17 +100,23 @@ export default {
       Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
       TheCandidateDescription: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE_DESCRIPTION"),
       ManualDescription: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL_DESCRIPTION"),
+      CandidateAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANDIDATE_ACTION"),
+      ManagerAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANAGER_ACTION"),
     };
   },
 
   methods: {
     editTrigger(trigger) {
       this.triggerSelected = trigger.trigger_id;
-      if(trigger.candidate == 1){
-        this.$modal.show('modalAddTriggercandidate');
-      } else {
-        this.$modal.show('modalAddTriggermanual');
-      }
+      this.manual_trigger += 1;
+      this.candidate_trigger += 1;
+      setTimeout(() => {
+        if(trigger.candidate == 1){
+          this.$modal.show('modalAddTriggercandidate');
+        } else {
+          this.$modal.show('modalAddTriggermanual');
+        }
+      },500);
     },
     removeTrigger(trigger) {
       axios({

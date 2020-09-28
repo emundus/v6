@@ -70,6 +70,67 @@ defined('_JEXEC') or die('Restricted access');
 
 	$cart = $this->checkoutHelper->getCart();
 
+	$displayingPrices = new stdClass();
+	$displayingPrices->price_currency_id = $cart->full_total->prices[0]->price_currency_id;
+
+	$displayingPrices->total = new stdClass();
+	$displayingPrices->total->price_value = $cart->full_total->prices[0]->price_value;
+	$displayingPrices->total->price_value_with_tax = $cart->full_total->prices[0]->price_value_with_tax;
+
+	$displayingPrices->taxes = array();
+	if(isset($cart->full_total->prices[0]->taxes))
+		$displayingPrices->taxes = $cart->full_total->prices[0]->taxes;
+
+	if(empty($this->options['show_payment'])){
+		if(isset($cart->payment->payment_price) && $cart->payment->payment_price > 0 && $cart->payment->payment_price < $displayingPrices->total->price_value)
+			$displayingPrices->total->price_value -= $cart->payment->payment_price;
+
+		if(isset($cart->payment->payment_price_with_tax) && $cart->payment->payment_price_with_tax > 0 && $cart->payment->payment_price_with_tax < $displayingPrices->total->price_value_with_tax)
+			$displayingPrices->total->price_value_with_tax -= $cart->payment->payment_price_with_tax;
+		if(isset($cart->payment->taxes)){
+			foreach($cart->payment->taxes as $payment_tax){
+				if(array_key_exists($payment_tax->tax_namekey, $displayingPrices->taxes)){
+					$displayingPrices->taxes[$payment_tax->tax_namekey]->tax_amount -= $payment_tax->tax_amount;
+				}
+			}
+		}
+	}
+	if(empty($this->options['show_shipping']) && !empty($cart->shipping)){
+		$shipping_price = 0;
+		$shipping_price_with_tax = 0;
+		foreach($cart->shipping as $shipping) {
+			if(isset($shipping->shipping_price) && $shipping->shipping_price > 0 && $shipping->shipping_price < $displayingPrices->total->price_value)
+				$shipping_price += $shipping->shipping_price;
+			if(isset($shipping->shipping_price_with_tax) && $shipping->shipping_price_with_tax > 0 && $shipping->shipping_price_with_tax < $displayingPrices->total->price_value_with_tax)
+				$shipping_price_with_tax += $shipping->shipping_price_with_tax;
+
+			if(isset($shipping->taxes)){
+				foreach($shipping->taxes as $shipping_tax){
+					if(array_key_exists($shipping_tax->tax_namekey, $displayingPrices->taxes)){
+						$displayingPrices->taxes[$shipping_tax->tax_namekey]->tax_amount -= $shipping_tax->tax_amount;
+					}
+				}
+			}
+
+			if(!empty($this->options['show_coupon']) && isset($cart->coupon->taxes) && isset($cart->coupon->discount_shipping_percent) && $cart->coupon->discount_shipping_percent > 0){
+				foreach($cart->coupon->taxes as $coupon_tax){
+					if(array_key_exists($coupon_tax->tax_namekey, $displayingPrices->taxes)){
+						$displayingPrices->taxes[$coupon_tax->tax_namekey]->tax_amount -= $coupon_tax->tax_amount;
+					}
+				}
+			}
+		}
+		$displayingPrices->total->price_value -= $shipping_price;
+		$displayingPrices->total->price_value_with_tax -= $shipping_price_with_tax;
+	}
+	if(empty($this->options['show_coupon'])){
+		if(isset($cart->coupon->discount_value_without_tax) && $cart->coupon->discount_value_without_tax > 0 && $cart->coupon->discount_value_without_tax < $displayingPrices->total->price_value)
+			$displayingPrices->total->price_value += $cart->coupon->discount_value_without_tax;
+
+		if(isset($cart->coupon->discount_value) && $cart->coupon->discount_value > 0 && $cart->coupon->discount_value < $displayingPrices->total->price_value_with_tax)
+			$displayingPrices->total->price_value_with_tax += $cart->coupon->discount_value;
+	}
+
 	if(empty($this->productClass))
 		$this->productClass = hikashop_get('class.product');
 
@@ -333,7 +394,7 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 
 <?php
-	$taxes = round($cart->full_total->prices[0]->price_value_with_tax - $cart->full_total->prices[0]->price_value, $this->currencyClass->getRounding($cart->full_total->prices[0]->price_currency_id));
+	$taxes = round($displayingPrices->total->price_value_with_tax - $displayingPrices->total->price_value, $this->currencyClass->getRounding($cart->full_total->prices[0]->price_currency_id));
 	if(!empty($this->options['show_price']) && (!empty($cart->coupon) || !empty($cart->shipping) || !empty($cart->additional) || $taxes > 0)) {
 ?>
 		<tr class="margin"><td colspan="<?php echo $row_count; ?>" class="hikashop_cart_empty_footer"></td></tr>
@@ -353,7 +414,7 @@ defined('_JEXEC') or die('Restricted access');
 		</tr>
 <?php
 		}
-		if(!empty($this->options['show_price']) && !empty($cart->coupon)) {
+		if(!empty($this->options['show_price']) && !empty($cart->coupon) && !empty($this->options['show_coupon'])) {
 ?>
 		<tr>
 			<td colspan="<?php echo $row_count - 2; ?>" class="hikashop_cart_empty_footer"></td>
@@ -372,7 +433,7 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 		}
 
-		if(!empty($this->options['show_price']) && !empty($cart->shipping)) {
+		if(!empty($this->options['show_price']) && !empty($cart->shipping) && !empty($this->options['show_shipping'])) {
 ?>
 		<tr>
 			<td colspan="<?php echo $row_count - 2; ?>" class="hikashop_cart_empty_footer"></td>
@@ -441,8 +502,8 @@ defined('_JEXEC') or die('Restricted access');
 		}
 
 		if(!empty($this->options['show_price']) && $taxes > 0){
-			if($this->config->get('detailed_tax_display') && isset($cart->full_total->prices[0]->taxes)) {
-				foreach($cart->full_total->prices[0]->taxes as $tax) {
+			if($this->config->get('detailed_tax_display') && isset($displayingPrices->taxes)) {
+				foreach($displayingPrices->taxes as $tax) {
 ?>
 		<tr>
 			<td colspan="<?php echo $row_count - 2; ?>" class="hikashop_cart_empty_footer"></td>
@@ -474,7 +535,7 @@ defined('_JEXEC') or die('Restricted access');
 			}
 		}
 
-		if(!empty($this->options['show_price']) && !empty($cart->payment) && $cart->payment->payment_price != 0) {
+		if(!empty($this->options['show_price']) && !empty($cart->payment) && $cart->payment->payment_price != 0 && !empty($this->options['show_payment'])) {
 ?>
 		<tr>
 			<td colspan="<?php echo $row_count - 2; ?>" class="hikashop_cart_empty_footer"></td>
@@ -511,7 +572,7 @@ defined('_JEXEC') or die('Restricted access');
 			?></td>
 			<td class="hikashop_cart_total_value" data-title="<?php echo Jtext::_('HIKASHOP_TOTAL'); ?>">
 				<span class="hikashop_checkout_cart_final_total"><?php
-					echo $this->currencyClass->format($cart->full_total->prices[0]->price_value_with_tax, $cart->full_total->prices[0]->price_currency_id);
+					echo $this->currencyClass->format($displayingPrices->total->price_value_with_tax, $displayingPrices->price_currency_id);
 				?></span>
 			</td>
 		</tr>

@@ -8,6 +8,8 @@
 
 // No direct access to this file
 defined('_JEXEC') or die;
+$document = JFactory::getDocument();
+$document->addStyleSheet("modules/mod_falang/style/mod_falang.css");
 
 ?>
 <form name="lang" method="post" action="<?php echo htmlspecialchars(JUri::current()); ?>">
@@ -43,11 +45,14 @@ defined('_JEXEC') or die;
         <?php foreach($list as $language):?>
             <?php if ($language->active) :?>
                 <a href="javascript:;" class="langChoose">
+                    <div class="langChoose__img_label">
                    <?php if ($params->get('image', 1)):?>
                       <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
-                   <?php else : ?>
+                       <?php endif; ?>
+                        <?php if ($params->get('show_name', 1)):?>
                        <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
                    <?php endif; ?>
+                    </div>
                     <span class="caret"></span>
                 </a>
             <?php endif; ?>
@@ -82,7 +87,7 @@ defined('_JEXEC') or die;
         </ul>
         <!-- <<< [PAID] <<< -->
 
-        
+
     <?php endif; ?>
 </form>
 

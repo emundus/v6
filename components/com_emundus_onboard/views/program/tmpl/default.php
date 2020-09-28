@@ -13,12 +13,16 @@ $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_onboard/chunk-vendors.js');
 $document->addStyleSheet('media/com_emundus_onboard/app.css');
 
+require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+
 ## GLOBAL ##
 JText::script('COM_EMUNDUS_ONBOARD_MODIFY');
 JText::script('COM_EMUNDUS_ONBOARD_VISUALIZE');
 JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_ADVANCED_SETTINGS');
 JText::script('COM_EMUNDUS_ONBOARD_OK');
 JText::script('COM_EMUNDUS_ONBOARD_CANCEL');
+JText::script('COM_EMUNDUS_ONBOARD_ALL');
+JText::script('COM_EMUNDUS_ONBOARD_SYSTEM');
 ## END ##
 
 ## ACTIONS ##
@@ -57,8 +61,11 @@ JText::script('COM_EMUNDUS_ONBOARD_PROGUNPUBLISHED');
 JText::script('COM_EMUNDUS_ONBOARD_PROGPUBLISHED');
 JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_CAMPAIGN_NUMBERS');
 ## END ##
+
+$user = JFactory::getUser();
+$coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
-<list id="em-list-vue" type="program"></list>
+<list id="em-list-vue" type="program" coordinatorAccess="<?= $coordinator_access ?>"></list>
 
 <script src="media/com_emundus_onboard/app.js"></script>

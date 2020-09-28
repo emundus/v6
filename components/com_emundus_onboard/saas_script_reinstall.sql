@@ -35,7 +35,7 @@ WHERE alias LIKE 'onboarding';
 
 # Disable old coordinator menu
 UPDATE jos_menu SET menutype = 'adminmenu'
-WHERE alias IN ('administration','parametres','parametrage-des-profils-utilisateurs','types-documents','setup-tags','periode-depot-dossier','liste-des-programmes-par-annee','configuration-des-courriers','emails-parametrage','groupes','declarer-un-nouveau-programme','ajouter-une-annee-pour-un-programme','programmes','parametrage-des-statuts','creer-campagne','solicitations-des-referents','declencheurs');
+WHERE alias IN ('administration','parametres','parametrage-des-profils-utilisateurs','types-documents','setup-tags','periode-depot-dossier','liste-des-programmes-par-annee','configuration-des-courriers','emails-parametrage','groupes','declarer-un-nouveau-programme','ajouter-une-annee-pour-un-programme','programmes','parametrage-des-statuts','creer-campagne','solicitations-des-referents','declencheurs','utilisateurs');
 #
 
 # Disable mod_menu_onboarding
@@ -45,6 +45,6 @@ WHERE title LIKE 'Menu-onboarding';
 
 # Update the coordinator to prepare the first onboarding
 UPDATE jos_users
-SET params = '{\"admin_language\":\"\",\"language\":\"\",\"editor\":\"\",\"helpsite\":\"\",\"timezone\":\"\",\"admin_style\":\"\",\"first_login\":\"true\",\"first_campaign\":\"true\"}'
+SET params = '{\"admin_language\":\"\",\"language\":\"\",\"editor\":\"\",\"helpsite\":\"\",\"timezone\":\"\",\"admin_style\":\"\",\"first_login\":\"true\",\"first_campaign\":\"true\",\"first_form\":\"true\",\"first_formbuilder\":\"true\",\"first_documents\":\"true\",\"first_databasejoin\":\"true\",\"first_program\":\"true\"}';
 WHERE id = 95;
 #

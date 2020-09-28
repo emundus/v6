@@ -280,6 +280,72 @@ if(!function_exists('hikashop_encode')) {
 		} else {
 			$id = $data;
 		}
+		if(is_object($data) && ($type=='order' || $type=='invoice') && hikashop_level(1)) {
+			JPluginHelper::importPlugin( 'hikashop' );
+			$app = JFactory::getApplication();
+			$result='';
+			$trigger_name = 'onBefore'.ucfirst($type).'NumberGenerate';
+			$app->triggerEvent($trigger_name, array( &$data, &$result) );
+			if(!empty($result)) {
+				return $result;
+			}
+
+			$config =& hikashop_config();
+			if(empty($format)) {
+				$format = $config->get($type.'_number_format','{automatic_code}');
+			}
+			if(preg_match('#\{id *(?:size ?= ?(?:"|\')(.*)(?:"|\'))? *\}#Ui',$format,$matches)) {
+				$copy = $id;
+				if(!empty($matches[1])){
+					$copy = sprintf('%0'.$matches[1].'d', $copy);
+				}
+				$format = str_replace($matches[0],$copy,$format);
+			}
+			$matches=null;
+			if(preg_match_all('#\{date *format ?= ?(?:"|\')(.*)(?:"|\') *\}#Ui',$format,$matches)) {
+				foreach($matches[0] as $k => $match) {
+					$format = str_replace($match,date($matches[1][$k],$data->order_modified),$format);
+				}
+			}
+			if(strpos($format,'{automatic_code}')!==false) {
+				$format = str_replace('{automatic_code}',hikashop_base($id),$format);
+			}
+			if(preg_match_all('#\{user ([a-z_0-9]+)\}#i',$format,$matches)) {
+				if(empty($data->customer)) {
+					$order_user_id = 0;
+					if(isset($data->order_user_id)) {
+						$order_user_id = $data->order_user_id;
+					} elseif(isset($data->old->order_user_id)) {
+						$order_user_id = $data->old->order_user_id;
+					} elseif(isset($data->order_id)) {
+						$orderClass = hikashop_get('class.order');
+						$orderData = $orderClass->get($data->order_id);
+						$order_user_id = $orderData->order_user_id;
+					}
+					if($order_user_id) {
+						$userClass = hikashop_get('class.user');
+						$data->customer = $userClass->get($order_user_id);
+					}
+				}
+				foreach($matches[1] as $match) {
+					if(isset($data->customer->$match)) {
+						$format = str_replace('{user '.$match.'}',$data->customer->$match,$format);
+					} else {
+						$format = str_replace('{user '.$match.'}','',$format);
+					}
+				}
+			}
+			if(preg_match_all('#\{([a-z_0-9]+) *(?:size ?= ?(?:"|\')(.*)(?:"|\'))? *\}#i',$format,$matches)) {
+				foreach($matches[1] as $k => $match) {
+					$copy = @$data->$match;
+					if(!empty($matches[2][$k])) {
+						$copy = sprintf('%0'.$matches[2][$k].'d', $copy);
+					}
+					$format = str_replace($matches[0][$k],$copy,$format);
+				}
+			}
+			return $format;
+		}
 		return hikashop_base($id);
 	}
 }
@@ -309,6 +375,49 @@ if(!function_exists('hikashop_base')) {
 
 if(!function_exists('hikashop_decode')) {
 	function hikashop_decode($str, $type = 'order') {
+		if($type == 'order' && hikashop_level(1)) {
+			$config =& hikashop_config();
+			JPluginHelper::importPlugin('hikashop');
+			$app = JFactory::getApplication();
+			$result = '';
+			$app->triggerEvent('onBeforeOrderNumberRevert', array( & $str, &$result ));
+			if(!empty($result)) {
+				return $result;
+			}
+
+			$format = $config->get('order_number_format','{automatic_code}');
+			$format = str_replace(array('^','$','.','[',']','|','(',')','?','*','+'),array('\^','\$','\.','\[','\]','\|','\(','\)','\?','\*','\+'),$format);
+			if(preg_match_all('#\{date *format ?= ?(?:"|\')(.*)(?:"|\') *\}#Ui',$format,$matches)){
+				foreach($matches[0] as $k => $match) {
+					$format = str_replace($match,'(?:'.preg_replace('#[a-z]+#i','[0-9a-z]+',$matches[1][$k]).')',$format);
+				}
+			}
+			if(preg_match('#\{id *(?:size ?= ?(?:"|\')(.*)(?:"|\'))? *\}#Ui',$format,$matches)){
+				$format = str_replace($matches[0],'([0-9]+)',$format);
+			}
+			if(strpos($format,'{automatic_code}')!==false){
+					$format = str_replace('{automatic_code}','([0-9a-z]+)',$format);
+			}
+			if(preg_match_all('#\{([a-z_0-9]+)\}#i',$format,$matches)){
+				foreach($matches[1] as $match){
+					if(isset($data->$match)){
+						$format = str_replace('{'.$match.'}','.*',$format);
+					}else{
+						$format = str_replace('{'.$match.'}','',$format);
+					}
+				}
+			}
+
+			$format = str_replace(array('{','}'),array('\{','\}'),$format);
+
+			if(preg_match('#'.$format.'#i',$str,$matches)){
+				foreach($matches as $i => $match){
+					if($i){
+						return ltrim(preg_replace('#[^0-9]#','',$match),'0');
+					}
+				}
+			}
+		}
 		return preg_replace('#[^0-9]#','',$str);
 	}
 }
@@ -1165,7 +1274,7 @@ if(!function_exists('hikashop_footer')) {
 			$link.='?partner_id='.$aff;
 		}
 		$text = '<!--  HikaShop Component powered by '.$link.' -->
-		<!-- version '.$config->get('level').' : '.$config->get('version').' [2006181142] -->';
+		<!-- version '.$config->get('level').' : '.$config->get('version').' [2008102218] -->';
 		if(!$config->get('show_footer',true)) return $text;
 		$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 		$app= JFactory::getApplication();
@@ -2008,6 +2117,33 @@ class hikashopController extends hikashopBridgeController {
 		}
 		if($this->isIn($task,array('modify','delete')) && (!JSession::checkToken('request'))) {
 			return false;
+		}
+		$app = JFactory::getApplication();
+		if(hikashop_isClient('administrator')) {
+			if(method_exists($this,'getACLName')) {
+				$name = $this->getACLName($task);
+			} else {
+				$name = $this->getName();
+			}
+			if(!empty($name) && hikashop_level(2)) {
+				$config =& hikashop_config();
+				if($this->isIn($task,array('display'))){
+					$task = 'view';
+				}elseif($this->isIn($task,array('modify_views','add','modify'))){
+					$task = 'manage';
+				}elseif($this->isIn($task,array('delete'))){
+					$task = 'delete';
+				}else{
+					return true;
+				}
+
+				if(!empty($name))
+					$name = 'acl_'.$name.'_'.$task;
+				if(!hikashop_isAllowed($config->get($name,'all'))){
+					hikashop_display(JText::_('RESSOURCE_NOT_ALLOWED'),'error');
+					return false;
+				}
+			}
 		}
 		return true;
 	}

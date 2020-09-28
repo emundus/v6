@@ -45,11 +45,27 @@ JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION');
 JText::script('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL');
 JText::script('COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_MAXPERUSER_REQUIRED');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_DELETEDOCUMENTTYPE');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_DELETEDOCUMENTTYPE_MESSAGE');
+JText::script('COM_EMUNDUS_ONBOARD_CANCEL');
+JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH');
+JText::script('COM_EMUNDUS_ONBOARD_SUBMITTIONDESCRIPTION');
+JText::script('COM_EMUNDUS_ONBOARD_PDF_DOCUMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
 
 $lang = JFactory::getLanguage();
-$actualLanguage = substr($lang->getTag(), 0, 2);
+$actualLanguage = substr($lang->getTag(), 0 , 2);
+$languages = JLanguageHelper::getLanguages();
+if(count($languages) > 1){
+    $many_languages = '1';
+} else {
+    $many_languages = '0';
+}
 ?>
 
-<div id="em-addFormNextCampaign-vue" campaignId="<?= $this->cid ?>" actualLanguage="<?= $actualLanguage ?>" index="<?= $this->index ?>"></div>
+<div id="em-addFormNextCampaign-vue" campaignId="<?= $this->cid ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>" index="<?= $this->index ?>"></div>
 
 <script src="media/com_emundus_onboard/app.js"></script>

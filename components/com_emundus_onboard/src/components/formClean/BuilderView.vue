@@ -7,68 +7,99 @@
       :class="object_json.show_page_heading.class"
       v-html="object_json.show_page_heading.page_heading"
     />
-    <div class="d-flex">
-      <h2 v-if="object_json.show_title" class="page_header" v-html="object_json.show_title.value" />
-      <span @click="$modal.show('modalSide' + object.rgt)">
-        <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+    <div class="d-flex" v-if="eval == 0 && !updatePage">
+      <h2 v-if="object_json.show_title" class="page_header" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
+      <span @click="$modal.show('modalSide' + object.rgt)" :title="Edit">
+        <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
       </span>
     </div>
-    <p v-if="object_json.intro" class="introP" v-html="object_json.intro" />
+    <div style="width: max-content;margin-left: 20px" v-show="updatePage && indexPage == object_json.id">
+      <div class="input-can-translate" style="margin-top: 40px">
+        <input v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_page ? '' : 'mb-1'" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
+        <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPage(object_json.id)"></button>
+        <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+          <a @click="updateLabelPage(object_json)" :title="Validate">
+            <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
+          </a>
+        </div>
+      </div>
+      <translation v-if="object_json.show_title"  :label="object_json.show_title.label" :actualLanguage="actualLanguage" v-if="translate.label_page"></translation>
+    </div>
+
+    <p v-if="eval == 0 && !updateIntroPage" class="introP" v-html="object_json.intro_value" @click="enableUpdatingPageIntro(object_json)" />
+    <div style="width: max-content;margin-left: 20px" v-show="updateIntroPage && indexPage == object_json.id">
+      <div class="input-can-translate" style="margin-top: 10px">
+        <textarea v-if="object_json.intro" v-model="object_json.intro[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.intro_page ? '' : 'mb-1'" :id="'update_intro_' + object_json.id"/>
+        <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.intro_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPageIntro(object_json.id)"></button>
+        <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.intro_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+          <a @click="updateIntroValuePage(object_json)" :title="Validate">
+            <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
+          </a>
+        </div>
+      </div>
+      <translation v-if="object_json.intro"  :label="object_json.intro" :actualLanguage="actualLanguage" v-if="translate.intro_page"></translation>
+    </div>
 
     <form method="post" v-on:submit.prevent object_json.attribs class="form-page">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
       <draggable
               handle=".handle"
               v-model="groups"
-              @start="draggable = true"
+              @start="startGroupDrag"
               @end="SomethingChangeInGroup">
           <div v-for="(group,index_group) in orderedGroups"
                v-bind:key="group.index"
                @mouseover="enableGroupHover(group.group_id)"
                @mouseleave="disableGroupHover()">
-            <fieldset :class="group.group_class" :id="'group_'+group.group_id" :style="group.group_css">
-              <div class="d-flex" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%">
-                <span v-show="hoverGroup && indexGroup == group.group_id" class="icon-handle-group">
-                  <em class="fas fa-grip-vertical handle"></em>
-                </span>
-                <legend
-                  v-if="group.group_showLegend"
-                  class="legend ViewerLegend">
-                  {{group.group_showLegend}}
-                </legend>
-                <a @click="enableUpdatingGroup(group)" style="margin-left: 1em">
-                  <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
-                </a>
+            <fieldset :class="[group.group_class]" :id="'group_'+group.group_id" :style="group.group_css" style="background-size: 20px; width: 100%">
+              <div class="d-flex justify-content-between" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%">
+                <div class="d-flex">
+                  <span v-show="hoverGroup && indexGroup == group.group_id" class="icon-handle-group">
+                    <em class="fas fa-grip-vertical handle"></em>
+                  </span>
+                  <legend
+                    @click="enableUpdatingGroup(group)"
+                    v-if="group.group_showLegend"
+                    class="legend ViewerLegend">
+                    {{group.group_showLegend}}
+                  </legend>
+                  <a @click="enableUpdatingGroup(group)" style="margin-left: 1em" :title="Edit">
+                    <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
+                  </a>
+                  <a v-if="group.repeat_group" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px pointer" :title="RepeatedGroup" @click="enableRepatedGroup(group)">
+                    <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
+                  </a>
+                </div>
+                <div>
+                  <div v-show="!openGroup[group.group_id]">
+                    <em class="fas fa-chevron-right"></em>
+                  </div>
+                  <div v-show="openGroup[group.group_id]">
+                    <em class="fas fa-chevron-down"></em>
+                  </div>
+                </div>
               </div>
               <div style="width: max-content" v-show="updateGroup && indexGroup == group.group_id">
                 <div class="input-can-translate">
-                  <input v-model="group.label_fr" class="form-control" style="width: 400px;" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
-                  <button class="translate-icon" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="translate.label_group = !translate.label_group"></button>
-                  <div class="d-flex actions-update-label" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
-                    <a @click="deleteAGroup(group,index_group)" style="margin-left: 1em;color: black">
-                      <em class="fas fa-trash-alt" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+                  <input v-model="group.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
+                  <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationGroup(group.group_id)"></button>
+                  <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+                    <a @click="updateLabelGroup(group)" :title="Validate">
+                      <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
                     </a>
-                    <a @click="updateGroup = false;translate.label_group = false">
-                      <em class="fas fa-times ml-20px" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+                    <a @click="enableRepatedGroup(group)" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon" :title="RepeatGroup">
+                      <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
                     </a>
-                    <a @click="updateLabelGroup(group)">
-                      <em class="fas fa-check ml-20px" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+                    <a @click="deleteAGroup(group,index_group)" style="margin-left: 1em;color: black" v-if="files == 0" :title="Delete">
+                      <em class="fas fa-trash-alt" data-toggle="tooltip" data-placement="top"></em>
                     </a>
                   </div>
                 </div>
-                <div class="inlineflex" v-if="translate.label_group">
-                  <label class="translate-label">
-                    {{TranslateEnglish}}
-                  </label>
-                  <em class="fas fa-sort-down"></em>
-                </div>
-                <div class="form-group mb-1" v-if="translate.label_group">
-                  <input v-model="group.label_en" type="text" maxlength="40" class="form-control"/>
-                </div>
+                <translation :label="group.label" :actualLanguage="actualLanguage" v-if="translate.label_group"></translation>
               </div>
               <div v-if="group.group_intro" class="groupintro">{{group.group_intro}}</div>
 
-              <div class="elements-block" v-if="openGroup[group.group_id]">
+              <div class="elements-block" v-show="openGroup[group.group_id]">
                 <draggable
                         handle=".handle"
                         v-model="group.elts"
@@ -87,8 +118,19 @@
                     <modalEditElement
                             :ID="element.id"
                             :element="element"
+                            :files="files"
                             @reloadElement="reloadElement(element)"
                             :id="element.id"
+                            :key="keyElements['element' + element.id]"
+                    />
+                    <modalDuplicateElement
+                            :ID="element.id"
+                            :currentGroup="group.group_id"
+                            :currentPage="object_json.id"
+                            :id="element.id"
+                            :prid="prid"
+                            @reloadElement="reloadElement(element)"
+                            :key="keyElements['element' + element.id]"
                     />
                     <div class="d-flex builder-item-element__properties">
                       <span :class="element.publish ? 'icon-handle' : 'icon-handle-unpublished'" v-show="hoverUpdating && indexHighlight == element.id">
@@ -96,32 +138,21 @@
                       </span>
                       <div class="w-100">
                         <div class="d-flex" style="align-items: baseline">
-                          <span v-if="element.label" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''" v-html="element.label" v-show="element.labelsAbove != 2"></span>
-                          <a @click="enableLabelInput" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'">
-                            <em class="fas fa-pencil-alt ml-10px" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+                          <span v-if="element.label_value" @click="enableLabelInput(element.id)" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
+                          <a @click="enableLabelInput(element.id)" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'" :title="Edit">
+                            <em class="fas fa-pencil-alt ml-10px" data-toggle="tooltip" data-placement="top"></em>
                           </a>
                         </div>
                         <div class="input-can-translate" v-show="clickUpdatingLabel && indexHighlight == element.id">
-                          <input v-model="element.label_fr" class="form-control" :class="translate.label ? '' : 'mb-1'" @keyup.enter="updateLabelElement(element)"/>
-                          <button class="translate-icon" :class="translate.label ? 'translate-icon-selected': ' translate-builder'" type="button" @click="translate.label = !translate.label"></button>
-                          <div class="d-flex actions-update-label" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
-                            <a @click="clickUpdatingLabel = false;translate.label = false">
-                              <em class="fas fa-times ml-20px" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
-                            </a>
-                            <a @click="updateLabelElement(element)">
-                              <em class="fas fa-check ml-20px" data-toggle="tooltip" data-placement="top" :title="sidemenuhelp"></em>
+                          <input v-model="element.label[actualLanguage]" class="form__input field-general w-input" :class="translate.label ? '' : 'mb-1'" @keyup.enter="updateLabelElement(element)" :id="'label_' + element.id"/>
+                          <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationLabel(element.id)"></button>
+                          <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+                            <a @click="updateLabelElement(element)" :title="Validate">
+                              <em class="fas fa-check" data-toggle="tooltip" data-placement="top"></em>
                             </a>
                           </div>
                         </div>
-                        <div class="inlineflex" v-if="translate.label && clickUpdatingLabel && indexHighlight == element.id">
-                          <label class="translate-label">
-                            {{TranslateEnglish}}
-                          </label>
-                          <em class="fas fa-sort-down"></em>
-                        </div>
-                        <div class="form-group mb-1" v-if="translate.label && clickUpdatingLabel && indexHighlight == element.id">
-                          <input v-model="element.label_en" type="text" maxlength="40" class="form__input field-general w-input"/>
-                        </div>
+                        <translation :label="element.label" :actualLanguage="actualLanguage"v-if="translate.label && clickUpdatingLabel && indexHighlight == element.id"></translation>
                         <div v-if="element.params.date_table_format">
                           <date-picker v-model="date" :config="options"></date-picker>
                         </div>
@@ -144,7 +175,7 @@
                         <span class="ml-10px" v-if="element.publish">{{Unpublish}}</span>
                         <span class="ml-10px" v-if="!element.publish">{{Publish}}</span>
                       </a>
-                      <a class="d-flex mr-2 text-orange">
+                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'display'">
                         <div class="toggle">
                           <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
                           <strong class="b switch"></strong>
@@ -152,11 +183,15 @@
                         </div>
                         <span class="ml-10px">{{Required}}</span>
                       </a>
-                      <a class="d-flex mr-2 text-orange" @click="$modal.show('modalEditElement' + element.id)">
+                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="repeat = false;$modal.show('modalEditElement' + element.id)">
                         <em class="fas fa-cog"></em>
                         <span class="ml-10px">{{Settings}}</span>
                       </a>
-                      <a class="d-flex mr-2" style="color: black" @click="deleteElement(element,index)">
+                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="$modal.show('modalDuplicateElement' + element.id)">
+                        <em class="fas fa-copy"></em>
+                        <span class="ml-10px">{{Duplicate}}</span>
+                      </a>
+                      <a class="d-flex mr-2" style="color: black" @click="deleteElement(element,index)" v-if="files == 0">
                         <em class="fas fa-trash-alt"></em>
                         <span class="ml-10px">{{Delete}}</span>
                       </a>
@@ -181,6 +216,8 @@ import axios from "axios";
 import datePicker from "vue-bootstrap-datetimepicker";
 import draggable from "vuedraggable";
 import modalEditElement from "./Modal";
+import modalDuplicateElement from "./ModalDuplicateElement";
+import Translation from "@/components/translation";
 
 const qs = require("qs");
 
@@ -196,26 +233,44 @@ export default {
     change: Boolean,
     changedElement: Array,
     changedGroup: String,
-    UpdateUx: Boolean
+    UpdateUx: Boolean,
+    files: Number,
+    eval: Number,
+    prid: String,
+    actualLanguage: String,
+    manyLanguages: Number
   },
   components: {
     datePicker,
     draggable,
-    modalEditElement
+    modalEditElement,
+    modalDuplicateElement,
+    Translation
   },
   data() {
     return {
       object_json: "",
+
+      // Page trigger
+      updatePage: false,
+      updateIntroPage: false,
+      indexPage: -1,
+
+      // Groups trigger
       openGroup: {},
-      hoverUpdating: false,
       hoverGroup: false,
-      lastIndex: 0,
-      indexHighlight: 0,
       indexGroup: -1,
-      clickUpdatingLabel: false,
       updateGroup: false,
+
+      // Elements trigger
+      hoverUpdating: false,
+      indexHighlight: 0,
+      clickUpdatingLabel: false,
       draggable: false,
       fieldChanges: false,
+      repeat: false,
+      keyElements: {},
+
       date: new Date(),
       options: {
         format: "DD/MM/YYYY",
@@ -223,8 +278,12 @@ export default {
       },
       translate: {
         label: false,
-        label_group: false
+        label_group: false,
+        label_page: false,
+        intro_page: false,
       },
+
+      // TRANSLATIONS
       update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
       updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
       updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
@@ -238,11 +297,17 @@ export default {
       Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
       Settings: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_SETTINGS"),
       Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
+      Edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
+      Cancel: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+      Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+      RepeatGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
+      RepeatedGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEATED_GROUP"),
+      Duplicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_DUPLICATE"),
     };
   },
   methods: {
     // Elements update
-    async updateElementsOrder(group, list) {
+    async updateElementsOrder(group, list, elt) {
       var elements = list.map((element, index) => {
         return { id: element.id, order: index + 1 };
       });
@@ -268,18 +333,19 @@ export default {
         let ellink = this.object.link.replace("fabrik","emundus_onboard");
         axios.get(ellink + "&format=vue_jsonclean").then(r => {
           this.groups.forEach(grp => {
-            this.object_json.Groups['group_' + grp.group_id].elements = r.data.Groups['group_' + grp.group_id].elements;
+              this.$set(this.object_json.Groups['group_' + grp.group_id], 'elements', r.data.Groups['group_' + grp.group_id].elements)
           });
         });
+        elt.group_id = group;
       }).catch(e => {
-        this.$emit(
+        /*this.$emit(
                 "show",
                 "foo-velocity",
                 "error",
                 this.orderFailed,
                 this.updating
         );
-        console.log(e);
+        console.log(e);*/
       });
     },
 
@@ -307,7 +373,7 @@ export default {
               return qs.stringify(params);
             }
           }).then(response => {
-            element.label = response.data.label;
+            element.label_value = response.data.label_value;
             this.$emit(
                     "show",
                     "foo-velocity",
@@ -410,12 +476,12 @@ export default {
 
     updateLabelElement(element) {
       let labels = {
-        fr: element.label_fr,
-        en: element.label_en
+        fr: element.label.fr,
+        en: element.label.en
       }
       if(labels.en === 'Unnamed item'){
         labels.en = labels.fr;
-        element.label_en = labels.fr;
+        element.label.en = labels.fr;
       }
       axios({
         method: "post",
@@ -428,29 +494,65 @@ export default {
           labelTofind: element.label_tag,
           NewSubLabel: labels
         })
-      }).then(() => {
-        axios({
-          method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
-          params: {
-            element: element.id,
-            gid: element.group_id
-          },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(response => {
-          element.label = response.data.label;
-          this.$emit(
+      }).then((rep) => {
+        if(rep.data.data.every(x => x = false)){
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateelementlabelwithouttranslation",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              eid: element.id,
+              label: element.label.fr
+            })
+          }).then(() => {
+            axios({
+              method: "get",
+              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+              params: {
+                element: element.id,
+                gid: element.group_id
+              },
+              paramsSerializer: params => {
+                return qs.stringify(params);
+              }
+            }).then(response => {
+              element.label_value = response.data.label_value;
+              this.$emit(
                   "show",
                   "foo-velocity",
                   "success",
                   this.updateSuccess,
                   this.update
-          );
-          this.translate.label = false;
-          this.clickUpdatingLabel = false;
-        });
+              );
+            });
+          });
+        } else {
+          axios({
+            method: "get",
+            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+            params: {
+              element: element.id,
+              gid: element.group_id
+            },
+            paramsSerializer: params => {
+              return qs.stringify(params);
+            }
+          }).then(response => {
+            this.$set(element,'element',response.data.element);
+            element.label_value = response.data.label_value;
+            this.$emit(
+                "show",
+                "foo-velocity",
+                "success",
+                this.updateSuccess,
+                this.update
+            );
+            this.translate.label = false;
+          });
+        }
+        this.clickUpdatingLabel = false;
       }).catch(e => {
         this.$emit(
                 "show",
@@ -475,8 +577,17 @@ export default {
             return qs.stringify(params);
           }
         }).then(response => {
-          element.element = response.data.element;
-          element = response.data;
+          if(response.data.plugin === 'databasejoin' && this.repeat === false){
+            // Check variables
+            this.repeat = true;
+            this.reloadElement(element)
+          } else{
+            this.$set(element,'element',response.data.element);
+            //element.element = response.data.element;
+            element = response.data;
+            this.$set(this.keyElements,'element' + element.id,this.keyElements['element' + element.id] + 1)
+            //this.keyElements['element' + element.id] = 1;
+          }
         }).catch(e => {
           this.$emit(
                   "show",
@@ -493,8 +604,8 @@ export default {
     // Group Update
     updateLabelGroup(group) {
       let labels = {
-        fr: group.label_fr,
-        en: group.label_en
+        fr: group.label.fr,
+        en: group.label.en
       }
       axios({
         method: "post",
@@ -507,7 +618,21 @@ export default {
           labelTofind: group.group_tag,
           NewSubLabel: labels
         })
-      }).then(() => {
+      }).then((rep) => {
+        if(rep.data.data.every(x => x = false)){
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updategrouplabelwithouttranslation",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              gid: group.group_id,
+              label: group.label.fr
+            })
+          });
+        }
+
         this.$emit(
                 "show",
                 "foo-velocity",
@@ -515,7 +640,7 @@ export default {
                 this.updateSuccess,
                 this.update
         );
-        group.group_showLegend = group.label_fr;
+        group.group_showLegend = group.label[this.actualLanguage];
         this.translate.label_group = false;
         this.updateGroup = false;
       }).catch(e => {
@@ -561,6 +686,7 @@ export default {
             }).then(() => {
               this.groups.splice(index,1);
               delete this.object_json.Groups['group_' + group.group_id];
+              this.updateGroup = false;
               this.$forceUpdate();
             });
           }).catch(e => {
@@ -607,7 +733,203 @@ export default {
         console.log(e);
       });
     },
+
+    enableRepatedGroup(group){
+      if(!group.repeat_group) {
+        Swal.fire({
+          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
+          text: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE"),
+          type: "info",
+          showCancelButton: true,
+          confirmButtonColor: '#de6339',
+          confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+          cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+          reverseButtons: true
+        }).then(result => {
+          if(result.value) {
+            axios({
+              method: "POST",
+              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=enablegrouprepeat",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                gid: group.group_id,
+              })
+            }).then((result) => {
+              if(result.data.status == true){
+                group.repeat_group = 1;
+                this.$emit(
+                        "show",
+                        "foo-velocity",
+                        "success",
+                        this.updateSuccess,
+                        this.update
+                );
+                group.group_showLegend = group.label[this.actualLanguage];
+                this.translate.label_group = false;
+                this.updateGroup = false;
+              }
+            });
+          }
+        });
+      } else {
+        Swal.fire({
+          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_DISABLE"),
+          text: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE_DISABLE"),
+          type: "info",
+          showCancelButton: true,
+          confirmButtonColor: '#de6339',
+          confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+          cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+          reverseButtons: true
+        }).then(result => {
+          if(result.value) {
+            axios({
+              method: "POST",
+              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=disablegrouprepeat",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                gid: group.group_id,
+              })
+            }).then((result) => {
+              if(result.data.status == true){
+                group.repeat_group = 0;
+                this.$emit(
+                        "show",
+                        "foo-velocity",
+                        "success",
+                        this.updateSuccess,
+                        this.update
+                );
+                group.group_showLegend = group.label[this.actualLanguage];
+                this.translate.label_group = false;
+                this.updateGroup = false;
+              }
+            });
+          }
+        });
+      }
+    },
     //
+
+    // Page trigger
+    updateLabelPage(page) {
+      let labels = {
+        fr: page.show_title.label.fr,
+        en: page.show_title.label.en
+      }
+      axios({
+        method: "post",
+        url:
+            "index.php?option=com_emundus_onboard&controller=formbuilder&task=formsTrad",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          labelTofind: page.show_title.titleraw,
+          NewSubLabel: labels
+        })
+      }).then((rep) => {
+        if(rep.data.data.every(x => x = false)){
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepagelabelwithouttranslation",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              pid: page.id,
+              label: page.show_title.label.fr
+            })
+          });
+        }
+            axios({
+              method: "post",
+              url:
+                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatemenulabel",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                pid: page.id,
+                label: labels
+              })
+            }).then(() => {
+              this.$emit(
+                  "show",
+                  "foo-velocity",
+                  "success",
+                  this.updateSuccess,
+                  this.update
+              );
+              page.show_title.value = page.show_title.label[this.actualLanguage];
+              this.updatePage = false;
+            });
+      }).catch(e => {
+        this.$emit(
+            "show",
+            "foo-velocity",
+            "error",
+            this.updateFailed,
+            this.updating
+        );
+        console.log(e);
+      });
+    },
+
+    updateIntroValuePage(page) {
+      let intros = {
+        fr: page.intro.fr,
+        en: page.intro.en
+      }
+      axios({
+        method: "post",
+        url:
+            "index.php?option=com_emundus_onboard&controller=formbuilder&task=formsTrad",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          labelTofind: page.intro_raw,
+          NewSubLabel: intros
+        })
+      }).then((rep) => {
+        if(rep.data.data.every(x => x = false)){
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepageintrowithouttranslation",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              pid: page.id,
+              intro: page.intro.fr
+            })
+          });
+        }
+        this.$emit(
+            "show",
+            "foo-velocity",
+            "success",
+            this.updateSuccess,
+            this.update
+        );
+        page.intro_value = page.intro.fr;
+        this.updateIntroPage = false;
+      }).catch(e => {
+        this.$emit(
+            "show",
+            "foo-velocity",
+            "error",
+            this.updateFailed,
+            this.updating
+        );
+        console.log(e);
+      });
+    },
 
     getDataObject: _.debounce(function() {
       this.object_json = this.object.object;
@@ -641,44 +963,132 @@ export default {
         this.openGroup[this.object_json.Groups[group].group_id] = true;
         Object.keys(this.object_json.Groups[group].elements).forEach(element => {
           this.object_json.Groups[group].elts.push(this.object_json.Groups[group].elements[element]);
+          this.keyElements[element] = 0;
         });
       });
     },
 
     // Dynamic actions
     enableActionBar(index) {
-      this.hoverUpdating = true;
-      this.indexHighlight = index;
-      this.lastIndex = index;
+      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
+        this.hoverUpdating = true;
+        this.indexHighlight = index;
+      }
     },
     disableActionBar() {
-      if(!this.clickUpdatingLabel) {
+      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
         this.hoverUpdating = false;
         this.clickUpdatingLabel = false;
         this.indexHighlight = 0;
         this.translate.label = false;
       }
     },
-    enableLabelInput() {
-      this.clickUpdatingLabel = true;
+    enableLabelInput(eid) {
+      if(!this.updateGroup && !this.updateIntroPage && !this.updatePage) {
+        this.clickUpdatingLabel = true;
+        setTimeout(() => {
+          document.getElementById('label_' + eid).focus();
+        }, 100);
+      }
+    },
+    enableTranslationLabel(eid) {
+      this.translate.label = !this.translate.label;
+      if(this.translate.label) {
+        /*setTimeout(() => {
+          document.getElementById('label_en_' + eid).focus();
+        },100);*/
+      } else {
+        setTimeout(() => {
+          document.getElementById('label_' + eid).focus();
+        },100);
+      }
+    },
+    enableUpdatingPage(page) {
+      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage) {
+        this.updatePage = true;
+        this.indexPage = page.id;
+        setTimeout(() => {
+          document.getElementById('update_input_' + page.id).focus();
+        }, 100);
+      }
+    },
+    enableUpdatingPageIntro(page) {
+      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updatePage) {
+        this.updateIntroPage = true;
+        this.indexPage = page.id;
+        setTimeout(() => {
+          document.getElementById('update_intro_' + page.id).focus();
+        }, 100);
+      }
+    },
+    enableTranslationPage(pid) {
+      this.translate.label_page = !this.translate.label_page;
+      if(this.translate.label_page) {
+        /*setTimeout(() => {
+          document.getElementById('label_page_en_' + pid).focus();
+        },100);*/
+      } else {
+        setTimeout(() => {
+          document.getElementById('update_input_' + pid).focus();
+        },100);
+      }
+    },
+    enableTranslationPageIntro(pid) {
+      this.translate.intro_page = !this.translate.intro_page;
+      if(this.translate.intro_page) {
+        /*setTimeout(() => {
+          document.getElementById('label_page_en_' + pid).focus();
+        },100);*/
+      } else {
+        setTimeout(() => {
+          document.getElementById('update_intro_' + pid).focus();
+        },100);
+      }
     },
     enableUpdatingGroup(group) {
-      this.updateGroup = true;
-      this.indexGroup = group.group_id;
-      setTimeout(() => {
-        document.getElementById('update_input_' + group.group_id).focus();
-      }, 200);
+      if(!this.clickUpdatingLabel && !this.updateIntroPage && !this.updatePage) {
+        this.updateGroup = true;
+        this.indexGroup = group.group_id;
+        setTimeout(() => {
+          document.getElementById('update_input_' + group.group_id).focus();
+        }, 100);
+      }
+    },
+    enableTranslationGroup(gid) {
+      this.translate.label_group = !this.translate.label_group;
+      if(this.translate.label_group) {
+        /*setTimeout(() => {
+          document.getElementById('label_group_en_' + gid).focus();
+        },100);*/
+      } else {
+        setTimeout(() => {
+          document.getElementById('update_input_' + gid).focus();
+        },100);
+      }
     },
     enableGroupHover(group) {
-      this.hoverGroup = true;
-      this.indexGroup = group;
+      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
+        this.hoverGroup = true;
+        this.indexGroup = group;
+      }
     },
     disableGroupHover() {
-      if(!this.updateGroup) {
+      if(!this.clickUpdatingLabel && !this.updateGroup && !this.updateIntroPage && !this.updatePage) {
         this.hoverGroup = false;
         this.updateGroup = false;
         this.indexGroup = -1;
       }
+    },
+    handleGroup(gid){
+      if(!this.updateGroup) {
+        this.openGroup[gid] ? this.$set(this.openGroup,gid,false) : this.$set(this.openGroup,gid,true)
+      }
+    },
+    startGroupDrag() {
+      /*Object.keys(this.openGroup).forEach((group,key) => {
+        this.openGroup[group] = false;
+      });*/
+      this.draggable = true;
     },
     //
 
@@ -688,7 +1098,7 @@ export default {
       this.groups.forEach(group => {
         group.elts.forEach(element => {
           if(element.id == elt_id){
-            this.updateElementsOrder(group.group_id,group.elts);
+            this.updateElementsOrder(group.group_id,group.elts, element);
           }
         })
       });
@@ -697,6 +1107,9 @@ export default {
     SomethingChangeInGroup: function() {
       this.draggable = false;
       this.updateGroupsOrder();
+      Object.keys(this.openGroup).forEach((group,key) => {
+        this.openGroup[group] = true;
+      });
     },
     //
   },
@@ -721,7 +1134,9 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "../../assets/variables";
+
   .hidden {
     display: none;
   }
@@ -779,6 +1194,18 @@ export default {
   }
   .hidden{
     display: none;
+  }
+  .active-repeat{
+    background: #de6339;
+    color: white !important;
+  }
+  .group-repeat-icon{
+    padding: 5px;
+    border-radius: 5px;
+    color: #1b1f3c;
+  }
+  .translate-icon-selected{
+    top: -5px;
   }
 </style>
 

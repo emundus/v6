@@ -26,6 +26,7 @@ class EmundusController extends JControllerLegacy {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         include_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+        include_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
 
 
         $this->_user = JFactory::getSession()->get('emundusUser');
@@ -158,81 +159,6 @@ class EmundusController extends JControllerLegacy {
 
         exit();
     }
-/*
-    function export_pdf() {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-
-        $current_user = JFactory::getSession()->get('emundusUser');
-        if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-            die (JText::_('RESTRICTED_ACCESS'));
-        }
-
-        $jinput = JFactory::getApplication()->input;
-        $fnums_post     = $jinput->getVar('fnums', null);
-        $form_post      = $jinput->getVar('forms', null);
-        $doc_post       = $jinput->getVar('attachment', null);
-        $eval_post      = $jinput->getVar('assessment', 0);
-        $decision_post  = $jinput->getVar('decision', 0);
-
-        $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
-        $m_files = $this->getModel('Files');
-
-        if ($fnums_array == 'all') {
-            $fnums = $m_files->getAllFnums();
-        } else {
-            $fnums = array();
-            foreach ($fnums_array as $key => $value) {
-                $fnums[] = $value->fnum;
-            }
-        }
-
-        $validFnums = array();
-		
-        foreach ($fnums as $fnum) {
-            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
-                $validFnums[] = $fnum;
-            }
-        }
-        $fnumsInfo = $m_files->getFnumsInfos($validFnums);
-
-        $files_list = array();
-        foreach ($validFnums as $fnum) {
-            if (is_numeric($fnum) && !empty($fnum)) {
-                $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post);
-
-                if ($doc_post) {
-                    $tmpArray = array();
-                    $m_application = $this->getModel('application');
-                    $files = $m_application->getAttachmentsByFnum($fnum);
-
-                    EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
-                }
-                if ($eval_post) {
-                    EmundusHelperExport::getEvalPDF($files_list,$fnum);
-                }
-            }
-        }
-
-        // all PDF in one file
-        require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
-        $pdf = new ConcatPdf();
-        $pdf->setFiles($files_list);
-        $pdf->concat();
-        if (isset($tmpArray)) {
-            foreach ($tmpArray as $fn) {
-                unlink($fn);
-            }
-        }
-        $tmpName = '/tmp/'.time()."-applications.pdf";
-        $pdf->Output(JPATH_BASE.$tmpName, 'F');
-        $res = new stdClass();
-        $res->status = true;
-        $res->link = $tmpName;
-        echo json_encode($res);
-        exit();
-    }
-*/
 
     /*
         Delete file
@@ -263,7 +189,8 @@ class EmundusController extends JControllerLegacy {
         
         if (EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum, array_keys($current_user->fnums))){
             $user = $current_user;
-            $result = $m_files->deleteFile($fnum);
+            $m_files->deleteFile($fnum);
+            EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_LOGS_DELETE_FILE');
         } elseif (EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = $m_profile->getEmundusUser($student_id);
         } else {
@@ -1277,6 +1204,12 @@ class EmundusController extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $url = $jinput->get->get('u', null, 'RAW');
 
+	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
+	    if (strpos($url, $applicant_files_path) !== 0 && strpos($url, 'tmp/') !== 0) {
+		    die (JText::_('ACCESS_DENIED'));
+	    }
+        
         $urltab = explode('/', $url);
 
         // Split the URL into different parts.
@@ -1288,12 +1221,15 @@ class EmundusController extends JControllerLegacy {
 
         // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
         if (!empty(JFactory::getUser($uid)->id)) {
+
             $db = JFactory::getDBO();
             $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads WHERE user_id = ' . $uid . ' AND filename like ' . $db->Quote($file);
             $db->setQuery($query);
             $fileInfo = $db->loadObject();
-            if (empty($fileInfo)) {
-                $fileInfo->fnum = explode('_', $file)[0];
+
+            $first_part_of_filename = explode('_', $file)[0];
+            if (empty($fileInfo) && is_numeric($first_part_of_filename) && strlen($first_part_of_filename) === 21) {
+                $fileInfo->fnum = $first_part_of_filename;
             }
         }
 
@@ -1312,7 +1248,7 @@ class EmundusController extends JControllerLegacy {
 
         // Otherwise, open the file if it exists.
         $file = JPATH_BASE.DS.$url;
-        if (file_exists($file)) {
+        if (is_file($file)) {
             $mime_type = $this->get_mime_type($file);
 
             if (EmundusHelperAccess::isDataAnonymized($current_user->id) && $mime_type === 'application/pdf') {
@@ -1340,7 +1276,7 @@ class EmundusController extends JControllerLegacy {
 	            exit;
             }
         } else {
-            JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$file);
+            JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$url);
         }
     }
 

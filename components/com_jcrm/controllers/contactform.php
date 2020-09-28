@@ -33,53 +33,54 @@ class JcrmControllerContactForm extends JcrmController {
         $app->setUserState('com_jcrm.edit.contact.id', $editId);
 
         // Get the model.
-        $model = $this->getModel('ContactForm', 'JcrmModel');
+        $m_contactform = $this->getModel('ContactForm', 'JcrmModel');
 
         // Check out the item
         if ($editId) {
-            $model->checkout($editId);
+            $m_contactform->checkout($editId);
         }
 
         // Check in the previous user.
         if ($previousId) {
-            $model->checkin($previousId);
+            $m_contactform->checkin($previousId);
         }
 
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_jcrm&view=contactform&layout=edit', false));
     }
 
-    /**
-     * Method to save a user's profile data.
-     *
-     * @return	void
-     * @since	1.6
-     */
+	/**
+	 * Method to save a user's profile data.
+	 *
+	 * @return bool
+	 * @throws Exception
+	 * @since    1.6
+	 */
     public function save() {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('ContactForm', 'JcrmModel');
+        $m_contactform = $this->getModel('ContactForm', 'JcrmModel');
 
         // Get the user data.
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
         // Validate the posted data.
-        $form = $model->getForm();
+        $form = $m_contactform->getForm();
         if (!$form) {
-            JError::raiseError(500, $model->getError());
+            JError::raiseError(500, $m_contactform->getError());
             return false;
         }
 
         // Validate the posted data.
-        $data = $model->validate($form, $data);
+        $data = $m_contactform->validate($form, $data);
 
         // Check for errors.
         if ($data === false) {
             // Get the validation messages.
-            $errors = $model->getErrors();
+            $errors = $m_contactform->getErrors();
 
             // Push up to three validation messages out to the user.
             for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
@@ -103,7 +104,7 @@ class JcrmControllerContactForm extends JcrmController {
         }
 
         // Attempt to save the data.
-        $return = $model->save($data);
+        $return = $m_contactform->save($data);
 
         // Check for errors.
         if ($return === false) {
@@ -112,7 +113,7 @@ class JcrmControllerContactForm extends JcrmController {
 
             // Redirect back to the edit screen.
             $id = (int) $app->getUserState('com_jcrm.edit.contact.id');
-            $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
+            $this->setMessage(JText::sprintf('Save failed', $m_contactform->getError()), 'warning');
             $this->setRedirect(JRoute::_('index.php?option=com_jcrm&view=contactform&layout=edit&id=' . $id, false));
             return false;
         }
@@ -120,7 +121,7 @@ class JcrmControllerContactForm extends JcrmController {
 
         // Check in the profile.
         if ($return) {
-            $model->checkin($return);
+            $m_contactform->checkin($return);
         }
 
         // Clear the profile id from the session.
@@ -145,11 +146,11 @@ class JcrmControllerContactForm extends JcrmController {
         $editId = (int) $app->getUserState('com_jcrm.edit.contact.id');
 
         // Get the model.
-        $model = $this->getModel('ContactForm', 'JcrmModel');
+        $m_contactform = $this->getModel('ContactForm', 'JcrmModel');
 
         // Check in the item
         if ($editId) {
-            $model->checkin($editId);
+            $m_contactform->checkin($editId);
         }
         
         $menu = JFactory::getApplication()->getMenu();
@@ -162,7 +163,7 @@ class JcrmControllerContactForm extends JcrmController {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('ContactForm', 'JcrmModel');
+        $m_contactform = $this->getModel('ContactForm', 'JcrmModel');
 
         // Get the user data.
         $data = array();
@@ -171,7 +172,7 @@ class JcrmControllerContactForm extends JcrmController {
         // Check for errors.
         if (empty($data['id'])) {
             // Get the validation messages.
-            $errors = $model->getErrors();
+            $errors = $m_contactform->getErrors();
 
             // Push up to three validation messages out to the user.
             for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
@@ -192,7 +193,7 @@ class JcrmControllerContactForm extends JcrmController {
         }
 
         // Attempt to save the data.
-        $return = $model->delete($data);
+        $return = $m_contactform->delete($data);
 
         // Check for errors.
         if ($return === false) {
@@ -201,7 +202,7 @@ class JcrmControllerContactForm extends JcrmController {
 
             // Redirect back to the edit screen.
             $id = (int) $app->getUserState('com_jcrm.edit.contact.id');
-            $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
+            $this->setMessage(JText::sprintf('Delete failed', $m_contactform->getError()), 'warning');
             $this->setRedirect(JRoute::_('index.php?option=com_jcrm&view=contact&layout=edit&id=' . $id, false));
             return false;
         }
@@ -209,7 +210,7 @@ class JcrmControllerContactForm extends JcrmController {
 
         // Check in the profile.
         if ($return) {
-            $model->checkin($return);
+            $m_contactform->checkin($return);
         }
 
         // Clear the profile id from the session.

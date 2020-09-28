@@ -23,6 +23,8 @@ require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campai
 include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
 include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
 
+JFactory::getDocument()->addStyleSheet(JPATH_BASE.'media/com_emundus/css/emundus_login.css');
+
 
 $m_campaign = new EmundusModelCampaign;
 

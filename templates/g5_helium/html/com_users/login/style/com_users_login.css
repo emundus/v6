@@ -2,7 +2,7 @@
 button.btn-primary{
     background: #e03c32;
     border: 1px solid #e03c32;
-    border-radius: 0!important;
+    border-radius: 4px!important;
     padding: 8px 12px!important;
 }
 button.btn-primary:hover{
@@ -33,13 +33,30 @@ button.btn-primary:hover{
 .nav-stacked > li {
     display: inline-block;
 }
-.login form {
-    background: #fcfcfc;
+.login form.form-validate.form-horizontal.well {
     border: none;
     margin-bottom: 0 !important;
     border-radius: 0;
-    padding: 20px !important;
+    background: #fafafa;
+    border-radius: 0;
+    padding: 0px;
+    box-shadow: none;
+    width: 58%;
+    margin-left: auto;
+    margin-right: auto;
 }
+
+#g-container-main div.em-formRegistrationCenter, #g-container-main div.login {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    background: #fafafa;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+}
+
 .invalid {
     color: red !important;
     font-weight: 600;
@@ -49,21 +66,17 @@ button.btn-primary:hover{
     font-size: 14px;
 }
 ul.nav.nav-tabs.nav-stacked {
-    background: #fcfcfc;
+    background: #fafafa;
     border-radius: 0;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-around;
+    width: 60%;
+    margin-left: auto !important;
+    margin-right: auto !important;
+   padding-bottom: 50px !important;
+    margin-top: 0px;
 }
-ul.nav.nav-tabs.nav-stacked a {
-    color: #e5283b;
-}
-ul.nav.nav-tabs.nav-stacked a:hover,
-ul.nav.nav-tabs.nav-stacked a:focus,
-ul.nav.nav-tabs.nav-stacked a:focus-within,
-ul.nav.nav-tabs.nav-stacked a:active {
-    color: #e5283b;
-    text-decoration: underline;
-}
+
 ul.nav.nav-tabs.nav-stacked a::before {
     content: "\f101";
     font-family: FontAwesome;
@@ -72,10 +85,11 @@ ul.nav.nav-tabs.nav-stacked a::before {
 .login form > fieldset .control-group:nth-child(3) .controls {
     justify-content: center;
     margin-top: 20px;
+    width: 100%;
 }
 .view-login .form-horizontal .controls {
     margin: 0 !important;
-    width: 25%;
+    width: 100%;
     display: inline-flex;
     align-items: center;
 }
@@ -86,6 +100,7 @@ ul.nav.nav-tabs.nav-stacked a::before {
 .view-login .form-horizontal .control-group {
     display: flex;
     justify-content: center;
+    flex-direction: column;
 }
 footer div{
     line-height:1.5em;
@@ -109,8 +124,10 @@ body.view-reset label#jform_username-lbl::after,
 }
 .control-group:nth-child(3) .controls button.btn.btn-primary {
     text-transform: capitalize;
-    width: 100%;
-    height: 41px;
+    width: 100% !important;
+    height: 50px;
+    margin-right: 0px !important;
+    font-weight: 300;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
     border-radius :0px;
@@ -123,7 +140,7 @@ h1.em-titre-connectez-vous::after {
     height: 0.2rem;
     background: #de6339;
     left: 0;
-    display: block;
+    display: block !important;
 }
 .header-right a.btn.btn-danger.connexion , a.btn.btn-danger.inscription  {
     font-weight: 300;
@@ -133,21 +150,91 @@ h1.em-titre-connectez-vous::after {
 #g-page-surround {
     width: 100%;
 }
-@media all and (max-width: 1239px) {
-    .form-validate.form-horizontal.well {
-        width: 50%;
-    }
 
+ul.nav.nav-tabs.nav-stacked span {
+    cursor: pointer;
 }
-@media all and (max-width: 1150px) {
-    .form-validate.form-horizontal.well {
-        width: 50%;
-    }
-    .em-formRegistrationCenter .form-horizontal fieldset .control-group {
-        width: 100% !important;
-    }
+ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, ul.nav.nav-tabs.nav-stacked span:active {
+    text-decoration: underline;
+}
 
+.logout .form-horizontal {
+    margin-top: 20px;
 }
+
+.logout .form-horizontal  .control-group {
+    margin-top: 20px;
+}
+
+/* Connexion candidater */
+.moduletable.em-formRegistrationCenter h1 {
+    margin: 27px 0 71px;
+}
+
+.moduletable.em-formRegistrationCenter .icon-user {
+    display: none;
+}
+
+.moduletable.em-formRegistrationCenter .icon-lock {
+    display: none;
+}
+
+.moduletable.em-formRegistrationCenter #login-form {
+    width: 50%;
+}
+
+.moduletable.em-formRegistrationCenter .input-prepend .input-small, .moduletable.em-formRegistrationCenter  #login-form .input-append .input-small {
+    width: 100%;
+}
+
+.moduletable.em-formRegistrationCenter #login-form    .control-group {
+    margin-bottom: 20px;
+}
+
+.moduletable.em-formRegistrationCenter #login-form .add-on {
+    background: transparent;
+    border: none;
+    height: unset;
+}
+
+.moduletable.em-formRegistrationCenter #login-form .add-on label {
+    color: #565656 !important;
+}
+
+.moduletable.em-formRegistrationCenter #login-form .unstyled {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    border: none;
+    padding: 0.938rem 0;
+}
+
+.moduletable.em-formRegistrationCenter #login-form .unstyled li {
+    border: none;
+}
+
+.moduletable.em-formRegistrationCenter #login-form .unstyled li a .icon-arrow-right {
+    display: none;
+}
+
+.moduletable.em-formRegistrationCenter #login-form .unstyled li  a::before {
+    content: "\f101";
+    font-family: FontAwesome;
+    margin-right: 3px;
+}
+
+.moduletable.em-formRegistrationCenter #login-form .control-group .input-prepend {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: baseline;
+}
+
+.moduletable.em-formRegistrationCenter #login-form .control-group .input-prepend input {
+    border-left: 1px solid #e0e0e5;
+    max-width: 100%;
+}
+
 @media all and (max-width: 450px) {
     .form-validate.form-horizontal.well {
         width: 100%;
@@ -158,11 +245,107 @@ h1.em-titre-connectez-vous::after {
 
 }
 @media all and (max-width: 767px) {
-    .form-validate.form-horizontal.well {
-        width: 100%;
+
+    .view-login .login.em-formRegistrationCenter  {
+         width: 100%;
     }
+
+    .view-login .login.em-formRegistrationCenter .page-header {
+        width: 100% !important;
+        padding: 0px 20px;
+    }
+
     .em-formRegistrationCenter .form-horizontal fieldset .control-group {
         width: 100% !important;
     }
 
+    .view-login #g-page-surround {
+        width: 100%;
+    }
+
+    .login form {
+        width: 90% !important;
+    }
+
+    ul.nav.nav-tabs.nav-stacked {
+        justify-content: center;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    ul.nav.nav-tabs.nav-stacked li {
+        text-align: center;
+    }
+
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+    .login form {
+        padding-right: 8rem;
+        padding-left: 4rem;
+        width: 80%;
+    }
+
+    .view-login .login.em-formRegistrationCenter .page-header  {
+        width: 75% !important;
+    }
+
+    .login form.form-validate.form-horizontal.well {
+        width: 70%;
+    }
+
+}
+
+@media all and (max-width: 1150px) {
+    .form-validate.form-horizontal.well {
+        width: 50%;
+    }
+    .em-formRegistrationCenter .form-horizontal fieldset .control-group {
+        width: 100% !important;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1199px) {
+    .login form {
+        padding-right: 10rem;
+        padding-left: 5rem;
+    }
+}
+
+@media all and (max-width: 1239px) {
+    .form-validate.form-horizontal.well {
+        width: 50%;
+    }
+    .view-login #g-page-surround {
+        width: 100%;
+    }
+}
+
+/* ICONE TITRE LOGIN */
+
+.view-login .login.em-formRegistrationCenter .page-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    flex-direction: row;
+    width: 59%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.view-login .login.em-formRegistrationCenter .page-header div.icon-title.loginicon {
+    background-image: url(/components/com_emundus_onboard/src/assets/images/enter.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.view-login .login.em-formRegistrationCenter .page-header div.icon-title {
+    margin-right: 10px;
+    width: 35px;
+    height: 35px;
+    background-position: 0 0;
+    background-size: contain;
+    -webkit-filter: brightness(.5);
+    filter: brightness(.5);
+    fill: grey;
 }

@@ -20,17 +20,11 @@
 }
 .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step {
 	background:transparent!important;
-	color:#de6339!important;
-	border:1px solid #de6339!important;
 }
 .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line {
 	background:transparent!important;
-	border-top:1px solid #de6339!important;
-	border-bottom:1px solid #de6339!important;
 }
-.swal2-progress-step, .swal2-progress-steps .swal2-progress-step-line, .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
-	background:#de6339!important;
-}
+
 .g-content h1 {
 	margin-top:4%!important;
 	margin-bottom:3%!important;
@@ -38,9 +32,7 @@
 .swal2-popup {
 	border-radius:0!important;
 }
-.g-content h1::after, .swal2-title::after {
-	background:#de6339!important;
-}
+
 .queryBuilder {
 	text-align:left;
 	padding-top:1%;
@@ -85,15 +77,16 @@
 }
 .btn {
     background-image: none !important;
-    background: #de6339 !important;
-    border: 1px solid #de6339 !important;
+	background: #de6339 !important;
+	border: 1px solid #de6339 !important;
     color: #ffffff !important;
     margin:0;
 }
 .btn:hover {
     background: #ffffff !important;
-    color: #de6339 !important;
+	color: #de6339 !important;
 }
+
 .input {
 	margin:1% 0%;
 }
@@ -101,7 +94,6 @@
 	vertical-align: text-top;
 }
 .input .modif, .input .delete {
-	color:#de6339!important;
 	background-color:transparent;
 	border:0px;
 }
@@ -129,18 +121,14 @@
 	margin-right:1%;
 }
 .btnExport, .btnQueryBuilder:hover, .swal2-confirm:hover, .swal2-cancel {
-	border-radius:0px!important;
+	border-radius:4px!important;
 	background:transparent!important;
-	color:#de6339!important;
-	border:1px solid #de6339!important;
 	padding:4px 12px!important;
 	white-space: normal;
 }
 .btnExport:hover, .btnQueryBuilder, .swal2-confirm, .swal2-cancel:hover {
-	border-radius:0px!important;
-	background:#de6339!important;
+	border-radius:4px!important;
 	color:white!important;
-	border:1px solid #de6339!important;
 	padding:4px 12px!important;
 	white-space: normal;
 }
@@ -165,18 +153,16 @@
 	margin:0!important;
 	background-color:white;
 	padding:2%;
-	box-shadow: 0px 0px 5px 0px lightgrey;
+	box-shadow: 0px 0px 47px -13px rgba(163,163,163,1);
 }
 .etiquette label {
-	color:#de6339!important;
 	font-weight:normal!important;
 }
 .etiquette p {
 	font-weight:bold;
-	color:#de6339!important;
 }
 .etiquette select {
-	border-radius:0px!important;
+	border-radius:4px!important;
 }
 .etiquette select:focus {
 	outline: 2px solid -webkit-focus-ring-color;
@@ -189,7 +175,6 @@
 .informationStatistique {
 	width:100%!important;
 	margin:0!important;
-	background-color:#de6339;
 	padding:2%;
 	padding-top:1%;
 	color:white!important;
@@ -204,6 +189,10 @@
 	font-size:1.5rem;
 	margin-top:-1%;
 	margin-right:-1.5%;
+}
+
+.closeButtonWelcomeStat:hover {
+	color: #ccc;
 }
 
 @media (max-width: 600px) {

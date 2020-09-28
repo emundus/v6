@@ -1,5 +1,7 @@
-.em_label-user, .em_label-passwd{
-    color:#565656!important;
+form[action="/connexion-candidater"] .em_label-user, .em_label-passwd{
+    color:#000!important;
+    font-size: 14px;
+
 }
 .login-button{
     text-transform: capitalize;
@@ -11,7 +13,16 @@
 }
 .g-title{
     margin-top: 50px!important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
 }
+
+.g-title::after {
+    display: none !important;
+}
+
 #login-form{
     background: white;
     border: none;
@@ -20,6 +31,8 @@
     padding: 20px !important;
     box-shadow: none;
     width: 50%;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 .em-linkForgot{
     margin-top: 40px!important;
@@ -32,4 +45,90 @@
 }
 .em-star{
     margin-top: -4px!important;
+}
+
+form[action="/connexion-candidater"] i.icon-star.small  {
+    top: -10px!important;
+}
+
+/* CONNEXION - CANDIDATER */
+
+ul.unstyled.em-linkForgot{
+    background:#fafafa;
+    display: flex;
+    justify-content: space-between;
+    border: none;
+    padding: 0px;
+    flex-direction: row-reverse;
+}
+
+ul.unstyled.em-linkForgot span.icon-arrow-right {
+    display: none;
+}
+
+ul.unstyled.em-linkForgot li {
+    border: none;
+}
+
+ul.unstyled.em-linkForgot li a::before {
+    content: "\f101";
+    font-family: FontAwesome;
+    margin-right: 3px;
+}
+
+ul.unstyled.em-linkForgot li a span::before {
+  display: none;
+}
+
+
+/* ICONE TITRE LOGIN */
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter .page-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    flex-direction: row;
+    width: 52%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter .page-header  div.icon-title.applyicon {
+    background-image: url(/components/com_emundus_onboard/src/assets/images/enter.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter .page-header.page-header div.icon-title {
+    margin-right: 10px;
+    width: 35px;
+    height: 35px;
+    background-position: 0 0;
+    background-size: contain;
+    -webkit-filter: brightness(.5);
+    filter: brightness(.5);
+    fill: grey;
+}
+
+/* RESPONSIVE */
+
+@media all and (max-width: 767px) {
+    .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
+        width: 100%;
+    }
+
+    .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {
+        width: 100%;
+    }
+
+    .view-form.em-formRegistrationCenter ul.unstyled.em-linkForgot {
+        justify-content: center;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .view-login .login.em-formRegistrationCenter .page-header {
+       width: 100%;
+        padding: 15px;
+    }
 }

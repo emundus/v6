@@ -2,10 +2,13 @@
     <div class="container-evaluation">
         <ModalAddUser
                 :group="this.group"
+                :coordinatorAccess="coordinatorAccess"
+                :userManage="0"
                 @Updatemanager="getManagersInGroup()"
                 @Updateevaluator="getEvaluatorsInGroup()"
         />
         <ModalAffect
+                v-if="coordinatorAccess != 0"
                 :group="this.group"
                 :groupProfile="'manager'"
                 @Updatemanager="getManagersInGroup()"
@@ -16,21 +19,24 @@
                 @Updateevaluator="getEvaluatorsInGroup()"
         />
         <a @click="$modal.show('modalAddUser')" class="bouton-sauvergarder-et-continuer-3 create-user">{{ addUser }}</a>
-        <div class="choices-buttons">
+        <div class="choices-buttons" v-if="coordinatorAccess != 0">
             <h2 style="margin-bottom: 0">{{ Administrators }}</h2>
             <a @click="$modal.show('modalAffectmanager')" class="bouton-sauvergarder-et-continuer-3">{{ affectUsers }}</a>
         </div>
-        <div v-for="(manager, index) in managers" :key="index" class="manager-item">
+        <transition-group :name="'slide-down'" type="transition">
+        <div v-for="(manager, index) in managers" :key="index" class="manager-item" v-if="coordinatorAccess != 0">
             <div>
                 <p>{{manager.name}}</p>
                 <p>{{manager.email}}</p>
             </div>
             <button type="button" @click="removeManager(manager,index)" class="remove-user"><em class="fas fa-minus"></em></button>
         </div>
+        </transition-group>
         <div class="choices-buttons">
             <h2 style="margin-bottom: 0">{{ Evaluators }}</h2>
             <a @click="$modal.show('modalAffectevaluator')" class="bouton-sauvergarder-et-continuer-3">{{ affectUsers }}</a>
         </div>
+        <transition-group :name="'slide-down'" type="transition">
         <div v-for="(evaluator, index) in evaluators" :key="index" class="manager-item">
             <div>
                 <p>{{evaluator.name}}</p>
@@ -38,6 +44,7 @@
             </div>
             <button type="button" @click="removeEvaluator(evaluator,index)" class="remove-user"><em class="fas fa-minus"></em></button>
         </div>
+        </transition-group>
     </div>
 </template>
 
@@ -58,7 +65,8 @@
 
         props: {
             funnelCategorie: String,
-            group: Number
+            group: Object,
+            coordinatorAccess: Number
         },
 
         data() {
@@ -74,13 +82,13 @@
 
         methods: {
             getManagersInGroup(){
-                axios.get("index.php?option=com_emundus_onboard&controller=program&task=getmanagers&group=" + this.group)
+                axios.get("index.php?option=com_emundus_onboard&controller=program&task=getmanagers&group=" + this.group.manager)
                     .then(response => {
                         this.managers = response.data.data;
                     });
             },
             getEvaluatorsInGroup(){
-                axios.get("index.php?option=com_emundus_onboard&controller=program&task=getevaluators&group=" + this.group)
+                axios.get("index.php?option=com_emundus_onboard&controller=program&task=getevaluators&group=" + this.group.evaluator)
                     .then(response => {
                         this.evaluators = response.data.data;
                     });
@@ -88,13 +96,14 @@
             removeManager(manager,key){
                 axios({
                     method: "post",
-                    url: 'index.php?option=com_emundus_onboard&controller=program&task=removefrommanagergroup',
+                    url: 'index.php?option=com_emundus_onboard&controller=program&task=removefromgroup',
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
                     data: qs.stringify({
                         id: manager.id,
-                        group: this.group
+                        group: this.group.manager,
+                        prog_group: this.group.prog
                     })
                 }).then(() => {
                     this.managers.splice(key,1);
@@ -103,13 +112,14 @@
             removeEvaluator(evaluator,key){
                 axios({
                     method: "post",
-                    url: 'index.php?option=com_emundus_onboard&controller=program&task=removefromevaluatorgroup',
+                    url: 'index.php?option=com_emundus_onboard&controller=program&task=removefromgroup',
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
                     data: qs.stringify({
                         id: evaluator.id,
-                        group: this.group
+                        group: this.group.evaluator,
+                        prog_group: this.group.prog
                     })
                 }).then(() => {
                     this.evaluators.splice(key,1);

@@ -74,6 +74,7 @@
             },
 
             pushTag() {
+                this.$emit("LaunchLoading");
                 axios({
                     method: "post",
                     url: 'index.php?option=com_emundus_onboard&controller=settings&task=createtag',
@@ -85,10 +86,12 @@
                     setTimeout(() => {
                         this.getHexColors(newtag.data);
                     }, 100);
+                    this.$emit("StopLoading");
                 });
             },
 
             removeTag(tag, index) {
+                this.$emit("LaunchLoading");
                 axios({
                     method: "post",
                     url: 'index.php?option=com_emundus_onboard&controller=settings&task=deletetag',
@@ -100,6 +103,7 @@
                     })
                 }).then(() => {
                     this.tags.splice(index,1);
+                    this.$emit("StopLoading");
                 });
             }
         },

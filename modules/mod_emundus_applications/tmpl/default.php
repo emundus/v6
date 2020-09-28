@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 echo $description;
 ?>
 <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-    <a id="add-application" class="btn btn-success" href="href=<?= $cc_list_url; ?>">
+    <a id="add-application" class="btn btn-success" href="<?= $cc_list_url; ?>">
         <span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span>
     </a>
     <hr>
@@ -23,8 +23,8 @@ echo $description;
         <?php
         $is_admission = in_array($application->status, $admission_status);
         $state = $states[$application->fnum]['published'];
-        $confirm_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
-        $first_page_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
+        $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
+        $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
         if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
             <?php 
             if ($file_tags != '') {
@@ -173,7 +173,7 @@ echo $description;
 endif; ?>
 
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
-    <a class="btn btn-success" href="href=<?= $cc_list_url; ?>"><span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+    <a class="btn btn-success" href="<?= $cc_list_url; ?>"><span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span></a>
 <?php endif; ?>
 
 <?php if (!empty($filled_poll_id) && !empty($poll_url) && $filled_poll_id == 0 && $poll_url != "") : ?>

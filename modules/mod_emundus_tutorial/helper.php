@@ -69,12 +69,35 @@ class modEmundusTutorialHelper {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$query->select($db->quoteName(['id', 'title', 'introtext', 'note']))
+        $query->select('id')
+            ->from($db->quoteName('#__fields'))
+            ->where($db->quoteName('context').' LIKE ' . $db->quote('com_content.article'))
+            ->andWhere($db->quoteName('title') . ' = ' . $db->quote('params'));
+        $db->setQuery($query);
+        $idfield = $db->loadResult();
+
+		$query->clear()
+            ->select($db->quoteName(['id', 'title', 'introtext', 'note']))
 			->from($db->quoteName('#__content'))
 			->where($db->quoteName('id').' IN ('.$artids.')');
 		$db->setQuery($query);
 		try {
-			return $db->loadAssocList();
+		    $articles = $db->loadAssocList();
+		    foreach ($articles as $key => $article){
+		        $query->clear()
+                    ->select('value')
+                    ->from($db->quoteName('#__fields_values'))
+                    ->where($db->quoteName('item_id') . ' = ' . $db->quote($article['id']))
+                    ->andWhere($db->quoteName('field_id') . ' = ' . $db->quote($idfield));
+                $db->setQuery($query);
+                $params = $db->loadResult();
+                if(is_string($params)) {
+                    $articles[$key]['note'] = $params;
+                } else {
+                    $article[$key]['note'] = '';
+                }
+            }
+			return $articles;
 		} catch (Exception $e) {
 			JLog::add('Error getting articles : '.$e->getMessage(), JLog::ERROR, 'mod_emundus_tutorial');
 			return false;

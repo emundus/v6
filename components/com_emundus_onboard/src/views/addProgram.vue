@@ -29,7 +29,7 @@
               <span class="error">{{LabelRequired}}</span>
             </p>
 
-            <div class="form-group prog-code">
+            <!--<div class="form-group prog-code">
               <label for="prog_code" style="top: 12.8em">{{ProgCode}} *</label>
               <input
                 id="prog_code"
@@ -43,10 +43,10 @@
             </div>
             <p v-if="errors.code" class="error col-md-12 mb-2">
               <span class="error">{{CodeRequired}}</span>
-            </p>
+            </p>-->
 
             <div class="form-group prog-label">
-              <label for="prog_code" style="top: 10.7em">{{ChooseCategory}} *</label>
+              <label for="prog_category" style="top: 10.7em">{{ChooseCategory}}</label>
               <autocomplete
                 @searched="onSearchCategory"
                 :id="'prog_category'"
@@ -56,7 +56,7 @@
             </div>
 
             <div class="form-group controls">
-              <editor :text="form.notes" :lang="actualLanguage" v-if="dynamicComponent" :id="'program'" v-model="form.notes"  :placeholder="ProgramResume"></editor>
+              <editor :text="form.notes" :lang="actualLanguage" v-if="dynamicComponent" :enable_variables="false" :id="'program'" v-model="form.notes"  :placeholder="ProgramResume"></editor>
             </div>
 
             <div class="form-group d-flex">
@@ -309,7 +309,7 @@ export default {
 
     quitFunnelOrContinue(quit) {
       if (quit == 0) {
-        history.go(-1);
+        window.location.href = '/configuration-programs'
       }
       else if (quit == 1) {
         window.location.replace('index.php?option=com_emundus_onboard&view=program&layout=advancedsettings&pid=' + this.prog);

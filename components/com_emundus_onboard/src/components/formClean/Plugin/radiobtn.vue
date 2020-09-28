@@ -7,31 +7,45 @@
       </div>
       <div class="col-md-8 flex">
         <label class="require col-md-3">{{suboptions}} :</label>
-        <button @click.prevent="add" class="add-option">+</button>
       </div>
       <div class="col-md-10">
-        <div v-for="(sub_values, i) in arraySubValues" :key="i" class="dpflex">
-          <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input" :id="'suboption_' + i" @keyup.enter="add"/>
-          <button @click.prevent="leave(i)" class="remove-option">-</button>
-        </div>
+        <draggable
+                v-model="arraySubValues"
+                @end="needtoemit()"
+                handle=".handle"
+                style="padding-bottom: 2em">
+          <div v-for="(sub_values, i) in arraySubValues" :key="i" class="dpflex">
+            <span class="icon-handle">
+              <em class="fas fa-grip-vertical handle"></em>
+            </span>
+            <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input" style="height: 35px" :id="'suboption_' + i" @keyup.enter="add"/>
+            <button @click.prevent="leave(i)" type="button" class="remove-option">-</button>
+          </div>
+        </draggable>
+        <button @click.prevent="add" type="button" class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">{{AddOption}}</button>
       </div>
-    </div>
+  </div>
   </div>
 </template>
 
 <script>
 import _ from "lodash";
-import Axios from "axios";
+import axios from "axios";
+import draggable from "vuedraggable";
 const qs = require("qs");
 
 export default {
   name: "radiobtnF",
+  components: {
+    draggable
+  },
   props: { element: Object },
   data() {
     return {
       arraySubValues: [],
       helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
       suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
+      AddOption: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
     };
   },
   methods: {
@@ -50,21 +64,21 @@ export default {
     },
     initialised: function() {
       if(typeof this.element.params.sub_options !== 'undefined') {
-      Axios({
+      axios({
         method: "post",
-        url:
-          "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXTA",
+        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXTA",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
           toJTEXT: this.element.params.sub_options.sub_labels
         })
-      })
-        .then(r => {
-          this.arraySubValues = r.data;
-        })
-        .catch(e => {
+      }).then(response => {
+          Object.values(response.data).forEach(rep => {
+            this.arraySubValues.push(rep);
+          });
+        this.needtoemit();
+        }).catch(e => {
           console.log(e);
         });
       } else {
@@ -98,4 +112,9 @@ export default {
   #radiobtnF{
     padding: 10px;
   }
+.icon-handle{
+  color: #cecece;
+  cursor: grab;
+  margin-right: 10px;
+}
 </style>

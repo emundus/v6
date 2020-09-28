@@ -11,16 +11,6 @@
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-?>
-    <div id="footdompdf">
-        <span class="footleft"><?php echo $this->table->label;?></span>
-        <span class="pagenum"> </span>
-    </div>
-    <div id="headerdompdf">
-        <span class="headleft"><?php echo $this->table->label;?></span>
-        <span class="pdfdate"> </span>
-    </div>
-<?php
 
 $form = $this->form;
 $model = $this->getModel();

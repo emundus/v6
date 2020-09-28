@@ -242,7 +242,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/protection
                         <div class="control-group">
                             <label for="csp_policy" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_TEXT'); ?></label>
                             <div class="controls controls-row">
-                                <input type="text" class="form-control" class="width_560" id="csp_policy" name="csp_policy" aria-describedby="csp_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['csp_policy']); ?>">            
+                                <input type="text" class="form-control width_560" id="csp_policy" name="csp_policy" aria-describedby="csp_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['csp_policy']); ?>">            
                                 <?php if ($this->config_applied['csp_policy'] ) {?>
                                     <span class="help-inline">
                                         <span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
@@ -255,7 +255,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/protection
                         <div class="control-group">
                             <label for="referrer_policy" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_TEXT'); ?></label>
                             <div class="controls controls-row">
-                                <input type="text" class="form-control" class="width_560" id="referrer_policy" name="referrer_policy" aria-describedby="referrer_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['referrer_policy']); ?>">            
+                                <input type="text" class="form-control width_560" id="referrer_policy" name="referrer_policy" aria-describedby="referrer_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['referrer_policy']); ?>">            
                                 <?php if ($this->config_applied['referrer_policy'] ) {?>
                                     <span class="help-inline">
                                         <span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
@@ -264,6 +264,19 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/protection
                             </div>
                         </div>
                         <blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_EXPLAIN') ?></footer></blockquote>
+						
+						<div class="control-group">
+                            <label for="feature_policy" class="control-label-more-width" title="<?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_POLICY_EXPLAIN') ?>"><?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_POLICY_TEXT'); ?></label>
+                            <div class="controls controls-row">
+                                <input type="text" class="form-control width_560" id="feature_policy" name="feature_policy" aria-describedby="feture_policy" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['feature_policy']); ?>">            
+                                <?php if ($this->config_applied['feature_policy'] ) {?>
+                                    <span class="help-inline">
+                                        <span class="badge badge-success"><i class="fapro fa-check"></i>&nbsp;&nbsp;<?php echo JText::_('COM_SECURITYCHECKPRO_APPLIED') ?></span>
+                                    </span>
+                                <?php } ?>
+                            </div>
+                        </div>
+                        <blockquote class="blockquote"><footer class="blockquote-footer"><?php echo JText::_('COM_SECURITYCHECKPRO_FEATURE_POLICY_EXPLAIN') ?></footer></blockquote>
                     <!-- headers_protection tab end -->
                     </div>
                         

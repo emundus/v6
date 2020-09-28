@@ -265,6 +265,9 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 
 	public function displayBlock($layout, $pos, $options) {
 		$ctrl = hikashop_get('helper.checkout-' . $layout);
+
+		$app = JFactory::getApplication();
+		$obj =& $this;
 		if(!empty($ctrl)) {
 			$previous_options = null;
 			if(!empty($this->options))
@@ -273,15 +276,18 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 			$this->options = $options;
 			$this->module_position = (int)$pos;
 
+			$app->triggerEvent('onBeforeCheckoutViewDisplay', array($layout, &$obj));
+
 			$this->setLayout('show_block_' . $layout);
 			$ret = $this->loadTemplate();
+
+
+			$app->triggerEvent('onAfterCheckoutViewDisplay', array($layout, &$obj, &$ret));
 
 			$this->options = $previous_options;
 
 		} else {
 			$ret = '';
-			$app = JFactory::getApplication();
-			$obj =& $this;
 			$app->triggerEvent('onCheckoutStepDisplay', array($layout, &$ret, &$obj, $pos, $options));
 		}
 		if(!empty($options['process_content_tags'])) {

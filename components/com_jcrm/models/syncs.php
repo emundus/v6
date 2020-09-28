@@ -26,8 +26,7 @@ class JcrmModelSyncs extends JModelList
      */
     public function __construct($config = array()) {
         if (empty($config['filter_fields'])) {
-            $config['filter_fields'] = array(
-            );
+            $config['filter_fields'] = array();
         }
         parent::__construct($config);
     }
@@ -98,7 +97,6 @@ class JcrmModelSyncs extends JModelList
 
                     // Just to keep the default case
                     default:
-                        $value = $value;
                         break;
                 }
 
@@ -276,14 +274,15 @@ class JcrmModelSyncs extends JModelList
     }
 
 	/**
-     * @param $tableName
-     * @param $colContact
-     * @param $colAccount
-     * @param $nbRef
-     * @param $page
-     * @return mixed
-     * @throws Exception
-     */
+	 * @param $select
+	 * @param $tableName
+	 * @param $colContact
+	 * @param $colAccount
+	 * @param $nbRef
+	 * @param $page
+	 *
+	 * @return mixed
+	 */
     public function getData($select, $tableName, $colContact, $colAccount, $nbRef, $page) {
 
     	$dbo = $this->getDbo();
@@ -304,16 +303,15 @@ class JcrmModelSyncs extends JModelList
             return $dbo->loadAssocList();
         } catch (Exception $e) {
             JLog::add('Error in model/syncs at function getData, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
+            return false;
         }
     }
 
 	/**
      * @param $email
      * @return mixed
-     * @throws Exception
      */
-    public function findContact($email)
-    {
+    public function findContact($email) {
         $dbo = $this->getDbo();
         $query = "select * from #__jcrm_contacts where `type` = 0 and `jcard` like ".$dbo->Quote('%'.$email.'%');
 
@@ -322,6 +320,7 @@ class JcrmModelSyncs extends JModelList
             return $dbo->loadObjectList();
         } catch(Exception $e) {
             JLog::add('Error in model/syncs at function findContact, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
+            return false;
         }
     }
 
@@ -330,39 +329,39 @@ class JcrmModelSyncs extends JModelList
      * @return mixed
      * @throws Exception
      */
-    public function getOrga($organisation)
-    {
+    public function getOrga($organisation) {
         $dbo = $this->getDbo();
         $query = "select `id`, `organisation` from #__jcrm_contacts where `type` = 1 and `organisation` like ".$dbo->quote($organisation);
-        try
-        {
+        try {
             $dbo->setQuery($query);
             return $dbo->loadObject();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             JLog::add('Error in model/syncs at function getOrga, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
+            return false;
         }
     }
 
 	/**
-     * @param $tableName
-     * @param $id
-     * @return mixed
-     * @throws Exception
-     */
-    public function getReferent($select, $tableName, $id)
-    {
-        $dbo = $this->getDbo();
-        $query = "select $select from $tableName where id = $id";
-        try
-        {
-            $dbo->setQuery($query);
-            return $dbo->loadAssoc();
-        }
-        catch(Exception $e)
-        {
-            JLog::add('Error in model/syncs at function getReferent, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
+	 * @param $select
+	 * @param $tableName
+	 * @param $id
+	 *
+	 * @return mixed
+	 */
+    public function getReferent($select, $tableName, $id) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select($select)
+	        ->from($tableName)
+	        ->where('id = '.$id);
+
+        try {
+            $db->setQuery($query);
+            return $db->loadAssoc();
+        } catch (Exception $e) {
+            JLog::add('Error in model/syncs at function getReferent, QUERY: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_jcrm');
+            return false;
         }
     }
 
@@ -373,64 +372,57 @@ class JcrmModelSyncs extends JModelList
      * @param $contactId
      * @param $index
      * @return mixed
-     * @throws Exception
      */
-    public function syncRefOrga($tableName, $colAccount, $refId, $contactId, $index)
-    {
+    public function syncRefOrga($tableName, $colAccount, $refId, $contactId, $index) {
         $dbo = $this->getDbo();
         $query = "update $tableName set `".$colAccount."_".$index."` = $contactId where `id` = $refId";
-        try
-        {
+        try {
             $dbo->setQuery($query);
             return $dbo->execute();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             JLog::add('Error in model/syncs at function syncRefOrga, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
+            return false;
         }
     }
 
 	/**
-     * @param $tableName
-     * @param $colContact
+     * @param String $tableName
+     * @param String $colContact
      * @param $refId
      * @param $orgaId
      * @param $index
      * @return mixed
-     * @throws Exception
      */
-    public function syncRef($tableName, $colContact, $refId, $orgaId, $index)
-    {
-        $dbo = $this->getDbo();
-        $query = "update $tableName set `".$colContact."_".$index."` = $orgaId where `id` = $refId";
-        try
-        {
-            $dbo->setQuery($query);
-            return $dbo->execute();
-        }
-        catch(Exception $e)
-        {
-            JLog::add('Error in model/syncs at function syncRef, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
+    public function syncRef($tableName, $colContact, $refId, $orgaId, $index) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update($db->quoteName($tableName))
+	        ->set($db->quoteName($colContact.'_'.$index).' = '.$orgaId)
+	        ->where($db->quoteName('id').' = '.$refId);
+
+        try {
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Error in model/syncs at function syncRef, QUERY: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_jcrm');
+            return false;
         }
     }
 
 	/**
      * @param $organisation
      * @return mixed
-     * @throws Exception
      */
-    public function getSiblingOrgs($organisation)
-    {
+    public function getSiblingOrgs($organisation) {
         $dbo = $this->getDbo();
         $query = 'select `id`, `organisation` from #__jcrm_contacts where `type` = 1 and organisation not like ""  and ((SOUNDEX(organisation) = SOUNDEX('.$dbo->quote($organisation).')) or organisation like '.$dbo->quote($organisation.'%').') ';
-        try
-        {
+        try {
             $dbo->setQuery($query);
             return $dbo->loadObjectList();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             JLog::add('Error in model/syncs at function getSiblingOrgs, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
+            return false;
         }
     }
 
@@ -441,23 +433,16 @@ class JcrmModelSyncs extends JModelList
      * @param $refId
      * @param $index
      * @return mixed
-     * @throws Exception
      */
-    public function ignore($tableName, $colContact, $colAccount, $refId, $index)
-    {
+    public function ignore($tableName, $colContact, $colAccount, $refId, $index) {
         $dbo = $this->getDbo();
         $query = "update $tableName set `".$colContact."_".$index."` = -1, `".$colAccount."_".$index."` = -1 where `id` = $refId";
-        try
-        {
+        try {
             $dbo->setQuery($query);
-            $res = $dbo->execute();
-            return $res;
-        }
-        catch(Exception $e)
-        {
+            return $dbo->execute();
+        } catch (Exception $e) {
             JLog::add('Error in model/syncs at function ignore, QUERY: '.$query, JLog::ERROR, 'com_jcrm');
+            return false;
         }
     }
-
-
 }

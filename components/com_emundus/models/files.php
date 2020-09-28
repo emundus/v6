@@ -863,158 +863,90 @@ class EmundusModelFiles extends JModelLegacy
         return $query;
     }
 
-    /**
-     * @param $str
-     * @param array $tableAlias
-     * @return array
-     */
-    private function _buildSearch($str_array, $tableAlias = array())
-    {
+	/**
+	 * @param       $str_array
+	 * @param array $tableAlias
+	 *
+	 * @return array
+	 */
+    private function _buildSearch($str_array, $tableAlias = array()) {
+
         $q = array('q' => array(), 'join' => array());
-        $all = 0; $fnum = 0; $id = 0; $email = 0; $username = 0; $lastname = 0; $firstname = 0;
+        $queryGroups = [
+        	'all' => '',
+	        'fnum' => '',
+	        'id' => '',
+	        'email' => '',
+	        'username' => '',
+	        'lastname' => '',
+	        'firstname' => ''
+        ];
+        $first = true;
 
         foreach ($str_array as $str) {
 
             $val = explode(': ', $str);
 
-               /* if (is_numeric($val[1]))
-                {
-                    //possibly fnum ou uid
-                    $q['q'][] .= ' (u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+            if ($val[0] == "ALL") {
+
+                if (is_numeric($val[1])) {
+
+                	//possibly fnum ou uid
+                    if (!empty($queryGroups['all'])) {
+	                    $queryGroups['all'] .= ' or (u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+                    } else {
+                    	if ($first) {
+		                    $queryGroups['all'] .= ' and (((u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+		                    $first = false;
+	                    } else {
+		                    $queryGroups['all'] .= ' and ((u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+	                    }
+
+                    }
+
+                    if (!in_array('jos_users', $tableAlias)) {
+                    	$q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+                    }
+
                     $q['users'] = true;
 
-                }
-                else
-                {
-                    if(filter_var($val[1], FILTER_VALIDATE_EMAIL) !== false)
-                    {
+                } else {
+
+                    if (filter_var($val[1], FILTER_VALIDATE_EMAIL) !== false) {
                         //the request is an email
-                        $q['q'][] .= ' u.email = "'.$val[1].'"';
-                        if (!in_array('jos_users', $tableAlias))
-                            $q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+                        if (!empty($queryGroups['all'])) {
+	                        $queryGroups['all'] .= ' or (u.email = "'.$val[1].'") ';
+                        } else {
+                        	if ($first) {
+		                        $queryGroups['all'] .= ' and (((u.email = "'.$val[1].'") ';
+		                        $first = false;
+	                        } else {
+		                        $queryGroups['all'] .= ' and ((u.email = "'.$val[1].'") ';
+	                        }
+
+                        }
+
+                        if (!in_array('jos_users', $tableAlias)) {
+                        	$q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+                        }
+
                         $q['users'] = true;
 
-                    }
-                    else
-                    {
-                        $q['q'][] .= ' (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
-                        if (!in_array('jos_users', $tableAlias)){
-                            $q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id';
-                            $q['users'] = true;
+                    } else {
+
+                        if (!empty($queryGroups['all'])) {
+	                        $queryGroups['all'] .= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
+                        } else {
+                        	if ($first) {
+		                        $queryGroups['all'] .= ' and (((eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
+		                        $first = false;
+	                        } else {
+		                        $queryGroups['all'] .= ' and ((eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
+	                        }
+
                         }
 
-                        if (!in_array('jos_emundus_users', $tableAlias)){
-                            $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
-                            $q['em_user'] = true;
-                        }
-
-                    }
-                }
-            }
-            if($val[0] == "FNUM"){
-
-                if (is_numeric($val[1]))
-                {
-                    //possibly fnum ou uid
-                    $q['q'][]= ' (jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
-                    $q['users'] = true;
-
-                }
-            }
-            if($val[0] == "ID"){
-
-                if (is_numeric($val[1]))
-                {
-                    //possibly fnum ou uid
-                    $q['q'][]= ' (u.id = ' . $val[1] . ') ';
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
-                    $q['users'] = true;
-
-                }
-            }
-            if($val[0] == "EMAIL"){
-
-
-                    //the request is an email
-                    $q['q'][] = 'u.email like "%'.$val[1].'%"';
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
-                    $q['users'] = true;
-
-            }
-            if($val[0] == "USERNAME"){
-                 //the request is an username
-
-                $q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
-                if (!in_array('jos_users', $tableAlias))
-                    $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
-                $q['users'] = true;
-
-            }
-            if($val[0] == "LAST_NAME"){
-                //the request is an lastname
-
-                    $q['q'][] = ' (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
-                    if (!in_array('jos_emundus_users', $tableAlias)){
-                        $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
-                        $q['em_user'] = true;
-                    }
-
-            }
-            if($val[0] == "FIRST_NAME"){
-                //the request is a firstname
-
-                    $q['q'][] = ' (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    if (!in_array('jos_emundus_users', $tableAlias)){
-                        $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
-                    }
-                    $q['em_user'] = true;
-            }*/
-
-            if($val[0] == "ALL"){
-
-                if (is_numeric($val[1]))
-                {
-                    //possibly fnum ou uid
-                    if($all > 0){
-                        $q['q'][]= ' or (u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
-                    }else{
-                        $q['q'][]= ' and (u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
-                    }
-                    //$q['q'][] .= ' (u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
-                    $q['users'] = true;
-
-                }
-                else
-                {
-                    if(filter_var($val[1], FILTER_VALIDATE_EMAIL) !== false)
-                    {
-                        //the request is an email
-                        if($all > 0){
-                            $q['q'][]= ' or (u.email = "'.$val[1].'") ';
-                        }else{
-                            $q['q'][]= ' and (u.email = "'.$val[1].'") ';
-                        }
-                        //$q['q'][] .= ' (u.email = "'.$val[1].'") ';
-                        if (!in_array('jos_users', $tableAlias))
-                            $q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
-                        $q['users'] = true;
-                    }
-                    else
-                    {
-                        if($all > 0){
-                            $q['q'][]= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
-                        }else{
-                            $q['q'][]= ' and (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
-                        }
-                        if (!in_array('jos_users', $tableAlias)){
+                        if (!in_array('jos_users', $tableAlias)) {
                             $q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id';
                             $q['users'] = true;
                         }
@@ -1025,106 +957,141 @@ class EmundusModelFiles extends JModelLegacy
                         }
                     }
                 }
-
-                $all = $all + 1;
             }
-            if($val[0] == "FNUM"){
 
-                if (is_numeric($val[1]))
-                {
-                    //possibly fnum ou uid
-                    if($fnum > 0){
-                        $q['q'][]= ' or (jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
-                    }else{
-                        $q['q'][]= ' and (jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
-                    }
 
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
-                    $q['users'] = true;
-
-                    $fnum = $fnum + 1;
+            if ($val[0] == "FNUM" && is_numeric($val[1])) {
+                //possibly fnum ou uid
+                if (!empty($queryGroups['fnum'])) {
+                    $queryGroups['fnum'] .= ' or (jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+                } else {
+                	if ($first) {
+		                $queryGroups['fnum'] .= ' and (((jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+		                $first = false;
+	                } else {
+		                $queryGroups['fnum'] .= ' and ((jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+	                }
                 }
-            }
-            if($val[0] == "ID"){
 
-                if (is_numeric($val[1]))
-                {
-                    //possibly fnum ou uid
-                    if($id > 0){
-                        $q['q'][]= ' or (u.id = ' . $val[1] . ') ';
-                    }else{
-                        $q['q'][]= ' and (u.id = ' . $val[1] . ') ';
-                    }
-
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
-                    $q['users'] = true;
-
-                    $id = $id + 1;
-                }
-            }
-            if($val[0] == "EMAIL"){
-
-                    //the request is an email
-                    if($email > 0){
-                        $q['q'][]= ' or ( u.email like "%'.$val[1].'%") ';
-                    }else{
-                        $q['q'][]= ' and ( u.email like "%'.$val[1].'%") ';
-                    }
-                    //$q['q'][] = ' ( u.email like "%'.$val[1].'%") ';
-                    if (!in_array('jos_users', $tableAlias))
-                        $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
-                    $q['users'] = true;
-
-                    $email = $email + 1;
-            }
-            if($val[0] == "USERNAME"){
-                 //the request is an username
-                if($username > 0){
-                    $q['q'][]= ' or ( u.username LIKE "%' . ($val[1]) . '%" ) ';
-                }else{
-                    $q['q'][]= ' and ( u.username LIKE "%' . ($val[1]) . '%" ) ';
-                }
-                //$q['q'][] = ' ( u.username LIKE "%' . ($val[1]) . '%" ) ';
-                if (!in_array('jos_users', $tableAlias))
+                if (!in_array('jos_users', $tableAlias)) {
                     $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+                }
                 $q['users'] = true;
-
-                $username = $username + 1;
             }
-            if($val[0] == "LAST_NAME"){
+
+
+            if ($val[0] == "ID" && is_numeric($val[1])) {
+                //possibly fnum ou uid
+                if (!empty($queryGroups['id'])) {
+	                $queryGroups['id'] .= ' or (u.id = ' . $val[1] . ') ';
+                } else {
+	                if ($first) {
+		                $queryGroups['id'] .= ' and (((u.id = ' . $val[1] . ') ';
+		                $first = false;
+	                } else {
+		                $queryGroups['id'] .= ' and ((u.id = ' . $val[1] . ') ';
+	                }
+                }
+
+                if (!in_array('jos_users', $tableAlias)) {
+                    $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+                }
+                $q['users'] = true;
+            }
+
+
+            if ($val[0] == "EMAIL") {
+                //the request is an email
+                if (!empty($queryGroups['email'])) {
+                    $queryGroups['email'] .= ' or (u.email like "%'.$val[1].'%") ';
+                } else {
+	                if ($first) {
+		                $queryGroups['email'] .= ' and (((u.email like "%'.$val[1].'%") ';
+		                $first = false;
+	                } else {
+		                $queryGroups['email'] .= ' and ((u.email like "%'.$val[1].'%") ';
+	                }
+                }
+
+                if (!in_array('jos_users', $tableAlias)) {
+                    $q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+                }
+
+                $q['users'] = true;
+            }
+
+
+            if ($val[0] == "USERNAME") {
+                 //the request is an username
+                if (!empty($queryGroups['username'])) {
+	                $queryGroups['username'] .= ' or (u.username LIKE "%' . ($val[1]) . '%" ) ';
+                } else {
+	                if ($first) {
+		                $queryGroups['username'] .= ' and (((u.username LIKE "%' . ($val[1]) . '%" ) ';
+		                $first = false;
+	                } else {
+		                $queryGroups['username'] .= ' and ((u.username LIKE "%' . ($val[1]) . '%" ) ';
+	                }
+                }
+
+                if (!in_array('jos_users', $tableAlias)) {
+                	$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+                }
+                $q['users'] = true;
+            }
+
+            if ($val[0] == "LAST_NAME") {
                 //the request is a lastname
-                if($lastname > 0){
-                    $q['q'][]= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
-                }else{
-                    $q['q'][]= ' and (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
+                if (!empty($queryGroups['lastname'])) {
+	                $queryGroups['lastname'] .= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
+                } else {
+	                if ($first) {
+		                $queryGroups['lastname'] .= ' and (((eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
+		                $first = false;
+	                } else {
+		                $queryGroups['lastname'] .= ' and ((eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
+	                }
                 }
 
                 if (!in_array('jos_emundus_users', $tableAlias)){
                     $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
                     $q['em_user'] = true;
                 }
-
-                $lastname = $lastname + 1;
             }
-            if($val[0] == "FIRST_NAME"){
-                //the request is a firstname
-                    if($firstname > 0){
-                        $q['q'][]= ' or (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    }else{
-                        $q['q'][]= ' and (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    }
-                    //$q['q'][] = ' and (ue.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    if (!in_array('jos_emundus_users', $tableAlias)){
-                        $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
-                        $q['em_user'] = true;
-                    }
 
-                    $firstname = $firstname + 1;
+            if ($val[0] == "FIRST_NAME") {
+                //the request is a firstname
+                if (!empty($queryGroups['firstname'])) {
+                    $queryGroups['firstname'] .= ' or (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
+                } else {
+	                if ($first) {
+		                $queryGroups['firstname'] .= ' and (((eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
+		                $first = false;
+	                } else {
+		                $queryGroups['firstname'] .= ' and ((eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
+	                }
+                }
+
+                if (!in_array('jos_emundus_users', $tableAlias)) {
+                    $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
+                    $q['em_user'] = true;
+                }
             }
         }
-        //var_dump($q['join']);die;
+
+        // Close all group parentheses.
+	    foreach ($queryGroups as $k => $v) {
+	    	if (!empty($v)) {
+	    		$queryGroups[$k] .= ')';
+		    }
+	    }
+	    $query = $queryGroups['all'].$queryGroups['fnum'].$queryGroups['id'].$queryGroups['email'].$queryGroups['username'].$queryGroups['lastname'].$queryGroups['firstname'];
+
+	    if (!empty($query)) {
+	    	$query .= ')';
+	    }
+
+	    $q['q'][] = $query;
         return $q;
     }
 
@@ -2279,21 +2246,20 @@ if (JFactory::getUser()->id == 63)
     public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1) {
 
     	$db = $this->getDbo();
-
         $locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
 
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 	    if ($anonymize_data) {
-		    $query = 'select c.fnum, esc.label, sp.code, esc.id as campaign_id';
+		    $query = 'select jos_emundus_campaign_candidature.fnum, esc.label, sp.code, esc.id as campaign_id';
 	    } else {
-		    $query = 'select c.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
+		    $query = 'select jos_emundus_campaign_candidature.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
 	    }
 
         $leftJoin = '';
         $leftJoinMulti = '';
         $tableAlias = [
             'jos_emundus_setup_campaigns' => 'esc',
-            'jos_emundus_campaign_candidature' => 'c',
+            'jos_emundus_campaign_candidature' => 'jos_emundus_campaign_candidature',
             'jos_emundus_setup_programmes' => 'sp',
             'jos_users' => 'u',
             'jos_emundus_tag_assoc' => 'eta'
@@ -2310,9 +2276,8 @@ if (JFactory::getUser()->id == 63)
                 if (!isset($lastTab)) {
 	                $lastTab = array();
                 }
-
                 if (!in_array($elt->tab_name, $lastTab)) {
-	                $leftJoin .= ' left join '.$elt->tab_name.' on '.$elt->tab_name.'.fnum = c.fnum ';
+	                $leftJoin .= ' left join '.$elt->tab_name.' on '.$elt->tab_name.'.fnum = jos_emundus_campaign_candidature.fnum ';
                 }
 
                 $lastTab[] = $elt->tab_name;
@@ -2328,13 +2293,11 @@ if (JFactory::getUser()->id == 63)
                         $where  = $element_attribs->join_key_column.'='.$elt->table_join.'.'.$elt->element_name;
                         $sub_query = 'SELECT '.$select.' FROM '.$from.' WHERE '.$where;
                         $sub_query = preg_replace('#{thistable}#', $from, $sub_query);
-                        //$sub_query = preg_replace('#{my->id}#', $aid, $sub_query);
                         $sub_query = preg_replace('#{shortlang}#', $locales, $sub_query);
 
                         $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
 
-                    }
-                    elseif ($elt->element_plugin == 'cascadingdropdown') {
+                    } elseif ($elt->element_plugin == 'cascadingdropdown') {
                         $element_attribs = json_decode($elt->element_attribs);
                         $cascadingdropdown_id = $element_attribs->cascadingdropdown_id;
                         $r1 = explode('___', $cascadingdropdown_id);
@@ -2365,12 +2328,10 @@ if (JFactory::getUser()->id == 63)
 
                         $sub_query = "SELECT ".$select." FROM ".$from." WHERE ".$where;
                         $sub_query = preg_replace('#{thistable}#', $from, $sub_query);
-                        //$sub_query = preg_replace('#{my->id}#', $aid, $sub_query);
                         $sub_query  = preg_replace('#{shortlang}#', $locales, $sub_query);
 
                         $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
-                    }
-                    else {
+                    } else {
                         $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
                     }
 
@@ -2402,7 +2363,7 @@ if (JFactory::getUser()->id == 63)
                             $select .= 'FROM '.$tableAlias[$elt->tab_name].'
                                 LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
                                 LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$elt->table_join.'.'.$elt->element_name.'
-                                WHERE '.$tableAlias[$elt->tab_name].'.fnum=c.fnum)';
+                                WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
                         }
 
                         $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
@@ -2418,7 +2379,7 @@ if (JFactory::getUser()->id == 63)
                             FROM '.$tableAlias[$elt->tab_name].'
                             LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
                             LEFT JOIN '.$from.' as t ON t.'.$where.'
-                            WHERE '.$tableAlias[$elt->tab_name].'.fnum=c.fnum)';
+                            WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
 
                         $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
                     }
@@ -2486,14 +2447,14 @@ if (JFactory::getUser()->id == 63)
                 $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
             }
         }
-        $query .= ' from #__emundus_campaign_candidature as c
-                    left join #__users as u on u.id = c.applicant_id
-                    left join #__emundus_setup_campaigns as esc on esc.id = c.campaign_id
+        $query .= ' from #__emundus_campaign_candidature as jos_emundus_campaign_candidature
+                    left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
+                    left join #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id
                     left join #__emundus_setup_programmes as sp on sp.code = esc.training ';
 
         $query .= $leftJoin. ' '. $leftJoinMulti;
 
-        $query .= 'where u.block=0 AND c.fnum in ("'.implode('","', $fnums).'") ';
+        $query .= 'where u.block=0 AND jos_emundus_campaign_candidature.fnum in ("'.implode('","', $fnums).'") ';
 
 	    if (preg_match("/emundus_evaluations/i", $query)) {
 
@@ -3302,7 +3263,6 @@ if (JFactory::getUser()->id == 63)
 
             return $res;
         } catch(Exception $e) {
-            var_dump($query);
             throw $e;
         }
     }

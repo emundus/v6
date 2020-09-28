@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+
+		<fieldset name="plg-form-emundusfinalgrade" label="PLG_FABRIK_FORM_EMUNDUSFINALGRADE_FIELDS">
+
+			<field name="email-trigger" type="list" default="0" description="PLG_FABRIK_FORM_EMUNDUSFINALGRADE_EMAIL_TRIGGER_DESC" label="PLG_FABRIK_FORM_EMUNDUSFINALGRADE_EMAIL_TRIGGER" >
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+		</fieldset>
+
+	</fields>
+</form>

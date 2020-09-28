@@ -73,7 +73,7 @@ class ConfigController extends hikashopController {
 			if(!isset($formData[$namebox])) {
 				$formData[$namebox] = '';
 			} elseif(is_array($formData[$namebox])) {
-				$formData[$namebox] = implode($formData[$namebox],',');
+				$formData[$namebox] = implode(',', $formData[$namebox]);
 			}
 		}
 

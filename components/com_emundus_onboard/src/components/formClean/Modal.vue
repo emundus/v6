@@ -26,19 +26,23 @@
         </div>
         <div class="form-group mb-2">
           <label>{{fieldType}} :</label>
-          <select id="select_type" class="dropdown-toggle" v-model="element.plugin" @change="checkPlugin">
+          <select id="select_type" class="dropdown-toggle" v-model="plugin" @change="checkPlugin" :disabled="(files != 0 && element.plugin == 'birthday') || (files != 0 && element.params.password == 6)">
             <option v-for="(plugin, index) in plugins" :key="index" :value="plugin.value">
               {{plugin.name}}
             </option>
           </select>
         </div>
         <div class="col-md-12 separator-top top-responsive">
-          <fieldF v-if="plugin == 'field'" :element="element"></fieldF>
+          <fieldF v-if="plugin == 'field'" :files="files" :element="element"></fieldF>
           <birthdayF v-if="plugin =='birthday'" :element="element"></birthdayF>
-          <checkboxF v-if="plugin =='checkbox'" :element="element"  @subOptions="subOptions"></checkboxF>
-          <dropdownF v-if="plugin =='dropdown'" :element="element" @subOptions="subOptions"></dropdownF>
-          <radiobtnF v-if="plugin == 'radiobutton'" :element="element"  @subOptions="subOptions"></radiobtnF>
+          <checkboxF v-if="plugin =='checkbox'" :element="element" :databases="databases"  @subOptions="subOptions"></checkboxF>
+          <dropdownF v-if="plugin =='dropdown'" :element="element" :databases="databases" @subOptions="subOptions"></dropdownF>
+          <radiobtnF v-if="plugin == 'radiobutton'" :element="element" @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
+          <displayF v-if="plugin =='display'" :element="element"></displayF>
+        </div>
+        <div class="loading-form" v-if="loading">
+          <Ring-Loader :color="'#de6339'" />
         </div>
       </div>
       <div class="col-md-12 mb-1">
@@ -63,18 +67,20 @@
   import dropdownF from "./Plugin/dropdown";
   import radiobtnF from "./Plugin/radiobtn";
   import textareaF from "./Plugin/textarea";
+  import displayF from "./Plugin/display";
   const qs = require("qs");
 
   export default {
     name: "modalEditElement",
-    props: { ID: Number, element: Object },
+    props: { ID: Number, element: Object, files: Number },
     components: {
       fieldF,
       birthdayF,
       checkboxF,
       dropdownF,
       radiobtnF,
-      textareaF
+      textareaF,
+      displayF
     },
     data() {
       return {
@@ -84,6 +90,7 @@
         },
         done: false,
         changes: false,
+        loading: false,
         sublabel: "",
         plugin: '',
         translate: {
@@ -115,7 +122,12 @@
             value: 'textarea',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
           },
+          display: {
+            value: 'display',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
+          },
         },
+        databases: [],
         // Translations
         Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
         Require: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_REQUIRED"),
@@ -150,7 +162,9 @@
             element: this.element,
           })
         }).then((response) => {
-          this.$emit("reloadElement");
+          setTimeout(() => {
+            this.$emit("reloadElement")
+          },200);
           this.$modal.hide('modalEditElement' + this.ID);
         }).catch(e => {
           console.log(e);
@@ -182,11 +196,24 @@
           }
         }).then(response => {
           this.element = response.data;
-          this.plugin = this.element.plugin;
+          if(this.element.plugin == 'databasejoin'){
+            this.plugin = this.element.params.database_join_display_type;
+          } else {
+            this.plugin = this.element.plugin;
+          }
+        });
+      },
+      getDatabases(){
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getdatabasesjoin",
+        }).then(response => {
+          this.databases = response.data.data;
         });
       },
       beforeClose(event) {
         if (this.changes === true) {
+          this.changes = false;
           this.$emit(
                   "show",
                   "foo-velocity",
@@ -195,12 +222,13 @@
                   this.informations
           );
         }
-        this.changes = false;
       },
       beforeOpen(event) {
         this.initialisation();
       },
       initialisation() {
+        this.loading = true;
+        this.getElement();
         this.axiostrad(this.element.label_tag)
                 .then(response => {
                   this.label.fr = response.data.fr;
@@ -209,10 +237,13 @@
                 .catch(function(response) {
                   console.log(response);
                 });
-        this.getElement();
+        this.getDatabases();
+        this.loading = false;
       },
       checkPlugin(){
-        this.plugin = this.element.plugin;
+        if(this.element.plugin === 'databasejoin'){
+          this.plugin = this.element.params.database_join_display_type;
+        }
       }
     },
     computed: {
@@ -224,8 +255,17 @@
       element: function() {
         this.tempEl = JSON.parse(JSON.stringify(this.element));
       },
+      plugin: function(value) {
+        if (this.element.plugin !== 'databasejoin') {
+          this.element.plugin = value;
+        }
+      }
     },
-    created: function() {}
+    created: function() {
+      if(this.files != 0 && this.element.plugin != 'birthday'){
+        delete this.plugins.birthday;
+      }
+    }
   };
 </script>
 

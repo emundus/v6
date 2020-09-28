@@ -9,11 +9,11 @@
                 </a>
             </li>
         </ul>
-        <div class="form-group controls" v-if="indexHighlight == 0">
-            <editor :text="form.content.fr" :lang="actualLanguage" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.fr"></editor>
+        <div class="form-group controls" v-if="indexHighlight == 0 && this.form.content.fr != null">
+            <editor :text="form.content.fr" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.fr"></editor>
         </div>
-        <div class="form-group controls" v-if="indexHighlight == 1">
-            <editor :text="form.content.en" :lang="actualLanguage" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.en"></editor>
+        <div class="form-group controls" v-if="indexHighlight == 1 && this.form.content.en != null">
+            <editor :text="form.content.en" :lang="actualLanguage" :enable_variables="false" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.en"></editor>
         </div>
     </div>
 </template>
@@ -41,8 +41,8 @@
                 indexHighlight: 0,
                 form: {
                     content: {
-                        fr: '',
-                        en: ''
+                        fr: null,
+                        en: null
                     }
                 },
                 languages: [
@@ -100,11 +100,16 @@
     }
     .MenuFormItemHome:not(.MenuFormItemHome_current):hover {
         color: grey;
+        text-decoration: none;
     }
     .MenuFormItemHome_current {
         color: white;
         cursor: pointer;
         background-color: #de6339;
+    }
+    .MenuFormItemHome_current:hover {
+        text-decoration: none;
+        color: white;
     }
     .MenuFormItemHome_current:after, .MenuFormItemHome_current:before {
         opacity: 1 !important;

@@ -44,8 +44,8 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
 	        $m_emails = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $filterCount = $jinput->get->get('filterCount');
-	        $rechercheCount = $jinput->get->get('rechercheCount');
+	        $filterCount = $jinput->getString('filterCount');
+	        $rechercheCount = $jinput->getString('rechercheCount');
 
             $emails = $m_emails->getEmailCount($filterCount, $rechercheCount);
 
@@ -73,11 +73,11 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 	        $m_emails = $this->model;
 
 	        $jinput = JFactory::getApplication()->input;
-	        $filter = $jinput->get->get('filter');
-	        $sort = $jinput->get->get('sort');
-	        $recherche = $jinput->get->get('recherche');
-	        $lim = $jinput->get->get('lim');
-	        $page = $jinput->get->get('page');
+	        $filter = $jinput->getString('filter');
+	        $sort = $jinput->getString('sort');
+	        $recherche = $jinput->getString('recherche');
+	        $lim = $jinput->getInt('lim');
+	        $page = $jinput->getInt('page');
 
             $emails = $m_emails->getAllEmails($lim, $page, $filter, $sort, $recherche);
 
@@ -100,7 +100,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('id');
+	        $data = $jinput->getInt('id');
 	        $m_email = $this->model;
 
             $emails = $m_email->deleteEmail($data);
@@ -124,7 +124,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('id');
+	        $data = $jinput->getInt('id');
 	        $m_email = $this->model;
 
             $emails = $m_email->unpublishEmail($data);
@@ -148,7 +148,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('id');
+	        $data = $jinput->getInt('id');
 	        $m_email = $this->model;
 
             $emails = $m_email->publishEmail($data);
@@ -172,7 +172,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('id');
+	        $data = $jinput->getInt('id');
 	        $m_email = $this->model;
 
             $email = $m_email->duplicateEmail($data);
@@ -197,7 +197,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('body');
+	        $data = $jinput->getRaw('body');
 	        $m_email = $this->model;
 
             $result = $m_email->createEmail($data);
@@ -223,8 +223,8 @@ class EmundusonboardControlleremail extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->post->getRaw('body');
-	        $code = $jinput->post->getRaw('code');
+	        $data = $jinput->getRaw('body');
+	        $code = $jinput->getString('code');
 	        $m_email = $this->model;
 
             $result = $m_email->updateEmail($code, $data);
@@ -248,7 +248,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $id = $jinput->get->getInt('id');
+	        $id = $jinput->getInt('id');
 	        $m_email = $this->model;
 
             $email = $m_email->getEmailById($id);
@@ -334,7 +334,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $pid = $jinput->get->getInt('pid');
+	        $pid = $jinput->getInt('pid');
 	        $m_email = $this->model;
 
             $triggers = $m_email->getTriggersByProgramId($pid);
@@ -357,7 +357,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
         } else {
 
 	        $jinput = JFactory::getApplication()->input;
-	        $tid = $jinput->get->getInt('tid');
+	        $tid = $jinput->getInt('tid');
 	        $m_email = $this->model;
 
             $trigger = $m_email->getTriggerById($tid);
@@ -381,11 +381,11 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
 	        $m_email = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $trigger = $jinput->post->getRaw('trigger');
-	        $users = $jinput->post->getRaw('users');
+	        $trigger = $jinput->getRaw('trigger');
+	        $users = $jinput->getRaw('users');
 
             $status = $m_email->createTrigger($trigger, $users, $user);
-            if (!empty($status)) {
+            if ($status) {
                 $tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);
             } else {
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_CREATE_TRIGGER'), 'data' => $status);
@@ -405,9 +405,9 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
 	        $m_email = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $tid = $jinput->post->getInt('tid');
-	        $trigger = $jinput->post->getRaw('trigger');
-	        $users = $jinput->post->getRaw('users');
+	        $tid = $jinput->getInt('tid');
+	        $trigger = $jinput->getRaw('trigger');
+	        $users = $jinput->getRaw('users');
 
             $status = $m_email->updateTrigger($tid, $trigger, $users);
             if (!empty($status)) {
@@ -430,7 +430,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 
 	        $m_email = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $tid = $jinput->post->getInt('tid');
+	        $tid = $jinput->getInt('tid');
 
             $status = $m_email->removeTrigger($tid);
             if (!empty($status)) {

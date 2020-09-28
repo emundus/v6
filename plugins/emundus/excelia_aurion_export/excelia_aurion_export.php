@@ -18,7 +18,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
         $this->db = JFactory::getDbo();
 
         jimport('joomla.log.log');
-        JLog::addLogger(array('text_file' => 'com_emundus.exceliaAurionExport.php'), JLog::ALL, array('com_emundus'));
+        JLog::addLogger(array('text_file' => 'com_emundus.exceliaAurionExport.php'), JLog::ALL, array('com_emundus_exceliaAurionExport'));
     }
 
     /**
@@ -43,7 +43,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
             // if any one of these params are empty, go no further
             if (empty($aurion_url) || empty($aurion_login) || empty($aurion_pass)) {
-                JLog::add('Could not run plugin, missing param', JLog::ERROR, 'com_emundus');
+                JLog::add('Could not run plugin, missing param', JLog::ERROR, 'com_emundus_exceliaAurionExport');
                 return false;
             }
 
@@ -98,6 +98,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             $scholarship_columns = [
                 $this->db->quoteName('es.fnum', 'es_fnum'),
                 $this->db->quoteName('es.mail_excelia'),
+                $this->db->quoteName('es.is_hadicap'),
                 $this->db->quoteName('es.formation')
             ];
 
@@ -207,12 +208,12 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $users = $this->db->loadObjectList('user_id');
 
             } catch (Exception $e) {
-                JLog::add('Could not get applicant info. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add('Could not get applicant info. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_exceliaAurionExport');
                 return false;
             }
 
             if (empty($users)) {
-                JLog::add('No users found in the aurion export query', JLog::ERROR, 'com_emundus');
+                JLog::add('No users found in the aurion export query', JLog::ERROR, 'com_emundus_exceliaAurionExport');
                 return false;
             }
 
@@ -230,7 +231,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 }
 
                 if (empty($xml_export)) {
-                    JLog::add('error while building the xml file', JLog::ERROR, 'com_emundus');
+                    JLog::add('error while building the xml file', JLog::ERROR, 'com_emundus_exceliaAurionExport');
                     return false;
                 }
 
@@ -264,7 +265,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
                 // Vérification si une erreur est survenue
                 if (curl_errno($ch)) {
-                    JLog::add('Error posting data in Curl' . $info, JLog::ERROR, 'com_emundus');
+                    JLog::add('Error posting data in Curl' . $info, JLog::ERROR, 'com_emundus_exceliaAurionExport');
                     return false;
                 }
 
@@ -277,10 +278,10 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     if ($data->execute == 'false') {
                         JLog::add('
 						Error parsing XML: this could be an error in the request \n 
-						URL: '.$aurion_url.' \n
-						POST DATA: '.$xml_export.' \n
+						URL: '.$aurion_url.' 
+						POST DATA: '.$xml_export.' 
 						RESPONSE BODY: '.$data->messages[0]->message.'
-					', JLog::ERROR, 'com_emundus');
+					', JLog::ERROR, 'com_emundus_exceliaAurionExport');
                         return false;
                     }
 
@@ -293,7 +294,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     JLog::add('
 						XML SENT : \n
 						POST DATA: '.$xml_export.' \n
-					', JLog::INFO, 'com_emundus');
+					', JLog::INFO, 'com_emundus_exceliaAurionExport');
 
                 } else {
                     JLog::add('
@@ -302,7 +303,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 						POST DATA: '.$xml_export.' \n
 						RESPONSE CODE: '.$data->execute[0].' \n
 						RESPONSE BODY: '.$data->messages[0]->message.'
-					', JLog::ERROR, 'com_emundus');
+					', JLog::ERROR, 'com_emundus_exceliaAurionExport');
                     return false;
                 }
             }
@@ -372,7 +373,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $qualification_city  = htmlspecialchars($user->city_2, ENT_XML1 | ENT_QUOTES, 'UTF-8');
             }
             $inscription_module = "
-                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
+                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A46372499 ='" . $user->is_hadicap . "' A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
                     
                     <individu  key='" . $user_key . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
                         <module objet_id='" . $user->aurion_id . "' ForceSource='apprenant'/>
@@ -519,7 +520,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $qualification_city  = htmlspecialchars($user->city_2, ENT_XML1 | ENT_QUOTES, 'UTF-8');
             }
             $inscription_module = "
-                <inscription_module ForceImport='true' key='". $user->aurion_id ."_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
+                <inscription_module ForceImport='true' key='". $user->aurion_id ."_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A46372499 ='" . $user->is_hadicap . "' A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
                     
                     <individu objet_id='" . $user_id . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
                         <module objet_id='" . $user->aurion_id . "' ForceSource='apprenant'/>
@@ -681,7 +682,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             $db->setQuery($query);
             return $db->loadResult();
         } catch(Exception $e) {
-            JLog::add('Query error '. $query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Query error '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus_exceliaAurionExport');
             return $input;
         }
     }
