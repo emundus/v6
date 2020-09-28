@@ -230,7 +230,7 @@ function addElement() {
                     '<select class="chzn-select em-filt-select" name="elements" id="elements">' +
                     '<option value="">' + result.default +'</option>' +
                     '</select> ' +
-                    '<button class="btn btn-danger btn-xs" id="suppr-filt"><span class="glyphicon glyphicon-trash" ></span></button>'+
+                    '<button class="btn btn-danger btn-xs" id="suppr-filt"><span class="fas fa-trash" ></span></button>'+
                     '</fieldset>');
 
                 var options = '';

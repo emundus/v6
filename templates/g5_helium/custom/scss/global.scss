@@ -291,7 +291,7 @@ input[type="text"],
   width: 100vw;
 
   .g-container {
-    padding: 10px;
+    padding: 10px !important;
     width: 95%;
     margin: auto !important;
   }
@@ -1425,6 +1425,19 @@ a {
     }
   }
 
+
+.btn-group.pull-right #em-close-file.btn.btn-danger.btn-xxl {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  &:hover,
+  &:focus {
+    background-color: $base-secondary-color !important;
+    color: #fff !important;
+    outline: none;
+  }
+}
+
   #em_select_filter #del-filter,#em-delete-files.btn.btn-danger.btn-xs.pull-right {
     background-color: $base-secondary-color !important;
     color: #fff !important;
@@ -1432,10 +1445,22 @@ a {
 
     &:hover, &:active, &:focus {
       background: #fff !important;
-      border-color: #fff !important;
+      border-color: $base-secondary-color !important;
       color: $base-secondary-color !important;
     }
   }
+
+#filters #quick.form-group input.btn.btn-sm.btn-info {
+  background-color: $base-primary-color !important;
+  color: #fff !important;
+  border: 1px solid $base-primary-color !important;
+
+  &:hover, &:active, &:focus {
+    background: #fff !important;
+    border-color: $base-primary-color !important;
+    color: $base-primary-color !important;
+  }
+}
 
   #em-see-files.btn.btn-info.btn-xs.pull-right {
     background-color: $base-primary-color !important;
@@ -1744,7 +1769,11 @@ a {
 
   /* PARTIE GESTIONNAIRE  */
 
-  .side-panel #em-files-filters .buttons input, .side-panel #em-user-filters .buttons input,  #em_filters  #em_select_filter input#save-filter {
+.g-back-office-emundus-tableau .panel-info > .panel-heading {
+  background: $base-secondary-color;
+}
+
+  .side-panel #em-files-filters .buttons input, .side-panel #em-user-filters .buttons input {
     background: $base-primary-color !important;
     border-color: $base-primary-color !important;
 
@@ -1754,6 +1783,52 @@ a {
       border-color: #fff !important;
     }
   }
+
+.side-panel #em-files-filters .buttons input {
+  background: transparent !important;
+  color: #fff !important;
+  border-color: transparent !important;
+
+  &:hover, &:active, &:focus {
+    color: $base-primary-color !important;
+  }
+}
+
+#em_filters #filters > p  {
+ color: $base-secondary-color ;
+}
+
+#em_filters fieldset.em_filters_filedset > p  {
+  color: $base-secondary-color;
+
+}
+
+#em-files-filters #em_filters fieldset input#save-filter {
+    margin-top: 10px;
+    background: $base-secondary-color;
+    border: 1px solid $base-secondary-color !important;
+      width: 100%;
+      width: -moz-available;
+      width: -webkit-fill-available;
+      width: fill-available;
+    &:focus, &:hover, &:active {
+      background: #fff;
+      border-color: $base-secondary-color !important;
+      color: $base-secondary-color !important;
+    }
+}
+
+#advanced-filters button.btn.btn-danger.btn-xs#suppr-filt {
+  background: $base-secondary-color !important;
+  border-color: $base-secondary-color !important;
+  color: #fff !important;
+  padding: 6px 10px !important;
+  &:focus, &:hover, &:active {
+    background: #fff !important;
+    border-color: $base-secondary-color !important;
+    color: $base-secondary-color !important;
+  }
+}
 
 
 
@@ -1779,7 +1854,7 @@ a {
 
   /* Editer & Ajouter*/
 
-  .g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn.btn-info.btn-sm, .g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn.btn-default.btn-sm {
+  .g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn.btn-info.btn-sm,  .g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn-default.btn-sm.em-actions-form  {
     height: 40px;
     background-color: $base-secondary-color !important;
     border: 1px solid $base-secondary-color !important;
@@ -1791,7 +1866,7 @@ a {
   }
 
 
-  #em-last-open .list-group-item,
+
   #em-see-files,
   #em-delete-files,
   .panel-body .content .btn-info,
@@ -1811,6 +1886,7 @@ a {
       background: $base-primary-color;
       padding-top: 5px;
       border-radius: 0;
+      margin-top: 2px;
     }
 
     button.btn.btn-default {
@@ -1860,6 +1936,10 @@ a {
     border: $base-primary-color;
   }
 
+.navbar.navbar-inverse {
+  background: $base-primary-color;
+}
+
   /* FILES */
 
   .g-back-office-emundus-tableau #em-hide-filters {
@@ -1874,7 +1954,6 @@ a {
 
       &#search,
       &#clear-search,
-      &#save-filter,
       &#add-filter {
         background: $base-primary-color none !important;
         &:hover,

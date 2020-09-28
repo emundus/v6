@@ -41,7 +41,7 @@ try {
     $company_id = $db->loadResult();
 
 } catch (Exception $e) {
-    JLog::add('Error in script/CCIRS-create-assign-company getting company by siret at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+    JLog::add('Error in script/CCIRS-create-assign-company getting company by siret at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 }
 
 // If the company wasn't found, make a new one.
@@ -59,7 +59,7 @@ if (empty($company_id)) {
 		$company_id = $db->insertid();
 
 	} catch (Exception $e) {
-		JLog::add('Error in script/CCIRS-create-assign-company inserting company at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		JLog::add('Error in script/CCIRS-create-assign-company inserting company at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		return false;
 	}
 
@@ -77,7 +77,7 @@ try {
 	$link = $db->loadResult();
 
 } catch (Exception $e) {
-	JLog::add('Error in script/CCIRS-create-assign-company getting company/user link: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	JLog::add('Error in script/CCIRS-create-assign-company getting company/user link: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 }
 
 // If there is no link between the user and the company, make him DRH.
@@ -102,7 +102,7 @@ if (empty($link)) {
 		$db->execute();
 
 	} catch (Exception $e) {
-		JLog::add('Error in script/CCIRS-create-assign-company inserting company at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		JLog::add('Error in script/CCIRS-create-assign-company inserting company at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	}
 
 }

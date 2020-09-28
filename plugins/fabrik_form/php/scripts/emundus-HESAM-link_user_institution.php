@@ -71,7 +71,7 @@ if ($profile == 1007) {
 			$db->execute();
 		} catch (Exception $e) {
 			// TODO: What to do if error? block user from account creation?? Might be too late.
-			JLog::add('Error adding catid to the new municipality at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error adding catid to the new municipality at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		}
 
 		// Set the catid so that we can add it to the user.
@@ -130,7 +130,7 @@ if ($profile == 1007) {
 			$db->execute();
 		} catch (Exception $e) {
 			// TODO: What to do if error? block user from account creation?? Might be too late.
-			JLog::add('Error adding catid to the new municipality at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error adding catid to the new municipality at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		}
 
 		// Set the catid so that we can add it to the user.
@@ -152,7 +152,7 @@ $db->setQuery($query);
 try {
 	$db->execute();
 } catch (Exception $e) {
-	JLog::add('Error adding user link to institution in plugin/link_user_institution at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	JLog::add('Error adding user link to institution in plugin/link_user_institution at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	// TODO: What to do if error? block user from account creation?? Might be too late.
 	return false;
 }
@@ -166,5 +166,5 @@ try {
 	$db->execute();
 } catch (Exception $e) {
 	// TODO: What to do if error? block user from account creation?? Might be too late.
-	JLog::add('Error adding catid to the new municipality at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	JLog::add('Error adding catid to the new municipality at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 }
