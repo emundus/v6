@@ -184,7 +184,6 @@ export default {
         }
       }).then(response => {
         this.groups = response.data.data;
-        console.log(this.groups.length)
         if(this.groups.length <= 1){
           this.group = this.groups[0].id;
         }
