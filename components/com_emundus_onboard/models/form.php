@@ -1500,7 +1500,8 @@ class EmundusonboardModelform extends JModelList {
                 $query->clear()
                     ->select('COUNT(*)')
                     ->from ($db->quoteName('#__emundus_campaign_candidature'))
-                    ->where($db->quoteName('campaign_id') . ' = ' . $campaign->id);
+                    ->where($db->quoteName('campaign_id') . ' = ' . $campaign->id)
+                    ->andWhere($db->quoteName('published') . ' != -1');
 
                 $db->setQuery($query);
                 $files += $db->loadResult();

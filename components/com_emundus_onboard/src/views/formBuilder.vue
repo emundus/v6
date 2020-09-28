@@ -410,10 +410,23 @@
             })
           }).then((resultTrad) => {
             result.data.group_showLegend = resultTrad.data;
-            this.loading = false;
-            this.pushGroup(result.data);
+            axios({
+              method: "post",
+              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getalltranslations",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                toJTEXT: result.data.group_tag
+              })
+            }).then((traductions) => {
+              result.data.label.fr = traductions.data.fr;
+              result.data.label.en = traductions.data.en;
+              this.loading = false;
+              this.pushGroup(result.data);
+            });
+            });
           });
-        });
       },
 
       // Update component dynamically

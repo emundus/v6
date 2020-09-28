@@ -1328,13 +1328,18 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db->setQuery($query);
         $db->execute();
 
+        $label_fr = $this->getTranslation($tag,$Content_Folder['fr']);
+        $label_en = $this->getTranslation($tag,$Content_Folder['en']);
+
         return array(
             'elements' => array(),
             'group_id' => $groupid,
             'group_tag' => $tag,
             'group_showLegend' => $this->getJTEXT("GROUP_" . $fid . "_" . $groupid),
-            'label_fr' => $this->getTranslation("GROUP_" . $fid . "_" . $groupid,$Content_Folder['fr']),
-            'label_en' => $this->getTranslation("GROUP_" . $fid . "_" . $groupid,$Content_Folder['en']),
+            'label' => array(
+                'fr' => $label_fr,
+                'en' => $label_en,
+            ),
             'ordering' => $order,
             'formid' => $fid
         );
