@@ -249,8 +249,8 @@ input[type="text"],
 
 /* Branding */
 .g-branding{
+  margin-right: 0;
   text-align: end;
-  margin-right: 1em;
 }
 
 /* HEADER */
@@ -299,10 +299,6 @@ input[type="text"],
   #header-a {
     display: flex;
     align-items: center;
-
-    .logo {
-      width: 12rem;
-    }
   }
 }
 
@@ -327,7 +323,7 @@ footer#g-footer {
 }
 
 footer#g-footer img{
-  max-width: 35%;
+  max-width: 50%;
 }
 
 #g-page-surround {
@@ -369,9 +365,6 @@ footer#g-footer > .g-container {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  width: 95%;
-  margin-left: auto;
-  margin-right: auto;
 
   .em-containerAdresseLogo {
     width: 55%;
@@ -418,7 +411,7 @@ footer#g-footer > .g-container {
 }
 
 #g-footer {
-  padding: 20px !important;
+  padding: 20px;
   margin : auto auto 0 auto !important;
 
 a {
@@ -787,7 +780,38 @@ a {
     color: $base-primary-color;
   }
 
-  /* FORMULAIRE  */
+
+
+/*BOUTONS + ET _ */
+
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success, .applicant-form .fabrikGroupRepeater.pull-right.btn-group  .deleteGroup.btn-small.btn.btn-danger  {
+  border: none !important;
+}
+
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success:hover, .applicant-form .fabrikGroupRepeater.pull-right.btn-group  .deleteGroup.btn-small.btn.btn-danger:hover   {
+  border: none !important;
+  background-color: transparent !important;
+}
+
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i:hover  {
+  color: darken(#3e8ac5, 10%);
+
+}
+
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group  .addGroup.btn-success i {
+  color: #3e8ac5;
+}
+
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group  .deleteGroup.btn-danger  i {
+  color: #E03C35;
+}
+
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group  .deleteGroup.btn-danger i:hover  {
+  color: darken(#E03C35, 10%);
+}
+
+
+/* FORMULAIRE  */
 
   .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active {
     background-color: $base-secondary-color !important;
@@ -1177,7 +1201,7 @@ a {
     .span4.offset1 button.btn.goback-btn,  .span4.offset1 button.btn[name="Goback"]  {
       background: transparent !important;
       border: 1px solid $base-secondary-color !important;
-      border-radius: 4px !important;
+      border-radius: 4px;
       color: $base-secondary-color !important;
       margin-right: 10px;
       font-weight: normal;
@@ -1206,7 +1230,7 @@ a {
     .span4 button.btn.save-btn {
       background: $base-primary-color !important;
       border: 1px solid $base-primary-color !important;
-      border-radius: 4px !important;
+      border-radius: 4px;
       color: #fff !important;
       &:hover, &:active, :focus  {
         background: transparent !important;
@@ -1351,7 +1375,7 @@ a {
   .span4.offset1 > .btn-group > button.button {
     background: $base-primary-color !important;
     border: 1px solid $base-primary-color !important;
-    border-radius: 4px !important;
+    border-radius: 4px;
 
     &:hover {
       background-color: transparent !important;
@@ -1391,6 +1415,7 @@ a {
     text-shadow: none;
     text-transform: none;
     color: $base-secondary-color !important;
+    border-radius: 4px;
 
     &:hover,
     &:focus {
@@ -1476,7 +1501,7 @@ a {
   input[type="week"]:hover,
   input:not([type]):hover,
   textarea:hover {
-    border-color: $base-secondary-color;
+    border-color: #ccc;
     box-shadow: 0 0 4px rgba(62, 138, 197, 0.5);
   }
 
