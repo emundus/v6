@@ -17,9 +17,14 @@
 /* BTNS ACTIONS- GESTIONNAIRE - DOSSIERS */
 
 
+.files-page .em-containerFilter-heading div.buttons {
+    display: flex;
+    margin-top: -4px !important;
+}
+
 .em-containerFilter-heading div.buttons {
     display: flex;
-    margin-top: -6px !important;
+    margin-top: -2px !important;
 }
 
 .em-containerFilter-heading div.buttons input {
@@ -111,6 +116,20 @@ button.close {
     cursor: pointer;
 }
 /*TABLEAUX*/
+
+.files-board table.table-bordered thead th {
+    background: #ebebeb;
+}
+
+.em-personalDetail-table-multiplleLine.table-striped tbody tr:nth-child(2n+1) td, .em-personalDetail-table-multiplleLine.table-striped tbody tr:nth-child(2n+1) th {
+    background: #fafafa;
+}
+
+.em-data-container .table-hover.table-striped tbody tr:nth-child(2n+1) td, .em-data-container .table-hover.table-striped tbody tr:nth-child(2n+1) th {
+    background: #F2F2F2 !important;
+}
+
+
 td:first-child > .em-cell {
     display: flex;
     align-items: center;
@@ -259,7 +278,7 @@ table > thead > tr > th {
 }
 
 fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-heading h3{
-    color: #fff !important;
+    color: #ffffff !important;
 }
 /* Menu Actions */
 
@@ -510,11 +529,6 @@ table#groups-table a:hover {
     font-size: 17px;
 }
 
-#em-appli-block .table th,
-#em-appli-block .table td {
-    height: 62px;
-}
-
 
 /* MODALS */
 
@@ -664,7 +678,7 @@ div#em-modal-actions .panel-heading h5 {
     padding-right: 0;
 }
 
-.g-back-office-emundus-tableau div#em-files-filters .panel-heading h3 {
+.g-back-office-emundus-tableau div#em-files-filters .panel-heading h3, .view-users #em-user-filters .panel-heading h3 {
     font-size: 1rem;
     margin-top: 5px;
 }
@@ -679,12 +693,12 @@ div#em-modal-actions .panel-heading h5 {
     box-shadow: none;
 }
 
-#em_filters #filters > p  {
+#em_filters #filters > p, #em-user-filters #filters > p   {
     margin-bottom: 10px !important;
     font-weight: 600;
 }
 
-#em_filters fieldset.em_filters_filedset > p  {
+#em_filters fieldset.em_filters_filedset > p, #em-user-filters fieldset.em_filters_filedset > p   {
     margin-bottom: 10px !important;
     margin-top: 30px !important;
     font-weight: 600;
@@ -756,6 +770,10 @@ div#em-modal-actions .panel-heading h5 {
 .g-back-office-emundus-tableau .em_filters_filedset .em-filter .em_label{
     margin-bottom: 5px;
 }
+.g-back-office-emundus-tableau #group .em_label {
+    margin-bottom: 5px;
+}
+
 .g-back-office-emundus-tableau .em_filters_adv_filter .em_filters.em-filter{
     margin-bottom: 10px;
 }
@@ -793,7 +811,16 @@ div#em-modal-actions .panel-heading h5 {
     height: 31px;
 }
 
-#em-files-filters #em_select_filter label {
+#em-user-filters .chosen-container-single .chosen-single  {
+    background: #ffffff;
+    border: 1px solid #ccc !important;
+    box-shadow: none;
+    padding: 7px 10px;
+    margin-top: 1px;
+    height: 31px;
+}
+
+#em-files-filters #em_select_filter label, #em-user-filters #em_select_filter label  {
     color: #000 !important;
     margin: 5px 0 5px 5px !important;
 }
@@ -895,14 +922,14 @@ div#em-synthesis .panel-heading h3 {
 }
 
 .list-group-item:nth-last-child(even) {
-    background-color: #404B5A;
-    color: #ffffff;
+    background-color: #fafafa;
+    color: #000;
     border: 0;
 }
 
 .list-group-item:nth-last-child(odd) {
-    background: #4E5B6D;
-    color: #ffffff;
+    background: #fafafa;
+    color: #000;
     border: 0;
 }
 
@@ -1499,7 +1526,7 @@ thead th:hover {
 
 #em-appli-block .table th,
 #em-appli-block .table td {
-    height: 56px;
+    height: 61px;
 }
 
 .holds-iframe {
@@ -1951,6 +1978,19 @@ label[for="em-file_to_upload"]:hover {
 .swal2-container{
     z-index: 99999 !important;
 }
+
+.g-back-office-emundus-tableau.files-board .em-utilitize input#em-searchbar {
+    border-bottom-right-radius: 0px !important;
+    border-top-right-radius: 0px !important;
+}
+
+.g-back-office-emundus-tableau.files-board .em-utilitize button#btn-em-searchbar {
+    border-bottom-left-radius: 0px !important;
+    border-top-left-radius: 0px !important;
+    padding: 11px;
+}
+
+
 @media screen and (max-width: 991px){
     .download{
         display: inline !important;
@@ -2367,7 +2407,7 @@ a.copy-0:focus {
         padding: 0.3rem 0.5rem !important;
     }
 
-    .g-back-office-emundus-tableau div#em-files-filters .panel-heading h3 {
+    .g-back-office-emundus-tableau div#em-files-filters .panel-heading h3, .view-users #em-user-filters .panel-heading h3 {
         font-size: 1.3rem;
         margin-top: 11px;
     }

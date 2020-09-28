@@ -414,7 +414,7 @@ h3 {
   -ms-flex-pack: center;
   justify-content: center;
   border-radius: 6px;
-  background-color: hsla(232.72727272727275, 37.93%, 17.06%, 1);
+  background-color: #fff;
   color: #1f1f1f;
 }
 .block-dash.passee {
@@ -441,15 +441,14 @@ h3 {
 }
 .button-programme {
   display: inline-block;
-  margin-right: 30px;
   padding: 5px 15px;
-  float: right;
   border-radius: 4px;
   background-color: hsla(232.72727272727275, 37.93%, 17.06%, 1);
   color: #fff;
   font-size: 12px;
   line-height: 15px;
   text-decoration: none;
+  margin-top: 10px;
 }
 .container-gerer-modifier-visualiser {
   padding: 10px;
@@ -551,7 +550,7 @@ h3 {
 }
 .column-inner-block-2 {
   height: auto;
-  padding: 30px;
+  padding: 15px;
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
   background-color: #fff;
@@ -564,8 +563,6 @@ h3 {
 .nb-dossier {
   width: 40px;
   height: 40px;
-  margin-right: 40px;
-  float: right;
   clear: right;
   border-radius: 50%;
   background-color: hsla(15.272727272727272, 71.43%, 54.71%, 1);
@@ -576,6 +573,7 @@ h3 {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 10px;
 }
 .section-sub-menu {
   background-color: #fafafa;
@@ -599,6 +597,30 @@ h3 {
   &:hover {
     color: hsla(15.272727272727272, 71.43%, 54.71%, 1);
   }
+}
+.publishedTag,
+.unpublishedTag,
+.passeeTag {
+  color: #fff;
+  font-weight: 700;
+  border-radius: 10px;
+  width: min-content;
+  padding: 5px;
+  text-align: center;
+  margin-left: 1em;
+  margin-bottom: 10px;
+}
+.unpublishedTag {
+  background: #c3c3c3;
+}
+.publishedTag {
+  background: #44d421;
+}
+.unpublishedBlock {
+  background: #4b4b4b;
+}
+.passeeTag {
+  background: #4b4b4b;
 }
 .dropdown-list {
   background-color: #b37575;
@@ -634,8 +656,8 @@ h3 {
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  margin-top: 2%;
-  margin-bottom: 3%;
+  margin-top: 1%;
+  margin-bottom: 2%;
   border: 1px solid #696969;
   background-color: unset;
   margin-right: 5px;
@@ -645,7 +667,7 @@ h3 {
 }
 div.buttonSelectDeselect {
   div {
-    margin-top: 2.1%;
+    margin-top: 1%;
     font-size: 18px;
     margin-left: 2%;
   }
@@ -1664,8 +1686,6 @@ label.label__placeholder {
   overflow: scroll;
 }
 .stats-block {
-  display: flex;
-  align-items: center;
   margin-left: 1em;
   width: 100%;
 }
@@ -2214,5 +2234,10 @@ label.label__placeholder {
 @media (min-width: 768px) {
   .container {
     width: 610px;
+  }
+
+  .actions-menu{
+    width: 35%;
+    left: 0;
   }
 }

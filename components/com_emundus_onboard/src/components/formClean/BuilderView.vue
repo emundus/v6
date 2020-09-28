@@ -17,7 +17,7 @@
       <div class="input-can-translate" style="margin-top: 40px">
         <input v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_page ? '' : 'mb-1'" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
         <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPage(object_json.id)"></button>
-        <div class="d-flex actions-update-label" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+        <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
           <a @click="updateLabelPage(object_json)" :title="Validate">
             <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
           </a>
@@ -31,7 +31,7 @@
       <div class="input-can-translate" style="margin-top: 10px">
         <textarea v-if="object_json.intro" v-model="object_json.intro[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.intro_page ? '' : 'mb-1'" :id="'update_intro_' + object_json.id"/>
         <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.intro_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPageIntro(object_json.id)"></button>
-        <div class="d-flex actions-update-label" :style="translate.intro_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+        <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.intro_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
           <a @click="updateIntroValuePage(object_json)" :title="Validate">
             <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
           </a>
@@ -52,7 +52,7 @@
                @mouseover="enableGroupHover(group.group_id)"
                @mouseleave="disableGroupHover()">
             <fieldset :class="[group.group_class]" :id="'group_'+group.group_id" :style="group.group_css" style="background-size: 20px; width: 100%">
-              <div class="d-flex justify-content-between" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%" @click="handleGroup(group.group_id)">
+              <div class="d-flex justify-content-between" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%">
                 <div class="d-flex">
                   <span v-show="hoverGroup && indexGroup == group.group_id" class="icon-handle-group">
                     <em class="fas fa-grip-vertical handle"></em>
@@ -66,7 +66,7 @@
                   <a @click="enableUpdatingGroup(group)" style="margin-left: 1em" :title="Edit">
                     <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
                   </a>
-                  <a v-if="group.repeat_group" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px" :title="RepeatedGroup">
+                  <a v-if="group.repeat_group" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px pointer" :title="RepeatedGroup" @click="enableRepatedGroup(group)">
                     <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
                   </a>
                 </div>
@@ -83,7 +83,7 @@
                 <div class="input-can-translate">
                   <input v-model="group.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
                   <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationGroup(group.group_id)"></button>
-                  <div class="d-flex actions-update-label" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+                  <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
                     <a @click="updateLabelGroup(group)" :title="Validate">
                       <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
                     </a>
@@ -126,6 +126,7 @@
                     <modalDuplicateElement
                             :ID="element.id"
                             :currentGroup="group.group_id"
+                            :currentPage="object_json.id"
                             :id="element.id"
                             :prid="prid"
                             @reloadElement="reloadElement(element)"
@@ -145,7 +146,7 @@
                         <div class="input-can-translate" v-show="clickUpdatingLabel && indexHighlight == element.id">
                           <input v-model="element.label[actualLanguage]" class="form__input field-general w-input" :class="translate.label ? '' : 'mb-1'" @keyup.enter="updateLabelElement(element)" :id="'label_' + element.id"/>
                           <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationLabel(element.id)"></button>
-                          <div class="d-flex actions-update-label" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+                          <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
                             <a @click="updateLabelElement(element)" :title="Validate">
                               <em class="fas fa-check" data-toggle="tooltip" data-placement="top"></em>
                             </a>
@@ -306,7 +307,7 @@ export default {
   },
   methods: {
     // Elements update
-    async updateElementsOrder(group, list) {
+    async updateElementsOrder(group, list, elt) {
       var elements = list.map((element, index) => {
         return { id: element.id, order: index + 1 };
       });
@@ -335,15 +336,16 @@ export default {
               this.$set(this.object_json.Groups['group_' + grp.group_id], 'elements', r.data.Groups['group_' + grp.group_id].elements)
           });
         });
+        elt.group_id = group;
       }).catch(e => {
-        this.$emit(
+        /*this.$emit(
                 "show",
                 "foo-velocity",
                 "error",
                 this.orderFailed,
                 this.updating
         );
-        console.log(e);
+        console.log(e);*/
       });
     },
 
@@ -638,7 +640,7 @@ export default {
                 this.updateSuccess,
                 this.update
         );
-        group.group_showLegend = group.label.fr;
+        group.group_showLegend = group.label[this.actualLanguage];
         this.translate.label_group = false;
         this.updateGroup = false;
       }).catch(e => {
@@ -764,7 +766,7 @@ export default {
                         this.updateSuccess,
                         this.update
                 );
-                group.group_showLegend = group.label_fr;
+                group.group_showLegend = group.label[this.actualLanguage];
                 this.translate.label_group = false;
                 this.updateGroup = false;
               }
@@ -802,7 +804,7 @@ export default {
                         this.updateSuccess,
                         this.update
                 );
-                group.group_showLegend = group.label.fr;
+                group.group_showLegend = group.label[this.actualLanguage];
                 this.translate.label_group = false;
                 this.updateGroup = false;
               }
@@ -844,15 +846,28 @@ export default {
             })
           });
         }
-        this.$emit(
-            "show",
-            "foo-velocity",
-            "success",
-            this.updateSuccess,
-            this.update
-        );
-        page.show_title.value = page.show_title.label.fr;
-        this.updatePage = false;
+            axios({
+              method: "post",
+              url:
+                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatemenulabel",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                pid: page.id,
+                label: labels
+              })
+            }).then(() => {
+              this.$emit(
+                  "show",
+                  "foo-velocity",
+                  "success",
+                  this.updateSuccess,
+                  this.update
+              );
+              page.show_title.value = page.show_title.label[this.actualLanguage];
+              this.updatePage = false;
+            });
       }).catch(e => {
         this.$emit(
             "show",
@@ -1070,9 +1085,9 @@ export default {
       }
     },
     startGroupDrag() {
-      Object.keys(this.openGroup).forEach((group,key) => {
+      /*Object.keys(this.openGroup).forEach((group,key) => {
         this.openGroup[group] = false;
-      });
+      });*/
       this.draggable = true;
     },
     //
@@ -1083,7 +1098,7 @@ export default {
       this.groups.forEach(group => {
         group.elts.forEach(element => {
           if(element.id == elt_id){
-            this.updateElementsOrder(group.group_id,group.elts);
+            this.updateElementsOrder(group.group_id,group.elts, element);
           }
         })
       });

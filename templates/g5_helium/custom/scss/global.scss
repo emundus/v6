@@ -249,8 +249,8 @@ input[type="text"],
 
 /* Branding */
 .g-branding{
+  margin-right: 0;
   text-align: end;
-  margin-right: 1em;
 }
 
 /* HEADER */
@@ -299,10 +299,6 @@ input[type="text"],
   #header-a {
     display: flex;
     align-items: center;
-
-    .logo {
-      width: 12rem;
-    }
   }
 }
 
@@ -318,6 +314,10 @@ input[type="text"],
 
 /* FOOTER */
 
+.g-back-office-emundus-tableau #g-navigation.g-flushed .g-container {
+    padding: 10px !important;
+}
+
 footer#g-footer {
   background-color: #fafafa;
   border-top: none;
@@ -327,7 +327,7 @@ footer#g-footer {
 }
 
 footer#g-footer img{
-  max-width: 35%;
+  max-width: 50%;
 }
 
 #g-page-surround {
@@ -369,9 +369,6 @@ footer#g-footer > .g-container {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  width: 95%;
-  margin-left: auto;
-  margin-right: auto;
 
   .em-containerAdresseLogo {
     width: 55%;
@@ -421,10 +418,10 @@ footer#g-footer > .g-container {
   padding: 20px;
   margin : auto auto 0 auto;
 
-a {
-  color: $base-secondary-color;
-  text-decoration: underline;
-}
+  a {
+    color: $base-secondary-color;
+    text-decoration: underline;
+  }
 }
 
 /* MODULE USER DROPDOWN */
@@ -785,7 +782,38 @@ a {
     color: $base-primary-color;
   }
 
-  /* FORMULAIRE  */
+
+
+/*BOUTONS + ET _ */
+
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success, .applicant-form .fabrikGroupRepeater.pull-right.btn-group  .deleteGroup.btn-small.btn.btn-danger  {
+  border: none !important;
+}
+
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success:hover, .applicant-form .fabrikGroupRepeater.pull-right.btn-group  .deleteGroup.btn-small.btn.btn-danger:hover   {
+  border: none !important;
+  background-color: transparent !important;
+}
+
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i:hover  {
+  color: darken(#3e8ac5, 10%);
+
+}
+
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group  .addGroup.btn-success i {
+  color: #3e8ac5;
+}
+
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group  .deleteGroup.btn-danger  i {
+  color: #E03C35;
+}
+
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group  .deleteGroup.btn-danger i:hover  {
+  color: darken(#E03C35, 10%);
+}
+
+
+/* FORMULAIRE  */
 
   .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active {
     background-color: $base-secondary-color;
@@ -1014,6 +1042,20 @@ a {
 
 
   /* BOUTONS */
+
+.view-form p.select-program a {
+  border: 1px solid $base-secondary-color !important;
+  color: $base-secondary-color !important;
+  background: transparent !important;
+
+  &:hover,
+  &:focus,
+  &:active {
+    border: 1px solid $base-secondary-color !important;
+    color: #fff !important;
+    background: $base-secondary-color !important;
+  }
+}
 
   .btn  {
     border-radius: 4px;
@@ -1393,8 +1435,9 @@ a {
   border: none;
   color: white;
   &:hover,
-  &:focus {
-    background-color: $base-secondary-color;
+  &:focus
+  &:active {
+    background-color: darken($base-primary-color, 10%);
     color: #fff;
     outline: none;
   }
@@ -1410,19 +1453,18 @@ a {
       border-color: $base-secondary-color;
       color: $base-secondary-color ;
       background: #fff;
-      border-color: #fff;
       color: $base-secondary-color;
     }
   }
 
-#filters #quick.form-group input.btn.btn-sm.btn-info {
+#filters #quick.form-group input#search.btn.btn-sm.btn-info {
   background-color: $base-primary-color;
-  color: #fff !important;
-  border: 1px solid $base-primary-color;
+  color: #fff;
+  border: 1px solid $base-primary-color !important;
 
   &:hover, &:active, &:focus {
     background: #fff;
-    border-color: $base-primary-color;
+    border: 1px solid $base-primary-color;
     color: $base-primary-color;
   }
 }
@@ -1466,7 +1508,7 @@ a {
   input[type="week"]:hover,
   input:not([type]):hover,
   textarea:hover {
-    border-color: $base-secondary-color;
+    border-color: #ccc;
     box-shadow: 0 0 4px rgba(62, 138, 197, 0.5);
   }
 
@@ -1732,7 +1774,9 @@ a {
   }
 
 
-  /* PARTIE GESTIONNAIRE  */
+  /************************ GESTIONNAIRE - COORDINATOR *********************/
+
+/* SIDEBAR FILTRES */
 
 .view-form.fabrik-boards .form-horizontal .control-group .btn-group label.btn-default {
   background: $base-primary-color;
@@ -1750,49 +1794,73 @@ a {
   color: $base-secondary-color !important;
 }
 
-  .side-panel #em-files-filters .buttons input, .side-panel #em-user-filters .buttons input {
-    background: $base-primary-color;
-    border-color: $base-primary-color;
-
-    &:hover, &:active, &:focus {
-      background: #fff;
-      color: $base-primary-color;
-      border-color: #fff;
-    }
-  }
-
-.side-panel #em-files-filters .buttons input {
-  background: transparent;
-  color: #fff ;
-  border-color: transparent;
-
-  &:hover, &:active, &:focus {
-    color: $base-primary-color;
-  }
+.g-back-office-emundus-tableau.files-board .panel-info > .panel-heading {
+  background: $base-secondary-color;
 }
 
-#em_filters #filters > p  {
- color: $base-secondary-color ;
-}
-
-#em_filters fieldset.em_filters_filedset > p  {
+#em_filters fieldset.em_filters_filedset > p, #em-user-filters fieldset.em_filters_filedset > p {
   color: $base-secondary-color;
+}
 
+.chosen-container .chosen-results li.highlighted {
+  background-color: $base-primary-color;
+}
+
+.navbar.navbar-inverse {
+  border: $base-primary-color;
+  background: $base-primary-color;
 }
 
 #em-files-filters #em_filters fieldset input#save-filter {
-    margin-top: 10px;
-    background: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+  margin-top: 10px;
+  background: $base-secondary-color;
+    border: 1px solid $base-secondary-color !important;
       width: 100%;
       width: -moz-available;
       width: -webkit-fill-available;
-      width: fill-available;
-    &:focus, &:hover, &:active {
-      background: #fff;
-      border-color: $base-secondary-color;
-      color: $base-secondary-color;
+  width: fill-available;
+  &:focus, &:hover, &:active {
+    background: #fff;
+    border-color: $base-secondary-color !important;
+    color: $base-secondary-color !important;
+  }
+}
+
+.g-back-office-emundus-tableau {
+
+  button,
+  input {
+
+    &#search,
+    &#clear-search,
+    &#add-filter {
+      background: $base-primary-color none;
+      &:hover,
+      &:focus,
+      &:active {
+        background: darken($base-primary-color, 10%) none;
+      }
     }
+
+    &#showhide {
+      background-color: $base-primary-color;
+
+      &:hover {
+        background-color: darken($base-primary-color, 10%);
+      }
+    }
+  }
+}
+
+.g-back-office-emundus-tableau .side-panel #em-files-filters .buttons input#clear-search, .g-back-office-emundus-tableau .side-panel #em-user-filters .buttons input#clear-search {
+  background: transparent;
+  color: #fff !important;
+  border-color: transparent;
+
+  &:hover, &:active, &:focus {
+    color: #fff;
+    background: darken($base-secondary-color, 10%) !important;
+  }
 }
 
 #advanced-filters button.btn.btn-danger.btn-xs#suppr-filt {
@@ -1807,27 +1875,37 @@ a {
   }
 }
 
-  .em-personalInfo > a {
-    background-color: $base-primary-color;
+.g-back-office-emundus-tableau #em-hide-filters {
+  border: 0 solid $base-primary-color;
+  background-color: $base-primary-color;
+
+  &:hover,
+  &:focus,
+  &:active {
+    border: darken($base-primary-color, 10%);
+    background-color: darken($base-primary-color, 10%);
   }
+}
 
-  /* FILTRES */
-  .g-back-office-emundus-tableau #em-hide-filters {
-    border: 0 solid $base-primary-color;
-    background-color: $base-primary-color;
 
-    &:hover,
-    &:focus,
-    &:active {
-      border: darken($base-primary-color, 10%);
-      background-color: darken($base-primary-color, 10%);
+/* SUPPRIMER EVAL */
+.g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
+  background: $base-secondary-color !important;
+  color: #fff !important;
+
+    &:hover, &:active, &:focus {
+      background: #fff !important;
+      color: $base-secondary-color !important;
     }
-  }
+}
 
-  /*  FILES ? */
+/* DOSSIER CANDIDAT */
 
+.em-personalInfo > a {
+  background-color: $base-primary-color !important;
+}
 
-  /* Editer & Ajouter*/
+/* EDITER ET AJOUTER */
 
   .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,  .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm.em-actions-form  {
     height: 40px;
@@ -1854,22 +1932,22 @@ a {
     }
   }
 
-  div#em-appli-block {
-    .panel-heading {
-      background: $base-primary-color;
-      padding-top: 5px;
-      border-radius: 0;
-      margin-top: 2px;
-    }
+div#em-appli-block {
+  .panel-heading {
+    background: $base-primary-color;
+    padding-top: 5px;
+    border-radius: 0;
+    margin-top: 2px;
+  }
 
     button.btn.btn-default {
       background-color: $base-secondary-color;
       border: none;
-
-      &:hover {
-        background-color: darken($base-secondary-color, 10%);
-      }
+    &:hover {
+      background-color: darken($base-secondary-color, 10%);
     }
+  }
+
 
     span.label.label-info {
       background: #ffffff !important;
@@ -1877,6 +1955,7 @@ a {
       color: $base-primary-color !important;
     }
   }
+
 
   /* PAGE INDICATEUR */
   .indicateurs-page .btn a {
@@ -1896,54 +1975,6 @@ a {
     color: #ffffff !important;
     background-color: darken($base-primary-color, 10%) !important;
     border-color: darken($base-primary-color, 10%) !important;
-  }
-
-  /* PARTIE GESTIONNAORE - FILES */
-
-  .chosen-container .chosen-results li.highlighted {
-    background-color: $base-primary-color;
-  }
-
-  /* Menu Actions */
-  .navbar.navbar-inverse {
-    border: $base-primary-color;
-  }
-
-.navbar.navbar-inverse {
-  background: $base-primary-color;
-}
-
-  /* FILES */
-
-  .g-back-office-emundus-tableau #em-hide-filters {
-    border: 0 solid $base-primary-color;
-    background-color: $base-primary-color;
-  }
-
-  .g-back-office-emundus-tableau {
-
-    button,
-    input {
-
-      &#search,
-      &#clear-search,
-      &#add-filter {
-        background: $base-primary-color none;
-        &:hover,
-        &:focus,
-        &:active {
-          background: darken($base-primary-color, 10%) none;
-        }
-      }
-
-      &#showhide {
-        background-color: $base-primary-color;
-
-        &:hover {
-          background-color: darken($base-primary-color, 10%);
-        }
-      }
-    }
   }
 
   .btn:hover .caret,
@@ -2038,10 +2069,6 @@ a {
     .panel-body button i {
       margin: 0 !important;
     }
-  }
-
-  .table-hover tbody tr:nth-child(2n+1) td, .table-hover tbody tr:nth-child(2n+1) th {
-    background: #f2f2f2 !important;
   }
 
   .table-hover tbody tr:hover td {
@@ -2264,7 +2291,15 @@ a {
 
   /******************************* RESPONSIVE ***********************************/
 
-  @media all and (max-width: 767px) {
+@media all and (max-width: 767px) {
+
+.homepage h1::after {
+  display: none !important;
+}
+
+.view-form h1::after, .view-details h1::after {
+  display: none !important;
+}
 
   /* FOOTER */
 footer#g-footer {

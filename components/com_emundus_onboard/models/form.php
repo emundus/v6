@@ -791,7 +791,7 @@ class EmundusonboardModelform extends JModelList {
                     'fr' => '',
                     'en' => ''
                 );
-                $formbuilder->createMenuFromTemplate($label,$intro,258,$newprofile);
+                $formbuilder->createSubmittionPage($label,$intro,$newprofile);
 
                 $user = JFactory::getUser();
                 $settings->onAfterCreateForm($user->id);

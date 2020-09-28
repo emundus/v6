@@ -20,7 +20,7 @@ if($user != null) {
                 <?php foreach ($list as $i => $item) :?>
                     <li class="<?= ($item->id == $active_id)?'active':''; ?>"><a href="<?= $item->flink ?>" <?= ($item->browserNav == 1)?'target="_blank"':''; ?>><?= $item->title; ?></a></li>
                 <?php endforeach; ?>
-                <li role="separator" class="divider"></li>
+
             <?php endif; ?>
 	        <?php if ($show_logout == '1') :?>
                 <li><a href="index.php?option=com_users&task=user.logout&<?= JSession::getFormToken(); ?>=1" class="logout-phone-btn" title="<?= JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_TITLE'); ?>"><?= JText::_('LOGOUT'); ?></a></li>
