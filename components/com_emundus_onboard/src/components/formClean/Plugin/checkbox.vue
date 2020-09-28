@@ -62,7 +62,7 @@ export default {
   data() {
     return {
       arraySubValues: [],
-      databasejoin: false,
+      databasejoin: "0",
       databasejoin_data: 0,
       helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
       suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),

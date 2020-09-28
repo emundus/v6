@@ -370,7 +370,6 @@
           }
         }
         this.submitted = true;
-        this.form.lbl = this.form.subject;
 
         if (this.email !== "") {
           axios({
@@ -456,6 +455,7 @@
                 if (this.email !== "") {
                   axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
                           .then(resp => {
+                            this.form.lbl = resp.data.data.lbl;
                             this.form.subject = resp.data.data.subject;
                             this.form.name = resp.data.data.name;
                             this.form.emailfrom = resp.data.data.emailfrom;

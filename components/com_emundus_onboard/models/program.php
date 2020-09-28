@@ -212,6 +212,15 @@ class EmundusonboardModelprogram extends JModelList {
                 $db->execute();
                 //
 
+                // Link All rights group with programme
+                $query->clear()
+                    ->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
+                    ->set($db->quoteName('parent_id') . ' = ' . $db->quote(1))
+                    ->set($db->quoteName('course') . ' = ' . $db->quote($programme->code));
+                $db->setQuery($query);
+                $db->execute();
+                //
+
                 // Create evaluator and manager group
                 $this->addGroupToProgram($programme->label,$programme->code,2);
                 $this->addGroupToProgram($programme->label,$programme->code,3);

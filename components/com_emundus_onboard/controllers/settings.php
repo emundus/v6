@@ -299,10 +299,11 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $color = $jinput->post->getString('color');
 
             $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
-            $yaml['base'][$type . '-color'] = $color;
             if($type == 'primary'){
+                $yaml['base']['primary-color'] = $color;
                 $yaml['accent']['color-1'] = $color;
             } else {
+                $yaml['base']['secondary-color'] = $color;
                 $yaml['accent']['color-2'] = $color;
             }
 

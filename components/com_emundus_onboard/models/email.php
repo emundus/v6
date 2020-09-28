@@ -277,7 +277,14 @@ class EmundusonboardModelemail extends JModelList {
             try {
                 $db->setQuery($query);
                 $db->execute();
-                return $db->insertid();
+                $newemail = $db->insertid();
+
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_setup_emails'))
+                    ->set($db->quoteName('lbl') . ' = ' . $db->quote('email_' . $newemail))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($newemail));
+                $db->setQuery($query);
+                $db->execute();
             } catch(Exception $e) {
                 JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
                 return false;
