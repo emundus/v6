@@ -17,7 +17,7 @@
             </a>
         </div>
         <img class="logo-settings" :src="imageLink">
-        <h2>{{Colors}}</h2>
+        <!--<h2>{{Colors}}</h2>
         <div class="d-flex" style="margin-bottom: 20px;">
             <label style="margin: 0" class="col-md-2">{{PrimaryColor}} : </label>
             <div class="color-picker" id="primary">
@@ -29,7 +29,7 @@
             <div class="color-picker" id="secondary">
                 <input type="color" v-model="secondary" class="color-input"/>
             </div>
-        </div>
+        </div>-->
     </div>
 </template>
 
@@ -71,7 +71,7 @@
                 this.$forceUpdate();
             },
 
-            updateColor(type,color) {
+            /*updateColor(type,color) {
                 this.$emit("LaunchLoading");
                 axios({
                     method: "post",
@@ -87,7 +87,7 @@
                 }).then((rep) => {
                   this.$emit("StopLoading");
                 });
-            },
+            },*/
             /**
              * ** Methods for notify
              */
@@ -129,13 +129,13 @@
             primary: function(value){
                 document.getElementById('primary').style.backgroundColor = value;
                 if(this.changes) {
-                  this.updateColor('primary', value);
+                  //this.updateColor('primary', value);
                 }
             },
             secondary: function(value){
                 document.getElementById('secondary').style.backgroundColor = value;
                 if(this.changes) {
-                  this.updateColor('secondary', value);
+                  //this.updateColor('secondary', value);
                 }
             }
         }

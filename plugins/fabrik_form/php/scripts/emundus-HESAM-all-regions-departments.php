@@ -113,7 +113,7 @@ if ($all == 'oui') {
     }
     catch (Exection $e) {
         echo "<pre>";var_dump($user); echo "</pre>"; die();
-        JLog::add('Error at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+        JLog::add('Error at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
     }
 
 }

@@ -244,7 +244,7 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
                 return true;
 
             } catch(Exception $e) {
-                JLog::add('Unable to set status in plugin/emundusFinalGrade at query: '.str_replace('\n', ' ',$query->__toString()), JLog::ERROR, 'com_emundus.emundus-final-grade');
+                JLog::add('Unable to set status in plugin/emundusFinalGrade at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.emundus-final-grade');
                 return false;
             }
         }

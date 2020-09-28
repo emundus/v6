@@ -95,7 +95,7 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 			$bad_columns[] = $column_number;
 			continue;
 		}
-		
+
 		$table = $column[0];
 		$element = $column[1];
 
@@ -253,7 +253,7 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
 		if (in_array($column_number, $bad_columns)) {
 			continue;
 		}
-		
+
 		if (in_array($column_number, array_keys($repeat_tables))) {
 			// The repeat values are inserted into a separate array as they will be inserted into the DB AFTER their parent table.
 			$parsed_repeat[$row][$repeat_tables[$column_number]->parent][$repeat_tables[$column_number]->table][$database_elements[$column_number]->column] = $column;
@@ -451,7 +451,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 		}
 
 		JLog::add('--- '.$row_id.' Username: '.$username, JLog::INFO, 'com_emundus.csvimport');
- 
+
 		$user = clone(JFactory::getUser(0));
 		if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $username) !== 1) {
 			JLog::add('ERROR: Username format not OK: '.$username, JLog::ERROR, 'com_emundus.csvimport');
@@ -546,7 +546,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
             try {
                 $fnum = $db->loadResult();
             } catch (Exception $e) {
-                JLog::add('ERROR: Could not get fnum for user : '.$user->id.$query->__toString(), JLog::ERROR, 'com_emundus.csvimport');
+                JLog::add('ERROR: Could not get fnum for user : '.$user->id.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.csvimport');
             }
         }
     }
@@ -568,7 +568,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			$totals['write']++;
 			JLog::add(' --- INSERTED CC :'.$fnum.' FOR USER : '.$user->id, JLog::INFO, 'com_emundus.csvimport');
 		} catch (Exception $e) {
-			JLog::add('ERROR: Could not build fnum for user at query : '.$query->__toString(), JLog::ERROR, 'com_emundus.csvimport');
+			JLog::add('ERROR: Could not build fnum for user at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.csvimport');
 			continue;
 		}
 	}
@@ -585,7 +585,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 			$totals['write']++;
 			JLog::add(' --- INSERTED GROUP :'.$group.' FOR USER : '.$user->id, JLog::INFO, 'com_emundus.csvimport');
 		} catch (Exception $e) {
-			JLog::add('ERROR: Could not insert user into group at query : '.$query->__toString(), JLog::ERROR, 'com_emundus.csvimport');
+			JLog::add('ERROR: Could not insert user into group at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.csvimport');
 			// No continue, just a silent error with logging.
 		}
 	}
@@ -631,7 +631,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 				->set($fields)
 				->where($db->quoteName('user_id').' = '.$user->id);
 		} else {
-			
+
 			if (empty($fnum)) {
 				continue;
 			}
@@ -653,7 +653,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 				JLog::add(' --- INSERTED ROW: '.$db->insertid().' AT TABLE : '.$table_name, JLog::INFO, 'com_emundus.csvimport');
 			}
 		} catch (Exception $e) {
-			JLog::add('ERROR inserting data in query : '.$query->__toString(), JLog::ERROR, 'com_emundus.csvimport');
+			JLog::add('ERROR inserting data in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.csvimport');
 		}
 
 		// Insert into child repeat tables.
@@ -690,7 +690,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 						$totals['write']++;
 						JLog::add(' --- INSERTED REPEAT ROW :'.$db->insertid().' AT TABLE : '.$repeat_table_name, JLog::INFO, 'com_emundus.csvimport');
 					} catch (Exception $e) {
-						JLog::add('ERROR inserting data in query : '.$query->__toString().' error text -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.csvimport');
+						JLog::add('ERROR inserting data in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()).' error text -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.csvimport');
 					}
 				}
 			}

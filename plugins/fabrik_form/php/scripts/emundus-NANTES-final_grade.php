@@ -39,7 +39,7 @@ if (!empty($status)) {
 	try {
 		$res = $db->loadObject();
 	} catch (Exception $e) {
-		JLog::add('Error getting information about fnum in plugin/final_grade at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		JLog::add('Error getting information about fnum in plugin/final_grade at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		return false;
 	}
 
@@ -63,7 +63,7 @@ if (!empty($status)) {
 		try {
 			$occupants = count($db->loadColumn());
 		} catch (Exception $e) {
-			JLog::add('Error getting information about occupants in plugin/final_grade at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting information about occupants in plugin/final_grade at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -75,12 +75,12 @@ if (!empty($status)) {
 			->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
 
 	try {
-	
+
 		$db->setQuery($query);
 		$db->execute();
-	
+
 	} catch(Exception $e) {
-		JLog::add('Unable to set status in plugin/emundusFinalGrade at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		JLog::add('Unable to set status in plugin/emundusFinalGrade at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	}
 
 	// Get triggered email

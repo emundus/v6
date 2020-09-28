@@ -178,7 +178,7 @@ if (!empty($this->custom_title)) :?>
                         payload:"{\"userId\":\"'.$this->user->id.'\",\"fnum\":\"'.$this->user->fnum.'\",\"aid\":\"'.$attachment->id.'\",\"lbl\":\"'.$attachment->lbl.'\",\"jobId\":\"'.$this->user->fnum.'|'.$attachment->id.'|'.date("Y-m-d_H:i:s").'\"}", 
                         eid:"'.$addpipe_eid.'", 
                         showMenu:'.$addpipe_showmenu.', 
-                        mrt:'.$addpipe_mrt.',
+                        mrt:'.(!empty($attachment->video_max_length) ? $attachment->video_max_length : $addpipe_mrt).',
                         sis:0,
                         asv:'.$addpipe_asv.', 
                         mv:0, 
