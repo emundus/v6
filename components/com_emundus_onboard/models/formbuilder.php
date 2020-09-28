@@ -2897,13 +2897,12 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
     }
 
-    function updateMenuLabel($label,$link){
+    function updateMenuLabel($label,$pid){
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
-        $formid = explode('=',explode('&',$link)[2])[1];
+        $link = 'index.php?option=com_fabrik&view=form&formid=' . $pid;
 
         $query->select('id')
             ->from($db->quoteName('#__menu'))
