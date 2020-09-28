@@ -630,7 +630,7 @@ button.btn.btn-default.sch {
 }
 
 .campaigns-list .below-content a {
-    width: 14.3%;
+    width: auto;
     font-size: 14px;
     justify-content: center;
     font-weight: 400;
