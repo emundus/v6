@@ -554,7 +554,7 @@ button.register {
   height: 100% !important;
 }
 
-.view-registration form, .view-form .em-formRegistrationCenter form {
+.view-registration form.fabrikForm , .view-form .em-formRegistrationCenter form.fabrikForm {
   border: none;
     margin-bottom: 0 !important;
     border-radius: 0;
@@ -824,20 +824,6 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
     margin-right: 10px !important;
 }
 
-.applicant-form .fabrikGroupRepeater .addGroup.btn-success {
-    color: #3e8ac5 !important;
-    background-color: transparent !important;
-    border: 1px solid transparent !important;
-    font-size: 1rem;
-}
-
-.applicant-form .fabrikGroupRepeater .deleteGroup.btn-danger {
-    color: #E03C35 !important;
-    background-color: transparent !important;
-    border: 1px solid transparent !important;
-    font-size: 1rem;
-}
-
 /* Déclarer un nouveau programme */
 .add-new-program-page .btn-success{
     margin-right: 5px;
@@ -1039,7 +1025,7 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
     background: #4e5b6d;
     background-color: #4e5b6d;
     border: 1px solid #4e5b6d;
-    border-radius: 0 !important;
+    border-radius: 4px;
     padding: 8px 12px !important;
 }
 .span4.offset1 > .btn-group > button.button:hover{
@@ -1294,7 +1280,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
   position: absolute;
-  top: 0px;
+  top: -10px;
   right: 10px;
 }
 
@@ -1341,6 +1327,16 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .view-form .fabrikElement button.calendarbutton {
   width: 41px !important;
+}
+
+
+.view-form .fabrikElement button.timeButton {
+  width: 41px !important;
+  height: 50px !important; 
+}
+
+.view-form .fabrikElement button.timeButton i {
+    margin-top: 16px; 
 }
 
 
@@ -1849,6 +1845,20 @@ ol {
     .view-registration form .control-group.fabrikElementContainer.plg-radiobutton.fb_el_jos_emundus_users___civility.fabrikDataEmpty.span12 div.fabrikgrid_radio.span2 {
         width:35%;
     }
+    
+    /* INSCRIPTION */ 
+    .view-registration form.fabrikForm,  .view-form .em-formRegistrationCenter {
+        width: 70%;   
+    }
+    
+     .view-registration .em-formRegistrationCenter .em-heading-registration {
+        width: 75% !important;   
+    }
+    
+    .view-registration ol {
+        width: 75%;   
+    }
+    
 }
 
 @media all and (max-width: 959px) {

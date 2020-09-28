@@ -35,46 +35,22 @@
         <div class="form-group" :class="{ 'mb-0': translate.label}">
           <label>{{Name}}* :</label>
           <div class="input-can-translate">
-            <input v-model="label.fr" type="text" maxlength="40" class="form__input field-general w-input" id="menu_label" style="margin: 0" :class="{ 'is-invalid': errors}"/>
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" @click="translate.label = !translate.label"></button>
+            <input v-model="label[actualLanguage]" type="text" maxlength="40" class="form__input field-general w-input" id="menu_label" style="margin: 0" :class="{ 'is-invalid': errors}"/>
+            <button class="translate-icon" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': translate.label}" type="button" @click="translate.label = !translate.label"></button>
           </div>
         </div>
-        <transition :name="'slide-down'" type="transition">
-        <div class="inlineflex" v-if="translate.label">
-          <label class="translate-label">
-            {{TranslateEnglish}}
-          </label>
-          <em class="fas fa-sort-down"></em>
-        </div>
-        </transition>
-        <transition :name="'slide-down'" type="transition">
-        <div class="form-group mb-1" v-if="translate.label">
-          <input v-model="label.en" type="text" maxlength="40" class="form__input field-general w-input"/>
-        </div>
-        </transition>
+        <translation :label="label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
         <p v-if="errors && model_id == -1" class="error col-md-12 mb-2">
           <span class="error">{{LabelRequired}}</span>
         </p>
         <div class="form-group mt-1" :class="{'mb-0': translate.intro}">
           <label>{{Intro}} :</label>
           <div class="input-can-translate">
-              <textarea v-model="intro.fr" class="form__input field-general w-input" rows="3" maxlength="300" style="margin: 0"></textarea>
-              <button class="translate-icon" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
+              <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="300" style="margin: 0"></textarea>
+              <button class="translate-icon" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
           </div>
         </div>
-         <transition :name="'slide-down'" type="transition">
-          <div class="inlineflex" v-if="translate.intro">
-            <label class="translate-label">
-              {{TranslateEnglish}}
-            </label>
-            <em class="fas fa-sort-down"></em>
-          </div>
-         </transition>
-         <transition :name="'slide-down'" type="transition">
-          <div class="form-group mb-1" v-if="translate.intro">
-            <textarea v-model="intro.en" rows="3" class="form__input field-general w-input" maxlength="300"></textarea>
-          </div>
-         </transition>
+        <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>
         <div class="col-md-12 d-flex" v-if="model_id == -1">
           <input type="checkbox" v-model="template">
           <label class="ml-10px">{{SaveAsTemplate}} :</label>
@@ -100,11 +76,17 @@
 <script>
 import axios from "axios";
 const qs = require("qs");
+import translation from "@/components/translation";
 
 export default {
   name: "modalMenu",
+  components: {
+    translation
+  },
   props: {
     profileId: Number,
+    actualLanguage: String,
+    manyLanguages: Number
   },
   data() {
     return {
@@ -167,10 +149,10 @@ export default {
       this.changes = true;
 
       if(this.label.fr != '' || this.model_id != -1) {
-        if(!this.translate.label){
+        if(this.label.en == ''){
           this.label.en = this.label.fr;
         }
-        if(!this.translate.intro){
+        if(this.intro.en = ''){
           this.intro.en = this.intro.fr;
         }
         this.submitted = true;

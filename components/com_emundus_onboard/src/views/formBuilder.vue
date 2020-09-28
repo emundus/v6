@@ -12,6 +12,8 @@
     />
     <ModalMenu
             :profileId="prid"
+            :actualLanguage="actualLanguage"
+            :manyLanguages="manyLanguages"
             @AddMenu="pushMenu"
     />
     <ModalSide
@@ -323,6 +325,8 @@
               this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
               this.$refs.builder.updateOrder(gid,this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts);
               this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+              this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
+              this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
               this.loading = false;
             });
           });
@@ -431,8 +435,8 @@
               group_id: group.group_id,
               group_showLegend: group.group_showLegend,
               label: {
-                fr: group.label_fr,
-                en: group.label_en,
+                fr: group.label.fr,
+                en: group.label.en,
               },
               group_tag: group.group_tag,
               ordering: group.ordering

@@ -199,7 +199,7 @@ export default {
         },
         data: qs.stringify({
           label: label,
-          link: this.link
+          pid: this.element.id
         })
       }).then((result) => {});
     },

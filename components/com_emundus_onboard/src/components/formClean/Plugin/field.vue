@@ -63,7 +63,13 @@ export default {
   created(){
     this.msg =
             '<p style="color: white">' + this.placeholderHelp + '</p>' +
-            '<img src="' + this.path + 'placeholder.gif" />'
+            '<img src="' + this.path + 'placeholder.gif" />';
+    if(typeof this.element.params.password == 'undefined'){
+      this.element.params.password = 0;
+    }
+    if(typeof this.element.params.maxlength == 'undefined'){
+      this.element.params.maxlength = 255;
+    }
   }
 };
 </script>

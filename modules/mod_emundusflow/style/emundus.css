@@ -185,6 +185,10 @@
 	 .ui.attached.segment p {
 		text-align: center !important;
 	}
+
+	.ui.attached.segment  {
+		flex-direction: column;
+	}
 }
 
 @media all and (min-width: 768px) {
