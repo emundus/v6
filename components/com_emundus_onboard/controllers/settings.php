@@ -487,5 +487,43 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         echo json_encode((object)$response);
         exit;
     }
+
+    public function uploadimages() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $image = $jinput->files->get('file');
+
+            if(isset($image)) {
+                $config = JFactory::getConfig();
+                $sitename = strtolower(str_replace(array('=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%'),'_',$config->get('sitename')));
+
+                $path = $image["name"];
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
+
+                $target_dir = "images/custom/" . $sitename . "/";
+                if(!file_exists($target_dir)){
+                    mkdir($target_dir);
+                }
+
+                do{
+                    $target_file = $target_dir . rand(1000,90000) . '.' . $ext;
+                } while (file_exists($target_file));
+
+                if (move_uploaded_file($image["tmp_name"], $target_file)) {
+                    echo json_encode(array('location' => $target_file));
+                } else {
+                    echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR IMAGE'));
+                }
+            } else {
+                echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR IMAGE'));
+            }
+            exit;
+        }
+    }
 }
 

@@ -1344,6 +1344,16 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 
+.view-form .fabrikElement button.timeButton {
+  width: 41px !important;
+  height: 50px !important; 
+}
+
+.view-form .fabrikElement button.timeButton i {
+    margin-top: 16px; 
+}
+
+
 .view-form .fabrikElement button.calendarbutton i {
   color: white;
 }
@@ -1849,6 +1859,20 @@ ol {
     .view-registration form .control-group.fabrikElementContainer.plg-radiobutton.fb_el_jos_emundus_users___civility.fabrikDataEmpty.span12 div.fabrikgrid_radio.span2 {
         width:35%;
     }
+    
+    /* INSCRIPTION */ 
+    .view-registration form.fabrikForm,  .view-form .em-formRegistrationCenter {
+        width: 70%;   
+    }
+    
+     .view-registration .em-formRegistrationCenter .em-heading-registration {
+        width: 75% !important;   
+    }
+    
+    .view-registration ol {
+        width: 75%;   
+    }
+    
 }
 
 @media all and (max-width: 959px) {
