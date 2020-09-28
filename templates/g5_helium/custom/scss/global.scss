@@ -318,6 +318,10 @@ input[type="text"],
 
 /* FOOTER */
 
+.g-back-office-emundus-tableau #g-navigation.g-flushed .g-container {
+    padding: 10px !important;
+}
+
 footer#g-footer {
   background-color: #fafafa;
   border-top: none;
@@ -1392,9 +1396,10 @@ a {
   border: none !important;
   color: white !important;
   &:hover,
-  &:focus {
-    background-color: darken($base-primary-color, 10%) !important;
-    color: #fff !important;
+  &:focus
+  &:active {
+    background-color: darken($base-primary-color, 10%);
+    color: #fff;
     outline: none;
   }
 }
@@ -1405,21 +1410,23 @@ a {
     border-color: $base-secondary-color !important;
 
     &:hover, &:active, &:focus {
-      background: #fff !important;
-      border-color: $base-secondary-color !important;
-      color: $base-secondary-color !important;
+      background: #fff;
+      border-color: $base-secondary-color;
+      color: $base-secondary-color ;
+      background: #fff;
+      color: $base-secondary-color;
     }
   }
 
-#filters #quick.form-group input.btn.btn-sm.btn-info {
-  background-color: $base-primary-color !important;
-  color: #fff !important;
+#filters #quick.form-group input#search.btn.btn-sm.btn-info {
+  background-color: $base-primary-color;
+  color: #fff;
   border: 1px solid $base-primary-color !important;
 
   &:hover, &:active, &:focus {
-    background: #fff !important;
-    border-color: $base-primary-color !important;
-    color: $base-primary-color !important;
+    background: #fff;
+    border: 1px solid $base-primary-color;
+    color: $base-primary-color;
   }
 }
 
@@ -1736,8 +1743,8 @@ a {
   background: $base-secondary-color;
 }
 
-#em_filters #filters > p , #em-user-filters #filters > p {
-  color: $base-secondary-color ;
+.g-back-office-emundus-tableau.files-board .panel-info > .panel-heading {
+  background: $base-secondary-color;
 }
 
 #em_filters fieldset.em_filters_filedset > p, #em-user-filters fieldset.em_filters_filedset > p {
@@ -1759,10 +1766,10 @@ a {
 #em-files-filters #em_filters fieldset input#save-filter {
   margin-top: 10px;
   background: $base-secondary-color;
-  border: 1px solid $base-secondary-color !important;
-  width: 100%;
-  width: -moz-available;
-  width: -webkit-fill-available;
+    border: 1px solid $base-secondary-color !important;
+      width: 100%;
+      width: -moz-available;
+      width: -webkit-fill-available;
   width: fill-available;
   &:focus, &:hover, &:active {
     background: #fff;
