@@ -111,7 +111,6 @@ $doc = JFactory::getDocument();
     (function($){
         $(document).ready(function(){
             $('#menuToggler').on('click', function(e){
-                console.log('here')
                 e.preventDefault;
                 $('#siteNav ul').toggleClass('menuIsActive');
             });
