@@ -115,6 +115,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 
     .view-reset .reset .page-header {
         width: 100% !important;
+        padding: 0px 15px;
     }
 
     .view-reset .reset {
@@ -146,6 +147,24 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 
 }
 
+@media screen and (min-width: 768px) and (max-width: 959px) {
+    .view-reset .reset .page-header {
+        width: 78% !important;
+    }
+
+    form#user-registration.form-validate.form-horizontal.well,
+    .reset-confirm .form-validate.form-horizontal.well,
+    .reset-complete .form-validate.form-horizontal.well {
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 979px) {
+    .view-reset .reset .page-header {
+        width: 70% !important;
+    }
+}
+
 /* TEST TITRE MDPO */
 
 .view-reset .reset .page-header {
@@ -153,7 +172,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     justify-content: flex-start;
     align-items: flex-end;
     flex-direction: row;
-    width: 59%;
+    width: 60%;
     margin-left: auto;
     margin-right: auto;
 }

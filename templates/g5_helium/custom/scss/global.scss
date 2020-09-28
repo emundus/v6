@@ -1029,6 +1029,20 @@ a {
 
   /* BOUTONS */
 
+.view-form p.select-program a {
+  border: 1px solid $base-secondary-color !important;
+  color: $base-secondary-color !important;
+  background: transparent !important;
+
+  &:hover,
+  &:focus,
+  &:active {
+    border: 1px solid $base-secondary-color !important;
+    color: #fff !important;
+    background: $base-secondary-color !important;
+  }
+}
+
   .btn  {
     border-radius: 4px;
   }
@@ -2251,7 +2265,15 @@ a {
 
   /******************************* RESPONSIVE ***********************************/
 
-  @media all and (max-width: 767px) {
+@media all and (max-width: 767px) {
+
+.homepage h1::after {
+  display: none !important;
+}
+
+.view-form h1::after, .view-details h1::after {
+  display: none !important;
+}
 
   /* FOOTER */
 footer#g-footer {
