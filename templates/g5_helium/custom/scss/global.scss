@@ -314,6 +314,10 @@ input[type="text"],
 
 /* FOOTER */
 
+.g-back-office-emundus-tableau #g-navigation.g-flushed .g-container {
+    padding: 10px !important;
+}
+
 footer#g-footer {
   background-color: #fafafa;
   border-top: none;
@@ -1431,9 +1435,10 @@ a {
   border: none !important;
   color: white !important;
   &:hover,
-  &:focus {
-    background-color: $base-secondary-color !important;
-    color: #fff !important;
+  &:focus
+  &:active {
+    background-color: darken($base-primary-color, 10%);
+    color: #fff;
     outline: none;
   }
 }
@@ -1444,21 +1449,23 @@ a {
     border-color: $base-secondary-color !important;
 
     &:hover, &:active, &:focus {
-      background: #fff !important;
-      border-color: $base-secondary-color !important;
-      color: $base-secondary-color !important;
+      background: #fff;
+      border-color: $base-secondary-color;
+      color: $base-secondary-color ;
+      background: #fff;
+      color: $base-secondary-color;
     }
   }
 
-#filters #quick.form-group input.btn.btn-sm.btn-info {
-  background-color: $base-primary-color !important;
-  color: #fff !important;
+#filters #quick.form-group input#search.btn.btn-sm.btn-info {
+  background-color: $base-primary-color;
+  color: #fff;
   border: 1px solid $base-primary-color !important;
 
   &:hover, &:active, &:focus {
-    background: #fff !important;
-    border-color: $base-primary-color !important;
-    color: $base-primary-color !important;
+    background: #fff;
+    border: 1px solid $base-primary-color;
+    color: $base-primary-color;
   }
 }
 
@@ -1767,55 +1774,90 @@ a {
   }
 
 
-  /* PARTIE GESTIONNAIRE  */
+  /************************ GESTIONNAIRE - COORDINATOR *********************/
+
+/* SIDEBAR FILTRES */
 
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
   background: $base-secondary-color;
 }
 
-  .side-panel #em-files-filters .buttons input, .side-panel #em-user-filters .buttons input {
-    background: $base-primary-color !important;
-    border-color: $base-primary-color !important;
-
-    &:hover, &:active, &:focus {
-      background: #fff !important;
-      color: $base-primary-color !important;
-      border-color: #fff !important;
-    }
-  }
-
-.side-panel #em-files-filters .buttons input {
-  background: transparent !important;
-  color: #fff !important;
-  border-color: transparent !important;
-
-  &:hover, &:active, &:focus {
-    color: $base-primary-color !important;
-  }
+.g-back-office-emundus-tableau.files-board .panel-info > .panel-heading {
+  background: $base-secondary-color;
 }
 
-#em_filters #filters > p  {
- color: $base-secondary-color ;
-}
-
-#em_filters fieldset.em_filters_filedset > p  {
+#em_filters fieldset.em_filters_filedset > p, #em-user-filters fieldset.em_filters_filedset > p {
   color: $base-secondary-color;
+}
 
+.chosen-container .chosen-results li.highlighted {
+  background-color: $base-primary-color;
+}
+
+.navbar.navbar-inverse {
+  border: $base-primary-color;
+}
+
+.navbar.navbar-inverse {
+  background: $base-primary-color;
 }
 
 #em-files-filters #em_filters fieldset input#save-filter {
-    margin-top: 10px;
-    background: $base-secondary-color;
+  margin-top: 10px;
+  background: $base-secondary-color;
     border: 1px solid $base-secondary-color !important;
       width: 100%;
       width: -moz-available;
       width: -webkit-fill-available;
-      width: fill-available;
-    &:focus, &:hover, &:active {
-      background: #fff;
-      border-color: $base-secondary-color !important;
-      color: $base-secondary-color !important;
+  width: fill-available;
+  &:focus, &:hover, &:active {
+    background: #fff;
+    border-color: $base-secondary-color !important;
+    color: $base-secondary-color !important;
+  }
+}
+
+
+.g-back-office-emundus-tableau #em-hide-filters {
+  border: 0 solid $base-primary-color;
+  background-color: $base-primary-color;
+}
+
+.g-back-office-emundus-tableau {
+
+  button,
+  input {
+
+    &#search,
+    &#clear-search,
+    &#add-filter {
+      background: $base-primary-color none;
+      &:hover,
+      &:focus,
+      &:active {
+        background: darken($base-primary-color, 10%) none;
+      }
     }
+
+    &#showhide {
+      background-color: $base-primary-color;
+
+      &:hover {
+        background-color: darken($base-primary-color, 10%);
+      }
+    }
+  }
+}
+
+.g-back-office-emundus-tableau .side-panel #em-files-filters .buttons input#clear-search, .g-back-office-emundus-tableau .side-panel #em-user-filters .buttons input#clear-search {
+  background: transparent;
+  color: #fff !important;
+  border-color: transparent;
+
+  &:hover, &:active, &:focus {
+    color: #fff;
+    background: darken($base-secondary-color, 10%) !important;
+  }
 }
 
 #advanced-filters button.btn.btn-danger.btn-xs#suppr-filt {
@@ -1830,80 +1872,86 @@ a {
   }
 }
 
+.g-back-office-emundus-tableau #em-hide-filters {
+  border: 0 solid $base-primary-color;
+  background-color: $base-primary-color;
 
-
-  .em-personalInfo > a {
-    background-color: $base-primary-color !important;
+  &:hover,
+  &:focus,
+  &:active {
+    border: darken($base-primary-color, 10%);
+    background-color: darken($base-primary-color, 10%);
   }
+}
 
-  /* FILTRES */
-  .g-back-office-emundus-tableau #em-hide-filters {
-    border: 0 solid $base-primary-color;
-    background-color: $base-primary-color;
 
-    &:hover,
-    &:focus,
-    &:active {
-      border: darken($base-primary-color, 10%);
-      background-color: darken($base-primary-color, 10%);
+/* SUPPRIMER EVAL */
+.g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
+  background: $base-secondary-color !important;
+  color: #fff !important;
+
+    &:hover, &:active, &:focus {
+      background: #fff !important;
+      color: $base-secondary-color !important;
     }
+}
+
+/* DOSSIER CANDIDAT */
+
+.em-personalInfo > a {
+  background-color: $base-primary-color !important;
+}
+
+/* EDITER ET AJOUTER */
+
+.g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn.btn-info.btn-sm,  .g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn-default.btn-sm.em-actions-form  {
+  height: 40px;
+  background-color: $base-secondary-color !important;
+  border: 1px solid $base-secondary-color !important;
+  &:hover {
+    background-color: darken($base-secondary-color, 10%) !important;
+    color: #fff !important;
+    border: 1px solid darken($base-secondary-color, 10%) !important;
+  }
+}
+
+#em-see-files,
+#em-delete-files,
+.panel-body .content .btn-info,
+.panel-body .content .btn-sm {
+  background-color: $base-primary-color !important;
+  border: 1px solid darken($base-primary-color, 10%);
+
+  &:hover {
+    background-color: darken($base-primary-color, 10%) !important;
+    color: #fff !important;
+    border: 1px solid darken($base-primary-color, 10%) !important;
+  }
+}
+
+div#em-appli-block {
+  .panel-heading {
+    background: $base-primary-color;
+    padding-top: 5px;
+    border-radius: 0;
+    margin-top: 2px;
   }
 
-  /*  FILES ? */
+  button.btn.btn-default {
+    background-color: $base-secondary-color;
+    border: none !important;
 
-
-  /* Editer & Ajouter*/
-
-  .g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn.btn-info.btn-sm,  .g-back-office-emundus-tableau #em-appli-block .panel-body .btn.btn-default.btn-sm.em-actions-form  {
-    height: 40px;
-    background-color: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
     &:hover {
-      background-color: darken($base-secondary-color, 10%) !important;
-      color: #fff !important;
-      border: 1px solid darken($base-secondary-color, 10%) !important;
+      background-color: darken($base-secondary-color, 10%);
     }
   }
 
-
-
-  #em-see-files,
-  #em-delete-files,
-  .panel-body .content .btn-info,
-  .panel-body .content .btn-sm {
-    background-color: $base-primary-color !important;
-    border: 1px solid darken($base-primary-color, 10%);
-
-    &:hover {
-      background-color: darken($base-primary-color, 10%) !important;
-      color: #fff !important;
-      border: 1px solid darken($base-primary-color, 10%) !important;
-    }
+  span.label.label-info {
+    background: #ffffff !important;
+    text-shadow: none !important;
+    color: $base-primary-color !important;
   }
-
-  div#em-appli-block {
-    .panel-heading {
-      background: $base-primary-color;
-      padding-top: 5px;
-      border-radius: 0;
-      margin-top: 2px;
-    }
-
-    button.btn.btn-default {
-      background-color: $base-secondary-color;
-      border: none !important;
-
-      &:hover {
-        background-color: darken($base-secondary-color, 10%);
-      }
-    }
-
-    span.label.label-info {
-      background: #ffffff !important;
-      text-shadow: none !important;
-      color: $base-primary-color !important;
-    }
-  }
+}
 
   /* PAGE INDICATEUR */
   .indicateurs-page .btn a {
@@ -1925,53 +1973,6 @@ a {
     border-color: darken($base-primary-color, 10%) !important;
   }
 
-  /* PARTIE GESTIONNAORE - FILES */
-
-  .chosen-container .chosen-results li.highlighted {
-    background-color: $base-primary-color;
-  }
-
-  /* Menu Actions */
-  .navbar.navbar-inverse {
-    border: $base-primary-color;
-  }
-
-.navbar.navbar-inverse {
-  background: $base-primary-color;
-}
-
-  /* FILES */
-
-  .g-back-office-emundus-tableau #em-hide-filters {
-    border: 0 solid $base-primary-color;
-    background-color: $base-primary-color;
-  }
-
-  .g-back-office-emundus-tableau {
-
-    button,
-    input {
-
-      &#search,
-      &#clear-search,
-      &#add-filter {
-        background: $base-primary-color none !important;
-        &:hover,
-        &:focus,
-        &:active {
-          background: darken($base-primary-color, 10%) none !important;
-        }
-      }
-
-      &#showhide {
-        background-color: $base-primary-color;
-
-        &:hover {
-          background-color: darken($base-primary-color, 10%);
-        }
-      }
-    }
-  }
 
   .btn:hover .caret,
   .btn:focus .caret,
@@ -2067,10 +2068,6 @@ a {
     }
   }
 
-  .table-hover tbody tr:nth-child(2n+1) td, .table-hover tbody tr:nth-child(2n+1) th {
-    background: #f2f2f2 !important;
-  }
-
   .table-hover tbody tr:hover td {
     background: #ECEFF3 !important;
   }
@@ -2080,7 +2077,7 @@ a {
   }
 
   .files-board  .table-hover thead th:hover {
-    background-color: #eceff3;
+    background-color: #fafafa;
     cursor: pointer;
   }
 
