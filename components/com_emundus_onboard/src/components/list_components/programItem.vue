@@ -5,9 +5,6 @@
         <div class="column-blocks w-row">
           <div class="column-inner-block w-col w-col-8 pl-30px">
             <div class="list-item-header">
-              <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
-                {{ isPublished ? publishedTag : unpublishedTag }}
-              </div>
               <div class="block-label">
                 <a
                         class="item-select w-inline-block"
@@ -22,9 +19,12 @@
             </div>
           </div>
           <div class="column-inner-block-2 w-clearfix w-col w-col-4">
+            <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
+              {{ isPublished ? publishedTag : unpublishedTag }}
+            </div>
             <div class="stats-block mb-1">
               <label class="mb-0">{{CampaignNumbers}} : </label>
-              <div class="nb-dossier ml-10px">
+              <div class="nb-dossier">
                 <div>{{ data.nb_campaigns }}</div>
               </div>
             </div>
@@ -102,31 +102,6 @@ export default {
 };
 </script>
 <style scoped>
-.publishedTag,
-.unpublishedTag {
-  position: absolute;
-  top: 5%;
-  right: 2%;
-  color: #fff;
-  font-weight: 700;
-  border-radius: 10px;
-  width: 18%;
-  padding: 5px;
-  text-align: center;
-}
-
-.unpublishedTag {
-  background: #c3c3c3;
-}
-
-.publishedTag {
-  background: #44d421;
-}
-
-.unpublishedBlock {
-  background: #4b4b4b;
-}
-
 a.button-programme:hover {
   color: white;
   cursor: default;

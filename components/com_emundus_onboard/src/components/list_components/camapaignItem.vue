@@ -5,9 +5,6 @@
         <div class="column-blocks w-row">
           <div class="column-inner-block w-col w-col-8 pl-30px">
             <div class="list-item-header">
-              <div :class="isPublished ? 'publishedTag' : isFinish ? 'passeeTag' : 'unpublishedTag'">
-                {{ isPublished ? publishedTag : isFinish ? passeeTag : unpublishedTag }}
-              </div>
               <div class="block-label">
                 <a class="item-select w-inline-block"
                    v-on:click="selectItem(data.id)"
@@ -30,9 +27,12 @@
             <p class="description-block white">{{ data.short_description }}</p>
           </div>
           <div class="column-inner-block-2 w-clearfix w-col w-col-4">
+            <div :class="isPublished ? 'publishedTag' : isFinish ? 'passeeTag' : 'unpublishedTag'">
+              {{ isPublished ? publishedTag : isFinish ? passeeTag : unpublishedTag }}
+            </div>
             <div class="stats-block mb-1">
               <label class="mb-0">{{Program}} : </label>
-              <a class="button-programme ml-10px pointer"
+              <a class="button-programme pointer"
                  :title="AdvancedSettings"
                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=program&layout=advancedsettings&pid=' + data.program_id)">
                 {{ data.program_label }}
@@ -40,7 +40,7 @@
             </div>
             <div class="stats-block">
               <label class="mb-0">{{FilesCount}} : </label>
-              <div class="nb-dossier ml-10px">
+              <div class="nb-dossier">
                 <div>{{ data.nb_files }}</div>
               </div>
             </div>
@@ -138,36 +138,6 @@ export default {
 };
 </script>
 <style scoped>
-.publishedTag,
-.unpublishedTag,
-.passeeTag {
-  position: absolute;
-  top: 5%;
-  right: 2%;
-  color: #fff;
-  font-weight: 700;
-  border-radius: 10px;
-  width: 18%;
-  padding: 5px;
-  text-align: center;
-}
-
-.unpublishedTag {
-  background: #c3c3c3;
-}
-
-.publishedTag {
-  background: #44d421;
-}
-
-.unpublishedBlock {
-  background: #4b4b4b;
-}
-
-.passeeTag {
-  background: #4b4b4b;
-}
-
 a.button-programme:hover {
   color: white;
   background: #de6339;
