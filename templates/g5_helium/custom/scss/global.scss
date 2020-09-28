@@ -980,7 +980,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 .fabrikForm .row-fluid .control-group .control-label {
-  color: $base-primary-color;
+  color: #000;
 }
 
 .fabrikForm .controls .btn-danger:hover,
@@ -1344,7 +1344,7 @@ p.readmore .btn,
   .span12 button.goback-btn[name="Goback"] {
     background: transparent;
     border: 1px solid $base-secondary-color;
-    border-radius: 4px;
+    border-radius: 4px !important;
     color: $base-secondary-color;
     margin-right: 10px;
     font-weight: normal;
@@ -1438,6 +1438,7 @@ a#em-doc-zip,
   border: 1px solid $base-primary-color;
   text-shadow: none;
   text-transform: initial;
+  padding: 8px 12px;
 }
 
 button.save-btn:hover,
@@ -1578,12 +1579,28 @@ button#back,
   text-transform: none;
   color: $base-secondary-color;
   border-radius: 4px;
+  padding: 8px 12px;
+  font-weight: inherit;
 
   &:hover,
   &:focus {
     background-color: $base-secondary-color;
     color: #fff;
     outline: none;
+  }
+}
+
+#member-profile .controls button.btn.btn-primary.validate {
+  background: $base-primary-color;
+  border: 1px solid $base-primary-color;
+  text-shadow: none;
+  text-transform: initial;
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: transparent;
+    color: $base-primary-color;
+    border: 1px solid $base-primary-color;
   }
 }
 
@@ -1646,20 +1663,26 @@ button#back,
   }
 }
 
-#em-prev-file.btn.btn-info.btn-xxl,
-#em-next-file.btn.btn-info.btn-xxl {
-  background-color: $base-primary-color;
-  color: #fff;
-  border-color: $base-primary-color;
+.panel-heading.em-container-form-heading, .panel-heading.em-container-evaluation-heading, .panel-heading.em-container-decision-heading, .panel-heading.em-container-comment-heading, .panel-heading.em-container-tags-heading, .panel-heading.em-container-share-heading, .panel-heading.em-container-mail-heading {
+  padding: 6px !important;
 
-  &:hover,
-  &:active,
-  &:focus {
-    background: #fff;
-    border: 1px solid $base-primary-color;
-    color: $base-primary-color;
+  #em-prev-file.btn.btn-info.btn-xxl,
+  #em-next-file.btn.btn-info.btn-xxl {
+    background-color: $base-primary-color;
+    color: #fff;
+    border-color: $base-primary-color;
+    margin-top: -5px;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background: #fff;
+      border: 1px solid $base-primary-color;
+      color: $base-primary-color;
+    }
   }
 }
+
 
 
 input[type="color"]:hover,
@@ -2091,6 +2114,8 @@ ul.unstyled.em-linkForgot li a {
 }
 
 
+
+
 /* SUPPRIMER EVAL */
 .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
   background: $base-secondary-color !important;
@@ -2107,7 +2132,7 @@ ul.unstyled.em-linkForgot li a {
 /* DOSSIER CANDIDAT */
 
 .em-personalInfo>a {
-  background-color: $base-primary-color !important;
+  background-color: $base-primary-color;
 }
 
 /* EDITER ET AJOUTER */
@@ -2116,12 +2141,12 @@ ul.unstyled.em-linkForgot li a {
 .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm.em-actions-form {
   height: 40px;
   background-color: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
+  border: 1px solid $base-secondary-color !important;
 
   &:hover,
   &:active,
   &:focus {
-    background-color: darken($base-secondary-color, 10%);
+    background-color: darken($base-secondary-color, 10%) !important;
     color: #fff;
     border: 1px solid darken($base-secondary-color, 10%);
   }
@@ -2144,7 +2169,6 @@ ul.unstyled.em-linkForgot li a {
 div#em-appli-block {
   .panel-heading {
     background: $base-primary-color;
-    padding-top: 5px;
     border-radius: 0;
     margin-top: 2px;
   }
@@ -2221,7 +2245,7 @@ div#em-appli-block {
       &:active,
       &:focus {
         background: #fff;
-        border-color: #fff;
+        border-color: $base-secondary-color;
         color: $base-secondary-color;
       }
     }
@@ -2236,7 +2260,7 @@ div#em-appli-block {
       &:active,
       &:focus {
         background: #fff;
-        border-color: #fff;
+        border-color: $base-primary-color;
         color: $base-primary-color;
       }
     }
@@ -2270,6 +2294,31 @@ div#em-appli-block {
     b.caret {
       color: $base-secondary-color;
     }
+
+    b.caret {
+      color: $base-secondary-color;
+    }
+    a:hover b.caret,
+    a:hover b.caret,
+    a:hover b.caret, {
+      color: $base-secondary-color;
+      border-top-color: $base-secondary-color;
+      border-bottom-color: $base-secondary-color;
+    }
+      ul.dropdown-menu li a {
+        color: $base-secondary-color;
+          &:hover, &:focus, &:active {
+            color: #fff;
+            i {
+              color: #fff;
+            }
+        }
+     }
+  }
+
+  .nav-tabs .open .dropdown-toggle, .nav-pills .open .dropdown-toggle, .nav > li.dropdown.open.active > a:hover, .nav > li.dropdown.open.active > a:focus {
+    background-color: #dcdcdc;
+    border-color: #dcdcdc;
   }
 
   .fabrikDataContainer .tabData {
@@ -2440,7 +2489,7 @@ div#em-appli-block {
   &:focus {
     color: $base-secondary-color;
     border: 1px solid $base-secondary-color;
-    background: #fff;
+    background-color: #fff;
   }
 }
 
