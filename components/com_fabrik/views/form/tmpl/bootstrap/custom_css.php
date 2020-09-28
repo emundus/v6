@@ -1344,6 +1344,16 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 
+.view-form .fabrikElement button.timeButton {
+  width: 41px !important;
+  height: 50px !important; 
+}
+
+.view-form .fabrikElement button.timeButton i {
+    margin-top: 16px; 
+}
+
+
 .view-form .fabrikElement button.calendarbutton i {
   color: white;
 }
