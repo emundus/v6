@@ -760,13 +760,19 @@ class EmundusModelApplication extends JModelList {
                                     $elt = date($date_params->date_form_format, strtotime($element->content));
 
                                 } elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content > 0) {
-                                    $format = json_decode($element->params)->list_date_format;
+                                    preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
+                                    if(count($matches) == 0){
+                                      $elt = $element->content;
+                                    }
+                                    else {
+                                        $format = json_decode($element->params)->list_date_format;
 
-                                    $d = DateTime::createFromFormat($format, $element->content);
-                                    if ($d && $d->format($format) == $element->content) {
-                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-                                    } else {
-                                        $elt = JHtml::_('date', $element->content, $format);
+                                        $d = DateTime::createFromFormat($format, $element->content);
+                                        if ($d && $d->format($format) == $element->content) {
+                                            $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                        } else {
+                                            $elt = JHtml::_('date', $element->content, $format);
+                                        }
                                     }
 
                                 } elseif ($element->plugin == 'databasejoin') {
@@ -889,13 +895,18 @@ class EmundusModelApplication extends JModelList {
                                             $elt = date($date_params->date_form_format, strtotime($r_elt));
 
                                         } elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt > 0) {
-
-                                            $format = json_decode($elements[$j]->params)->list_date_format;
-                                            $d = DateTime::createFromFormat($format, $r_elt);
-                                            if ($d && $d->format($format) == $r_elt) {
-                                                $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
-                                            } else {
-                                                $elt = JHtml::_('date', $r_elt, $format);
+                                            preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
+                                            if(count($matches) == 0){
+                                              $elt = $r_elt;
+                                            }
+                                            else {
+                                                $format = json_decode($elements[$j]->params)->list_date_format;
+                                                $d = DateTime::createFromFormat($format, $r_elt);
+                                                if ($d && $d->format($format) == $r_elt) {
+                                                    $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                                } else {
+                                                    $elt = JHtml::_('date', $r_elt, $format);
+                                                }
                                             }
 
                                         } elseif ($elements[$j]->plugin == 'databasejoin') {
@@ -1001,15 +1012,20 @@ class EmundusModelApplication extends JModelList {
                                     $elt = date($date_params->date_form_format, strtotime($element->content));
 
                                 } elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content > 0) {
-                                    $format = json_decode($element->params)->list_date_format;
-
-                                    $d = DateTime::createFromFormat($format, $element->content);
-                                    if ($d && $d->format($format) == $element->content) {
-                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-                                    } else {
-                                        $elt = JHtml::_('date', $element->content, $format);
+                                    preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
+                                    if(count($matches) == 0){
+                                      $elt = $element->content;
                                     }
+                                    else {
+                                        $format = json_decode($element->params)->list_date_format;
 
+                                        $d = DateTime::createFromFormat($format, $element->content);
+                                        if ($d && $d->format($format) == $element->content) {
+                                            $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                        } else {
+                                            $elt = JHtml::_('date', $element->content, $format);
+                                        }
+                                    }
                                 }
                                 elseif ($element->plugin == 'databasejoin') {
 
@@ -1270,13 +1286,19 @@ class EmundusModelApplication extends JModelList {
                                                     }
 
                                                     elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt>0) {
-                                                        $format = $params->list_date_format;
+                                                        preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
+                                                        if(count($matches) == 0){
+                                                          $elt = $r_elt;
+                                                        }
+                                                        else {
+                                                            $format = $params->list_date_format;
 
-                                                        $d = DateTime::createFromFormat($format, $r_elt);
-                                                        if ($d && $d->format($format) == $r_elt) {
-                                                            $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
-                                                        } else {
-                                                            $elt = JHtml::_('date', $r_elt, $format);
+                                                            $d = DateTime::createFromFormat($format, $r_elt);
+                                                            if ($d && $d->format($format) == $r_elt) {
+                                                                $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                                            } else {
+                                                                $elt = JHtml::_('date', $r_elt, $format);
+                                                            }
                                                         }
                                                     }
 
@@ -1423,14 +1445,20 @@ class EmundusModelApplication extends JModelList {
 	                                        $elt = date($date_params->date_form_format, strtotime($element->content));
 	                                    }
 	                                    elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content>0) {
-                                            $format = json_decode($element->params)->list_date_format;
+                                            preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
+                                            if(count($matches) == 0){
+                                              $elt = $element->content;
+                                            }
+                                            else {
+                                                $format = json_decode($element->params)->list_date_format;
 
-                                            $d = DateTime::createFromFormat($format, $element->content);
-	                                        if ($d && $d->format($format) == $element->content) {
-		                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-	                                        } else {
-                                                $elt = JHtml::_('date', $element->content, $format);
-	                                        }
+                                                $d = DateTime::createFromFormat($format, $element->content);
+    	                                        if ($d && $d->format($format) == $element->content) {
+    		                                        $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+    	                                        } else {
+                                                    $elt = JHtml::_('date', $element->content, $format);
+    	                                        }
+                                            }
 	                                    }
 	                                    elseif ($element->plugin=='databasejoin') {
 	                                        $params = json_decode($element->params);
@@ -1729,12 +1757,18 @@ class EmundusModelApplication extends JModelList {
                                                     $elt = $dt->format($params->date_form_format);
                                                 }
                                                 elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt > 0) {
-                                                    $format = $params->list_date_format;
-                                                    $d = DateTime::createFromFormat($format, $r_elt);
-                                                    if ($d && $d->format($format) == $r_elt) {
-                                                        $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
-                                                    } else {
-                                                        $elt = JHtml::_('date', $r_elt, $format);
+                                                    preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
+                                                    if(count($matches) == 0){
+                                                      $elt = $r_elt;
+                                                    }
+                                                    else {
+                                                        $format = $params->list_date_format;
+                                                        $d = DateTime::createFromFormat($format, $r_elt);
+                                                        if ($d && $d->format($format) == $r_elt) {
+                                                            $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                                        } else {
+                                                            $elt = JHtml::_('date', $r_elt, $format);
+                                                        }
                                                     }
                                                 }
                                                 elseif ($elements[$j]->plugin == 'databasejoin') {
@@ -1902,12 +1936,18 @@ class EmundusModelApplication extends JModelList {
                                                     $elt = $dt->format($date_params->date_form_format);
                                                 }
                                                 elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt > 0) {
-                                                    $format = json_decode($elements[$j]->params)->list_date_format;
-                                                    $d = DateTime::createFromFormat($format, $r_elt);
-                                                    if ($d && $d->format($format) == $r_elt) {
-                                                        $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
-                                                    } else {
-                                                        $elt = JHtml::_('date', $r_elt, $format);
+                                                    preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
+                                                    if(count($matches) == 0){
+                                                      $elt = $r_elt;
+                                                    }
+                                                    else {
+                                                        $format = json_decode($elements[$j]->params)->list_date_format;
+                                                        $d = DateTime::createFromFormat($format, $r_elt);
+                                                        if ($d && $d->format($format) == $r_elt) {
+                                                            $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                                        } else {
+                                                            $elt = JHtml::_('date', $r_elt, $format);
+                                                        }
                                                     }
                                                 }
                                                 elseif ($elements[$j]->plugin == 'databasejoin') {
@@ -2049,12 +2089,18 @@ class EmundusModelApplication extends JModelList {
                                         }
 
                                         elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content > 0) {
-                                            $format = $params->list_date_format;
-                                            $d = DateTime::createFromFormat($format, $element->content);
-                                            if ($d && $d->format($format) == $element->content) {
-                                                $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
-                                            } else {
-                                                $elt = JHtml::_('date', $element->content, $format);
+                                            preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
+                                            if(count($matches) == 0){
+                                              $elt = $element->content;
+                                            }
+                                            else {
+                                                $format = $params->list_date_format;
+                                                $d = DateTime::createFromFormat($format, $element->content);
+                                                if ($d && $d->format($format) == $element->content) {
+                                                    $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                                } else {
+                                                    $elt = JHtml::_('date', $element->content, $format);
+                                                }
                                             }
                                         }
 
@@ -2264,14 +2310,20 @@ class EmundusModelApplication extends JModelList {
                                             $elt = date($date_params->date_form_format, strtotime($r_elt));
                                         }
                                         elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt>0) {
-                                            $format = json_decode($elements[$j]->params)->list_date_format;
-
-                                            $d = DateTime::createFromFormat($format, $r_elt);
-                                            if($d && $d->format($format) == $r_elt) {
-                                                $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                            preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
+                                            if(count($matches) == 0){
+                                              $elt = $r_elt;
                                             }
                                             else {
-                                                $elt = JHtml::_('date', $r_elt, $format);
+                                                $format = json_decode($elements[$j]->params)->list_date_format;
+
+                                                $d = DateTime::createFromFormat($format, $r_elt);
+                                                if($d && $d->format($format) == $r_elt) {
+                                                    $elt = JHtml::_('date', $r_elt, JText::_('DATE_FORMAT_LC'));
+                                                }
+                                                else {
+                                                    $elt = JHtml::_('date', $r_elt, $format);
+                                                }
                                             }
                                         }
                                         elseif($elements[$j]->plugin=='databasejoin') {
@@ -2350,14 +2402,20 @@ class EmundusModelApplication extends JModelList {
 
                                     }
                                     elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content>0) {
-                                        $format = json_decode($element->params)->list_date_format;
-
-                                        $d = DateTime::createFromFormat($format, $element->content);
-                                        if($d && $d->format($format) == $element->content) {
-                                            $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                        preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
+                                        if(count($matches) == 0){
+                                          $elt = $element->content;
                                         }
                                         else {
-                                            $elt = JHtml::_('date', $element->content, $format);
+                                            $format = json_decode($element->params)->list_date_format;
+
+                                            $d = DateTime::createFromFormat($format, $element->content);
+                                            if($d && $d->format($format) == $element->content) {
+                                                $elt = JHtml::_('date', $element->content, JText::_('DATE_FORMAT_LC'));
+                                            }
+                                            else {
+                                                $elt = JHtml::_('date', $element->content, $format);
+                                            }
                                         }
                                     }
                                     elseif($element->plugin=='databasejoin') {
