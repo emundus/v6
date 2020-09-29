@@ -2642,20 +2642,30 @@ div#em-appli-block {
       .bas-footer {
         justify-content: center;
 
-        .adresse {
-          align-items: center;
-        }
+        em-containerAdresseLogo {
+          justify-content: center;
+          .adresse {
+            align-items: center;
+          }
 
-        .adresse .street {
-          text-align: center;
+          .adresse .street {
+            text-align: center;
+          }
         }
       }
     }
 
-    .g-block .g-branding .logo {
-      width: 25vw;
-      .credits-emundus p{
-        text-align: center;
+    .g-block {
+      width: 60%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .g-branding .logo {
+        width: 25vw;
+
+        .credits-emundus p {
+          text-align: center;
+        }
       }
     }
   }
