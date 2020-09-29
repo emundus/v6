@@ -2635,6 +2635,29 @@ div#em-appli-block {
     text-align: left;
   }
 
+  /* FOOTER */
+
+  footer#g-footer .g-grid {
+    #footer-a {
+      .bas-footer {
+        justify-content: center;
+
+        .adresse {
+          align-items: center;
+        }
+
+        .adresse .street {
+          text-align: center;
+        }
+      }
+    }
+
+    .g-block .g-branding .logo {
+      .credits-emundus p{
+        text-align: center;
+      }
+    }
+  }
 }
 
 @media all and (max-width: 767px) {
