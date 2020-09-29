@@ -2602,8 +2602,12 @@ div#em-appli-block {
 /* MOBILE */
 
 @media all and (max-width: 479px) {
-  /* HEADER */
+  /* GENERAL */
+  #g-container-main.g-wrapper {
+    padding: 10px;
+  }
 
+  /* HEADER */
   #g-navigation #header-a {
     display: flex;
     align-items: center;
@@ -2619,17 +2623,27 @@ div#em-appli-block {
 #g-offcanvas {
   background: #FAFAFA;
 
-  .user-list-menu ul {
+  .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel  {
     background: #FAFAFA;
     margin: 0;
+    padding: 0;
 
     li {
       border-bottom: 1px solid #F2F2F2;
+
 
       a {
         color: $base-primary-color;
         padding: 15px 30px;
         width: auto;
+      }
+    }
+
+    li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module).active {
+      background: #FAFAFA;
+      border-left: 6px solid $base-secondary-color;
+      a {
+        color: $base-primary-color;
       }
     }
   }
