@@ -2615,6 +2615,29 @@ div#em-appli-block {
     top: 20px !important;
   }
 
+  /* BURGER OUVERT */
+#g-offcanvas {
+  background: #FAFAFA;
+
+  .user-list-menu ul {
+    background: #FAFAFA;
+    margin: 0;
+
+    li {
+      border-bottom: 1px solid #F2F2F2;
+
+      a {
+        color: $base-primary-color;
+        padding: 15px 30px;
+        width: auto;
+      }
+    }
+  }
+}
+
+
+
+
   /* FOOTER */
 
 footer#g-footer .g-grid {
