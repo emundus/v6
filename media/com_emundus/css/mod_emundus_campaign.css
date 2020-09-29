@@ -693,9 +693,3 @@ button.btn.btn-default.sch {
         min-height: auto !important;
     }
 }
-
-@media (max-width: 360px) {
-    a.btn.btn-primary.btn-creux.btn-orange {
-        margin-bottom: 10px;
-    }
-}
