@@ -420,9 +420,13 @@ footer#g-footer img {
 #g-page-surround {
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
   min-height: 100%;
   width: 100%;
+}
+
+.view-registration.login.em-formRegistrationCenter #g-page-surround,
+.view-form.em-formRegistrationCenter #g-page-surround {
+  overflow-y: auto;
 }
 
 #g-page-surround>.g-container:not(.g-flushed) {
