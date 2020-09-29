@@ -2615,51 +2615,30 @@ div#em-appli-block {
     top: 20px !important;
   }
 
-  /* CAMPAGNES */
-
-  .homepage .blog-featuredhomepage {
-    margin-bottom: 25px;
-    margin-top: 25px;
-  }
-
-  .homepage #navfilter .navsearch .navsearch-content .input-group-btn button {
-     margin-bottom: 0px;
-  }
-
-  .campaign-month-campaigns .campaign-content  .left-side.campaigntext p {
-    padding-left: 0px;
-    margin-left: 0px;
-  }
-
-  .homepage .campaingapplycontent {
-    text-align: left;
-  }
-
   /* FOOTER */
 
-  footer#g-footer .g-grid {
-    #footer-a {
-      .bas-footer {
-        justify-content: center;
-
-        em-containerAdresseLogo {
+footer#g-footer .g-grid {
+  .bas-footer {
+      justify-content: center;
+        .em-containerAdresseLogo {
           justify-content: center;
+          width: 100% !important;
           .adresse {
             align-items: center;
-          }
 
-          .adresse .street {
-            text-align: center;
+            p.street {
+              text-align: center;
+            }
           }
         }
       }
-    }
 
     .g-block {
       width: 60%;
       display: flex;
       justify-content: center;
       align-items: center;
+
       .g-branding .logo {
         width: 25vw;
 
@@ -2669,19 +2648,6 @@ div#em-appli-block {
       }
     }
   }
-
-  /* MORE INFOS PLUS D'INFO */
-
-  .view-programme.homepage .campaingapplycontent {
-    text-align: left;
-  }
-
-  /* CONNEXION LOGIN */
- .view-login #g-container-main div.login.em-formRegistrationCenter {
-    width: 100%;
-  }
-
-
 
 }
 

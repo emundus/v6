@@ -112,6 +112,12 @@ ul.unstyled.em-linkForgot li a span::before {
 
 /* RESPONSIVE */
 
+@media all and (max-width: 479px) {
+    .view-form.em-formRegistrationCenter #g-container-main .page-header {
+        width: 85%;
+    }
+}
+
 @media all and (max-width: 767px) {
     .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
         width: 100%;
