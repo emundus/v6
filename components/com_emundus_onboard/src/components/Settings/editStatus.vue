@@ -1,6 +1,6 @@
 <template>
     <div class="container-evaluation">
-        <div v-for="(statu, index) in status" class="status-item">
+        <div v-for="(statu, index) in status" class="status-item" :id="'step_' + statu.step">
             <div :style="{background: statu.class}" class="status-field">
                 <div style="width: 100%">
                     <input type="text" v-model="statu.label[actualLanguage]">

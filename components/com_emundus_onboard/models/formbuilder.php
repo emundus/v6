@@ -1679,6 +1679,8 @@ class EmundusonboardModelformbuilder extends JModelList {
         // Update column type
         $query->select([
             'el.name AS name',
+            'el.plugin AS plugin',
+            'el.default as default_text',
             'fl.db_table_name AS dbtable',
             'el.params AS params'
         ])
@@ -1686,6 +1688,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             ->leftJoin($db->quoteName('#__fabrik_formgroup','fg') . ' ON ' . $db->quoteName('fg.group_id') . ' = ' . $db->quoteName('el.group_id'))
             ->leftJoin($db->quoteName('#__fabrik_lists','fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
             ->where($db->quoteName('el.id') . ' = ' . $db->quote($element['id']));
+
         try {
             $db->setQuery($query);
             $db_element = $db->loadObject();
@@ -1700,6 +1703,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $dbtype = 'DATE';
             } elseif ($element['plugin'] === 'textarea') {
                 $dbtype = 'TEXT';
+            }
+
+            if($db_element->plugin == 'display' && $db_element->default_text != ''){
+                $element['default'] = '';
             }
 
             // Filter by plugin
