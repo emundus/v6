@@ -32,7 +32,7 @@
     </transition>
 
     <transition :name="'slide-down'" type="transition">
-    <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'">
+    <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
       <ul class="pagination" v-if="total > 0">
         <a @click="nbpages(pages - 1)" class="pagination-arrow arrow-left">
           <em class="fas fa-chevron-left"></em>
@@ -76,7 +76,7 @@
         </div>
       </transition>
 
-      <transition-group :name="'slide-down'" type="transition">
+      <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin-bottom: 5%;">
         <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
@@ -95,8 +95,8 @@
         <component v-bind:is="type" />
       </div>
 
-      <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'">
-        <ul class="pagination" v-if="total > 0">
+      <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
+        <ul class="pagination" v-if="total > 0" style="position: absolute;bottom: 0;width: 100%;">
           <a @click="nbpages(pages - 1)" class="pagination-arrow arrow-left">
             <em class="fas fa-chevron-left"></em>
           </a>
