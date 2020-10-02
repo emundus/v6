@@ -43,13 +43,13 @@
                   ref="customization"
           ></customization>
 
-          <editUsers
+          <!--<editUsers
                   v-if="menuHighlight == 1 && coordinatorAccess != 0"
                   ref="users"
-          ></editUsers>
+          ></editUsers>-->
 
           <editDatas
-                  v-if="menuHighlight == 2 && coordinatorAccess != 0"
+                  v-if="menuHighlight == 1 && coordinatorAccess != 0"
                   ref="datas"
                   :actualLanguage="actualLanguage"
                   :manyLanguages="manyLanguages"
@@ -113,9 +113,11 @@ export default {
     funnelDescription: [
       [
         '',
+        '',
         Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTIONSETTINGS"),
       ],
       [
+        '',
         '',
         Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTIONSETTINGS"),
       ]
@@ -124,12 +126,10 @@ export default {
     settingsCategories: [
       [
         "Personnalisation",
-        "Utilisateurs",
         "Référentiels de données",
       ],
       [
         "Styling",
-        "Users",
         "Data repository",
       ]
     ],

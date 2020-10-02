@@ -1,6 +1,6 @@
 <template>
     <div class="container-evaluation">
-        <div v-for="(tag, index) in tags" class="status-item tags-item">
+        <div v-for="(tag, index) in tags" class="status-item tags-item" :id="'tag_' + tag.id">
             <div :style="{background: tag.class}" class="status-field">
                 <input type="text" v-model="tag.label">
                 <input type="hidden" :class="tag.class">

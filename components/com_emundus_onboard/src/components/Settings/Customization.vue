@@ -26,14 +26,20 @@
                   :actualLanguage="actualLanguage"
           ></editHomepage>
 
-          <editFooter
+          <editCGV
               v-if="menuHighlight == 2 && coordinatorAccess != 0"
+              ref="cgv"
+              :actualLanguage="actualLanguage"
+          ></editCGV>
+
+          <editFooter
+              v-if="menuHighlight == 3 && coordinatorAccess != 0"
               ref="footer"
               :actualLanguage="actualLanguage"
           ></editFooter>
 
           <editStatus
-                  v-if="menuHighlight == 3 && coordinatorAccess != 0"
+                  v-if="menuHighlight == 4 && coordinatorAccess != 0"
                   @LaunchLoading="runLoading"
                   @StopLoading="stopLoading"
                   ref="status"
@@ -42,7 +48,7 @@
           ></editStatus>
 
           <editTags
-                  v-if="menuHighlight == 4"
+                  v-if="menuHighlight == 5"
                   @LaunchLoading="runLoading"
                   @StopLoading="stopLoading"
                   ref="tags"
@@ -50,19 +56,6 @@
         </transition>
       </div>
     </div>
-
-    <!--<div
-            class="section-sauvegarder-et-continuer-funnel"
-    >
-      <div class="w-container">
-        <div class="container-evaluation w-clearfix">
-          <a @click="next()" class="bouton-sauvergarder-et-continuer-3">{{ Continuer }}</a>
-          <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previous()">
-            {{Retour}}
-          </a>
-        </div>
-      </div>
-    </div>-->
   </div>
 </template>
 
@@ -75,6 +68,7 @@ import editFooter from "./editFooter";
 import editStyle from "./editStyle";
 import editDatas from "./editDatas";
 import editUsers from "./editUsers";
+import editCGV from "@/components/Settings/editCGV";
 
 const qs = require("qs");
 
@@ -88,7 +82,8 @@ export default {
     editFooter,
     editStyle,
     editDatas,
-    editUsers
+    editUsers,
+    editCGV
   },
 
   props: {
@@ -105,6 +100,7 @@ export default {
       [
         "Style",
         "Page d'accueil",
+        "Conditions générales",
         "Pied de page",
         "Statuts",
         "Etiquettes"
@@ -112,6 +108,7 @@ export default {
       [
         "Styling",
         "Home page",
+        "General Terms and Conditions",
         "Footer",
         "Status",
         "Tags"
@@ -191,15 +188,39 @@ export default {
       });
     },
 
+    updateCgv(content) {
+      this.runLoading();
+      axios({
+        method: "post",
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatecgv',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          content: content
+        })
+      }).then(() => {
+        this.stopLoading();
+      });
+    },
+
     saveCurrentPage() {
-      if(this.menuHighlight === 1) {
-        this.updateHomepage(this.$refs.homepage.$data.form.content);
-      } else if (this.menuHighlight === 2) {
-        this.updateFooter(this.$refs.footer.$data.form.content);
-      } else if (this.menuHighlight === 3) {
-        this.updateStatus(this.$refs.status.$data.status);
-      } else if (this.menuHighlight === 4) {
-        this.updateTags(this.$refs.tags.$data.tags);
+      switch (this.menuHighlight) {
+        case 1:
+          this.updateHomepage(this.$refs.homepage.$data.form.content);
+          break;
+        case 2:
+          this.updateCgv(this.$refs.cgv.$data.form.content);
+          break;
+        case 3:
+          this.updateFooter(this.$refs.homepage.$data.form.content);
+          break;
+        case 4:
+          this.updateStatus(this.$refs.homepage.$data.form.content);
+          break;
+        case 5:
+          this.updateTags(this.$refs.homepage.$data.form.content);
+          break;
       }
     },
 

@@ -47,7 +47,8 @@ class EmundusonboardModelform extends JModelList {
 			->from($db->quoteName('#__emundus_setup_profiles', 'sp'))
 			->where($filterId)
 			->andWhere($filterCount)
-			->andWhere($fullRecherche);
+			->andWhere($fullRecherche)
+            ->andWhere($db->quoteName('acl_aro_groups') . ' = ' . $db->quote(2));
 
 		try {
 			$db->setQuery($query);
@@ -103,6 +104,7 @@ class EmundusonboardModelform extends JModelList {
 			->where($filterDate)
 			->andWhere($fullRecherche)
 			->andWhere($filterId)
+            ->andWhere($db->quoteName('acl_aro_groups') . ' = ' . $db->quote(2))
 			->group($sortDb)
 			->order($sortDb . $sort);
 
@@ -125,7 +127,8 @@ class EmundusonboardModelform extends JModelList {
                 ->select('id')
                 ->from($db->quoteName('#__emundus_setup_profiles'))
                 ->where($db->quoteName('id') . ' > 1000')
-                ->andWhere($db->quoteName('status') . ' = 1');
+                ->andWhere($db->quoteName('status') . ' = 1')
+                ->andWhere($db->quoteName('acl_aro_groups') . ' = ' . $db->quote(2));
             $db->setQuery($query);
             $access_profiles[] = $db->loadColumn();
 
