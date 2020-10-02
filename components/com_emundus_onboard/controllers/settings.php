@@ -526,5 +526,22 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             exit;
         }
     }
+
+    public function gettasks(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $table = JTable::getInstance('user', 'JTable');
+            $table->load($user->id);
+
+            // Check if the param exists but is false, this avoids accidetally resetting a param.
+            $params = $user->getParameters();
+            echo json_encode(array('params' => $params));
+        }
+        exit;
+    }
 }
 

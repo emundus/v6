@@ -149,6 +149,7 @@
     <div class="loading-form" v-if="loading">
       <RingLoader :color="'#de6339'" />
     </div>
+    <tasks></tasks>
   </div>
 </template>
 
@@ -160,7 +161,9 @@ import email from "../components/list_components/emailItem";
 import formulaire from "../components/list_components/formItem";
 import files from "../components/list_components/files";
 import actions from "../components/list_components/action_menu";
+import tasks from "./tasks"
 import { list } from "../store";
+import Swal from "sweetalert2";
 
 import "../assets/css/webflow.css";
 import "../assets/css/normalize.css";
@@ -182,7 +185,8 @@ export default {
     email,
     formulaire,
     files,
-    actions
+    actions,
+    tasks
   },
 
   name: "list",
@@ -228,6 +232,7 @@ export default {
 
     menuEmail: 0,
     email_categories: [],
+    tasks: '',
   }),
 
   computed: {

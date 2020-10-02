@@ -2241,3 +2241,46 @@ label.label__placeholder {
     left: 0;
   }
 }
+
+/** TASKS **/
+.task-title{
+  position: relative !important;
+  top: -30px;
+  height: 5px;
+  font-size: x-large !important;
+  align-self: start;
+}
+.task-content{
+  text-align: left !important;
+  font-size: larger !important;
+  #close-tasks, #open-tasks{
+    position: absolute;
+    top: 15px;
+    right: 30px;
+    cursor: pointer;
+  }
+  #tasks_list{
+    transition: all 0.5s ease-in-out;
+  }
+  ul{
+    padding-left: 0 !important;
+    li{
+      margin-bottom: 1em !important;
+      display: flex;
+      align-items: center;
+      a{
+        color: unset;
+        text-decoration: unset;
+        &:hover{
+          color: #de6339;
+        }
+      }
+    }
+  }
+}
+.task-container{
+  bottom: -20px !important;
+  transition: all 0.3S ease-in-out !important;
+  width: 18vw !important;
+}
+
