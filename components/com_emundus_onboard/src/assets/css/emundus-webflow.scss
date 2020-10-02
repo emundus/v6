@@ -2253,6 +2253,7 @@ label.label__placeholder {
 .task-content{
   text-align: left !important;
   font-size: larger !important;
+  padding: 0 0.6em !important;
   #close-tasks, #open-tasks{
     position: absolute;
     top: 15px;
@@ -2268,6 +2269,8 @@ label.label__placeholder {
       margin-bottom: 1em !important;
       display: flex;
       align-items: center;
+      padding: 5px;
+      border-radius: 5px !important;
       a{
         color: unset;
         text-decoration: unset;

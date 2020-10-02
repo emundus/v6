@@ -122,6 +122,7 @@
     <div class="loading-form" v-if="submitted">
       <RingLoader :color="'#de6339'" />
     </div>
+    <tasks></tasks>
   </div>
 </template>
 
@@ -130,6 +131,7 @@ import { required } from "vuelidate/lib/validators";
 import axios from "axios";
 import Editor from "../components/editor";
 import Autocomplete from "../components/autocomplete";
+import Tasks from "@/views/tasks";
 
 const qs = require("qs");
 
@@ -137,6 +139,7 @@ export default {
   name: "addProgram",
 
   components: {
+    Tasks,
     Editor,
     Autocomplete
   },

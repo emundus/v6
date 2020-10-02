@@ -86,12 +86,14 @@
     <div class="loading-form" v-if="submitted">
       <Ring-Loader :color="'#de6339'" />
     </div>
+    <tasks></tasks>
   </div>
 </template>
 
 <script>
   import { required } from "vuelidate/lib/validators";
   import axios from "axios";
+  import Tasks from "@/views/tasks";
 
   const qs = require("qs");
 
@@ -105,7 +107,7 @@
       campaignId: Number
     },
 
-    components: {},
+    components: {Tasks},
 
     directives: { focus: {
         inserted: function (el) {

@@ -89,6 +89,7 @@
         </div>
       </div>
     </div>
+    <tasks></tasks>
   </div>
 </template>
 
@@ -104,6 +105,7 @@
   import addEvaluationGrid from "./funnelFormulaire/addEvaluationGrid";
 
   import ModalAddUser from "./advancedModals/ModalAddUser";
+  import Tasks from "@/views/tasks";
 
   const qs = require("qs");
 
@@ -111,6 +113,7 @@
     name: "addProgramAdvancedSettings",
 
     components: {
+      Tasks,
       Datetime,
       addGestionnaires,
       addEmail,

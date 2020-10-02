@@ -96,6 +96,7 @@
             </div>
         </div>
     </div>
+  <tasks></tasks>
 </template>
 
 <script>
@@ -111,6 +112,7 @@
     import addEvalVisi from "../views/funnelFormulaire/addEvalVisi";
     import addEvalEval from "../views/funnelFormulaire/addEvalEval";
     import ModalWarningFormBuilder from "./advancedModals/ModalWarningFormBuilder";
+    import Tasks from "@/views/tasks";
 
     const qs = require("qs");
 
@@ -118,6 +120,7 @@
         name: "addFormNextCampaign",
 
         components: {
+          Tasks,
             ModalWarningFormBuilder,
             Datetime,
             addFormulaire,

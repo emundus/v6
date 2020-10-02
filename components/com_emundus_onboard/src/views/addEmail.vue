@@ -172,12 +172,14 @@
       </form>
     </div>
   </div>
+  <tasks></tasks>
 </template>
 
 <script>
   import Autocomplete from "../components/autocomplete";
   import axios from "axios";
   import Editor from "../components/editor";
+  import Tasks from "@/views/tasks";
 
   const qs = require("qs");
 
@@ -185,6 +187,7 @@
     name: "addEmail",
 
     components: {
+      Tasks,
       Editor,
       Autocomplete
     },

@@ -312,6 +312,7 @@
     <div class="loading-form" v-if="submitted">
       <RingLoader :color="'#de6339'" />
     </div>
+    <tasks></tasks>
   </div>
 </template>
 
@@ -322,6 +323,7 @@ import { DateTime as LuxonDateTime, Settings } from "luxon";
 import Editor from "../components/editor";
 import Autocomplete from "../components/autocomplete";
 import Translation from "../components/translation"
+import Tasks from "@/views/tasks";
 
 const qs = require("qs");
 
@@ -329,6 +331,7 @@ export default {
   name: "addCampaign",
 
   components: {
+    Tasks,
     Datetime,
     Editor,
     Autocomplete,
