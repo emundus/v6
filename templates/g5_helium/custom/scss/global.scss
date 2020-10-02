@@ -944,7 +944,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /* FORMULAIRE  */
 
-.controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active {
+.controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active, .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.active.btn-success {
   background-color: $base-secondary-color;
   color: #fff;
   border-color: $base-secondary-color;
@@ -2142,7 +2142,7 @@ ul.unstyled.em-linkForgot li a {
 /* EDITER ET AJOUTER */
 
 .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
-.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm.em-actions-form {
+.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
   height: 40px;
   background-color: $base-secondary-color;
   border: 1px solid $base-secondary-color !important;
