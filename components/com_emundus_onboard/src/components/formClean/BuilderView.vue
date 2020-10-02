@@ -126,6 +126,7 @@
                     <modalDuplicateElement
                             :ID="element.id"
                             :currentGroup="group.group_id"
+                            :currentPage="object_json.id"
                             :id="element.id"
                             :prid="prid"
                             @reloadElement="reloadElement(element)"

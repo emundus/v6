@@ -249,7 +249,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $params['options_split_str'] = '';
             $params['dropdown_populate'] = '';
         } elseif ($plugin === 'radiobutton') {
-            $params['options_per_row'] = 3;
+            $params['options_per_row'] = 1;
             $params['btnGroup'] = 0;
             $params['rad-allowadd-onlylabel'] = 0;
             $params['rad-savenewadditions'] = 0;
@@ -299,7 +299,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $params['join_popupwidth'] = '';
         $params['databasejoin_readonly_link'] = 0;
         $params['fabrikdatabasejoin_frontend_select'] = 0;
-        $params['dbjoin_options_per_row'] = 4;
+        $params['dbjoin_options_per_row'] = 3;
         $params['dbjoin_multiselect_max'] = 0;
         $params['dbjoin_multilist_size'] = 6;
         $params['dbjoin_autocomplete_size'] = 20;
@@ -1679,6 +1679,8 @@ class EmundusonboardModelformbuilder extends JModelList {
         // Update column type
         $query->select([
             'el.name AS name',
+            'el.plugin AS plugin',
+            'el.default as default_text',
             'fl.db_table_name AS dbtable',
             'el.params AS params'
         ])
@@ -1686,6 +1688,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             ->leftJoin($db->quoteName('#__fabrik_formgroup','fg') . ' ON ' . $db->quoteName('fg.group_id') . ' = ' . $db->quoteName('el.group_id'))
             ->leftJoin($db->quoteName('#__fabrik_lists','fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
             ->where($db->quoteName('el.id') . ' = ' . $db->quote($element['id']));
+
         try {
             $db->setQuery($query);
             $db_element = $db->loadObject();
@@ -1700,6 +1703,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $dbtype = 'DATE';
             } elseif ($element['plugin'] === 'textarea') {
                 $dbtype = 'TEXT';
+            }
+
+            if($db_element->plugin == 'display' && $db_element->default_text != ''){
+                $element['default'] = '';
             }
 
             // Filter by plugin
@@ -1785,9 +1792,9 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $element['params']['validations']['plugin_published'][] = "1";
                     $element['params']['validations']['validate_in'][] = "both";
                     $element['params']['validations']['validation_on'][] = "both";
-                    $element['params']['validations']['validate_hidden'][] = "1";
+                    $element['params']['validations']['validate_hidden'][] = "0";
                     $element['params']['validations']['must_validate'][] = "0";
-                    $element['params']['validations']['show_icon'][] = "1";
+                    $element['params']['validations']['show_icon'][] = "0";
                 } else {
                     //$element['params']['validations']['plugin'] = array_merge(array_diff($element['params']['validations']['plugin'], array("isemail")));
                     $key = array_search("isemail", $element['params']['validations']['plugin']);

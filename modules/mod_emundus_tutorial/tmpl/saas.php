@@ -15,7 +15,6 @@ $document->addStyleSheet("modules/mod_emundus_tutorial/style/mod_emundus_tutoria
 if (!empty($articles)) :?>
 
     <script>
-
         function tip<?= $user_param->name; ?>() {
 
             const queryString = window.location.search;
@@ -25,7 +24,8 @@ if (!empty($articles)) :?>
             const layout = urlParams.get('layout')
             const cid = urlParams.get('cid')
 
-            let queue = []
+            let queue = [];
+
 
             <?php foreach ($articles as $key => $article) :?>
                 <?php
@@ -117,29 +117,31 @@ if (!empty($articles)) :?>
                     <?php endif; ?>
                 <?php endforeach; ?>
 
-            Swal.mixin({
-                confirmButtonColor: '#de6339',
-                showCloseButton: true,
-                allowOutsideClick: false,
-                customClass: {
-                    popup: 'swal-popup-custom',
-                }
-            }).queue(queue).then((result) => {
-                <?php if ($run) :?>
-                if(result.value) {
-                    if (result.value.length > 0) {
-                        jQuery.ajax({
-                            type: 'POST',
-                            url: 'index.php?option=com_ajax&module=emundus_tutorial&method=markRead&format=json',
-                            data: {
-                                param: "<?= $user_param->name; ?>",
-                                paramType: "<?= $user_param->load_once; ?>"
-                            }
-                        });
+            if(queue.length > 0) {
+                Swal.mixin({
+                    confirmButtonColor: '#de6339',
+                    showCloseButton: true,
+                    allowOutsideClick: false,
+                    customClass: {
+                        popup: 'swal-popup-custom',
                     }
-                }
-                <?php endif; ?>
-            })
+                }).queue(queue).then((result) => {
+                    <?php if ($run) :?>
+                    if (result.value) {
+                        if (result.value.length > 0) {
+                            jQuery.ajax({
+                                type: 'POST',
+                                url: 'index.php?option=com_ajax&module=emundus_tutorial&method=markRead&format=json',
+                                data: {
+                                    param: "<?= $user_param->name; ?>",
+                                    paramType: "<?= $user_param->load_once; ?>"
+                                }
+                            });
+                        }
+                    }
+                    <?php endif; ?>
+                })
+            }
         }
 
         <?php if ($run) :?>

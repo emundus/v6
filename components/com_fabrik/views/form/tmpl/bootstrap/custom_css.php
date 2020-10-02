@@ -79,6 +79,7 @@ echo <<<EOT
 
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn:not(.active) {
     background-color: #c6c6c6;
+        margin-left: 0px;
 }
 
 .modal {
@@ -781,7 +782,7 @@ form#member-profile .controls button,
 .step.completed i.icon.attach::before,
 .step.completed i.icon.add.to.cart::before,
 .step.completed i.icon.time::before {
-    color: #3e8ac5 !important;
+    color: #3e8ac5;
     background: none !important;
 }
 
@@ -1065,6 +1066,11 @@ footer#g-footer {
     margin-top: 50px !important; 
 }
 
+.view-form .page-header h1 {
+    margin-top: 50px !important; 
+    margin-bottom: 30px !important; 
+}
+
 ol {
     width: 59%;
     text-align: justify;
@@ -1082,7 +1088,7 @@ ol li {
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input {
-   border-radius : 0px; 
+   border-radius : 4px; 
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid:nth-child(4) .controls label.radio {
@@ -1117,12 +1123,12 @@ body.em-formRegistrationCenter  {
 
 
 .applicant-form input[type='text'], .applicant-form input[type='tel'], .applicant-form input[type='number'], .applicant-form textarea , .applicant-form input[type='email'], .applicant-form select {
-        border-radius: 0px;
+        border-radius: 4px;
 }
 
 .applicant-form .fabrikElement select {
     height: 50px !important;
-  border-radius: 0px;
+    border-radius: 4px;
 }
 
 .applicant-form .fabrikElement div a.chzn-single {
@@ -1295,7 +1301,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 .form-actions .row-fluid .span4 .btn-group .register {
-  background-color: transparent !important;
+  background-color: transparent;
   outline: none;
 }
 

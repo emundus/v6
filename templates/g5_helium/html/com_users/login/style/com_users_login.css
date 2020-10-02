@@ -130,8 +130,13 @@ body.view-reset label#jform_username-lbl::after,
     font-weight: 300;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
-    border-radius :0px;
+    border-radius :4px;
 }
+
+h1.em-titre-connectez-vous {
+    margin-bottom: 20px !important;
+}
+
 h1.em-titre-connectez-vous::after {
     content: '';
     position: absolute;
@@ -337,6 +342,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     background-image: url(/components/com_emundus_onboard/src/assets/images/enter.svg);
     background-size: contain;
     background-repeat: no-repeat;
+    margin-bottom: 20px;
 }
 
 .view-login .login.em-formRegistrationCenter .page-header div.icon-title {

@@ -1,25 +1,25 @@
 button.btn-primary{
     background: #e03c32;
-    background-color: #e03c32 !important;
-    border: 1px solid #e03c32 !important;
+    background-color: #e03c32;
+    border: 1px solid #e03c32;
     border-radius: 4px !important;
     padding: 8px 12px!important;
 }
 button.btn-primary:hover{
-    background-color: transparent !important;
-    color: #e03c32 !important;
+    background-color: transparent;
+    color: #e03c32;
     outline: none;
 }
 a.btn{
     background: #29d4ff;
-    background-color: #29d4ff !important;
-    border: 1px solid #29d4ff !important;
+    background-color: #29d4ff;
+    border: 1px solid #29d4ff;
     border-radius: 4px;
-    padding: 8px 12px!important;
+    padding: 8px 12px;
 }
 a.btn:hover{
-    background-color: transparent !important;
-    color: #29d4ff !important;
+    background-color: transparent;
+    color: #29d4ff;
     outline: none;
 }
 

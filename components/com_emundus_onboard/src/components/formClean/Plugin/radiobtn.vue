@@ -18,11 +18,11 @@
             <span class="icon-handle">
               <em class="fas fa-grip-vertical handle"></em>
             </span>
-            <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input" style="height: 35px" :id="'suboption_' + i"/>
-            <button @click.prevent="leave(i)" class="remove-option">-</button>
+            <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input" style="height: 35px" :id="'suboption_' + i" @keyup.enter="add"/>
+            <button @click.prevent="leave(i)" type="button" class="remove-option">-</button>
           </div>
         </draggable>
-        <button @click.prevent="add" class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">{{AddOption}}</button>
+        <button @click.prevent="add" type="button" class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">{{AddOption}}</button>
       </div>
   </div>
   </div>
