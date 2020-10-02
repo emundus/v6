@@ -1683,6 +1683,16 @@ a.btn-attach:active {
     .view-registration form.fabrikForm, .view-form .em-formRegistrationCenter form.fabrikForm {
         width: 75%;
     }
+    
+    .view-form .btn.send_the_request_for_individual_assessment {
+       margin-left: 0px !important; 
+    }
+    
+    .view-form .fabrikActions.form-actions .row-fluid {
+       align-items: end;
+    }
+    
+        
 }
 
 @media all and (max-width: 767px) {

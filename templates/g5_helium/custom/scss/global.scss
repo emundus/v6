@@ -2602,6 +2602,12 @@ div#em-appli-block {
 /* MOBILE */
 
 @media all and (max-width: 479px) {
+
+
+  .g-back-office-emundus-tableau.view-syncs.experts-synchro-page .app-container.ng-scope  {
+    overflow-x: scroll;
+  }
+
   /* GENERAL */
   #g-container-main.g-wrapper {
     padding: 10px;
@@ -2623,7 +2629,7 @@ div#em-appli-block {
 #g-offcanvas {
   background: #FAFAFA;
 
-  .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel  {
+  .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
     background: #FAFAFA;
     margin: 0;
     padding: 0;
@@ -2645,6 +2651,13 @@ div#em-appli-block {
       a {
         color: $base-primary-color;
       }
+    }
+
+    li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module):hover {
+      background: #ccc;
+     a {
+       color:#fff;
+     }
     }
   }
 }
