@@ -2377,6 +2377,18 @@ a.copy-0:focus {
     .g-back-office-emundus-tableau.files-page  .panel-heading .btn-group.pull-right {
         margin-top: 10px;
     }
+
+    .g-back-office-emundus-tableau.files-page select[multiple] {
+        height: 50px !important;
+    }
+
+    .g-back-office-emundus-tableau.files-page .em-collapse-container .em-utilitize {
+        flex-direction: column;
+    }
+
+    .g-back-office-emundus-tableau.files-page .em-utilitize input#em-searchbar {
+        width: 13rem !important;
+    }
 }
 
 @media all and (max-width: 767px) {
