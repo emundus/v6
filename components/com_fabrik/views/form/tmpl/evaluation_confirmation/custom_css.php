@@ -84,22 +84,22 @@ echo <<<EOT
     height: 41px;
 }
 
-.applicant-form main#g-main-mainbody {
+.view-form main#g-main-mainbody {
     padding-right: 5%;
 }
 
-.applicant-form .fabrikForm .fabrikActions.form-actions {
+.view-form .fabrikForm .fabrikActions.form-actions, .view-checklist .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions {
     padding: 0;
 }
 
-.applicant-form .fabrikGroup {
+.view-form .fabrikGroup {
     background: #fcfcfc;
     margin-bottom: 20px;
     border-radius: 0;
     padding: 20px;
 }
 
-.applicant-form .fabrikSubGroup > div[data-role="group-repeat-intro"] {
+.view-form .fabrikSubGroup > div[data-role="group-repeat-intro"] {
     font-size: 1.5rem;
 }
 
@@ -130,13 +130,13 @@ echo <<<EOT
     padding: 8px 0;
 }
 
-.applicant-form .ui.attached.segment {
+.view-form .ui.attached.segment, .view-details .ui.attached.segment, .view-checklist .ui.attached.segment{
     background: #3e8ac5;
     border: #3e8ac5;
     color: #ffffff;
 }
 
-.applicant-form .ui.attached.segment > p:first-child {
+.view-form .ui.attached.segment > p:first-child, .view-details .ui.attached.segment > p:first-child, .view-checklist .ui.attached.segment > p:first-child  {
     margin-bottom: 0;
     font-size: 18px;
 }
@@ -162,11 +162,11 @@ form .optional {
     margin-right: 0 !important;
 }
 
-.applicant-form #drawer .attached p {
+.view-form #drawer .attached p, .view-details #drawer .attached p, .view-checklist #drawer .attached p{
     margin: 0 !important;
 }
 
-.applicant-form textarea {
+.view-form textarea {
     margin: 10px 0 !important;
 }
 
@@ -217,7 +217,7 @@ fieldset {
     height: auto;
 }
 
-.applicant-form fieldset, .view-checklist fieldset, body:not(.g-back-office-emundus-tableau) .ui.attached.warning.message, body:not(.g-back-office-emundus-tableau) .ui.warning.message {
+.view-form fieldset, .view-checklist fieldset, body:not(.g-back-office-emundus-tableau) .ui.attached.warning.message, body:not(.g-back-office-emundus-tableau) .ui.warning.message {
     box-shadow: 2px 2px 10px 0px #c0c0c0;
 }
 
@@ -309,27 +309,27 @@ form legend a, form legend a:hover, form legend a:focus {
     width: 100% !important;
 }
 
-.applicant-form .toggle-editor.btn-toolbar {
+.view-form .toggle-editor.btn-toolbar {
     display: none !important;
 }
 
 /* Fabrik application form details */
-.applicant-form .nav.nav-tabs {
+.view-form .nav.nav-tabs {
     display: none;
 }
 
 /* Fabrik application form buttons left-right */
-.applicant-form .fabrikActions.form-actions .span4 {
+.view-form .fabrikActions.form-actions .span4 {
     float: right;
     text-align: right;
 }
 
-.applicant-form .fabrikActions.form-actions .offset1.span4 {
+.view-form .fabrikActions.form-actions .offset1.span4 {
     float: left;
     margin-left: 0;
 }
 
-.applicant-form .fabrikActions.form-actions .offset1 .pull-right {
+.view-form .fabrikActions.form-actions .offset1 .pull-right {
     float: left;
 }
 
@@ -337,15 +337,15 @@ form legend a, form legend a:hover, form legend a:focus {
     color: #ffffff !important;
 }
 /* Fabrik application WYSIWYG height */
-.applicant-form iframe {
+.view-form iframe {
     height: 200px !important;
 }
 
-.applicant-form .mce-tinymce .mce-statusbar .mce-path > .mce-path-item {
+.view-form .mce-tinymce .mce-statusbar .mce-path > .mce-path-item {
     display: none !important;
 }
 
-.applicant-form .sauvegarder,
+.view-form .sauvegarder,
 .view-checkout .sauvegarder,
 #fabrikSubmit_307, #fabrikSubmit_321 {
     margin-left: 20px !important;
@@ -378,19 +378,19 @@ form#member-profile .form-horizontal .control-label {
 }
 
 /*Dossiers Perso Complet*/
-.applicant-form .row-striped > .span12 {
+.view-form .row-striped > .span12 {
     width: 100%;
 }
 
-.applicant-form .row-striped .span12 > * {
+.view-form .row-striped .span12 > * {
     width: 50% !important;
 }
 
-.applicant-form .row-striped .span12 > * {
+.view-form .row-striped .span12 > * {
     width: 50% !important;
 }
 
-.applicant-form .row-striped .span12 .fabrikLabel, .applicant-form .row-striped .span12 .fabrikElement {
+.view-form .row-striped .span12 .fabrikLabel, .view-form .row-striped .span12 .fabrikElement {
     width: 100% !important;
 }
 
@@ -402,7 +402,7 @@ form#member-profile .form-horizontal .control-label {
 
 /* ---- VALIDATION STARS ----- */
 /* --- hiding icon atm because i'm not sure what they want yet... --- */
-.applicant-form .icon-star.small {
+.view-form .icon-star.small {
     display: none;
 }
 
@@ -423,7 +423,7 @@ form#member-profile .form-horizontal .control-label {
     content: "";
 }
 
-.applicant-form form[name="form_324"] input::placeholder, .applicant-form input[placeholder="€"]::placeholder {
+.view-form form[name="form_324"] input::placeholder, .view-form input[placeholder="€"]::placeholder {
     color: red !important;
     opacity: 1;
 }
@@ -433,37 +433,37 @@ form#member-profile .form-horizontal .control-label {
     flex-direction: row-reverse;
 }
 
-#jos_emundus_funding___total_ressource, #jos_emundus_funding___total_depense, .applicant-form form[name="form_324"] input[readonly="readonly"] {
+#jos_emundus_funding___total_ressource, #jos_emundus_funding___total_depense, .view-form form[name="form_324"] input[readonly="readonly"] {
     border: none;
     box-shadow: none;
     background-color: transparent;
     text-align: end;
 }
 
-.applicant-form form[name="form_324"] .legend {
+.view-form form[name="form_324"] .legend {
     font-size: 1.2rem;
 }
 
-.applicant-form form[name="form_324"] #group711 tr td:first-child,
-.applicant-form form[name="form_324"] #group714 tr td:first-child,
-.applicant-form form[name="form_324"] #group720 tr td:first-child,
-.applicant-form form[name="form_324"] #group721 tr td:first-child {
+.view-form form[name="form_324"] #group711 tr td:first-child,
+.view-form form[name="form_324"] #group714 tr td:first-child,
+.view-form form[name="form_324"] #group720 tr td:first-child,
+.view-form form[name="form_324"] #group721 tr td:first-child {
     width: 24%;
 }
 
-.applicant-form form[name="form_324"] #group711 tr td:last-child,
-.applicant-form form[name="form_324"] #group714 tr td:last-child,
-.applicant-form form[name="form_324"] #group720 tr td:last-child,
-.applicant-form form[name="form_324"] #group721 tr td:last-child {
+.view-form form[name="form_324"] #group711 tr td:last-child,
+.view-form form[name="form_324"] #group714 tr td:last-child,
+.view-form form[name="form_324"] #group720 tr td:last-child,
+.view-form form[name="form_324"] #group721 tr td:last-child {
     width: 5%;
 }
 
-.applicant-form #group735 select.input.input-medium {
+.view-form #group735 select.input.input-medium {
     width: 210px;
 }
 
 /* ---- ALLOW * TO BE AT THE END OF TEXT ----- */
-.applicant-form form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
+.view-form form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
     display: inline !important;
 }
 /* Inscription */
@@ -692,18 +692,18 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
 }
 
 
-.applicant-form .fabrikGroupRepeater .btn-success {
+.view-form .fabrikGroupRepeater .btn-success {
     margin-right: 10px !important;
 }
 
-.applicant-form .fabrikGroupRepeater .addGroup.btn-success {
+.view-form .fabrikGroupRepeater .addGroup.btn-success {
     color: #3e8ac5 !important;
     background-color: transparent !important;
     border: 1px solid transparent !important;
     font-size: 1rem;
 }
 
-.applicant-form .fabrikGroupRepeater .deleteGroup.btn-danger {
+.view-form .fabrikGroupRepeater .deleteGroup.btn-danger {
     color: #E03C35 !important;
     background-color: transparent !important;
     border: 1px solid transparent !important;
