@@ -105,7 +105,13 @@ button#back:hover, button#back:active, button#back:focus,
     width: 100%;
 }
 
-.view-checklist .em-description {
+.view-checklist #attachment_list_mand .em-description {
+    display: flex;
+    align-items: center;
+    padding-bottom: 20px;
+}
+
+.view-checklist #attachment_list_opt .em-description {
     display: flex;
     align-items: center;
     padding-bottom: 20px;
