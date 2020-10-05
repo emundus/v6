@@ -1146,7 +1146,7 @@ body.em-formRegistrationCenter  {
 
 form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
         height: 41px !important; 
-        border-radius: 0px; 
+        border-radius: 4px; 
 }
 
 /* EDITER LE PROFIL DU CANDIDAT - ESPACEMENT SOUS LE TITRE - */ 
