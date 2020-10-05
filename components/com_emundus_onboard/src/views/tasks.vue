@@ -48,23 +48,23 @@ name: "tasks",
                   break;
                 case 'first_formbuilder':
                   if (response.data.params[param]) {
-                    html += "<li><div class='col-md-2'><i class='far fa-times-circle' style='color: darkred'></i></div> <span>" + Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER") + "</span> </li><hr>";
+                    html += "<li><div class='col-md-2'><i class='far fa-times-circle' style='color: darkred'></i></div><a href='configuration-forms'><span>" + Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER") + "</span></a></li><hr>";
                   } else {
-                    html += "<li><div class='col-md-2'><i class='far fa-check-circle' style='color: green'></i></div> <span>" + Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER") + "</span> </li><hr>";
+                    html += "<li><div class='col-md-2'><i class='far fa-check-circle' style='color: green'></i></div><a href='configuration-forms'><span>" + Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER") + "</span></a></li><hr>";
                   }
                   break;
                 case 'first_documents':
                   if (response.data.params[param]) {
-                    html += "<li><div class='col-md-2'><i class='far fa-times-circle' style='color: darkred'></i></div> <span>" + Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS") + "</span> </li><hr>";
+                    html += "<li><div class='col-md-2'><i class='far fa-times-circle' style='color: darkred'></i></div><a href='configuration-campaigns'><span>" + Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS") + "</span></a></li><hr>";
                   } else {
-                    html += "<li><div class='col-md-2'><i class='far fa-check-circle' style='color: green'></i></div> <span>" + Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS") + "</span> </li><hr>";
+                    html += "<li><div class='col-md-2'><i class='far fa-check-circle' style='color: green'></i></div><a href='configuration-campaigns'><span>" + Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS") + "</span></a></li><hr>";
                   }
                   break;
                 case 'first_program':
                   if (response.data.params[param]) {
-                    html += "<li><div class='col-md-2'><i class='far fa-times-circle' style='color: darkred'></i></div> <span>" + Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM") + "</span> </li><hr>";
+                    html += "<li><div class='col-md-2'><i class='far fa-times-circle' style='color: darkred'></i></div><a href='configuration-programs'><span>" + Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM") + "</span></a></li><hr>";
                   } else {
-                    html += "<li><div class='col-md-2'><i class='far fa-check-circle' style='color: green'></i></div> <span>" + Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM") + "</span> </li><hr>";
+                    html += "<li><div class='col-md-2'><i class='far fa-check-circle' style='color: green'></i></div><a href='configuration-programs'><span>" + Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM") + "</span></a></li><hr>";
                   }
                   break;
               }
