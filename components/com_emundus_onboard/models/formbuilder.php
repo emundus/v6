@@ -157,7 +157,24 @@ class EmundusonboardModelformbuilder extends JModelList {
             'show_label_in_rss_feed' => 0,
             'use_as_rss_enclosure' => 0,
             'rollover' => '',
-            'validations' => array(
+            'tipseval' => 0,
+            'tiplocation' => 'top-left',
+            'labelindetails' => 0,
+            'labelinlist' => '0',
+            'comment' => '',
+            'edit_access' => 1,
+            'edit_access_user' => '',
+            'view_access' => 1,
+            'view_access_user' => '',
+            'list_view_access' => 1,
+            'encrypt' => 0,
+            'store_in_db' => 1,
+            'default_on_copy' => 0,
+            'can_order' => 0,
+        );
+
+        if($plugin != 'display'){
+            $params['validations'] = array(
                 'plugin' => array(
                     "notempty",
                 ),
@@ -179,24 +196,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                 'show_icon' => array(
                     "1",
                 ),
-            ),
-            'notempty-message' => array(),
-            'notempty-validation_condition' => array(),
-            'tipseval' => 0,
-            'tiplocation' => 'top-left',
-            'labelindetails' => 0,
-            'labelinlist' => '0',
-            'comment' => '',
-            'edit_access' => 1,
-            'edit_access_user' => '',
-            'view_access' => 1,
-            'view_access_user' => '',
-            'list_view_access' => 1,
-            'encrypt' => 0,
-            'store_in_db' => 1,
-            'default_on_copy' => 0,
-            'can_order' => 0,
-        );
+            );
+            $params['notempty-message'] = array();
+            $params['notempty-validation_condition'] = array();
+        }
 
         if ($plugin == 'field') {
             $params['placeholder'] = '';
