@@ -26,7 +26,7 @@
 #navfilter .navsearch .navsearch-content .input-group label input {
     border-radius: 4px 0px 0px 4px !important;
     height: 34px;
-    margin-top: -1px;
+    margin-top: 0px;
 }
 .campaignbymonth {
     margin-top: 0 !important;
