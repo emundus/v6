@@ -2707,7 +2707,7 @@ footer#g-footer .g-grid {
 
 }
 
-@media all and (max-width: 767px) {
+@media all and (min-width: 480px) and (max-width: 767px)  {
 
   .homepage h1::after {
     display: none !important;
@@ -2990,19 +2990,18 @@ footer#g-footer .g-grid {
   }
 }
 
-@media all and (min-width: 768px) {
+@media all and (min-width: 768px) and (max-width: 959px){
   button.save {
     margin-left: 20px !important;
   }
-}
 
-@media all and (min-width: 768px) and (max-width: 940px) {
+  .g-branding {
+    text-align: inherit;
+  }
+
   .header-right a.btn:first-child {
     margin-bottom: 10px;
   }
-}
-
-@media screen and (min-width: 768px) and (max-width: 959px) {
 
   #g-main-mainbody {
     padding-top: 0;
@@ -3032,7 +3031,6 @@ footer#g-footer .g-grid {
       width: 50%;
     }
   }
-
 }
 
 @media all and (max-width: 959px) {
