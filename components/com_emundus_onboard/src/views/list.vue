@@ -76,7 +76,7 @@
         </div>
       </transition>
 
-      <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin-bottom: 5%;">
+      <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin-bottom: 5%;width: 100%">
         <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
