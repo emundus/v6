@@ -942,7 +942,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 
+/* VIEW DETAILS  */
+
+.view-details .fabrikGroup h3.legend {
+  margin-top: 30px !important;
+}
+
 /* FORMULAIRE  */
+
 
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active {
   background-color: $base-secondary-color;
