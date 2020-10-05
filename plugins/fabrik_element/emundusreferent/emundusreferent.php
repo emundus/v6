@@ -95,7 +95,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			}
 		}
 		$str = '<div><label class="fabrikLabel " for="'.$element->name.'">'.$element->label.'<img class="fabrikTip fabrikImg" title="" src="media/com_fabrik/images/notempty.png"></label>';
-		if ($this->isReferentLetterUploaded($this->_attachment_id)) {
+		if ($this->isReferentLetterUploaded($this->_attachment_id,$fnum)) {
 			$str .= '<span class="emundusreferent_uploaded">'.JText::_('REFERENCE_LETTER_UPLOADED').'<span>';
 		} else {
 			$str .= '<input ' ;

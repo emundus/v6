@@ -1457,7 +1457,25 @@ class EmundusonboardModelform extends JModelList {
 
         try {
             $db->setQuery($query);
-            return $db->loadObject();
+            $menus = $db->loadObjectList();
+            $sub_page = new stdClass();
+            foreach($menus as $menu){
+                $formid = explode('=',$menu->link)[3];
+                if($formid != null){
+                    $query->clear()
+                        ->select('count(id)')
+                        ->from($db->quoteName('#__fabrik_lists'))
+                        ->where($db->quoteName('db_table_name') . ' LIKE ' . $db->quote('jos_emundus_declaration'))
+                        ->andWhere($db->quoteName('form_id') . ' = ' . $db->quote($formid));
+                    $db->setQuery($query);
+                    $submittion = $db->loadResult();
+                    if($submittion > 0){
+                        $sub_page->link = $menu->link;
+                        $sub_page->rgt = $menu->rgt;
+                    }
+                }
+            }
+            return $sub_page;
         } catch(Exception $e) {
             JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
