@@ -85,6 +85,7 @@ class EmundusonboardModelformbuilder extends JModelList {
     function prepareSubmittionPlugin($params) {
         $params['applicationsent_status'] = "0";
         $params['admission'] = "0";
+        $params['ajax_validations'] = "0";
         $params['only_process_curl'] = array(
             2 => "getEndContent"
         );
@@ -156,7 +157,24 @@ class EmundusonboardModelformbuilder extends JModelList {
             'show_label_in_rss_feed' => 0,
             'use_as_rss_enclosure' => 0,
             'rollover' => '',
-            'validations' => array(
+            'tipseval' => 0,
+            'tiplocation' => 'top-left',
+            'labelindetails' => 0,
+            'labelinlist' => '0',
+            'comment' => '',
+            'edit_access' => 1,
+            'edit_access_user' => '',
+            'view_access' => 1,
+            'view_access_user' => '',
+            'list_view_access' => 1,
+            'encrypt' => 0,
+            'store_in_db' => 1,
+            'default_on_copy' => 0,
+            'can_order' => 0,
+        );
+
+        if($plugin != 'display'){
+            $params['validations'] = array(
                 'plugin' => array(
                     "notempty",
                 ),
@@ -178,24 +196,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                 'show_icon' => array(
                     "1",
                 ),
-            ),
-            'notempty-message' => array(),
-            'notempty-validation_condition' => array(),
-            'tipseval' => 0,
-            'tiplocation' => 'top-left',
-            'labelindetails' => 0,
-            'labelinlist' => '0',
-            'comment' => '',
-            'edit_access' => 1,
-            'edit_access_user' => '',
-            'view_access' => 1,
-            'view_access_user' => '',
-            'list_view_access' => 1,
-            'encrypt' => 0,
-            'store_in_db' => 1,
-            'default_on_copy' => 0,
-            'can_order' => 0,
-        );
+            );
+            $params['notempty-message'] = array();
+            $params['notempty-validation_condition'] = array();
+        }
 
         if ($plugin == 'field') {
             $params['placeholder'] = '';
@@ -502,6 +506,20 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         $this->copyFileToAdministration('fr-FR');
         $this->copyFileToAdministration('en-GB');
+    }
+
+    function addTranslation($text,$pathfile,$codelang){
+        $lines = file($pathfile);
+        $last_line = $lines[count($lines)-1];
+
+        if (strpos($last_line,'COM_USERS_RESET_REQUEST_LABEL') === 0) {
+            file_put_contents($pathfile,"\r\n" . $text . PHP_EOL, FILE_APPEND | LOCK_EX);
+        } else {
+            file_put_contents($pathfile,$text . PHP_EOL, FILE_APPEND | LOCK_EX);
+        }
+        $this->removeEmptyLinesFr();
+
+        $this->copyFileToAdministration($codelang);
     }
 
     function addTransationFr($text) {
@@ -1026,14 +1044,16 @@ class EmundusonboardModelformbuilder extends JModelList {
             $group = $this->createGroup($group_label,$formid);
 
             $query = $db->getQuery(true);
-            $query->select('fe.id as eid')
+            $query->select('fe.id as eid, fg.group_id as gid')
                 ->from($db->quoteName('#__fabrik_elements','fe'))
                 ->leftJoin($db->quoteName('#__fabrik_formgroup', 'fg') . ' ON ' . $db->quoteName('fg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
                 ->where($db->quoteName('fg.form_id') . ' = ' . $db->quote(258))
                 ->andWhere($db->quoteName('fe.hidden') . ' = ' . $db->quote(0));
             $db->setQuery($query);
-            $eid = $db->loadObject()->eid;
-            $this->duplicateElement($eid,$group,258,$formid);
+            $result = $db->loadObject();
+            $eid = $result->eid;
+            $oldgroup = $result->gid;
+            $this->duplicateElement($eid,$group['group_id'],$oldgroup,$formid);
             //
 
             return array(
@@ -1918,7 +1938,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $query->clear();
                     $query->update($db->quoteName('#__fabrik_elements'));
                     foreach ($languages as $language) {
-                        $this->duplicateFileTranslation($element->element->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'ELEMENT_' . $group . '_' . $newelementid,$language->lang_code);
+                        $duplicate_translation = $this->duplicateFileTranslation($element->element->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'ELEMENT_' . $group . '_' . $newelementid,$language->lang_code);
+                        if(!$duplicate_translation){
+                            $this->addTranslation('ELEMENT_' . $group . '_' . $newelementid . '=' . "\"" . $element->element->label . "\"", $path_to_files[$language->sef],$language->lang_code);
+                        }
                     }
                     //
 
@@ -2557,7 +2580,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     foreach ($languages as $language) {
                         $duplicate_translation = $this->duplicateFileTranslation($group_model->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'GROUP_' . $newformid . '_' . $newgroupid,$language->lang_code);
                         if(!$duplicate_translation){
-                            $this->addTransationFr('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . $group_model->label . "\"");
+                            $this->addTranslation('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . $group_model->label . "\"", $path_to_files[$language->sef],$language->lang_code);
                         }
                     }
                 }
@@ -2591,7 +2614,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                                 foreach ($languages as $language) {
                                     $duplicate_translation = $this->duplicateFileTranslation($sub_label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index,$language->lang_code);
                                     if(!$duplicate_translation){
-                                        $this->addTransationFr('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index . '=' . "\"" . $sub_label . "\"");
+                                        $this->addTranslation('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index . '=' . "\"" . $sub_label . "\"", $path_to_files[$language->sef],$language->lang_code);
                                     }
                                 }
                                 $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
@@ -2603,7 +2626,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                         foreach ($languages as $language) {
                             $duplicate_translation = $this->duplicateFileTranslation($element->element->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'ELEMENT_' . $newgroupid . '_' . $newelementid,$language->lang_code);
                             if(!$duplicate_translation){
-                                $this->addTransationFr('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . $element->element->label . "\"");
+                                $this->addTranslation('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . $element->element->label . "\"", $path_to_files[$language->sef],$language->lang_code);
                             }
                         }
                         //
