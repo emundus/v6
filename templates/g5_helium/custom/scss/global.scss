@@ -944,7 +944,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /* FORMULAIRE  */
 
-.controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active {
+.controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active, .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.active.btn-success {
   background-color: $base-secondary-color;
   color: #fff;
   border-color: $base-secondary-color;
@@ -2142,7 +2142,7 @@ ul.unstyled.em-linkForgot li a {
 /* EDITER ET AJOUTER */
 
 .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
-.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm.em-actions-form {
+.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
   height: 40px;
   background-color: $base-secondary-color;
   border: 1px solid $base-secondary-color !important;
@@ -2599,7 +2599,115 @@ div#em-appli-block {
 
 /******************************* RESPONSIVE ***********************************/
 
-@media all and (max-width: 767px) {
+/* MOBILE */
+
+@media all and (max-width: 479px) {
+
+
+  .g-back-office-emundus-tableau.view-syncs.experts-synchro-page .app-container.ng-scope  {
+    overflow-x: scroll;
+  }
+
+  /* GENERAL */
+  #g-container-main.g-wrapper {
+    padding: 10px;
+  }
+
+  /* HEADER */
+  #g-navigation #header-a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* BURGER */
+  #g-page-surround .g-offcanvas-toggle {
+    top: 20px !important;
+  }
+
+  /* BURGER OUVERT */
+#g-offcanvas {
+  background: #FAFAFA;
+
+  .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
+    background: #FAFAFA;
+    margin: 0;
+    padding: 0;
+
+    li {
+      border-bottom: 1px solid #F2F2F2;
+
+      span {
+        width: 10%;
+        margin-top: 15px;
+        &::after {
+          color: #000;
+        }
+      }
+      a {
+        color: $base-primary-color;
+        padding: 15px 30px;
+        width: auto;
+      }
+    }
+
+    li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module).active {
+      background: #FAFAFA;
+      border-left: 6px solid $base-secondary-color;
+      a {
+        color: $base-primary-color;
+      }
+    }
+
+    li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module):hover {
+      background: #ccc;
+     a {
+       color:#fff;
+     }
+    }
+  }
+}
+
+
+
+
+  /* FOOTER */
+
+footer#g-footer .g-grid {
+  .bas-footer {
+      justify-content: center;
+        .em-containerAdresseLogo {
+          justify-content: center;
+          width: 100% !important;
+          .adresse {
+            align-items: center;
+
+            p.street {
+              text-align: center;
+            }
+          }
+        }
+      }
+
+    .g-block {
+      width: 60%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .g-branding .logo {
+        width: 25vw;
+
+        .credits-emundus p {
+          text-align: center;
+        }
+      }
+    }
+  }
+
+}
+
+@media all and (min-width: 480px) and (max-width: 767px)  {
 
   .homepage h1::after {
     display: none !important;
@@ -2882,19 +2990,18 @@ div#em-appli-block {
   }
 }
 
-@media all and (min-width: 768px) {
+@media all and (min-width: 768px) and (max-width: 959px){
   button.save {
     margin-left: 20px !important;
   }
-}
 
-@media all and (min-width: 768px) and (max-width: 940px) {
+  .g-branding {
+    text-align: inherit;
+  }
+
   .header-right a.btn:first-child {
     margin-bottom: 10px;
   }
-}
-
-@media screen and (min-width: 768px) and (max-width: 959px) {
 
   #g-main-mainbody {
     padding-top: 0;
@@ -2924,7 +3031,6 @@ div#em-appli-block {
       width: 50%;
     }
   }
-
 }
 
 @media all and (max-width: 959px) {
