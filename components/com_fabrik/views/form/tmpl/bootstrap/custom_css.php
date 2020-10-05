@@ -1704,7 +1704,7 @@ ol {
 }
 
     
-    .applicant-form .btn.btn-primary.save-btn.sauvegarder.save_continue {
+    .view-form .btn.btn-primary.save-btn.sauvegarder.save_continue {
         margin-left: 0px !important;
         margin-bottom: 10px; 
     }
@@ -1751,30 +1751,26 @@ ol {
         font-size: 0.7em !important;
     }
     
-    .applicant-form .fabrikActions.form-actions .span4 {
-        width: 39%;
-    }
-  
     #jos_emundus_projet___project_discipline_other .row-fluid > .span3 {
         width: 50%;
         float: left;
     }
       
-    .applicant-form  main#g-main-mainbody {
+    .view-form  main#g-main-mainbody, .view-details  main#g-main-mainbody, .view-checklist  main#g-main-mainbody {
           padding-right: 0;
     }
 
-    .applicant-form .fabrikGroup .row-fluid {
+    .view-form .fabrikGroup .row-fluid, .view-details .fabrikGroup .row-fluid, .view-checklist .fabrikGroup .row-fluid{
         padding-right: 0;
         padding-left: 0;
     }
     
-    .applicant-form .fabrikGroup legend {
+    .view-form .fabrikGroup legend, .view-checklist .fabrikGroup legend,  .view-details .fabrikGroup legend {
         padding-left: 0;
     }
 
 
-    .applicant-form .fabrikActions.form-actions .row-fluid .offset1.span4 {
+    .view-form .fabrikActions.form-actions .row-fluid .offset1.span4,  .view-checklist .fabrikActions.form-actions .row-fluid .offset1.span4,  .view-details .fabrikActions.form-actions .row-fluid .offset1.span4 {
           float: left;
     }
     
@@ -1829,7 +1825,7 @@ ol {
     }
         
     /* APRES MAJ */
-    .applicant-form .fabrikForm fieldset > .row-fluid {
+    .view-form .fabrikForm fieldset > .row-fluid, .view-details .fabrikForm fieldset > .row-fluid,  .view-checklist .fabrikForm fieldset > .row-fluid {
         padding: 0px !important;
     }
 
