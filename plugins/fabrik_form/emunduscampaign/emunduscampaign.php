@@ -285,7 +285,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
                 break;
 
             case 'cc':
-                $campaign_id = is_array($jinput->getInt('jos_emundus_campaign_candidature___id_raw')) ? $jinput->getInt('jos_emundus_campaign_candidature___id_raw')[0] : $jinput->getInt('jos_emundus_campaign_candidature___id_raw');
+                $campaign_id = is_array($jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw')) ? $jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw')[0] : $jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw');
 
                 // Check if the campaign limit has been obtained
                 if ($m_campaign->isLimitObtained($campaign_id) === true) {
