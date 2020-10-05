@@ -2637,7 +2637,13 @@ div#em-appli-block {
     li {
       border-bottom: 1px solid #F2F2F2;
 
-
+      span {
+        width: 10%;
+        margin-top: 15px;
+        &::after {
+          color: #000;
+        }
+      }
       a {
         color: $base-primary-color;
         padding: 15px 30px;
