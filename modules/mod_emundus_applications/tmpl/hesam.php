@@ -104,9 +104,19 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
                                 <?php endif; ?>
 
                                 <!-- Trash button -->
-                                <a id="trash" onClick="<?= ($application->status !== '1')?'deletefile(\''.$application->fnum.'\');':'completefile(\''.$application->fnum.'\', true)'; ?>" href="#row<?= $application->fnum; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>">
-                                    <i class="icon-trash"></i>
-                                </a>
+                                <?php if ($application->status === '0') :?>
+                                    <a id="trash" onClick="deletefile('<?= $application->fnum; ?>')" href="#row<?= $application->fnum; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>">
+                                        <i class="icon-trash"></i>
+                                    </a>
+                                <?php elseif ($application->status === '1') :?>
+                                    <a id="trash" onClick="completefile('<?= $application->fnum; ?>', true)" href="#row<?= $application->fnum; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>">
+                                        <i class="icon-trash"></i>
+                                    </a>
+                                <?php else :?>
+                                    <a id="trash" onClick="unpublishfile('<?= $application->fnum; ?>')" href="#row<?= $application->fnum; ?>" title="<?= JText::_('UNPUBLISH_APPLICATION'); ?>">
+                                        <i class="icon-trash"></i>
+                                    </a>
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -674,7 +684,7 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
             customClass: {
                 title: "heading no-dash"
             },
-            title: '<?= JText::_('CONFIRM_REPUBLISH_FILE'); ?>',
+            title: '<?= JText::_('CONFIRM_PUBLISH_FILE'); ?>',
             icon: 'warning',
             showCloseButton: true
         }).then(confirm => {
@@ -684,9 +694,24 @@ $document->addStyleSheet('https://cdnjs.cloudflare.com/ajax/libs/iconate/0.3.1/i
         });
     }
 
+    function unpublishfile(fnum) {
+        Swal.fire({
+            customClass: {
+                title: "heading no-dash"
+            },
+            title: '<?= JText::_('CONFIRM_UNPUBLISH_FILE'); ?>',
+            icon: 'warning',
+            showCloseButton: true
+        }).then(confirm => {
+            if (confirm.value) {
+                document.location.href = "index.php?option=com_emundus&task=completefile&status=7&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>";
+            }
+        });
+    }
+
     function completefile(fnum, trash) {
 
-        const trashButton = trash ? "<a href=\"index.php?option=com_emundus&task=deletefile&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>\" class=\"cta-offre w-inline-block\"><?= JText::_('DELETE_FILE'); ?></a>":"";
+        const trashButton = trash ? "<a href=\"index.php?option=com_emundus&task=completefile&status=7&fnum="+fnum+"&redirect=<?= base64_encode($uri->getPath()); ?>\" class=\"cta-offre w-inline-block\"><?= JText::_('UNPUBLISH_FILE'); ?></a>":"";
 
         Swal.fire({
             customClass: {
