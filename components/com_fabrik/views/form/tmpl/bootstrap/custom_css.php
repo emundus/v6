@@ -1906,6 +1906,10 @@ ol {
  .view-registration form {
     padding-right: 8rem;
   }
+  
+      .view-form #g-sidebar .moduletable  {
+        padding: 0px !important;
+    }
 }
 
 /* END - Your CSS styling ends here */

@@ -2646,8 +2646,8 @@ div#em-appli-block {
     font-size: 1.8em !important;
 
     &::after {
-      margin-top: 75px;
-      width: 100px;
+      margin-top: 45px !important;
+      width: 2.7rem !important;
     }
   }
 
@@ -2888,13 +2888,28 @@ div#em-appli-block {
   }
 }
 
-@media all and (min-width: 768px) and (max-width: 940px) {
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
   .header-right a.btn:first-child {
     margin-bottom: 10px;
   }
-}
 
-@media screen and (min-width: 768px) and (max-width: 959px) {
+  #g-navigation {
+    border-bottom: 1px solid #eeeeee;
+    width: 100vw;
+
+    .g-container {
+      padding: 10px;
+      width: 95%;
+      margin: auto !important;
+    }
+
+    #header-a {
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+  }
+
 
   #g-main-mainbody {
     padding-top: 0;

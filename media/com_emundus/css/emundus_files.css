@@ -2380,6 +2380,15 @@ a.copy-0:focus {
     #em-hide-filters {
         display: none;
     }
+
+    .g-back-office-emundus-tableau #em-modal-actions .modal-dialog, .g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg {
+        width: fit-content !important;
+        min-width:95%;
+    }
+
+    .g-back-office-emundus-tableau .em-container-evaluation-heading .btn-group.pull-right {
+        margin-top: 15px;
+    }
 }
 
 @media screen and (min-width: 960px) and (max-width: 1199px) {
