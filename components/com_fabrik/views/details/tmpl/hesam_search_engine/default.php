@@ -382,7 +382,7 @@ $document->setMetaData('og:description', $this->data['jos_emundus_projet___quest
                             $query->clear()
                                 ->select($db->quoteName('type'))
                                 ->from($db->quoteName('jos_emundus_recherche_762_repeat'))
-                                ->where($db->quoteName('parent_id').' = '.$this->data["jos_emundus_projet___id"]);
+                                ->where($db->quoteName('parent_id').' = '.$this->data["jos_emundus_recherche___id"]);
                             $db->setQuery($query);
 
                             try {
