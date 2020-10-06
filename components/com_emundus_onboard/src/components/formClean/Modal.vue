@@ -198,6 +198,8 @@
           this.element = response.data;
           if(this.element.plugin == 'databasejoin'){
             this.plugin = this.element.params.database_join_display_type;
+          } else if (this.element.plugin == 'date') {
+            this.plugin = 'birthday';
           } else {
             this.plugin = this.element.plugin;
           }
