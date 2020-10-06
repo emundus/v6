@@ -374,7 +374,28 @@ $document->setMetaData('og:description', $this->data['jos_emundus_projet___quest
             <?php if ($profile != '1008') : ?>
                 <strong><?= JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB'); ?></strong><?= $this->data["jos_emundus_recherche___acteur_public_yesno"]; ?>
                 <br>
-                <strong><?= JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB_TYPE'); ?></strong><?= $this->data["jos_emundus_recherche___acteur_public_type_raw"]; ?>
+                <strong><?= JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB_TYPE'); ?></strong>
+
+                <?php if ($profile == '1006' && $this->data["jos_emundus_recherche___acteur_public_yesno"] === 'oui') :?>
+                        <!-- If we are a doctorant and looking for an acteur publique, we get from the repeat group. -->
+                        <?php
+                            $query->clear()
+                                ->select($db->quoteName('type'))
+                                ->from($db->quoteName('jos_emundus_recherche_762_repeat'))
+                                ->where($db->quoteName('parent_id').' = '.$this->data["jos_emundus_projet___id"]);
+                            $db->setQuery($query);
+
+                            try {
+                                echo implode(', ',$db->loadColumn());
+                            } catch (Exception $e) {
+                                echo '';
+                            }
+
+                        ?>
+                <?php else :?>
+		                <?= $this->data["jos_emundus_recherche___acteur_public_type_raw"]; ?>
+                <?php endif; ?>
+
                 <?php if ($this->data["jos_emundus_recherche___acteur_public_yesno_raw"] == 0) :?>
                     <br>
                     <strong><?= JText::_('COM_EMUNDUS_FABRIK_EQUIPE_ACTEUR_PUB_NAME'); ?></strong><?= $this->data["jos_emundus_recherche___acteur_public_nom_de_structure_raw"]; ?>
