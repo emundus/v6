@@ -89,6 +89,10 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
         </div>
     </div>
     <div class="row">
+        <label for="trombi_header_height"><?= JText::_('COM_EMUNDUS_TROMBI_HEIGHT_HEADER'); ?></label>
+        <input id="trombi_header_height" name="trombi_header_height" value="" class="trombi_margin" />
+    </div>
+    <div class="row">
         <div class="col-md-12">
             <h3 class="title_wysiwyg"><?= JText::_('COM_EMUNDUS_TROMBI_HEADER'); ?></h3>
 		    <?= $this->wysiwyg_header; ?>
@@ -170,6 +174,7 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
         var selected_grid_height = $('#trombi_grid_height').val();
         var selected_margin = $('#trombi_margin').val();
         var selected_tmpl = $('#trombi_tmpl').val();
+        var header_height = $('#trombi_header_height').val();
 
         var format = $('#selected_format').val();
 
@@ -192,7 +197,8 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
                 template: selected_tmpl,
                 format: format,
                 generate: string_generate,
-                border: selected_border
+                border: selected_border,
+                headerHeight: header_height
             },
             success: function (data) {
                 var html_content = data.html_content;
@@ -220,6 +226,7 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
         var selected_margin = $('#trombi_margin').val();
         var selected_tmpl = $('#trombi_tmpl').val();
         var header = $('#trombi_head').val();
+        var header_height = $('#trombi_header_height').val();
         var footer = $('#trombi_foot').val();
 
         var format = $('#selected_format').val();
@@ -248,7 +255,8 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
                 format: format,
                 generate: string_generate,
                 checkHeader: selected_check,
-                border: selected_border
+                border: selected_border,
+                headerHeight : header_height
             },
             success: function (data) {
                 $pdf_url = data.pdf_url;
