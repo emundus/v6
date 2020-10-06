@@ -352,7 +352,7 @@ div#em-appli-menu .list-group {
 
 /* Panel gauche dosiers associés du déposant */
 div#em-assoc-files .panel > .panel-heading h6 {
-    color: #ffffff;
+    color: #000;
     padding: 10px 0;
     margin: 0;
 }
