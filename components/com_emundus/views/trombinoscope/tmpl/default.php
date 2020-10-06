@@ -89,6 +89,10 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
         </div>
     </div>
     <div class="row">
+        <label for="trombi_header_height"><?= JText::_('COM_EMUNDUS_TROMBI_HEIGHT_HEADER'); ?></label>
+        <input id="trombi_header_height" name="trombi_header_height" value="<?= $this->default_header_height; ?>" class="trombi_margin" />
+    </div>
+    <div class="row">
         <div class="col-md-12">
             <h3 class="title_wysiwyg"><?= JText::_('COM_EMUNDUS_TROMBI_HEADER'); ?></h3>
 		    <?= $this->wysiwyg_header; ?>

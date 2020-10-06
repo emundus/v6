@@ -195,10 +195,6 @@ body {
 
 .div-cell {
     border: '.$borderCSS.';
-    display: inline-block;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    whitespace: no-wrap;
     line-height: 1;
     width: '.$cell_width.'px;
     height: '.$cell_height.'px;
@@ -208,7 +204,7 @@ body {
 
 /** Define now the real margins of every page in the PDF **/
 .em-body {
-    margin-top: 330px;
+    margin-top: '.$trombi->default_header_height.'px;
 }
 
 /** Define the header rules **/
@@ -217,7 +213,7 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    height: 330px;
+    height: '.$trombi->default_header_height.'px;
 }
 
 /** Define the footer rules **/
