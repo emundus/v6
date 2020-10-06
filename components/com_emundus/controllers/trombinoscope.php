@@ -73,8 +73,9 @@ class EmundusControllerTrombinoscope extends EmundusController {
         $generate = $jinput->get('generate');
         $border = $jinput->get('border');
         $fnums = $this->fnums_json_decode($string_fnums);
+        $headerHeight = $jinput->get('headerHeight');
         // Génération du HTML
-        $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, false, false, $generate, false, false, $border);
+        $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, false, false, $generate, false, false, $border, $headerHeight);
         $value =  array(
             'html_content' => $html_content
         );
@@ -104,7 +105,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
 	 * @throws Exception
 	 * @since version
 	 */
-    public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter,  $generate, $preview = false, $checkHeader = false, $border) {
+    public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter,  $generate, $preview = false, $checkHeader = false, $border, $headerHeight) {
         // Traitement du nombre de colonnes max par ligne
         $nb_col_max = $gridL;
         $nb_li_max = $gridH;
@@ -177,7 +178,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
         foreach ($htmlLetters as $letter){
             $templ[$letter['attachment_id']] = $letter;
         }
-
+        $headerH = (empty($headerHeight))?$trombi->default_header_height:$headerHeight;
         $head = '
 <!DOCTYPE html>
 <html>
@@ -204,7 +205,7 @@ body {
 
 /** Define now the real margins of every page in the PDF **/
 .em-body {
-    margin-top: '.$trombi->default_header_height.'px;
+    margin-top: '.$headerH.'px;
 }
 
 /** Define the header rules **/
@@ -213,7 +214,7 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    height: '.$trombi->default_header_height.'px;
+    height: '.$headerH.'px;
 }
 
 /** Define the footer rules **/
@@ -287,9 +288,10 @@ footer {
         $checkHeader = $jinput->get('checkHeader');
         $format = $jinput->get('format');
         $border = $jinput->get('border');
+        $headerHeight = $jinput->get('headerHeight');
         
         $fnums = $this->fnums_json_decode($string_fnums);
-        $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader, $border);
+        $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader, $border, $headerHeight);
 
         require_once (JPATH_COMPONENT.DS.'models'.DS.'trombinoscope.php');
         $m_trombinoscrope = new EmundusModelTrombinoscope();
