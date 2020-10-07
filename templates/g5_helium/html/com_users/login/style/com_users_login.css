@@ -167,6 +167,10 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     margin-top: 20px;
 }
 
+#g-main-mainbody div.logout.login {
+    background: #fff !important;
+}
+
 .logout .form-horizontal  .control-group {
     margin-top: 20px;
 }
