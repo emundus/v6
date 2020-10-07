@@ -144,6 +144,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$opts->sendmail = JText::_('SEND_EMAIL');
 		$opts->sendmailagain = JText::_('SEND_EMAIL_AGAIN');
 		$opts->attachment_id = $params->get('attachment_id');
+		$opts->form_recommend = $params->get('form_id', '68');
 		$opts->fullName = $this->getFullName(false, true);
 		$opts->formid = $this->getForm()->getForm()->id;
 		$opts->filterid = $filterid;
@@ -228,6 +229,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 
 		$recipient = $jinput->post->getRaw('email');
 		$attachment_id = $jinput->post->getInt('attachment_id');
+		$form_recommend = $jinput->post->getInt('form_recommend');
 		$fnum = $jinput->post->get('fnum');
 
 		if (empty($recipient)) {
@@ -294,7 +296,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			$fnum_detail = $profile->getFnumDetails($fnum);
 
 			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-			$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid=68&keyid='.$key.'&sid='.$this->_user->id;
+			$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$form_recommend.'&keyid='.$key.'&sid='.$this->_user->id;
 
 			$patterns = array('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', '/\[PROGRAMME_NAME\]/');
 			$replacements = array($this->_user->id, $this->_user->name, $this->_user->email, $link_upload, $fnum_detail['label']);
