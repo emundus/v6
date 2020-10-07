@@ -1869,7 +1869,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $element['default'] = '';
             }
 
-            $element['params'] = $this->updateElementParams($element['plugin'],$db_element->plugin,$element['params']);
+            //$element['params'] = $this->updateElementParams($element['plugin'],$db_element->plugin,$element['params']);
 
             // Filter by plugin
             if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown') {
