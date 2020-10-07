@@ -6,6 +6,7 @@
 
 div.advanced-dropdown{
     width: max-content;
+    margin-left: 25px;
 }
 
 div.mod-languages.advanced-dropdown ul{
@@ -27,6 +28,7 @@ div.mod-languages a{
     width: 100%;
     padding: 0;
     align-items: baseline;
+    margin-left: 5px;
     color: black;
 }
 
@@ -44,6 +46,7 @@ div.advanced-dropdown a.langChoose:link, div.advanced-dropdown a.langChoose:visi
     padding: 10px;
     justify-content: space-between;
     align-items: center;
+    margin-left: 15px;
     border-radius: 4px;
     background: #eeebeb;
     color: black;
