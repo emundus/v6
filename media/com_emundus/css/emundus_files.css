@@ -1519,6 +1519,14 @@ thead th:hover {
     overflow: auto;
 }
 
+.files-board #em-appli-block h3 small {
+    color: #fff;
+}
+
+#em-appli-block .panel-heading .panel-title a.clean button.btn.btn-default:hover {
+    color: #fff !important;
+}
+
 .table-left,
 .table-right {
     padding: 0 !important;

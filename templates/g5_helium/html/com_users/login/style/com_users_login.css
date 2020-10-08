@@ -165,10 +165,13 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
 .logout .form-horizontal {
     margin-top: 20px;
+    width: 60%;
+    border: none;
+    background: #fafafa;
 }
 
 #g-main-mainbody div.logout.login {
-    background: #fff !important;
+    background: #fafafa !important;
 }
 
 .logout .form-horizontal  .control-group {

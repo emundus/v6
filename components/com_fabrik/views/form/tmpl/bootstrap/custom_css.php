@@ -1307,7 +1307,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .form-actions .row-fluid .span4 .btn-group .register:hover {
     text-shadow: none;
-    color: white !important;
+    color: white; 
 }
 
 .applicant-form .row-fluid > .fabrikElementContainer {
