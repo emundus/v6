@@ -104,7 +104,7 @@ echo <<<EOT
     padding: 0;
 }
 
-.view-form .fabrikGroup {
+.view-form:not(.login) .fabrikGroup {
     background: #fafafa;
     margin-bottom: 20px;
     border-radius: 0;
@@ -1292,7 +1292,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   position: relative;
 }
 
-.view-form .fabrikForm fieldset > .row-fluid, 
+.view-form:not(.login) .fabrikForm fieldset > .row-fluid, 
 .view-details .fabrikForm fieldset > .row-fluid,
 .view-checklist .fabrikForm fieldset > .row-fluid, 
 .view-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid, 
