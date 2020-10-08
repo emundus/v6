@@ -119,7 +119,7 @@ echo <<<EOT
     background: #fff;
 }
 
-.view-form .size-100 .size-100 .fabrikGroup {
+.view-form:not(.login) .size-100 .size-100 .fabrikGroup {
     background: #fff;
 }
 
