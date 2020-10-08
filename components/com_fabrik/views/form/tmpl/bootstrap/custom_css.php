@@ -104,7 +104,7 @@ echo <<<EOT
     padding: 0;
 }
 
-.view-form:not(.login) .fabrikGroup {
+.view-form:not(.em-formRegistrationCenter) .fabrikGroup {
     background: #fafafa;
     margin-bottom: 20px;
     border-radius: 0;
@@ -119,7 +119,7 @@ echo <<<EOT
     background: #fff;
 }
 
-.view-form:not(.login) .size-100 .size-100 .fabrikGroup {
+.view-form:not(.em-formRegistrationCenter) .size-100 .size-100 .fabrikGroup {
     background: #fff;
 }
 
