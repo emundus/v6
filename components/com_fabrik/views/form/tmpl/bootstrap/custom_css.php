@@ -1078,7 +1078,7 @@ footer#g-footer {
     margin-top: 50px !important; 
 }
 
-.view-form .page-header h1 {
+.view-form:not(.em-formRegistrationCenter) .page-header h1 {
     margin-top: 50px !important; 
     margin-bottom: 30px !important; 
 }
