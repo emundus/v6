@@ -71,7 +71,7 @@
               </template>
 
               <template slot="next" slot-scope="{load}">
-                  <button class="bouton-sauvergarder-et-continuer-3" style="float: left" @click.prevent="load">{{Load}}</button>
+                  <button class="bouton-sauvergarder-et-continuer" style="float: left" @click.prevent="load">{{Load}}</button>
               </template>
 
               <template slot="submit" slot-scope="{submit}">
@@ -80,14 +80,14 @@
         </vue-csv-import>
       </div>
       <div class="col-md-12 mb-1">
-        <a class="bouton-sauvergarder-et-continuer-3"
+        <button type="button" class="bouton-sauvergarder-et-continuer"
            @click.prevent="saveDatas()">
           {{ Continuer }}
-        </a>
-        <a class="bouton-sauvergarder-et-continuer-3 w-retour"
+        </button>
+        <button type="button" class="bouton-sauvergarder-et-continuer w-retour"
            @click.prevent="goBack">
           {{Retour}}
-        </a>
+        </button>
       </div>
     </modal>
   </span>
@@ -206,30 +206,6 @@
 </script>
 
 <style scoped>
-    .modalC-content {
-        height: 100%;
-        box-sizing: border-box;
-        padding: 10px;
-        font-size: 15px;
-        overflow: auto;
-    }
-    .topright {
-        font-size: 25px;
-        float: right;
-    }
-    .btnCloseModal {
-        background-color: inherit;
-    }
-    .update-field-header{
-        margin-bottom: 1em;
-    }
-
-    .update-title-header{
-        margin-top: 0;
-        display: flex;
-        align-items: center;
-    }
-
     .flex {
         display: flex;
         align-items: center;

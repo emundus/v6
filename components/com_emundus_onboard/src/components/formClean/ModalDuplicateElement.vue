@@ -51,14 +51,14 @@
         </p>
       </div>
       <div class="col-md-12 mb-1">
-        <a
-          class="bouton-sauvergarder-et-continuer-3"
+        <button type="button"
+          class="bouton-sauvergarder-et-continuer"
           @click.prevent="duplicate()"
-        >{{ Continuer }}</a>
-        <a
-          class="bouton-sauvergarder-et-continuer-3 w-retour"
+        >{{ Continuer }}</button>
+        <button type="button"
+          class="bouton-sauvergarder-et-continuer w-retour"
           @click.prevent="$modal.hide('modalDuplicateElement' + ID)"
-        >{{Retour}}</a>
+        >{{Retour}}</button>
       </div>
       <div class="loading-form" style="top: 10vh" v-if="submitted">
         <Ring-Loader :color="'#de6339'" />
@@ -200,33 +200,4 @@ export default {
 </script>
 
 <style scoped>
-.modalC-content {
-  height: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  font-size: 15px;
-  overflow: auto;
-}
-.topright {
-  font-size: 25px;
-  float: right;
-}
-.btnCloseModal {
-  background-color: inherit;
-}
-.update-field-header{
-  margin-bottom: 1em;
-}
-
-.update-title-header{
-  margin-top: 0;
-  display: flex;
-  align-items: center;
-}
-
-@media (max-width: 991px) {
-  .top-responsive {
-    margin-top: 5em;
-  }
-}
 </style>

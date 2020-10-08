@@ -73,7 +73,7 @@
           </div>
         </div>
         <a class="send-form-button" @click="sendForm">
-          <label style="cursor: pointer">{{sendFormButton}}</label>
+          <label style="cursor: pointer" class="mb-0">{{sendFormButton}}</label>
           <em class="fas fa-paper-plane" style="font-size: 20px"></em>
         </a>
       </div>
@@ -174,7 +174,6 @@
   import ModalMenu from "../components/formClean/ModalMenu";
 
   import _ from 'lodash';
-  import ModalElement from "../components/formClean/ModalElement";
   import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
   import List from "./list";
 
@@ -192,7 +191,6 @@
     components: {
       List,
       ModalAffectCampaign,
-      ModalElement,
       Builder,
       ModalSide,
       ModalMenu,

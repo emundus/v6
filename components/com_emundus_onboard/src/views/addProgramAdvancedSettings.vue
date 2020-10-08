@@ -80,12 +80,12 @@
     >
       <div class="w-container">
         <div class="container-evaluation w-clearfix">
-          <a @click="next()" class="bouton-sauvergarder-et-continuer-3">{{ Continuer }}</a>
-          <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previous()">
+          <button @click="next()" class="bouton-sauvergarder-et-continuer">{{ Continuer }}</button>
+          <button class="bouton-sauvergarder-et-continuer w-retour" @click="previous()">
             {{
             Retour
             }}
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -295,36 +295,7 @@
   };
 </script>
 
-<style>
-  .w-col-9 {
-    width: 75% !important;
-    padding-top: 0 !important;
-  }
-
-  .column-menu-main{
-    position: relative;
-    min-height: 100vh;
-  }
-
-  .description-block{
-    margin-top: unset;
-    margin-bottom: 1em;
-  }
-
-  .divider-menu{
-    width: 80%;
-    margin: 1em;
-  }
-
-  .heading-block{
-    display: flex;
-    align-items: center;
-  }
-
-  .heading{
-    margin-bottom: 5px;
-  }
-
+<style scoped>
   .edit-icon{
     margin-left: 10px;
     border-style: solid;
@@ -344,24 +315,6 @@
     color: black;
   }
 
-  .container-menu-funnel{
-    flex-direction: column;
-  }
-
-  .paragraphe-sous-titre{
-    margin-bottom: 1em;
-    margin-top: 1em;
-  }
-
-  .grey-link{
-    color: grey;
-  }
-
-  .icon-warning-margin{
-    margin-top: 2px;
-    margin-right: 5px;
-  }
-
   .prog-info{
     display: flex;
     align-items: center;
@@ -369,13 +322,5 @@
 
   .modifier-la-campagne{
     margin-left: 3em;
-  }
-
-  .w-row{
-    margin-bottom: 10%;
-  }
-
-  .grey-link{
-    color: grey;
   }
 </style>

@@ -102,9 +102,6 @@ export default {
   .label-toggle{
     margin: 0 0 0 1em;
   }
-  .dropdown-toggle{
-    height: 35px;
-  }
   .icon-warning-margin{
     margin-top: 2px;
     margin-right: 5px;

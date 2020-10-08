@@ -18,10 +18,10 @@
                 :groupProfile="'evaluator'"
                 @Updateevaluator="getEvaluatorsInGroup()"
         />
-        <a @click="$modal.show('modalAddUser')" class="bouton-sauvergarder-et-continuer-3 create-user">{{ addUser }}</a>
+        <button type="button" @click="$modal.show('modalAddUser')" class="bouton-sauvergarder-et-continuer-3 create-user">{{ addUser }}</button>
         <div class="choices-buttons" v-if="coordinatorAccess != 0">
             <h2 style="margin-bottom: 0">{{ Administrators }}</h2>
-            <a @click="$modal.show('modalAffectmanager')" class="bouton-sauvergarder-et-continuer-3">{{ affectUsers }}</a>
+            <button type="button" @click="$modal.show('modalAffectmanager')" class="bouton-sauvergarder-et-continuer">{{ affectUsers }}</button>
         </div>
         <transition-group :name="'slide-down'" type="transition">
         <div v-for="(manager, index) in managers" :key="index" class="manager-item" v-if="coordinatorAccess != 0">
@@ -34,7 +34,7 @@
         </transition-group>
         <div class="choices-buttons">
             <h2 style="margin-bottom: 0">{{ Evaluators }}</h2>
-            <a @click="$modal.show('modalAffectevaluator')" class="bouton-sauvergarder-et-continuer-3">{{ affectUsers }}</a>
+            <button type="button" @click="$modal.show('modalAffectevaluator')" class="bouton-sauvergarder-et-continuer">{{ affectUsers }}</button>
         </div>
         <transition-group :name="'slide-down'" type="transition">
         <div v-for="(evaluator, index) in evaluators" :key="index" class="manager-item">
@@ -133,7 +133,7 @@
         }
     };
 </script>
-<style>
+<style scoped>
     .create-user{
         text-align: center;
         width: 100%;
