@@ -1009,6 +1009,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 .fabrikForm legend {
   color: $base-primary-color;
   font-weight: 700;
+  display: contents;
+}
+
+.fabrikForm legend {
+  color: $base-primary-color;
+  font-weight: 700;
+  display: contents;
 }
 
 .form-actions .row-fluid .span4 .btn-group .register {

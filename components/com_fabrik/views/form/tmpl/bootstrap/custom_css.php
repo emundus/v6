@@ -1298,7 +1298,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 .view-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid, 
 .view-details .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid 
 .view-checklist .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
-  padding: 0 30px;
+  padding: 2px 30px;
 }
 
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
