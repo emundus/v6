@@ -9,6 +9,16 @@
     />
     <ModalAffectCampaign
             :prid="prid"
+            :testing="testing"
+    />
+    <ModalTestingForm
+        v-if="formObjectArray[indexHighlight]"
+        :profileId="prid"
+        :actualLanguage="actualLanguage"
+        :campaigns="campaignsAffected"
+        :currentForm="formObjectArray[indexHighlight].object.id"
+        :currentMenu="formObjectArray[indexHighlight].object.menu_id"
+        @testForm="testForm"
     />
     <ModalMenu
             :profileId="prid"
@@ -35,6 +45,12 @@
     />
     <div class="row form-builder">
       <div class="actions-menu menu-block">
+        <div class="heading-block">
+          <h1 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h1>
+          <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit">
+            <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
+          </a>
+        </div>
         <div>
           <div class="heading-actions">
             <label class="form-title" style="padding: 0; margin: 0">{{Actions}}</label>
@@ -76,14 +92,12 @@
           <label style="cursor: pointer">{{sendFormButton}}</label>
           <em class="fas fa-paper-plane" style="font-size: 20px"></em>
         </a>
+        <a class="send-form-button test-form-button" style="margin-top: 1em" @click="testForm">
+          <label style="cursor: pointer">{{testingForm}}</label>
+          <em class="fas fa-vial" style="font-size: 20px"></em>
+        </a>
       </div>
       <div class="col-md-8 col-sm-9 col-md-offset-4 col-sm-offset-4 menu-block">
-        <div class="heading-block">
-          <h1 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h1>
-          <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit">
-            <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
-          </a>
-        </div>
         <ul class="form-section">
           <li>
             <a :class="menuHighlight === 0 ? 'form-section__current' : ''" @click="menuHighlight = 0;indexHighlight = 0">{{FormPage}}</a>
@@ -177,6 +191,7 @@
   import ModalElement from "../components/formClean/ModalElement";
   import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
   import List from "./list";
+  import ModalTestingForm from "@/components/formClean/ModalTestingForm";
 
   const qs = require("qs");
 
@@ -190,6 +205,7 @@
       manyLanguages: Number
     },
     components: {
+      ModalTestingForm,
       List,
       ModalAffectCampaign,
       ModalElement,
@@ -230,6 +246,11 @@
         builderKey: 0,
         builderSubmitKey: 0,
         files: 0,
+        //
+
+        // Testing
+        campaignsAffected: {},
+        testing: false,
         //
 
         link: '',
@@ -291,6 +312,7 @@
         Edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
         FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
         SubmitPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
+        testingForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
       };
     },
 
@@ -551,26 +573,48 @@
         this.$notify({ group, clean: true });
       },
 
-      getDataObject() {
-        this.indexHighlight = this.index;
-        this.formList.forEach(element => {
+      async getDataObject() {
+        await this.asyncForEach(this.formList, async (element) => {
           let ellink = element.link.replace("fabrik","emundus_onboard");
-          axios.get(ellink + "&format=vue_jsonclean")
-                  .then(response => {
-                    this.formObjectArray.push({
-                      object: response.data,
-                      rgt: element.rgt,
-                      link: element.link
-                    });
-                  }).then(r => {
-                    this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
-                    this.rgt = this.formObjectArray[0].rgt;
-                    this.loading = false;
-                    this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
-                  }).catch(e => {
-                    console.log(e);
-                  });
+          await axios.get(ellink + "&format=vue_jsonclean")
+              .then(response => {
+                this.formObjectArray.push({
+                  object: response.data,
+                  rgt: element.rgt,
+                  link: element.link
+                });
+              }).then(r => {
+                this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
+              }).catch(e => {
+                console.log(e);
+              });
         });
+        this.loading = false;
+        this.indexHighlight = this.getCookie('page');
+        this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
+        this.rgt = this.formObjectArray[this.indexHighlight].rgt;
+      },
+
+      async asyncForEach(array, callback) {
+        for (let index = 0; index < array.length; index++) {
+          await callback(array[index], index, array);
+        }
+      },
+
+      getCookie(cname) {
+          var name = cname + "=";
+          var decodedCookie = decodeURIComponent(document.cookie);
+          var ca = decodedCookie.split(';');
+          for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+              c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+          return "";
       },
 
       getFilesByForm() {
@@ -692,11 +736,62 @@
         }
       },
 
+      testForm() {
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=gettestingparams",
+          params: {
+           prid : this.prid,
+          },
+          paramsSerializer: params => {
+             return qs.stringify(params);
+          }
+        }).then(response => {
+            this.campaignsAffected = response.data.campaign_files;
+            if(Object.keys(this.campaignsAffected).length > 1){
+              this.$modal.show('modalTestingForm');
+            } else if (Object.keys(this.campaignsAffected).length > 0) {
+              if(this.campaignsAffected[0].files.length > 0){
+                this.$modal.show('modalTestingForm');
+              } else {
+                axios({
+                  method: "post",
+                  url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=createtestingfile",
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                  },
+                  data: qs.stringify({
+                    cid: this.campaignsAffected[0].id,
+                  })
+                }).then((rep) => {
+                  window.open('/index.php?option=com_emundus&task=openfile&fnum=' + rep.data.fnum + '&redirect=1==&Itemid=1079#em-panel');
+                });
+              }
+            } else {
+              this.testing = true;
+              axios({
+                method: "get",
+                url:
+                    "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
+                params: {
+                  pid: this.prid
+                },
+                paramsSerializer: params => {
+                  return qs.stringify(params);
+                }
+              }).then(response => {
+                this.$modal.show('modalAffectCampaign');
+              });
+            }
+        });
+      },
+
       // Triggers
       changeGroup(index,rgt){
         this.indexHighlight = index;
         this.rgt = rgt;
         this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
+        document.cookie = 'page='+index+'; expires=Session; path=/'
       },
       SomethingChange: function(e) {
         this.dragging = true;
@@ -885,7 +980,7 @@
   .heading-block{
     text-align: center;
     margin-bottom: 1em;
-    margin-top: 2em;
+    margin-top: 4em;
     width: 75%;
   }
   .edit-icon{

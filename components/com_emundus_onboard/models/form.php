@@ -1508,6 +1508,8 @@ class EmundusonboardModelform extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        $user = JFactory::getUser();
+
         $files = 0;
 
         $query->select('id')
@@ -1522,7 +1524,8 @@ class EmundusonboardModelform extends JModelList {
                     ->select('COUNT(*)')
                     ->from ($db->quoteName('#__emundus_campaign_candidature'))
                     ->where($db->quoteName('campaign_id') . ' = ' . $campaign->id)
-                    ->andWhere($db->quoteName('published') . ' != -1');
+                    ->andWhere($db->quoteName('published') . ' != -1')
+                    ->andWhere($db->quoteName('user_id') . ' != ' . $db->quote($user->id));
 
                 $db->setQuery($query);
                 $files += $db->loadResult();

@@ -270,6 +270,13 @@ fieldset {
     background: transparent;
   }
 }
+.test-form-button{
+  background-color: #1B1F3C;
+  border: 1px solid #1B1F3c;
+  &:hover {
+    color: #1B1F3C;
+  }
+}
 select.fabrikinput.form-control {
   width: 100%;
   height: 35px;

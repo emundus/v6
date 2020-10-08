@@ -2954,4 +2954,73 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
     }
 
+    function getFormTesting($prid,$uid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id,label')
+                ->from($db->quoteName('#__emundus_setup_campaigns'))
+                ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid));
+            $db->setQuery($query);
+            $campaigns = $db->loadObjectList();
+            if(sizeof($campaigns) > 0){
+                foreach ($campaigns as $campaign) {
+                    $query->clear()
+                        ->select('id,fnum')
+                        ->from($db->quoteName('#__emundus_campaign_candidature'))
+                        ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign->id))
+                        ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($uid))
+                        ->andWhere($db->quoteName('published') . ' != ' . $db->quote(-1));
+                    $db->setQuery($query);
+                    $campaign->files = $db->loadObjectList();
+                }
+            }
+            return $campaigns;
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function createTestingFile($cid,$uid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        include_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
+
+        $fnum = @EmundusHelperFiles::createFnum($cid, $uid);
+
+        try {
+            $query->insert($db->quoteName('#__emundus_campaign_candidature'));
+            $query->set($db->quoteName('applicant_id') . ' = ' . $db->quote($uid))
+                ->set($db->quoteName('user_id') . ' = ' . $db->quote($uid))
+                ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($cid))
+                ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+            $db->setQuery($query);
+            $db->execute();
+
+            return $fnum;
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function deleteFormTesting($fnum,$uid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+        try {
+            $query->delete()
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+                ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($uid));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
 }
