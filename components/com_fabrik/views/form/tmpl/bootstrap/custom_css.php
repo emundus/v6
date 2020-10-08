@@ -111,6 +111,18 @@ echo <<<EOT
     padding: 20px;
 }
 
+.view-form p.select-program + form .fabrikGroup {
+    background: #fff;
+}
+
+.view-form.error-report-page .fabrikGroup {
+    background: #fff;
+}
+
+.view-form .size-100 .size-100 .fabrikGroup {
+    background: #fff;
+}
+
 .view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
     background: #fafafa;
     box-shadow: none; 
