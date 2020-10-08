@@ -340,7 +340,7 @@ input[type="text"],
   text-align: end;
 }
 
-/* HEADER */
+/* HEADER AVEC TCHOOZ ET LANG SWITCHER*/
 
 #g-navigation {
   .g-grid {
@@ -371,6 +371,49 @@ input[type="text"],
     }
   }
 }
+
+/* HEADER SANS LANG SWITCHER ET AVEC TCHOOZ */
+
+#g-navigation {
+  #header-c.without-lang-switcher {
+    max-width: 15rem;
+    min-height: 67px;
+    .g-content {
+      justify-content: space-between;
+      .platform-content:nth-child(2) {
+        order: 1;
+      }
+      .platform-content:nth-child(1) {
+        order: 2;
+      }
+    }
+  }
+}
+
+/*HEADER SANS TCHOOZ ET AVEC LANG SWITCHER  */
+
+#g-navigation {
+  #header-c.without-tchooz {
+    max-width: 20rem;
+    min-height: 67px;
+    .g-content {
+      justify-content: space-between;
+    }
+  }
+}
+
+/*HEADER SANS TCHOOZ ET SANS LANG SWITCHER  */
+
+#g-navigation {
+  #header-c.without-tchooz-and-lang-switcher {
+    max-width: 30rem;
+    min-height: 67px;
+    .g-content {
+      justify-content: flex-end;
+    }
+  }
+}
+
 
 
 #g-navigation {
