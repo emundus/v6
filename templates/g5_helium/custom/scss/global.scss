@@ -918,10 +918,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   border: none !important;
 }
 
-.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success:hover,
-.applicant-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger:hover {
-  border: none !important;
-  background-color: transparent !important;
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success,
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger{
+  &:hover, &:active, &:focus {
+    border: none !important;
+    background-color: transparent !important;
+  }
 }
 
 .applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i:hover {
@@ -1274,6 +1276,7 @@ span.btn {
     background-color: transparent;
     color: $base-primary-color;
     outline: none;
+    border: 1px solid $base-primary-color;
   }
 }
 
