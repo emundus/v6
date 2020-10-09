@@ -590,8 +590,8 @@
               });
         });
         this.loading = false;
-        if(this.getCookie('page') !== '') {
-          this.indexHighlight = this.getCookie('page');
+        if(this.getCookie('page_' + this.prid) !== '') {
+          this.indexHighlight = this.getCookie('page_' + this.prid);
         } else {
           this.indexHighlight = 0;
         }
@@ -795,7 +795,7 @@
         this.indexHighlight = index;
         this.rgt = rgt;
         this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
-        document.cookie = 'page='+index+'; expires=Session; path=/'
+        document.cookie = 'page_' + this.prid + '='+index+'; expires=Session; path=/'
       },
       SomethingChange: function(e) {
         this.dragging = true;
