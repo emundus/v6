@@ -411,8 +411,13 @@ class EmundusModelEmails extends JModelList {
 
         if(isset($post)) {
             foreach ($post as $key => $value) {
-                $patterns[] = '/\['.$key.'\]/';
-                $replacements[] = $value;
+                $constant_key = array_search('/\['.$key.'\]/', $patterns);
+                if ($constant_key !== false) {
+                    $replacements[$constant_key] = $value;
+                } else {
+                    $patterns[] = '/\['.$key.'\]/';
+                    $replacements[] = $value;
+                }
             }
         }
 
