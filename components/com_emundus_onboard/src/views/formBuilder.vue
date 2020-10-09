@@ -590,7 +590,11 @@
               });
         });
         this.loading = false;
-        this.indexHighlight = this.getCookie('page');
+        if(this.getCookie('page') !== '') {
+          this.indexHighlight = this.getCookie('page');
+        } else {
+          this.indexHighlight = 0;
+        }
         this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
         this.rgt = this.formObjectArray[this.indexHighlight].rgt;
       },
