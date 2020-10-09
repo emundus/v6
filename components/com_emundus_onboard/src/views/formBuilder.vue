@@ -179,6 +179,7 @@
   import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
   import List from "./list";
   import Tasks from "@/views/tasks";
+  import ModalTestingForm from "@/components/formClean/ModalTestingForm";
 
   const qs = require("qs");
 
@@ -199,7 +200,8 @@
       Builder,
       ModalSide,
       ModalMenu,
-      draggable
+      draggable,
+      ModalTestingForm,
     },
     data() {
       return {
