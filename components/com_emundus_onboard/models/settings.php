@@ -250,7 +250,7 @@ class EmundusonboardModelsettings extends JModelList {
             $class = array_search($statu['class'], $classes);
             $query->clear()
                 ->update('#__emundus_setup_status')
-                ->set($db->quoteName('value') . ' = ' . $db->quote($statu['label']['fr']))
+                ->set($db->quoteName('value') . ' = ' . $db->quote($statu['label']['fr'] . '_' . $statu['step']))
                 ->set($db->quoteName('class') . ' = ' . $db->quote($class))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
             $db->setQuery($query);
@@ -371,6 +371,59 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
+    function getCGVArticle() {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('*')
+            ->from($db->quoteName('#__content'))
+            ->where($db->quoteName('id') . ' = 2');
+
+        try {
+            $db->setQuery($query);
+            $cgv = $db->loadObject();
+
+            $cgv->title_en = '';
+            $cgv->introtext_en = '';
+
+            $query->clear()
+                ->select('value')
+                ->from($db->quoteName('#__falang_content'))
+                ->where(array(
+                    $db->quoteName('reference_id') . ' = 2',
+                    $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
+                    $db->quoteName('reference_field') . ' = ' . $db->quote('title'),
+                    $db->quoteName('language_id') . ' = 1'
+                ));
+            $db->setQuery($query);
+            $en_title = $db->loadResult();
+
+            $query->clear()
+                ->select('value')
+                ->from($db->quoteName('#__falang_content'))
+                ->where(array(
+                    $db->quoteName('reference_id') . ' = 2',
+                    $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
+                    $db->quoteName('reference_field') . ' = ' . $db->quote('introtext'),
+                    $db->quoteName('language_id') . ' = 1'
+                ));
+            $db->setQuery($query);
+            $en_introtext = $db->loadResult();
+
+            if ($en_title != null) {
+                $cgv->title_en = $en_title;
+            }
+            if ($en_introtext != null) {
+                $cgv->introtext_en = $en_introtext;
+            }
+
+            return $cgv;
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
     function getFooterArticles() {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -418,6 +471,39 @@ class EmundusonboardModelsettings extends JModelList {
                 ->set($db->quoteName('value') . ' = ' . $db->quote($content['en']))
                 ->where(array(
                     $db->quoteName('reference_id') . ' = 52',
+                    $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
+                    $db->quoteName('reference_field') . ' = ' . $db->quote('introtext'),
+                    $db->quoteName('language_id') . ' = 1'
+                ));
+            $db->setQuery($query);
+            $results[] = $db->execute();
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+
+        return $results;
+    }
+
+    function updateCGV($content) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $results = [];
+
+        $query->update($db->quoteName('#__content'))
+            ->set($db->quoteName('introtext') . ' = ' . $db->quote($content['fr']))
+            ->where($db->quoteName('id') . ' = ' . 2);
+
+        try {
+            $db->setQuery($query);
+            $results[] = $db->execute();
+
+            $query->clear()
+                ->update('#__falang_content')
+                ->set($db->quoteName('value') . ' = ' . $db->quote($content['en']))
+                ->where(array(
+                    $db->quoteName('reference_id') . ' = 2',
                     $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
                     $db->quoteName('reference_field') . ' = ' . $db->quote('introtext'),
                     $db->quoteName('language_id') . ' = 1'
@@ -731,7 +817,7 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
-    function unlockUser($user_id){
+    /*function unlockUser($user_id){
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -769,7 +855,7 @@ class EmundusonboardModelsettings extends JModelList {
         } else {
             return false;
         }
-    }
+    }*/
 
     function checkFirstDatabaseJoin($user_id) {
         $user = JFactory::getUser($user_id);

@@ -729,5 +729,56 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function gettestingparams(){
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $prid = $jinput->getInt('prid');
+            $campaign_files = $m_form->getFormTesting($prid,$user->id);
+            $tab = array('status' => true, 'user' => $user, 'campaign_files' => $campaign_files);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function createtestingfile(){
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $cid = $jinput->getInt('cid');
+            $fnum = $m_form->createTestingFile($cid,$user->id);
+            $tab = array('status' => true,'fnum' => $fnum);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function deletetestingfile(){
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $fnum = $jinput->getString('file');
+            $status = $m_form->deleteFormTesting($fnum,$user->id);
+            $tab = array('status' => $status,'userid' => $user->id);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }
 

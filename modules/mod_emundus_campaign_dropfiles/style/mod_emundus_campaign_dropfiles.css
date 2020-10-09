@@ -1,9 +1,8 @@
 .em-infoComp {
-    box-shadow: 0px 0px 30px -20px rgba(0, 0, 0, 0.75);
     padding: 20px;
     display: flex;
     flex-direction: column;
-    background: white;
+    background: #fafafa;
     font-weight: 300;
     font-style: normal;
     line-height: normal;
@@ -24,6 +23,11 @@
 
 .em-infoComp li {
     align-self: center;
+    list-style: none;
+}
+
+.em-infoComp ul a:focus {
+    color: green;
 }
 
 .em-infoComp .g-title {

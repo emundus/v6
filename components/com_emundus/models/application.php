@@ -2127,15 +2127,10 @@ class EmundusModelApplication extends JModelList {
                                                 try {
                                                     $this->_db->setQuery($query);
                                                     $res = $this->_db->loadColumn();
+                                                    $elt = implode(', ',$res);
                                                 } catch (Exception $e) {
                                                     JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                     throw $e;
-                                                }
-
-                                                if (count($res)>1) {
-                                                    $elt = implode(', ',$res);
-                                                } else {
-                                                    $elt = '';
                                                 }
                                             } else {
                                                 $from = $params->join_db_name;

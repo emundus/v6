@@ -72,7 +72,7 @@ export default {
       selector: '#tiny_' + this.selector_id,
       images_upload_url: 'index.php?option=com_emundus_onboard&controller=settings&task=uploadimages',
       plugins: 'paste link media preview image code anchor advlist hr emoticons lists searchreplace charmap quickbars imagetools pagebreak autolink print mention',
-      toolbar: 'undo redo | forecolor bold italic underline strikethrough | fontsizeselect formatselect | image link | alignleft aligncenter alignright alignjustify hr | bullist numlist | outdent indent | insertfile media anchor| charmap emoticons backcolor | searchreplace print',
+      toolbar: 'undo redo | forecolor bold italic underline strikethrough | fontsizeselect formatselect | image link preview | alignleft aligncenter alignright alignjustify hr | bullist numlist | outdent indent | insertfile media anchor| charmap emoticons backcolor | searchreplace print',
       fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
       content_css: baseUrl + 'skins/ui/oxide/content.min.css',
       height: '30em',
