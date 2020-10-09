@@ -1175,8 +1175,8 @@ export default {
     color: #cecece;
     position: absolute;
     cursor: grab;
-    left: 3em;
-    margin-bottom: 10px;
+    left: 1em;
+    margin-bottom: 0;
   }
   .icon-handle-group{
     color: #cecece;

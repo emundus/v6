@@ -37,13 +37,13 @@
         </div>
       </div>
       <div class="col-md-12 mb-1">
-        <a @click="createNewFile"
-          class="bouton-sauvergarder-et-continuer-3 ml-10px"
-        >{{ CreateFile }}</a>
-        <a v-if="filesExist"
+        <button type="button" @click="createNewFile"
+          class="bouton-sauvergarder-et-continuer ml-10px"
+        >{{ CreateFile }}</button>
+        <button type="button" v-if="filesExist"
           @click="goExistingFile"
-          class="bouton-sauvergarder-et-continuer-3"
-        >{{ ContinueFile }}</a>
+          class="bouton-sauvergarder-et-continuer"
+        >{{ ContinueFile }}</button>
       </div>
     </modal>
   </span>

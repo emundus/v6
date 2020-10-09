@@ -260,16 +260,6 @@ div#moduletable-d  a[href$="/configuration-settings"]  {
   text-decoration: underline;
   padding-left: 0;
 }
-input {
-  display: block;
-  width: 100%;
-  height: 48px;
-  margin-bottom: 10px;
-  background-color: #fff;
-  color: #2d1852;
-  padding: 8px 12px;
-  border: 1px solid #cccccc;
-}
 
 input[type="checkbox"] {
   width: auto !important;
@@ -842,6 +832,7 @@ div.moduletable-b ul {
   margin-right: 60px;
   justify-content: center;
   padding-left: 0;
+  margin-top: -10px;
 }
 
 div.moduletable-b ul li {
@@ -858,6 +849,7 @@ div.moduletable-b ul li a {
 
 div.moduletable-b ul li a:hover {
   color: #de6339 !important;
+  background: transparent;
 }
 
 #userDropdownIcon {
@@ -946,6 +938,8 @@ li.g-menu-item:hover ul.g-dropdown {
   text-decoration: none;
   font-size: 16px;
   text-align: center;
+  position: unset;
+  padding: 0 15px;
 }
 
 .size-8{
@@ -965,9 +959,9 @@ li.g-menu-item:hover ul.g-dropdown {
   .menu-current-link:after{
     width: 0;
     height: 0;
-    border-left: 25px solid transparent;
-    border-right: 25px solid transparent;
-    border-bottom: 25px solid #fff;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 20px solid #fff;
     content: "";
     position: relative;
     display: block;
