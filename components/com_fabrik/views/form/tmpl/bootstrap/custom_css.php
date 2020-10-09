@@ -1288,6 +1288,14 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   position: absolute;
   top: -10px;
   right: 10px;
+  display: flex;
+}
+
+.fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  display: flex;
 }
 
 .form-actions .row-fluid {
@@ -1307,7 +1315,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .form-actions .row-fluid .span4 .btn-group .register:hover {
     text-shadow: none;
-    color: white !important;
+    color: white; 
 }
 
 .applicant-form .row-fluid > .fabrikElementContainer {
@@ -1632,13 +1640,16 @@ a.btn-attach:active {
   }
 }
 
-@media screen and (max-width: 958px) {
+@media screen and (min-width:480px) and (max-width: 959px) {
 
-  .applicant-form {
-    .sauvegarder {
+  .applicant-form .sauvegarder{
       margin-left: 0 !important;
-    }
   }
+  
+  .view-registration form #jos_emundus_users___civility .row-fluid, .view-form .em-formRegistrationCenter form #jos_emundus_users___civility .row-fluid {
+    justify-content: space-around;
+  }
+  
 }
 
 @media all and (max-width: 1239px) {
@@ -1922,6 +1933,10 @@ ol {
  .view-registration form {
     padding-right: 8rem;
   }
+  
+      .view-form #g-sidebar .moduletable  {
+        padding: 0px !important;
+    }
 }
 
 /* END - Your CSS styling ends here */
