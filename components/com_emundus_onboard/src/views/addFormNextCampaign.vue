@@ -347,4 +347,20 @@
 </script>
 
 <style scoped>
+.edit-icon{
+  margin-left: 10px;
+  border: solid 1px #de6339;
+  border-radius: 50%;
+  background-color: #de6339;
+  color: white;
+  height: 32px;
+  width: 32px;
+  transition: all 0.2s ease-in-out;
+}
+
+.edit-icon:hover{
+  border-color: #de6339;
+  background-color: white;
+  color: black;
+}
 </style>

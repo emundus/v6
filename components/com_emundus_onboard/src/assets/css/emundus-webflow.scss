@@ -2120,6 +2120,7 @@ label.label__placeholder {
   color: #fff;
   font-size: 16px;
   font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
+  margin-top: 1em;
 }
 .heading-block{
   margin-bottom: 1em;
@@ -2135,13 +2136,13 @@ label.label__placeholder {
   transition: all 0.6s ease-in-out;
 }
 .actions-menu {
-  height: 70vh;
   background: #fafafa;
   padding: 10px;
   position: fixed;
   width: 25vw;
   border-radius: 4px;
   overflow: auto;
+  height: auto;
 }
 .heading-actions{
   height: 60px;
