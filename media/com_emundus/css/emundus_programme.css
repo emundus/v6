@@ -39,6 +39,12 @@ div.content-bottom-a fieldset.em_period {
     background: transparent;
 }
 
+
+@media all and (max-width: 479px) {
+    .view-programme.homepage .campaingapplycontent {
+        text-align: left;
+    }
+}
 @media all and (max-width: 767px) {
     /* VIEW PROGRAMME _ MORE INFORMATION */
     .view-programme .right-side.campaingapply {

@@ -105,10 +105,20 @@ button#back:hover, button#back:active, button#back:focus,
     width: 100%;
 }
 
-.view-checklist .em-description {
+.view-checklist #attachment_list_mand .em-description {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     padding-bottom: 20px;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.view-checklist #attachment_list_opt .em-description {
+    display: flex;
+    align-items: baseline;
+    padding-bottom: 20px;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .view-checklist .em-description label {

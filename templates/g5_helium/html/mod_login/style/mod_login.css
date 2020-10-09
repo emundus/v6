@@ -41,7 +41,7 @@ form[action="/connexion-candidater"] .em_label-user, .em_label-passwd{
     color: #1b1f3c;
 }
 #login-form input{
-    border-radius: 0px;
+    border-radius: 4px;
 }
 .em-star{
     margin-top: -4px!important;
@@ -112,6 +112,12 @@ ul.unstyled.em-linkForgot li a span::before {
 
 /* RESPONSIVE */
 
+@media all and (max-width: 479px) {
+    .view-form.em-formRegistrationCenter #g-container-main .page-header {
+        width: 85%;
+    }
+}
+
 @media all and (max-width: 767px) {
     .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
         width: 100%;
@@ -125,6 +131,7 @@ ul.unstyled.em-linkForgot li a span::before {
         justify-content: center;
         flex-direction: column;
         width: 100%;
+        align-items: center;
     }
 
     .view-login .login.em-formRegistrationCenter .page-header {

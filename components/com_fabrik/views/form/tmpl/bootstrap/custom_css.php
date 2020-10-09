@@ -1066,7 +1066,7 @@ footer#g-footer {
     margin-top: 50px !important; 
 }
 
-.view-form .page-header h1 {
+.view-form:not(.em-formRegistrationCenter) .page-header h1 {
     margin-top: 50px !important; 
     margin-bottom: 30px !important; 
 }
@@ -1687,6 +1687,25 @@ a.btn-attach:active {
     } 
 }
 
+@media all and (max-width: 479px) {
+    .view-registration .login div.em-heading-registration, .view-form .em-formRegistrationCenter div.em-heading-registration {
+        width: 85%;     
+    }
+    .view-registration form.fabrikForm, .view-form .em-formRegistrationCenter form.fabrikForm {
+        width: 75%;
+    }
+    
+    .view-form .btn.send_the_request_for_individual_assessment {
+       margin-left: 0px !important; 
+    }
+    
+    .view-form .fabrikActions.form-actions .row-fluid {
+       align-items: end;
+    }
+    
+        
+}
+
 @media all and (max-width: 767px) {
 
 /* INSCRIPTION */ 
@@ -1696,7 +1715,7 @@ a.btn-attach:active {
 }
 
 .view-registration .login div.em-heading-registration, .view-form .em-formRegistrationCenter div.em-heading-registration {
-    width: 93% !important;     
+    width: 93%;     
 }
 
 ol {

@@ -67,6 +67,15 @@ class EmundusonboardViewForm extends FabrikViewFormBase
 
         $returnObject->id = $form->id;
 
+        $db    = FabrikWorker::getDbo(true);
+        $query = $db->getQuery(true);
+
+        $query->select('id')
+            ->from($db->quoteName('#__menu'))
+            ->where($db->quoteName('link') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $form->id));
+        $db->setQuery($query);
+        $returnObject->menu_id = $db->loadResult();
+
         if ($getParams->get('show_page_heading') == 1) :
             $show_page_heading = new stdClass();
             $show_page_heading->class = 'componentheading a' . $getParams->get("pageclass_sfx");

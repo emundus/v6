@@ -85,6 +85,7 @@ class EmundusonboardModelformbuilder extends JModelList {
     function prepareSubmittionPlugin($params) {
         $params['applicationsent_status'] = "0";
         $params['admission'] = "0";
+        $params['ajax_validations'] = "0";
         $params['only_process_curl'] = array(
             2 => "getEndContent"
         );
@@ -156,7 +157,24 @@ class EmundusonboardModelformbuilder extends JModelList {
             'show_label_in_rss_feed' => 0,
             'use_as_rss_enclosure' => 0,
             'rollover' => '',
-            'validations' => array(
+            'tipseval' => 0,
+            'tiplocation' => 'top-left',
+            'labelindetails' => 0,
+            'labelinlist' => '0',
+            'comment' => '',
+            'edit_access' => 1,
+            'edit_access_user' => '',
+            'view_access' => 1,
+            'view_access_user' => '',
+            'list_view_access' => 1,
+            'encrypt' => 0,
+            'store_in_db' => 1,
+            'default_on_copy' => 0,
+            'can_order' => 0,
+        );
+
+        if($plugin != 'display'){
+            $params['validations'] = array(
                 'plugin' => array(
                     "notempty",
                 ),
@@ -178,100 +196,224 @@ class EmundusonboardModelformbuilder extends JModelList {
                 'show_icon' => array(
                     "1",
                 ),
-            ),
-            'notempty-message' => array(),
-            'notempty-validation_condition' => array(),
-            'tipseval' => 0,
-            'tiplocation' => 'top-left',
-            'labelindetails' => 0,
-            'labelinlist' => '0',
-            'comment' => '',
-            'edit_access' => 1,
-            'edit_access_user' => '',
-            'view_access' => 1,
-            'view_access_user' => '',
-            'list_view_access' => 1,
-            'encrypt' => 0,
-            'store_in_db' => 1,
-            'default_on_copy' => 0,
-            'can_order' => 0,
-        );
-
-        if ($plugin == 'field') {
-            $params['placeholder'] = '';
-            $params['password'] = 0;
-            $params['maxlength'] = 255;
-            $params['disable'] = 0;
-            $params['readonly'] = 0;
-            $params['autocomplete'] = 0;
-            $params['speech'] = 0;
-            $params['advanced_behavior'] = 0;
-            $params['text_format'] = 'text';
-            $params['integer_length'] = 11;
-            $params['decimal_length'] = 2;
-            $params['field_use_number_format'] = 0;
-            $params['field_thousand_sep'] = ',';
-            $params['field_decimal_sep'] = '.';
-            $params['text_format_string'] = '';
-            $params['field_format_string_blank'] = 1;
-            $params['text_input_mask'] = '';
-            $params['text_input_mask_autoclear'] = 0;
-        } elseif ($plugin == 'textarea') {
-            $params['textarea_placeholder'] = '';
-            $params['width'] = 60;
-            $params['height'] = 6;
-            $params['use_wysiwyg'] = 0;
-            $params['maxlength'] = 255;
-            $params['wysiwyg_extra_buttons'] = 1;
-            $params['textarea_field_type'] = 'TEXT';
-            $params['textarea-showmax'] = 0;
-            $params['textarea_limit_type'] = 'char';
-            $params['textarea-tagify'] = 0;
-            $params['textarea_tagifyurl'] = '';
-            $params['textarea-truncate-where'] = 0;
-            $params['textarea-truncate-html'] = 0;
-            $params['textarea-truncate'] = 0;
-            $params['textarea-hover'] = 1;
-            $params['textarea_hover_location'] = 'top';
-        } elseif ($plugin === 'dropdown') {
-            $params['multiple'] = 0;
-            $params['dropdown_multisize'] = 3;
-            $params['allow_frontend_addtodropdown'] = 0;
-            $params['dd-allowadd-onlylabel'] = 0;
-            $params['dd-savenewadditions'] = 0;
-            $params['options_split_str'] = '';
-            $params['dropdown_populate'] = '';
-        } elseif ($plugin === 'checkbox') {
-            $params['ck_options_per_row'] = 3;
-            $params['allow_frontend_addtocheckbox'] = 0;
-            $params['chk-allowadd-onlylabel'] = 0;
-            $params['chk-savenewadditions'] = 0;
-            $params['options_split_str'] = '';
-            $params['dropdown_populate'] = '';
-        } elseif ($plugin === 'radiobutton') {
-            $params['options_per_row'] = 1;
-            $params['btnGroup'] = 0;
-            $params['rad-allowadd-onlylabel'] = 0;
-            $params['rad-savenewadditions'] = 0;
-            $params['options_split_str'] = '';
-            $params['dropdown_populate'] = '';
-        } elseif ($plugin === 'birthday') {
-            $params['birthday_daylabel'] = '';
-            $params['birthday_monthlabel'] = '';
-            $params['birthday_yearlabel'] = '';
-            $params['birthday_yearopt'] = '';
-            $params['birthday_yearstart'] = 1950;
-            $params['birthday_forward'] = 0;
-            $params['details_date_format'] = 'd.m.Y';
-            $params['details_dateandage'] = 0;
-            $params['list_date_format'] = 'd.m.Y';
-            $params['list_age_format'] = 'no';
-            $params['empty_is_null'] = 1;
-            unset($params['bootstrap_class']);
-        } elseif ($plugin == 'display') {
-            $params['display_showlabel'] = 1;
-            unset($params['bootstrap_class']);
+            );
+            $params['notempty-message'] = array();
+            $params['notempty-validation_condition'] = array();
         }
+
+        return $this->updateElementParams($plugin,null,$params);
+    }
+
+    function updateElementParams($plugin, $oldplugin, $params){
+        // Reset params
+        if($oldplugin != null){
+            switch ($oldplugin){
+                case 'field':
+                    unset($params['placeholder']);
+                    unset($params['password']);
+                    unset($params['maxlength']);
+                    unset($params['disable']);
+                    unset($params['readonly']);
+                    unset($params['autocomplete']);
+                    unset($params['speech']);
+                    unset($params['advanced_behavior']);
+                    unset($params['text_format']);
+                    unset($params['integer_length']);
+                    unset($params['decimal_length']);
+                    unset($params['field_use_number_format']);
+                    unset($params['field_thousand_sep']);
+                    unset($params['field_decimal_sep']);
+                    unset($params['text_format_string']);
+                    unset($params['field_format_string_blank']);
+                    unset($params['text_input_mask']);
+                    unset($params['text_input_mask_autoclear']);
+                    break;
+                case 'textarea':
+                    unset($params['textarea_placeholder']);
+                    unset($params['width']);
+                    unset($params['height']);
+                    unset($params['use_wysiwyg']);
+                    unset($params['maxlength']);
+                    unset($params['wysiwyg_extra_buttons']);
+                    unset($params['textarea_field_type']);
+                    unset($params['textarea-showmax']);
+                    unset($params['textarea_limit_type']);
+                    unset($params['textarea-tagify']);
+                    unset($params['textarea_tagifyurl']);
+                    unset($params['textarea-truncate-where']);
+                    unset($params['textarea-truncate-html']);
+                    unset($params['textarea-truncate']);
+                    unset($params['textarea-hover']);
+                    unset($params['textarea_hover_location']);
+                    break;
+                case 'dropdown':
+                    unset($params['multiple']);
+                    unset($params['dropdown_multisize']);
+                    unset($params['allow_frontend_addtodropdown']);
+                    unset($params['dd-allowadd-onlylabel']);
+                    unset($params['dd-savenewadditions']);
+                    unset($params['options_split_str']);
+                    unset($params['dropdown_populate']);
+                    break;
+                case 'checkbox':
+                    unset($params['ck_options_per_row']);
+                    unset($params['allow_frontend_addtocheckbox']);
+                    unset($params['chk-allowadd-onlylabel']);
+                    unset($params['chk-savenewadditions']);
+                    unset($params['options_split_str']);
+                    unset($params['dropdown_populate']);
+                    break;
+                case 'radiobutton':
+                    unset($params['options_per_row']);
+                    unset($params['btnGroup']);
+                    unset($params['rad-allowadd-onlylabel']);
+                    unset($params['rad-savenewadditions']);
+                    unset($params['options_split_str']);
+                    unset($params['dropdown_populate']);
+                    break;
+                case 'birthday':
+                    unset($params['birthday_daylabel']);
+                    unset($params['birthday_monthlabel']);
+                    unset($params['birthday_yearlabel']);
+                    unset($params['birthday_yearopt']);
+                    unset($params['birthday_yearstart']);
+                    unset($params['birthday_forward']);
+                    unset($params['details_date_format']);
+                    unset($params['details_dateandage']);
+                    unset($params['list_date_format']);
+                    unset($params['list_age_format']);
+                    unset($params['empty_is_null']);
+                    break;
+                case 'date':
+                    unset($params['date_showtime']);
+                    unset($params['date_time_format']);
+                    unset($params['bootstrap_time_class']);
+                    unset($params['placeholder']);
+                    unset($params['date_store_as_local']);
+                    unset($params['date_table_format']);
+                    unset($params['date_form_format']);
+                    unset($params['date_defaulttotoday']);
+                    unset($params['date_alwaystoday']);
+                    unset($params['date_firstday']);
+                    unset($params['date_allow_typing_in_field']);
+                    unset($params['date_csv_offset_tz']);
+                    unset($params['date_advanced']);
+                    unset($params['date_allow_func']);
+                    unset($params['date_allow_php_func']);
+                    unset($params['date_observe']);
+                    break;
+                case 'display':
+                    unset($params['display_showlabel']);
+                    break;
+                default:
+                    break;
+            }
+        }
+        //
+
+        // Prepare new params
+        switch ($plugin){
+            case 'field':
+                $params['placeholder'] = '';
+                $params['password'] = 0;
+                $params['maxlength'] = 255;
+                $params['disable'] = 0;
+                $params['readonly'] = 0;
+                $params['autocomplete'] = 0;
+                $params['speech'] = 0;
+                $params['advanced_behavior'] = 0;
+                $params['text_format'] = 'text';
+                $params['integer_length'] = 11;
+                $params['decimal_length'] = 2;
+                $params['field_use_number_format'] = 0;
+                $params['field_thousand_sep'] = ',';
+                $params['field_decimal_sep'] = '.';
+                $params['text_format_string'] = '';
+                $params['field_format_string_blank'] = 1;
+                $params['text_input_mask'] = '';
+                $params['text_input_mask_autoclear'] = 0;
+                break;
+            case 'textarea':
+                $params['textarea_placeholder'] = '';
+                $params['width'] = 60;
+                $params['height'] = 6;
+                $params['use_wysiwyg'] = 0;
+                $params['maxlength'] = 255;
+                $params['wysiwyg_extra_buttons'] = 1;
+                $params['textarea_field_type'] = 'TEXT';
+                $params['textarea-showmax'] = 0;
+                $params['textarea_limit_type'] = 'char';
+                $params['textarea-tagify'] = 0;
+                $params['textarea_tagifyurl'] = '';
+                $params['textarea-truncate-where'] = 0;
+                $params['textarea-truncate-html'] = 0;
+                $params['textarea-truncate'] = 0;
+                $params['textarea-hover'] = 1;
+                $params['textarea_hover_location'] = 'top';
+                break;
+            case 'dropdown':
+                $params['multiple'] = 0;
+                $params['dropdown_multisize'] = 3;
+                $params['allow_frontend_addtodropdown'] = 0;
+                $params['dd-allowadd-onlylabel'] = 0;
+                $params['dd-savenewadditions'] = 0;
+                $params['options_split_str'] = '';
+                $params['dropdown_populate'] = '';
+                break;
+            case 'checkbox':
+                $params['ck_options_per_row'] = 3;
+                $params['allow_frontend_addtocheckbox'] = 0;
+                $params['chk-allowadd-onlylabel'] = 0;
+                $params['chk-savenewadditions'] = 0;
+                $params['options_split_str'] = '';
+                $params['dropdown_populate'] = '';
+                break;
+            case 'radiobutton':
+                $params['options_per_row'] = 1;
+                $params['btnGroup'] = 0;
+                $params['rad-allowadd-onlylabel'] = 0;
+                $params['rad-savenewadditions'] = 0;
+                $params['options_split_str'] = '';
+                $params['dropdown_populate'] = '';
+                break;
+            case 'birthday':
+                $params['birthday_daylabel'] = '';
+                $params['birthday_monthlabel'] = '';
+                $params['birthday_yearlabel'] = '';
+                $params['birthday_yearopt'] = '';
+                $params['birthday_yearstart'] = 1950;
+                $params['birthday_forward'] = 0;
+                $params['details_date_format'] = 'd.m.Y';
+                $params['details_dateandage'] = 0;
+                $params['list_date_format'] = 'd.m.Y';
+                $params['list_age_format'] = 'no';
+                $params['empty_is_null'] = 1;
+                break;
+            case 'date':
+                $params['date_showtime'] = 0;
+                $params['date_time_format'] = 'H:i';
+                $params['bootstrap_time_class'] = 'input-medium';
+                $params['placeholder'] = 'dd\/mm\/yyyy';
+                $params['date_store_as_local'] = 0;
+                $params['date_table_format'] = 'd\/m\/Y';
+                $params['date_form_format'] = 'Y-m-d';
+                $params['date_defaulttotoday'] = 0;
+                $params['date_alwaystoday'] = 0;
+                $params['date_firstday'] = 0;
+                $params['date_allow_typing_in_field'] = 1;
+                $params['date_csv_offset_tz'] = 0;
+                $params['date_advanced'] = 0;
+                $params['date_allow_func'] = '';
+                $params['date_allow_php_func'] = '';
+                $params['date_observe'] = '';
+                break;
+            case 'display':
+                $params['display_showlabel'] = 1;
+                break;
+            default:
+                break;
+        }
+        //
 
         return $params;
     }
@@ -502,6 +644,20 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         $this->copyFileToAdministration('fr-FR');
         $this->copyFileToAdministration('en-GB');
+    }
+
+    function addTranslation($text,$pathfile,$codelang){
+        $lines = file($pathfile);
+        $last_line = $lines[count($lines)-1];
+
+        if (strpos($last_line,'COM_USERS_RESET_REQUEST_LABEL') === 0) {
+            file_put_contents($pathfile,"\r\n" . $text . PHP_EOL, FILE_APPEND | LOCK_EX);
+        } else {
+            file_put_contents($pathfile,$text . PHP_EOL, FILE_APPEND | LOCK_EX);
+        }
+        $this->removeEmptyLinesFr();
+
+        $this->copyFileToAdministration($codelang);
     }
 
     function addTransationFr($text) {
@@ -1026,14 +1182,16 @@ class EmundusonboardModelformbuilder extends JModelList {
             $group = $this->createGroup($group_label,$formid);
 
             $query = $db->getQuery(true);
-            $query->select('fe.id as eid')
+            $query->select('fe.id as eid, fg.group_id as gid')
                 ->from($db->quoteName('#__fabrik_elements','fe'))
                 ->leftJoin($db->quoteName('#__fabrik_formgroup', 'fg') . ' ON ' . $db->quoteName('fg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
                 ->where($db->quoteName('fg.form_id') . ' = ' . $db->quote(258))
                 ->andWhere($db->quoteName('fe.hidden') . ' = ' . $db->quote(0));
             $db->setQuery($query);
-            $eid = $db->loadObject()->eid;
-            $this->duplicateElement($eid,$group,258,$formid);
+            $result = $db->loadObject();
+            $eid = $result->eid;
+            $oldgroup = $result->gid;
+            $this->duplicateElement($eid,$group['group_id'],$oldgroup,$formid);
             //
 
             return array(
@@ -1679,6 +1837,8 @@ class EmundusonboardModelformbuilder extends JModelList {
         // Update column type
         $query->select([
             'el.name AS name',
+            'el.plugin AS plugin',
+            'el.default as default_text',
             'fl.db_table_name AS dbtable',
             'el.params AS params'
         ])
@@ -1686,6 +1846,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             ->leftJoin($db->quoteName('#__fabrik_formgroup','fg') . ' ON ' . $db->quoteName('fg.group_id') . ' = ' . $db->quoteName('el.group_id'))
             ->leftJoin($db->quoteName('#__fabrik_lists','fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
             ->where($db->quoteName('el.id') . ' = ' . $db->quote($element['id']));
+
         try {
             $db->setQuery($query);
             $db_element = $db->loadObject();
@@ -1700,7 +1861,15 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $dbtype = 'DATE';
             } elseif ($element['plugin'] === 'textarea') {
                 $dbtype = 'TEXT';
+            } elseif ($element['plugin'] === 'date') {
+                $dbtype = 'DATETIME';
             }
+
+            if($db_element->plugin == 'display' && $db_element->default_text != ''){
+                $element['default'] = '';
+            }
+
+            $element['params'] = $this->updateElementParams($element['plugin'],$db_element->plugin,$element['params']);
 
             // Filter by plugin
             if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown') {
@@ -1757,15 +1926,14 @@ class EmundusonboardModelformbuilder extends JModelList {
                     " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
                 $db->setQuery($query);
                 $db->execute();
-            } elseif ($element['plugin'] === 'birthday') {
-                $element['params']['birthday_yearstart'] = 1950;
-
+            } else {
                 foreach ($element['params']['sub_options']['sub_labels'] as $index => $sub_label) {
                     $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
                 }
-
                 unset($element['params']['sub_options']);
+            }
 
+            if ($element['plugin'] === 'birthday' || $element['plugin'] === 'date') {
                 $query = "ALTER TABLE " . $db_element->dbtable .
                     " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
                 $db->setQuery($query);
@@ -1804,30 +1972,12 @@ class EmundusonboardModelformbuilder extends JModelList {
                     unset($element['params']['isemail-check_mx']);
                 }
 
-                if ($element['params']['sub_options']) {
-                    foreach ($element['params']['sub_options']['sub_labels'] as $index => $sub_label) {
-                        $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
-                    }
-                }
-
-                unset($element['params']['sub_options']);
-                unset($element['params']['birthday_yearstart']);
-
                 $query = "ALTER TABLE " . $db_element->dbtable .
                     " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
                 $db->setQuery($query);
                 $db->execute();
             } elseif ($element['plugin'] === 'textarea') {
                 $element['params']['width'] = 60;
-
-                if ($element['params']['sub_options']) {
-                    foreach ($element['params']['sub_options']['sub_labels'] as $index => $sub_label) {
-                        $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
-                    }
-                }
-
-                unset($element['params']['sub_options']);
-                unset($element['params']['birthday_yearstart']);
 
                 $query = "ALTER TABLE " . $db_element->dbtable .
                     " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
@@ -1911,7 +2061,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $query->clear();
                     $query->update($db->quoteName('#__fabrik_elements'));
                     foreach ($languages as $language) {
-                        $this->duplicateFileTranslation($element->element->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'ELEMENT_' . $group . '_' . $newelementid,$language->lang_code);
+                        $duplicate_translation = $this->duplicateFileTranslation($element->element->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'ELEMENT_' . $group . '_' . $newelementid,$language->lang_code);
+                        if(!$duplicate_translation){
+                            $this->addTranslation('ELEMENT_' . $group . '_' . $newelementid . '=' . "\"" . $element->element->label . "\"", $path_to_files[$language->sef],$language->lang_code);
+                        }
                     }
                     //
 
@@ -2446,23 +2599,25 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->setQuery($query);
             $list_model = $db->loadObject();
 
-            // Create table
-            $query->clear()
-                ->select('COUNT(*)')
-                ->from($db->quoteName('information_schema.tables'))
-                ->where($db->quoteName('table_name') . ' LIKE ' . $db->quote('%jos_emundus_' . $prid . '%'));
-            $db->setQuery($query);
-            $result = $db->loadResult();
+            if($list_model->db_table_name != 'jos_emundus_declaration') {
+                // Create table
+                $query->clear()
+                    ->select('COUNT(*)')
+                    ->from($db->quoteName('information_schema.tables'))
+                    ->where($db->quoteName('table_name') . ' LIKE ' . $db->quote('%jos_emundus_' . $prid . '%'));
+                $db->setQuery($query);
+                $result = $db->loadResult();
 
-            if ($result < 10) {
-                $increment = '0' . strval($result);
-            } elseif ($result > 10) {
-                $increment = strval($result);
+                if ($result < 10) {
+                    $increment = '0' . strval($result);
+                } elseif ($result > 10) {
+                    $increment = strval($result);
+                }
+                $table_query = "CREATE TABLE jos_emundus_" . $prid . "_" . $increment . " LIKE " . $list_model->db_table_name;
+                $db->setQuery($table_query);
+                $db->execute();
+                //
             }
-            $table_query = "CREATE TABLE jos_emundus_" . $prid . "_" . $increment . " LIKE " . $list_model->db_table_name;
-            $db->setQuery($table_query);
-            $db->execute();
-            //
 
             $query->clear();
             $query->insert($db->quoteName('#__fabrik_lists'));
@@ -2472,9 +2627,17 @@ class EmundusonboardModelformbuilder extends JModelList {
                 } elseif ($key == 'form_id') {
                     $query->set($key . ' = ' . $db->quote($newformid));
                 } elseif ($key == 'db_table_name') {
-                    $query->set($key . ' = ' . $db->quote('jos_emundus_' . $prid . '_' . $increment));
+                    if($val != 'jos_emundus_declaration') {
+                        $query->set($key . ' = ' . $db->quote('jos_emundus_' . $prid . '_' . $increment));
+                    } else {
+                        $query->set($key . ' = ' . $db->quote($val));
+                    }
                 } elseif ($key == 'db_primary_key') {
-                    $query->set($key . ' = ' . $db->quote('jos_emundus_' . $prid . '_' . $increment . '.id'));
+                    if($list_model->db_table_name != 'jos_emundus_declaration') {
+                        $query->set($key . ' = ' . $db->quote('jos_emundus_' . $prid . '_' . $increment . '.id'));
+                    } else {
+                        $query->set($key . ' = ' . $db->quote($val));
+                    }
                 } elseif ($key == 'access') {
                     $query->set($key . ' = ' . $db->quote($prid));
                 }
@@ -2550,7 +2713,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     foreach ($languages as $language) {
                         $duplicate_translation = $this->duplicateFileTranslation($group_model->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'GROUP_' . $newformid . '_' . $newgroupid,$language->lang_code);
                         if(!$duplicate_translation){
-                            $this->addTransationFr('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . $group_model->label . "\"");
+                            $this->addTranslation('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . $group_model->label . "\"", $path_to_files[$language->sef],$language->lang_code);
                         }
                     }
                 }
@@ -2584,7 +2747,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                                 foreach ($languages as $language) {
                                     $duplicate_translation = $this->duplicateFileTranslation($sub_label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index,$language->lang_code);
                                     if(!$duplicate_translation){
-                                        $this->addTransationFr('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index . '=' . "\"" . $sub_label . "\"");
+                                        $this->addTranslation('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index . '=' . "\"" . $sub_label . "\"", $path_to_files[$language->sef],$language->lang_code);
                                     }
                                 }
                                 $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
@@ -2596,7 +2759,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                         foreach ($languages as $language) {
                             $duplicate_translation = $this->duplicateFileTranslation($element->element->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'ELEMENT_' . $newgroupid . '_' . $newelementid,$language->lang_code);
                             if(!$duplicate_translation){
-                                $this->addTransationFr('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . $element->element->label . "\"");
+                                $this->addTranslation('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . $element->element->label . "\"", $path_to_files[$language->sef],$language->lang_code);
                             }
                         }
                         //
@@ -2679,14 +2842,26 @@ class EmundusonboardModelformbuilder extends JModelList {
                 } elseif ($key == 'link') {
                     $query->set($key . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $newformid));
                 } elseif ($key == 'parent_id') {
-                    $query->set($key . ' = ' . $db->quote($menu_parent->id));
+                    if($list_model->db_table_name != 'jos_emundus_declaration') {
+                        $query->set($key . ' = ' . $db->quote($menu_parent->id));
+                    } else {
+                        $query->set($key . ' = ' . $db->quote($val));
+                    }
                 } elseif ($key == 'lft') {
-                    if(strpos($menu_model->path,'/') !== false) {
-                        $query->set($key . ' = ' . $db->quote(array_values($lfts)[strval(sizeof($lfts) - 1)] + 2));
+                    if($list_model->db_table_name != 'jos_emundus_declaration') {
+                        if (strpos($menu_model->path, '/') !== false) {
+                            $query->set($key . ' = ' . $db->quote(array_values($lfts)[strval(sizeof($lfts) - 1)] + 2));
+                        }
+                    } else {
+                        $query->set($key . ' = ' . $db->quote($val));
                     }
                 } elseif ($key == 'rgt') {
-                    if(strpos($menu_model->path,'/') !== false) {
-                        $query->set($key . ' = ' . $db->quote(array_values($rgts)[strval(sizeof($rgts) - 1)] + 2));
+                    if($list_model->db_table_name != 'jos_emundus_declaration') {
+                        if (strpos($menu_model->path, '/') !== false) {
+                            $query->set($key . ' = ' . $db->quote(array_values($rgts)[strval(sizeof($rgts) - 1)] + 2));
+                        }
+                    } else {
+                        $query->set($key . ' = ' . $db->quote($val));
                     }
                 }
             }
@@ -2918,6 +3093,75 @@ class EmundusonboardModelformbuilder extends JModelList {
             $menuid = $db->loadObject();
 
             return $falang->updateFalang($label['fr'],$label['en'],$menuid->id,'menu','title');
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function getFormTesting($prid,$uid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id,label')
+                ->from($db->quoteName('#__emundus_setup_campaigns'))
+                ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid));
+            $db->setQuery($query);
+            $campaigns = $db->loadObjectList();
+            if(sizeof($campaigns) > 0){
+                foreach ($campaigns as $campaign) {
+                    $query->clear()
+                        ->select('id,fnum')
+                        ->from($db->quoteName('#__emundus_campaign_candidature'))
+                        ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign->id))
+                        ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($uid))
+                        ->andWhere($db->quoteName('published') . ' != ' . $db->quote(-1));
+                    $db->setQuery($query);
+                    $campaign->files = $db->loadObjectList();
+                }
+            }
+            return $campaigns;
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function createTestingFile($cid,$uid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        include_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
+
+        $fnum = @EmundusHelperFiles::createFnum($cid, $uid);
+
+        try {
+            $query->insert($db->quoteName('#__emundus_campaign_candidature'));
+            $query->set($db->quoteName('applicant_id') . ' = ' . $db->quote($uid))
+                ->set($db->quoteName('user_id') . ' = ' . $db->quote($uid))
+                ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($cid))
+                ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+            $db->setQuery($query);
+            $db->execute();
+
+            return $fnum;
+        } catch(Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function deleteFormTesting($fnum,$uid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+        try {
+            $query->delete()
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+                ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($uid));
+            $db->setQuery($query);
+            return $db->execute();
         } catch(Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;

@@ -222,6 +222,6 @@ class plgUserEmundus_registration_email extends JPlugin {
 		];
 		
 		// Send the email.
-		return $c_messages->sendEmailNoFnum($data['email'], $this->params->get('email', 'registration_email'), $post);
+		return $c_messages->sendEmailNoFnum($data['email'], $this->params->get('email', 'registration_email'), $post, $userID);
 	}
 }

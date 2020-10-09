@@ -46,6 +46,7 @@ export default {
   methods: {
     ChangeIndex(index) {
       this.indexHighlight = index;
+      document.cookie = 'page='+index+'; expires=Session; path=/'
       this.$emit("getEmitIndex", this.indexHighlight);
     },
     getDataObject: function() {
