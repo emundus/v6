@@ -71,11 +71,20 @@
                             :funnelCategorie="formCategories[langue][menuHighlight]"
                             :profileId="profileId"
                             :campaignId="campaignId"
-                            :langue="langue"
                             :menuHighlight="menuHighlight"
                             :langue="actualLanguage"
                             :manyLanguages="manyLanguages"
                     ></addDocuments>
+
+                  <add-documents-dropfiles
+                      v-if="menuHighlight == 2"
+                      :funnelCategorie="formCategories[langue][menuHighlight]"
+                      :profileId="profileId"
+                      :campaignId="campaignId"
+                      :menuHighlight="menuHighlight"
+                      :langue="actualLanguage"
+                      :manyLanguages="manyLanguages"
+                    />
 
                     <!--          <addEvalEval
                                       v-if="menuHighlight == 6"
@@ -111,6 +120,7 @@
     import addEvalVisi from "../views/funnelFormulaire/addEvalVisi";
     import addEvalEval from "../views/funnelFormulaire/addEvalEval";
     import ModalWarningFormBuilder from "./advancedModals/ModalWarningFormBuilder";
+    import AddDocumentsDropfiles from "@/views/funnelFormulaire/addDocumentsDropfiles";
 
     const qs = require("qs");
 
@@ -118,6 +128,7 @@
         name: "addFormNextCampaign",
 
         components: {
+          AddDocumentsDropfiles,
             ModalWarningFormBuilder,
             Datetime,
             addFormulaire,
@@ -165,12 +176,14 @@
 
             formCategories: [
                 [
-                    "Aperçu du formulaire",
-                    "Documents"
+                  "Aperçu du formulaire",
+                  "Documents",
+                  "Documents d'informations",
                 ],
                 [
-                    "Form Preview",
-                    "Documents"
+                  "Form Preview",
+                  "Documents",
+                  "Informations documents",
                 ]
             ],
 

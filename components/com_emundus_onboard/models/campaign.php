@@ -834,9 +834,92 @@ class EmundusonboardModelcampaign extends JModelList
 
             $falang->updateFalang($document['name']['fr'],$document['name']['en'],$did,'emundus_setup_attachments','value');
             $falang->updateFalang($document['description']['fr'],$document['description']['en'],$did,'emundus_setup_attachments','description');
+
+            return true;
         } catch (Exception $e) {
             JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return $e->getMessage();
+        }
+    }
+
+    function getCampaignCategory($cid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $campaign_dropfile_cat = 0;
+            $query->select('id,params')
+                ->from($db->quoteName('#__categories'))
+                ->where($db->quoteName('extension') . ' = ' . $db->quote('com_dropfiles'));
+            $db->setQuery($query);
+            $dropfiles_cat = $db->loadObjectList();
+
+            foreach ($dropfiles_cat as $dropfile_cat){
+                $param = json_decode($dropfile_cat->params);
+                if($param->idCampaign == $cid){
+                    $campaign_dropfile_cat = $dropfile_cat->id;
+                    break;
+                }
+            }
+            return $campaign_dropfile_cat;
+        } catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function getCampaignDropfilesDocuments($campaign_cat) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('*')
+                ->from($db->quoteName('#__dropfiles_files'))
+                ->where($db->quoteName('catid') . ' = ' . $db->quote($campaign_cat));
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function getDropfileDocument($did){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('*')
+                ->from($db->quoteName('#__dropfiles_files'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($did));
+            $db->setQuery($query);
+            return $db->loadObject();
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function deleteDocumentDropfile($did){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            $query->select('file,catid')
+                ->from($db->quoteName('#__dropfiles_files'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote(($did)));
+            $db->setQuery($query);
+            $file = $db->loadObject();
+            unlink('media/com_dropfiles/' . $file->catid . '/' . $file->file);
+
+            $query->clear()
+                ->delete($db->quoteName('#__dropfiles_files'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote(($did)));
+            $db->setQuery($query);
+            return $db->execute();
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
         }
     }
 }

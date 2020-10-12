@@ -36,7 +36,7 @@
                 v-on:vdropzone-complete="onComplete"
                 v-on:vdropzone-error="catchError">
           <div class="dropzone-custom-content" id="dropzone-message">
-            <i class="fas fa-file-image"></i>
+            <em class="fas fa-file-image"></em>
             {{DropHere}}
           </div>
         </vue-dropzone>

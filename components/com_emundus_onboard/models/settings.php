@@ -896,4 +896,43 @@ class EmundusonboardModelsettings extends JModelList {
             return false;
         }
     }
+
+    function moveUploadedFileToDropbox($file,$name,$extension,$campaign_cat,$filesize){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            //CHECK OREDERING BEFORE INSERT
+            $query->select('ordering')
+                ->from($db->quoteName('#__dropfiles_files'))
+                ->where($db->quoteName('catid') . ' = ' . $db->quote($campaign_cat));
+            $db->setQuery($query);
+            $orderings = $db->loadColumn();
+            $order = $orderings[sizeof($orderings) - 1] + 1;
+
+            $query->clear()
+                ->insert($db->quoteName('#__dropfiles_files'));
+            $query->set($db->quoteName('catid') . ' = ' . $db->quote($campaign_cat))
+                ->set($db->quoteName('file') . ' = ' . $db->quote($file))
+                ->set($db->quoteName('state') . ' = ' . $db->quote(1))
+                ->set($db->quoteName('ordering') . ' = ' . $db->quote($order))
+                ->set($db->quoteName('title') . ' = ' . $db->quote($name))
+                ->set($db->quoteName('description') . ' = ' . $db->quote(''))
+                ->set($db->quoteName('ext') . ' = ' . $db->quote($extension))
+                ->set($db->quoteName('size') . ' = ' . $db->quote($filesize))
+                ->set($db->quoteName('hits') . ' = ' . $db->quote(0))
+                ->set($db->quoteName('version') . ' = ' . $db->quote(''))
+                ->set($db->quoteName('created_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('modified_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('publish') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('author') . ' = ' . $db->quote(JFactory::getUser()->id))
+                ->set($db->quoteName('language') . ' = ' . $db->quote(''));
+            $db->setQuery($query);
+            $db->execute();
+            return $db->insertid();
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
 }

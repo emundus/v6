@@ -563,5 +563,48 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             exit;
         }
     }
+
+    public function uploaddropfiledoc() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $m_settings = $this->model;
+            $m_campaign = JModelLegacy::getInstance('campaign', 'EmundusonboardModel');
+
+            $jinput = JFactory::getApplication()->input;
+            $file = $jinput->files->get('file');
+            $cid = $jinput->get('cid');
+
+            if(isset($file)) {
+                $campaign_category = $m_campaign->getCampaignCategory($cid);
+
+                $path = $file["name"];
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
+                $filename = pathinfo($path, PATHINFO_FILENAME);
+
+                $target_dir = "media/com_dropfiles/" . $campaign_category . "/";
+                if(!file_exists($target_dir)){
+                    mkdir($target_dir);
+                }
+
+                do{
+                    $target_file = $target_dir . rand(1000,90000) . '.' . $ext;
+                } while (file_exists($target_file));
+
+                if (move_uploaded_file($file["tmp_name"], $target_file)) {
+                    $did = $m_settings->moveUploadedFileToDropbox(pathinfo($target_file,PATHINFO_BASENAME),$filename,$ext,$campaign_category,filesize($target_file));
+                    echo json_encode($m_campaign->getDropfileDocument($did));
+                } else {
+                    echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
+                }
+            } else {
+                echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
+            }
+            exit;
+        }
+    }
 }
 

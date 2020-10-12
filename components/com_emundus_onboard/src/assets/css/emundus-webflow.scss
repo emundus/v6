@@ -2207,6 +2207,8 @@ label.label__placeholder {
   width: 20vw;
   margin: 20px;
 }
+
+/**** CUSTOM VUE DROPZONE ****/
 #customdropzone {
   letter-spacing: 0.2px;
   background: #ececec;
@@ -2220,6 +2222,7 @@ label.label__placeholder {
   justify-content: center;
   align-items: center;
   display: flex;
+  cursor: pointer;
   .dz-preview {
     width: 100%;
     display: inline-block;
@@ -2254,6 +2257,8 @@ label.label__placeholder {
 .dz-error-mark {
   display: none;
 }
+/**** END ****/
+
 .color-picker {
   width: 40px;
   border-radius: 50%;

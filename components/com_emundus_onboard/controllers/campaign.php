@@ -525,5 +525,47 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         exit;
     }
 
+    public function getdocumentsdropfiles() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_camp = $this->model;
+
+            $jinput = JFactory::getApplication()->input;
+            $cid = $jinput->get('cid');
+            $campaign_category = $m_camp->getCampaignCategory($cid);
+            $datas = $m_camp->getCampaignDropfilesDocuments($campaign_category);
+            $response = array('status' => '1', 'msg' => 'SUCCESS', 'documents' => $datas);
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
+
+    public function deletedocumentdropfile() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $did = $jinput->getInt('did');
+            $m_camp = $this->model;
+
+            $result = $m_camp->deleteDocumentDropfile($did);
+
+            if ($result) {
+                $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_DELETED'), 'data' => $result);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_DELETE_DOCUMENT'), 'data' => $result);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
 }
 
