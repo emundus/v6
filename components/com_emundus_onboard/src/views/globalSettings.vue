@@ -30,7 +30,7 @@
                 <i class="fas fa-check"></i><span class="mr-1">{{Saved}}</span>
               </div>
             </transition>
-            <a @click="savePage()" class="bouton-sauvergarder-et-continuer-3">{{ Save }}</a>
+            <button type="button" @click="savePage()" class="bouton-sauvergarder-et-continuer">{{ Save }}</button>
           </div>
         </div>
         <p class="paragraphe-sous-titre">{{funnelDescription[langue][menuHighlight]}}</p>

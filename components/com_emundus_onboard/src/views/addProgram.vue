@@ -60,7 +60,6 @@
             </div>
 
             <div class="form-group d-flex">
-              <label for="published">{{ Publish }}</label>
               <div class="toggle">
                 <input
                   type="checkbox"
@@ -74,10 +73,10 @@
                 <strong class="b switch"></strong>
                 <strong class="b track"></strong>
               </div>
+              <label for="published" class="ml-10px mb-0">{{ Publish }}</label>
             </div>
 
             <div class="form-group d-flex last-container">
-              <label for="apply">{{ DepotDeDossier }}</label>
               <div class="toggle">
                 <input
                   type="checkbox"
@@ -91,23 +90,24 @@
                 <strong class="b switch"></strong>
                 <strong class="b track"></strong>
               </div>
+              <label for="apply" class="ml-10px mb-0">{{ DepotDeDossier }}</label>
             </div>
             <div class="section-sauvegarder-et-continuer">
               <div class="w-container">
                 <div class="container-evaluation w-clearfix">
-                  <button class="bouton-sauvergarder-et-continuer w-button"
+                  <button class="bouton-sauvergarder-et-continuer"
                           type="button"
                           @click="quit = 1; submit()">
                     {{ Continuer }}
                   </button>
-                  <button class="bouton-sauvergarder-et-continuer w-quitter w-button"
+                  <button class="bouton-sauvergarder-et-continuer w-quitter"
                           type="button"
                           @click="quit = 0; submit()">
                     {{ Quitter }}
                   </button>
                   <button
                     type="button"
-                    class="bouton-sauvergarder-et-continuer w-retour w-button"
+                    class="bouton-sauvergarder-et-continuer w-retour"
                     onclick="history.go(-1)"
                   >
                     {{ Retour }}
@@ -372,132 +372,4 @@ export default {
 </script>
 
 <style scoped>
-.is-invalid {
-  border-color: #dc3545 !important;
-}
-.is-invalid:hover,
-.is-invalid:focus {
-  border-color: #dc3545 !important;
-  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
-}
-
-input[type="radio"],
-input[type="checkbox"] {
-  width: 100% !important;
-}
-
-.toggle > b {
-  display: block;
-}
-
-.toggle {
-  position: relative;
-  width: 40px;
-  height: 20px;
-  border-radius: 100px;
-  background-color: #ddd;
-  overflow: hidden;
-  box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.05);
-}
-
-.check {
-  position: absolute;
-  display: block;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  z-index: 6;
-}
-
-.check:checked ~ .track {
-  box-shadow: inset 0 0 0 20px #4bd863;
-}
-
-.check:checked ~ .switch {
-  right: 2px;
-  left: 22px;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition-property: left, right;
-  transition-delay: 0.05s, 0s;
-}
-
-.switch {
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  bottom: 2px;
-  right: 22px;
-  background-color: #fff;
-  border-radius: 36px;
-  z-index: 1;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition-property: left, right;
-  transition-delay: 0s, 0.05s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.track {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.05);
-  border-radius: 40px;
-}
-
-.plus.w-inline-block {
-  background-color: white;
-  border-color: #cccccc;
-}
-
-.w-input,
-.w-select {
-  min-height: 55px;
-  padding: 12px;
-  background-color: white !important;
-}
-
-.bouton-sauvergarder-et-continuer {
-  position: relative;
-  padding: 10px 30px;
-  float: right;
-  border-radius: 4px;
-  background-color: #1b1f3c;
-  -webkit-transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
-  transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
-}
-
-.w-quitter {
-  margin-right: 5%;
-  background: none !important;
-  border: 1px solid #1b1f3c;
-  color: #1b1f3c;
-}
-
-.last-container {
-  padding-bottom: 30px;
-}
-
-.section-principale {
-  padding-bottom: 0;
-}
-
-h2 {
-  color: #1b1f3c;
-}
-
-.d-flex{
-  display: flex;
-  align-items: center;
-}
-
-.d-flex label{
-  margin-bottom: 0;
-  margin-right: 10px;
-}
 </style>

@@ -53,8 +53,8 @@ h1::after,
 .swal2-title::after {
   content: '';
   position: absolute;
-  margin-top: 45px;
-  width: 2.7rem;
+  margin-top: 45px !important;
+  width: 2.7rem !important;
   height: 0.2rem;
   background: $base-secondary-color !important;
   left: 0;
@@ -340,7 +340,7 @@ input[type="text"],
   text-align: end;
 }
 
-/* HEADER */
+/* HEADER AVEC TCHOOZ ET LANG SWITCHER*/
 
 #g-navigation {
   .g-grid {
@@ -371,6 +371,49 @@ input[type="text"],
     }
   }
 }
+
+/* HEADER SANS LANG SWITCHER ET AVEC TCHOOZ */
+
+#g-navigation {
+  #header-c.without-lang-switcher {
+    max-width: 15rem;
+    min-height: 67px;
+    .g-content {
+      justify-content: space-between;
+      .platform-content:nth-child(2) {
+        order: 1;
+      }
+      .platform-content:nth-child(1) {
+        order: 2;
+      }
+    }
+  }
+}
+
+/*HEADER SANS TCHOOZ ET AVEC LANG SWITCHER  */
+
+#g-navigation {
+  #header-c.without-tchooz {
+    max-width: 20rem;
+    min-height: 67px;
+    .g-content {
+      justify-content: space-between;
+    }
+  }
+}
+
+/*HEADER SANS TCHOOZ ET SANS LANG SWITCHER  */
+
+#g-navigation {
+  #header-c.without-tchooz-and-lang-switcher {
+    max-width: 30rem;
+    min-height: 67px;
+    .g-content {
+      justify-content: flex-end;
+    }
+  }
+}
+
 
 
 #g-navigation {
@@ -825,7 +868,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background-color: $base-secondary-color;
     background: $base-secondary-color;
     color: white;
-    margin-bottom: 1px;
+    margin-bottom: -1px;
   }
 
   /* COULEURS TITRES  */
@@ -918,10 +961,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   border: none !important;
 }
 
-.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success:hover,
-.applicant-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger:hover {
-  border: none !important;
-  background-color: transparent !important;
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success,
+.applicant-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger{
+  &:hover, &:active, &:focus {
+    border: none !important;
+    background-color: transparent !important;
+  }
 }
 
 .applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i:hover {
@@ -944,6 +989,17 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /* FORMULAIRE  */
 
+#sidebar-a .em-send-button a.btn.btn-success.btn-xs {
+  color: #fff;
+  background: $base-primary-color;
+  border-color: $base-primary-color;
+  &:hover, &:active, &:focus {
+    color: $base-primary-color;
+    background: transparent;
+    border-color: $base-primary-color;
+  }
+}
+
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active, .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.active.btn-success {
   background-color: $base-secondary-color;
   color: #fff;
@@ -964,23 +1020,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 .btn.calendarbutton {
   background: #fff;
-}
-
-.control-group.success {
-
-  .checkbox,
-  .radio,
-  input,
-  select,
-  textarea {
-    color: $base-secondary-color;
-  }
-
-  input,
-  select,
-  textarea {
-    border-color: $base-secondary-color;
-  }
 }
 
 .fabrikForm .row-fluid .control-group .control-label {
@@ -1047,107 +1086,107 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 /* STATUS ET ETIQUETTES */
 
 .label-lightpurple {
-  background-color: #DCC6E0;
+  background-color: #DCC6E0 !important;
   text-shadow: none;
 }
 
 .label-purple {
-  background-color: #947CB0;
+  background-color: #947CB0 !important;
   text-shadow: none;
 }
 
 .label-darkpurple {
-  background-color: #663399;
+  background-color: #663399 !important;
   text-shadow: none;
 }
 
 .label-lightblue {
-  background-color: #6bb9F0;
+  background-color: #6bb9F0 !important;
   text-shadow: none;
 }
 
 .label-blue {
-  background-color: #19B5FE;
+  background-color: #19B5FE !important;
   text-shadow: none;
 }
 
 .label-darkblue {
-  background-color: #013243;
+  background-color: #013243 !important;
   text-shadow: none;
 }
 
 .label-lightgreen {
-  background-color: #7befb2;
+  background-color: #7befb2 !important;
   text-shadow: none;
 }
 
 .label-green {
-  background-color: #3FC380;
+  background-color: #3FC380 !important;
   text-shadow: none;
 }
 
 .label-darkgreen {
-  background-color: #1E824C;
+  background-color: #1E824C !important;
   text-shadow: none;
 }
 
 .label-lightyellow {
-  background-color: #FFFD7E;
+  background-color: #FFFD7E !important;
   text-shadow: none;
 }
 
 .label-yellow {
-  background-color: #FFFD54;
+  background-color: #FFFD54 !important;
   text-shadow: none;
 }
 
 .label-darkyellow {
-  background-color: #F7CA18;
+  background-color: #F7CA18 !important;
   text-shadow: none;
 }
 
 .label-lightorange {
-  background-color: #FABE58;
+  background-color: #FABE58 !important;
   text-shadow: none;
 }
 
 .label-orange {
-  background-color: #E87E04;
+  background-color: #E87E04 !important;
   text-shadow: none;
 }
 
 .label-darkorange {
-  background-color: #D35400;
+  background-color: #D35400 !important;
   text-shadow: none;
 }
 
 .label-lightred {
-  background-color: #EC644B;
+  background-color: #EC644B !important;
   text-shadow: none;
 }
 
 .label-red {
-  background-color: #CF000F;
+  background-color: #CF000F !important;
   text-shadow: none;
 }
 
 .label-darkred {
-  background-color: #e5283b;
+  background-color: #e5283b !important;
   text-shadow: none;
 }
 
 .label-lightpink {
-  background-color: #e08283;
+  background-color: #e08283 !important;
   text-shadow: none;
 }
 
 .label-pink {
-  background-color: #d2527f;
+  background-color: #d2527f !important;
   text-shadow: none;
 }
 
 .label-darkpink {
-  background-color: #db0a5b;
+  background-color: #db0a5b !important;
   text-shadow: none;
 }
 
@@ -1280,6 +1319,7 @@ span.btn {
     background-color: transparent;
     color: $base-primary-color;
     outline: none;
+    border: 1px solid $base-primary-color;
   }
 }
 
@@ -1990,6 +2030,29 @@ ul.unstyled.em-linkForgot li a {
 
 
 /************************ GESTIONNAIRE - COORDINATOR *********************/
+
+.edit-comment-container button.edit-comment  {
+  color: white;
+  background: $base-primary-color;
+  border: 1px solid $base-primary-color;
+  &:hover, &:active, &:focus {
+    color: $base-primary-color;
+    background: transparent;
+    border: 1px solid $base-primary-color;
+  }
+}
+
+.edit-comment-container button.delete-comment {
+  color: white;
+  background: $base-secondary-color;
+  border: 1px solid $base-secondary-color;
+  border-radius: 4px !important;
+  &:hover, &:active, &:focus {
+    color: $base-secondary-color;
+    background: transparent;
+    border: 1px solid $base-secondary-color;
+  }
+}
 
 /* SIDEBAR FILTRES */
 
@@ -2754,8 +2817,8 @@ footer#g-footer .g-grid {
     font-size: 1.8em !important;
 
     &::after {
-      margin-top: 75px;
-      width: 100px;
+      margin-top: 45px !important;
+      width: 2.7rem !important;
     }
   }
 
@@ -2990,120 +3053,139 @@ footer#g-footer .g-grid {
   }
 }
 
-@media all and (min-width: 768px) and (max-width: 959px){
+@media all and (min-width: 768px) and (max-width: 959px) {
   button.save {
     margin-left: 20px !important;
   }
+}
 
-  .g-branding {
-    text-align: inherit;
-  }
 
-  .header-right a.btn:first-child {
-    margin-bottom: 10px;
-  }
+  @media screen and (min-width: 768px) and (max-width: 959px) {
+    .header-right a.btn:first-child {
+      margin-bottom: 10px;
+    }
 
-  #g-main-mainbody {
-    padding-top: 0;
-  }
+    #g-navigation {
+      border-bottom: 1px solid #eeeeee;
+      width: 100vw;
 
-  h1 {
-    font-size: 28px;
-  }
+      .g-container {
+        padding: 10px;
+        width: 95%;
+        margin: auto !important;
+      }
 
-  h2 {
-    font-size: 25px;
-  }
+      #header-a {
+        justify-content: center;
+        margin-bottom: 18px;
+      }
+    }
 
-  h3 {
-    font-size: 22px;
-  }
+    .g-branding {
+      text-align: inherit;
+    }
 
-  h4 {
-    font-size: 18px;
-  }
+    #g-main-mainbody {
+      padding-top: 0;
+    }
 
-  .col-xs-12.col-md-6,
-  .col-xs-12.col-md-6 {
+    h1 {
+      font-size: 28px;
+    }
 
-    &.main-page-file-progress,
-    &.main-page-file-info {
-      width: 50%;
+    h2 {
+      font-size: 25px;
+    }
+
+    h3 {
+      font-size: 22px;
+    }
+
+    h4 {
+      font-size: 18px;
+    }
+
+    .col-xs-12.col-md-6,
+    .col-xs-12.col-md-6 {
+
+      &.main-page-file-progress,
+      &.main-page-file-info {
+        width: 50%;
+      }
     }
   }
-}
 
-@media all and (max-width: 959px) {
-  section#g-navigation {
-    width: auto !important;
+  @media all and (max-width: 959px) {
+    section#g-navigation {
+      width: auto !important;
+    }
+
+    .row {
+      margin-left: 0px;
+    }
+
+    .container {
+      padding-right: 0;
+      padding-left: 0;
+    }
+
+    .bas-footer {
+      width: 90%;
+    }
+
+    #g-navigation .g-container {
+      padding: 10px 30px !important;
+    }
   }
 
-  .row {
-    margin-left: 0px;
+  @media screen and (min-width: 960px) and (max-width: 1199px) {
+    #g-main-mainbody {
+      padding-top: 0;
+    }
+
+    .bas-footer {
+      width: 95%;
+    }
   }
 
-  .container {
-    padding-right: 0;
-    padding-left: 0;
+  @media screen and (max-width: 991px) {
+    section.container {
+      float: none !important;
+    }
   }
 
-  .bas-footer {
-    width: 90%;
+  @media all and (max-width: 1239px) {
+
+    /* FOOTER */
+    .em-containerAdresseLogo {
+      width: 60% !important;
+    }
+
+    /* STRUCUTURE */
+    .g-container {
+      width: 100% !important;
+    }
+
+    section#g-navigation {
+      width: auto !important;
+    }
+
+    #g-navigation .g-main-nav .g-toplevel > li {
+      margin: 0 8px;
+    }
+
+    #g-utility #drawer .moduletable {
+      width: 100% !important;
+      margin-left: 0 !important;
+    }
+
+    #g-container-main {
+      padding: 20px;
+    }
+
+    /* GENERAL */
+    #gototop div {
+      display: none !important;
+    }
+
   }
-
-  #g-navigation .g-container {
-    padding: 10px 30px !important;
-  }
-}
-
-@media screen and (min-width: 960px) and (max-width: 1199px) {
-  #g-main-mainbody {
-    padding-top: 0;
-  }
-
-  .bas-footer {
-    width: 95%;
-  }
-}
-
-@media screen and (max-width: 991px) {
-  section.container {
-    float: none !important;
-  }
-}
-
-@media all and (max-width: 1239px) {
-
-  /* FOOTER */
-  .em-containerAdresseLogo {
-    width: 60% !important;
-  }
-
-  /* STRUCUTURE */
-  .g-container {
-    width: 100% !important;
-  }
-
-  section#g-navigation {
-    width: auto !important;
-  }
-
-  #g-navigation .g-main-nav .g-toplevel>li {
-    margin: 0 8px;
-  }
-
-  #g-utility #drawer .moduletable {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-
-  #g-container-main {
-    padding: 20px;
-  }
-
-  /* GENERAL */
-  #gototop div {
-    display: none !important;
-  }
-
-}

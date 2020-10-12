@@ -92,7 +92,6 @@
   import ModalMenu from "../components/formClean/ModalMenu";
 
   import _ from 'lodash';
-  import ModalElement from "../components/formClean/ModalElement";
   import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
   import List from "./list";
 
@@ -111,7 +110,6 @@
     components: {
       List,
       ModalAffectCampaign,
-      ModalElement,
       Builder,
       ModalSide,
       ModalMenu,

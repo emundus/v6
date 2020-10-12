@@ -139,3 +139,10 @@ ul.unstyled.em-linkForgot li a span::before {
         padding: 15px;
     }
 }
+
+@media all and (min-width: 768px) and (max-width: 959px) {
+    ul.unstyled.em-linkForgot {
+        align-items: center;
+        flex-direction: column;
+    }
+}

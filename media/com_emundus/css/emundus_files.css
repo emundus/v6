@@ -352,7 +352,7 @@ div#em-appli-menu .list-group {
 
 /* Panel gauche dosiers associés du déposant */
 div#em-assoc-files .panel > .panel-heading h6 {
-    color: #ffffff;
+    color: #000;
     padding: 10px 0;
     margin: 0;
 }
@@ -843,12 +843,17 @@ div#em-modal-actions .panel-heading h5 {
     border-right: 2px solid #eee;
     border-left:none;
     border-bottom:none;
+    margin-bottom: 0px !important;
 }
 
 .g-back-office-emundus-tableau .panel-body .SumoSelect > .CaptionCont {
     border: 1px solid #ccc;
     background-color: #fff;
     border-radius: 5px;
+}
+
+.g-back-office-emundus-tableau .panel-body .SumoSelect > .CaptionCont > label {
+    top: 7px;
 }
 
 .g-back-office-emundus-tableau .em-dropdown {
@@ -914,7 +919,7 @@ div#em-synthesis .panel-heading h3 {
 }
 
 .list-group-item {
-    padding: 5px 20px;
+    padding: 6px 20px;
 }
 
 .list-group-item b {
@@ -1517,6 +1522,14 @@ thead th:hover {
 .access-table {
     margin-bottom: 15px;
     overflow: auto;
+}
+
+.files-board #em-appli-block h3 small {
+    color: #fff;
+}
+
+#em-appli-block .panel-heading .panel-title a.clean button.btn.btn-default:hover {
+    color: #fff !important;
 }
 
 .table-left,
@@ -2412,6 +2425,15 @@ a.copy-0:focus {
     }
     #em-hide-filters {
         display: none;
+    }
+
+    .g-back-office-emundus-tableau #em-modal-actions .modal-dialog, .g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg {
+        width: fit-content !important;
+        min-width:95%;
+    }
+
+    .g-back-office-emundus-tableau .em-container-evaluation-heading .btn-group.pull-right {
+        margin-top: 15px;
     }
 }
 
