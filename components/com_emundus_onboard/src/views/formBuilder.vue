@@ -332,44 +332,11 @@
 
     methods: {
       createElement(gid,plugin,order) {
-        if(!_.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups)){
-          this.loading = true;
-          axios({
-            method: "post",
-            url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              gid: gid,
-              plugin: plugin
-            })
-          }).then((result) => {
-            axios({
-              method: "get",
-              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
-              params: {
-                element: result.data.scalar,
-                gid: gid
-              },
-              paramsSerializer: params => {
-                return qs.stringify(params);
-              }
-            }).then(response => {
-              this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
-              this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
-              this.$refs.builder.updateOrder(gid,this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts);
-              this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
-              this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
-              this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
-              this.loading = false;
-            });
-          });
+        let list = this.formObjectArray;
+        if(this.menuHighlight === 1){
+          list = this.submittionPages;
         }
-      },
-      createSubmittionElement(gid,plugin,order){
-        if(!_.isEmpty(this.submittionPages[this.indexHighlight].object.Groups)){
+        if(!_.isEmpty(list[this.indexHighlight].object.Groups)){
           this.loading = true;
           axios({
             method: "post",
@@ -394,10 +361,21 @@
                 return qs.stringify(params);
               }
             }).then(response => {
-              this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
-              this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
-              this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
-              this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+              if(this.menuHighlight === 0) {
+                this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid], 'elements[element' + response.data.id + ']', response.data)
+                this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.splice(order, 0, response.data);
+                this.$refs.builder.updateOrder(gid, this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts);
+                this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+                this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
+                this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
+              } else {
+                this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
+                this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
+                this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
+                this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+                this.$refs.builder_submit.$refs.builder_viewer.enableActionBar(response.data.id);
+                this.$refs.builder_submit.$refs.builder_viewer.enableLabelInput(response.data.id);
+              }
               this.loading = false;
             });
           });
@@ -409,11 +387,7 @@
         let plugin = evt.clone.id.split('_')[1];
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
         if(typeof gid != 'undefined'){
-          if(this.menuHighlight === 0) {
-            this.createElement(gid, plugin, evt.newIndex);
-          } else {
-            this.createSubmittionElement(gid, plugin, evt.newIndex);
-          }
+          this.createElement(gid, plugin, evt.newIndex);
         }
       },
       addingNewElementByDblClick: _.debounce(function(plugin) {
@@ -425,6 +399,10 @@
       }, 250, { 'maxWait': 1000 }),
       createGroup() {
         this.loading = true;
+        let param = this.formObjectArray[this.indexHighlight].object.id;
+        if(this.menuHighlight === 1){
+          param = this.submittionPages[this.indexHighlight].object.id;
+        }
         axios({
           method: "post",
           url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimplegroup",
@@ -432,7 +410,7 @@
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify({
-            fid: this.formObjectArray[this.indexHighlight].object.id
+            fid: param
           })
         }).then((result) => {
           axios({
@@ -476,25 +454,46 @@
         this.UpdateUx = true;
       },
       pushGroup(group) {
-        this.formObjectArray.forEach((form, index) => {
-          if(form.object.id == group.formid){
-            this.formObjectArray[index]['object']['Groups']['group_'+group.group_id] = {
-              elements: {},
-              elts: [],
-              group_id: group.group_id,
-              group_showLegend: group.group_showLegend,
-              label: {
-                fr: group.label.fr,
-                en: group.label.en,
-              },
-              group_tag: group.group_tag,
-              ordering: group.ordering
-            };
-          }
-        });
+        if(this.menuHighlight === 0) {
+          this.formObjectArray.forEach((form, index) => {
+            if (form.object.id == group.formid) {
+              this.formObjectArray[index]['object']['Groups']['group_' + group.group_id] = {
+                elements: {},
+                elts: [],
+                group_id: group.group_id,
+                group_showLegend: group.group_showLegend,
+                label: {
+                  fr: group.label.fr,
+                  en: group.label.en,
+                },
+                group_tag: group.group_tag,
+                ordering: group.ordering
+              };
+            }
+          });
+          this.$refs.builder.getDataObject();
+          this.$refs.builder.$refs.builder_viewer.openGroup[group.group_id] = true;
+        } else {
+          this.submittionPages.forEach((form, index) => {
+            if (form.object.id == group.formid) {
+              this.submittionPages[index]['object']['Groups']['group_' + group.group_id] = {
+                elements: {},
+                elts: [],
+                group_id: group.group_id,
+                group_showLegend: group.group_showLegend,
+                label: {
+                  fr: group.label.fr,
+                  en: group.label.en,
+                },
+                group_tag: group.group_tag,
+                ordering: group.ordering
+              };
+            }
+          });
+          this.$refs.builder_submit.getDataObject();
+          this.$refs.builder_submit.$refs.builder_viewer.openGroup[group.group_id] = true;
+        }
         this.elementDisabled = false;
-        this.$refs.builder.getDataObject();
-        this.$refs.builder.$refs.builder_viewer.openGroup[group.group_id] = true;
         setTimeout(() => {
           window.scrollTo(0,document.body.scrollHeight);
         }, 200);
@@ -809,6 +808,14 @@
         this.indexHighlight = index;
         this.rgt = rgt;
         this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
+        if(this.menuHighlight === 1){
+          this.$refs.builder_submit.$refs.builder_viewer.clickUpdatingLabel = false;
+          this.$refs.builder_submit.$refs.builder_viewer.translate.label = false;
+        } else {
+          this.$refs.builder.$refs.builder_viewer.clickUpdatingLabel = false;
+          this.$refs.builder.$refs.builder_viewer.translate.label = false;
+        }
+
         document.cookie = 'page_' + this.prid + '='+index+'; expires=Session; path=/'
       },
       SomethingChange: function(e) {
