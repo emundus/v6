@@ -3053,138 +3053,139 @@ footer#g-footer .g-grid {
   }
 }
 
-@media all and (min-width: 768px) and (max-width: 959px){
+@media all and (min-width: 768px) and (max-width: 959px) {
   button.save {
     margin-left: 20px !important;
   }
+}
 
 
-@media screen and (min-width: 768px) and (max-width: 959px) {
-  .header-right a.btn:first-child {
-    margin-bottom: 10px;
+  @media screen and (min-width: 768px) and (max-width: 959px) {
+    .header-right a.btn:first-child {
+      margin-bottom: 10px;
+    }
+
+    #g-navigation {
+      border-bottom: 1px solid #eeeeee;
+      width: 100vw;
+
+      .g-container {
+        padding: 10px;
+        width: 95%;
+        margin: auto !important;
+      }
+
+      #header-a {
+        justify-content: center;
+        margin-bottom: 18px;
+      }
+    }
+
+    .g-branding {
+      text-align: inherit;
+    }
+
+    #g-main-mainbody {
+      padding-top: 0;
+    }
+
+    h1 {
+      font-size: 28px;
+    }
+
+    h2 {
+      font-size: 25px;
+    }
+
+    h3 {
+      font-size: 22px;
+    }
+
+    h4 {
+      font-size: 18px;
+    }
+
+    .col-xs-12.col-md-6,
+    .col-xs-12.col-md-6 {
+
+      &.main-page-file-progress,
+      &.main-page-file-info {
+        width: 50%;
+      }
+    }
   }
 
-  #g-navigation {
-    border-bottom: 1px solid #eeeeee;
-    width: 100vw;
+  @media all and (max-width: 959px) {
+    section#g-navigation {
+      width: auto !important;
+    }
 
-    .g-container {
-      padding: 10px;
+    .row {
+      margin-left: 0px;
+    }
+
+    .container {
+      padding-right: 0;
+      padding-left: 0;
+    }
+
+    .bas-footer {
+      width: 90%;
+    }
+
+    #g-navigation .g-container {
+      padding: 10px 30px !important;
+    }
+  }
+
+  @media screen and (min-width: 960px) and (max-width: 1199px) {
+    #g-main-mainbody {
+      padding-top: 0;
+    }
+
+    .bas-footer {
       width: 95%;
-      margin: auto !important;
-    }
-
-    #header-a {
-      justify-content: center;
-      margin-bottom: 18px;
     }
   }
 
-  .g-branding {
-    text-align: inherit;
-  }
-
-  #g-main-mainbody {
-    padding-top: 0;
-  }
-
-  h1 {
-    font-size: 28px;
-  }
-
-  h2 {
-    font-size: 25px;
-  }
-
-  h3 {
-    font-size: 22px;
-  }
-
-  h4 {
-    font-size: 18px;
-  }
-
-  .col-xs-12.col-md-6,
-  .col-xs-12.col-md-6 {
-
-    &.main-page-file-progress,
-    &.main-page-file-info {
-      width: 50%;
+  @media screen and (max-width: 991px) {
+    section.container {
+      float: none !important;
     }
   }
-}
 
-@media all and (max-width: 959px) {
-  section#g-navigation {
-    width: auto !important;
+  @media all and (max-width: 1239px) {
+
+    /* FOOTER */
+    .em-containerAdresseLogo {
+      width: 60% !important;
+    }
+
+    /* STRUCUTURE */
+    .g-container {
+      width: 100% !important;
+    }
+
+    section#g-navigation {
+      width: auto !important;
+    }
+
+    #g-navigation .g-main-nav .g-toplevel > li {
+      margin: 0 8px;
+    }
+
+    #g-utility #drawer .moduletable {
+      width: 100% !important;
+      margin-left: 0 !important;
+    }
+
+    #g-container-main {
+      padding: 20px;
+    }
+
+    /* GENERAL */
+    #gototop div {
+      display: none !important;
+    }
+
   }
-
-  .row {
-    margin-left: 0px;
-  }
-
-  .container {
-    padding-right: 0;
-    padding-left: 0;
-  }
-
-  .bas-footer {
-    width: 90%;
-  }
-
-  #g-navigation .g-container {
-    padding: 10px 30px !important;
-  }
-}
-
-@media screen and (min-width: 960px) and (max-width: 1199px) {
-  #g-main-mainbody {
-    padding-top: 0;
-  }
-
-  .bas-footer {
-    width: 95%;
-  }
-}
-
-@media screen and (max-width: 991px) {
-  section.container {
-    float: none !important;
-  }
-}
-
-@media all and (max-width: 1239px) {
-
-  /* FOOTER */
-  .em-containerAdresseLogo {
-    width: 60% !important;
-  }
-
-  /* STRUCUTURE */
-  .g-container {
-    width: 100% !important;
-  }
-
-  section#g-navigation {
-    width: auto !important;
-  }
-
-  #g-navigation .g-main-nav .g-toplevel>li {
-    margin: 0 8px;
-  }
-
-  #g-utility #drawer .moduletable {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-
-  #g-container-main {
-    padding: 20px;
-  }
-
-  /* GENERAL */
-  #gototop div {
-    display: none !important;
-  }
-
-}
