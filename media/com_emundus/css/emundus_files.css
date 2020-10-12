@@ -2357,13 +2357,46 @@ a.copy-0:focus {
     align-items: center;
 }
 
+@media all and (max-width: 479px) {
+    .g-back-office-emundus-tableau #em_select_filter select#select_filter {
+        width: 85% !important;
+    }
+
+    .g-back-office-emundus-tableau.files-page  fieldset.em-personalDetail {
+        overflow-x: scroll;
+    }
+
+    .g-back-office-emundus-tableau.files-page  #collapseARCHIVE .panel-body {
+        overflow-x: scroll;
+    }
+
+    .g-back-office-emundus-tableau.files-page  .panel.panel-default div.panel-heading[class*="-heading"] {
+        height: 90px;
+    }
+
+    .g-back-office-emundus-tableau.files-page  .panel-heading .btn-group.pull-right {
+        margin-top: 10px;
+    }
+
+    .g-back-office-emundus-tableau.files-page select[multiple] {
+        height: 50px !important;
+    }
+
+    .g-back-office-emundus-tableau.files-page .em-collapse-container .em-utilitize {
+        flex-direction: column;
+    }
+
+    .g-back-office-emundus-tableau.files-page .em-utilitize input#em-searchbar {
+        width: 13rem !important;
+    }
+}
+
 @media all and (max-width: 767px) {
 
     #em-hide-filters {
         display: none;
     }
 }
-
 
 @media all and (max-width: 959px) {
 

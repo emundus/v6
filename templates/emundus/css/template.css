@@ -971,7 +971,7 @@ li.g-menu-item:hover ul.g-dropdown {
     content: "";
     position: relative;
     display: block;
-    bottom: -7px;
+    bottom: -3px;
     margin: auto;
   }
 }
