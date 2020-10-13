@@ -63,6 +63,7 @@ JText::script('COM_EMUNDUS_ONBOARD_FILE_TOO_BIG');
 JText::script('COM_EMUNDUS_ONBOARD_MAX_FILES_EXCEEDED');
 JText::script('COM_EMUNDUS_ONBOARD_DROP_FILE_HERE');
 JText::script('COM_EMUNDUS_ONBOARD_ERROR');
+JText::script('COM_EMUNDUS_ONBOARD_DOCUMENT_NAME');
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0 , 2);

@@ -9,6 +9,7 @@
             class="list-group"
             handle=".handle"
             v-bind="dragOptions"
+            @end="updateDocumentsOrder"
         >
           <transition-group type="transition" :value="!drag ? 'flip-list' : null">
             <li class="list-group-item"
@@ -21,7 +22,7 @@
                   {{ document.title }}
                   <span class="document-allowed_types">({{ document.ext }})</span>
                 </span>
-                <button type="button" class="buttonDeleteDoc" style="margin-left: 0">
+                <button type="button" class="buttonDeleteDoc" @click="editName(document)" style="margin-left: 0">
                   <em class="fas fa-pencil-alt"></em>
                 </button>
                 <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
@@ -58,7 +59,8 @@
 <script>
 import axios from "axios";
 import Swal from "sweetalert2";
-import vueDropzone from 'vue2-dropzone'
+import vueDropzone from 'vue2-dropzone';
+import draggable from "vuedraggable";
 
 const qs = require("qs");
 
@@ -78,7 +80,8 @@ export default {
   name: "addDocumentsDropfiles",
 
   components: {
-    vueDropzone
+    vueDropzone,
+    draggable
   },
 
   props: {
@@ -114,6 +117,7 @@ export default {
       Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
       DropHere: Joomla.JText._("COM_EMUNDUS_ONBOARD_DROP_FILE_HERE"),
       Error: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR"),
+      DocumentName: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENT_NAME"),
     };
   },
 
@@ -130,6 +134,52 @@ export default {
         }
       }).then(response => {
           this.documents = response.data.documents;
+      });
+    },
+    updateDocumentsOrder(){
+      this.documents.forEach((document,index) => {
+        document.ordering = index;
+      });
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_onboard&controller=campaign&task=updateorderdropfiledocuments",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          documents: this.documents,
+        })
+      });
+    },
+    editName(doc){
+      Swal.fire({
+        title: '',
+        html: '<div class="form-group campaign-label">' +
+            '<label for="campLabel">' + this.DocumentName + '</label><input type="text" id="label_' + doc.id + '" value="' + doc.title + '"/>' +
+            '</div>',
+        confirmButtonColor: '#de6339',
+        showCloseButton: true,
+        allowOutsideClick: false,
+        customClass: {
+          popup: 'swal-popup-custom',
+        }
+      }).then((value) => {
+        if(value){
+          let newname = document.getElementById('label_' + doc.id).value
+          axios({
+            method: "post",
+            url: "index.php?option=com_emundus_onboard&controller=campaign&task=editdocumentdropfile",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              did: doc.id,
+              name: newname
+            })
+          }).then(() => {
+            doc.title = newname;
+          });
+        }
       });
     },
     deleteDoc(index,id) {

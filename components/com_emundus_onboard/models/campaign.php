@@ -276,6 +276,10 @@ class EmundusonboardModelcampaign extends JModelList
 
         if (count($data) > 0) {
             try {
+                JPluginHelper::importPlugin('emundus', 'setup_category');
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onCampaignDelete', $data);
+
                 foreach (array_values($data) as $id) {
                     $falang->deleteFalang($id,'emundus_setup_campaigns','label');
                 }
@@ -486,6 +490,10 @@ class EmundusonboardModelcampaign extends JModelList
 
                 $user = JFactory::getUser();
                 $settings->onAfterCreateCampaign($user->id);
+
+                JPluginHelper::importPlugin('emundus', 'setup_category');
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onCampaignCreate', $campaign_id);
 
                 return $campaign_id;
             } catch (Exception $e) {
@@ -847,19 +855,19 @@ class EmundusonboardModelcampaign extends JModelList
         $query = $db->getQuery(true);
 
         try {
-            $campaign_dropfile_cat = 0;
+            $campaign_dropfile_cat = null;
             $query->select('id,params')
                 ->from($db->quoteName('#__categories'))
-                ->where($db->quoteName('extension') . ' = ' . $db->quote('com_dropfiles'));
+                ->where('json_extract(`params`, "$.idCampaign") LIKE ' . $db->quote('"'.$cid.'"'))
+                ->andWhere($db->quoteName('extension') . ' LIKE ' . $db->quote('com_dropfiles'));
             $db->setQuery($query);
-            $dropfiles_cat = $db->loadObjectList();
+            $campaign_dropfile_cat = $db->loadResult();
 
-            foreach ($dropfiles_cat as $dropfile_cat){
-                $param = json_decode($dropfile_cat->params);
-                if($param->idCampaign == $cid){
-                    $campaign_dropfile_cat = $dropfile_cat->id;
-                    break;
-                }
+            if(!$campaign_dropfile_cat){
+                JPluginHelper::importPlugin('emundus', 'setup_category');
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onCampaignCreate', $cid);
+                $this->getCampaignCategory($cid);
             }
             return $campaign_dropfile_cat;
         } catch (Exception $e) {
@@ -875,7 +883,8 @@ class EmundusonboardModelcampaign extends JModelList
         try {
             $query->select('*')
                 ->from($db->quoteName('#__dropfiles_files'))
-                ->where($db->quoteName('catid') . ' = ' . $db->quote($campaign_cat));
+                ->where($db->quoteName('catid') . ' = ' . $db->quote($campaign_cat))
+                ->group($db->quoteName('ordering'));
             $db->setQuery($query);
             return $db->loadObjectList();
         }  catch (Exception $e) {
@@ -917,6 +926,43 @@ class EmundusonboardModelcampaign extends JModelList
                 ->where($db->quoteName('id') . ' = ' . $db->quote(($did)));
             $db->setQuery($query);
             return $db->execute();
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function editDocumentDropfile($did,$name){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            $query->update($db->quoteName('#__dropfiles_files'))
+                ->set($db->quoteName('title') . ' = ' . $db->quote($name))
+                ->where($db->quoteName('id') . ' = ' . $db->quote(($did)));
+            $db->setQuery($query);
+            return $db->execute();
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function updateOrderDropfileDocuments($documents){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            foreach ($documents as $document) {
+                $query->clear()
+                    ->update($db->quoteName('#__dropfiles_files'))
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote($document['ordering']))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote(($document['id'])));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            return true;
         }  catch (Exception $e) {
             JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;
