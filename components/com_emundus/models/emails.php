@@ -473,7 +473,7 @@ class EmundusModelEmails extends JModelList {
                     $replacements[] = $request[0];
                 }
 
-            } else {
+            } elseif (!empty($fnum)) {
                 $request = explode('|', $value);
                 $val = $this->setTagsFabrik($request[1], array($fnum));
                 $replacements[] = eval("$val");
