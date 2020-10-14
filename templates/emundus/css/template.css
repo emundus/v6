@@ -44,7 +44,6 @@ a:hover {
   vertical-align: middle;
   border: 0;
   max-height: 64px;
-  filter: grayscale(100) brightness(10);
 }
 
 .g-container{
