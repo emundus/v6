@@ -95,7 +95,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			}
 		}
 		$str = '<div><label class="fabrikLabel " for="'.$element->name.'">'.$element->label.'<img class="fabrikTip fabrikImg" title="" src="media/com_fabrik/images/notempty.png"></label>';
-		if ($this->isReferentLetterUploaded($this->_attachment_id,$fnum)) {
+		if ($this->isReferentLetterUploaded($this->_attachment_id,$fnum) || $this->isReferentFormUploaded($this->_attachment_id,$fnum) == 1) {
 			$str .= '<span class="emundusreferent_uploaded">'.JText::_('REFERENCE_LETTER_UPLOADED').'<span>';
 		} else {
 			$str .= '<input ' ;
@@ -144,6 +144,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$opts->sendmail = JText::_('SEND_EMAIL');
 		$opts->sendmailagain = JText::_('SEND_EMAIL_AGAIN');
 		$opts->attachment_id = $params->get('attachment_id');
+		$opts->form_recommend = $params->get('form_id', '68');
 		$opts->fullName = $this->getFullName(false, true);
 		$opts->formid = $this->getForm()->getForm()->id;
 		$opts->filterid = $filterid;
@@ -228,6 +229,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 
 		$recipient = $jinput->post->getRaw('email');
 		$attachment_id = $jinput->post->getInt('attachment_id');
+		$form_recommend = $jinput->post->getInt('form_recommend');
 		$fnum = $jinput->post->get('fnum');
 
 		if (empty($recipient)) {
@@ -294,7 +296,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			$fnum_detail = $profile->getFnumDetails($fnum);
 
 			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-			$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid=68&keyid='.$key.'&sid='.$this->_user->id;
+			$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$form_recommend.'&keyid='.$key.'&sid='.$this->_user->id;
 
 			$patterns = array('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', '/\[PROGRAMME_NAME\]/');
 			$replacements = array($this->_user->id, $this->_user->name, $this->_user->email, $link_upload, $fnum_detail['label']);
@@ -367,5 +369,13 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$db->query();
 		return ($db->loadResult() > 0);
 	}
+
+	protected function isReferentFormUploaded($attachment_id,$fnum){
+        $db = JFactory::getDBO();
+        $query = 'SELECT uploaded FROM #__emundus_files_request WHERE fnum LIKE '.$db->quote($fnum).' AND attachment_id='.$attachment_id.' limit 1 ORDER DESC';
+        $db->setQuery($query);
+
+        return $db->loadColumn();
+    }
 
 }
