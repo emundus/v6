@@ -44,60 +44,75 @@
             @removeMenu="removeMenu"
     />
     <div class="row form-builder">
-      <div class="actions-menu menu-block">
+      <div class="sidebar-formbuilder">
         <div class="heading-block">
           <h1 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h1>
           <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit">
             <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
           </a>
         </div>
-        <div>
-          <div class="heading-actions">
-            <label class="form-title" style="padding: 0; margin: 0">{{Actions}}</label>
+        <transition name="little-move-right">
+          <div v-if="!actions_menu">
+            <button class="actions-button" type="button" @click="actions_menu = true">
+              {{Actions}}
+              <em class="fas fa-plus-circle"></em>
+            </button>
           </div>
-          <div class="action-links">
-              <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')">
-                <em class="add-page-icon col-md-offset-1 col-sm-offset-1"></em>
-                <label class="action-label col-md-offset-2 col-sm-offset-1">{{addMenu}}</label>
-              </a>
-              <a class="d-flex action-link" @click="createGroup()">
-                <em class="add-group-icon col-md-offset-1 col-sm-offset-1"></em>
-                <label class="action-label col-md-offset-2 col-sm-offset-1">{{addGroup}}</label>
-              </a>
-              <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements">
-                <em class="add-element-icon col-md-offset-1 col-sm-offset-1"></em>
-                <label class="action-label col-md-offset-2 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
-              </a>
-            <transition :name="'slide-down'" type="transition">
-              <draggable
-                      v-model="plugins"
-                      v-bind="dragOptions"
-                      v-if="addingElement"
-                      handle=".handle"
-                      @start="dragging = true;draggingIndex = index"
-                      @end="addingNewElement($event)"
-                      drag-class="plugin-drag"
-                      chosen-class="plugin-chosen"
-                      ghost-class="plugin-ghost"
-                      style="padding-bottom: 2em">
-                  <div class="d-flex plugin-link col-md-offset-3 col-sm-offset-2 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
-                    <em :class="plugin.icon"></em>
-                    <span class="ml-10px">{{plugin.name}}</span>
-                  </div>
-              </draggable>
-            </transition>
+        </transition>
+        <transition name="move-right">
+          <div class="actions-menu menu-block" v-if="actions_menu">
+            <div>
+              <div class="heading-actions">
+                <label class="form-title" style="padding: 0; margin: 0">{{Actions}}</label>
+                <button type="button" class="btnCloseModal" @click="actions_menu = false">
+                  <em class="fas fa-times-circle pointer" ></em>
+                </button>
+              </div>
+              <div class="action-links">
+                  <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')">
+                    <em class="add-page-icon col-md-offset-1 col-sm-offset-1"></em>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{addMenu}}</label>
+                  </a>
+                  <a class="d-flex action-link" @click="createGroup()">
+                    <em class="add-group-icon col-md-offset-1 col-sm-offset-1"></em>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{addGroup}}</label>
+                  </a>
+                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements">
+                    <em class="add-element-icon col-md-offset-1 col-sm-offset-1"></em>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
+                  </a>
+                <transition :name="'slide-down'" type="transition">
+                  <draggable
+                          v-model="plugins"
+                          v-bind="dragOptions"
+                          v-if="addingElement"
+                          handle=".handle"
+                          @start="dragging = true;draggingIndex = index"
+                          @end="addingNewElement($event)"
+                          drag-class="plugin-drag"
+                          chosen-class="plugin-chosen"
+                          ghost-class="plugin-ghost"
+                          style="padding-bottom: 2em">
+                      <div class="d-flex plugin-link col-md-offset-3 col-sm-offset-2 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
+                        <em :class="plugin.icon"></em>
+                        <span class="ml-10px">{{plugin.name}}</span>
+                      </div>
+                  </draggable>
+                </transition>
+              </div>
+            </div>
+            <a class="send-form-button" @click="sendForm">
+              <label style="cursor: pointer" class="mb-0">{{sendFormButton}}</label>
+              <em class="fas fa-paper-plane" style="font-size: 20px"></em>
+            </a>
+            <a class="send-form-button test-form-button" style="margin-top: 1em" @click="testForm">
+              <label style="cursor: pointer">{{testingForm}}</label>
+              <em class="fas fa-vial" style="font-size: 20px"></em>
+            </a>
           </div>
-        </div>
-        <a class="send-form-button" @click="sendForm">
-          <label style="cursor: pointer">{{sendFormButton}}</label>
-          <em class="fas fa-paper-plane" style="font-size: 20px"></em>
-        </a>
-        <a class="send-form-button test-form-button" style="margin-top: 1em" @click="testForm">
-          <label style="cursor: pointer">{{testingForm}}</label>
-          <em class="fas fa-vial" style="font-size: 20px"></em>
-        </a>
+        </transition>
       </div>
-      <div class="col-md-8 col-sm-9 col-md-offset-4 col-sm-offset-4 menu-block">
+      <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : 'col-md-10 col-md-offset-2 col-sm-11 col-sm-offset-1'" class="menu-block">
         <ul class="form-section">
           <li>
             <a :class="menuHighlight === 0 ? 'form-section__current' : ''" @click="menuHighlight = 0;indexHighlight = 0">{{FormPage}}</a>
@@ -188,7 +203,6 @@
   import ModalMenu from "../components/formClean/ModalMenu";
 
   import _ from 'lodash';
-  import ModalElement from "../components/formClean/ModalElement";
   import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
   import List from "./list";
   import ModalTestingForm from "@/components/formClean/ModalTestingForm";
@@ -208,7 +222,6 @@
       ModalTestingForm,
       List,
       ModalAffectCampaign,
-      ModalElement,
       Builder,
       ModalSide,
       ModalMenu,
@@ -217,6 +230,7 @@
     data() {
       return {
         // UX variables
+        actions_menu: true,
         UpdateUx: false,
         menuHighlight: 0,
         indexHighlight: "0",
@@ -318,44 +332,11 @@
 
     methods: {
       createElement(gid,plugin,order) {
-        if(!_.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups)){
-          this.loading = true;
-          axios({
-            method: "post",
-            url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              gid: gid,
-              plugin: plugin
-            })
-          }).then((result) => {
-            axios({
-              method: "get",
-              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
-              params: {
-                element: result.data.scalar,
-                gid: gid
-              },
-              paramsSerializer: params => {
-                return qs.stringify(params);
-              }
-            }).then(response => {
-              this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
-              this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
-              this.$refs.builder.updateOrder(gid,this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts);
-              this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
-              this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
-              this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
-              this.loading = false;
-            });
-          });
+        let list = this.formObjectArray;
+        if(this.menuHighlight === 1){
+          list = this.submittionPages;
         }
-      },
-      createSubmittionElement(gid,plugin,order){
-        if(!_.isEmpty(this.submittionPages[this.indexHighlight].object.Groups)){
+        if(!_.isEmpty(list[this.indexHighlight].object.Groups)){
           this.loading = true;
           axios({
             method: "post",
@@ -380,10 +361,21 @@
                 return qs.stringify(params);
               }
             }).then(response => {
-              this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
-              this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
-              this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
-              this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+              if(this.menuHighlight === 0) {
+                this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid], 'elements[element' + response.data.id + ']', response.data)
+                this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.splice(order, 0, response.data);
+                this.$refs.builder.updateOrder(gid, this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts);
+                this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+                this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
+                this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
+              } else {
+                this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
+                this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
+                this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
+                this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+                this.$refs.builder_submit.$refs.builder_viewer.enableActionBar(response.data.id);
+                this.$refs.builder_submit.$refs.builder_viewer.enableLabelInput(response.data.id);
+              }
               this.loading = false;
             });
           });
@@ -395,11 +387,7 @@
         let plugin = evt.clone.id.split('_')[1];
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
         if(typeof gid != 'undefined'){
-          if(this.menuHighlight === 0) {
-            this.createElement(gid, plugin, evt.newIndex);
-          } else {
-            this.createSubmittionElement(gid, plugin, evt.newIndex);
-          }
+          this.createElement(gid, plugin, evt.newIndex);
         }
       },
       addingNewElementByDblClick: _.debounce(function(plugin) {
@@ -411,6 +399,10 @@
       }, 250, { 'maxWait': 1000 }),
       createGroup() {
         this.loading = true;
+        let param = this.formObjectArray[this.indexHighlight].object.id;
+        if(this.menuHighlight === 1){
+          param = this.submittionPages[this.indexHighlight].object.id;
+        }
         axios({
           method: "post",
           url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimplegroup",
@@ -418,7 +410,7 @@
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify({
-            fid: this.formObjectArray[this.indexHighlight].object.id
+            fid: param
           })
         }).then((result) => {
           axios({
@@ -462,25 +454,46 @@
         this.UpdateUx = true;
       },
       pushGroup(group) {
-        this.formObjectArray.forEach((form, index) => {
-          if(form.object.id == group.formid){
-            this.formObjectArray[index]['object']['Groups']['group_'+group.group_id] = {
-              elements: {},
-              elts: [],
-              group_id: group.group_id,
-              group_showLegend: group.group_showLegend,
-              label: {
-                fr: group.label.fr,
-                en: group.label.en,
-              },
-              group_tag: group.group_tag,
-              ordering: group.ordering
-            };
-          }
-        });
+        if(this.menuHighlight === 0) {
+          this.formObjectArray.forEach((form, index) => {
+            if (form.object.id == group.formid) {
+              this.formObjectArray[index]['object']['Groups']['group_' + group.group_id] = {
+                elements: {},
+                elts: [],
+                group_id: group.group_id,
+                group_showLegend: group.group_showLegend,
+                label: {
+                  fr: group.label.fr,
+                  en: group.label.en,
+                },
+                group_tag: group.group_tag,
+                ordering: group.ordering
+              };
+            }
+          });
+          this.$refs.builder.getDataObject();
+          this.$refs.builder.$refs.builder_viewer.openGroup[group.group_id] = true;
+        } else {
+          this.submittionPages.forEach((form, index) => {
+            if (form.object.id == group.formid) {
+              this.submittionPages[index]['object']['Groups']['group_' + group.group_id] = {
+                elements: {},
+                elts: [],
+                group_id: group.group_id,
+                group_showLegend: group.group_showLegend,
+                label: {
+                  fr: group.label.fr,
+                  en: group.label.en,
+                },
+                group_tag: group.group_tag,
+                ordering: group.ordering
+              };
+            }
+          });
+          this.$refs.builder_submit.getDataObject();
+          this.$refs.builder_submit.$refs.builder_viewer.openGroup[group.group_id] = true;
+        }
         this.elementDisabled = false;
-        this.$refs.builder.getDataObject();
-        this.$refs.builder.$refs.builder_viewer.openGroup[group.group_id] = true;
         setTimeout(() => {
           window.scrollTo(0,document.body.scrollHeight);
         }, 200);
@@ -795,6 +808,14 @@
         this.indexHighlight = index;
         this.rgt = rgt;
         this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
+        if(this.menuHighlight === 1){
+          this.$refs.builder_submit.$refs.builder_viewer.clickUpdatingLabel = false;
+          this.$refs.builder_submit.$refs.builder_viewer.translate.label = false;
+        } else {
+          this.$refs.builder.$refs.builder_viewer.clickUpdatingLabel = false;
+          this.$refs.builder.$refs.builder_viewer.translate.label = false;
+        }
+
         document.cookie = 'page_' + this.prid + '='+index+'; expires=Session; path=/'
       },
       SomethingChange: function(e) {
@@ -872,70 +893,14 @@
 </script>
 
 <style scoped lang="scss">
-  .fa-li {
-    left: -0.45em;
-  }
-
-  .full-width {
-    width: 100vw;
-    position: relative;
-    margin-left: -50vw !important;
-    left: 50%;
-    margin-top: -4.2%;
-  }
-  .container {
-    margin-bottom: 5%;
-  }
-  h1 {
-    margin: 20px;
-    line-height: 20px;
-    font-family: "Open Sans", sans-serif;
-    box-sizing: border-box;
-  }
-  .sidebar {
-    padding-top: 20px;
-    background-color: #f0f0f0;
-    height: 100%;
-    width: 16.9%;
-  }
-  body {
-    background-color: #fafafa;
-  }
-  .Topbar {
-    text-align: center;
-    font-family: "Open Sans", sans-serif;
-    padding: 25px 0;
-    background-color: #f0f0f0;
-    height: 150px;
-  }
-  .separator {
-    border-right: 1px solid hsla(0, 0%, 81%, 0.5);
-  }
-
-  .btnreturn {
-    position: relative;
-    left: 37%;
-    top: 5%;
-    background-color: #1b1f3c;
-    border-radius: 28px;
-    border: 1px solid #1b1f3c;
-    display: inline-block;
-    cursor: pointer;
-    color: #ffffff;
-    font-family: Arial;
-    font-size: 17px;
-    padding: 12px 27px;
-    text-decoration: none;
-  }
-  .btnreturn:hover {
-    background-color: #ef6d3b;
-    border: 1px solid #ef6d3b;
-  }
-
   .form-builder{
     margin-top: 6em;
     padding: 1em;
     min-height: 50em;
+  }
+
+  .menu-block {
+    margin-top: 0;
   }
 
   .form-title{
@@ -951,47 +916,6 @@
       margin-top: 0;
     }
   }
-  .select-form{
-    display: flex;
-  }
-  .select-form select{
-    width: 75%;
-    margin-left: 1em;
-  }
-
-  .add-menu{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: unset;
-    cursor: pointer;
-    align-self: baseline;
-  }
-
-  .add-menu:hover > .btnPM {
-    background-color: #1b1f3c;
-    color: white;
-  }
-
-  .dropdown-toggle{
-    height: auto;
-    background: white;
-  }
-  .divider-menu{
-    width: 100%;
-    margin: 0em;
-  }
-  .heading-block{
-    text-align: center;
-    margin-bottom: 1em;
-    margin-top: 4em;
-    width: 75%;
-  }
-  .edit-icon{
-    align-items: center;
-    display: flex;
-    justify-content: center;
-  }
   .container-fluid{
     margin-bottom: 10em;
   }
@@ -1000,25 +924,6 @@
     position: relative;
     cursor: grab;
     left: 5px;
-  }
-  .heading-actions{
-    background: #1b1f3c;
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    color: #fff;
-  }
-  .action-link{
-    padding: 1em 10px 10px 5px;
-    cursor: pointer;
-  }
-  .action-link:hover > .action-label{
-    color: #de6339;
-  }
-  .action-links{
-    background: #fafafa;
   }
   .form-viewer-builder{
     background: #fafafa;

@@ -16,12 +16,12 @@
                 @updateDatabases="getDatabases"
         />
         <div class="d-flex">
-            <a class="bouton-sauvergarder-et-continuer-3 mr-1" @click="$modal.show('modalAddDatas')">
+            <button type="button" class="bouton-sauvergarder-et-continuer-3 mr-1" @click="$modal.show('modalAddDatas')">
                 {{CreateDatas}}
-            </a>
-            <a class="bouton-sauvergarder-et-continuer-3" @click="$modal.show('modalImportDatas')">
+            </button>
+            <button type="button" class="bouton-sauvergarder-et-continuer-3" @click="$modal.show('modalImportDatas')">
                 {{ImportDatas}}
-            </a>
+            </button>
         </div>
         <div class="mt-1">
             <div v-for="(database,index) in databases" class="db-table">

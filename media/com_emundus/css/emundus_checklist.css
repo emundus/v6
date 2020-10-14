@@ -578,3 +578,16 @@ body.view-reset label#jform_username-lbl::after,
             justify-content: flex-start;
     }
 }
+
+@media all and (min-width: 768px) and (max-width: 959px) {
+    .view-details #g-container-main h3.legend {
+        margin-top: 30px !important;
+    }
+    .view-details #g-container-main .page-header h1 {
+        margin-bottom: 30px !important;
+    }
+
+    .view-details #g-sidebar .moduletable, .view-checklist #g-sidebar .moduletable {
+        padding: 0px !important;
+    }
+}

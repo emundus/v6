@@ -274,7 +274,7 @@
                     <strong class="b switch"></strong>
                     <strong class="b track"></strong>
                   </div>
-                  <label for="apply" class="ml-10px">{{ DepotDeDossier }}</label>
+                  <label for="apply" class="ml-10px mb-0">{{ DepotDeDossier }}</label>
                 </div>
               </div>
             </div>
@@ -288,19 +288,19 @@
             <div class="container-evaluation w-clearfix">
               <button
                 type="button"
-                class="bouton-sauvergarder-et-continuer w-button"
+                class="bouton-sauvergarder-et-continuer"
                 @click="quit = 1; submit()">
                 {{ Continuer }}
               </button>
               <button
                 type="button"
-                class="bouton-sauvergarder-et-continuer w-quitter w-button"
+                class="bouton-sauvergarder-et-continuer w-quitter"
                 @click="quit = 0; submit()">
                 {{ Quitter }}
               </button>
               <button
                 type="button"
-                class="bouton-sauvergarder-et-continuer w-retour w-button"
+                class="bouton-sauvergarder-et-continuer w-retour"
                 onclick="history.go(-1)">
                 {{ Retour }}
               </button>
@@ -843,169 +843,11 @@ export default {
 </script>
 
 <style scoped>
-.container-evaluation {
-  position: relative;
-  width: 85%;
-  margin-right: auto;
-  margin-left: auto;
-}
-
-h2 {
-  color: #1b1f3c !important;
-}
-
-.w-select {
-  background-color: white;
-  border-color: #cccccc;
-}
-
-.bouton-sauvergarder-et-continuer {
-  position: relative;
-  padding: 10px 30px;
-  float: right;
-  border-radius: 4px;
-  background-color: #1b1f3c;
-  -webkit-transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
-  transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
-}
-
-.last-container {
-  padding-bottom: 30px;
-}
-
-.section-principale {
-  padding-bottom: 0;
-}
-
-.toggle > b {
-  display: block;
-}
-
-.toggle {
-  position: relative;
-  width: 40px;
-  height: 20px;
-  border-radius: 100px;
-  background-color: #ddd;
-  overflow: hidden;
-  box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.05);
-}
-
-.check {
-  position: absolute;
-  display: block;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  z-index: 6;
-}
-
-.check:checked ~ .track {
-  box-shadow: inset 0 0 0 20px #4bd863;
-}
-
-.check:checked ~ .switch {
-  right: 2px;
-  left: 22px;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition-property: left, right;
-  transition-delay: 0.05s, 0s;
-}
-
-.switch {
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  bottom: 2px;
-  right: 22px;
-  background-color: #fff;
-  border-radius: 36px;
-  z-index: 1;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition-property: left, right;
-  transition-delay: 0s, 0.05s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.track {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.05);
-  border-radius: 40px;
-}
-
-.w-quitter {
-  margin-right: 5%;
-  background: none !important;
-  border: 1px solid #1b1f3c;
-  color: #1b1f3c;
-}
-
-.program-addCampaign {
-  padding: 2%;
-  margin-bottom: 5%;
-}
-
-  .d-flex{
-    display: flex;
-    align-items: center;
-  }
-
-  .d-flex label{
-    margin-bottom: 0;
-    margin-right: 10px;
-  }
-
-  #add-program{
-    width: 32px;
-    height: 30px;
-    cursor: pointer;
-    transition: transform 0.5s ease-in-out;
-  }
-
-  .translate-icon{
-    top: -5px;
-  }
-
-  .translate-icon-selected{
-    top: 0;
-  }
-
-  .w-row{
-    margin-bottom: 1em;
-  }
-
-  .inlineflex{
-    display: flex;
-    align-items: center;
-  }
-
-.users-block{
-  height: auto;
-  overflow: scroll;
-  max-height: 15vh;
-}
-
-.user-item{
-  display: flex;
-  padding: 10px;
-  background-color: #f0f0f0;
-  border-radius: 5px;
-  align-items: center;
+.w-row{
   margin-bottom: 1em;
 }
-
-.bigbox{
-  height: 30px !important;
-  width: 30px !important;
-  cursor: pointer;
+.addCampProgEmail{
+  width: 32px;
+  height: 30px;
 }
-
 </style>
