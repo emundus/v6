@@ -22,6 +22,7 @@
 		<fieldset label="PLG_ELEMENT_EMUNDUSREFERENT_HEADING" name="plg-element-emundusreferent-extra">
 			<field name="attachment_id" size="2" type="text" default="4" label="PLG_ELEMENT_EMUNDUSREFERENT_ATTACHMENTID_LABEL" description="PLG_ELEMENT_EMUNDUSREFERENT_ATTACHMENTID_DESC" />
 			<field name="email_element" size="40" type="text" default="jos_emundus_references___Email_1" label="PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_LABEL" description="PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_DESC" />
+			<field name="form_id" size="40" type="text" default="342" label="PLG_ELEMENT_EMUNDUSREFERENT_FORMID" description="PLG_ELEMENT_EMUNDUSREFERENT_FORMID_DESC" />
 			<field name="disable" type="radio" default="1" label="PLG_ELEMENT_EMUNDUSREFERENT_DISABLEELEMENT_LABEL" description="PLG_ELEMENT_EMUNDUSREFERENT_DISABLEELEMENT_DESC">
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>

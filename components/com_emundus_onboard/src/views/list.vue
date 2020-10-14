@@ -32,7 +32,7 @@
     </transition>
 
     <transition :name="'slide-down'" type="transition">
-    <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'">
+    <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
       <ul class="pagination" v-if="total > 0">
         <a @click="nbpages(pages - 1)" class="pagination-arrow arrow-left">
           <em class="fas fa-chevron-left"></em>
@@ -76,7 +76,7 @@
         </div>
       </transition>
 
-      <transition-group :name="'slide-down'" type="transition">
+      <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin-bottom: 5%;width: 100%">
         <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
@@ -95,8 +95,8 @@
         <component v-bind:is="type" />
       </div>
 
-      <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'">
-        <ul class="pagination" v-if="total > 0">
+      <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
+        <ul class="pagination" v-if="total > 0" style="position: absolute;bottom: 0;width: 100%;">
           <a @click="nbpages(pages - 1)" class="pagination-arrow arrow-left">
             <em class="fas fa-chevron-left"></em>
           </a>
@@ -165,7 +165,6 @@ import tasks from "./tasks"
 import { list } from "../store";
 import Swal from "sweetalert2";
 
-import "../assets/css/webflow.css";
 import "../assets/css/normalize.css";
 import "../assets/css/emundus-webflow.scss";
 import "../assets/css/codemirror.css";
@@ -369,85 +368,11 @@ export default {
 </script>
 
 <style scoped>
-.noPagination {
-  display: none;
-}
-
-.pagination-pages {
-  text-align: center;
-}
-
-.pagination {
-  list-style: none;
-  padding: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.pagination a,
-.pagination li {
-  border-radius: 50%;
-  color: #212121;
-  transition: 0.15s ease-in;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-}
-.pagination a:hover {
-  background: rgba(27, 31, 60, 0.8);
-  color: white;
-}
-.pagination .pagination-number,
-.pagination .pagination-arrow i {
-  vertical-align: middle;
-}
-.pagination .pagination-number {
-  font-family: sans-serif;
-  font-size: 14px;
-  text-align: center;
-  line-height: 24px;
-  width: 35px;
-  height: 35px;
-  margin-right: 10px;
-}
-.pagination .pagination-number.current-number {
-  background: #1b1f3c;
-  color: #fff;
-  border: unset;
-}
-
-.pagination-arrow{
-  width: 35px;
-  height: 35px;
-  align-items: center;
-  display: flex !important;
-  justify-content: center;
-}
-
-.arrow-left {
-  margin-right: 10px !important;
-}
-
-h2 {
-  color: #de6339 !important;
-}
-
-.noneDiscover {
-  position: absolute;
-  top: 35%;;
-  font-size: 20px;
-  color: #1b1f3c;
-  width: 100%;
-  margin: 0 auto;
-  text-align: center;
-}
+  h2 {
+    color: #de6339 !important;
+  }
 
   .loading-form{
     top: unset;
   }
-
-.email-sections{
-  width: 50%;
-  margin: 0 auto;
-}
 </style>

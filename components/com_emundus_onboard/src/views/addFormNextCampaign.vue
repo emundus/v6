@@ -88,10 +88,10 @@
         <div class="section-sauvegarder-et-continuer-funnel">
             <div class="w-container">
                 <div class="container-evaluation w-clearfix">
-                    <a @click="next()" class="bouton-sauvergarder-et-continuer-3">{{ Continuer }}</a>
-                    <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previous()">
+                    <button @click="next()" class="bouton-sauvergarder-et-continuer" type="button">{{ Continuer }}</button>
+                    <button class="bouton-sauvergarder-et-continuer w-retour" type="button" @click="previous()">
                         {{ Retour }}
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
@@ -349,74 +349,21 @@
     };
 </script>
 
-<style>
-    .w-col-9 {
-        width: 75% !important;
-        padding-top: 0 !important;
-    }
+<style scoped>
+.edit-icon{
+  margin-left: 10px;
+  border: solid 1px #de6339;
+  border-radius: 50%;
+  background-color: #de6339;
+  color: white;
+  height: 32px;
+  width: 32px;
+  transition: all 0.2s ease-in-out;
+}
 
-    .column-menu-main{
-        position: relative;
-        min-height: 100vh;
-    }
-
-    .description-block{
-        margin-top: unset;
-        margin-bottom: 1em;
-    }
-
-    .divider-menu{
-        width: 80%;
-        margin: 1em;
-    }
-
-    .heading-block{
-        display: flex;
-        align-items: center;
-    }
-
-    .heading{
-        margin-bottom: 5px;
-    }
-
-    .edit-icon{
-        margin-left: 10px;
-        border-style: solid;
-        border-width: 1px;
-        border-color: #de6339;
-        border-radius: 50%;
-        background-color: #de6339;
-        color: white;
-        height: 32px;
-        width: 32px;
-        transition: all 0.2s ease-in-out;
-    }
-
-    .edit-icon:hover{
-        border-color: #de6339;
-        background-color: white;
-        color: black;
-    }
-
-    .container-menu-funnel{
-        flex-direction: column;
-    }
-
-    .paragraphe-sous-titre{
-        margin-bottom: 1em;
-        margin-top: 1em;
-    }
-
-    .grey-link{
-        color: grey;
-    }
-
-    .icon-warning-margin{
-        margin-top: 2px;
-        margin-right: 5px;
-    }
-
-    .w-row{
-        margin-bottom: 10em;
-    }
+.edit-icon:hover{
+  border-color: #de6339;
+  background-color: white;
+  color: black;
+}
 </style>

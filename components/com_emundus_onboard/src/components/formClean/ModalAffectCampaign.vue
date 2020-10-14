@@ -45,10 +45,11 @@
           class="bouton-sauvergarder-et-continuer-3"
           @click.prevent="affectToForm"
         >{{ Continuer }}</a>
-        <a
-          class="bouton-sauvergarder-et-continuer-3 w-retour"
-          @click.prevent="$modal.hide('modalAffectCampaign')"
-        >{{Retour}}</a>
+        <a v-if="!testing"
+          class="bouton-sauvergarder-et-continuer-3"
+          style="margin-right: 20px"
+          @click.prevent="goAddCampaign"
+        >{{addCampaign}}</a>
       </div>
     </modal>
   </span>
@@ -60,7 +61,7 @@ const qs = require("qs");
 
 export default {
   name: "modalAffectCampaign",
-  props: { prid: Number },
+  props: { prid: Number, testing: Boolean },
   data() {
     return {
       campaigns: [],
@@ -70,6 +71,7 @@ export default {
       Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
       affectCampaigns: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_AFFECTCAMPAIGNS"),
       campaignsEmpty: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_CAMPAIGNSEMPTY"),
+      addCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
     };
   },
   methods: {
@@ -80,24 +82,52 @@ export default {
     },
     affectToForm() {
       let campaigns = [];
-      this.campaigns.forEach(campaign => {
-        if(this.affectedCampaigns[campaign.id]){
-          campaigns.push(campaign.id);
+      if(this.affectedCampaigns.length > 0) {
+        this.campaigns.forEach(campaign => {
+          if (this.affectedCampaigns[campaign.id]) {
+            campaigns.push(campaign.id);
+          }
+        });
+        axios({
+          method: "post",
+          url: 'index.php?option=com_emundus_onboard&controller=form&task=affectcampaignstoform',
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            prid: this.prid,
+            campaigns: campaigns
+          })
+        }).then(() => {
+          if(!this.testing) {
+            window.location.href = '/configuration-forms'
+          } else {
+            if(campaigns.length > 0){
+              this.$emit("testForm");
+              this.$modal.hide('modalAffectCampaign');
+            }
+          }
+        });
+      } else {
+        if(!this.testing) {
+          window.location.href = '/configuration-forms'
+        } else {
+          this.$modal.hide('modalAffectCampaign');
         }
-      });
+      }
+    },
+    goAddCampaign() {
       axios({
-        method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=form&task=affectcampaignstoform',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        params: {
+          link: 'index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=',
         },
-        data: qs.stringify({
-          prid: this.prid,
-          campaigns: campaigns
-        })
-      }).then(() => {
-        this.$modal.hide('modalAffectCampaign');
-        history.go(-1);
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        window.location.href = window.location.pathname + response.data.data;
       });
     },
     getCampaigns() {

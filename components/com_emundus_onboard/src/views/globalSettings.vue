@@ -30,7 +30,7 @@
                 <i class="fas fa-check"></i><span class="mr-1">{{Saved}}</span>
               </div>
             </transition>
-            <a @click="savePage()" class="bouton-sauvergarder-et-continuer-3">{{ Save }}</a>
+            <button type="button" @click="savePage()" class="bouton-sauvergarder-et-continuer">{{ Save }}</button>
           </div>
         </div>
         <p class="paragraphe-sous-titre">{{funnelDescription[langue][menuHighlight]}}</p>
@@ -43,13 +43,13 @@
                   ref="customization"
           ></customization>
 
-          <editUsers
+          <!--<editUsers
                   v-if="menuHighlight == 1 && coordinatorAccess != 0"
                   ref="users"
-          ></editUsers>
+          ></editUsers>-->
 
           <editDatas
-                  v-if="menuHighlight == 2 && coordinatorAccess != 0"
+                  v-if="menuHighlight == 1 && coordinatorAccess != 0"
                   ref="datas"
                   :actualLanguage="actualLanguage"
                   :manyLanguages="manyLanguages"
@@ -116,9 +116,11 @@ export default {
     funnelDescription: [
       [
         '',
+        '',
         Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTIONSETTINGS"),
       ],
       [
+        '',
         '',
         Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTIONSETTINGS"),
       ]
@@ -127,12 +129,10 @@ export default {
     settingsCategories: [
       [
         "Personnalisation",
-        "Utilisateurs",
         "Référentiels de données",
       ],
       [
         "Styling",
-        "Users",
         "Data repository",
       ]
     ],

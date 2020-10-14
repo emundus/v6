@@ -115,38 +115,44 @@ $doc = JFactory::getDocument();
                 $('#siteNav ul').toggleClass('menuIsActive');
             });
         });
-    })(jQuery);
 
-    let found = false;
+        let found = false;
 
-    // Get route
-    const path = window.location.pathname.split('/');
-    const route = path[path.length - 1];
-    const menu = document.getElementById('moduletable-b');
-    //
+        // Get route
+        const path = window.location.pathname.split('/');
+        const route = path[path.length - 1];
+        const menu = document.getElementById('moduletable-b');
+        //
 
-    // Get view params
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const view = urlParams.get('view')
-    //
+        // Get view params
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const view = urlParams.get('view')
+        //
 
-    menu.childNodes[1].childNodes.forEach((element) => {
-        element.childNodes.forEach((link) => {
-            if(link.tagName == 'A' && !found) {
-                let find;
-                if(view != null) {
-                    find = link.attributes.href.nodeValue.search(view);
-                } else {
-                    find = link.attributes.href.nodeValue.search(route);
-                }
-                if(find !== -1){
-                    link.className = 'menu-current-link';
-                    found = true;
-                }
+        menu.childNodes[1].childNodes.forEach((element) => {
+            if(element.tagName == 'UL') {
+                element.childNodes.forEach((list) => {
+                    if (list.tagName == 'LI') {
+                        list.childNodes.forEach((link) => {
+                            if (link.tagName == 'A' && !found) {
+                                let find;
+                                if (view != null) {
+                                    find = link.attributes.href.nodeValue.search(view);
+                                } else {
+                                    find = link.attributes.href.nodeValue.search(route);
+                                }
+                                if (find !== -1) {
+                                    link.className = 'menu-current-link';
+                                    found = true;
+                                }
+                            }
+                        });
+                    }
+                });
             }
         });
-    });
+    })(jQuery);
 </script>
 </body>
 </html>
