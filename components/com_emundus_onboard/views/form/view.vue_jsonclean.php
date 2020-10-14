@@ -92,8 +92,10 @@ class EmundusonboardViewForm extends FabrikViewFormBase
             $show_title->label = new stdClass;
             $show_title->label->fr = $formbuilder->getTranslation($form->form->label,$Content_Folder['fr']);
             $show_title->label->en = $formbuilder->getTranslation($form->form->label,$Content_Folder['en']);
-            if($show_title->label->fr == '' && $show_title->label->en == ''){
+            if($show_title->label->fr === false) {
                 $show_title->label->fr = $form->form->label;
+            }
+            if($show_title->label->en === false) {
                 $show_title->label->en = $form->form->label;
             }
             $returnObject->show_title = $show_title;
@@ -104,10 +106,10 @@ class EmundusonboardViewForm extends FabrikViewFormBase
             $returnObject->intro = new stdClass;
             $returnObject->intro->fr = $formbuilder->getTranslation($form->form->intro,$Content_Folder['fr']);
             $returnObject->intro->en = $formbuilder->getTranslation($form->form->intro,$Content_Folder['en']);
-            if($returnObject->intro->fr == ''){
+            if($returnObject->intro->fr === false){
                 $returnObject->intro->fr = $form->form->intro;
             }
-            if($returnObject->intro->en == ''){
+            if($returnObject->intro->en === false){
                 $returnObject->intro->en = $form->form->intro;
             }
             $returnObject->intro_raw = $form->form->intro;
@@ -146,8 +148,10 @@ class EmundusonboardViewForm extends FabrikViewFormBase
             ${"group_".$GroupProperties->id}->label = new stdClass;
             ${"group_".$GroupProperties->id}->label->fr = $formbuilder->getTranslation($GroupProperties->name,$Content_Folder['fr']);
             ${"group_".$GroupProperties->id}->label->en = $formbuilder->getTranslation($GroupProperties->name,$Content_Folder['en']);
-            if (${"group_".$GroupProperties->id}->label->fr == '' && ${"group_".$GroupProperties->id}->label->en == ''){
-                ${"group_".$GroupProperties->id}->label->fr = $GroupProperties->name;
+            if (${"group_".$GroupProperties->id}->label->fr === false) {
+                ${"group_" . $GroupProperties->id}->label->fr = $GroupProperties->name;
+            }
+            if(${"group_".$GroupProperties->id}->label->en === false) {
                 ${"group_".$GroupProperties->id}->label->en = $GroupProperties->name;
             }
 
@@ -207,8 +211,10 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                     ${"element" . $o_element->id}->label = new stdClass;
                     ${"element" . $o_element->id}->label->fr = $formbuilder->getTranslation(${"element" . $o_element->id}->label_tag,$Content_Folder['fr']);
                     ${"element" . $o_element->id}->label->en = $formbuilder->getTranslation(${"element" . $o_element->id}->label_tag,$Content_Folder['en']);
-                    if(${"element" . $o_element->id}->label->fr == '' && ${"element" . $o_element->id}->label->en == ''){
+                    if(${"element" . $o_element->id}->label->fr === false){
                         ${"element" . $o_element->id}->label->fr = $o_element->label;
+                    }
+                    if(${"element" . $o_element->id}->label->en === false) {
                         ${"element" . $o_element->id}->label->en = $o_element->label;
                     }
                     ${"element" . $o_element->id}->labelToFind = $element->label;
