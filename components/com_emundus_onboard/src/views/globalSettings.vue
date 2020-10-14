@@ -57,6 +57,7 @@
         </transition>
       </div>
     </div>
+    <tasks></tasks>
 
     <!--<div
             class="section-sauvegarder-et-continuer-funnel"
@@ -82,6 +83,7 @@ import editStyle from "../components/Settings/editStyle";
 import editDatas from "../components/Settings/editDatas";
 import editUsers from "../components/Settings/editUsers";
 import customization from "../components/Settings/Customization"
+import Tasks from "@/views/tasks";
 
 const qs = require("qs");
 
@@ -89,6 +91,7 @@ export default {
   name: "globalSettings",
 
   components: {
+    Tasks,
     editStatus,
     editTags,
     editHomepage,

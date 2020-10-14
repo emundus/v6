@@ -59,6 +59,14 @@ JText::script('COM_EMUNDUS_ONBOARD_EMAILUNPUBLISHED');
 JText::script('COM_EMUNDUS_ONBOARD_EMAILPUBLISHED');
 ## END ##
 
+## TUTORIAL ##
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORM');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
+## END ##
+
 $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>

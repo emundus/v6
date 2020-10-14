@@ -137,6 +137,14 @@ JText::script('COM_EMUNDUS_ONBOARD_FILE_EXIST_BEFORE_TESTING');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_CALENDAR');
 ## END ##
 
+## TUTORIAL ##
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORM');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
+## END ##
+
 $vue = 'em-formBuilder-vue';
 if($this->eval != 0){
     $vue = 'em-evaluationBuilder-vue';

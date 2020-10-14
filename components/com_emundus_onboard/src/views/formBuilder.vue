@@ -185,6 +185,7 @@
     <div class="loading-form" v-if="loading">
       <Ring-Loader :color="'#de6339'" />
     </div>
+    <tasks></tasks>
   </div>
 </template>
 
@@ -205,6 +206,7 @@
   import _ from 'lodash';
   import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
   import List from "./list";
+  import Tasks from "@/views/tasks";
   import ModalTestingForm from "@/components/formClean/ModalTestingForm";
 
   const qs = require("qs");
@@ -219,13 +221,14 @@
       manyLanguages: Number
     },
     components: {
+      Tasks,
       ModalTestingForm,
       List,
       ModalAffectCampaign,
       Builder,
       ModalSide,
       ModalMenu,
-      draggable
+      draggable,
     },
     data() {
       return {
