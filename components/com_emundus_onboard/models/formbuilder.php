@@ -552,7 +552,11 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         // Search and return the translation
         preg_match_all($textTofind, $content, $matches, PREG_SET_ORDER, 0);
-        return str_replace("\"",'',explode('=',$matches[0][0])[1]);
+        if(!empty($matches)) {
+            return str_replace("\"", '', explode('=', $matches[0][0])[1]);
+        } else {
+            return false;
+        }
         //
     }
 
@@ -2274,10 +2278,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ${"element" . $o_element->id}->label = new stdClass;
                 ${"element".$o_element->id}->label->fr = $this->getTranslation(${"element".$o_element->id}->label_tag,$Content_Folder['fr']);
                 ${"element".$o_element->id}->label->en = $this->getTranslation(${"element".$o_element->id}->label_tag,$Content_Folder['en']);
-                if(${"element" . $o_element->id}->label->fr == ''){
+                if(${"element" . $o_element->id}->label->fr === false){
                     ${"element" . $o_element->id}->label->fr = $o_element->label;
                 }
-                if(${"element" . $o_element->id}->label->en == ''){
+                if(${"element" . $o_element->id}->label->en === false){
                     ${"element" . $o_element->id}->label->en = $o_element->label;
                 }
                 ${"element".$o_element->id}->labelToFind=$group_elt->label;

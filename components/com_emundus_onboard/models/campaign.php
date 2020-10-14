@@ -436,6 +436,7 @@ class EmundusonboardModelcampaign extends JModelList
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
         $settings = JModelLegacy::getInstance('settings', 'EmundusonboardModel');
+        $email = JModelLegacy::getInstance('email', 'EmundusonboardModel');
 
         $i = 0;
 
@@ -486,6 +487,28 @@ class EmundusonboardModelcampaign extends JModelList
 
                 $user = JFactory::getUser();
                 $settings->onAfterCreateCampaign($user->id);
+
+                // Create a default trigger
+                $query->clear()
+                    ->select('id')
+                    ->from($db->quoteName('#__emundus_setup_programmes'))
+                    ->where($db->quoteName('code') . ' LIKE ' . $db->quote($data['training']));
+                $db->setQuery($query);
+                $pid = $db->loadResult();
+
+                $emails = $email->getTriggersByProgramId($pid);
+
+                if(empty($emails)) {
+                    $trigger = array(
+                        'status' => 1,
+                        'model' => 1,
+                        'action_status' => 'to_current_user',
+                        'target' => -1,
+                        'program' => $pid,
+                    );
+                    $email->createTrigger($trigger, array(), $user);
+                }
+                //
 
                 return $campaign_id;
             } catch (Exception $e) {
