@@ -1351,24 +1351,21 @@ class EmundusonboardModelformbuilder extends JModelList {
         $hiddengroup = $this->createGroup($label, $formid, -1);
 
         foreach ($groups as $group) {
-            $properties = $group->getGroupProperties($group->getFormModel());
             $elements = $group->getMyElements();
 
-            if ($properties->id == 683) {
-                foreach ($elements as $element) {
-                    if (in_array($element->element->id,$elementstoduplicate)) {
-                        $newelement = $element->copyRow($element->element->id, $element->element->name, $hiddengroup['group_id']);
+            foreach ($elements as $element) {
+                if (in_array($element->element->id,$elementstoduplicate)) {
+                    $newelement = $element->copyRow($element->element->id, $element->element->name, $hiddengroup['group_id']);
 
-                        // Update to publish element
-                        $query->clear();
-                        $query->update($db->quoteName('#__fabrik_elements'));
-                        //
+                     // Update to publish element
+                    $query->clear();
+                    $query->update($db->quoteName('#__fabrik_elements'));
+                    //
 
-                        $query->set('published = 1');
-                        $query->where('id =' . $newelement->id);
-                        $db->setQuery($query);
-                        $db->execute();
-                    }
+                    $query->set('published = 1');
+                    $query->where('id =' . $newelement->id);
+                    $db->setQuery($query);
+                    $db->execute();
                 }
             }
         }
