@@ -681,6 +681,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   color: #ffffff;
   border-color: $base-secondary-color;
   text-transform: initial;
+  margin-left: 0px !important;
 
   &:hover,
   &active,
@@ -956,36 +957,40 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /*BOUTONS + ET _ */
 
-.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success,
-.applicant-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger {
+.view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success,
+.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger {
   border: none !important;
 }
 
-.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success,
-.applicant-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger{
-  &:hover, &:active, &:focus {
-    border: none !important;
-    background-color: transparent !important;
-  }
+.view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success:hover,
+.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger:hover {
+  border: none !important;
+  background-color: transparent !important;
 }
 
-.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i:hover {
+.view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i:hover {
   color: darken(#3e8ac5, 10%);
 
 }
 
-.applicant-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i {
+.view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i {
   color: #3e8ac5;
 }
 
-.applicant-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-danger i {
+.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-danger i {
   color: #E03C35;
 }
 
-.applicant-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-danger i:hover {
+.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-danger i:hover {
   color: darken(#E03C35, 10%);
 }
 
+
+/* VIEW DETAILS  */
+
+.view-details .fabrikGroup h3.legend {
+  margin-top: 30px !important;
+}
 
 /* FORMULAIRE  */
 
@@ -1041,6 +1046,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 .fabrikForm legend {
   color: $base-primary-color;
   font-weight: 700;
+  display: contents;
+}
+
+.fabrikForm legend {
+  color: $base-primary-color;
+  font-weight: 700;
+  display: contents;
 }
 
 .form-actions .row-fluid .span4 .btn-group .register {
