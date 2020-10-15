@@ -2141,8 +2141,14 @@ label.label__placeholder {
   position: fixed;
   width: 25vw;
   border-radius: 4px;
-  overflow: auto;
+  overflow-y: scroll;
   height: auto;
+  max-height: 70%;
+}
+@media (min-width: 1920px) {
+  .actions-menu {
+    max-height: 100%;
+  }
 }
 .heading-actions{
   height: 60px;
@@ -2515,6 +2521,6 @@ label.label__placeholder {
 .task-container{
   bottom: -20px !important;
   transition: all 0.3S ease-in-out !important;
-  width: 18vw !important;
+  width: 80% !important;
 }
 

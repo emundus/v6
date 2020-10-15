@@ -67,7 +67,6 @@
             <autocomplete
                     :id="'year'"
                     @searched="onSearchYear"
-                    :name="'2020-2021'"
                     :items="this.session"
                     :year="form.year"
             />
