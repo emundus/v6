@@ -213,13 +213,13 @@ export default {
           this.updateCgv(this.$refs.cgv.$data.form.content);
           break;
         case 3:
-          this.updateFooter(this.$refs.homepage.$data.form.content);
+          this.updateFooter(this.$refs.footer.$data.form.content);
           break;
         case 4:
-          this.updateStatus(this.$refs.homepage.$data.form.content);
+          this.updateStatus(this.$refs.status.$data.status);
           break;
         case 5:
-          this.updateTags(this.$refs.homepage.$data.form.content);
+          this.updateTags(this.$refs.tags.$data.tags);
           break;
       }
     },
