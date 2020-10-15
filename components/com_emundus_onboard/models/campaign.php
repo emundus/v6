@@ -25,6 +25,7 @@ class EmundusonboardModelcampaign extends JModelList
         $this->model_program = JModelLegacy::getInstance('program', 'EmundusonboardModel');
     }
 
+    /**** MANAGE CAMPAIGNS ****/
     function getCampaignCount($filter, $recherche)
     {
         $db = $this->getDbo();
@@ -589,6 +590,64 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
+    public function updateProfile($profile, $campaign) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $form = JModelLegacy::getInstance('form', 'EmundusonboardModel');
+
+        $query->select('year')
+            ->from($db->quoteName('#__emundus_setup_campaigns'))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
+
+        try {
+            $db->setQuery($query);
+            $schoolyear = $db->loadResult();
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
+                ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign));
+            $db->setQuery($query);
+            $db->execute();
+
+            // Create checklist menu if documents are asked
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__menu'))
+                ->where($db->quoteName('alias') . ' = ' . $db->quote('checklist-' . $profile));
+            $db->setQuery($query);
+            $checklist = $db->loadObject();
+
+            if ($checklist == null) {
+                $form->addChecklistMenu($profile);
+            }
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_setup_campaigns'))
+                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
+
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_setup_teaching_unity'))
+                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
+                ->where($db->quoteName('schoolyear') . ' = ' . $db->quote($schoolyear));
+
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+    /**** END ****/
+
+    /* -------------- */
+
+    /**** GETTERS ****/
     public function getCampaignById($id) {
         if (empty($id)) {
             return false;
@@ -640,60 +699,6 @@ class EmundusonboardModelcampaign extends JModelList
         try {
             $db->setQuery($query);
             return $db->loadObject();
-        } catch (Exception $e) {
-            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
-            return false;
-        }
-    }
-
-    public function updateProfile($profile, $campaign) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        $form = JModelLegacy::getInstance('form', 'EmundusonboardModel');
-
-        $query->select('year')
-            ->from($db->quoteName('#__emundus_setup_campaigns'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
-
-        try {
-            $db->setQuery($query);
-            $schoolyear = $db->loadResult();
-
-            $query->clear()
-                ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
-                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
-                ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign));
-            $db->setQuery($query);
-            $db->execute();
-
-            // Create checklist menu if documents are asked
-            $query->clear()
-                ->select('*')
-                ->from($db->quoteName('#__menu'))
-                ->where($db->quoteName('alias') . ' = ' . $db->quote('checklist-' . $profile));
-            $db->setQuery($query);
-            $checklist = $db->loadObject();
-
-            if ($checklist == null) {
-                $form->addChecklistMenu($profile);
-            }
-
-            $query->clear()
-                ->update($db->quoteName('#__emundus_setup_campaigns'))
-                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
-
-            $db->setQuery($query);
-            $db->execute();
-
-            $query->clear()
-                ->update($db->quoteName('#__emundus_setup_teaching_unity'))
-                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
-                ->where($db->quoteName('schoolyear') . ' = ' . $db->quote($schoolyear));
-
-            $db->setQuery($query);
-            return $db->execute();
         } catch (Exception $e) {
             JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return false;
@@ -754,7 +759,11 @@ class EmundusonboardModelcampaign extends JModelList
             return false;
         }
     }
+    /**** END ****/
 
+    /* ----------------------- */
+
+    /**** MANAGE DOCUMENTS ****/
     public function createDocument($document,$types,$cid,$pid) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -811,16 +820,21 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    public function updateDocument($document,$types,$did) {
+    public function updateDocument($document,$types,$did,$type) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
 
         $types = implode(";", array_values($types));
+        $table = 'emundus_setup_attachments';
+
+        if($type == 'document'){
+            $table = 'emundus_setup_attachment_profiles';
+        }
 
         $query
-            ->update($db->quoteName('#__emundus_setup_attachments'));
+            ->update($db->quoteName('#__' . $table));
         $query
             ->set($db->quoteName('value') . ' = ' . $db->quote($document['name']['fr']))
             ->set($db->quoteName('description') . ' = ' . $db->quote($document['description']['fr']))
@@ -832,11 +846,314 @@ class EmundusonboardModelcampaign extends JModelList
             $db->setQuery($query);
             $db->execute();
 
-            $falang->updateFalang($document['name']['fr'],$document['name']['en'],$did,'emundus_setup_attachments','value');
-            $falang->updateFalang($document['description']['fr'],$document['description']['en'],$did,'emundus_setup_attachments','description');
+            $falang->updateFalang($document['name']['fr'],$document['name']['en'],$did,$table,'value');
+            $falang->updateFalang($document['description']['fr'],$document['description']['en'],$did,$table,'description');
+
+            return true;
         } catch (Exception $e) {
             JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return $e->getMessage();
         }
     }
+
+    public function updateDocumentMandatory($did,$mandatory){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query
+                ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->set($db->quoteName('mandatory') . ' = ' . $db->quote($mandatory))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($did));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return $e->getMessage();
+        }
+    }
+
+    public function updateDocumentsOrder($documents){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            foreach ($documents as $document) {
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_setup_attachment_profiles'))
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote($document['ordering']))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote(($document['id'])));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            return true;
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function addDocument($type,$cid,$pid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
+        try {
+            $query->select('*')
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($type));
+            $db->setQuery($query);
+            $doc_model = $db->loadObject();
+
+            $query->clear()
+                ->select('ordering')
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('campaign_id') . ' = ' . $db->quote($cid))
+                ->orWhere($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+                ->group('ordering');
+            $db->setQuery($query);
+            $orderings = $db->loadObjectList();
+
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
+            $query->set($db->quoteName('profile_id') . ' = ' . $db->quote($pid))
+                ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($cid))
+                ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($type))
+                ->set($db->quoteName('mandatory') . ' = ' . $db->quote(1))
+                ->set($db->quoteName('ordering') . ' = ' . $db->quote(sizeof($orderings)))
+                ->set($db->quoteName('value') . ' = ' . $db->quote($doc_model->value))
+                ->set($db->quoteName('description') . ' = ' . $db->quote($doc_model->description))
+                ->set($db->quoteName('allowed_types') . ' = ' . $db->quote($doc_model->allowed_types))
+                ->set($db->quoteName('nbmax') . ' = ' . $db->quote($doc_model->nbmax));
+            $db->setQuery($query);
+            $db->execute();
+            $docid = $db->insertid();
+
+            $f_values = $falang->getFalang($doc_model->id,'emundus_setup_attachments','value');
+            $f_descriptions = $falang->getFalang($doc_model->id,'emundus_setup_attachments','description');
+            $falang->insertFalang($f_values->fr->value,$f_values->en->value,$docid,'emundus_setup_attachment_profiles','value');
+            $falang->insertFalang($f_descriptions->fr->value,$f_descriptions->en->value,$docid,'emundus_setup_attachment_profiles','description');
+
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($docid));
+            $db->setQuery($query);
+            $document = $db->loadObject();
+
+            $f_values = $falang->getFalang($document->id,'emundus_setup_attachment_profiles','value');
+            $document->label->en = $f_values->en->value;
+            $document->label->fr = $f_values->fr->value;
+
+            $f_descriptions = $falang->getFalang($document->id,'emundus_setup_attachment_profiles','description');
+            $document->desc->en = $f_descriptions->en->value;
+            $document->desc->fr = $f_descriptions->fr->value;
+
+            return $document;
+        } catch (Exception $e) {
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return $e->getMessage();
+        }
+    }
+
+    public function removeDocument($did){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
+        try {
+            $falang->deleteFalang($did,'emundus_setup_attachment_profiles','value');
+            $falang->deleteFalang($did,'emundus_setup_attachment_profiles','description');
+
+            $query->delete($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($did));
+
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function getUnDocuments() {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
+        $query->select('*')
+            ->from($db->quoteName('#__emundus_setup_attachments'))
+            ->where($db->quoteName('published') . ' = ' . 1)
+            ->order($db->quoteName('ordering'));
+
+        try {
+            $db->setQuery($query);
+            $undocuments = $db->loadObjectList();
+
+            foreach ($undocuments as $undocument){
+                if(strpos($undocument->lbl, '_em') === 0){
+                    $undocument->can_be_deleted = true;
+                } else {
+                    $undocument->can_be_deleted = false;
+                }
+
+                $undocument->label = new stdClass;
+                $undocument->desc = new stdClass;
+
+                $f_values = $falang->getFalang($undocument->id,'emundus_setup_attachments','value');
+                $undocument->label->en = $f_values->en->value;
+                $undocument->label->fr = $f_values->fr->value;
+
+                $f_descriptions = $falang->getFalang($undocument->id,'emundus_setup_attachments','description');
+                $undocument->desc->en = $f_descriptions->en->value;
+                $undocument->desc->fr = $f_descriptions->fr->value;
+            }
+
+            return $undocuments;
+        } catch (Exception $e) {
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function getAllDocuments($prid, $cid)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
+        try {
+            $query->select('*')
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))
+                ->andWhere($db->quoteName('campaign_id') . ' IS NULL ');
+            $db->setQuery($query);
+            $old_docs = $db->loadObjectList();
+
+            if(!empty($old_docs)){
+                $query->clear()
+                    ->select('id')
+                    ->from($db->quoteName('#__emundus_setup_campaigns'))
+                    ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid));
+                $db->setQuery($query);
+                $campaignstoaffect = $db->loadObjectList();
+
+                foreach ($campaignstoaffect as $campaign) {
+                    foreach ($old_docs as $old_doc){
+                        $query->clear()
+                            ->insert($db->quoteName('#__emundus_setup_attachment_profiles'));
+                        foreach ($old_doc as $key => $value) {
+                            if ($key != 'id' && $key != 'campaign_id') {
+                                $query->set($key . ' = ' . $db->quote($value));
+                            } elseif ($key == 'campaign_id') {
+                                $query->set($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign->id));
+                            }
+                        }
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+                }
+
+                $query->clear()
+                    ->delete($db->quoteName('#__emundus_setup_attachment_profiles'))
+                    ->where($db->quoteName('profile_id') . ' = ' . $db->quote($prid))
+                    ->andWhere($db->quoteName('campaign_id') . ' IS NULL');
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            $query->clear()
+                ->select([
+                    'sap.id AS id',
+                    'sap.attachment_id AS attachment_id',
+                    'sap.ordering as ordering',
+                    'sap.mandatory AS mandatory',
+                    'sap.value as value',
+                    'sap.description as description',
+                    'sap.allowed_types as allowed_types',
+                    'sap.nbmax as nbmax',
+                    'sa.allowed_types as type_allowed_types',
+                    'sa.nbmax as type_nbmax',
+                    'sa.lbl as lbl'
+                ])
+                ->from($db->quoteName('#__emundus_setup_attachment_profiles', 'sap'))
+                ->leftJoin($db->quoteName('#__emundus_setup_attachments', 'sa') . ' ON ' . $db->quoteName('sa.id') . ' = ' . $db->quoteName('sap.attachment_id'))
+                ->order($db->quoteName('sap.ordering'))
+                ->where($db->quoteName('sap.published') . ' = 1')
+                ->andWhere($db->quoteName('sap.campaign_id') . ' = ' . $cid);
+
+            $db->setQuery($query);
+            $documents = $db->loadObjectList();
+
+            foreach ($documents as $document) {
+                if(strpos($document->lbl, '_em') === 0){
+                    $document->can_be_deleted = true;
+                } else {
+                    $document->can_be_deleted = false;
+                }
+
+                $document->label = new stdClass;
+                $document->desc = new stdClass;
+
+                if($document->value != ''){
+                    $f_values = $falang->getFalang($document->id,'emundus_setup_attachment_profiles','value');
+                    $document->label->en = $f_values->en->value;
+                    $document->label->fr = $f_values->fr->value;
+                } else {
+                    $f_values = $falang->getFalang($document->attachment_id,'emundus_setup_attachments','value');
+                    $document->label->en = $f_values->en->value;
+                    $document->label->fr = $f_values->fr->value;
+                }
+                if($document->description != ''){
+                    $f_descriptions = $falang->getFalang($document->id,'emundus_setup_attachment_profiles','description');
+                    $document->desc->en = $f_descriptions->en->value;
+                    $document->desc->fr = $f_descriptions->fr->value;
+                } else {
+                    $f_descriptions = $falang->getFalang($document->attachment_id,'emundus_setup_attachments','description');
+                    $document->desc->en = $f_descriptions->en->value;
+                    $document->desc->fr = $f_descriptions->fr->value;
+                }
+            }
+
+            return $documents;
+        } catch (Exception $e) {
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function deleteDocument($did){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
+        try {
+            $falang->deleteFalang($did,'emundus_setup_attachments','value');
+            $falang->deleteFalang($did,'emundus_setup_attachments','description');
+
+            $query->clear()
+                ->delete($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->where($db->quoteName('attachment_id') . ' = ' . $db->quote($did));
+
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->delete($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($did));
+
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+    /**** END ****/
 }

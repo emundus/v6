@@ -90,6 +90,7 @@
       cid: Number,
       pid: Number,
       doc: Object,
+      type: String,
       manyLanguages: Number,
       langue: String,
     },
@@ -180,20 +181,36 @@
       },
       beforeOpen(event) {
         if(this.doc != null) {
-          this.form.name.fr = this.doc.value_fr;
-          this.form.name.en = this.doc.value_en;
-          this.form.description.fr = this.doc.description_fr;
-          this.form.description.en = this.doc.description_en;
-          if(this.doc.allowed_types.includes('pdf')) {
-            this.form.selectedTypes.pdf = true;
+          this.form.name.fr = this.doc.label.fr;
+          this.form.name.en = this.doc.label.en;
+          this.form.description.fr = this.doc.desc.fr;
+          this.form.description.en = this.doc.desc.en;
+          if(this.type == 'document'){
+            if(this.doc.allowed_types != ''){
+              this.checkTypes(this.doc.allowed_types);
+            } else {
+              this.checkTypes(this.doc.type_allowed_types);
+            }
+            if(this.doc.nbmax != ''){
+              this.form.nbmax = this.doc.nbmax;
+            } else {
+              this.form.nbmax = this.doc.type_nbmax
+            }
+          } else {
+            this.checkTypes(this.doc.allowed_types);
+            this.form.nbmax = this.doc.nbmax;
           }
-          if(this.doc.allowed_types.includes('jpg') || this.doc.allowed_types.includes('png') || this.doc.allowed_types.includes('gif')) {
-            this.form.selectedTypes['jpg;png;gif'] = true;
-          }
-          if(this.doc.allowed_types.includes('xls') || this.doc.allowed_types.includes('xlsx') || this.doc.allowed_types.includes('odf')) {
-            this.form.selectedTypes['xls;xlsx;odf'] = true;
-          }
-          this.form.nbmax = this.doc.nbmax;
+        }
+      },
+      checkTypes(allowed_types){
+        if(allowed_types.includes('pdf')) {
+          this.form.selectedTypes.pdf = true;
+        }
+        if(allowed_types.includes('jpg') || allowed_types.includes('png') || allowed_types.includes('gif')) {
+          this.form.selectedTypes['jpg;png;gif'] = true;
+        }
+        if(allowed_types.includes('xls') || allowed_types.includes('xlsx') || allowed_types.includes('odf')) {
+          this.form.selectedTypes['xls;xlsx;odf'] = true;
         }
       },
       createNewDocument() {
@@ -233,6 +250,7 @@
         let params = {
           document: this.form,
           types: types,
+          type: this.type,
           cid: this.cid,
           pid: this.pid,
         }

@@ -58,30 +58,21 @@
             <div class="col-md-8 p-1" style="padding-left: 2em !important;border-left: solid 1px #cecece;">
                 <h2>{{formCategories[langue][menuHighlight]}}</h2>
                 <p class="paragraphe-sous-titre">{{funnelDescription[langue][menuHighlight]}}</p>
-                <transition name="slide-right">
-                    <addFormulaire
-                            v-if="menuHighlight == 0"
-                            :profileId="profileId"
-                            :key="formReload"
-                            :visibility="null"
-                    ></addFormulaire>
+              <addFormulaire
+                  v-if="menuHighlight == 0"
+                  :profileId="profileId"
+                  :visibility="null"
+              ></addFormulaire>
 
-                    <addDocuments
-                            v-if="menuHighlight == 1"
-                            :funnelCategorie="formCategories[langue][menuHighlight]"
-                            :profileId="profileId"
-                            :campaignId="campaignId"
-                            :langue="langue"
-                            :menuHighlight="menuHighlight"
-                            :langue="actualLanguage"
-                            :manyLanguages="manyLanguages"
-                    ></addDocuments>
-
-                    <!--          <addEvalEval
-                                      v-if="menuHighlight == 6"
-                                      :funnelCategorie="formCategories[langue][menuHighlight]"
-                              ></addEvalEval>-->
-                </transition>
+              <addDocuments
+                  v-if="menuHighlight == 1"
+                  :funnelCategorie="formCategories[langue][menuHighlight]"
+                  :profileId="profileId"
+                  :campaignId="campaignId"
+                  :menuHighlight="menuHighlight"
+                  :langue="actualLanguage"
+                  :manyLanguages="manyLanguages"
+              ></addDocuments>
             </div>
         </div>
 
