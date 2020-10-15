@@ -187,7 +187,7 @@ class EmundusController extends JControllerLegacy {
         $current_user  = JFactory::getSession()->get('emundusUser');
         $m_files = $this->getModel('files');
         
-        if (EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum, array_keys($current_user->fnums))){
+        if (in_array($fnum, array_keys($current_user->fnums))){
             $user = $current_user;
             $m_files->deleteFile($fnum);
             EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_LOGS_DELETE_FILE');
