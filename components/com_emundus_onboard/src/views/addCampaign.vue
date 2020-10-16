@@ -55,7 +55,7 @@
                   :placeholder="EndDate + ' *'"
                   type="datetime"
                   :input-id="'end_date'"
-                  :min-datetime="form.start_date"
+                  :min-datetime="minDate"
                   v-model="form.end_date"
                   :phrases="{ok: OK, cancel: Cancel}"
                 ></datetime>
@@ -357,6 +357,7 @@ export default {
     isHiddenProgram: false,
 
     olderDate: "",
+    minDate: "",
 
     programs: [],
     years: [],
@@ -372,7 +373,7 @@ export default {
         fr: '',
         en: ''
       },
-      start_date: LuxonDateTime.local().toISO(),
+      start_date: "",
       end_date: "",
       short_description: "",
       description: "",
@@ -458,6 +459,9 @@ export default {
     // Configure datetime
     Settings.defaultLocale = this.actualLanguage;
     //
+
+    let now = new Date();
+    this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
 
     //Check if we add or edit a campaign
     if (this.campaign !== "") {
@@ -817,7 +821,6 @@ export default {
       document.getElementById(id).style.borderColor = '#cccccc';
     },
 
-
     /**
      * ** Methods for notify
      */
@@ -841,6 +844,12 @@ export default {
       this.$notify({ group, clean: true });
     },
   },
+
+  watch: {
+    'form.start_date': function (val, oldVal) {
+      this.minDate = LuxonDateTime.fromISO(val).plus({ days: 1 });
+    }
+  }
 };
 </script>
 
