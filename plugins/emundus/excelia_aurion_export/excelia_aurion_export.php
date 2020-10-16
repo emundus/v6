@@ -91,7 +91,10 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $this->db->quoteName('eq.lv2'),
                 $this->db->quoteName('eq.level'),
                 $this->db->quoteName('eq.type'),
-                $this->db->quoteName('eq.country', 'eq_country')
+                $this->db->quoteName('eq.country', 'eq_country'),
+                $this->db->quoteName('eq.etab_sup'),
+                $this->db->quoteName('eq.lycee'),
+                $this->db->quoteName('eq.type_diplome')
             ];
 
             // emundus scholarship table
@@ -166,10 +169,25 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $this->db->quoteName('dacon2.id_Concours', 'concours_session2')
             ];
 
+            // data_aurion_47672525
+            $aurion_lycee = [
+                $this->db->quoteName('lycee.id_Lycee')
+            ];
+            // data_aurion_47993857
+            $aurion_etab = [
+                $this->db->quoteName('etab.id_EtablissementSuperieur', 'id_etab')
+            ];
+            // data_aurion_47974046
+            $aurion_type_dip = [
+                $this->db->quoteName('type_dip.id_TypediplomeEmundus', 'type_diplome')
+            ];
+
+
+
             $query = $this->db->getQuery(true);
             // In the query, we merge all the different tables in the select and join them while checking if the rows we get in the aurion tables are published
             $query
-                ->select(array_merge($campaign_columns, $eu_columns, $pd_columns, $qualification_columns, $scholarship_columns, $concours_columns, $aurion_user, $aurion_em_user, $aurion_civility, $aurion_diplome, $aurion_nationality, $aurion_concours_1, $aurion_concours_2, $aurion_city,$spe_columns,$rentrees))
+                ->select(array_merge($campaign_columns, $eu_columns, $pd_columns, $qualification_columns, $scholarship_columns, $concours_columns, $aurion_user, $aurion_em_user, $aurion_civility, $aurion_diplome, $aurion_nationality, $aurion_concours_1, $aurion_concours_2, $aurion_city,$spe_columns,$rentrees, $aurion_lycee, $aurion_etab, $aurion_type_dip))
                 ->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
                 ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('ecc.campaign_id') . ' = '. $this->db->quoteName('esc.id'))
                 ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('ecc.applicant_id') . ' = '. $this->db->quoteName('eu.user_id'))
@@ -200,6 +218,10 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 // Get concours id
                 ->leftJoin($this->db->quoteName('data_aurion_37241402', 'dacon') . ' ON ' . $this->db->quoteName('econ.concours_session') . ' = '. $this->db->quoteName('dacon.id'))
                 ->leftJoin($this->db->quoteName('data_aurion_39124065', 'dacon2') . ' ON ' . $this->db->quoteName('econ.concours_session_attente') . ' = '. $this->db->quoteName('dacon2.id'))
+                // Get Lycee and etablissement Sup
+                ->leftJoin($this->db->quoteName('data_aurion_47672525', 'lycee') . ' ON ' . $this->db->quoteName('eq.lycee') . ' = '. $this->db->quoteName('lycee.id'))
+                ->leftJoin($this->db->quoteName('data_aurion_47993857', 'etab') . ' ON ' . $this->db->quoteName('eq.etab_sup') . ' = '. $this->db->quoteName('etab.id'))
+                ->leftJoin($this->db->quoteName('data_aurion_47974046', 'type_dip') . ' ON ' . $this->db->quoteName('eq.type_diplome') . ' = '. $this->db->quoteName('type_dip.id'))
                 ->where($this->db->quoteName('ecc.fnum') . ' IN (' . implode(', ', $this->db->quote($fnums)). ')');
 
             try {
@@ -235,6 +257,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     return false;
                 }
 
+                JLog::add($xml_export, JLog::INFO, 'com_emundus_exceliaAurionExport');
                 // build the body with the plugin params and the xml
                 $request_body = [
                     'login' => $aurion_login,
@@ -366,14 +389,24 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 </individu>";
 
         // Check if the the user has filled out their qualification form AND their scholarship form, don't import if one of them doesn't have a fnum
-        if (!empty($user->es_fnum)) {
+        if (!empty($user->es_fnum) && !empty($user->eq_fnum)) {
             if (!empty($user->city)) {
                 $qualification_city  = htmlspecialchars($this->getOutputLabelFromInput($user->aurion_city, 'id_Ville', 'Nom', 'data_aurion_35584331'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
             } else {
                 $qualification_city  = htmlspecialchars($user->city_2, ENT_XML1 | ENT_QUOTES, 'UTF-8');
             }
+
+            $eq_lycee = !empty($user->lycee) ? "<lycee.client ForceDest='lycee.client§47996272' objet_id='" . $user->id_Lycee. "' ForceImport='true'/>" : "";
+
+            $eq_etablissment = !empty($user->etab_sup) ? "<etablissement_superieur.client objet_id='" . $user->id_etab. "' ForceDest='etablissement_superieur.client§47997720' ForceImport='true'/>" : "";
+
+            $other_etabs = !empty($eq_lycee) ? "A47997723='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "'" : "A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "'";
+
+            $type_diplome = !empty($user->type_diplome) ? "<typediplome_emundus.client objet_id='" . $user->type_diplome . "' ForceDest='typediplome_emundus.client§48130556' ForceImport='true'/>" : '';
+            $eq_country = !empty($user->eq_country) ? "<pays objet_id='" . $user->eq_country . "' ForceDest='pays§37765785' ForceImport='true'/>" : "";
+
             $inscription_module = "
-                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A46372499 ='" . $user->is_hadicap . "' A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
+                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A46372499='" . $user->is_hadicap . "' " . $other_etabs . "  A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
                     
                     <individu  key='" . $user_key . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
                         <module objet_id='" . $user->aurion_id . "' ForceSource='apprenant'/>
@@ -387,17 +420,18 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     
                     <niveau_formation objet_id='" . $user->level . "' ForceDest='niveau_formation§37764238' ForceImport='true'/>
                     
-                    <typeetablissement.client objet_id='" . $user->type . "' ForceDest='typeetablissement.client§37765649' ForceImport='true'/>
-                    
-                    <pays objet_id='" . $user->eq_country . "' ForceDest='pays§37765785' ForceImport='true'/>
-                    
+                    " . $eq_lycee . "
+                    " . $eq_etablissment . "
+                    " . $type_diplome . "
+                    " . $eq_country . "
+      
                     <typediplome_fr_int_.client ForceDest='typediplome_fr_int_.client§101204' objet_id='" . $user->id_TypeDiplome . "' ForceImport='true' />
                     
                     <rentree.client ForceDest='rentree.client§2954426' objet_id='" . $user->entrance . "' ForceImport='true' />
                    
                     <cours ForceDest='cours§99785' objet_id='" . $user->speciality . "' ForceImport='true' />
                     
-                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 40400743 : 103503) . "' ForceImport='true' />
+                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? $this->getAlternance($user->es_fnum) : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
                     
@@ -420,7 +454,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     
                     <cours objet_id='" . $user->speciality . "' ForceImport='true'/>
                     
-                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 40400743 : 103503) . "' ForceImport='true' />
+                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? $this->getAlternance($user->es_fnum) : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
                     
@@ -444,7 +478,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     
                     <concours objet_id='" . (!empty($user->concours_session) ? $user->concours_session : $user->concours_session2) . "' ForceImport='true'/>
                     
-                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 40400743 : 103503) . "' ForceImport='true' />
+                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? $this->getAlternance($user->es_fnum) : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
                     
@@ -519,9 +553,19 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             } else {
                 $qualification_city  = htmlspecialchars($user->city_2, ENT_XML1 | ENT_QUOTES, 'UTF-8');
             }
+
+            $eq_lycee = !empty($user->lycee) ? "<lycee.client ForceDest='lycee.client§47996272' objet_id='" . $user->id_Lycee. "' ForceImport='true'/>" : "";
+
+            $eq_etablissment = !empty($user->etab_sup) ? "<etablissement_superieur.client objet_id='" . $user->id_etab. "' ForceDest='etablissement_superieur.client§47997720' ForceImport='true'/>" : "";
+
+            $other_etabs = !empty($eq_lycee) ? "A47997723='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "'" : "A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "'";
+
+            $type_diplome = !empty($user->type_diplome) ? "<typediplome_emundus.client objet_id='" . $user->type_diplome . "' ForceDest='typediplome_emundus.client§48130556' ForceImport='true'/>" : '';
+            $eq_country = !empty($user->eq_country) ? "<pays objet_id='" . $user->eq_country . "' ForceDest='pays§37765785' ForceImport='true'/>" : "";
+
             $inscription_module = "
-                <inscription_module ForceImport='true' key='". $user->aurion_id ."_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A46372499 ='" . $user->is_hadicap . "' A37765483='" . htmlspecialchars($user->university, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "' A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
-                    
+                <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A46372499='" . $user->is_hadicap . "' " . $other_etabs . "  A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
+
                     <individu objet_id='" . $user_id . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
                         <module objet_id='" . $user->aurion_id . "' ForceSource='apprenant'/>
                     </individu>
@@ -533,18 +577,19 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     <langue objet_id='" . $user->lv2 . "' ForceDest='langue§4649756' ForceImport='true'/>
                     
                     <niveau_formation objet_id='" . $user->level . "' ForceDest='niveau_formation§37764238' ForceImport='true'/>
-                    
-                    <typeetablissement.client objet_id='" . $user->type . "' ForceDest='typeetablissement.client§37765649' ForceImport='true'/>
-                    
-                    <pays objet_id='" . $user->eq_country . "' ForceDest='pays§37765785' ForceImport='true'/>
-                    
+                                        
+                    " . $eq_lycee . "
+                    " . $eq_etablissment . "
+                    " . $type_diplome . "
+                    " . $eq_country . "
+
                     <typediplome_fr_int_.client ForceDest='typediplome_fr_int_.client§101204' objet_id='" . $user->id_TypeDiplome . "' ForceImport='true' />
                     
                     <rentree.client ForceDest='rentree.client§2954426' objet_id='" . $user->entrance . "' ForceImport='true' />
                     
                     <cours ForceDest='cours§99785' objet_id='" . $user->speciality . "' ForceImport='true' />
                     
-                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 40400743 : 103503) . "' ForceImport='true' />
+                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? $this->getAlternance($user->es_fnum) : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
                     
@@ -566,7 +611,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     
                     <cours objet_id='" . $user->speciality . "' ForceImport='true'/>
                     
-                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 40400743 : 103503) . "' ForceImport='true' />
+                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? $this->getAlternance($user->es_fnum) : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
                     
@@ -588,7 +633,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     
                     <concours objet_id='" . (!empty($user->concours_session) ? $user->concours_session : $user->concours_session2) . "' ForceImport='true'/>
                     
-                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? 40400743 : 103503) . "' ForceImport='true' />
+                    <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? $this->getAlternance($user->es_fnum) : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
                     
@@ -686,5 +731,28 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             return $input;
         }
     }
+
+
+    function getAlternance($fnum) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select([$db->quoteName('da_fr.id_TypeDApprenant', 'alt_fr'), $db->quoteName('da_int.id_TypedApprenant', 'alt_int')])
+            ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+            ->leftjoin($db->quoteName('data_aurion_37130437', 'da_int') . ' ON ' . $db->quoteName('da_int.id') . ' = ' . $db->quoteName('cc.spe_int_alt'))
+            ->leftjoin($db->quoteName('data_aurion_35616195', 'da_fr') . ' ON ' . $db->quoteName('da_fr.id') . ' = ' . $db->quoteName('cc.spe_fr_alt'))
+            ->where($db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum));
+
+        try{
+
+            $db->setQuery($query);
+            return array_filter(array_values($db->loadAssoc()))[0];
+        } catch (Exception $e) {
+            return '';
+        }
+
+    }
+
 
 }
