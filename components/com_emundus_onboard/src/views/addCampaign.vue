@@ -28,7 +28,7 @@
                   required
                   :class="{ 'is-invalid': errors.label, 'mb-0': translate.label }"
                 />
-              <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" v-if="actualLanguage != ''" type="button" @click="enableLabelTranslation"></button>
+              <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" v-if="manyLanguages !== '0'" type="button" @click="enableLabelTranslation"></button>
             </div>
             <translation :label="form.label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
           </div>

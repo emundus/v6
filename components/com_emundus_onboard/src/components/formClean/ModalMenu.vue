@@ -150,13 +150,7 @@ export default {
     createMenu() {
       this.changes = true;
 
-      if(this.label.fr != '' || this.model_id != -1) {
-        if(this.label.en == ''){
-          this.label.en = this.label.fr;
-        }
-        if(this.intro.en = ''){
-          this.intro.en = this.intro.fr;
-        }
+      if(this.label[this.actualLanguage] != '' || this.model_id != -1) {
         this.submitted = true;
         axios({
           method: "post",

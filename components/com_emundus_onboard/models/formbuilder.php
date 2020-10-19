@@ -2235,6 +2235,9 @@ class EmundusonboardModelformbuilder extends JModelList {
         $elements = $group->getMyElements();
 
         // Prepare languages
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
+
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_files = array();
         $Content_Folder = array();
@@ -2268,7 +2271,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
                 if ($el_params->sub_options) {
                     foreach ($el_params->sub_options->sub_labels as $key => $sub_label) {
-                        $el_params->sub_options->sub_labels[$key] = $this->getTranslation($sub_label,$Content_Folder['fr']);
+                        $el_params->sub_options->sub_labels[$key] = $this->getTranslation($sub_label,$Content_Folder[$actualLanguage]);
                     }
                 }
 
