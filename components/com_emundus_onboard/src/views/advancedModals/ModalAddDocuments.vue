@@ -38,7 +38,7 @@
         <div class="form-group">
           <label for="description">{{Description}} :</label>
           <div class="input-can-translate">
-            <textarea type="text" maxlength="200" class="form__input field-general w-input mb-0" v-model="form.description[langue]" id="description" />
+            <textarea type="text" class="form__input field-general w-input mb-0" v-model="form.description[langue]" id="description" />
             <button class="translate-icon" :class="{'translate-icon-selected': translate.description}" v-if="manyLanguages !== '0'" type="button" @click="translate.description = !translate.description"></button>
           </div>
           <translation :label="form.description" :actualLanguage="langue" v-if="translate.description"></translation>
@@ -202,7 +202,7 @@
           nbmax: false,
           selectedTypes: false
         };
-        if(this.form.name.fr === ''){
+        if(this.form.name[this.langue] === ''){
           this.errors.name = true;
           return 0;
         }
