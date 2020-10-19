@@ -21,7 +21,7 @@
             </button>
           </div>
           <h2 class="update-title-header">
-            {{label.fr}}
+            {{label[actualLanguage]}}
           </h2>
         </div>
         <div class="form-group mb-2">
@@ -72,7 +72,7 @@
 
   export default {
     name: "modalEditElement",
-    props: { ID: Number, element: Object, files: Number },
+    props: { ID: Number, element: Object, files: Number, manyLanguages: Number, actualLanguage: String },
     components: {
       fieldF,
       birthdayF,

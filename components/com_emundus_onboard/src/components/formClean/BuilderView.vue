@@ -119,6 +119,8 @@
                             :ID="element.id"
                             :element="element"
                             :files="files"
+                            :manyLanguages="manyLanguages"
+                            :actualLanguage="actualLanguage"
                             @reloadElement="reloadElement(element)"
                             :id="element.id"
                             :key="keyElements['element' + element.id]"
@@ -1199,7 +1201,7 @@ export default {
     color: #cecece;
     position: absolute;
     cursor: grab;
-    left: 1em;
+    left: 4em;
     margin-bottom: 0;
   }
   .icon-handle-group{
