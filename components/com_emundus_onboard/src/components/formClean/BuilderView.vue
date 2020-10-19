@@ -943,7 +943,7 @@ export default {
             this.updateSuccess,
             this.update
         );
-        page.intro_value = page.intro.fr;
+        page.intro_value = page.intro[this.actualLanguage];
         this.updateIntroPage = false;
       }).catch(e => {
         this.$emit(
