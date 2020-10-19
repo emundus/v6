@@ -28,6 +28,15 @@ class plgEmundusSetup_category extends JPlugin {
         try {
             $app = JFactory::getApplication();
             $label = $app->input->getString("jos_emundus_setup_campaigns___label");
+            if($label == null){
+                $this->query
+                    ->clear()
+                    ->select($this->db->quoteName('label'))
+                    ->from($this->db->quoteName('jos_emundus_setup_campaigns'))
+                    ->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id));
+                $this->db->setQuery($this->query);
+                $label = $this->db->loadResult();
+            }
             $nom = JFilterOutput::stringURLSafe($label);
 
 
