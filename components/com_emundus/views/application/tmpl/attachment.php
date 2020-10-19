@@ -364,15 +364,19 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
 
         var url = "index.php?option=com_emundus&controller=application&task=exportpdf&fnum=<?php echo $this->fnum; ?>&student_id=<?php echo $this->student_id; ?>&ids="+checked;
         //url = url.fmt({ids: checkedInput});
-        var link = window.open('', '_blank');
         $.ajax({
             type:'get',
             url: url,
             dataType:'json',
-
             success: function(result) {
-                if(result.link){
+                if (result.status) {
+                    var link = window.open('', '_blank');
                     link.location.href = result.link;
+                } else {
+                    Swal.fire({
+                        title: result.msg,
+                        type: 'error'
+                    })
                 }
             },
             error: function (jqXHR) {

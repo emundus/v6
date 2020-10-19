@@ -149,30 +149,36 @@ class EmundusHelperExport
     }
 
 	public static function getAttachmentPDF(&$exports, &$tmpArray, $files, $sid) {
-        if(!empty($files)){
-            foreach($files as $file) {
+        if (!empty($files)) {
+
+        	$nb_application_forms = 0;
+            foreach ($files as $file) {
                 if (strrpos($file->filename, 'application_form') === false) {
                     $exFileName = explode('.', $file->filename);
                     $filePath = EMUNDUS_PATH_ABS.$file->user_id.DS.$file->filename;
-                    if(file_exists($filePath)) {
+                    if (file_exists($filePath)) {
                         if (strtolower($exFileName[1]) != 'pdf') {
                             $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
                             $exports[] = $fn;
                             $tmpArray[] = $fn;
                         } else {
-                            /*$prop = EmundusHelperExport::get_pdf_prop($filePath);
-                            echo "<pre>";
-                var_dump($prop); die();*/
                             if (EmundusHelperExport::isEncrypted($filePath)) { 
                                 $fn = EmundusHelperExport::makePDF($file->filename, $exFileName[1], $sid);
                                 $exports[] = $fn;
                                 $tmpArray[] = $fn;
-                            } else
-                                $exports[] = $filePath;
+                            } else {
+                            	$exports[] = $filePath;
+                            }
                         }
                     }
+                } else {
+	                $nb_application_forms++;
                 }
             }
+
+	        if (sizeof($files) === $nb_application_forms) {
+				return false;
+	        }
         }
 		
 		return $exports;
