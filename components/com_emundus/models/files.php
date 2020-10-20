@@ -857,7 +857,7 @@ class EmundusModelFiles extends JModelLegacy
 
         if (!empty($sql_code) || !empty($sql_fnum) ) {
 	        $query['q'] .= ' AND (' . $sql_code . ' ' . $sql_fnum . ') ';
-        } else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0]))) {
+        } else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0])) || empty(array_intersect($params['programme'], array_filter($this->code)))) {
         	$query['q'] .= ' AND 1=2 ';
         }
         return $query;
@@ -2199,28 +2199,28 @@ if (JFactory::getUser()->id == 63)
         }
     }
 
-    /**
-     * @return bool|mixed
-     */
-    public function getAllFnums($assoc_tab_fnums = false)
-    {
+	/**
+	 * @return bool|mixed
+	 * @throws Exception
+	 */
+    public function getAllFnums($assoc_tab_fnums = false) {
         include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
-        $userModel = new EmundusModelUsers;
+        $m_users = new EmundusModelUsers;
 
         $current_user = JFactory::getUser();
 
-        $this->code = $userModel->getUserGroupsProgrammeAssoc($current_user->id);
+        $this->code = $m_users->getUserGroupsProgrammeAssoc($current_user->id);
 
-        $groups = $userModel->getUserGroups($current_user->id, 'Column');
-        $fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
-        $fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
-        $this->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+        $groups = $m_users->getUserGroups($current_user->id, 'Column');
+        $fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
+        $fnum_assoc_to_user = $m_users->getApplicantsAssoc($current_user->id);
+        $this->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc_to_user);
 
         $files = $this->getAllUsers(0, 0);
         $fnums = array();
 
         if ($assoc_tab_fnums) {
-            foreach($files as $key => $file){
+            foreach($files as $file){
                 if ($file['applicant_id'] > 0) {
                     $fnums[] = array( 'fnum' => $file['fnum'],
                                       'applicant_id' => $file['applicant_id'],
