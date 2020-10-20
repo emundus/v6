@@ -1339,7 +1339,7 @@ class EmundusModelUsers extends JModelList {
             $db = $this->getDbo();
             $db->setQuery($query);
             return $db->loadAssoc();
-        } catch(Exeption $e) {
+        } catch(Exception $e) {
             return false;
         }
     }
@@ -1395,7 +1395,7 @@ class EmundusModelUsers extends JModelList {
             $db->setQuery($query);
 
             return $db->loadAssocList($index);
-        } catch(Exeption $e) {
+        } catch(Exception $e) {
             return false;
         }
     }
@@ -1485,7 +1485,7 @@ class EmundusModelUsers extends JModelList {
             $db = $this->getDbo();
             $db->setQuery($query);
             return $db->loadColumn();
-        } catch(Exeption $e) {
+        } catch(Exception $e) {
             return false;
         }
     }
@@ -1508,7 +1508,7 @@ class EmundusModelUsers extends JModelList {
             $db->setQuery($query);
 
             return $db->loadColumn();
-        } catch(Exeption $e) {
+        } catch(Exception $e) {
             return false;
         }
     }
@@ -1524,7 +1524,7 @@ class EmundusModelUsers extends JModelList {
             $db->setQuery($query);
 
             return $db->loadColumn();
-        } catch(Exeption $e) {
+        } catch(Exception $e) {
             return false;
         }
     }
@@ -1538,7 +1538,7 @@ class EmundusModelUsers extends JModelList {
             $db = $this->getDbo();
             $db->setQuery($query);
             return $db->loadAssocList('id', 'label');
-        } catch(Exeption $e) {
+        } catch(Exception $e) {
             return false;
         }
     }
@@ -1552,7 +1552,7 @@ class EmundusModelUsers extends JModelList {
             $db = $this->getDbo();
             $db->setQuery($query);
             return $db->loadAssocList('id', 'label');
-        } catch(Exeption $e) {
+        } catch(Exception $e) {
             return false;
         }
     }
@@ -1564,7 +1564,7 @@ class EmundusModelUsers extends JModelList {
             $db = $this->getDbo();
             $db->setQuery($query);
             return $db->loadResult();
-        } catch(Exeption $e) {
+        } catch(Exception $e) {
             error_log($e->getMessage(), 0);
             return false;
         }
