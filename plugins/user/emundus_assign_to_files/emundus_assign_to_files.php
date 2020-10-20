@@ -109,7 +109,7 @@ class plgUserEmundus_assign_to_files extends JPlugin {
 
 					$query->clear()
 						->delete($db->quoteName('jos_emundus_users_assoc'))
-						->where($db->quoteName('fnums').' IN ('.implode(',',$fnums_to_delete).') AND '.$db->quoteName('user_id').' = '.$user['id']);
+						->where($db->quoteName('fnum').' IN ("'.implode('","',$fnums_to_delete).'") AND '.$db->quoteName('user_id').' = '.$user['id']);
 					$db->setQuery($query);
 
 					try {
