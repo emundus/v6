@@ -64,11 +64,16 @@ $show_remove_files = $params->get('show_remove_files', 1);
 $show_archive_files = $params->get('show_archived_files', 1);
 $show_state_files = $params->get('show_state_files', 0);
 
+$order_applications = $params->get('order_applications', 'esc.end_date');
+$applications_as_desc = $params->get('order_applications_asc_des', 'DESC');
+$query_order_by = $order_applications . ' ' . $applications_as_desc;
+
 $file_status = $params->get('file_status', 1);
 
 $file_tags = JText::_($params->get('tags', ''));
 
 $cc_list_url = $params->get('cc_list_url', 'index.php?option=com_fabrik&view=form&formid=102');
+
 
 // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
 if ($layout == '_:ccirs-drh') {
@@ -76,10 +81,10 @@ if ($layout == '_:ccirs-drh') {
 	$applications = modemundusApplicationsHelper::getDrhApplications();
 } elseif ($layout == '_:ccirs') {
 	$cc_list_url = $params->get('cc_list_url', 'index.php');
-	$applications = modemundusApplicationsHelper::getApplications($layout);
+	$applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
 } else {
 	// We send the layout as a param because Hesam needs different information.
-	$applications = modemundusApplicationsHelper::getApplications($layout);
+	$applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
     $states = modemundusApplicationsHelper::getStatusFiles();
 }
 

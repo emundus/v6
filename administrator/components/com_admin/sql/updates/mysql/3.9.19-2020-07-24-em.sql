@@ -41,3 +41,4 @@ INSERT INTO jos_modules_menu (moduleid, menuid) VALUES (@new_mod, @menu_id);
 
 COMMIT;
 
+SET autocommit = 1;

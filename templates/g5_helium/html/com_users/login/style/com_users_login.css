@@ -165,6 +165,19 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
 .logout .form-horizontal {
     margin-top: 20px;
+    width: 60%;
+    border: none;
+    background: #fafafa;
+}
+
+#g-main-mainbody div.logout.login {
+    background: #fafafa !important;
+}
+
+#g-main-mainbody div.logout.login .page-header h1 {
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .logout .form-horizontal  .control-group {
@@ -249,6 +262,13 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     }
 
 }
+
+@media all and (max-width: 479px) {
+    .view-login #g-container-main div.login.em-formRegistrationCenter {
+        width: 100%;
+    }
+}
+
 @media all and (max-width: 767px) {
 
     .view-login .login.em-formRegistrationCenter  {

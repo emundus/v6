@@ -207,4 +207,13 @@ a {
     .g-main-nav ul.g-sublevel li.g-dropdown-column, .g-main-nav ul.g-sublevel span.g-menu-parent-indicator, .g-main-nav .g-menu-item.g-parent .g-menu-item.g-parent .g-dropdown.g-dropdown-right {
         display: none !important;
     }
+
+   #g-navigation .g-container .g-grid #header-b {
+        width: 100%;
+    }
+
+    #g-navigation .g-container .g-grid {
+        flex-direction: column;
+        align-items: center;
+    }
 }

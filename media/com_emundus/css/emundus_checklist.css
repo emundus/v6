@@ -105,10 +105,20 @@ button#back:hover, button#back:active, button#back:focus,
     width: 100%;
 }
 
-.view-checklist .em-description {
+.view-checklist #attachment_list_mand .em-description {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     padding-bottom: 20px;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.view-checklist #attachment_list_opt .em-description {
+    display: flex;
+    align-items: baseline;
+    padding-bottom: 20px;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .view-checklist .em-description label {
@@ -144,11 +154,11 @@ button#back:hover, button#back:active, button#back:focus,
 .em-container-attachments > h1, .em-container-attachmentsOpt > h1 {
     color: #000;
 }
-.applicant-form .fabrikGroup legend, .applicant-form #attachment_list_mand legend, .applicant-form #attachment_list_opt legend {
+.view-checklist .fabrikGroup legend, .view-checklist #attachment_list_mand legend, .view-checklist #attachment_list_opt legend {
     display: contents;
 }
 
-#attachment_list_mand legend a, .applicant-form #attachment_list_opt legend a {
+#attachment_list_mand legend a, .view-checklist  #attachment_list_opt legend a {
     color: #000 !important;
 }
 #attachment_list {
@@ -271,11 +281,11 @@ button#back:hover, button#back:active, button#back:focus,
     height: auto;
 }
 
-.applicant-form .table {
+.view-checklist .table {
     margin-bottom: 0;
 }
 
-.applicant-form .table-responsive {
+.view-checklist .table-responsive {
     color: #2E2E2E;
 }
 
@@ -289,7 +299,7 @@ button#back:hover, button#back:active, button#back:focus,
     text-decoration: none !important;
 }
 
-.applicant-form form .input-group div:nth-child(2) .col-sm-12 {
+.view-checklist form .input-group div:nth-child(2) .col-sm-12 {
     display: flex;
     justify-content: space-between;
     margin-top: 10px;
@@ -388,18 +398,18 @@ button#back:hover, button#back:active, button#back:focus,
     justify-content: center;
     flex-direction: row-reverse;
 }
-.applicant-form .form-actions .row-fluid {
+.view-checklist .form-actions .row-fluid {
     display: flex;
     flex-direction: row-reverse;
     justify-content: space-around;
 }
 
-.applicant-form .fabrikActions.form-actions .span4 {
+.view-checklist .fabrikActions.form-actions .span4 {
     width: 50% !important;
     display: flex;
 }
 
-.applicant-form .fabrikActions.form-actions .span4:not(.offset1) {
+.view-checklist  .fabrikActions.form-actions .span4:not(.offset1) {
     justify-content:flex-end;
 }
 
@@ -432,7 +442,7 @@ body.view-reset label#jform_username-lbl::after,
 }
 
 @media screen and (max-width: 767px){
-    .applicant-form .fabrikActions.form-actions .span4:not(.offset1){
+    .view-checklist  .fabrikActions.form-actions .span4:not(.offset1){
         justify-content: flex-end;
     }
 }
@@ -448,13 +458,13 @@ body.view-reset label#jform_username-lbl::after,
         width: 100% !important;
         margin-right: -95px;
     }
-    .applicant-form form .input-group div:nth-child(2) .col-sm-12{
+    .view-checklist form .input-group div:nth-child(2) .col-sm-12{
         flex-direction: column;
     }
-    .applicant-form form .input-group div:nth-child(2) .col-sm-12 input{
+    .view-checklist form .input-group div:nth-child(2) .col-sm-12 input{
         margin-top: 10px;
     }
-    .applicant-form .fabrikActions.form-actions .span4:not(.offset1){
+    .view-checklist .fabrikActions.form-actions .span4:not(.offset1){
         justify-content: flex-start;
     }
 
@@ -502,7 +512,7 @@ body.view-reset label#jform_username-lbl::after,
 
 
 #attachment_list_mand legend a,
-.applicant-form #attachment_list_opt legend a {
+.view-checklist #attachment_list_opt legend a {
     color: #000 !important;
 }
 
@@ -566,5 +576,18 @@ body.view-reset label#jform_username-lbl::after,
 
     #g-sidebar .moduletable .custom {
             justify-content: flex-start;
+    }
+}
+
+@media all and (min-width: 768px) and (max-width: 959px) {
+    .view-details #g-container-main h3.legend {
+        margin-top: 30px !important;
+    }
+    .view-details #g-container-main .page-header h1 {
+        margin-bottom: 30px !important;
+    }
+
+    .view-details #g-sidebar .moduletable, .view-checklist #g-sidebar .moduletable {
+        padding: 0px !important;
     }
 }

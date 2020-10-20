@@ -170,10 +170,10 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 @media all and (max-width: 768px) and (max-width: 959px) {
-    .view-featured .candidacy-files-list .row {
+.view-featured #content-bottom-a .row {
         align-items: center;
         display: flex;
-        flex-direction: column;
+        flex-direction: inherit;
     }
 
     .view-featured .candidacy-files-list .row .main-page-application-title {

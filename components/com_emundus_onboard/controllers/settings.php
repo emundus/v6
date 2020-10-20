@@ -204,6 +204,43 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         exit;
     }
 
+    public function getcgvarticle(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $content = $m_settings->getCGVArticle();
+            if (!empty($content)) {
+                $tab = array('status' => 1, 'msg' => JText::_('STATUS_RETRIEVED'), 'data' => $content);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_STATUS'), 'data' => $content);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function updatecgv() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $content = $jinput->getRaw('content');
+
+            $changeresponse = $m_settings->updateCGV($content);
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+
     public function getfooterarticles() {
         $user = JFactory::getUser();
 
@@ -501,7 +538,7 @@ class EmundusonboardControllersettings extends JControllerLegacy {
 
             if(isset($image)) {
                 $config = JFactory::getConfig();
-                $sitename = strtolower(str_replace(array('=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%'),'_',$config->get('sitename')));
+                $sitename = strtolower(str_replace(array('\\','=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%'),'_',$config->get('sitename')));
 
                 $path = $image["name"];
                 $ext = pathinfo($path, PATHINFO_EXTENSION);
@@ -525,6 +562,23 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             }
             exit;
         }
+    }
+
+    public function gettasks(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $table = JTable::getInstance('user', 'JTable');
+            $table->load($user->id);
+
+            // Check if the param exists but is false, this avoids accidetally resetting a param.
+            $params = $user->getParameters();
+            echo json_encode(array('params' => $params));
+        }
+        exit;
     }
 }
 

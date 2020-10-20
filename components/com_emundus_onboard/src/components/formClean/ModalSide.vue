@@ -77,23 +77,23 @@
 
         <div class="col-md-12 d-flex mb-1" style="align-items: center">
           <input type="checkbox" v-model="template">
-          <label class="ml-10px">{{SaveAsTemplate}}</label>
+          <label class="ml-10px mb-0">{{SaveAsTemplate}}</label>
         </div>
 
         <div class="col-md-12 mb-1">
-          <a
-            class="bouton-sauvergarder-et-continuer-3"
+          <button
+            class="bouton-sauvergarder-et-continuer"
             @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()"
-          >{{Continuer}}</a>
-          <a class="bouton-sauvergarder-et-continuer-3 w-delete"
+          >{{Continuer}}</button>
+          <button class="bouton-sauvergarder-et-continuer w-delete"
              @click.prevent="deleteMenu()"
              v-if="menus.length > 1 && files == 0">
             {{Delete}}
-          </a>
-          <a
-            class="bouton-sauvergarder-et-continuer-3 w-retour"
+          </button>
+          <button
+            class="bouton-sauvergarder-et-continuer w-retour"
             @click.prevent="$modal.hide('modalSide' + ID)"
-          >{{Retour}}</a>
+          >{{Retour}}</button>
         </div>
       </div>
     </modal>
@@ -310,134 +310,4 @@ export default {
 </script>
 
 <style scoped>
-.modalC-content {
-  height: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  font-size: 15px;
-  overflow: auto;
-}
-
-.b {
-  display: block;
-}
-
-.toggle {
-  vertical-align: middle;
-  position: relative;
-
-  left: 20px;
-  width: 45px;
-  border-radius: 100px;
-  background-color: #ddd;
-  overflow: hidden;
-  box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.05);
-}
-
-.check {
-  position: absolute;
-  display: block;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  z-index: 6;
-}
-
-.check:checked ~ .track {
-  box-shadow: inset 0 0 0 20px #4bd863;
-}
-
-.check:checked ~ .switch {
-  right: 2px;
-  left: 22px;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition-property: left, right;
-  transition-delay: 0.05s, 0s;
-}
-
-.switch {
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  bottom: 2px;
-  right: 22px;
-  background-color: #fff;
-  border-radius: 36px;
-  z-index: 1;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition-property: left, right;
-  transition-delay: 0s, 0.05s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.track {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.05);
-  border-radius: 40px;
-}
-.inlineflex {
-  display: flex;
-  align-content: center;
-}
-.titleType {
-  font-size: 45%;
-}
-.topright {
-  float: right;
-  font-size: 25px;
-}
-.btnCloseModal {
-  background-color: inherit;
-}
-.centepercent {
-  width: 100%;
-  max-width: 100%;
-  min-height: 100px;
-  margin-bottom: 1em;
-}
-
-.intro{
-  margin-top: 2em;
-}
-
-  textarea{
-    padding: 0.5em;
-  }
-
-  .menu-list{
-    padding: 1em;
-  }
-
-.inlineflex {
-  display: flex;
-  align-content: center;
-  align-items: center;
-  height: 30px;
-}
-
-.handle {
-  cursor: grab;
-}
-  .icon-handle{
-    position: relative;
-  }
-
-.update-field-header{
-  margin-bottom: 1em;
-}
-
-.update-title-header{
-  margin-top: 0;
-  display: flex;
-  align-items: center;
-}
-
 </style>

@@ -89,6 +89,10 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
         </div>
     </div>
     <div class="row">
+        <label for="trombi_header_height"><?= JText::_('COM_EMUNDUS_TROMBI_HEIGHT_HEADER'); ?></label>
+        <input id="trombi_header_height" name="trombi_header_height" value="" class="trombi_margin" />
+    </div>
+    <div class="row">
         <div class="col-md-12">
             <h3 class="title_wysiwyg"><?= JText::_('COM_EMUNDUS_TROMBI_HEADER'); ?></h3>
 		    <?= $this->wysiwyg_header; ?>
@@ -134,52 +138,53 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
 
 
     $('.trombi_format').change(function() {
-        var selected_format = $(this).val();
+        const selected_format = $(this).val();
 
-        var default_tmpl = '';
-
-        var templ = <?= json_encode($this->templ); ?>;
-
-        var actual_tmpl = $('#trombi_tmpl').val();
+        const templ = <?= json_encode($this->templ); ?>;
 
         $('#selected_format').val(selected_format);
-        default_tmpl = templ[selected_format].body;
-        var header = templ[selected_format].header;
-        var footer = templ[selected_format].footer;
+        const default_tmpl = templ[selected_format].body;
+        const header = templ[selected_format].header;
+        const footer = templ[selected_format].footer;
 
         $('#trombi_tmpl').val(default_tmpl);
         $('#trombi_header').val(header);
         $('#trombi_footer').val(footer);
-
-        var heightHeader = $('#trombi_header').height();
 
         tinyMCE.execCommand("mceSetContent", false, default_tmpl);
         tinyMCE.execCommand("mceRepaint");
     });
 
 
-    $('#trombi_preview').click(function (e) { 
+    $('#trombi_preview').click(function (e) {
         e.preventDefault();
         //tinyMCE.execCommand("mceRepaint");
         // use to refresh content... double ToggleEditor
         tinyMCE.execCommand('mceToggleEditor', false, 'trombi_tmpl');
         tinyMCE.execCommand('mceToggleEditor', false, 'trombi_tmpl');
 
-        var string_fnums = JSON.stringify(<?= $this->string_fnums; ?>);//$('#string_fnums').val();
-        var selected_grid_width = $('#trombi_grid_width').val();
-        var selected_grid_height = $('#trombi_grid_height').val();
-        var selected_margin = $('#trombi_margin').val();
-        var selected_tmpl = $('#trombi_tmpl').val();
+        let string_fnums;
+        if ('<?= $this->string_fnums; ?>' === 'all') {
+            string_fnums = '["all"]';
+        } else {
+            string_fnums = JSON.stringify(<?= $this->string_fnums; ?>);
+        }
 
-        var format = $('#selected_format').val();
+        const selected_grid_width = $('#trombi_grid_width').val();
+        const selected_grid_height = $('#trombi_grid_height').val();
+        const selected_margin = $('#trombi_margin').val();
+        const selected_tmpl = $('#trombi_tmpl').val();
+        const header_height = $('#trombi_header_height').val();
+
+        const format = $('#selected_format').val();
 
         $('#string_generate').val(0);
-        var string_generate = $('#string_generate').val();
-        var selected_border = $('#trombi_border').val();
+        const string_generate = $('#string_generate').val();
+        const selected_border = $('#trombi_border').val();
 
         $('#trombi_generate').prop('disabled', false);
 
-        var data = $.ajax({
+        $.ajax({
             type: 'POST',
             url: 'index.php?option=com_emundus&controller=trombinoscope&task=generate_preview',
             async: false,
@@ -192,10 +197,11 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
                 template: selected_tmpl,
                 format: format,
                 generate: string_generate,
-                border: selected_border
+                border: selected_border,
+                headerHeight: header_height
             },
             success: function (data) {
-                var html_content = data.html_content;
+                const html_content = data.html_content;
 
                 $('#div-preview').html(html_content);
                 $('#data_for_pdf').html(html_content);
@@ -214,25 +220,31 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
         tinyMCE.execCommand('mceToggleEditor', false, 'trombi_head');
         tinyMCE.execCommand('mceToggleEditor', false, 'trombi_foot');
 
-        var string_fnums = JSON.stringify(<?= $this->string_fnums; ?>);
-        var selected_grid_width = $('#trombi_grid_width').val();
-        var selected_grid_height = $('#trombi_grid_height').val();
-        var selected_margin = $('#trombi_margin').val();
-        var selected_tmpl = $('#trombi_tmpl').val();
-        var header = $('#trombi_head').val();
-        var footer = $('#trombi_foot').val();
+        let string_fnums;
+        if ('<?= $this->string_fnums; ?>' === 'all') {
+            string_fnums = '["all"]';;
+        } else {
+            string_fnums = JSON.stringify(<?= $this->string_fnums; ?>);
+        }
+        const selected_grid_width = $('#trombi_grid_width').val();
+        const selected_grid_height = $('#trombi_grid_height').val();
+        const selected_margin = $('#trombi_margin').val();
+        const selected_tmpl = $('#trombi_tmpl').val();
+        const header = $('#trombi_head').val();
+        const header_height = $('#trombi_header_height').val();
+        const footer = $('#trombi_foot').val();
 
-        var format = $('#selected_format').val();
+        const format = $('#selected_format').val();
 
-        var selected_check = $('#trombi_check').val();
-        var selected_border = $('#trombi_border').val();
+        const selected_check = $('#trombi_check').val();
+        const selected_border = $('#trombi_border').val();
 
         $('#string_generate').val(1); //For display the header and footer only for the pdf
-        var string_generate = $('#string_generate').val();
+        const string_generate = $('#string_generate').val();
 
         $(this).prop('disabled', true);
 
-        var data = $.ajax({
+        $.ajax({
             type: 'POST',
             url: 'index.php?option=com_emundus&controller=trombinoscope&task=generate_pdf',
             async: false,
@@ -248,10 +260,11 @@ unset($document->_styleSheets[$this->baseurl .'/media/com_emundus/lib/bootstrap-
                 format: format,
                 generate: string_generate,
                 checkHeader: selected_check,
-                border: selected_border
+                border: selected_border,
+                headerHeight : header_height
             },
             success: function (data) {
-                $pdf_url = data.pdf_url;
+                const $pdf_url = data.pdf_url;
                 $('#trombi_download').attr("href", $pdf_url);
                 $('#div-download').css({
                     'display':'block',

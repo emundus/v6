@@ -219,6 +219,12 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 			foreach($file as &$prop) {
 				$prop = trim($prop);
 			}
+			
+			// Street numbers longer than 3 chars are not allowed...
+			if (strlen($file->numVoieAF) > 3) {
+				$file->voieAF = $file->numVoieAF.' '.$file->voieAF;
+				unset($file->voieAF);
+			}
 
 			JLog::add('Processing file : '.$fnum.' POST json : '.json_encode($file), JLog::INFO, 'com_emundus.emundusnantesscholargpush');
 

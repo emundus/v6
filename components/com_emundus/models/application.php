@@ -1531,15 +1531,18 @@ class EmundusModelApplication extends JModelList {
 	                                        $elt = implode(", ", json_decode (@$element->content));
 	                                    }
 	                                    elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content)) {
-	                                        $params = json_decode($element->params);
-	                                        $index = array_search($element->content, $params->sub_options->sub_values);
-	                                        if (strlen($index) > 0) {
-	                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
-	                                        } elseif (!empty($params->dropdown_populate)) {
-		                                        $elt = $element->content;
-	                                        } else {
-	                                            $elt = "";
-	                                        }
+                                            $params = json_decode($element->params);
+                                            $index = array_search($element->content, $params->sub_options->sub_values);
+
+                                            if (strlen($index) > 0) {
+                                                $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                            } elseif (!empty($params->dropdown_populate)) {
+                                                $elt = $element->content;
+                                            } elseif($params->multiple == 1){
+                                                $elt = implode(", ", json_decode (@$element->content));
+                                            } else {
+                                                $elt = "";
+                                            }
 	                                    } elseif ($element->plugin == 'internalid') {
 		                                    $elt = '';
 	                                    } else {
@@ -2127,15 +2130,10 @@ class EmundusModelApplication extends JModelList {
                                                 try {
                                                     $this->_db->setQuery($query);
                                                     $res = $this->_db->loadColumn();
+                                                    $elt = implode(', ',$res);
                                                 } catch (Exception $e) {
                                                     JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                     throw $e;
-                                                }
-
-                                                if (count($res)>1) {
-                                                    $elt = implode(', ',$res);
-                                                } else {
-                                                    $elt = '';
                                                 }
                                             } else {
                                                 $from = $params->join_db_name;
@@ -2173,6 +2171,8 @@ class EmundusModelApplication extends JModelList {
                                             $index = array_search($element->content, $params->sub_options->sub_values);
                                             if (strlen($index) > 0) {
                                                 $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                            } elseif($params->multiple == 1){
+                                                $elt = implode(", ", json_decode (@$element->content));
                                             } else {
                                                 $elt = "";
                                             }

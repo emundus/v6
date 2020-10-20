@@ -623,6 +623,15 @@ class EmundusModelCampaign extends JModelList {
      */
     public function isLimitObtained($id) {
 
+        $user = JFactory::getSession()->get('emundusUser');
+        if (empty($user)){
+            $user = JFactory::getUser();
+        }
+
+        if(!EmundusHelperAccess::isApplicant($user->id) || empty($id)) {
+            return null;
+        }
+
         $limit = $this->getLimit($id);
 
         if (!empty($limit->is_limited)) {
@@ -633,7 +642,8 @@ class EmundusModelCampaign extends JModelList {
             $query
                 ->select('COUNT(id)')
                 ->from($db->quoteName('#__emundus_campaign_candidature'))
-                ->where($db->quoteName('status') . ' IN (' . $limit->steps . ')');
+                ->where($db->quoteName('status') . ' IN (' . $limit->steps . ')')
+                ->andWhere($db->quoteName('campaign_id') . ' = ' . $id);
 
             try {
 

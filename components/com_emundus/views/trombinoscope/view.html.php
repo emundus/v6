@@ -61,6 +61,7 @@ class EmundusViewTrombinoscope extends JViewLegacy {
 
         // Autres options
         $this->assign('default_margin', $m_trombi->default_margin);
+        $this->assign('default_header_height', $m_trombi->default_header_height);
         $this->assign('wysiwyg', $wysiwyg);
 	    $this->assign('wysiwyg_header', $wysiwyg_header);
 	    $this->assign('wysiwyg_footer', $wysiwyg_footer);

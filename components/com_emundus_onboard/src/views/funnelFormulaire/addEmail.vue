@@ -16,7 +16,7 @@
     />
     <div class="choices-buttons">
       <h2 style="margin-bottom: 0">{{ CandidateAction }}</h2>
-      <a @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
+      <button type="button" @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null" class="bouton-sauvergarder-et-continuer">{{ addTrigger }}</button>
     </div>
     <p>{{ TheCandidateDescription }}</p>
     <transition-group :name="'slide-down'" type="transition">
@@ -43,7 +43,7 @@
     </transition-group>
     <div class="choices-buttons">
       <h2 style="margin-bottom: 0">{{ ManagerAction }}</h2>
-      <a @click="$modal.show('modalAddTriggermanual'); triggerSelected = null" class="bouton-sauvergarder-et-continuer-3">{{ addTrigger }}</a>
+      <button type="button" @click="$modal.show('modalAddTriggermanual'); triggerSelected = null" class="bouton-sauvergarder-et-continuer">{{ addTrigger }}</button>
     </div>
     <p>{{ ManualDescription }}</p>
     <transition-group :name="'slide-down'" type="transition">
@@ -145,14 +145,22 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
   .create-trigger{
     text-align: center;
     width: 100%;
     margin-bottom: 4em;
   }
 
-  .choices-buttons .bouton-sauvergarder-et-continuer-3{
+  .choices-buttons{
+    display: flex;
+    align-items: center;
+    margin-bottom: 1em;
+  }
+  .choices-buttons h2{
+    margin-right: 1em;
+  }
+  .choices-buttons .bouton-sauvergarder-et-continuer{
     float: unset;
   }
 
