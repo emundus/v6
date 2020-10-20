@@ -1349,66 +1349,67 @@ class EmundusonboardModelprogram extends JModelList {
 
             $db->setQuery($query);
             $db->execute();
+
+            $formbuilder->addTransationFr('FORM_' . $pid. '_' . $formid . '=' . "\"" . $label['fr'] . "\"");
+            $formbuilder->addTransationFr('FORM_' . $pid. '_INTRO_' . $formid . '=' . "\"" . $intro['fr'] . "\"");
+            $formbuilder->addTransationEn('FORM_' . $pid. '_' . $formid . '=' . "\"" . $label['en'] . "\"");
+            $formbuilder->addTransationEn('FORM_' . $pid. '_INTRO_' . $formid . '=' . "\"" . $intro['en'] . "\"");
+            //
+
+            // INSERT FABRIK LIST
+            $query->clear()
+                ->select('*')
+                ->from('#__fabrik_lists')
+                ->where($db->quoteName('form_id') . ' = 270');
+            $db->setQuery($query);
+            $list_model = $db->loadObject();
+
+            $query->clear();
+            $query->insert($db->quoteName('#__fabrik_lists'));
+            foreach ($list_model as $key => $val) {
+                if ($key != 'id' && $key != 'form_id') {
+                    $query->set($key . ' = ' . $db->quote($val));
+                } elseif ($key == 'form_id') {
+                    $query->set($key . ' = ' . $db->quote($formid));
+                }
+            }
+            $db->setQuery($query);
+            $db->execute();
+            $listid = $db->insertid();
+
+            $query->clear();
+            $query->update($db->quoteName('#__fabrik_lists'));
+
+            $query->set('label = ' . $db->quote('FORM_' . $pid . '_' . $formid));
+            $query->set('access = ' . $db->quote($pid));
+            $query->where($db->quoteName('id') . ' = ' . $db->quote($listid));
+            $db->setQuery($query);
+            $db->execute();
+            //
+
+            $formbuilder->createHiddenGroup($formid);
+            $group = $formbuilder->createGroup($label,$formid);
+
+            // Link groups to program
+            $this->affectGroupToProgram($group['group_id'],$pid);
+            //
+
+            // Save as template
+            if ($template == 'true') {
+                $query->clear()
+                    ->insert($db->quoteName('#__emundus_template_evaluation'))
+                    ->set($db->quoteName('form_id') . ' = ' . $db->quote($formid))
+                    ->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $pid. '_' . $formid))
+                    ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')));
+                $db->setQuery($query);
+                $db->execute();
+            }
+            //
+
+            return true;
         } catch (Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
         }
-
-        $formbuilder->addTransationFr('FORM_' . $pid. '_' . $formid . '=' . "\"" . $label['fr'] . "\"");
-        $formbuilder->addTransationFr('FORM_' . $pid. '_INTRO_' . $formid . '=' . "\"" . $intro['fr'] . "\"");
-        $formbuilder->addTransationEn('FORM_' . $pid. '_' . $formid . '=' . "\"" . $label['en'] . "\"");
-        $formbuilder->addTransationEn('FORM_' . $pid. '_INTRO_' . $formid . '=' . "\"" . $intro['en'] . "\"");
-        //
-
-        // INSERT FABRIK LIST
-        $query->clear()
-            ->select('*')
-            ->from('#__fabrik_lists')
-            ->where($db->quoteName('form_id') . ' = 270');
-        $db->setQuery($query);
-        $list_model = $db->loadObject();
-
-        $query->clear();
-        $query->insert($db->quoteName('#__fabrik_lists'));
-        foreach ($list_model as $key => $val) {
-            if ($key != 'id' && $key != 'form_id') {
-                $query->set($key . ' = ' . $db->quote($val));
-            } elseif ($key == 'form_id') {
-                $query->set($key . ' = ' . $db->quote($formid));
-            }
-        }
-        $db->setQuery($query);
-        $db->execute();
-        $listid = $db->insertid();
-
-        $query->clear();
-        $query->update($db->quoteName('#__fabrik_lists'));
-
-        $query->set('label = ' . $db->quote('FORM_' . $pid . '_' . $formid));
-        $query->set('access = ' . $db->quote($pid));
-        $query->where($db->quoteName('id') . ' = ' . $db->quote($listid));
-        $db->setQuery($query);
-        $db->execute();
-        //
-
-        $group = $formbuilder->createGroup($label,$formid);
-
-        // Link groups to program
-        $this->affectGroupToProgram($group['group_id'],$pid);
-        //
-
-        // Save as template
-        if ($template == 'true') {
-            $query->clear()
-                ->insert($db->quoteName('#__emundus_template_evaluation'))
-                ->set($db->quoteName('form_id') . ' = ' . $db->quote($formid))
-                ->set($db->quoteName('label') . ' = ' . $db->quote('FORM_' . $pid. '_' . $formid))
-                ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')));
-            $db->setQuery($query);
-            $db->execute();
-        }
-        //
-
-        return true;
     }
 
     function getUserPrograms($user_id){
