@@ -15,12 +15,12 @@
           </div>
           <div class="action-links">
             <a class="d-flex action-link" @click="createGroup()">
-              <em class="add-group-icon col-md-offset-1"></em>
-              <label class="action-label col-md-offset-2">{{addGroup}}</label>
+              <em class="add-group-icon col-md-offset-1 col-sm-offset-1"></em>
+              <label class="action-label col-md-offset-2 col-sm-offset-1">{{addGroup}}</label>
             </a>
             <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements">
-              <em class="add-element-icon col-md-offset-1"></em>
-              <label class="action-label col-md-offset-2" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
+              <em class="add-element-icon col-md-offset-1 col-sm-offset-1"></em>
+              <label class="action-label col-md-offset-2 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
             </a>
             <transition :name="'slide-down'" type="transition">
               <draggable
@@ -34,7 +34,7 @@
                       chosen-class="plugin-chosen"
                       ghost-class="plugin-ghost"
                       style="padding-bottom: 2em">
-                <div class="d-flex plugin-link col-md-offset-3 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
+                <div class="d-flex plugin-link col-md-offset-3 col-sm-offset-2 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
                   <em :class="plugin.icon"></em>
                   <span class="ml-10px">{{plugin.name}}</span>
                 </div>
@@ -47,7 +47,7 @@
           <em class="fas fa-paper-plane" style="font-size: 20px"></em>
         </a>
       </div>
-      <div class="col-md-8 col-md-offset-4 menu-block">
+      <div class="col-md-8 col-sm-9 col-md-offset-4 menu-block">
         <div class="heading-block">
           <h1 class="form-title" style="padding: 0; margin: 0">Evaluation</h1>
         </div>
@@ -61,8 +61,11 @@
                   @removeGroup="removeGroup"
                   :key="builderKey"
                   :rgt="rgt"
+                  :prid="prid"
                   :eval="1"
                   :files="files"
+                  :actualLanguage="actualLanguage"
+                  :manyLanguages="manyLanguages"
                   ref="builder"
           />
         </div>
@@ -102,6 +105,8 @@
       index: Number,
       cid: Number,
       eval: Number,
+      actualLanguage: String,
+      manyLanguages: Number
     },
     components: {
       List,
@@ -152,11 +157,11 @@
             icon: 'fas fa-font',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
           },
-          birthday: {
-            id: 1,
-            value: 'birthday',
-            icon: 'far fa-calendar-alt',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY")
+          textarea: {
+            id: 5,
+            value: 'textarea',
+            icon: 'far fa-square',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
           },
           checkbox: {
             id: 2,
@@ -164,23 +169,29 @@
             icon: 'far fa-check-square',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_CHECKBOX")
           },
-          dropdown: {
-            id: 3,
-            value: 'dropdown',
-            icon: 'fas fa-th-list',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN")
-          },
           radiobutton: {
             id: 4,
             value: 'radiobutton',
             icon: 'fas fa-list-ul',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON")
           },
-          textarea: {
-            id: 5,
-            value: 'textarea',
-            icon: 'far fa-square',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
+          dropdown: {
+            id: 3,
+            value: 'dropdown',
+            icon: 'fas fa-th-list',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN")
+          },
+          birthday: {
+            id: 1,
+            value: 'birthday',
+            icon: 'far fa-calendar-alt',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY")
+          },
+          display: {
+            id: 6,
+            value: 'display',
+            icon: 'fas fa-paragraph',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
         },
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
@@ -226,6 +237,8 @@
               this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
               this.$refs.builder.updateOrder(gid,this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts);
               this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+              this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
+              this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
               this.loading = false;
             });
           });
@@ -306,8 +319,10 @@
               elts: [],
               group_id: group.group_id,
               group_showLegend: group.group_showLegend,
-              label_fr: group.label_fr,
-              label_en: group.label_en,
+              label: {
+                fr: group.label.fr,
+                en: group.label.en,
+              },
               group_tag: group.group_tag,
               ordering: group.ordering
             };
@@ -520,9 +535,12 @@
     padding: 1em;
   }
 
-  @media (max-width: 700px) {
+  @media (max-width: 768px) {
     .form-title{
-      max-width: 200px;
+      max-width: 250px;
+    }
+    .form-builder{
+      margin-top: 0;
     }
   }
   .select-form{
@@ -578,9 +596,9 @@
   }
   .icon-handle{
     color: #cecece;
-    position: absolute;
+    position: relative;
     cursor: grab;
-    top: 22px;
+    left: 5px;
   }
   .heading-actions{
     background: #1b1f3c;

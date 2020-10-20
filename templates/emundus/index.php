@@ -56,7 +56,10 @@ $doc = JFactory::getDocument();
                 $showcolumn = $this->countModules('header-onboarding');
                 ?>
                 <?php if($showcolumn): ?>
+                <nav id="siteNav">
+                    <a href="#" id="menuToggler" class="show-on-small">&#9776;</a>
                     <jdoc:include type="modules" name="header-onboarding"/>
+                </nav>
                 <?php endif; ?>
             </div>
             <div id="moduletable-d" class="moduletable-d size-30">
@@ -104,37 +107,52 @@ $doc = JFactory::getDocument();
     <?php } ?>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-<script>
-    let found = false;
+<script type="text/javascript">
+    (function($){
+        $(document).ready(function(){
+            $('#menuToggler').on('click', function(e){
+                e.preventDefault;
+                $('#siteNav ul').toggleClass('menuIsActive');
+            });
+        });
 
-    // Get route
-    const path = window.location.pathname.split('/');
-    const route = path[path.length - 1];
-    const menu = document.getElementById('moduletable-b');
-    //
+        let found = false;
 
-    // Get view params
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const view = urlParams.get('view')
-    //
+        // Get route
+        const path = window.location.pathname.split('/');
+        const route = path[path.length - 1];
+        const menu = document.getElementById('moduletable-b');
+        //
 
-    menu.childNodes[1].childNodes.forEach((element) => {
-        element.childNodes.forEach((link) => {
-            if(link.tagName == 'A' && !found) {
-                let find;
-                if(view != null) {
-                    find = link.attributes.href.nodeValue.search(view);
-                } else {
-                    find = link.attributes.href.nodeValue.search(route);
-                }
-                if(find !== -1){
-                    link.className = 'menu-current-link';
-                    found = true;
-                }
+        // Get view params
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const view = urlParams.get('view')
+        //
+
+        menu.childNodes[1].childNodes.forEach((element) => {
+            if(element.tagName == 'UL') {
+                element.childNodes.forEach((list) => {
+                    if (list.tagName == 'LI') {
+                        list.childNodes.forEach((link) => {
+                            if (link.tagName == 'A' && !found) {
+                                let find;
+                                if (view != null) {
+                                    find = link.attributes.href.nodeValue.search(view);
+                                } else {
+                                    find = link.attributes.href.nodeValue.search(route);
+                                }
+                                if (find !== -1) {
+                                    link.className = 'menu-current-link';
+                                    found = true;
+                                }
+                            }
+                        });
+                    }
+                });
             }
         });
-    });
+    })(jQuery);
 </script>
 </body>
 </html>

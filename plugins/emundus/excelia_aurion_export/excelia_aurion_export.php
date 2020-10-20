@@ -682,7 +682,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             $db->setQuery($query);
             return $db->loadResult();
         } catch(Exception $e) {
-            JLog::add('Query error '. $query->__toString(), JLog::ERROR, 'com_emundus_exceliaAurionExport');
+            JLog::add('Query error '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus_exceliaAurionExport');
             return $input;
         }
     }

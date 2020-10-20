@@ -26,7 +26,7 @@
 #navfilter .navsearch .navsearch-content .input-group label input {
     border-radius: 4px 0px 0px 4px !important;
     height: 34px;
-    margin-top: -1px;
+    margin-top: 0px;
 }
 .campaignbymonth {
     margin-top: 0 !important;
@@ -130,11 +130,10 @@
   width: auto;
   padding: 8px 12px;
   text-transform: inherit;
-  font-family: 'Open Sans', sans-serif !important;
 }
 
 .campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {
-    text-transform: capitalize;
+    text-transform: initial;
 }
 
 .campaign-title {
@@ -303,6 +302,25 @@
         padding: 10px !important;
     }
 }
+@media all and (max-width: 479px) {
+    .homepage .blog-featuredhomepage {
+        margin-bottom: 25px;
+        margin-top: 25px;
+    }
+
+    .homepage #navfilter .navsearch .navsearch-content .input-group-btn button {
+        margin-bottom: 0px;
+    }
+
+    .campaign-month-campaigns .campaign-content  .left-side.campaigntext p {
+        padding-left: 0px;
+        margin-left: 0px;
+    }
+
+    .homepage .campaingapply .campaingapplycontent {
+        text-align: left;
+    }
+}
 
 @media all and (max-width: 768px) {
 
@@ -321,8 +339,8 @@
         border-bottom: none;
     }
 
-    .homepage .campaingapplycontent {
-        text-align: center;
+    .homepage .campaingapply .campaingapplycontent {
+        text-align: left;
     }
 
 }

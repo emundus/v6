@@ -135,7 +135,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			$db->execute();
 		} catch (Exception $e) {
             echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
         }
 
 		// 2. Vérification de l'existance d'un compte utilisateur avec email de l'expert
@@ -148,7 +148,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			$uid = $db->loadResult();
 		} catch (Exception $e) {
             echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
         }
 
 		$acl_aro_groups = $m_users->getDefaultGroup($profile_id);
@@ -168,7 +168,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 				$is_evaluator = $db->loadResult();
 			} catch (Exception $e) {
 	            echo $e->getMessage();
-	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+	            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	        }
 
 			// Ajout d'un nouveau profil dans #__emundus_users_profiles + #__emundus_users_profiles_history
@@ -183,9 +183,9 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 					$db->execute();
 				} catch (Exception $e) {
 		            echo $e->getMessage();
-		            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		        }
-		        
+
 				// Modification du profil courant en profil Expert
 				$user->groups = $acl_aro_groups;
 
@@ -206,7 +206,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 					$db->execute();
 				} catch (Exception $e) {
 		            echo $e->getMessage();
-		            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		        }
 			}
 
@@ -218,7 +218,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			// 2.1.2. Envoie des identifiants à l'expert + Envoie d'un message d'invitation à se connecter pour evaluer le dossier
 			$email = $m_emails->getEmail('expert_accept');
 			$body = $m_emails->setBody($user, $email->message);
-			
+
 			$email_from_sys = $app->getCfg('mailfrom');
 			$sender = [
 				$email_from_sys,
@@ -418,7 +418,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			$db->execute();
 		} catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -432,7 +432,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 				$db->setQuery($query);
 			} catch (Exception $e) {
 				echo $e->getMessage();
-				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 				return false;
 			}
 
@@ -446,7 +446,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 					$db->execute();
 				} catch (Exception $e) {
 					echo $e->getMessage();
-					JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+					JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 					return false;
 				}
 			}

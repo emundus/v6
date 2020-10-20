@@ -109,7 +109,7 @@ class PlgFabrik_FormEmundussetprofile extends plgFabrik_Form {
 				$db->setQuery($query);
 				$p = $db->loadObject();
 			} catch (Exception $e) {
-				JLog::add('Unable to get profile in plugin/emundusSetProfile at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+				JLog::add('Unable to get profile in plugin/emundusSetProfile at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 				return false;
 			}
 
@@ -128,7 +128,7 @@ class PlgFabrik_FormEmundussetprofile extends plgFabrik_Form {
 					$db->setQuery($query);
 					$db->execute();
 				} catch (Exception $e) {
-					JLog::add('Unable to set profile in plugin/emundusSetProfile at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+					JLog::add('Unable to set profile in plugin/emundusSetProfile at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 				}
 			}
 

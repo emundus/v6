@@ -169,6 +169,22 @@ a.btn.btn-success:not(.btn-xs) {
 
 }
 
+@media all and (max-width: 768px) and (max-width: 959px) {
+.view-featured #content-bottom-a .row {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .view-featured .candidacy-files-list .row .main-page-application-title {
+        width: 100%;
+    }
+
+    .view-featured .candidacy-files-list .row .main-page-file-info {
+        width: 100%;
+    }
+}
+
 @media screen and (max-width: 991px) {
     .main-page-file-info {
         width: auto;
@@ -195,12 +211,6 @@ a.btn.btn-success:not(.btn-xs) {
 @media all and (max-width: 959px) {
     .main-page-application-title {
         text-align: center;
-    }
-
-    .candidacy-files-list .row {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
     }
 
     .main-page-file-progress {

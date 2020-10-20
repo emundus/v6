@@ -55,9 +55,40 @@ a:hover {
   justify-content: center;
 }
 
+.show-on-small{
+  display: none;
+  font-size: xx-large;
+  left: 0;
+  position: absolute;
+  top: -17px;
+  color: white;
+}
+
+.show-on-small:hover, .show-on-small:focus{
+  color: #de6339;
+  text-decoration: unset;
+}
+
 @media (max-width: 991px) {
   .g-container{
     width: 85%;
+  }
+
+  .g-navigation .custom a {
+    position: absolute;
+    left: 10%;
+    top: -10px;
+  }
+
+  .g-navigation .custom img {
+    position: relative;
+    top: 0;
+    margin: 0 auto;
+  }
+
+  .moduletable-c,.moduletable-d{
+    position: absolute;
+    right: 0;
   }
 }
 
@@ -80,12 +111,16 @@ a:hover {
   justify-content: space-around;
   display: flex;
   flex-direction: row;
-  min-width: 36rem;
   align-items: center;
+  width: 25em;
 }
 
 div#moduletable-d  a[href$="/configuration-settings"]  {
   display: none;
+}
+
+.lang-inline a[href$="/configuration-settings"] {
+  display: inherit !important;
 }
 
 .moduletable-d div#userDropdown {
@@ -202,7 +237,6 @@ div#moduletable-d  a[href$="/configuration-settings"]  {
   width: 900px;
   margin-right: auto;
   margin-left: auto;
-  margin-top: 15%;
 }
 .nav.link {
   margin-top: 15px;
@@ -517,7 +551,7 @@ input[type="checkbox"].check{
 }
 @media (max-width: 991px) {
   .section-sub-menu {
-    top: 13em;
+    top: 8em;
   }
 
   .stats-block label{
@@ -526,7 +560,7 @@ input[type="checkbox"].check{
 }
 @media (max-width: 700px) {
   .section-sub-menu {
-    top: 11em;
+    top: 7em;
   }
 }
 .section-sub-menu .icon {
@@ -597,6 +631,31 @@ input[type="checkbox"].check{
     margin-right: 22px;
     font-size: 14px;
     line-height: 26px;
+  }
+
+  .show-on-small{
+    display: block;
+  }
+
+  #siteNav ul{
+    display: none;
+  }
+
+  .menuIsActive{
+    display: block !important;
+    opacity: 1 !important;
+    position: absolute;
+    left: -20px;
+    height: 100vh;
+    background: #1b1f3c;
+    padding: 20px !important;
+    width: 60% !important;
+    margin-top: 5%;
+    transition: all ease-in-out 0.3s;
+  }
+  .menuIsActive li{
+    text-align: left !important;
+    margin-bottom: 10%;
   }
 }
 
@@ -779,7 +838,7 @@ div.moduletable-b {
 
 div.moduletable-b ul {
   display: flex;
-  width: 150%;
+  width: 110%;
   margin-right: 60px;
   justify-content: center;
   padding-left: 0;
@@ -912,9 +971,19 @@ li.g-menu-item:hover ul.g-dropdown {
     content: "";
     position: relative;
     display: block;
-    bottom: -7px;
+    bottom: -3px;
     margin: auto;
   }
 }
 
-@media (min-width: 1168px) {  }
+@media (max-width: 1168px) {
+  #userDropdownIcon{
+    font-size: x-large;
+    padding: 10px !important;
+  }
+
+  div.advanced-dropdown{
+    position: static;
+    margin-right: 15px;
+  }
+}

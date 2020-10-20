@@ -29,7 +29,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			die("Can not reach this page : Permission denied");
 		}
 	}
-	
+
 	/**
 	 * Draws the html form element
 	 *
@@ -95,7 +95,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			}
 		}
 		$str = '<div><label class="fabrikLabel " for="'.$element->name.'">'.$element->label.'<img class="fabrikTip fabrikImg" title="" src="media/com_fabrik/images/notempty.png"></label>';
-		if ($this->isReferentLetterUploaded($this->_attachment_id)) {
+		if ($this->isReferentLetterUploaded($this->_attachment_id,$fnum) || $this->isReferentFormUploaded($this->_attachment_id,$fnum) == 1) {
 			$str .= '<span class="emundusreferent_uploaded">'.JText::_('REFERENCE_LETTER_UPLOADED').'<span>';
 		} else {
 			$str .= '<input ' ;
@@ -105,7 +105,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			$str .= " />\n";
 			$txt_button = ($value>0)?JText::_('SEND_EMAIL_AGAIN'):JText::_('SEND_EMAIL');
 			$str .= '<div id="'.$id.'_response"><input type="button" class="fabrikinput button btn-referent" id="'.$id.'_btn" name="'.$name.'" value="'.$txt_button.'" /></div>';
-			
+
 			$str .= '<img src="'.COM_FABRIK_LIVESITE.'media/com_fabrik/images/ajax-loader.gif" class="loader" id="'.$id.'_loader" alt="'.JText::_('Loading').'" style="display:none;padding-left:10px;" />';
 			$str .= '<div id="'.$id.'_error"></div>';
 		}
@@ -144,6 +144,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$opts->sendmail = JText::_('SEND_EMAIL');
 		$opts->sendmailagain = JText::_('SEND_EMAIL_AGAIN');
 		$opts->attachment_id = $params->get('attachment_id');
+		$opts->form_recommend = $params->get('form_id', '68');
 		$opts->fullName = $this->getFullName(false, true);
 		$opts->formid = $this->getForm()->getForm()->id;
 		$opts->filterid = $filterid;
@@ -194,9 +195,9 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$ar = array('id' => $id, 'triggerEvent' => 'click');
 		return array($ar);
 	}
-		
+
 	//////////////////////////  SET FILES REQUEST  /////////////////////////////
-	// 
+	//
 	// Génération de l'id du prochain fichier qui devra être ajouté par le referent
 	// 1. Génération aléatoire de l'ID
 	private function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789') {
@@ -228,6 +229,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 
 		$recipient = $jinput->post->getRaw('email');
 		$attachment_id = $jinput->post->getInt('attachment_id');
+		$form_recommend = $jinput->post->getInt('form_recommend');
 		$fnum = $jinput->post->get('fnum');
 
 		if (empty($recipient)) {
@@ -252,7 +254,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 				die(json_encode($response));
 			}
 		} catch (Exception $e) {
-			JLog::add('Error getting CC by fnum in query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting CC by fnum in query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			$response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('FNUM_INCORRECT_ERROR').'</span>');
 			die(json_encode($response));
 		}
@@ -270,7 +272,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$db->setQuery($query);
 		$db->query();
 		$obj = $db->loadObject() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_SETUP_EMAIL').'</span>')));
-		
+
 		// Récupèration de la pièce jointe : modele de lettre
 		$query = 'SELECT esp.reference_letter
 						FROM #__emundus_setup_profiles AS esp 
@@ -280,7 +282,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$db->setQuery($query);
 		$db->query() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_REFERENCE_LETTER').'</span>')));
 		$obj_letter = $db->loadResult();
-		
+
 		// Reference  /////////////////////////////////////////////////////////////
 		if (!$this->isReferentLetterUploaded($attachment_id, $fnum)) {
 			$key = md5($this->rand_string(20).time());
@@ -294,7 +296,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			$fnum_detail = $profile->getFnumDetails($fnum);
 
 			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-			$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid=68&keyid='.$key.'&sid='.$this->_user->id;
+			$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$form_recommend.'&keyid='.$key.'&sid='.$this->_user->id;
 
 			$patterns = array('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', '/\[PROGRAMME_NAME\]/');
 			$replacements = array($this->_user->id, $this->_user->name, $this->_user->email, $link_upload, $fnum_detail['label']);
@@ -307,7 +309,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			}
 			$body = preg_replace($patterns, $replacements, $body);
 
-			// Mail 
+			// Mail
 			$from = $obj->emailfrom;
 			$fromname = $obj->name;
 
@@ -331,7 +333,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			}
 
 			$send = $mailer->send();
-			
+
 			if ($send !== true) {
 				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
 				$response = array("result" => 0, "message" => '<span class="emundusreferent_error">'.JText::_('EMAIL_ERROR').'</span>');
@@ -359,7 +361,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$db->setQuery($query);
 		return $db->loadAssocList();
 	}
-	
+
 	protected function isReferentLetterUploaded($attachment_id, $fnum) {
 		$db = JFactory::getDBO();
 		$query = 'SELECT count(id) as cpt FROM #__emundus_uploads WHERE fnum LIKE '.$db->quote($fnum).' AND attachment_id='.$attachment_id;
@@ -367,5 +369,13 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$db->query();
 		return ($db->loadResult() > 0);
 	}
-	
+
+	protected function isReferentFormUploaded($attachment_id,$fnum){
+        $db = JFactory::getDBO();
+        $query = 'SELECT uploaded FROM #__emundus_files_request WHERE fnum LIKE '.$db->quote($fnum).' AND attachment_id='.$attachment_id.' limit 1 ORDER DESC';
+        $db->setQuery($query);
+
+        return $db->loadColumn();
+    }
+
 }

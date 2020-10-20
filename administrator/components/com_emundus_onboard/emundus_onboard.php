@@ -12,6 +12,36 @@ defined('_JEXEC') or die('Restricted access');
 // emundus helpers
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 
+// Access check.
+if (!JFactory::getUser()->authorise('core.manage', 'com_emundus'))
+{
+    throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
+}
+// Include dependancies
+jimport('joomla.application.component.controller');
+jimport('joomla.filesystem.file');
+$version = new JVersion();
+$sversion = $version->getShortVersion();
+// TODO: Update this to PHP 7 once done
+if (version_compare( phpversion(), '5.0.0', '<')) {
+    echo 'Sorry you are using ' .  phpversion() . ". You need to have PHP5 installed to run eMundus\n";
+    return;
+}
+
+// Update this to Joomla 3.7.3 once done
+if (version_compare( phpversion(), '5.3', '>=') && ($version->RELEASE <= 1.5 && $version->DEV_LEVEL <= 14)) {
+    JError::raiseNotice(500, 'You are using PHP ' .  phpversion() . ". but Joomla $sversion does not fully support this!");
+}
+
+if (ini_get('magic_quotes_sybase') == 1){
+    echo "You have the PHP directive magic_quotes_sybase turned ON Fabrik requires you to turn this directive off, either by editing your php.ini file or adding:<p> php_value magic_quotes_sybase 0</p> to your .htaccess file";
+    return;
+}
+
+if (in_array( 'suhosin', get_loaded_extensions()) ) {
+    JError::raiseWarning(500, JText::_('Looks like your server has suhosin installed - this may cause issues when submitting large forms, or forms with long element names'));
+}
+
 // LOGGER
 jimport('joomla.log.log');
 jimport('joomla.methods');
@@ -30,36 +60,38 @@ JLog::addLogger(
     array('com_emundus.email')
 );
 
-$current_user = JFactory::getUser();
+// Require the base controller
+require_once( JPATH_COMPONENT.DS.'controller.php' );
 
-if (!EmundusonboardHelperAccess::asPartnerAccessLevel($current_user->id)) {
-    die( JText::_('RESTRICTED_ACCESS') );
+$controllers = explode(',', 'panel');
+if (!JRequest::getWord('controller'))
+    JRequest::setVar( 'controller', $controllers[0] );
+
+foreach ($controllers as $controller) {
+    $link = JRoute::_("index.php?option=com_emundus_onboard&controller=".$controller);
+    $selected = ($controller == JRequest::getWord('controller'));
+    JSubMenuHelper::addEntry(JText::_( 'MENU_' . strtoupper($controller) ), "index.php?option=com_emundus_onboard&controller=".$controller, ($controller == JRequest::getWord('controller')));
 }
+JRequest::setVar( 'view', JRequest::getWord('controller') );
 
-$app = JFactory::getApplication();
 
-// Require specific controller if requested
-if ($controller = $app->input->get('controller', '', 'WORD')) {
+// Require specific controller if requested; allways, in standard execution
+if ($controller = JRequest::getWord('controller')) {
     $path = JPATH_COMPONENT.DS.'controllers'.DS.$controller.'.php';
-    if (file_exists($path)) {
+    if (file_exists($path))
         require_once $path;
-        // Create the controller
-        $classname    = 'EmundusonboardController'.$controller;
-        $controller   = new $classname();
-    }
-    else {
+    else
         $controller = '';
-    }
+}
 
-    $controller->execute($app->input->get('task'));
-}
-else {
-    $controller = JControllerLegacy::getInstance('Emundusonboard');
-}
+// Create the controller
+$classname	= 'EmundusController'.$controller;
+$controller	= new $classname( );
 
 // Perform the Request task
-$controller->execute($app->input->get('task'));
+$controller->execute( JRequest::getCmd( 'task' ) );
 
 // Redirect if set by the controller
 $controller->redirect();
 
+?>

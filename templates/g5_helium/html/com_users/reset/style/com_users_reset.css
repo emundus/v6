@@ -60,7 +60,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 .reset-confirm .form-validate.form-horizontal.well .control-group .controls input,
 .reset-complete .form-validate.form-horizontal.well .control-group .controls input
 {
-    border-radius: 0px;
+    border-radius: 4px;
 }
 
 .view-reset .reset .page-header,
@@ -80,7 +80,6 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     margin-left: auto;
     margin-right: auto;
     margin-top: 50px;
-    padding-bottom: 50px;
     margin-bottom: 100px;
 }
 
@@ -96,7 +95,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 .reset-complete .required::after
 {
     content: "\f005";
-    color: #c30505;
+    color:  rgba(62, 138, 197, 0.5);
     padding-left: 2px;
     top: -10px;
     position: relative;
@@ -115,6 +114,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 
     .view-reset .reset .page-header {
         width: 100% !important;
+        padding: 0px 15px;
     }
 
     .view-reset .reset {
@@ -146,6 +146,24 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 
 }
 
+@media screen and (min-width: 768px) and (max-width: 959px) {
+    .view-reset .reset .page-header {
+        width: 78% !important;
+    }
+
+    form#user-registration.form-validate.form-horizontal.well,
+    .reset-confirm .form-validate.form-horizontal.well,
+    .reset-complete .form-validate.form-horizontal.well {
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 979px) {
+    .view-reset .reset .page-header {
+        width: 70% !important;
+    }
+}
+
 /* TEST TITRE MDPO */
 
 .view-reset .reset .page-header {
@@ -153,7 +171,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     justify-content: flex-start;
     align-items: flex-end;
     flex-direction: row;
-    width: 59%;
+    width: 60%;
     margin-left: auto;
     margin-right: auto;
 }

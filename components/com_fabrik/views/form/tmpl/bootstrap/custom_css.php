@@ -79,6 +79,7 @@ echo <<<EOT
 
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn:not(.active) {
     background-color: #c6c6c6;
+        margin-left: 0px;
 }
 
 .modal {
@@ -554,7 +555,7 @@ button.register {
   height: 100% !important;
 }
 
-.view-registration form, .view-form .em-formRegistrationCenter form {
+.view-registration form.fabrikForm , .view-form .em-formRegistrationCenter form.fabrikForm {
   border: none;
     margin-bottom: 0 !important;
     border-radius: 0;
@@ -781,7 +782,7 @@ form#member-profile .controls button,
 .step.completed i.icon.attach::before,
 .step.completed i.icon.add.to.cart::before,
 .step.completed i.icon.time::before {
-    color: #3e8ac5 !important;
+    color: #3e8ac5;
     background: none !important;
 }
 
@@ -822,20 +823,6 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
 
 .applicant-form .fabrikGroupRepeater .btn-success {
     margin-right: 10px !important;
-}
-
-.applicant-form .fabrikGroupRepeater .addGroup.btn-success {
-    color: #3e8ac5 !important;
-    background-color: transparent !important;
-    border: 1px solid transparent !important;
-    font-size: 1rem;
-}
-
-.applicant-form .fabrikGroupRepeater .deleteGroup.btn-danger {
-    color: #E03C35 !important;
-    background-color: transparent !important;
-    border: 1px solid transparent !important;
-    font-size: 1rem;
 }
 
 /* Déclarer un nouveau programme */
@@ -1039,7 +1026,7 @@ a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus,
     background: #4e5b6d;
     background-color: #4e5b6d;
     border: 1px solid #4e5b6d;
-    border-radius: 0 !important;
+    border-radius: 4px;
     padding: 8px 12px !important;
 }
 .span4.offset1 > .btn-group > button.button:hover{
@@ -1079,6 +1066,11 @@ footer#g-footer {
     margin-top: 50px !important; 
 }
 
+.view-form:not(.em-formRegistrationCenter) .page-header h1 {
+    margin-top: 50px !important; 
+    margin-bottom: 30px !important; 
+}
+
 ol {
     width: 59%;
     text-align: justify;
@@ -1096,7 +1088,7 @@ ol li {
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input {
-   border-radius : 0px; 
+   border-radius : 4px; 
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid:nth-child(4) .controls label.radio {
@@ -1131,12 +1123,12 @@ body.em-formRegistrationCenter  {
 
 
 .applicant-form input[type='text'], .applicant-form input[type='tel'], .applicant-form input[type='number'], .applicant-form textarea , .applicant-form input[type='email'], .applicant-form select {
-        border-radius: 0px;
+        border-radius: 4px;
 }
 
 .applicant-form .fabrikElement select {
     height: 50px !important;
-  border-radius: 0px;
+    border-radius: 4px;
 }
 
 .applicant-form .fabrikElement div a.chzn-single {
@@ -1154,7 +1146,7 @@ body.em-formRegistrationCenter  {
 
 form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
         height: 41px !important; 
-        border-radius: 0px; 
+        border-radius: 4px; 
 }
 
 /* EDITER LE PROFIL DU CANDIDAT - ESPACEMENT SOUS LE TITRE - */ 
@@ -1294,7 +1286,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
   position: absolute;
-  top: 0px;
+  top: -10px;
   right: 10px;
 }
 
@@ -1309,7 +1301,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 .form-actions .row-fluid .span4 .btn-group .register {
-  background-color: transparent !important;
+  background-color: transparent;
   outline: none;
 }
 
@@ -1341,6 +1333,16 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .view-form .fabrikElement button.calendarbutton {
   width: 41px !important;
+}
+
+
+.view-form .fabrikElement button.timeButton {
+  width: 41px !important;
+  height: 50px !important; 
+}
+
+.view-form .fabrikElement button.timeButton i {
+    margin-top: 16px; 
 }
 
 
@@ -1674,6 +1676,25 @@ a.btn-attach:active {
     } 
 }
 
+@media all and (max-width: 479px) {
+    .view-registration .login div.em-heading-registration, .view-form .em-formRegistrationCenter div.em-heading-registration {
+        width: 85%;     
+    }
+    .view-registration form.fabrikForm, .view-form .em-formRegistrationCenter form.fabrikForm {
+        width: 75%;
+    }
+    
+    .view-form .btn.send_the_request_for_individual_assessment {
+       margin-left: 0px !important; 
+    }
+    
+    .view-form .fabrikActions.form-actions .row-fluid {
+       align-items: end;
+    }
+    
+        
+}
+
 @media all and (max-width: 767px) {
 
 /* INSCRIPTION */ 
@@ -1683,7 +1704,7 @@ a.btn-attach:active {
 }
 
 .view-registration .login div.em-heading-registration, .view-form .em-formRegistrationCenter div.em-heading-registration {
-    width: 93% !important;     
+    width: 93%;     
 }
 
 ol {
@@ -1849,6 +1870,20 @@ ol {
     .view-registration form .control-group.fabrikElementContainer.plg-radiobutton.fb_el_jos_emundus_users___civility.fabrikDataEmpty.span12 div.fabrikgrid_radio.span2 {
         width:35%;
     }
+    
+    /* INSCRIPTION */ 
+    .view-registration form.fabrikForm,  .view-form .em-formRegistrationCenter {
+        width: 70%;   
+    }
+    
+     .view-registration .em-formRegistrationCenter .em-heading-registration {
+        width: 75% !important;   
+    }
+    
+    .view-registration ol {
+        width: 75%;   
+    }
+    
 }
 
 @media all and (max-width: 959px) {

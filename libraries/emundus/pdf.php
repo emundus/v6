@@ -39,6 +39,10 @@ function get_mime_type($filename, $mimePath = '../etc') {
     return false; // no match at all
 }
 
+function is_image_ext($filename) {
+	return array_key_exists(strtolower(array_pop(explode('.', $filename))), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
+}
+
 
 /** Generate a PDF letter based on the HTML it contains.
  * This is only for letter type 2, letters type 1 are any file uploaded by the user and 3 are DOC templates.
@@ -1045,9 +1049,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	        $htmldata .= '
 						<table width="100%"><tr>';
-	        if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar)) {
+	        if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
 	            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="right" /></td>';
-	        } elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar)) {
+	        } elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
 	            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="right" /></td>';
 	        }
 
@@ -1110,7 +1114,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         <table class="en-tete"> 
             <tr>
             ';
-                     /* td candidat */ 
+                     /* td candidat */
                     $htmldata .= '
                    
                     <td class="candidat">
@@ -1120,14 +1124,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     <table>
 
                     <tr><td class="name">'.@$item->firstname.' '.strtoupper(@$item->lastname).'</td></tr>';
-                        
+
                         $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                         if (!$anonymize_data) {
                             $htmldata .= '
                             <tr><td class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</td></tr>
                             <tr><td class="idcandidat">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</td></tr>';
                         }
-                    
+
 
                     if (isset($item->maiden_name)) {
                         $htmldata .= ' <tr><td class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</td></tr>';
@@ -1135,20 +1139,20 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 }
 
                 $htmldata .= ' </table></td>';
- 
+
 
                  /* td image */
                 $htmldata .= '<td class="avatar">';
 
-                if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar)) {
+                if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
                     $htmldata .= '<img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" />';
-                } elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar)) {
+                } elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
                         $htmldata .= '<img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" />';
                 }
 
                 $htmldata .= '</td>';
                 $htmldata .= '</tr>';
-            
+
                 $date_submitted = (!empty($item->date_submitted) && $item->date_submitted != '0000-00-00 00:00:00')?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
 
                 // create a $dt object with the UTC timezone
@@ -1176,8 +1180,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         </table>
      
      
-        ';  
-        
+        ';
+
     }
     /**  END APPLICANT   ****/
 
@@ -1399,9 +1403,9 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 	    	if ($allowed_attachments === true || in_array('10', $allowed_attachments)) {
 			        $htmldata .= '<div class="card">
 								<table width="100%"><tr>';
-			        if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar)) {
+			        if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
 				        $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
-			        } elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar)) {
+			        } elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
 				        $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
 			        }
 		        }

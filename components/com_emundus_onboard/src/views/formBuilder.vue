@@ -12,6 +12,8 @@
     />
     <ModalMenu
             :profileId="prid"
+            :actualLanguage="actualLanguage"
+            :manyLanguages="manyLanguages"
             @AddMenu="pushMenu"
     />
     <ModalSide
@@ -39,16 +41,16 @@
           </div>
           <div class="action-links">
               <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')">
-                <em class="add-page-icon col-md-offset-1"></em>
-                <label class="action-label col-md-offset-2">{{addMenu}}</label>
+                <em class="add-page-icon col-md-offset-1 col-sm-offset-1"></em>
+                <label class="action-label col-md-offset-2 col-sm-offset-1">{{addMenu}}</label>
               </a>
               <a class="d-flex action-link" @click="createGroup()">
-                <em class="add-group-icon col-md-offset-1"></em>
-                <label class="action-label col-md-offset-2">{{addGroup}}</label>
+                <em class="add-group-icon col-md-offset-1 col-sm-offset-1"></em>
+                <label class="action-label col-md-offset-2 col-sm-offset-1">{{addGroup}}</label>
               </a>
               <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements">
-                <em class="add-element-icon col-md-offset-1"></em>
-                <label class="action-label col-md-offset-2" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
+                <em class="add-element-icon col-md-offset-1 col-sm-offset-1"></em>
+                <label class="action-label col-md-offset-2 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
               </a>
             <transition :name="'slide-down'" type="transition">
               <draggable
@@ -62,7 +64,7 @@
                       chosen-class="plugin-chosen"
                       ghost-class="plugin-ghost"
                       style="padding-bottom: 2em">
-                  <div class="d-flex plugin-link col-md-offset-3 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
+                  <div class="d-flex plugin-link col-md-offset-3 col-sm-offset-2 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
                     <em :class="plugin.icon"></em>
                     <span class="ml-10px">{{plugin.name}}</span>
                   </div>
@@ -75,7 +77,7 @@
           <em class="fas fa-paper-plane" style="font-size: 20px"></em>
         </a>
       </div>
-      <div class="col-md-8 col-md-offset-4 menu-block">
+      <div class="col-md-8 col-sm-9 col-md-offset-4 col-sm-offset-4 menu-block">
         <div class="heading-block">
           <h1 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h1>
           <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit">
@@ -294,42 +296,11 @@
 
     methods: {
       createElement(gid,plugin,order) {
-        if(!_.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups)){
-          this.loading = true;
-          axios({
-            method: "post",
-            url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              gid: gid,
-              plugin: plugin
-            })
-          }).then((result) => {
-            axios({
-              method: "get",
-              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
-              params: {
-                element: result.data.scalar,
-                gid: gid
-              },
-              paramsSerializer: params => {
-                return qs.stringify(params);
-              }
-            }).then(response => {
-              this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
-              this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
-              this.$refs.builder.updateOrder(gid,this.formObjectArray[this.indexHighlight].object.Groups['group_'+gid].elts);
-              this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
-              this.loading = false;
-            });
-          });
+        let list = this.formObjectArray;
+        if(this.menuHighlight === 1){
+          list = this.submittionPages;
         }
-      },
-      createSubmittionElement(gid,plugin,order){
-        if(!_.isEmpty(this.submittionPages[this.indexHighlight].object.Groups)){
+        if(!_.isEmpty(list[this.indexHighlight].object.Groups)){
           this.loading = true;
           axios({
             method: "post",
@@ -354,10 +325,21 @@
                 return qs.stringify(params);
               }
             }).then(response => {
-              this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
-              this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
-              this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
-              this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+              if(this.menuHighlight === 0) {
+                this.$set(this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid], 'elements[element' + response.data.id + ']', response.data)
+                this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.splice(order, 0, response.data);
+                this.$refs.builder.updateOrder(gid, this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts);
+                this.$refs.builder.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+                this.$refs.builder.$refs.builder_viewer.enableActionBar(response.data.id);
+                this.$refs.builder.$refs.builder_viewer.enableLabelInput(response.data.id);
+              } else {
+                this.$set(this.submittionPages[this.indexHighlight].object.Groups['group_'+gid], 'elements[element' + response.data.id + ']', response.data)
+                this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts.splice(order,0,response.data);
+                this.$refs.builder_submit.updateOrder(gid,this.submittionPages[this.indexHighlight].object.Groups['group_'+gid].elts);
+                this.$refs.builder_submit.$refs.builder_viewer.keyElements['element' + response.data.id] = 0;
+                this.$refs.builder_submit.$refs.builder_viewer.enableActionBar(response.data.id);
+                this.$refs.builder_submit.$refs.builder_viewer.enableLabelInput(response.data.id);
+              }
               this.loading = false;
             });
           });
@@ -369,11 +351,7 @@
         let plugin = evt.clone.id.split('_')[1];
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
         if(typeof gid != 'undefined'){
-          if(this.menuHighlight === 0) {
-            this.createElement(gid, plugin, evt.newIndex);
-          } else {
-            this.createSubmittionElement(gid, plugin, evt.newIndex);
-          }
+          this.createElement(gid, plugin, evt.newIndex);
         }
       },
       addingNewElementByDblClick: _.debounce(function(plugin) {
@@ -385,6 +363,10 @@
       }, 250, { 'maxWait': 1000 }),
       createGroup() {
         this.loading = true;
+        let param = this.formObjectArray[this.indexHighlight].object.id;
+        if(this.menuHighlight === 1){
+          param = this.submittionPages[this.indexHighlight].object.id;
+        }
         axios({
           method: "post",
           url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimplegroup",
@@ -392,7 +374,7 @@
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify({
-            fid: this.formObjectArray[this.indexHighlight].object.id
+            fid: param
           })
         }).then((result) => {
           axios({
@@ -406,10 +388,23 @@
             })
           }).then((resultTrad) => {
             result.data.group_showLegend = resultTrad.data;
-            this.loading = false;
-            this.pushGroup(result.data);
+            axios({
+              method: "post",
+              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getalltranslations",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({
+                toJTEXT: result.data.group_tag
+              })
+            }).then((traductions) => {
+              result.data.label.fr = traductions.data.fr;
+              result.data.label.en = traductions.data.en;
+              this.loading = false;
+              this.pushGroup(result.data);
+            });
+            });
           });
-        });
       },
 
       // Update component dynamically
@@ -423,25 +418,46 @@
         this.UpdateUx = true;
       },
       pushGroup(group) {
-        this.formObjectArray.forEach((form, index) => {
-          if(form.object.id == group.formid){
-            this.formObjectArray[index]['object']['Groups']['group_'+group.group_id] = {
-              elements: {},
-              elts: [],
-              group_id: group.group_id,
-              group_showLegend: group.group_showLegend,
-              label: {
-                fr: group.label_fr,
-                en: group.label_en,
-              },
-              group_tag: group.group_tag,
-              ordering: group.ordering
-            };
-          }
-        });
+        if(this.menuHighlight === 0) {
+          this.formObjectArray.forEach((form, index) => {
+            if (form.object.id == group.formid) {
+              this.formObjectArray[index]['object']['Groups']['group_' + group.group_id] = {
+                elements: {},
+                elts: [],
+                group_id: group.group_id,
+                group_showLegend: group.group_showLegend,
+                label: {
+                  fr: group.label.fr,
+                  en: group.label.en,
+                },
+                group_tag: group.group_tag,
+                ordering: group.ordering
+              };
+            }
+          });
+          this.$refs.builder.getDataObject();
+          this.$refs.builder.$refs.builder_viewer.openGroup[group.group_id] = true;
+        } else {
+          this.submittionPages.forEach((form, index) => {
+            if (form.object.id == group.formid) {
+              this.submittionPages[index]['object']['Groups']['group_' + group.group_id] = {
+                elements: {},
+                elts: [],
+                group_id: group.group_id,
+                group_showLegend: group.group_showLegend,
+                label: {
+                  fr: group.label.fr,
+                  en: group.label.en,
+                },
+                group_tag: group.group_tag,
+                ordering: group.ordering
+              };
+            }
+          });
+          this.$refs.builder_submit.getDataObject();
+          this.$refs.builder_submit.$refs.builder_viewer.openGroup[group.group_id] = true;
+        }
         this.elementDisabled = false;
-        this.$refs.builder.getDataObject();
-        this.$refs.builder.$refs.builder_viewer.openGroup[group.group_id] = true;
         setTimeout(() => {
           window.scrollTo(0,document.body.scrollHeight);
         }, 200);
@@ -680,6 +696,14 @@
         this.indexHighlight = index;
         this.rgt = rgt;
         this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
+        if(this.menuHighlight === 1){
+          this.$refs.builder_submit.$refs.builder_viewer.clickUpdatingLabel = false;
+          this.$refs.builder_submit.$refs.builder_viewer.translate.label = false;
+        } else {
+          this.$refs.builder.$refs.builder_viewer.clickUpdatingLabel = false;
+          this.$refs.builder.$refs.builder_viewer.translate.label = false;
+        }
+
       },
       SomethingChange: function(e) {
         this.dragging = true;
@@ -827,9 +851,12 @@
     padding: 1em;
   }
 
-  @media (max-width: 700px) {
+  @media (max-width: 768px) {
     .form-title{
-      max-width: 200px;
+      max-width: 250px;
+    }
+    .form-builder{
+      margin-top: 0;
     }
   }
   .select-form{

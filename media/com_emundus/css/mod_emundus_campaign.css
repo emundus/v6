@@ -250,8 +250,8 @@
 }
 
 .campaigntext p {
-    margin-left: 30px !important;
-    margin-right: 10px !important;
+    margin-left: 30px;
+    margin-right: 10px;
 }
 
 .campaingapplycontent {
@@ -630,7 +630,7 @@ button.btn.btn-default.sch {
 }
 
 .campaigns-list .below-content a {
-    width: 14.3%;
+    width: auto;
     font-size: 14px;
     justify-content: center;
     font-weight: 400;
@@ -691,11 +691,5 @@ button.btn.btn-default.sch {
     .campaigntext,
     .campaign-content .right-side.campaingapply {
         min-height: auto !important;
-    }
-}
-
-@media (max-width: 360px) {
-    a.btn.btn-primary.btn-creux.btn-orange {
-        margin-bottom: 10px;
     }
 }

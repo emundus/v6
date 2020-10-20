@@ -75,34 +75,38 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 	 */
 	public function onBeforeCalculations() {
 
-		jimport('joomla.log.log');
-		JLog::addLogger(['text_file' => 'com_emundus.setStatusPlugin.php'], JLog::ALL, ['com_emundusSetStatus']);
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.setStatusPlugin.php'], JLog::ALL, ['com_emundusSetStatus']);
 
-		$status = $this->getParam('status', null);
-		if ($status === null || $status === '') {
-			JLog::add('No status provided for plugin.', JLog::ERROR, 'com_emundusSetStatus');
-			return false;
-		}
+        $status = $this->getParam('status', null);
+        if ($status === null || $status === '') {
+            JLog::add('No status provided for plugin.', JLog::ERROR, 'com_emundusSetStatus');
+            return false;
+        }
 
-		$jinput = JFactory::getApplication()->input;
-		$fnum = $jinput->get->get('rowid');
+        $fnum = $this->getModel()->formData['fnum_raw'];
 
-		if (empty($fnum)) {
-			JLog::add('No fnum provided.', JLog::ERROR, 'com_emundusSetStatus');
-			return false;
-		}
+        if (empty($fnum)) {
+            $jinput = JFactory::getApplication()->input;
+            $fnum = $jinput->get->get('rowid');
+        }
 
-		// We need the current status of the fnum.
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query->select($db->quoteName('status'))
+        if (empty($fnum)) {
+            JLog::add('No fnum provided.', JLog::ERROR, 'com_emundusSetStatus');
+            return false;
+        }
+
+        // We need the current status of the fnum.
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select($db->quoteName('status'))
 			->from($db->quoteName('#__emundus_campaign_candidature'))
 			->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum));
 		$db->setQuery($query);
 		try {
 			$current_status = $db->loadResult();
 		} catch (Exception $e) {
-			JLog::add('Could not get file status at query -> '.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundusSetStatus');
+			JLog::add('Could not get file status at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundusSetStatus');
 			return false;
 		}
 

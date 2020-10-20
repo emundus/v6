@@ -46,7 +46,7 @@ button.btn-primary:hover{
     margin-right: auto;
 }
 
-div.em-formRegistrationCenter, div.login {
+#g-container-main div.em-formRegistrationCenter, #g-container-main div.login {
     display: flex !important;
     flex-direction: column;
     align-items: center;
@@ -130,8 +130,13 @@ body.view-reset label#jform_username-lbl::after,
     font-weight: 300;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
-    border-radius :0px;
+    border-radius :4px;
 }
+
+h1.em-titre-connectez-vous {
+    margin-bottom: 20px !important;
+}
+
 h1.em-titre-connectez-vous::after {
     content: '';
     position: absolute;
@@ -244,6 +249,13 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     }
 
 }
+
+@media all and (max-width: 479px) {
+    .view-login #g-container-main div.login.em-formRegistrationCenter {
+        width: 100%;
+    }
+}
+
 @media all and (max-width: 767px) {
 
     .view-login .login.em-formRegistrationCenter  {
@@ -252,6 +264,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
     .view-login .login.em-formRegistrationCenter .page-header {
         width: 100% !important;
+        padding: 0px 20px;
     }
 
     .em-formRegistrationCenter .form-horizontal fieldset .control-group {
@@ -284,6 +297,15 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
         padding-left: 4rem;
         width: 80%;
     }
+
+    .view-login .login.em-formRegistrationCenter .page-header  {
+        width: 75% !important;
+    }
+
+    .login form.form-validate.form-horizontal.well {
+        width: 70%;
+    }
+
 }
 
 @media all and (max-width: 1150px) {
@@ -327,6 +349,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     background-image: url(/components/com_emundus_onboard/src/assets/images/enter.svg);
     background-size: contain;
     background-repeat: no-repeat;
+    margin-bottom: 20px;
 }
 
 .view-login .login.em-formRegistrationCenter .page-header div.icon-title {

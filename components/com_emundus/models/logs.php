@@ -65,7 +65,7 @@ class EmundusModelLogs extends JModelList {
 			try {
 				$db->execute();
 			} catch (Exception $e) {
-				JLog::add('Error logging at the following query: ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+				JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			}
 		}
 	}
@@ -109,7 +109,7 @@ class EmundusModelLogs extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -153,7 +153,7 @@ class EmundusModelLogs extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -196,7 +196,7 @@ class EmundusModelLogs extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -241,7 +241,7 @@ class EmundusModelLogs extends JModelList {
 		try {
 			return $this->db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Could not get logs in model logs at query: '.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}

@@ -16,7 +16,7 @@
         $session = JFactory::getSession();
         $current_user = $session->get('emundusUser');
         if (!empty($current_user->fnum)) {
-    
+
             $france = 1020;
             $etranger = 1021;
 
@@ -33,7 +33,7 @@
                     $db->setQuery($query);
                     $p = $db->loadObject();
                 } catch (Exception $e) {
-                    JLog::add('Unable to get profile in plugin/emundusSetProfile at query: ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+                    JLog::add('Unable to get profile in plugin/emundusSetProfile at query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
                     return false;
                 }
 
@@ -52,7 +52,7 @@
                         $db->setQuery($query);
                         $db->execute();
                     } catch (Exception $e) {
-                        JLog::add('Unable to set profile in plugin/emundusSetProfile at query: ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+                        JLog::add('Unable to set profile in plugin/emundusSetProfile at query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
                     }
                 }
             }
@@ -68,7 +68,7 @@
                     $db->setQuery($query);
                     $p = $db->loadObject();
                 } catch (Exception $e) {
-                    JLog::add('Unable to get profile in plugin/emundusSetProfile at query: ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+                    JLog::add('Unable to get profile in plugin/emundusSetProfile at query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
                     return false;
                 }
 
@@ -87,7 +87,7 @@
                         $db->setQuery($query);
                         $db->execute();
                     } catch (Exception $e) {
-                        JLog::add('Unable to set profile in plugin/emundusSetProfile at query: ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+                        JLog::add('Unable to set profile in plugin/emundusSetProfile at query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
                     }
                 }
             }

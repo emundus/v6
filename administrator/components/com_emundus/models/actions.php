@@ -11,38 +11,110 @@ jimport('joomla.application.component.model');
 class EmundusModelActions extends JModelList {
 
 	/**
-	 * @param   bool  $echo  if true, echo output.
+	 * @param bool $echo if true, echo output.
+	 * @param null $gid
 	 *
 	 * @return bool
 	 *
 	 * @throws Exception
 	 * @since version
 	 */
-	public function syncAllActions($echo = true) {
+	public function syncAllActions($echo = true, $gid = null) {
 		try {
 			$dbo = $this->getDbo();
-			$queryGetMissingGroups = 'SELECT id FROM jos_emundus_setup_groups WHERE id NOT IN (SELECT group_id FROM jos_emundus_acl)';
-			$queryActionID = "SELECT id FROM jos_emundus_setup_actions WHERE status >= 1";
-			$groupAssocQuery = "select jega.fnum, jega.group_id, jega.action_id from jos_emundus_group_assoc as jega left join jos_emundus_setup_actions as jesa on jesa.id = jega.action_id where jesa.status = 1";
-			$userAssocQuery = "select jega.fnum, jega.user_id, jega.action_id from jos_emundus_users_assoc as jega left join jos_emundus_setup_actions as jesa on jesa.id = jega.action_id where jesa.status = 1";
-			$queryAcl = "select action_id, group_id from jos_emundus_acl";
+			
+            $subQuery = $dbo->getQuery(true);
+            $query = $dbo->getQuery(true);
 
-			$dbo->setQuery($queryGetMissingGroups);
-			$missingGroups = $dbo->loadColumn();
+            /* Get the missing groups */
+            $subQuery
+                ->select($dbo->quoteName('group_id'))
+                ->from($dbo->quoteName('#__emundus_acl'));
+            
+            $query
+                ->select($dbo->quoteName('id'))
+                ->from($dbo->quoteName('#__emundus_setup_groups'))
+                ->where($dbo->quoteName('id') . ' NOT IN (' . $subQuery .')');
+                
+            $dbo->setQuery($query);
+            $missingGroups = $dbo->loadColumn();
+
+
+            /* Get action IDs*/
+            $query
+                ->clear()
+                ->select($dbo->quoteName('id'))
+                ->from($dbo->quoteName('#__emundus_setup_actions'))
+                ->where($dbo->quoteName('status') . ' >= 1');
+
+            $dbo->setQuery($query);
+            $actionsId = $dbo->loadColumn();
+
+            /** Get all group assoc
+             *  When using the $gid param, we only get the files linked to the group we are looking at
+             */
+            $query
+                ->clear()
+                ->select([$dbo->quoteName('jega.fnum'), $dbo->quoteName('jega.group_id'), $dbo->quoteName('jega.action_id')])
+                ->from($dbo->quoteName('#__emundus_group_assoc', 'jega'))
+                ->leftJoin($dbo->quoteName('#__emundus_setup_actions','jesa').' ON '.$dbo->quoteName('jesa.id').' = '.$dbo->quoteName('jega.action_id'))
+                ->where($dbo->quoteName('jesa.status') . ' = 1');
+
+            if (!empty($gid)) {
+                $query
+                    ->andWhere($dbo->quoteName('jega.group_id') . ' = ' . $gid);
+            }
+
+            $dbo->setQuery($query);
+            $arrayGroupAssoc = $dbo->loadAssocList();
+
+            /** Get all user assoc
+             *  When using the $gid param, we only get the files linked to the group we are looking at
+             */
+            $query
+                ->clear()
+                ->select([$dbo->quoteName('jeua.fnum'), $dbo->quoteName('jeua.user_id'), $dbo->quoteName('jeua.action_id')])
+                ->from($dbo->quoteName('#__emundus_users_assoc', 'jeua'))
+                ->leftJoin($dbo->quoteName('#__emundus_setup_actions','jesa').' ON '.$dbo->quoteName('jesa.id').' = '.$dbo->quoteName('jeua.action_id'))
+                ->where($dbo->quoteName('jesa.status') . ' = 1');
+
+            if (!empty($gid)) {
+                $query
+                    ->leftJoin($dbo->quoteName('#__emundus_group_assoc','jega').' ON '.$dbo->quoteName('jesa.id').' = '.$dbo->quoteName('jega.action_id'))
+                    ->andWhere($dbo->quoteName('jega.group_id') . ' = ' . $gid);
+            }
+
+            $dbo->setQuery($query);
+            $arrayUserAssoc = $dbo->loadAssocList();
+
+            /* Get all actions in acl table */
+            $query
+                ->clear()
+                ->select([$dbo->quoteName('action_id'), $dbo->quoteName('group_id')])
+                ->from($dbo->quoteName('#__emundus_acl'));
+
+            $dbo->setQuery($query);
+            $aclAction = $dbo->loadAssocList();
+
+            /* Insert missing groups*/
 			if (!empty($missingGroups)) {
-				$queryInsertMissingGroups = 'INSERT INTO `jos_emundus_acl` (`group_id`, `action_id`, `c`, `r`, `u`, `d`) VALUES ('.implode(',1,0,1,0,0),(',$missingGroups).',1,0,1,0,0)';
-				$dbo->setQuery($queryInsertMissingGroups);
-				$dbo->execute();
+
+				$columns = ['group_id', 'action_id', 'c', 'r', 'u', 'd'];
+
+				$query
+                    ->clear()
+                    ->insert($dbo->quoteName('#__emundus_acl'))
+                    ->columns($dbo->quoteName($columns));
+                    foreach ($missingGroups as $missingGroup) {
+                        $query->values($missingGroup.',1,0,1,0,0');
+                    }
+
+                $dbo->setQuery($query);
+                $dbo->execute();
+
 			}
 
-			$dbo->setQuery($queryActionID);
-			$actionsId = $dbo->loadColumn();
-			$dbo->setQuery($queryAcl);
-			$aclAction = $dbo->loadAssocList();
-			$dbo->setQuery($groupAssocQuery);
-			$arrayGroupAssoc = $dbo->loadAssocList();
-			$dbo->setQuery($userAssocQuery);
-			$arrayUserAssoc = $dbo->loadAssocList();
+
 			$acl = array();
 			$aclGroupAssoc = array();
 			$aclUserAssoc = array();

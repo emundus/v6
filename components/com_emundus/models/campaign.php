@@ -191,7 +191,7 @@ class EmundusModelCampaign extends JModelList {
 			$db->setQuery($query);
 			return $db->loadObjectList();
 		} catch (Exception $e) {
-			JLog::add('Error getting campaigns at model/campaign at query :'.$query->__toString(), JLog::ERROR, 'com_emundus');
+			JLog::add('Error getting campaigns at model/campaign at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return [];
 		}
 
@@ -522,7 +522,7 @@ class EmundusModelCampaign extends JModelList {
             return $db->loadResult();
 
         } catch (Exception $e) {
-            JLog::add('Error getting latest programme at model/campaign at query :'.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting latest programme at model/campaign at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return '';
         }
 
@@ -548,7 +548,7 @@ class EmundusModelCampaign extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add('Error getting latest programme at model/campaign at query :'.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting latest programme at model/campaign at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 	        return [];
         }
     }
@@ -576,7 +576,7 @@ class EmundusModelCampaign extends JModelList {
 		    $db->setQuery($query);
 		    return $db->loadObjectList();
 	    } catch (Exception $e) {
-		    JLog::add('Error getting latest programme at model/campaign at query :'.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundus');
+		    JLog::add('Error getting latest programme at model/campaign at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 		    return [];
 	    }
     }
@@ -606,7 +606,7 @@ class EmundusModelCampaign extends JModelList {
             return $db->loadObject();
 
         } catch (Exception $exception) {
-            JLog::add('Error getting campaign limit at query :'.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting campaign limit at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
             return null;
         }
 
@@ -623,6 +623,15 @@ class EmundusModelCampaign extends JModelList {
      */
     public function isLimitObtained($id) {
 
+        $user = JFactory::getSession()->get('emundusUser');
+        if (empty($user)){
+            $user = JFactory::getUser();
+        }
+
+        if(!EmundusHelperAccess::isApplicant($user->id) || empty($id)) {
+            return null;
+        }
+
         $limit = $this->getLimit($id);
 
         if (!empty($limit->is_limited)) {
@@ -633,7 +642,8 @@ class EmundusModelCampaign extends JModelList {
             $query
                 ->select('COUNT(id)')
                 ->from($db->quoteName('#__emundus_campaign_candidature'))
-                ->where($db->quoteName('status') . ' IN (' . $limit->steps . ')');
+                ->where($db->quoteName('status') . ' IN (' . $limit->steps . ')')
+                ->andWhere($db->quoteName('campaign_id') . ' = ' . $id);
 
             try {
 
@@ -642,7 +652,7 @@ class EmundusModelCampaign extends JModelList {
 
             } catch (Exception $exception) {
 
-                JLog::add('Error checking obtained limit at query :'.str_replace('\n', '', $query->__toString()), JLog::ERROR, 'com_emundus');
+                JLog::add('Error checking obtained limit at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
                 return null;
 
             }

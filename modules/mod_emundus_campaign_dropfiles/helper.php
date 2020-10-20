@@ -4,7 +4,7 @@ use Joomla\CMS\Date\Date;
 
 jimport( 'joomla.access.access' );
 
-class modEmundusInformationComplementaireHelper {
+class modEmundusCampaignDropfilesHelper {
     public function getFiles() {
 
         $db = JFactory::getDbo();

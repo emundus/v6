@@ -70,8 +70,9 @@ export default {
 
     let options = {
       selector: '#tiny_' + this.selector_id,
+      images_upload_url: 'index.php?option=com_emundus_onboard&controller=settings&task=uploadimages',
       plugins: 'paste link media preview image code anchor advlist hr emoticons lists searchreplace charmap quickbars imagetools pagebreak autolink print mention',
-      toolbar: 'undo redo | forecolor bold italic underline strikethrough | fontselect fontsizeselect formatselect | preview | alignleft aligncenter alignright alignjustify hr pagebreak | bullist numlist | outdent indent | link image insertfile media anchor| charmap emoticons backcolor | searchreplace print',
+      toolbar: 'undo redo | forecolor bold italic underline strikethrough | fontsizeselect formatselect | image link preview | alignleft aligncenter alignright alignjustify hr | bullist numlist | outdent indent | insertfile media anchor| charmap emoticons backcolor | searchreplace print',
       fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
       content_css: baseUrl + 'skins/ui/oxide/content.min.css',
       height: '30em',
@@ -85,6 +86,31 @@ export default {
       quickbars_selection_toolbar: 'bold italic underline | quicklink h2 h3 blockquote',
       toolbar_mode: 'sliding',
       placeholder: this.placeholder,
+      file_picker_types: 'image',
+      file_picker_callback: function(cb, value, meta) {
+        var input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+
+        input.onchange = function() {
+          var file = this.files[0];
+          var reader = new FileReader();
+
+          reader.onload = function () {
+            var id = 'blobid' + (new Date()).getTime();
+            var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+            var base64 = reader.result.split(',')[1];
+            var blobInfo = blobCache.create(id, file, base64);
+            blobCache.add(blobInfo);
+
+            // call the callback and populate the Title field with the file name
+            cb(blobInfo.blobUri(), { title: file.name });
+          };
+          reader.readAsDataURL(file);
+        };
+
+        input.click();
+      },
       mentions: {
         delimiter: '/',
         source: (query, process, delimiter) => {
@@ -129,7 +155,7 @@ export default {
 
     this.$forceUpdate();
 
-    //setInterval(this.saveText, 3000);
+    setInterval(this.saveText, 3000);
   },
 };
 </script>

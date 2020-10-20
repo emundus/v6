@@ -411,8 +411,13 @@ class EmundusModelEmails extends JModelList {
 
         if(isset($post)) {
             foreach ($post as $key => $value) {
-                $patterns[] = '/\['.$key.'\]/';
-                $replacements[] = $value;
+                $constant_key = array_search('/\['.$key.'\]/', $patterns);
+                if ($constant_key !== false) {
+                    $replacements[$constant_key] = $value;
+                } else {
+                    $patterns[] = '/\['.$key.'\]/';
+                    $replacements[] = $value;
+                }
             }
         }
 
@@ -468,7 +473,7 @@ class EmundusModelEmails extends JModelList {
                     $replacements[] = $request[0];
                 }
 
-            } else {
+            } elseif (!empty($fnum)) {
                 $request = explode('|', $value);
                 $val = $this->setTagsFabrik($request[1], array($fnum));
                 $replacements[] = eval("$val");
@@ -1164,7 +1169,7 @@ class EmundusModelEmails extends JModelList {
             $this->_db->execute();
 
         } catch (Exception $e) {
-            JLog::add('Error logging email in model/emails : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error logging email in model/emails : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
         }
 
     }
