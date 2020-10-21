@@ -4,7 +4,7 @@
   echo ltrim($str, "0");
 -->
 <template>
-    <div class="column-menu-main w-row" style="margin-top: 120px">
+    <div class="column-menu-main w-row" style="margin-top: 120px; margin-bottom: 10em">
         <ModalWarningFormBuilder
                 :pid="profileId"
                 :cid="campaignId"
