@@ -78,6 +78,7 @@ name: "tasks",
             Swal.fire({
               position: 'bottom-end',
               backdrop: false,
+              allowOutsideClick: false,
               title: 'Progression',
               html: html,
               customClass: {

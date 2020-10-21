@@ -228,20 +228,6 @@ INSERT INTO jos_modules_menu(moduleid, menuid)
 VALUES(@module_id, 0);
 #
 
-# Create english status
-INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
-VALUES (1, 1, 'emundus_setup_status', 'value', 'Sent', '', '', '2020-04-24 15:23:50', 62, 1);
-
-INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
-VALUES (1, 2, 'emundus_setup_status', 'value', 'Rejected', '', '', '2020-04-24 15:23:50', 62, 1);
-
-INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
-VALUES (1, 3, 'emundus_setup_status', 'value', 'Accepted', '', '', '2020-04-24 15:23:50', 62, 1);
-
-INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
-VALUES (1, 4, 'emundus_setup_status', 'value', 'Confirmed', '', '', '2020-04-24 15:23:50', 62, 1);
-#
-
 # Create table emundus_setup_form_list
 CREATE TABLE IF NOT EXISTS jos_emundus_setup_formlist (
                                                           id int(11) NOT NULL AUTO_INCREMENT,

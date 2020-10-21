@@ -53,26 +53,26 @@ echo <<<EOT
 #g-container-main {
 	padding-left:5%!important;
 	padding-right:5%!important;
-	background-color:#eeeeee;
+	background-color:#fff;
 }
 
 .g-content h1::after {
-	background:#de6339!important;
+	background:#de6339;
 }
 
 .fabrikDataContainer .tabData tbody {
-	border-left:2px solid #de6339 !important;
-	border-right:2px solid #de6339 !important;
+	border-left:2px solid #de6339;
+	border-right:2px solid #de6339;
 }
 
 .fabrikDataContainer .tabData .fabrik_groupdata {
-	border-bottom:2px solid #de6339 !important;
+	border-bottom:2px solid #de6339;
 }
 
 .fabrikDataContainer .tabData thead {
-	border-top:2px solid #de6339 !important;
-	border-left:2px solid #de6339 !important;
-	border-right:2px solid #de6339 !important;
+	border-top:2px solid #de6339;
+	border-left:2px solid #de6339;
+	border-right:2px solid #de6339;
 }
 
 .pagination a {
@@ -86,7 +86,7 @@ echo <<<EOT
 }
 
 .fabrikButtonsContainer a {
-	color:#de6339 !important;
+	color:#de6339;
 }
 
 .fabrikButtonsContainer a .caret {
@@ -106,7 +106,7 @@ echo <<<EOT
 }
 
 .filtertable a {
-	color:#de6339 !important;
+	color:#de6339;
 }
 
 .filtertable>thead>tr>th {

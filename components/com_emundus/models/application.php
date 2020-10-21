@@ -716,10 +716,9 @@ class EmundusModelApplication extends JModelList {
 
             // liste des groupes pour le formulaire d'une table
             $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
-                                FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-                                WHERE ff.group_id = fg.id AND
-                                    ff.form_id = '.$table[$i]->form_id.'
-                                ORDER BY ff.ordering';
+                      FROM #__fabrik_formgroup ff, #__fabrik_groups fg
+                      WHERE ff.group_id = fg.id AND fg.published = 1 AND ff.form_id = '.$table[$i]->form_id.'
+                      ORDER BY ff.ordering';
             try {
 
                 $this->_db->setQuery($query);
@@ -1174,7 +1173,7 @@ class EmundusModelApplication extends JModelList {
 	                // liste des groupes pour le formulaire d'une table
 	                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
 	                            FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-	                            WHERE ff.group_id = fg.id AND
+	                            WHERE ff.group_id = fg.id AND fg.published = 1 AND 
 	                                  ff.form_id = "'.$itemt->form_id.'"
 	                            ORDER BY ff.ordering';
 	                $this->_db->setQuery($query);
@@ -1608,7 +1607,7 @@ class EmundusModelApplication extends JModelList {
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-                            WHERE ff.group_id = fg.id';
+                            WHERE ff.group_id = fg.id AND fg.published = 1';
 
                 if (!empty($gids) && $gids != 0) {
                     $query .= ' AND  fg.id IN ('.implode(',',$gids).')';
@@ -2227,7 +2226,7 @@ class EmundusModelApplication extends JModelList {
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-                            WHERE ff.group_id = fg.id AND
+                            WHERE ff.group_id = fg.id AND fg.published = 1 AND  
                                   ff.form_id = "'.$itemt->form_id.'"
                             ORDER BY ff.ordering';
                 $this->_db->setQuery( $query );
