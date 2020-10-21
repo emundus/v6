@@ -169,6 +169,12 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $this->db->quoteName('dacon2.id_Concours', 'concours_session2')
             ];
 
+            // data_aurion_39124065
+            $aurion_concours_Easy = [
+                $this->db->quoteName('daconEasy.id_Module', 'concours_easy_mod'),
+                $this->db->quoteName('daconEasy.id_Concours', 'concours_easy_session')
+            ];
+
             // data_aurion_47672525
             $aurion_lycee = [
                 $this->db->quoteName('lycee.id_Lycee')
@@ -182,12 +188,10 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $this->db->quoteName('type_dip.id_TypediplomeEmundus', 'type_diplome')
             ];
 
-
-
             $query = $this->db->getQuery(true);
             // In the query, we merge all the different tables in the select and join them while checking if the rows we get in the aurion tables are published
             $query
-                ->select(array_merge($campaign_columns, $eu_columns, $pd_columns, $qualification_columns, $scholarship_columns, $concours_columns, $aurion_user, $aurion_em_user, $aurion_civility, $aurion_diplome, $aurion_nationality, $aurion_concours_1, $aurion_concours_2, $aurion_city,$spe_columns,$rentrees, $aurion_lycee, $aurion_etab, $aurion_type_dip))
+                ->select(array_merge($campaign_columns, $eu_columns, $pd_columns, $qualification_columns, $scholarship_columns, $concours_columns, $aurion_user, $aurion_em_user, $aurion_civility, $aurion_diplome, $aurion_nationality, $aurion_concours_1, $aurion_concours_2, $aurion_city,$spe_columns,$rentrees, $aurion_lycee, $aurion_etab, $aurion_type_dip, $aurion_concours_Easy))
                 ->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
                 ->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('ecc.campaign_id') . ' = '. $this->db->quoteName('esc.id'))
                 ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('ecc.applicant_id') . ' = '. $this->db->quoteName('eu.user_id'))
@@ -218,6 +222,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 // Get concours id
                 ->leftJoin($this->db->quoteName('data_aurion_37241402', 'dacon') . ' ON ' . $this->db->quoteName('econ.concours_session') . ' = '. $this->db->quoteName('dacon.id'))
                 ->leftJoin($this->db->quoteName('data_aurion_39124065', 'dacon2') . ' ON ' . $this->db->quoteName('econ.concours_session_attente') . ' = '. $this->db->quoteName('dacon2.id'))
+                ->leftJoin($this->db->quoteName('data_aurion_45601790', 'daconEasy') . ' ON ' . $this->db->quoteName('econ.concours_session_easy') . ' = '. $this->db->quoteName('daconEasy.id'))
                 // Get Lycee and etablissement Sup
                 ->leftJoin($this->db->quoteName('data_aurion_47672525', 'lycee') . ' ON ' . $this->db->quoteName('eq.lycee') . ' = '. $this->db->quoteName('lycee.id'))
                 ->leftJoin($this->db->quoteName('data_aurion_47993857', 'etab') . ' ON ' . $this->db->quoteName('eq.etab_sup') . ' = '. $this->db->quoteName('etab.id'))
@@ -470,13 +475,13 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
         if (!empty($user->econ_fnum)) {
 
             $inscription_concours = "
-                <inscription_concours ForceImport='true' key='" . (!empty($user->concours_session) ? $user->concours_session : $user->concours_session2) . "_" . $user_key . "'  A4620='" . date('d-m-Y') . "' >
+                <inscription_concours ForceImport='true' key='" . (!empty($user->concours_easy_session) ? $user->concours_easy_session : (!empty($user->concours_session) ? $user->concours_session : $user->concours_session2)) . "_" . $user_key . "'  A4620='" . date('d-m-Y') . "' >
                     
                     <individu  key='" . $user_key . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
-                        <cours objet_id='" . (!empty($user->concours_mod) ? $user->concours_mod : $user->concours_mod2) . "' ForceSource='apprenant'/>
+                        <cours objet_id='" . (!empty($user->concours_easy_mod) ? $user->concours_easy_mod : (!empty($user->concours_mod) ? $user->concours_mod : $user->concours_mod2)) . "' ForceSource='apprenant'/>
                     </individu>
                     
-                    <concours objet_id='" . (!empty($user->concours_session) ? $user->concours_session : $user->concours_session2) . "' ForceImport='true'/>
+                    <concours objet_id='" . (!empty($user->concours_easy_session) ? $user->concours_easy_session : (!empty($user->concours_session) ? $user->concours_session : $user->concours_session2)) . "' ForceImport='true'/>
                     
                     <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? $this->getAlternance($user->es_fnum) : 103503) . "' ForceImport='true' />
                     
@@ -625,13 +630,13 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
         // Check if the the user has filled out their session_concours form, don't import if no fnum
         if (!empty($user->econ_fnum)) {
             $inscription_concours = "
-                <inscription_concours ForceImport='true' key='" . (!empty($user->concours_session) ? $user->concours_session : $user->concours_session2) . "_" . $user_key . "'  A4620='" . date('d-m-Y') . "' >
+                <inscription_concours ForceImport='true' key='" . (!empty($user->concours_easy_session) ? $user->concours_easy_session : (!empty($user->concours_session) ? $user->concours_session : $user->concours_session2)) . "_" . $user_key . "'  A4620='" . date('d-m-Y') . "' >
                     
                     <individu objet_id='" . $user_id . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
-                        <cours objet_id='" . (!empty($user->concours_mod) ? $user->concours_mod : $user->concours_mod2) . "' ForceSource='apprenant'/>
+                        <cours objet_id='" . (!empty($user->concours_easy_mod) ? $user->concours_easy_mod : (!empty($user->concours_mod) ? $user->concours_mod : $user->concours_mod2)) . "' ForceSource='apprenant'/>
                     </individu>
                     
-                    <concours objet_id='" . (!empty($user->concours_session) ? $user->concours_session : $user->concours_session2) . "' ForceImport='true'/>
+                    <concours objet_id='" . (!empty($user->concours_easy_session) ? $user->concours_easy_session : (!empty($user->concours_session) ? $user->concours_session : $user->concours_session2)) . "' ForceImport='true'/>
                     
                     <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? $this->getAlternance($user->es_fnum) : 103503) . "' ForceImport='true' />
                     
