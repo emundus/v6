@@ -414,7 +414,12 @@ class PlgFabrik_ElementEmundustextarea extends PlgFabrik_Element
 			if ($params->get('textarea_limit_type', 'char') === 'char')
 			{
 				$label = FText::_('PLG_ELEMENT_TEXTAREA_CHARACTERS_LEFT');
-				$charsLeft = $params->get('textarea-maxlength') - JString::strlen($value);
+                if ($params->get('textarea-maxlength-regex', '0') == '1'){
+                    $value_without_lines = preg_replace('/[\s]*/', '', strip_tags($value));
+                    $charsLeft = $params->get('textarea-maxlength') - JString::strlen($value_without_lines - 1);
+                } else {
+                    $charsLeft = $params->get('textarea-maxlength') - JString::strlen($value);
+                }
 			}
 			else
 			{

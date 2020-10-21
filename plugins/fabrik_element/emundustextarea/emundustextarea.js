@@ -349,7 +349,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             } else {
                 if(this.options.allow_whitespace == 1) {
                     var content_without_lines = content.replace(/\s/g, '');
-                    i = this.options.max - (content_without_lines.length + 1);
+                    i = this.options.max - (content_without_lines.length);
                 } else {
                     i = this.options.max - (content.length + 1);
                 }
@@ -372,7 +372,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 c = c.join(' ');
                 c += (this.options.wysiwyg) ? '&nbsp;' : ' ';
             } else {
-                c = content.substring(0, this.options.max);
+                c = content.slice(0, this.options.max);
             }
             this.setContent(c);
         },
@@ -388,7 +388,12 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 var words = content.split(' ');
                 return words.length > this.options.max;
             } else {
-                var charsLeft = this.options.max - (content.length + 1);
+                if(this.options.allow_whitespace == 1) {
+                    var content_without_lines = content.replace(/\s/g, '');
+                    var charsLeft = this.options.max - (content_without_lines.length + 1);
+                } else {
+                    var charsLeft = this.options.max - (content.length + 1);
+                }
                 return charsLeft < 0 ? true : false;
             }
         },
