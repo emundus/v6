@@ -29,7 +29,6 @@
 import axios from "axios";
 import draggable from "vuedraggable";
 import BuilderViewer from "./BuilderView";
-import ModalElement from "./ModalElement";
 import Swal from "sweetalert2";
 
 const qs = require("qs");
@@ -40,7 +39,6 @@ export default {
   components: {
     draggable,
     BuilderViewer,
-    ModalElement,
   },
   data() {
     return {

@@ -1968,7 +1968,7 @@ class EmundusHelperFiles
 				    'USER_EMAIL'     => $fnum['email']
 			    ];
 
-			    $tags = $m_emails->setTags($fnum['applicant_id'], $post);
+			    $tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum']);
 			    $htmlList[$fnum['fnum']] = preg_replace($tags['patterns'], $tags['replacements'], $html);
 			    $htmlList[$fnum['fnum']] = $m_emails->setTagsFabrik($htmlList[$fnum['fnum']], [$fnum['fnum']]);
 		    }

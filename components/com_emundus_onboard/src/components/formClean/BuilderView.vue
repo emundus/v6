@@ -119,6 +119,8 @@
                             :ID="element.id"
                             :element="element"
                             :files="files"
+                            :manyLanguages="manyLanguages"
+                            :actualLanguage="actualLanguage"
                             @reloadElement="reloadElement(element)"
                             :id="element.id"
                             :key="keyElements['element' + element.id]"
@@ -941,7 +943,7 @@ export default {
             this.updateSuccess,
             this.update
         );
-        page.intro_value = page.intro.fr;
+        page.intro_value = page.intro[this.actualLanguage];
         this.updateIntroPage = false;
       }).catch(e => {
         this.$emit(
@@ -1199,8 +1201,8 @@ export default {
     color: #cecece;
     position: absolute;
     cursor: grab;
-    left: 3em;
-    margin-bottom: 10px;
+    left: 4em;
+    margin-bottom: 0;
   }
   .icon-handle-group{
     color: #cecece;

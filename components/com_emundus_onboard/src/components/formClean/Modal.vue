@@ -21,7 +21,7 @@
             </button>
           </div>
           <h2 class="update-title-header">
-            {{label.fr}}
+            {{label[actualLanguage]}}
           </h2>
         </div>
         <div class="form-group mb-2">
@@ -46,14 +46,14 @@
         </div>
       </div>
       <div class="col-md-12 mb-1">
-        <a
-                class="bouton-sauvergarder-et-continuer-3"
+        <button type="button"
+                class="bouton-sauvergarder-et-continuer"
                 @click.prevent="UpdateParams"
-        >{{ Continuer }}</a>
-        <a
-                class="bouton-sauvergarder-et-continuer-3 w-retour"
+        >{{ Continuer }}</button>
+        <button type="button"
+                class="bouton-sauvergarder-et-continuer w-retour"
                 @click.prevent="$modal.hide('modalEditElement' + ID)"
-        >{{Retour}}</a>
+        >{{Retour}}</button>
       </div>
     </modal>
   </span>
@@ -72,7 +72,7 @@
 
   export default {
     name: "modalEditElement",
-    props: { ID: Number, element: Object, files: Number },
+    props: { ID: Number, element: Object, files: Number, manyLanguages: Number, actualLanguage: String },
     components: {
       fieldF,
       birthdayF,
@@ -272,113 +272,4 @@
 </script>
 
 <style scoped>
-  .modalC-content {
-    height: 100%;
-    box-sizing: border-box;
-    padding: 10px;
-    font-size: 15px;
-    overflow: auto;
-  }
-
-  .b {
-    display: block;
-  }
-
-  .toggle {
-    vertical-align: middle;
-    position: relative;
-
-    left: 20px;
-    width: 45px;
-    border-radius: 100px;
-    background-color: #ddd;
-    overflow: hidden;
-    box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.05);
-  }
-
-  .check {
-    position: absolute;
-    display: block;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    z-index: 6;
-  }
-
-  .check:checked ~ .track {
-    box-shadow: inset 0 0 0 20px #4bd863;
-  }
-
-  .check:checked ~ .switch {
-    right: 2px;
-    left: 22px;
-    transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-    transition-property: left, right;
-    transition-delay: 0.05s, 0s;
-  }
-
-  .switch {
-    position: absolute;
-    left: 2px;
-    top: 2px;
-    bottom: 2px;
-    right: 22px;
-    background-color: #fff;
-    border-radius: 36px;
-    z-index: 1;
-    transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-    transition-property: left, right;
-    transition-delay: 0s, 0.05s;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  }
-
-  .track {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-    box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.05);
-    border-radius: 40px;
-  }
-  .inlineflex {
-    display: flex;
-    align-content: center;
-    align-items: center;
-    height: 30px;
-  }
-  .titleType {
-    font-size: 45%;
-    margin-left: 1em;
-  }
-  .topright {
-    font-size: 25px;
-    float: right;
-  }
-  .btnCloseModal {
-    background-color: inherit;
-  }
-  .update-field-header{
-    margin-bottom: 1em;
-  }
-
-  .update-title-header{
-    margin-top: 0;
-    display: flex;
-    align-items: center;
-  }
-
-  label{
-    color: #000 !important;
-  }
-
-  @media (max-width: 991px) {
-    .top-responsive {
-      margin-top: 5em;
-    }
-  }
 </style>

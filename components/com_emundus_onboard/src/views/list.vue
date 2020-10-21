@@ -149,6 +149,7 @@
     <div class="loading-form" v-if="loading">
       <RingLoader :color="'#de6339'" />
     </div>
+    <tasks></tasks>
   </div>
 </template>
 
@@ -160,9 +161,10 @@ import email from "../components/list_components/emailItem";
 import formulaire from "../components/list_components/formItem";
 import files from "../components/list_components/files";
 import actions from "../components/list_components/action_menu";
+import tasks from "./tasks"
 import { list } from "../store";
+import Swal from "sweetalert2";
 
-import "../assets/css/webflow.css";
 import "../assets/css/normalize.css";
 import "../assets/css/emundus-webflow.scss";
 import "../assets/css/codemirror.css";
@@ -182,7 +184,8 @@ export default {
     email,
     formulaire,
     files,
-    actions
+    actions,
+    tasks
   },
 
   name: "list",
@@ -228,6 +231,7 @@ export default {
 
     menuEmail: 0,
     email_categories: [],
+    tasks: '',
   }),
 
   computed: {
@@ -364,85 +368,11 @@ export default {
 </script>
 
 <style scoped>
-.noPagination {
-  display: none;
-}
-
-.pagination-pages {
-  text-align: center;
-}
-
-.pagination {
-  list-style: none;
-  padding: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.pagination a,
-.pagination li {
-  border-radius: 50%;
-  color: #212121;
-  transition: 0.15s ease-in;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-}
-.pagination a:hover {
-  background: rgba(27, 31, 60, 0.8);
-  color: white;
-}
-.pagination .pagination-number,
-.pagination .pagination-arrow i {
-  vertical-align: middle;
-}
-.pagination .pagination-number {
-  font-family: sans-serif;
-  font-size: 14px;
-  text-align: center;
-  line-height: 24px;
-  width: 35px;
-  height: 35px;
-  margin-right: 10px;
-}
-.pagination .pagination-number.current-number {
-  background: #1b1f3c;
-  color: #fff;
-  border: unset;
-}
-
-.pagination-arrow{
-  width: 35px;
-  height: 35px;
-  align-items: center;
-  display: flex !important;
-  justify-content: center;
-}
-
-.arrow-left {
-  margin-right: 10px !important;
-}
-
-h2 {
-  color: #de6339 !important;
-}
-
-.noneDiscover {
-  position: absolute;
-  top: 35%;;
-  font-size: 20px;
-  color: #1b1f3c;
-  width: 100%;
-  margin: 0 auto;
-  text-align: center;
-}
+  h2 {
+    color: #de6339 !important;
+  }
 
   .loading-form{
     top: unset;
   }
-
-.email-sections{
-  width: 50%;
-  margin: 0 auto;
-}
 </style>

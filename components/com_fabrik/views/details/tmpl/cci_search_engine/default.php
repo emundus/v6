@@ -138,7 +138,7 @@ else {
 }
 
 
-//GET Taux de satisfaction
+//GET Taux de satisfaction from GESCOF
 $http = new JHttp();
 
 try {
@@ -154,88 +154,6 @@ try {
 catch (Exception $e) {
     JLog::add('Error data from ccirochefort.evaluations.ovh : '.$result, JLog::ERROR, 'com_emundus');
 }
-
-
-
-/// CALL Pole Emploi API
-/*function poleEmploi($token = null) {
-
-    $curl = curl_init();
-
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => "https://api.emploi-store.fr/partenaire/anotea/v1/formations?id=15_533653",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => "",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "GET",
-        CURLOPT_HTTPHEADER => array(
-            "scope: api_anoteav1",
-            "Authorization: Bearer ".$token
-        ),
-    ));
-
-    $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    $response = curl_exec($curl);
-
-
-    curl_close($curl);
-
-    if ($http_code >= 200 && $http_code < 300) {
-        $curl_cred = curl_init();
-
-        $data = array(
-            "client_id" => "1",
-            "client_secret" => "2",
-            "scope" => "3",
-            "grant_type" => "client_credentials"
-        );
-        curl_setopt_array($curl_cred, array(
-            CURLOPT_URL => "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=/partenaire",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => http_build_query($data),
-            CURLOPT_HTTPHEADER => array(
-                "Content-Type: application/x-www-form-urlencoded"
-            ),
-        ));
-
-        $response = curl_exec($curl_cred);
-
-        curl_close($curl_cred);
-
-        poleEmploi($response->access_token);
-        echo $response;
-    }
-
-
-}*/
-
-
-
-$db = JFactory::getDbo();
-// Get the list of categories.
-$query = $db->getQuery(true);
-$query
-    ->select($db->quoteName('token'))
-    ->from($db->quoteName('data_api_user'));
-$db->setQuery($query);
-try {
-    $token = $db->loadResult();
-
-    $apiData = poleEmploi($token);
-
-} catch (Exception $e) {
-    JLog::add('Error getting programme codes in query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-}
-
 
 
 ?>
@@ -268,8 +186,18 @@ try {
             <?php endif; ?>
             <?php echo $title; ?>
         </h1>
-        <p><?php echo JText::_('REF'). str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
-            <?php if (!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) { echo JText::_('CODE')." : " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; } ?></p>
+        <div class="em-flex-between">
+            <div>
+                <p style="margin-top: 0px;"><?php echo JText::_('REF'). str_replace('FOR', '', $this->data['jos_emundus_setup_programmes___code_raw']) ;?><br>
+                    <?php if (!empty($this->data['jos_emundus_setup_programmes___numcpf_raw'])) { echo JText::_('CODE')." : " . $this->data['jos_emundus_setup_programmes___numcpf_raw']; } ?></p>
+            </div>
+            <?php if (!empty((int)$taux)) :?>
+                <div id="formation-taux" class="em-flex-column" rel="tooltip" title="<?php echo JText::_('SOURCE_TAUX'); ?>">
+                    <span><b>Taux de satisfaction : </b><?php echo $taux; ?>%</span>
+                    <span><b>Nombre d'avis : </b><?php echo $nbAvis; ?></span>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="em-details g-block size-95 em-details-<?php echo $this->data['jos_emundus_setup_thematiques___color_raw']; ?>">
@@ -416,8 +344,8 @@ try {
                                     <?php
 
                                     setlocale(LC_ALL, 'fr_FR.utf8');
-
-                                    $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($session['location_city']))));
+                                    $sessionCity = !empty($session['location_city']) ? $session['location_city'] : $session['location_title'];
+                                    $town = preg_replace('/[0-9]+/', '',  str_replace(" cedex", "", ucfirst(strtolower($sessionCity))));
                                     $town =  ucwords(strtolower($town), '\',. ');
                                     $beforeComma = strpos($town, "D'");
 
@@ -634,13 +562,6 @@ try {
             jQuery('.em-category-search-module').prepend(video);
             <?php endif; ?>
 
-            /** Display Taux satisfaction */
-
-            var tauxDiv =document.getElementById("formation-taux");
-            <?php if (!empty((int)$taux)) :?>
-            jQuery('#formation-taux').append("<p><b>Taux de satisfaction : </b><?php echo $taux; ?>%</p>");
-            jQuery('#formation-taux').append("<p><b>Nombre d'avis : </b><?php echo $nbAvis; ?></p>");
-            <?php endif; ?>
         });
 
         document.getElementById("em-option-menu-inter").addEventListener('click', function (e) {

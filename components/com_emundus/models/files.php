@@ -3379,7 +3379,7 @@ if (JFactory::getUser()->id == 63)
             $db = JFactory::getDbo();
 
             $query = $db->getQuery(true);
-            $query->select('t.*, c.id AS cid')
+            $query->select('DISTINCT(t.session_code) AS sc, t.*')
                 ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
                 ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->quoteName('c.training') . ' = ' . $db->quoteName('p.code'))
                 ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))

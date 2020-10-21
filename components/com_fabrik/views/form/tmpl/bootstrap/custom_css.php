@@ -70,8 +70,8 @@ echo <<<EOT
     margin:auto;
 }
 
-.view-form.applicant-form #g-container-main .page-header, 
-.view-details.applicant-form #g-container-main .page-header { 
+.view-form #g-container-main .page-header, 
+.view-details #g-container-main .page-header { 
     padding-bottom: 30px;
 }
 
@@ -96,7 +96,7 @@ echo <<<EOT
     height: 41px !important;
 }
 
-.applicant-form main#g-main-mainbody {
+.view-form main#g-main-mainbody {
     padding-right: 5%;
 }
 
@@ -104,11 +104,23 @@ echo <<<EOT
     padding: 0;
 }
 
-.applicant-form .fabrikGroup {
+.view-form:not(.em-formRegistrationCenter) .fabrikGroup {
     background: #fafafa;
     margin-bottom: 20px;
     border-radius: 0;
     padding: 20px;
+}
+
+.view-form p.select-program + form .fabrikGroup {
+    background: #fff;
+}
+
+.view-form.error-report-page .fabrikGroup {
+    background: #fff;
+}
+
+.view-form:not(.em-formRegistrationCenter) .size-100 .size-100 .fabrikGroup {
+    background: #fff;
 }
 
 .view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
@@ -179,7 +191,7 @@ form .optional {
     margin-right: 0 !important;
 }
 
-.applicant-form #drawer .attached p {
+.view-form #drawer .attached p, .view-checklist #drawer .attached p, .view-details #drawer .attached p {
     margin: 0 !important;
 }
 
@@ -328,22 +340,22 @@ form legend a, form legend a:hover, form legend a:focus {
 }
 
 /* Fabrik application form details */
-.applicant-form .nav.nav-tabs {
+.view-details .nav.nav-tabs {
     display: none;
 }
 
 /* Fabrik application form buttons left-right */
-.applicant-form .fabrikActions.form-actions .span4 {
+.view-form .fabrikActions.form-actions .span4 {
     float: right;
     text-align: right;
 }
 
-.applicant-form .fabrikActions.form-actions .offset1.span4 {
+.view-form .fabrikActions.form-actions .offset1.span4 {
     float: left;
     margin-left: 0;
 }
 
-.applicant-form .fabrikActions.form-actions .offset1 .pull-right {
+.view-form .fabrikActions.form-actions .offset1 .pull-right {
     float: left;
 }
 
@@ -351,15 +363,15 @@ form legend a, form legend a:hover, form legend a:focus {
     color: #ffffff !important;
 }
 /* Fabrik application WYSIWYG height */
-.applicant-form iframe {
+.view-form iframe {
     height: 200px !important;
 }
 
-.applicant-form .mce-tinymce .mce-statusbar .mce-path > .mce-path-item {
+.view-form .mce-tinymce .mce-statusbar .mce-path > .mce-path-item {
     display: none !important;
 }
 
-.applicant-form .sauvegarder,
+.view-form .sauvegarder,
 .view-checkout .sauvegarder, #fabrikSubmit_321 {
     margin-left: 20px !important;
 }
@@ -395,19 +407,19 @@ form#member-profile .form-horizontal .control-label {
 }
 
 /*Dossiers Perso Complet*/
-.applicant-form .row-striped > .span12 {
+.view-details .row-striped > .span12 {
     width: 100%;
 }
 
-.applicant-form .row-striped .span12 > * {
+.view-details .row-striped .span12 > * {
     width: 50% !important;
 }
 
-.applicant-form .row-striped .span12 > * {
+.view-details .row-striped .span12 > * {
     width: 50% !important;
 }
 
-.applicant-form .row-striped .span12 .fabrikLabel, .applicant-form .row-striped .span12 .fabrikElement {
+.view-details .row-striped .span12 .fabrikLabel, .view-details .row-striped .span12 .fabrikElement {
     width: 100% !important;
 }
 
@@ -419,7 +431,7 @@ form#member-profile .form-horizontal .control-label {
 
 /* ---- VALIDATION STARS ----- */
 /* --- hiding icon atm because i'm not sure what they want yet... --- */
-/*.applicant-form .icon-star.small {
+/*.view-form .icon-star.small {
     display: none;
 }
 
@@ -456,7 +468,7 @@ form#member-profile .form-horizontal .control-label {
     content: "";
 }
 
-.applicant-form form[name="form_324"] input::placeholder, .applicant-form input[placeholder="€"]::placeholder {
+.view-form form[name="form_324"] input::placeholder, .view-form input[placeholder="€"]::placeholder {
     color: red !important;
     opacity: 1;
 }
@@ -466,37 +478,37 @@ form#member-profile .form-horizontal .control-label {
     flex-direction: row-reverse;
 }
 
-#jos_emundus_funding___total_ressource, #jos_emundus_funding___total_depense, .applicant-form form[name="form_324"] input[readonly="readonly"] {
+#jos_emundus_funding___total_ressource, #jos_emundus_funding___total_depense, .view-form form[name="form_324"] input[readonly="readonly"] {
     border: none;
     box-shadow: none;
     background-color: transparent;
     text-align: end;
 }
 
-.applicant-form form[name="form_324"] .legend {
+.view-form form[name="form_324"] .legend {
     font-size: 1.2rem;
 }
 
-.applicant-form form[name="form_324"] #group711 tr td:first-child,
-.applicant-form form[name="form_324"] #group714 tr td:first-child,
-.applicant-form form[name="form_324"] #group720 tr td:first-child,
-.applicant-form form[name="form_324"] #group721 tr td:first-child {
+.view-form form[name="form_324"] #group711 tr td:first-child,
+.view-form  form[name="form_324"] #group714 tr td:first-child,
+.view-form  form[name="form_324"] #group720 tr td:first-child,
+.view-form form[name="form_324"] #group721 tr td:first-child {
     width: 24%;
 }
 
-.applicant-form form[name="form_324"] #group711 tr td:last-child,
-.applicant-form form[name="form_324"] #group714 tr td:last-child,
-.applicant-form form[name="form_324"] #group720 tr td:last-child,
-.applicant-form form[name="form_324"] #group721 tr td:last-child {
+.view-form  form[name="form_324"] #group711 tr td:last-child,
+.view-form form[name="form_324"] #group714 tr td:last-child,
+.view-form  form[name="form_324"] #group720 tr td:last-child,
+.view-form form[name="form_324"] #group721 tr td:last-child {
     width: 5%;
 }
 
-.applicant-form #group735 select.input.input-medium {
+.view-form  #group735 select.input.input-medium {
     width: 210px;
 }
 
 /* ---- ALLOW * TO BE AT THE END OF TEXT ----- */
-.applicant-form form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
+.view-form form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
     display: inline;
 }
 /* Inscription */
@@ -821,7 +833,7 @@ body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
 }
 
 
-.applicant-form .fabrikGroupRepeater .btn-success {
+.view-form .fabrikGroupRepeater .btn-success {
     margin-right: 10px !important;
 }
 
@@ -1122,25 +1134,25 @@ body.em-formRegistrationCenter  {
 }
 
 
-.applicant-form input[type='text'], .applicant-form input[type='tel'], .applicant-form input[type='number'], .applicant-form textarea , .applicant-form input[type='email'], .applicant-form select {
+.view-form input[type='text'], .view-form input[type='tel'], .view-forminput[type='number'], .view-form textarea , .view-form input[type='email'], .view-form select {
         border-radius: 4px;
 }
 
-.applicant-form .fabrikElement select {
+.view-form .fabrikElement select {
     height: 50px !important;
     border-radius: 4px;
 }
 
-.applicant-form .fabrikElement div a.chzn-single {
+.view-form .fabrikElement div a.chzn-single {
    border-radius: 0px; 
 }
 
-.applicant-form .fabrikElement div a.chzn-single span {
+.view-form .fabrikElement div a.chzn-single span {
    display: inline; 
 }
 
 /* AJOUT APRES MAJ */
-.applicant-form input[type='radio']  { 
+.view-form input[type='radio']  { 
     border: 1px solid #e0e0e5 !important;
 }
 
@@ -1154,20 +1166,20 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
           margin-bottom: 0px !important;
 }
 
-.applicant-form input[type='radio']:checked  { 
+.view-form input[type='radio']:checked  { 
     background: #de6339;
 }
 
-.applicant-form .fabrikActions.form-actions .row-fluid button {
+.view-form .fabrikActions.form-actions .row-fluid button, .view-details .fabrikActions.form-actions .row-fluid button {
     font-weight: 300; 
     height: 41px !important; 
 }
 ​
-.applicant-form .sidebar-a a#print {
+.view-form .sidebar-a a#print, .view-checklist .sidebar-a a#print, .view-details .sidebar-a a#print  {
     height: 41px !important;
 }
 
-.applicant-form p em strong i.icon-star.small.obligatoire  {
+.view-form p em strong i.icon-star.small.obligatoire  {
     margin-top: -2px;
 }
 
@@ -1185,7 +1197,7 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
 }
 
 /****** Add border style to applicant forms ****/
-.applicant-form  input[type='radio'] {
+.view-form  input[type='radio'] {
     margin-top: 0;
     -webkit-appearance: none;
     border-radius: 50%;
@@ -1193,7 +1205,7 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
     height: 10px;
 }
 
-.applicant-form input[type='radio']:checked {
+.view-form input[type='radio']:checked {
       height: 12px;
       width: 12px;
 }
@@ -1276,18 +1288,31 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 /* Formulaire Fabrik */
 
  
-.applicant-form .fabrikForm fieldset {
+.view-form .fabrikForm fieldset, .view-details .fabrikForm fieldset, .view-checklist .fabrikForm fieldset {
   position: relative;
 }
 
-.applicant-form .fabrikForm fieldset > .row-fluid, .applicant-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
-  padding: 0 30px;
+.view-form:not(.login) .fabrikForm fieldset > .row-fluid, 
+.view-details .fabrikForm fieldset > .row-fluid,
+.view-checklist .fabrikForm fieldset > .row-fluid, 
+.view-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid, 
+.view-details .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid 
+.view-checklist .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
+  padding: 2px 30px;
 }
 
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
   position: absolute;
   top: -10px;
   right: 10px;
+  display: flex;
+}
+
+.fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  display: flex;
 }
 
 .form-actions .row-fluid {
@@ -1307,10 +1332,10 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .form-actions .row-fluid .span4 .btn-group .register:hover {
     text-shadow: none;
-    color: white !important;
+    color: white; 
 }
 
-.applicant-form .row-fluid > .fabrikElementContainer {
+.view-form .row-fluid > .fabrikElementContainer, .view-details .row-fluid > .fabrikElementContainer, .view-checklist .row-fluid > .fabrikElementContainer{
   display: flex;
   flex-direction: column;
 }
@@ -1627,18 +1652,22 @@ a.btn-attach:active {
 /*** MEDIA QUERY SECTION ***/
 
 @media screen and (min-width: 960px) and (max-width: 1239px) {
-  .applicant-form .fabrikActions.form-actions .span4 {
+  .view-form .fabrikActions.form-actions .span4 {
     width: 27%;
   }
 }
 
-@media screen and (max-width: 958px) {
+@media screen and (min-width:480px) and (max-width: 959px) {
 
-  .applicant-form {
+  .view-form {
     .sauvegarder {
       margin-left: 0 !important;
-    }
   }
+  
+  .view-registration form #jos_emundus_users___civility .row-fluid, .view-form .em-formRegistrationCenter form #jos_emundus_users___civility .row-fluid {
+    justify-content: space-around;
+  }
+  
 }
 
 @media all and (max-width: 1239px) {
@@ -1723,7 +1752,7 @@ ol {
 }
 
     
-    .applicant-form .btn.btn-primary.save-btn.sauvegarder.save_continue {
+    .view-form .btn.btn-primary.save-btn.sauvegarder.save_continue {
         margin-left: 0px !important;
         margin-bottom: 10px; 
     }
@@ -1770,30 +1799,26 @@ ol {
         font-size: 0.7em !important;
     }
     
-    .applicant-form .fabrikActions.form-actions .span4 {
-        width: 39%;
-    }
-  
     #jos_emundus_projet___project_discipline_other .row-fluid > .span3 {
         width: 50%;
         float: left;
     }
       
-    .applicant-form  main#g-main-mainbody {
+    .view-form  main#g-main-mainbody, .view-details  main#g-main-mainbody, .view-checklist  main#g-main-mainbody {
           padding-right: 0;
     }
 
-    .applicant-form .fabrikGroup .row-fluid {
+    .view-form .fabrikGroup .row-fluid, .view-details .fabrikGroup .row-fluid, .view-checklist .fabrikGroup .row-fluid{
         padding-right: 0;
         padding-left: 0;
     }
     
-    .applicant-form .fabrikGroup legend {
+    .view-form .fabrikGroup legend, .view-checklist .fabrikGroup legend,  .view-details .fabrikGroup legend {
         padding-left: 0;
     }
 
 
-    .applicant-form .fabrikActions.form-actions .row-fluid .offset1.span4 {
+    .view-form .fabrikActions.form-actions .row-fluid .offset1.span4,  .view-checklist .fabrikActions.form-actions .row-fluid .offset1.span4,  .view-details .fabrikActions.form-actions .row-fluid .offset1.span4 {
           float: left;
     }
     
@@ -1848,7 +1873,7 @@ ol {
     }
         
     /* APRES MAJ */
-    .applicant-form .fabrikForm fieldset > .row-fluid {
+    .view-form .fabrikForm fieldset > .row-fluid, .view-details .fabrikForm fieldset > .row-fluid,  .view-checklist .fabrikForm fieldset > .row-fluid {
         padding: 0px !important;
     }
 
@@ -1857,7 +1882,12 @@ ol {
         flex-direction: column;
     }
 
-    .applicant-form .fabrikForm fieldset > .row-fluid, .applicant-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
+     .view-form .fabrikForm fieldset > .row-fluid,
+      .view-checklist .fabrikForm fieldset > .row-fluid,
+      .view-details .fabrikForm fieldset > .row-fluid,
+     .view-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid, 
+      .view-checklist .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid, 
+      .view-details .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid{
         padding: 0px !important;
     }
 
@@ -1888,7 +1918,7 @@ ol {
 
 @media all and (max-width: 959px) {
 
-    .applicant-form form.fabrikForm label.radio  { 
+    .view-form form.fabrikForm label.radio  { 
         display: inline-block !important; 
     }
     .form-horizontal .control-group {
@@ -1911,7 +1941,7 @@ ol {
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
-  .applicant-form .fabrikActions.form-actions .span4 {
+  .view-form .fabrikActions.form-actions .span4 {
     width: 34%;
   }
 
@@ -1922,6 +1952,10 @@ ol {
  .view-registration form {
     padding-right: 8rem;
   }
+  
+      .view-form #g-sidebar .moduletable  {
+        padding: 0px !important;
+    }
 }
 
 /* END - Your CSS styling ends here */

@@ -75,6 +75,7 @@
       <Ring-Loader :color="'#de6339'" />
     </div>
   </div>
+  <tasks></tasks>
 </template>
 
 
@@ -92,9 +93,9 @@
   import ModalMenu from "../components/formClean/ModalMenu";
 
   import _ from 'lodash';
-  import ModalElement from "../components/formClean/ModalElement";
   import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
   import List from "./list";
+  import Tasks from "@/views/tasks";
 
   const qs = require("qs");
 
@@ -109,9 +110,9 @@
       manyLanguages: Number
     },
     components: {
+      Tasks,
       List,
       ModalAffectCampaign,
-      ModalElement,
       Builder,
       ModalSide,
       ModalMenu,
