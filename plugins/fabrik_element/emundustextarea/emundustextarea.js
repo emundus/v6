@@ -247,7 +247,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
         getContent: function () {
             if (this.options.wysiwyg) {
-                return tinyMCE.activeEditor.getContent().replace(/<\/?[^>]+(>|$)/g, '');
+                return tinyMCE.activeEditor.getContent();
             } else {
                 return this.container.value;
             }
@@ -321,15 +321,32 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 content = this.getContent(),
                 charsLeft = this.itemsLeft();
             if (this.limitReached()) {
-                this.limitContent();
-                this.warningFX.start({'opacity': 0, 'color': '#FF0000'}).chain(function () {
+                if(this.options.allow_whitespace == 1 && this.options.wysiwyg) {
+                    var content_without_lines = content.replace(/<\/?[^>]+(>|$)/g, '');
+                    content_without_lines = content_without_lines.replace(/\s/g, '');
+                    var diff = content_without_lines.length - this.options.max;
+                    if (diff > 2) {
+                        this.limitContent();
+                    } else {
+                        if (!this.options.block_type) {
+                            this.options.block_type = this.getContent();
+                        }
+                        this.setContent(this.options.block_type);
+                    }
+                } else {
+                    this.limitContent();
+                }
+                /*this.warningFX.start({'opacity': 0, 'color': '#FF0000'}).chain(function () {
                     this.start({'opacity': 1, 'color': '#FF0000'}).chain(function () {
                         this.start({'opacity': 0, 'color': this.origCol}).chain(function () {
                             this.start({'opacity': 1});
                         });
                     });
-                });
+                });*/
             } else {
+                if(this.options.block_type) {
+                    this.options.block_type = false;
+                }
                 charsleftEl.setStyle('color', this.origCol);
             }
             charsleftEl.getElement('span').set('html', charsLeft);
@@ -347,8 +364,9 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             if (this.options.maxType === 'word') {
                 i = this.options.max - content.split(' ').length;
             } else {
-                if(this.options.allow_whitespace == 1) {
-                    var content_without_lines = content.replace(/\s/g, '');
+                if(this.options.allow_whitespace == 1 && this.options.wysiwyg) {
+                    var content_without_lines = content.replace(/<\/?[^>]+(>|$)/g, '');
+                    content_without_lines = content_without_lines.replace(/\s/g, '');
                     i = this.options.max - (content_without_lines.length);
                 } else {
                     i = this.options.max - (content.length + 1);
@@ -372,9 +390,18 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 c = c.join(' ');
                 c += (this.options.wysiwyg) ? '&nbsp;' : ' ';
             } else {
-                c = content.slice(0, this.options.max);
+                if(this.options.allow_whitespace == 1 && this.options.wysiwyg) {
+                    var diff_whitespace = content.length - content.replace(/\s/g, '').length;
+                    var end = parseInt(this.options.max) + parseInt(diff_whitespace);
+                    c = content.substring(0, end);
+                } else {
+                    c = content.substring(0, this.options.max);
+                }
             }
             this.setContent(c);
+            if(this.options.allow_whitespace == 1 && this.options.wysiwyg) {
+                this.informKeyPress()
+            }
         },
 
         /**
@@ -388,8 +415,9 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 var words = content.split(' ');
                 return words.length > this.options.max;
             } else {
-                if(this.options.allow_whitespace == 1) {
-                    var content_without_lines = content.replace(/\s/g, '');
+                if(this.options.allow_whitespace == 1 && this.options.wysiwyg) {
+                    var content_without_lines = content.replace(/<\/?[^>]+(>|$)/g, '');
+                    content_without_lines = content_without_lines.replace(/\s/g, '');
                     var charsLeft = this.options.max - (content_without_lines.length + 1);
                 } else {
                     var charsLeft = this.options.max - (content.length + 1);

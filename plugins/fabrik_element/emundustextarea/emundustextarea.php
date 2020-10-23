@@ -415,8 +415,8 @@ class PlgFabrik_ElementEmundustextarea extends PlgFabrik_Element
 			{
 				$label = FText::_('PLG_ELEMENT_TEXTAREA_CHARACTERS_LEFT');
                 if ($params->get('textarea-maxlength-regex', '0') == '1'){
-                    $value_without_lines = preg_replace('/[\s]*/', '', strip_tags($value));
-                    $charsLeft = $params->get('textarea-maxlength') - JString::strlen($value_without_lines - 1);
+                    $value_without_lines = preg_replace('/\s*/', '', strip_tags($value));
+                    $charsLeft = $params->get('textarea-maxlength') - JString::strlen($value_without_lines);
                 } else {
                     $charsLeft = $params->get('textarea-maxlength') - JString::strlen($value);
                 }
@@ -547,6 +547,7 @@ class PlgFabrik_ElementEmundustextarea extends PlgFabrik_Element
 		$opts->maxType = $params->get('textarea_limit_type', 'char');
 		$opts->wysiwyg = $this->useWysiwyg();
 		$opts->allow_whitespace = $params->get('textarea-maxlength-regex');
+		$opts->block_type = false;
 		$opts->deleteOverflow = $params->get('delete_overflow', true) ? true : false;
 		$opts->htmlId = $this->getHTMLId($repeatCounter);
 
