@@ -114,34 +114,15 @@ export default {
 <style scoped>
 .autocomplete {
   position: relative;
-  min-height: 55px;
+  min-height: 50px;
   width: 100%;
   display: block;
-  width: 100%;
-  height: 38px;
+  height: 50px;
   margin-bottom: 10px;
   font-size: 14px;
   line-height: 1.428571429;
   color: #333333;
   background-color: #ffffff;
-}
-
-input {
-  display: block;
-  width: 100%;
-  height: 55px;
-  background: none;
-  padding: 8px 12px;
-}
-
-input::placeholder {
-  color: black;
-  font-weight: 300;
-}
-
-input.placeholder::placeholder {
-  color: #9b9b9b;
-  font-weight: 300;
 }
 
 .autocomplete-results {

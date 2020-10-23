@@ -4,7 +4,7 @@ use Joomla\CMS\Date\Date;
 
 jimport( 'joomla.access.access' );
 
-class modEmundusInformationComplementaireHelper {
+class modEmundusCampaignDropfilesHelper {
     public function getFiles() {
 
         $db = JFactory::getDbo();
@@ -27,7 +27,8 @@ class modEmundusInformationComplementaireHelper {
             ->andWhere($db->quoteName('df.state') . ' = 1')
             ->andWhere($db->quoteName('cat.extension') . ' = ' . $db->quote('com_dropfiles'))
             ->andWhere('json_extract(`cat`.`params`, "$.idCampaign") LIKE ' . $db->quote('"'.$id.'"'))
-            ->andWhere($db->quoteName('cat.access') . ' IN (' . implode(' , ', $groupUser) . ')');
+            ->andWhere($db->quoteName('cat.access') . ' IN (' . implode(' , ', $groupUser) . ')')
+            ->group('df.ordering');
 
         try {
             $db->setQuery($query);

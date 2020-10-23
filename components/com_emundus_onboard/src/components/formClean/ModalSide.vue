@@ -33,23 +33,11 @@
         <div class="form-group" :class="{ 'mb-0': translate.label}">
             <label>{{Name}} :</label>
           <div class="input-can-translate">
-            <input v-model="label.fr" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors}"/>
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" @click="translate.label = !translate.label"></button>
+            <input v-model="label[actualLanguage]" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors}"/>
+            <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" v-if="manyLanguages !== '0'" @click="translate.label = !translate.label"></button>
           </div>
+          <translation :label="label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
         </div>
-        <transition :name="'slide-down'" type="transition">
-        <div class="inlineflex" v-if="translate.label">
-          <label class="translate-label">
-            {{TranslateEnglish}}
-          </label>
-          <em class="fas fa-sort-down"></em>
-        </div>
-        </transition>
-        <transition :name="'slide-down'" type="transition">
-        <div class="form-group mb-1" v-if="translate.label">
-          <input v-model="label.en" type="text" maxlength="40" class="form__input field-general w-input"/>
-        </div>
-        </transition>
         <p v-if="errors" class="error col-md-12 mb-2">
           <span class="error">{{LabelRequired}}</span>
         </p>
@@ -57,43 +45,31 @@
         <div class="form-group mt-1" :class="{'mb-0': translate.intro}">
           <label>{{Intro}} :</label>
           <div class="input-can-translate">
-            <textarea v-model="intro.fr" class="form__input field-general w-input" rows="3" maxlength="300" style="margin: 0"></textarea>
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
+            <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="300" style="margin: 0"></textarea>
+            <button class="translate-icon" :class="{'translate-icon-selected': translate.intro}" type="button" v-if="manyLanguages !== '0'" @click="translate.intro = !translate.intro"></button>
           </div>
+          <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>
         </div>
-        <transition :name="'slide-down'" type="transition">
-        <div class="inlineflex" v-if="translate.intro">
-          <label class="translate-label">
-            {{TranslateEnglish}}
-          </label>
-          <em class="fas fa-sort-down"></em>
-        </div>
-        </transition>
-        <transition :name="'slide-down'" type="transition">
-        <div class="form-group mb-1" v-if="translate.intro">
-          <textarea v-model="intro.en" rows="3" class="form__input field-general w-input" maxlength="300"></textarea>
-        </div>
-        </transition>
 
         <div class="col-md-12 d-flex mb-1" style="align-items: center">
           <input type="checkbox" v-model="template">
-          <label class="ml-10px">{{SaveAsTemplate}}</label>
+          <label class="ml-10px mb-0">{{SaveAsTemplate}}</label>
         </div>
 
         <div class="col-md-12 mb-1">
-          <a
-            class="bouton-sauvergarder-et-continuer-3"
+          <button
+            class="bouton-sauvergarder-et-continuer"
             @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()"
-          >{{Continuer}}</a>
-          <a class="bouton-sauvergarder-et-continuer-3 w-delete"
+          >{{Continuer}}</button>
+          <button class="bouton-sauvergarder-et-continuer w-delete"
              @click.prevent="deleteMenu()"
              v-if="menus.length > 1 && files == 0">
             {{Delete}}
-          </a>
-          <a
-            class="bouton-sauvergarder-et-continuer-3 w-retour"
+          </button>
+          <button
+            class="bouton-sauvergarder-et-continuer w-retour"
             @click.prevent="$modal.hide('modalSide' + ID)"
-          >{{Retour}}</a>
+          >{{Retour}}</button>
         </div>
       </div>
     </modal>
@@ -103,13 +79,16 @@
 <script>
 import axios from "axios";
 import Swal from "sweetalert2";
+import Translation from "@/components/translation"
 
 const qs = require("qs");
 
 export default {
   name: "modalSide",
-  props: { ID: Number, element: Object, index: Number, menus: Array, files: Number, link: String },
-  components: {},
+  components: {
+    Translation
+  },
+  props: { ID: Number, element: Object, index: Number, menus: Array, files: Number, link: String, manyLanguages: Number, actualLanguage: String },
   data() {
     return {
       tempEl: [],
@@ -145,19 +124,13 @@ export default {
   methods: {
     UpdateParams() {
       this.changes = true;
-      if(this.label.en == '') {
-        this.label.en = this.label.fr;
-      }
-      if(this.intro.en == '') {
-        this.intro.en = this.intro.fr;
-      }
       this.axioschange(this.intro, this.tempEl.intro_raw);
       this.axioschange(this.label, this.tempEl.show_title.titleraw);
       this.updatefalang(this.label);
       this.saveAsTemplate();
       this.element = JSON.parse(JSON.stringify(this.tempEl));
-      this.$emit("UpdateName", this.index, this.label.fr);
-      this.$emit("UpdateIntro", this.index, this.intro.fr);
+      this.$emit("UpdateName", this.index, this.label[this.actualLanguage]);
+      this.$emit("UpdateIntro", this.index, this.intro[this.actualLanguage]);
     },
     beforeClose(event) {
       if (this.changes != false) {
@@ -310,134 +283,4 @@ export default {
 </script>
 
 <style scoped>
-.modalC-content {
-  height: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  font-size: 15px;
-  overflow: auto;
-}
-
-.b {
-  display: block;
-}
-
-.toggle {
-  vertical-align: middle;
-  position: relative;
-
-  left: 20px;
-  width: 45px;
-  border-radius: 100px;
-  background-color: #ddd;
-  overflow: hidden;
-  box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.05);
-}
-
-.check {
-  position: absolute;
-  display: block;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  z-index: 6;
-}
-
-.check:checked ~ .track {
-  box-shadow: inset 0 0 0 20px #4bd863;
-}
-
-.check:checked ~ .switch {
-  right: 2px;
-  left: 22px;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition-property: left, right;
-  transition-delay: 0.05s, 0s;
-}
-
-.switch {
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  bottom: 2px;
-  right: 22px;
-  background-color: #fff;
-  border-radius: 36px;
-  z-index: 1;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition-property: left, right;
-  transition-delay: 0s, 0.05s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.track {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.05);
-  border-radius: 40px;
-}
-.inlineflex {
-  display: flex;
-  align-content: center;
-}
-.titleType {
-  font-size: 45%;
-}
-.topright {
-  float: right;
-  font-size: 25px;
-}
-.btnCloseModal {
-  background-color: inherit;
-}
-.centepercent {
-  width: 100%;
-  max-width: 100%;
-  min-height: 100px;
-  margin-bottom: 1em;
-}
-
-.intro{
-  margin-top: 2em;
-}
-
-  textarea{
-    padding: 0.5em;
-  }
-
-  .menu-list{
-    padding: 1em;
-  }
-
-.inlineflex {
-  display: flex;
-  align-content: center;
-  align-items: center;
-  height: 30px;
-}
-
-.handle {
-  cursor: grab;
-}
-  .icon-handle{
-    position: relative;
-  }
-
-.update-field-header{
-  margin-bottom: 1em;
-}
-
-.update-title-header{
-  margin-top: 0;
-  display: flex;
-  align-items: center;
-}
-
 </style>

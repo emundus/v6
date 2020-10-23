@@ -88,13 +88,26 @@ table {
 border-radius: 4px;
 }
 
+@media all and (max-width: 479px) {
+ .view-list h1::after {
+       display: none !important;
+  } 
+  
+    .view-list form {
+        overflow: auto;
+    }
+}
 @media all and (max-width: 767px) {
   #listform_84_com_fabrik_84 {
     padding: 0 !important;
   }
   
-  .view-list form {
+  .view-list form.fabrikForm {
     overflow: auto;
+  }
+  
+  .view-list form[name="lang"] {
+    overflow: inherit;
   }
 }
 

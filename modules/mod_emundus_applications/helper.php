@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 class modemundusApplicationsHelper {
 
 	// get users sorted by activation date
-	static function getApplications($layout) {
+	static function getApplications($layout, $order_by) {
 		$user = JFactory::getUser();
 		$db	= JFactory::getDbo();
 
@@ -57,9 +57,10 @@ class modemundusApplicationsHelper {
 		}
 
 		$query .= ' WHERE ecc.applicant_id ='.$user->id.'
-					ORDER BY esc.end_date DESC';
+					ORDER BY ' . $order_by;
 
 		$db->setQuery($query);
+
 		$result = $db->loadObjectList('fnum');
 		return (array) $result;
 	}

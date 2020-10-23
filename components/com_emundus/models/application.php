@@ -716,10 +716,9 @@ class EmundusModelApplication extends JModelList {
 
             // liste des groupes pour le formulaire d'une table
             $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
-                                FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-                                WHERE ff.group_id = fg.id AND
-                                    ff.form_id = '.$table[$i]->form_id.'
-                                ORDER BY ff.ordering';
+                      FROM #__fabrik_formgroup ff, #__fabrik_groups fg
+                      WHERE ff.group_id = fg.id AND fg.published = 1 AND ff.form_id = '.$table[$i]->form_id.'
+                      ORDER BY ff.ordering';
             try {
 
                 $this->_db->setQuery($query);
@@ -1174,7 +1173,7 @@ class EmundusModelApplication extends JModelList {
 	                // liste des groupes pour le formulaire d'une table
 	                $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
 	                            FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-	                            WHERE ff.group_id = fg.id AND
+	                            WHERE ff.group_id = fg.id AND fg.published = 1 AND 
 	                                  ff.form_id = "'.$itemt->form_id.'"
 	                            ORDER BY ff.ordering';
 	                $this->_db->setQuery($query);
@@ -1531,15 +1530,18 @@ class EmundusModelApplication extends JModelList {
 	                                        $elt = implode(", ", json_decode (@$element->content));
 	                                    }
 	                                    elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content)) {
-	                                        $params = json_decode($element->params);
-	                                        $index = array_search($element->content, $params->sub_options->sub_values);
-	                                        if (strlen($index) > 0) {
-	                                            $elt = JText::_($params->sub_options->sub_labels[$index]);
-	                                        } elseif (!empty($params->dropdown_populate)) {
-		                                        $elt = $element->content;
-	                                        } else {
-	                                            $elt = "";
-	                                        }
+                                            $params = json_decode($element->params);
+                                            $index = array_search($element->content, $params->sub_options->sub_values);
+
+                                            if (strlen($index) > 0) {
+                                                $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                            } elseif (!empty($params->dropdown_populate)) {
+                                                $elt = $element->content;
+                                            } elseif($params->multiple == 1){
+                                                $elt = implode(", ", json_decode (@$element->content));
+                                            } else {
+                                                $elt = "";
+                                            }
 	                                    } elseif ($element->plugin == 'internalid') {
 		                                    $elt = '';
 	                                    } else {
@@ -1605,7 +1607,7 @@ class EmundusModelApplication extends JModelList {
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-                            WHERE ff.group_id = fg.id';
+                            WHERE ff.group_id = fg.id AND fg.published = 1';
 
                 if (!empty($gids) && $gids != 0) {
                     $query .= ' AND  fg.id IN ('.implode(',',$gids).')';
@@ -2127,15 +2129,10 @@ class EmundusModelApplication extends JModelList {
                                                 try {
                                                     $this->_db->setQuery($query);
                                                     $res = $this->_db->loadColumn();
+                                                    $elt = implode(', ',$res);
                                                 } catch (Exception $e) {
                                                     JLog::add('line:1461 - Error in model/application at query: '.$query, JLog::ERROR, 'com_emundus');
                                                     throw $e;
-                                                }
-
-                                                if (count($res)>1) {
-                                                    $elt = implode(', ',$res);
-                                                } else {
-                                                    $elt = '';
                                                 }
                                             } else {
                                                 $from = $params->join_db_name;
@@ -2173,6 +2170,8 @@ class EmundusModelApplication extends JModelList {
                                             $index = array_search($element->content, $params->sub_options->sub_values);
                                             if (strlen($index) > 0) {
                                                 $elt = JText::_($params->sub_options->sub_labels[$index]);
+                                            } elseif($params->multiple == 1){
+                                                $elt = implode(", ", json_decode (@$element->content));
                                             } else {
                                                 $elt = "";
                                             }
@@ -2227,7 +2226,7 @@ class EmundusModelApplication extends JModelList {
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, INSTR(fg.params,"\"repeat_group_button\":\"1\"") as repeated, INSTR(fg.params,"\"repeat_group_button\":1") as repeated_1
                             FROM #__fabrik_formgroup ff, #__fabrik_groups fg
-                            WHERE ff.group_id = fg.id AND
+                            WHERE ff.group_id = fg.id AND fg.published = 1 AND  
                                   ff.form_id = "'.$itemt->form_id.'"
                             ORDER BY ff.ordering';
                 $this->_db->setQuery( $query );

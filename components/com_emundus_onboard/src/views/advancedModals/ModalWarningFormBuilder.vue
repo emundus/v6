@@ -29,18 +29,16 @@
         </div>
       </div>
       <div class="col-md-12 mb-1">
-<!--        <a class="bouton-sauvergarder-et-continuer-3"
-           @click.prevent="duplicateProfile()">
-          {{ Duplicate }}
-        </a>-->
-        <a class="bouton-sauvergarder-et-continuer-3 mr-1"
+        <button class="bouton-sauvergarder-et-continuer mr-1"
+                type="button"
            @click.prevent="formbuilder()">
           {{ Update }}
-        </a>
-        <a class="bouton-sauvergarder-et-continuer-3 w-retour"
+        </button>
+        <button class="bouton-sauvergarder-et-continuer w-retour"
+                type="button"
            @click.prevent="$modal.hide('modalWarningFormBuilder')">
           {{Retour}}
-        </a>
+        </button>
       </div>
     </modal>
   </span>
@@ -115,27 +113,4 @@ export default {
 </script>
 
 <style scoped>
-.modalC-content {
-  height: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  font-size: 15px;
-  overflow: auto;
-}
-.topright {
-  font-size: 25px;
-  float: right;
-}
-.btnCloseModal {
-  background-color: inherit;
-}
-  .update-field-header{
-    margin-bottom: 1em;
-  }
-
-  .update-title-header{
-    margin-top: 0;
-    display: flex;
-    align-items: center;
-  }
 </style>

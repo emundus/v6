@@ -216,7 +216,7 @@ class EmundusModelFiles extends JModelLegacy
                     } else {
                         $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where."=".$def_elmt->element_name." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
                     }
-                    
+
                     $query = preg_replace('#{thistable}#', $from, $query);
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
@@ -2418,11 +2418,19 @@ if (JFactory::getUser()->id == 63)
                 	$element_attribs = json_decode($elt->element_attribs);
 
                     if ($element_attribs->database_join_display_type == "checkbox") {
+                        $select_check = $element_attribs->join_val_column;
+                        if(!empty($element_attribs->join_val_column_concat)){
+                            $select_check = $element_attribs->join_val_column_concat;
+                            $select_check = preg_replace('#{thistable}#', 'jd', $select_check);
+                            $select_check = preg_replace('#{shortlang}#', $this->locales, $select_check);
+                        }
+
                         $t = $tableAlias[$elt->tab_name].'_repeat_'.$elt->element_name;
                         $select = '(
-                            SELECT GROUP_CONCAT('.$t.'.'.$elt->element_name.' SEPARATOR ", ")
-                            FROM '.$t.'
-                            WHERE '.$t.'.parent_id='.$tableAlias[$elt->tab_name].'.id
+                            SELECT GROUP_CONCAT('.$select_check.' SEPARATOR ", ")
+                            FROM '.$t.' AS t
+                            LEFT JOIN '.$element_attribs->join_db_name.' AS jd ON jd.'.$element_attribs->join_key_column.' = t.'.$elt->element_name.'
+                            WHERE '.$tableAlias[$elt->tab_name].'.id = t.parent_id
                           )';
                     } else {
                         $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
@@ -3371,7 +3379,7 @@ if (JFactory::getUser()->id == 63)
             $db = JFactory::getDbo();
 
             $query = $db->getQuery(true);
-            $query->select('t.*, c.id AS cid')
+            $query->select('DISTINCT(t.session_code) AS sc, t.*')
                 ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
                 ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->quoteName('c.training') . ' = ' . $db->quoteName('p.code'))
                 ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))

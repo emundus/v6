@@ -40,7 +40,8 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 							'attachment_id': attachment_id,
 							'email': email,
 							'formid': this.options.formid,
-							'fnum': fnum
+							'fnum': fnum,
+							'form_recommend': this.options.form_recommend
 						},
 						onComplete: response => {
 							self.ajaxComplete(response);
