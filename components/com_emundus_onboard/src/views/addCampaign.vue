@@ -191,6 +191,7 @@
               id="select_prog"
               v-model="form.training"
               v-on:change="setCategory"
+              :disabled="this.programs.length <= 0"
             >
               <option value="">{{ ChooseProg }}</option>
               <option

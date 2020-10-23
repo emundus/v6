@@ -27,7 +27,7 @@
 
         <div class="form-group">
           <label>{{ChooseExistingPageModel}} :</label>
-          <select v-model="model_id" class="dropdown-toggle">
+          <select v-model="model_id" class="dropdown-toggle" :disabled="Object.keys(models).length <= 0">
             <option value="-1"></option>
             <option v-for="(model, index) in models" :value="model.form_id">{{model.label.fr}}</option>
           </select>
