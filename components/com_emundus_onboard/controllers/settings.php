@@ -623,5 +623,40 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             exit;
         }
     }
+
+    public function rewindtutorial(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $table = JTable::getInstance('user', 'JTable');
+            $table->load($user->id);
+
+            $user->setParam('first_login', true);
+            $user->setParam('first_campaign', true);
+            $user->setParam('first_form', true);
+            $user->setParam('first_formbuilder', true);
+            $user->setParam('first_documents', true);
+            $user->setParam('first_databasejoin', true);
+            $user->setParam('first_program', true);
+
+            // Get the raw User Parameters
+            $params = $user->getParameters();
+
+            // Set the user table instance to include the new token.
+            $table->params = $params->toString();
+
+            // Save user data
+            if (!$table->store()) {
+                JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'mod_emundus.saas');
+                echo json_encode(array('status' => true));
+            }
+
+            echo json_encode(array('status' => true));
+        }
+        exit;
+    }
 }
 
