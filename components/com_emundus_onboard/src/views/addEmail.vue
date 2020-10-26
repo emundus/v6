@@ -156,12 +156,12 @@
         <div class="section-sauvegarder-et-continuer">
           <div class="w-container">
             <div class="container-evaluation w-clearfix">
-              <button type="submit" class="bouton-sauvergarder-et-continuer w-button">
+              <button type="submit" class="bouton-sauvergarder-et-continuer">
                 {{ continuer }}
               </button>
               <button
                       type="button"
-                      class="bouton-sauvergarder-et-continuer w-retour w-button"
+                      class="bouton-sauvergarder-et-continuer w-retour"
                       onclick="history.go(-1)"
               >
                 {{ retour }}
@@ -172,12 +172,14 @@
       </form>
     </div>
   </div>
+  <tasks></tasks>
 </template>
 
 <script>
   import Autocomplete from "../components/autocomplete";
   import axios from "axios";
   import Editor from "../components/editor";
+  import Tasks from "@/views/tasks";
 
   const qs = require("qs");
 
@@ -185,6 +187,7 @@
     name: "addEmail",
 
     components: {
+      Tasks,
       Editor,
       Autocomplete
     },
@@ -370,7 +373,6 @@
           }
         }
         this.submitted = true;
-        this.form.lbl = this.form.subject;
 
         if (this.email !== "") {
           axios({
@@ -456,6 +458,7 @@
                 if (this.email !== "") {
                   axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
                           .then(resp => {
+                            this.form.lbl = resp.data.data.lbl;
                             this.form.subject = resp.data.data.subject;
                             this.form.name = resp.data.data.name;
                             this.form.emailfrom = resp.data.data.emailfrom;
@@ -490,51 +493,4 @@
 </script>
 
 <style scoped>
-  .container-evaluation {
-    position: relative;
-    width: 85%;
-    margin-right: auto;
-    margin-left: auto;
-  }
-
-  h2 {
-    color: #1b1f3c !important;
-  }
-
-  .w-input,
-  .w-select {
-    min-height: 50px;
-    padding: 12px;
-    font-weight: 300;
-  }
-
-  .bouton-sauvergarder-et-continuer {
-    position: relative;
-    padding: 10px 30px;
-    float: right;
-    border-radius: 4px;
-    background-color: #1b1f3c;
-    -webkit-transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
-    transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
-  }
-
-  .last-container {
-    padding-bottom: 30px;
-  }
-
-  .section-principale {
-    padding-bottom: 0;
-  }
-
-  .check:checked ~ .track {
-    box-shadow: inset 0 0 0 20px #4bd863;
-  }
-
-  .check:checked ~ .switch {
-    right: 2px;
-    left: 22px;
-    transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-    transition-property: left, right;
-    transition-delay: 0.05s, 0s;
-  }
 </style>

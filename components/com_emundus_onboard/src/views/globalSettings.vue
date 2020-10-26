@@ -17,7 +17,7 @@
       </div>
 
       <div class="col-md-10 p-1" style="padding-left: 2em !important;">
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between" style="margin-bottom: 10px">
           <h2 class="mb-0">{{settingsCategories[langue][menuHighlight]}}</h2>
           <div class="d-flex" v-if="menuHighlight == 0">
             <transition name="slide-right">
@@ -30,10 +30,9 @@
                 <i class="fas fa-check"></i><span class="mr-1">{{Saved}}</span>
               </div>
             </transition>
-            <a @click="savePage()" class="bouton-sauvergarder-et-continuer-3">{{ Save }}</a>
+            <button type="button" @click="savePage()" class="bouton-sauvergarder-et-continuer">{{ Save }}</button>
           </div>
         </div>
-        <p class="paragraphe-sous-titre">{{funnelDescription[langue][menuHighlight]}}</p>
         <transition name="slide-right">
           <customization
                   v-if="menuHighlight == 0"
@@ -43,20 +42,28 @@
                   ref="customization"
           ></customization>
 
-          <editUsers
+          <!--<editUsers
                   v-if="menuHighlight == 1 && coordinatorAccess != 0"
                   ref="users"
-          ></editUsers>
+          ></editUsers>-->
 
           <editDatas
-                  v-if="menuHighlight == 2 && coordinatorAccess != 0"
+                  v-if="menuHighlight == 1 && coordinatorAccess != 0"
                   ref="datas"
                   :actualLanguage="actualLanguage"
                   :manyLanguages="manyLanguages"
           ></editDatas>
+
+          <help-settings
+              v-if="menuHighlight == 2"
+              ref="help"
+              :actualLanguage="actualLanguage"
+              :manyLanguages="manyLanguages"
+          ></help-settings>
         </transition>
       </div>
     </div>
+    <tasks></tasks>
 
     <!--<div
             class="section-sauvegarder-et-continuer-funnel"
@@ -82,6 +89,9 @@ import editStyle from "../components/Settings/editStyle";
 import editDatas from "../components/Settings/editDatas";
 import editUsers from "../components/Settings/editUsers";
 import customization from "../components/Settings/Customization"
+import helpSettings from "@/components/Settings/helpSettings";
+import Tasks from "@/views/tasks";
+import HelpSettings from "@/components/Settings/helpSettings";
 
 const qs = require("qs");
 
@@ -89,6 +99,8 @@ export default {
   name: "globalSettings",
 
   components: {
+    HelpSettings,
+    Tasks,
     editStatus,
     editTags,
     editHomepage,
@@ -110,27 +122,16 @@ export default {
     saving: false,
     endSaving: false,
 
-    funnelDescription: [
-      [
-        '',
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTIONSETTINGS"),
-      ],
-      [
-        '',
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_USERSDESCRIPTIONSETTINGS"),
-      ]
-    ],
-
     settingsCategories: [
       [
         "Personnalisation",
-        "Utilisateurs",
         "Référentiels de données",
+        "Aide"
       ],
       [
         "Styling",
-        "Users",
         "Data repository",
+        "Help"
       ]
     ],
 

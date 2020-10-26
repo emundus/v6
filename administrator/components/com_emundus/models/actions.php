@@ -11,7 +11,8 @@ jimport('joomla.application.component.model');
 class EmundusModelActions extends JModelList {
 
 	/**
-	 * @param   bool  $echo  if true, echo output.
+	 * @param bool $echo if true, echo output.
+	 * @param null $gid
 	 *
 	 * @return bool
 	 *
@@ -98,7 +99,7 @@ class EmundusModelActions extends JModelList {
             /* Insert missing groups*/
 			if (!empty($missingGroups)) {
 
-				$columns = [$dbo->quoteName('group_id'), $dbo->quoteName('action_id'), $dbo->quoteName('c'), $dbo->quoteName('r'), $dbo->quoteName('u'), $dbo->quoteName('d')];
+				$columns = ['group_id', 'action_id', 'c', 'r', 'u', 'd'];
 
 				$query
                     ->clear()

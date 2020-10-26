@@ -37,6 +37,7 @@ class EmundusModelTrombinoscope extends JModelLegacy
 </table>
 ';*/
     public $default_margin = '5';
+    public $default_header_height = '330';
 
     public $pdf_margin_top = 0;
     public $pdf_margin_right = 0;

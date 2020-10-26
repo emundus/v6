@@ -74,14 +74,14 @@
         </div>
       </div>
       <div class="col-md-12 mb-1">
-        <a
-          class="bouton-sauvergarder-et-continuer-3"
+        <button type="button"
+          class="bouton-sauvergarder-et-continuer"
           @click.prevent="createUser()"
-        >{{ Continuer }}</a>
-        <a
-          class="bouton-sauvergarder-et-continuer-3 w-retour"
+        >{{ Continuer }}</button>
+        <button type="button"
+          class="bouton-sauvergarder-et-continuer w-retour"
           @click.prevent="$modal.hide('modalAddUser')"
-        >{{Retour}}</a>
+        >{{Retour}}</button>
       </div>
       <div class="loading-form" v-if="loading">
         <Ring-Loader :color="'#de6339'" />
@@ -308,60 +308,9 @@ export default {
 </script>
 
 <style scoped>
-.modalC-content {
-  height: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  font-size: 15px;
-  overflow: auto;
-}
-.topright {
-  font-size: 25px;
-  float: right;
-}
-.btnCloseModal {
-  background-color: inherit;
-}
-  .update-field-header{
-    margin-bottom: 1em;
-  }
-
-  .update-title-header{
-    margin-top: 0;
-    display: flex;
-    align-items: center;
-  }
-
   p .error{
     position: absolute;
     bottom: -10px;
     left: 28%;
   }
-
-.users-block{
-  height: auto;
-  overflow: scroll;
-  max-height: 15vh;
-}
-
-.user-item{
-  display: flex;
-  padding: 10px;
-  background-color: #f0f0f0;
-  border-radius: 5px;
-  align-items: center;
-  margin-bottom: 1em;
-}
-
-.bigbox{
-  height: 30px !important;
-  width: 30px !important;
-  cursor: pointer;
-}
-
-.select-all{
-  display: flex;
-  align-items: end;
-  margin-bottom: 1em;
-}
 </style>

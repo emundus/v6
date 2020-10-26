@@ -53,18 +53,20 @@
         <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>
         <div class="col-md-12 d-flex" v-if="model_id == -1">
           <input type="checkbox" v-model="template">
-          <label class="ml-10px">{{SaveAsTemplate}} :</label>
+          <label class="ml-10px mb-0">{{SaveAsTemplate}} :</label>
         </div>
       </div>
       <div class="col-md-12 mb-1">
-        <a
-          class="bouton-sauvergarder-et-continuer-3"
+        <button
+            type="button"
+          class="bouton-sauvergarder-et-continuer"
           @click.prevent="createMenu()"
-        >{{ Continuer }}</a>
-        <a
-          class="bouton-sauvergarder-et-continuer-3 w-retour"
+        >{{ Continuer }}</button>
+        <button
+            type="button"
+          class="bouton-sauvergarder-et-continuer w-retour"
           @click.prevent="$modal.hide('modalMenu')"
-        >{{Retour}}</a>
+        >{{Retour}}</button>
       </div>
       <div class="loading-form" style="top: 10vh" v-if="submitted">
         <Ring-Loader :color="'#de6339'" />
@@ -148,13 +150,7 @@ export default {
     createMenu() {
       this.changes = true;
 
-      if(this.label.fr != '' || this.model_id != -1) {
-        if(this.label.en == ''){
-          this.label.en = this.label.fr;
-        }
-        if(this.intro.en = ''){
-          this.intro.en = this.intro.fr;
-        }
+      if(this.label[this.actualLanguage] != '' || this.model_id != -1) {
         this.submitted = true;
         axios({
           method: "post",
@@ -209,103 +205,4 @@ export default {
 </script>
 
 <style scoped>
-.modalC-content {
-  height: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  font-size: 15px;
-  overflow: auto;
-}
-
-.b {
-  display: block;
-}
-
-.toggle {
-  vertical-align: middle;
-  position: relative;
-
-  left: 20px;
-  width: 45px;
-  border-radius: 100px;
-  background-color: #ddd;
-  overflow: hidden;
-  box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.05);
-}
-
-.check {
-  position: absolute;
-  display: block;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  z-index: 6;
-}
-
-.check:checked ~ .track {
-  box-shadow: inset 0 0 0 20px #4bd863;
-}
-
-.check:checked ~ .switch {
-  right: 2px;
-  left: 22px;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition-property: left, right;
-  transition-delay: 0.05s, 0s;
-}
-
-.switch {
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  bottom: 2px;
-  right: 22px;
-  background-color: #fff;
-  border-radius: 36px;
-  z-index: 1;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition-property: left, right;
-  transition-delay: 0s, 0.05s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.track {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.05);
-  border-radius: 40px;
-}
-.inlineflex {
-  display: flex;
-  align-content: center;
-  align-items: center;
-  height: 30px;
-}
-.titleType {
-  font-size: 45%;
-  margin-left: 1em;
-}
-.topright {
-  font-size: 25px;
-  float: right;
-}
-.btnCloseModal {
-  background-color: inherit;
-}
-  .update-field-header{
-    margin-bottom: 1em;
-  }
-
-  .update-title-header{
-    margin-top: 0;
-    display: flex;
-    align-items: center;
-  }
 </style>

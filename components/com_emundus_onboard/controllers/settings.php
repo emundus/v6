@@ -204,6 +204,43 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         exit;
     }
 
+    public function getcgvarticle(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $content = $m_settings->getCGVArticle();
+            if (!empty($content)) {
+                $tab = array('status' => 1, 'msg' => JText::_('STATUS_RETRIEVED'), 'data' => $content);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_STATUS'), 'data' => $content);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function updatecgv() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $content = $jinput->getRaw('content');
+
+            $changeresponse = $m_settings->updateCGV($content);
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+
     public function getfooterarticles() {
         $user = JFactory::getUser();
 
@@ -299,10 +336,11 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $color = $jinput->post->getString('color');
 
             $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
-            $yaml['base'][$type . '-color'] = $color;
             if($type == 'primary'){
+                $yaml['base']['primary-color'] = $color;
                 $yaml['accent']['color-1'] = $color;
             } else {
+                $yaml['base']['secondary-color'] = $color;
                 $yaml['accent']['color-2'] = $color;
             }
 
@@ -500,7 +538,7 @@ class EmundusonboardControllersettings extends JControllerLegacy {
 
             if(isset($image)) {
                 $config = JFactory::getConfig();
-                $sitename = strtolower(str_replace(array('=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%'),'_',$config->get('sitename')));
+                $sitename = strtolower(str_replace(array('\\','=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%'),'_',$config->get('sitename')));
 
                 $path = $image["name"];
                 $ext = pathinfo($path, PATHINFO_EXTENSION);
@@ -524,6 +562,101 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             }
             exit;
         }
+    }
+
+    public function gettasks(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $table = JTable::getInstance('user', 'JTable');
+            $table->load($user->id);
+
+            // Check if the param exists but is false, this avoids accidetally resetting a param.
+            $params = $user->getParameters();
+            echo json_encode(array('params' => $params));
+        }
+        exit;
+    }
+
+    public function uploaddropfiledoc() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $m_settings = $this->model;
+            $m_campaign = JModelLegacy::getInstance('campaign', 'EmundusonboardModel');
+
+            $jinput = JFactory::getApplication()->input;
+            $file = $jinput->files->get('file');
+            $cid = $jinput->get('cid');
+
+            if(isset($file)) {
+                $campaign_category = $m_campaign->getCampaignCategory($cid);
+
+                $path = $file["name"];
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
+                $filename = pathinfo($path, PATHINFO_FILENAME);
+
+                $target_dir = "media/com_dropfiles/" . $campaign_category . "/";
+                if(!file_exists($target_dir)){
+                    mkdir($target_dir);
+                }
+
+                do{
+                    $target_file = $target_dir . rand(1000,90000) . '.' . $ext;
+                } while (file_exists($target_file));
+
+                if (move_uploaded_file($file["tmp_name"], $target_file)) {
+                    $did = $m_settings->moveUploadedFileToDropbox(pathinfo($target_file,PATHINFO_BASENAME),$filename,$ext,$campaign_category,filesize($target_file));
+                    echo json_encode($m_campaign->getDropfileDocument($did));
+                } else {
+                    echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
+                }
+            } else {
+                echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
+            }
+            exit;
+        }
+    }
+
+    public function rewindtutorial(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $table = JTable::getInstance('user', 'JTable');
+            $table->load($user->id);
+
+            $user->setParam('first_login', true);
+            $user->setParam('first_campaign', true);
+            $user->setParam('first_form', true);
+            $user->setParam('first_formbuilder', true);
+            $user->setParam('first_documents', true);
+            $user->setParam('first_databasejoin', true);
+            $user->setParam('first_program', true);
+
+            // Get the raw User Parameters
+            $params = $user->getParameters();
+
+            // Set the user table instance to include the new token.
+            $table->params = $params->toString();
+
+            // Save user data
+            if (!$table->store()) {
+                JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'mod_emundus.saas');
+                echo json_encode(array('status' => true));
+            }
+
+            echo json_encode(array('status' => true));
+        }
+        exit;
     }
 }
 

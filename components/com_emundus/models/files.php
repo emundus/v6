@@ -216,7 +216,7 @@ class EmundusModelFiles extends JModelLegacy
                     } else {
                         $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where."=".$def_elmt->element_name." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
                     }
-                    
+
                     $query = preg_replace('#{thistable}#', $from, $query);
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
@@ -857,7 +857,7 @@ class EmundusModelFiles extends JModelLegacy
 
         if (!empty($sql_code) || !empty($sql_fnum) ) {
 	        $query['q'] .= ' AND (' . $sql_code . ' ' . $sql_fnum . ') ';
-        } else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0]))) {
+        } else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0])) || empty(array_intersect($params['programme'], array_filter($this->code)))) {
         	$query['q'] .= ' AND 1=2 ';
         }
         return $query;
@@ -2199,28 +2199,28 @@ if (JFactory::getUser()->id == 63)
         }
     }
 
-    /**
-     * @return bool|mixed
-     */
-    public function getAllFnums($assoc_tab_fnums = false)
-    {
+	/**
+	 * @return bool|mixed
+	 * @throws Exception
+	 */
+    public function getAllFnums($assoc_tab_fnums = false) {
         include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
-        $userModel = new EmundusModelUsers;
+        $m_users = new EmundusModelUsers;
 
         $current_user = JFactory::getUser();
 
-        $this->code = $userModel->getUserGroupsProgrammeAssoc($current_user->id);
+        $this->code = $m_users->getUserGroupsProgrammeAssoc($current_user->id);
 
-        $groups = $userModel->getUserGroups($current_user->id, 'Column');
-        $fnum_assoc_to_groups = $userModel->getApplicationsAssocToGroups($groups);
-        $fnum_assoc = $userModel->getApplicantsAssoc($current_user->id);
-        $this->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+        $groups = $m_users->getUserGroups($current_user->id, 'Column');
+        $fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
+        $fnum_assoc_to_user = $m_users->getApplicantsAssoc($current_user->id);
+        $this->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc_to_user);
 
         $files = $this->getAllUsers(0, 0);
         $fnums = array();
 
         if ($assoc_tab_fnums) {
-            foreach($files as $key => $file){
+            foreach($files as $file){
                 if ($file['applicant_id'] > 0) {
                     $fnums[] = array( 'fnum' => $file['fnum'],
                                       'applicant_id' => $file['applicant_id'],
@@ -2418,11 +2418,19 @@ if (JFactory::getUser()->id == 63)
                 	$element_attribs = json_decode($elt->element_attribs);
 
                     if ($element_attribs->database_join_display_type == "checkbox") {
+                        $select_check = $element_attribs->join_val_column;
+                        if(!empty($element_attribs->join_val_column_concat)){
+                            $select_check = $element_attribs->join_val_column_concat;
+                            $select_check = preg_replace('#{thistable}#', 'jd', $select_check);
+                            $select_check = preg_replace('#{shortlang}#', $this->locales, $select_check);
+                        }
+
                         $t = $tableAlias[$elt->tab_name].'_repeat_'.$elt->element_name;
                         $select = '(
-                            SELECT GROUP_CONCAT('.$t.'.'.$elt->element_name.' SEPARATOR ", ")
-                            FROM '.$t.'
-                            WHERE '.$t.'.parent_id='.$tableAlias[$elt->tab_name].'.id
+                            SELECT GROUP_CONCAT('.$select_check.' SEPARATOR ", ")
+                            FROM '.$t.' AS t
+                            LEFT JOIN '.$element_attribs->join_db_name.' AS jd ON jd.'.$element_attribs->join_key_column.' = t.'.$elt->element_name.'
+                            WHERE '.$tableAlias[$elt->tab_name].'.id = t.parent_id
                           )';
                     } else {
                         $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
@@ -3371,7 +3379,7 @@ if (JFactory::getUser()->id == 63)
             $db = JFactory::getDbo();
 
             $query = $db->getQuery(true);
-            $query->select('t.*, c.id AS cid')
+            $query->select('DISTINCT(t.session_code) AS sc, t.*')
                 ->from($db->quoteName('#__emundus_setup_programmes', 'p'))
                 ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->quoteName('c.training') . ' = ' . $db->quoteName('p.code'))
                 ->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $db->quoteName('t.session_code') . ' = ' . $db->quoteName('c.session_code'))

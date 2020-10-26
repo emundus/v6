@@ -64,7 +64,7 @@ button.save-btn:hover, button.save-btn:active, .trombi_download:hover, button.sa
     padding: 8px 12px;
 }
 .modal-header .btn-danger, .modal-header .btn-success{
-    border-radius: 0 !important;
+    border-radius: 4px !important;
 }
 .em-user-personal-filter .btn-xs{
     padding: 8px 12px !important;
@@ -352,7 +352,7 @@ div#em-appli-menu .list-group {
 
 /* Panel gauche dosiers associés du déposant */
 div#em-assoc-files .panel > .panel-heading h6 {
-    color: #ffffff;
+    color: #000;
     padding: 10px 0;
     margin: 0;
 }
@@ -843,12 +843,17 @@ div#em-modal-actions .panel-heading h5 {
     border-right: 2px solid #eee;
     border-left:none;
     border-bottom:none;
+    margin-bottom: 0px !important;
 }
 
 .g-back-office-emundus-tableau .panel-body .SumoSelect > .CaptionCont {
     border: 1px solid #ccc;
     background-color: #fff;
     border-radius: 5px;
+}
+
+.g-back-office-emundus-tableau .panel-body .SumoSelect > .CaptionCont > label {
+    top: 7px;
 }
 
 .g-back-office-emundus-tableau .em-dropdown {
@@ -914,7 +919,7 @@ div#em-synthesis .panel-heading h3 {
 }
 
 .list-group-item {
-    padding: 5px 20px;
+    padding: 6px 20px;
 }
 
 .list-group-item b {
@@ -1257,7 +1262,7 @@ ul {
 .btn-xs,
 .btn-group-xs>.btn {
     padding: 1px 5px !important;
-    font-size: 12px !important;
+    font-size: 12px;
     line-height: 1.5 !important;
     border-radius: 3px !important;
 }
@@ -1415,6 +1420,11 @@ thead th:hover {
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05) !important;
 }
 
+.g-back-office-emundus-tableau well.em-container-pagination {
+    border: none;
+    background-color: #fff !important;
+}
+
 .well blockquote {
     border-color: #ddd !important;
     border-color: rgba(0, 0, 0, 0.15) !important;
@@ -1517,6 +1527,14 @@ thead th:hover {
 .access-table {
     margin-bottom: 15px;
     overflow: auto;
+}
+
+.files-board #em-appli-block h3 small {
+    color: #fff;
+}
+
+#em-appli-block .panel-heading .panel-title a.clean button.btn.btn-default:hover {
+    color: #fff !important;
 }
 
 .table-left,
@@ -2095,7 +2113,7 @@ footer#g-footer {
 }
 
 .em-personalInfo > a {
-    border: none !important;
+    border: none;
 }
 
 #em-last-open .list-group-item{
@@ -2154,9 +2172,9 @@ div#em-assoc-files .panel > .panel-heading {
 }
 
 .g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {
-    box-shadow: none !important;
+    box-shadow: none;
     text-shadow: none;
-    color: #ffffff !important;
+    color: #ffffff;
 }
 
 .g-back-office-emundus-tableau button#search:active ,  .g-back-office-emundus-tableau button#clear-search:active, .g-back-office-emundus-tableau button#save-filter:active , .g-back-office-emundus-tableau button#add-filter:active,  .g-back-office-emundus-tableau input#search:active ,  .g-back-office-emundus-tableau input#clear-search:active, .g-back-office-emundus-tableau input#save-filter:active , .g-back-office-emundus-tableau input#add-filter:active  {
@@ -2206,7 +2224,7 @@ div#em-assoc-files .panel > .panel-heading {
 }
 
 .g-back-office-emundus-tableau .em-container-mail .panel-heading.em-container-mail-heading h3 span, .g-back-office-emundus-tableau .em-container-comment .panel-heading.em-container-comment-heading h3 span, .g-back-office-emundus-tableau .em-container-share .panel-heading.em-container-share-heading h3 span, .g-back-office-emundus-tableau .em-container-attachment.em-container-form .panel-heading.em-container-form-heading h3 span  {
-    margin-top: 5px;
+    margin-top: 10px;
 }
 
 .g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading .btn-group.pull-right {
@@ -2242,12 +2260,12 @@ button#em-close-file {
 }
 
 button#em-close-file:hover, button#em-close-file:focus, button#em-close-file:active {
-    background: #404B5A !important;
-    border-color: #404B5A !important;
+    background: #404B5A;
+    border-color: #404B5A;
 }
 
 #em_select_filter #del-filter i {
-    margin: 0 !important;
+    margin: 0;
 }
 
 .btn:hover .caret {
@@ -2357,13 +2375,46 @@ a.copy-0:focus {
     align-items: center;
 }
 
+@media all and (max-width: 479px) {
+    .g-back-office-emundus-tableau #em_select_filter select#select_filter {
+        width: 85% !important;
+    }
+
+    .g-back-office-emundus-tableau.files-page  fieldset.em-personalDetail {
+        overflow-x: scroll;
+    }
+
+    .g-back-office-emundus-tableau.files-page  #collapseARCHIVE .panel-body {
+        overflow-x: scroll;
+    }
+
+    .g-back-office-emundus-tableau.files-page  .panel.panel-default div.panel-heading[class*="-heading"] {
+        height: 90px;
+    }
+
+    .g-back-office-emundus-tableau.files-page  .panel-heading .btn-group.pull-right {
+        margin-top: 10px;
+    }
+
+    .g-back-office-emundus-tableau.files-page select[multiple] {
+        height: 50px !important;
+    }
+
+    .g-back-office-emundus-tableau.files-page .em-collapse-container .em-utilitize {
+        flex-direction: column;
+    }
+
+    .g-back-office-emundus-tableau.files-page .em-utilitize input#em-searchbar {
+        width: 13rem !important;
+    }
+}
+
 @media all and (max-width: 767px) {
 
     #em-hide-filters {
         display: none;
     }
 }
-
 
 @media all and (max-width: 959px) {
 
@@ -2379,6 +2430,15 @@ a.copy-0:focus {
     }
     #em-hide-filters {
         display: none;
+    }
+
+    .g-back-office-emundus-tableau #em-modal-actions .modal-dialog, .g-back-office-emundus-tableau #em-modal-actions .modal-dialog.modal-lg {
+        width: fit-content !important;
+        min-width:95%;
+    }
+
+    .g-back-office-emundus-tableau .em-container-evaluation-heading .btn-group.pull-right {
+        margin-top: 15px;
     }
 }
 

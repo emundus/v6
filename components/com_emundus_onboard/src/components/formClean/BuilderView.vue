@@ -119,6 +119,8 @@
                             :ID="element.id"
                             :element="element"
                             :files="files"
+                            :manyLanguages="manyLanguages"
+                            :actualLanguage="actualLanguage"
                             @reloadElement="reloadElement(element)"
                             :id="element.id"
                             :key="keyElements['element' + element.id]"
@@ -133,7 +135,7 @@
                             :key="keyElements['element' + element.id]"
                     />
                     <div class="d-flex builder-item-element__properties">
-                      <span :class="element.publish ? 'icon-handle' : 'icon-handle-unpublished'" v-show="hoverUpdating && indexHighlight == element.id">
+                      <span :class="element.publish ? 'icon-handle' : 'icon-handle-unpublished'" v-show="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel">
                         <em class="fas fa-grip-vertical handle"></em>
                       </span>
                       <div class="w-100">
@@ -183,11 +185,11 @@
                         </div>
                         <span class="ml-10px">{{Required}}</span>
                       </a>
-                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="repeat = false;$modal.show('modalEditElement' + element.id)">
+                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="openParameters(element)">
                         <em class="fas fa-cog"></em>
                         <span class="ml-10px">{{Settings}}</span>
                       </a>
-                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="$modal.show('modalDuplicateElement' + element.id)">
+                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="openDuplicate(element)">
                         <em class="fas fa-copy"></em>
                         <span class="ml-10px">{{Duplicate}}</span>
                       </a>
@@ -350,6 +352,9 @@ export default {
     },
 
     updateRequireElement(element) {
+      if(this.clickUpdatingLabel) {
+        this.updateLabelElement(element);
+      }
       setTimeout(() => {
         axios({
           method: "post",
@@ -396,6 +401,9 @@ export default {
     },
 
     publishUnpublishElement(element) {
+      if(this.clickUpdatingLabel) {
+        this.updateLabelElement(element);
+      }
       axios({
         method: "post",
         url:
@@ -435,6 +443,9 @@ export default {
     },
 
     deleteElement(element,index) {
+      if(this.clickUpdatingLabel) {
+          this.updateLabelElement(element);
+      }
       Swal.fire({
         title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEELEMENT"),
         text: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
@@ -472,6 +483,21 @@ export default {
           });
         }
       });
+    },
+
+    openDuplicate(element){
+      if(this.clickUpdatingLabel) {
+        this.updateLabelElement(element);
+      }
+      this.$modal.show('modalDuplicateElement' + element.id)
+    },
+
+    openParameters(element){
+      if(this.clickUpdatingLabel) {
+        this.updateLabelElement(element);
+      }
+      this.repeat = false;
+      this.$modal.show('modalEditElement' + element.id)
     },
 
     updateLabelElement(element) {
@@ -917,7 +943,7 @@ export default {
             this.updateSuccess,
             this.update
         );
-        page.intro_value = page.intro.fr;
+        page.intro_value = page.intro[this.actualLanguage];
         this.updateIntroPage = false;
       }).catch(e => {
         this.$emit(
@@ -1175,8 +1201,8 @@ export default {
     color: #cecece;
     position: absolute;
     cursor: grab;
-    left: 3em;
-    margin-bottom: 10px;
+    left: 4em;
+    margin-bottom: 0;
   }
   .icon-handle-group{
     color: #cecece;

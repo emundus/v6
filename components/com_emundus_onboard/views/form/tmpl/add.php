@@ -39,6 +39,14 @@ JText::script('UPDATE');
 JText::script('DELETE');
 JText::script('RequiredFieldsIndicate');
 
+## TUTORIAL ##
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORM');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
+## END ##
+
 ?>
 
 <div id="em-addForm-vue" profileId="<?= $this->pid ?>" campaignId="<?= $this->cid ?>"></div>
