@@ -41,7 +41,7 @@ class EmundusonboardModelform extends JModelList {
 			$fullRecherche = $rechercheLbl.' OR '.$rechercheResume;
 		}
 
-		$filterId = $db->quoteName('sp.id') . ' > 1000';
+		$filterId = $db->quoteName('sp.publised') . ' = 1';
 
 		$query->select('COUNT(sp.id)')
 			->from($db->quoteName('#__emundus_setup_profiles', 'sp'))
@@ -86,7 +86,7 @@ class EmundusonboardModelform extends JModelList {
             $filterDate = $db->quoteName('sp.status') . ' = 1';
 		}
 
-		$filterId = $db->quoteName('sp.id') . ' > 1000';
+		$filterId = $db->quoteName('sp.published') . ' = 1';
 
 		if (empty($recherche)) {
 			$fullRecherche = 1;
@@ -175,7 +175,7 @@ class EmundusonboardModelform extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $filterId = $db->quoteName('sp.id') . ' > 1000';
+        $filterId = $db->quoteName('sp.published') . ' = 1';
 
         $query->select([
                 'sp.*',
