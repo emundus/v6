@@ -991,4 +991,84 @@ class EmundusonboardModelcampaign extends JModelList
             return false;
         }
     }
+
+    public function getFormDocuments($pid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            $query->select('*')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('note') . '!=' .  $db->quote(''));
+            $db->setQuery($query);
+            $modules = $db->loadObjectList();
+            foreach ($modules as $module){
+                if(json_decode($module->note,true)['pid'] == $pid){
+                    $form_module = $module;
+                    break;
+                }
+            }
+
+            $files = array();
+
+            if($form_module != null) {
+                // create the DOMDocument object, and load HTML from string
+                $dochtml = new DOMDocument();
+                $dochtml->loadHTML($form_module->content);
+
+                // gets all DIVs
+                $links = $dochtml->getElementsByTagName('a');
+                foreach($links as $link) {
+                    $file = new stdClass;
+                    if($link->hasAttribute('href')) {
+                        $file->link = $link->getAttribute('href');
+                        $file->name = $link->textContent;
+                    }
+                    if($link->hasAttribute('id')) {
+                        $file->id = $link->getAttribute('id');
+                    }
+                    $files[] = $file;
+                }
+            }
+
+            return $files;
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function editDocumentForm($did,$name,$pid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            $query->select('*')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('note') . '!=' .  $db->quote(''));
+            $db->setQuery($query);
+            $modules = $db->loadObjectList();
+            foreach ($modules as $module){
+                if(json_decode($module->note,true)['pid'] == $pid){
+                    $form_module = $module;
+                    break;
+                }
+            }
+
+            if($form_module != null) {
+                // create the DOMDocument object, and load HTML from string
+                $dochtml = new DOMDocument();
+                $dochtml->loadHTML($form_module->content);
+
+                // gets all DIVs
+                $link = $dochtml->getElementById($did);
+                $link->textContent = $name;
+                echo '<pre>'; var_dump($form_module->content); echo '</pre>';
+                echo '<pre>'; var_dump($link); echo '</pre>';die;
+            }
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
 }
