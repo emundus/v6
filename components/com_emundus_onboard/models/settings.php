@@ -943,7 +943,7 @@ class EmundusonboardModelsettings extends JModelList {
         $user = JFactory::getUser();
         $form_module = null;
 
-        $html = '<li class="col-md-6 em-print-button" style="margin-bottom: 10px"><a id="' . explode('.',$file)[0] . '" style="border-radius: 4px;" href="' . $dir . $file . '" download="">' . $filename . '</a></li>';
+        $html = '<li class="col-md-6 em-print-button" id="' . explode('.',$file)[0] . '" style="margin-bottom: 10px"><a id="print" style="border-radius: 4px;text-decoration: unset" href="' . $dir . $file . '" download="">' . $filename . '</a></li>';
 
         try {
             $query->select('*')
@@ -964,7 +964,7 @@ class EmundusonboardModelsettings extends JModelList {
                     ->insert($db->quoteName('#__modules'));
                 $query->set($db->quoteName('asset_id') . ' = ' . $db->quote(0))
                     ->set($db->quoteName('title') . ' = ' . $db->quote('Documents à télécharger'))
-                    ->set($db->quoteName('note') . ' = ' . $db->quote('{"pid":' . $pid . '}'))
+                    ->set($db->quoteName('note') . ' = ' . $db->quote('{"pid":"' . $pid . '"}'))
                     ->set($db->quoteName('content') . ' = ' . $db->quote($content))
                     ->set($db->quoteName('position') . ' = ' . $db->quote('sidebar-a'))
                     ->set($db->quoteName('ordering') . ' = ' . $db->quote(1))
@@ -1008,7 +1008,7 @@ class EmundusonboardModelsettings extends JModelList {
                     ->set($db->quoteName('content') . ' = ' . $db->quote($new_content))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($form_module->id));
                 $db->setQuery($query);
-                $db->execute();
+                return $db->execute();
             }
         }  catch (Exception $e) {
             JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');

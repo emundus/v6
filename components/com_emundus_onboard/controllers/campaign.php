@@ -657,5 +657,29 @@ class EmundusonboardControllercampaign extends JControllerLegacy {
         exit;
     }
 
+    public function deletedocumentform() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $did = $jinput->getInt('did');
+            $pid = $jinput->getInt('pid');
+            $m_camp = $this->model;
+
+            $result = $m_camp->deleteDocumentForm($did,$pid);
+
+            if ($result) {
+                $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_EDITED'), 'data' => $result);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_EDIT_DOCUMENT'), 'data' => $result);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
 }
 

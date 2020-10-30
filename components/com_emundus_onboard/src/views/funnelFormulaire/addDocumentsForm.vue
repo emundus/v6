@@ -1,55 +1,43 @@
 <template>
   <div class="container-evaluation">
     <transition :name="'slide-down'" type="transition">
-    <div class="w-form">
-      <ul style="padding-left: 0">
-        <draggable
-            v-model="documents"
-            tag="ul"
-            class="list-group"
-            handle=".handle"
-            v-bind="dragOptions"
-            @end="updateDocumentsOrder"
-        >
-          <transition-group type="transition" :value="!drag ? 'flip-list' : null">
-            <li class="list-group-item"
-                v-for="(document, indexDoc) in documents"
-                :key="indexDoc">
-              <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
-              <div style="display: inline;">
+      <div class="w-form">
+        <ul style="padding-left: 0">
+          <li class="list-group-item"
+              v-for="(document, indexDoc) in documents"
+              :key="indexDoc">
+            <div style="display: inline;">
                 <span class="draggable">
                   {{ document.name }}
                 </span>
-                <button type="button" class="buttonDeleteDoc" @click="editName(document)" style="margin-left: 0">
-                  <em class="fas fa-pencil-alt"></em>
-                </button>
-                <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
-                  <em class="fas fa-times"></em>
-                </button>
-              </div>
-            </li>
-          </transition-group>
-        </draggable>
-      </ul>
+              <button type="button" class="buttonDeleteDoc" @click="editName(document)" style="margin-left: 0">
+                <em class="fas fa-pencil-alt"></em>
+              </button>
+              <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
+                <em class="fas fa-times"></em>
+              </button>
+            </div>
+          </li>
+        </ul>
 
-      <hr>
+        <hr>
 
-      <vue-dropzone
-          ref="dropzone"
-          id="customdropzone"
-          :include-styling="false"
-          :options="dropzoneOptions"
-          :useCustomSlot=true
-          v-on:vdropzone-file-added="afterAdded"
-          v-on:vdropzone-removed-file="afterRemoved"
-          v-on:vdropzone-success="onComplete"
-          v-on:vdropzone-error="catchError">
-        <div class="dropzone-custom-content" id="dropzone-message">
-          <em class="fas fa-file-upload"></em>
-          {{DropHere}}
-        </div>
-      </vue-dropzone>
-    </div>
+        <vue-dropzone
+            ref="dropzone"
+            id="customdropzone"
+            :include-styling="false"
+            :options="dropzoneOptions"
+            :useCustomSlot=true
+            v-on:vdropzone-file-added="afterAdded"
+            v-on:vdropzone-removed-file="afterRemoved"
+            v-on:vdropzone-success="onComplete"
+            v-on:vdropzone-error="catchError">
+          <div class="dropzone-custom-content" id="dropzone-message">
+            <em class="fas fa-file-upload"></em>
+            {{DropHere}}
+          </div>
+        </vue-dropzone>
+      </div>
     </transition>
   </div>
 </template>
@@ -58,7 +46,6 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 import vueDropzone from 'vue2-dropzone';
-import draggable from "vuedraggable";
 
 const qs = require("qs");
 
@@ -78,8 +65,7 @@ export default {
   name: "addDocumentsForm",
 
   components: {
-    vueDropzone,
-    draggable
+    vueDropzone
   },
 
   props: {
@@ -128,25 +114,10 @@ export default {
           pid: this.profileId,
         },
         paramsSerializer: params => {
-           return qs.stringify(params);
+          return qs.stringify(params);
         }
       }).then(response => {
-          this.documents = response.data.documents;
-      });
-    },
-    updateDocumentsOrder(){
-      this.documents.forEach((document,index) => {
-        document.ordering = index;
-      });
-      axios({
-        method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=campaign&task=updateorderformdocuments",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          documents: this.documents,
-        })
+        this.documents = response.data.documents;
       });
     },
     editName(doc){
@@ -190,6 +161,7 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
+          pid: this.profileId,
           did : id,
         })
       });
@@ -223,25 +195,14 @@ export default {
     }*/
   },
 
-  computed: {
-    dragOptions() {
-      return {
-        animation: 200,
-        group: "description",
-        disabled: false,
-        ghostClass: "ghost"
-      };
-    },
-  },
-
   created() {
     this.getDocumentsDropfiles()
   }
 };
 </script>
 <style scoped>
-  .fa-file-upload{
-    font-size: 25px;
-    margin-right: 20px;
-  }
+.fa-file-upload{
+  font-size: 25px;
+  margin-right: 20px;
+}
 </style>
