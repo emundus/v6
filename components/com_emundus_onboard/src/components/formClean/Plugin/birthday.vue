@@ -1,19 +1,28 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div id="birthdayF">
     <div class="rowmodal">
-      <div class="form-group dpflex">
+      <div class="form-group">
 <!--        <input type="checkbox" class="form__input field-general w-input" value="0" v-model="datepicker" />-->
 <!--        <label class="ml-10px mb-0">{{displaycalendar}}</label>-->
       <!-- 3 radio buttons pour 3 options -->
-        <input type="radio" id = 'radio_default' value='1' v-model="datepicker">{{birthdaySelect}}</input>
-        <input type="radio" id = 'radio_years' value='2' v-model="datepicker">{{yearSelect}}</input>
-        <input type="radio" id = 'radio_dayMonth' value='3' v-model="datepicker">{{dateSelect}}</input>
-
+        <label>{{ Format }}</label>
+        <div class="flex mr-2">
+          <input type="radio" id = 'radio_default' value='1' v-model="datepicker"/>
+          <span class="ml-10px">{{birthdaySelect}}</span>
+        </div>
+        <div class="flex mr-2">
+          <input type="radio" id = 'radio_years' value='2' v-model="datepicker"/>
+          <span class="ml-10px">{{yearSelect}}</span>
+        </div>
+        <div class="flex mr-2">
+          <input type="radio" id = 'radio_dayMonth' value='3' v-model="datepicker"/>
+          <span class="ml-10px">{{dateSelect}}</span>
+        </div>
       </div>
-      <div class="form-group">
-<!--        <label>{{helptext}} :</label>-->
-<!--        <input type="text" class="form__input field-general w-input" v-model="element.params.rollover" />-->
-      </div>
+<!--      <div class="form-group">
+        <label>{{helptext}} :</label>
+        <input type="text" class="form__input field-general w-input" v-model="element.params.rollover" />
+      </div>-->
     </div>
   </div>
   </template>
@@ -26,9 +35,10 @@ export default {
   data() {
     return {
       datepicker: 1,
-      birthdaySelect: "Plein",
-      yearSelect: "Annee",
-      dateSelect: "Jour-Mois",
+      birthdaySelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMAT_BIRTHDAY"),
+      yearSelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMAT_YEAR"),
+      dateSelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_CALENDAR"),
+      Format: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMATTING"),
       // calendarShow:false,
     }
   },
@@ -80,6 +90,10 @@ export default {
   }
   birthdayF {
     padding: 10px;
+  }
+
+  input[type='radio']{
+    width: auto;
   }
 
 </style>
