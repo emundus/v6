@@ -1088,11 +1088,12 @@ class EmundusonboardModelcampaign extends JModelList
 
             // gets all DIVs
             $link = $dochtml->getElementById($did);
+            unlink($link->firstChild->getAttribute('href'));
             $link->parentNode->removeChild($link);
 
             $newcontent = explode('</body>',explode('<body>',$dochtml->saveHTML())[1])[0];
 
-            if(strpos($newcontent,'<li>') === false) {
+            if(strpos($newcontent,'<li') === false) {
                 $query->clear()
                     ->select('m.id')
                     ->from($db->quoteName('#__menu', 'm'))
