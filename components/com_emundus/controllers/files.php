@@ -1558,7 +1558,7 @@ class EmundusControllerFiles extends JControllerLegacy
         // Here we filter elements which are already present but under a different name or ID, by looking at tablename___element_name.
         $elts_present = [];
         foreach ($ordered_elements as $elt_id => $o_elt) {
-        	$element = $o_elt->tab_name.'___'.$o_elt->element_name;
+            $element = !empty($o_elt->table_join) ? $o_elt->table_join.'___'.$o_elt->element_name : $o_elt->tab_name.'___'.$o_elt->element_name;
         	if (in_array($element, $elts_present)) {
         		unset($ordered_elements[$elt_id]);
 	        } else {
@@ -3039,7 +3039,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 if (count($val) > 0) {
                                     foreach ($val as $k => $v) {
                                         $index = array_search(trim($v), $params->sub_options->sub_values);
-                                        $val[$k] = $params->sub_options->sub_labels[$index];
+                                        $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
                                     }
                                     $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                                 } else {
