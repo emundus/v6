@@ -585,7 +585,7 @@ class EmundusonboardModelsettings extends JModelList {
      * @return bool
      * @since version
      */
-    private function createParam($param, $user_id) {
+    function createParam($param, $user_id) {
 
         $user = JFactory::getUser($user_id);
 
