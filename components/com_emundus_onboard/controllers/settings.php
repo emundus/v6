@@ -624,7 +624,60 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         }
     }
 
-    public function rewindtutorial(){
+    public function uploadformdoc() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $m_settings = $this->model;
+            $m_campaign = JModelLegacy::getInstance('campaign', 'EmundusonboardModel');
+
+            $jinput = JFactory::getApplication()->input;
+            $file = $jinput->files->get('file');
+            $pid = $jinput->get('pid');
+
+            if(isset($file)) {
+                $config = JFactory::getConfig();
+                $sitename = strtolower(str_replace(array('\\','=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%'),'_',$config->get('sitename')));
+
+                $path = $file["name"];
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
+                $filename = pathinfo($path, PATHINFO_FILENAME);
+
+
+                $target_root = "images/custom/" . $sitename . "/";
+                $target_dir = $target_root . "form_documents/";
+                if(!file_exists($target_root)){
+                    mkdir($target_root);
+                }
+                if(!file_exists($target_dir)){
+                    mkdir($target_dir);
+                }
+
+                do{
+                    $target_file = $target_dir . rand(1000,90000) . '.' . $ext;
+                } while (file_exists($target_file));
+
+                if (move_uploaded_file($file["tmp_name"], $target_file)) {
+                    $m_settings->addDocumentToForm(pathinfo($target_file,PATHINFO_BASENAME),$filename,$target_dir,$pid);
+                    $doc = new stdClass;
+                    $doc->name = $filename;
+                    $doc->link = $target_file;
+                    $doc->id = explode('.',pathinfo($target_file,PATHINFO_BASENAME))[0];
+                    echo json_encode($doc);
+                } else {
+                    echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
+                }
+            } else {
+                echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
+            }
+            exit;
+        }
+    }
+
+    public function rewindtutorial() {
         $user = JFactory::getUser();
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
