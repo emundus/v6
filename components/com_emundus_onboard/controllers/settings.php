@@ -646,7 +646,12 @@ class EmundusonboardControllersettings extends JControllerLegacy {
                 $ext = pathinfo($path, PATHINFO_EXTENSION);
                 $filename = pathinfo($path, PATHINFO_FILENAME);
 
-                $target_dir = "images/custom/" . $sitename . "/form_documents/";
+
+                $target_root = "images/custom/" . $sitename . "/";
+                $target_dir = $target_root . "form_documents/";
+                if(!file_exists($target_root)){
+                    mkdir($target_root);
+                }
                 if(!file_exists($target_dir)){
                     mkdir($target_dir);
                 }
@@ -681,7 +686,7 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         } else {
             $table = JTable::getInstance('user', 'JTable');
             $table->load($user->id);
-    
+
             $user->setParam('first_login', true);
             $user->setParam('first_campaign', true);
             $user->setParam('first_form', true);
@@ -689,19 +694,19 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $user->setParam('first_documents', true);
             $user->setParam('first_databasejoin', true);
             $user->setParam('first_program', true);
-    
+
             // Get the raw User Parameters
             $params = $user->getParameters();
-    
+
             // Set the user table instance to include the new token.
             $table->params = $params->toString();
-    
+
             // Save user data
             if (!$table->store()) {
                 JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'mod_emundus.saas');
                 echo json_encode(array('status' => true));
             }
-    
+
             echo json_encode(array('status' => true));
         }
         exit;
