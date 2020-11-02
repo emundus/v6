@@ -50,18 +50,40 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	$pdf->SetTitle('Fiches emplois étudiants');
 	
 	//get logo
-	$app 		= JFactory::getApplication();
-    $template 	= $app->getTemplate(true);
-    $params     = $template->params;
+    $template = $app->getTemplate(true);
+    $params = $template->params;
 
-    $logo   	= json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-    $logo 		= !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
-	
+    if (!empty($params->get('logo')->custom->image)) {
+	    $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+	    $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+    } else {
+    	$logo_module = JModuleHelper::getModuleById('90');
+	    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+
+	    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+	    if ((bool) preg_match($pattern, $tab[1])) {
+	    	$tab[1] = parse_url($tab[1], PHP_URL_PATH);
+	    }
+
+	    $logo = JPATH_BASE.DS.$tab[1];
+    }
+
+    // manage logo by programme
+    $ext = substr($logo, -3);
+    $logo_prg = substr($logo, 0, -4).'-'.$item->training.'.'.$ext;
+    if (is_file($logo_prg)) {
+	    $logo = $logo_prg;
+    }
+
 	//get title
-	//$config = JFactory::getConfig(); 
-	//$title = $config->getValue('config.sitename');
-	$title = 'Emplois étudiants Sorbonne Université';
-	$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+	$title = $config->get('sitename');
+	if (is_file($logo)) {
+		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+	}
+
 	unset($logo);
 	unset($title);
 
