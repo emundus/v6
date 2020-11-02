@@ -2582,7 +2582,7 @@ class EmundusModelApplication extends JModelList {
 	            $query .= " AND eu.id in ($ids)";
             }
 
-            $query .= " ORDER BY sa.value DESC";
+            $query .= "ORDER BY sa.category,sa.ordering,sa.value ASC";
 
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();
