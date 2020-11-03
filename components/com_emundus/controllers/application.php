@@ -501,10 +501,18 @@ class EmundusControllerApplication extends JControllerLegacy
 
             $m_application = $this->getModel('application');
             $files = $m_application->getAttachments($ids);
-            EmundusHelperExport::getAttachmentPDF($exports, $tmpArray, $files, $sid);
 
-            if(!empty($exports))
-            {
+            $isNotOnlyApplicantionForms = EmundusHelperExport::getAttachmentPDF($exports, $tmpArray, $files, $sid);
+            if (!$isNotOnlyApplicantionForms) {
+	            $res = new stdClass();
+	            $res->status = false;
+	            $res->msg = JText::_('CANNOT_EXPORT_FILETYPE');
+	            echo json_encode($res);
+	            exit();
+            }
+
+
+            if (!empty($exports)) {
                 require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdi.php');
                 $pdf = new ConcatPdf();
                 $pdf->setFiles($exports);
