@@ -15,8 +15,9 @@ import { VTooltip, VPopover, VClosePopover } from 'v-tooltip';
 import * as VueSpinnersCss from 'vue-spinners-css';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import { TableComponent, TableColumn } from 'vue-table-component';
-
-Vue.directive('tooltip', VTooltip);
+import VueMask from 'v-mask';
+// import VTooltip from 'v-tooltip';
+// Vue.directive('tooltip', VTooltip);
 Vue.directive('close-popover', VClosePopover);
 Vue.component('v-popover', VPopover);
 Vue.component('table-component', TableComponent);
@@ -29,6 +30,14 @@ Vue.use(Notifications, { velocity });
 Vue.use(Vuelidate);
 Vue.use(VueJsModal);
 Vue.use(VueSpinnersCss);
+Vue.use(VueMask);
+Vue.use(VTooltip);
+//define new placeholder
+Vue.use(VueMask,{
+  placeholder: {
+    9: /\d/,
+  }
+})
 
 Vue.config.productionTip = false;
 Vue.config.devtools = true;

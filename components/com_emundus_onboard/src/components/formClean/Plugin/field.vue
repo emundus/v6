@@ -3,11 +3,13 @@
     <div class="row rowmodal">
       <div class="form-group">
         <label>{{fieldtype}} :</label>
-        <select v-model="element.params.password" class="dropdown-toggle" :disabled="files != 0 && element.params.password == 6">
-          <option value="0">{{textfield}}</option>
-          <option value="2">{{phonefield}}</option>
-          <option value="3">{{emailfield}}</option>
-          <option value="6" v-if="files == 0 || (files != 0 && element.params.password == 6)">{{numberfield}}</option>
+        <select v-model="element.params.password" id='selectIdTest' class="dropdown-toggle" :disabled="files != 0 && element.params.password == 6">
+          <option value="0" selected v-on:click="selected = false" >{{textfield}}</option>
+          <option value="2" v-on:click="selected = false">{{phonefield}}</option>
+          <option value="3" v-on:click="selected = false">{{emailfield}}</option>
+          <option value="6" v-if="files == 0 || (files != 0 && element.params.password == 6)" v-on:click="selected = false">{{numberfield}}</option>
+          <!-- candidat number format -->
+          <option value="4" v-on:click="selected = true">{{inputmasktitle}}</option>
         </select>
       </div>
       <div class="form-group">
@@ -35,6 +37,14 @@
         <label>{{maxlength}} :</label>
         <input type="number" max="255" min="1" class="form__input field-general w-input" v-model="element.params.maxlength" />
       </div>
+
+<!--      v-show - shox this div when option 4 is checked-->
+      <div class="form-group" v-show="selected">
+        <label>{{inputmasktitle}}</label>
+        <input type="text" id="format" class="form__input field-general w-input" @input="addFormat" v-model="format" :placeholder="[[ inputmaskplaceholder ]]" v-mask="format"/>
+        <div class="hint_line" style="font-size: xx-small">{{tipData}}</div>
+        <p>Preview : {{ format }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -57,9 +67,20 @@ export default {
       emailfield: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EMAIL"),
       numberfield: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NUMBER"),
       placeholderHelp: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER_HELP"),
+
+      inputmasktitle: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_TITLE"),
+      inputmaskplaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_PLACEHOLDER"),
+      selected: false,
+      tipData: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_HINT"),
+      format: ""
     };
   },
-  methods: {},
+  methods: {
+    addFormat: function () {
+      format = this.format;
+      return format;
+    }
+  },
   created(){
     this.msg =
             '<p style="color: white">' + this.placeholderHelp + '</p>' +
@@ -70,7 +91,7 @@ export default {
     if(typeof this.element.params.maxlength == 'undefined'){
       this.element.params.maxlength = 255;
     }
-  }
+  },
 };
 </script>
 <style scoped>
