@@ -27,6 +27,7 @@ class EmundusController extends JControllerLegacy {
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         include_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
         include_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
+        include_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 
 
         $this->_user = JFactory::getSession()->get('emundusUser');
@@ -75,6 +76,15 @@ class EmundusController extends JControllerLegacy {
         $m_profile = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
 
+        $infos 		= $m_profile->getFnumDetails($fnum);
+        $profile 	= $m_profile->getProfileByCampaign($infos['campaign_id']);
+        $h_menu = new EmundusHelperMenu;
+        $getformids = $h_menu->getUserApplicationMenu($profile['profile_id']);
+
+        foreach ($getformids as $getformid) {
+            $formid[] = $getformid->form_id;
+        }
+
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
             $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
@@ -100,7 +110,7 @@ class EmundusController extends JControllerLegacy {
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, null, null, $profile_id);
             exit;
         } elseif (EmundusHelperAccess::isApplicant($user->id)) {
-            application_form_pdf($user->id, $fnum, true, 1, null, null, null, $profile_id);
+            application_form_pdf($user->id, $fnum, true, 1, $formid, null, null, $profile_id);
             exit;
         } else {
             die(JText::_('ACCESS_DENIED'));
@@ -187,7 +197,7 @@ class EmundusController extends JControllerLegacy {
         $current_user  = JFactory::getSession()->get('emundusUser');
         $m_files = $this->getModel('files');
         
-        if (EmundusHelperAccess::isApplicant($current_user->id) && in_array($fnum, array_keys($current_user->fnums))){
+        if (in_array($fnum, array_keys($current_user->fnums))){
             $user = $current_user;
             $m_files->deleteFile($fnum);
             EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_LOGS_DELETE_FILE');

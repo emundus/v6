@@ -354,7 +354,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
   .text-required{
     color: #de6339;
   }

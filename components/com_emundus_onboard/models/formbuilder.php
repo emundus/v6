@@ -188,7 +188,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     "both",
                 ),
                 'validate_hidden' => array(
-                    "1",
+                    "0",
                 ),
                 'must_validate' => array(
                     "0",
@@ -1779,7 +1779,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $old_params['validations']['plugin_published'][] = "1";
             $old_params['validations']['validate_in'][] = "both";
             $old_params['validations']['validation_on'][] = "both";
-            $old_params['validations']['validate_hidden'][] = "1";
+            $old_params['validations']['validate_hidden'][] = "0";
             $old_params['validations']['must_validate'][] = "0";
             $old_params['validations']['show_icon'][] = "1";
             $old_params['notempty-message'] = array("");
@@ -1890,6 +1890,17 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $element['params'] = $this->deleteDatabaseJoinParams($element['params']);
                     $sub_values = [];
                     $sub_labels = [];
+                    $sub_initial_selection = [];
+
+                    if($element['params']['default_value'] == 'true') {
+                        if (!array_search('PLEASE_SELECT', $old_params['sub_options']['sub_labels'])) {
+                            $sub_labels[] = 'PLEASE_SELECT';
+                            $sub_values[] = '';
+                            $sub_initial_selection[] = '';
+                        } else {
+                            $sub_initial_selection[0] = '';
+                        }
+                    }
 
                     foreach ($element['params']['sub_options']['sub_values'] as $index => $sub_value) {
                         if ($old_params['sub_options']) {
@@ -1898,16 +1909,19 @@ class EmundusonboardModelformbuilder extends JModelList {
                                 'en' => $sub_value,
                             );
                             if ($old_params['sub_options']['sub_labels'][$index]) {
-                                $this->formsTrad($old_params['sub_options']['sub_labels'][$index], $new_label);
-                                $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
+                                if($old_params['sub_options']['sub_labels'][$index] != 'PLEASE_SELECT'){
+                                    $this->formsTrad($old_params['sub_options']['sub_labels'][$index], $new_label);
+                                    $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
+                                    $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
+                                }
                             } else {
                                 $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
                                 $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
                                 $this->addTransationFr($contentToAdd);
                                 $this->addTransationEn($contentToAdd);
                                 $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
+                                $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
                             }
-                            $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
                         } else {
                             $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
                             $this->addTransationFr($contentToAdd);
@@ -1919,7 +1933,8 @@ class EmundusonboardModelformbuilder extends JModelList {
 
                     $element['params']['sub_options'] = array(
                         'sub_values' => $sub_values,
-                        'sub_labels' => $sub_labels
+                        'sub_labels' => $sub_labels,
+                        'sub_initial_selection' => $sub_initial_selection,
                     );
                 }
 
@@ -2235,6 +2250,9 @@ class EmundusonboardModelformbuilder extends JModelList {
         $elements = $group->getMyElements();
 
         // Prepare languages
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
+
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_files = array();
         $Content_Folder = array();
@@ -2268,7 +2286,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
                 if ($el_params->sub_options) {
                     foreach ($el_params->sub_options->sub_labels as $key => $sub_label) {
-                        $el_params->sub_options->sub_labels[$key] = $this->getTranslation($sub_label,$Content_Folder['fr']);
+                        $el_params->sub_options->sub_labels[$key] = $this->getTranslation($sub_label,$Content_Folder[$actualLanguage]);
                     }
                 }
 
@@ -2349,7 +2367,9 @@ class EmundusonboardModelformbuilder extends JModelList {
             if ($params['sub_options']) {
                 $sub_labels = json_decode($fabrik_element->params, true)['sub_options']['sub_labels'];
                 foreach ($sub_labels as $sub_label) {
-                    $this->deleteTranslation($sub_label);
+                    if($sub_label != 'PLEASE_SELECT') {
+                        $this->deleteTranslation($sub_label);
+                    }
                 }
             }
 
@@ -2973,6 +2993,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $groupModel->setId(intval($gid));
         $elements = $groupModel->getMyElements();
         //
+
         try {
             $query->select('*')
                 ->from($db->quoteName('#__fabrik_groups'))
@@ -2981,7 +3002,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $group = $db->loadObject();
 
             $query->clear()
-                ->select('fl.db_table_name as dbtable, fl.form_id as formid')
+                ->select('fl.db_table_name as dbtable, fl.form_id as formid, fl.id as listid')
                 ->from($db->quoteName('#__fabrik_formgroup', 'fg'))
                 ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
                 ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
@@ -2989,6 +3010,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $object = $db->loadObject();
             $db_table = $object->dbtable;
             $form_id = $object->formid;
+            $list_id = $object->listid;
 
             $group_params = json_decode($group->params);
             $group_params->repeat_group_button = 1;
@@ -3000,12 +3022,59 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->setQuery($query);
             $db->execute();
 
+            // Create the new table
             $newtablename = $db_table . "_" . $gid . "_repeat";
+            $joins_params = '{"type":"group","pk":"`' . $newtablename . '`.`id`"}';
 
             $query = "CREATE TABLE IF NOT EXISTS " . $newtablename . " (
             id int(11) NOT NULL AUTO_INCREMENT,
             PRIMARY KEY (id)
             ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+            $db->setQuery($query);
+            $db->execute();
+            //
+
+            // Create parent_id element
+            $query = $db->getQuery(true);
+            $params = $this->prepareElementParameters('field');
+            $params['validations'] = array();
+
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__fabrik_elements'))
+                ->where($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                ->order('ordering');
+            $db->setQuery($query);
+            $results = $db->loadObjectList();
+            $orderings = [];
+            foreach (array_values($results) as $result) {
+                if (!in_array($result->ordering, $orderings)) {
+                    $orderings[] = intval($result->ordering);
+                }
+            }
+
+            $query->clear()
+                ->insert($db->quoteName('#__fabrik_elements'))
+                ->set($db->quoteName('name') . ' = ' . $db->quote('parent_id'))
+                ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                ->set($db->quoteName('plugin') . ' = ' . $db->quote('field'))
+                ->set($db->quoteName('label') . ' = ' . $db->quote('parent_id'))
+                ->set($db->quoteName('checked_out') . ' = 0')
+                ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('created_by') . ' = 95')
+                ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
+                ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('modified_by') . ' = 95')
+                ->set($db->quoteName('width') . ' = 0')
+                ->set($db->quoteName('default') . ' = ' . $db->quote(''))
+                ->set($db->quoteName('hidden') . ' = 1')
+                ->set($db->quoteName('eval') . ' = 0')
+                ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
+                ->set($db->quoteName('parent_id') . ' = 0')
+                ->set($db->quoteName('published') . ' = 1')
+                ->set($db->quoteName('access') . ' = 1')
+                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
             $db->setQuery($query);
             $db->execute();
 
@@ -3016,7 +3085,25 @@ class EmundusonboardModelformbuilder extends JModelList {
             $query = "CREATE INDEX fb_parent_fk_parent_id_INDEX ON " . $newtablename . " (parent_id);";
             $db->setQuery($query);
             $db->execute();
+            //
 
+            // Insert leftjoin in fabrik
+            $query = $db->getQuery(true);
+            $query->insert($db->quoteName('#__fabrik_joins'));
+            $query->set($db->quoteName('list_id') . ' = ' . $db->quote($list_id))
+                ->set($db->quoteName('element_id') . ' = ' . $db->quote(0))
+                ->set($db->quoteName('join_from_table') . ' = ' . $db->quote($db_table))
+                ->set($db->quoteName('table_join') . ' = ' . $db->quote($newtablename))
+                ->set($db->quoteName('table_key') . ' = ' . $db->quote('id'))
+                ->set($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'))
+                ->set($db->quoteName('join_type') . ' = ' . $db->quote('left'))
+                ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                ->set($db->quoteName('params') . ' = ' . $db->quote($joins_params));
+            $db->setQuery($query);
+            $db->execute();
+            //
+
+            // Insert element present in the group
             foreach ($elements as $element) {
                 if ($element->element->plugin === 'birthday') {
                     $dbtype = 'DATE';
@@ -3030,6 +3117,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
             }
+            //
 
             return true;
         } catch(Exception $e) {
@@ -3049,6 +3137,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->setQuery($query);
             $group = $db->loadObject();
 
+            // Disable group repeat
             $query->clear()
                 ->select('fl.db_table_name as dbtable')
                 ->from($db->quoteName('#__fabrik_formgroup','fg'))
@@ -3056,7 +3145,6 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
             $db_table = $db->loadObject()->dbtable;
-
             $group_params = json_decode($group->params);
             $group_params->repeat_group_button = 0;
 
@@ -3066,8 +3154,23 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
             $db->execute();
-
             $repeat_table_name = $db_table . "_" . $gid . "_repeat";
+            //
+
+            // Delete parent_id and join_table
+            $query->clear()
+                ->delete($db->quoteName('#__fabrik_elements'))
+                ->where($db->quoteName('name') . ' = ' . $db->quote('parent_id'))
+                ->andWhere($db->quoteName('group_id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->delete($db->quoteName('#__fabrik_joins'))
+                ->where($db->quoteName('table_join') . ' = ' . $db->quote($repeat_table_name));
+            $db->setQuery($query);
+            $db->execute();
+            //
 
             $query = "DROP TABLE IF EXISTS " . $repeat_table_name;
             $db->setQuery($query);

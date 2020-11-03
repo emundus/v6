@@ -125,7 +125,7 @@
             });
         },
 
-        watch: {
+        /*watch: {
             primary: function(value){
                 document.getElementById('primary').style.backgroundColor = value;
                 if(this.changes) {
@@ -138,7 +138,7 @@
                   //this.updateColor('secondary', value);
                 }
             }
-        }
+        }*/
     };
 </script>
 <style>

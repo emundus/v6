@@ -36,6 +36,8 @@
             :menus="formObjectArray"
             :index="index"
             :files="files"
+            :actualLanguage="actualLanguage"
+            :manyLanguages="manyLanguages"
             @show="show"
             @UpdateUx="UpdateUXT"
             @UpdateName="UpdateName"

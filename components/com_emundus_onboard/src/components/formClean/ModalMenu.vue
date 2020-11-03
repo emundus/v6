@@ -27,7 +27,7 @@
 
         <div class="form-group">
           <label>{{ChooseExistingPageModel}} :</label>
-          <select v-model="model_id" class="dropdown-toggle">
+          <select v-model="model_id" class="dropdown-toggle" :disabled="Object.keys(models).length <= 0">
             <option value="-1"></option>
             <option v-for="(model, index) in models" :value="model.form_id">{{model.label.fr}}</option>
           </select>
@@ -150,13 +150,7 @@ export default {
     createMenu() {
       this.changes = true;
 
-      if(this.label.fr != '' || this.model_id != -1) {
-        if(this.label.en == ''){
-          this.label.en = this.label.fr;
-        }
-        if(this.intro.en = ''){
-          this.intro.en = this.intro.fr;
-        }
+      if(this.label[this.actualLanguage] != '' || this.model_id != -1) {
         this.submitted = true;
         axios({
           method: "post",

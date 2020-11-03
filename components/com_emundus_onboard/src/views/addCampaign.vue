@@ -28,7 +28,7 @@
                   required
                   :class="{ 'is-invalid': errors.label, 'mb-0': translate.label }"
                 />
-              <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" v-if="actualLanguage != ''" type="button" @click="enableLabelTranslation"></button>
+              <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" v-if="manyLanguages !== '0'" type="button" @click="enableLabelTranslation"></button>
             </div>
             <translation :label="form.label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
           </div>
@@ -55,7 +55,7 @@
                   :placeholder="EndDate + ' *'"
                   type="datetime"
                   :input-id="'end_date'"
-                  :min-datetime="form.start_date"
+                  :min-datetime="minDate"
                   v-model="form.end_date"
                   :phrases="{ok: OK, cancel: Cancel}"
                 ></datetime>
@@ -67,7 +67,6 @@
             <autocomplete
                     :id="'year'"
                     @searched="onSearchYear"
-                    :name="'2020-2021'"
                     :items="this.session"
                     :year="form.year"
             />
@@ -192,6 +191,7 @@
               id="select_prog"
               v-model="form.training"
               v-on:change="setCategory"
+              :disabled="this.programs.length <= 0"
             >
               <option value="">{{ ChooseProg }}</option>
               <option
@@ -358,6 +358,7 @@ export default {
     isHiddenProgram: false,
 
     olderDate: "",
+    minDate: "",
 
     programs: [],
     years: [],
@@ -373,7 +374,7 @@ export default {
         fr: '',
         en: ''
       },
-      start_date: LuxonDateTime.local().toISO(),
+      start_date: "",
       end_date: "",
       short_description: "",
       description: "",
@@ -460,6 +461,9 @@ export default {
     Settings.defaultLocale = this.actualLanguage;
     //
 
+    let now = new Date();
+    this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
+
     //Check if we add or edit a campaign
     if (this.campaign !== "") {
       axios.get(
@@ -481,8 +485,8 @@ export default {
           this.form.year = response.data.data.campaign.year;
           this.form.is_limited = response.data.data.campaign.is_limited;
           this.form.limit = response.data.data.campaign.limit;
-          this.form.start_date = this.changeDate(this.form.start_date);
-          this.form.end_date = this.changeDate(this.form.end_date);
+          this.form.start_date = LuxonDateTime.fromSQL(this.form.start_date);
+          this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date);
           if(typeof response.data.data.campaign.status != 'undefined') {
             Object.values(response.data.data.campaign.status).forEach((statu) => {
               this.form.limit_status[parseInt(statu.limit_status)] = true;
@@ -667,6 +671,9 @@ export default {
 
       this.submitted = true;
 
+      this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+      this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=program&task=createprogram",
@@ -742,39 +749,6 @@ export default {
       });
     },
 
-    changeDate(dbDate) {
-      const regexDate = /\d{4}-\d{2}-\d{2}/gm;
-      const regexHour = /\d{2}:\d{2}:\d{2}/gm;
-      const str = dbDate;
-      let m;
-      var formatDate = "";
-
-      while ((m = regexDate.exec(str)) !== null) {
-        // This is necessary to avoid infinite loops with zero-width matches
-        if (m.index === regexHour.lastIndex) {
-          regexHour.lastIndex++;
-        }
-
-        // The result can be accessed through the `m`-variable.
-        m.forEach((yy_MM_dd, groupIndex) => {
-          formatDate = `${yy_MM_dd}T`;
-        });
-      }
-
-      while ((m = regexHour.exec(str)) !== null) {
-        // This is necessary to avoid infinite loops with zero-width matches
-        if (m.index === regexHour.lastIndex) {
-          regexHour.lastIndex++;
-        }
-
-        // The result can be accessed through the `m`-variable.
-        m.forEach((HH_mm, groupIndex) => {
-          formatDate = formatDate + `${HH_mm}.000Z`;
-        });
-      }
-      return formatDate;
-    },
-
     onSearchYear(value) {
       this.form.year = value;
     },
@@ -818,7 +792,6 @@ export default {
       document.getElementById(id).style.borderColor = '#cccccc';
     },
 
-
     /**
      * ** Methods for notify
      */
@@ -842,6 +815,12 @@ export default {
       this.$notify({ group, clean: true });
     },
   },
+
+  watch: {
+    'form.start_date': function (val, oldVal) {
+      this.minDate = LuxonDateTime.fromISO(val).plus({ days: 1 });
+    }
+  }
 };
 </script>
 

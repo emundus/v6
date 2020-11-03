@@ -2141,8 +2141,14 @@ label.label__placeholder {
   position: fixed;
   width: 25vw;
   border-radius: 4px;
-  overflow: auto;
+  overflow-y: scroll;
   height: auto;
+  max-height: 70%;
+}
+@media (min-width: 1920px) {
+  .actions-menu {
+    max-height: 100%;
+  }
 }
 .heading-actions{
   height: 60px;
@@ -2207,6 +2213,8 @@ label.label__placeholder {
   width: 20vw;
   margin: 20px;
 }
+
+/**** CUSTOM VUE DROPZONE ****/
 #customdropzone {
   letter-spacing: 0.2px;
   background: #ececec;
@@ -2220,6 +2228,7 @@ label.label__placeholder {
   justify-content: center;
   align-items: center;
   display: flex;
+  cursor: pointer;
   .dz-preview {
     width: 100%;
     display: inline-block;
@@ -2254,6 +2263,8 @@ label.label__placeholder {
 .dz-error-mark {
   display: none;
 }
+/**** END ****/
+
 .color-picker {
   width: 40px;
   border-radius: 50%;
@@ -2515,6 +2526,6 @@ label.label__placeholder {
 .task-container{
   bottom: -20px !important;
   transition: all 0.3S ease-in-out !important;
-  width: 18vw !important;
+  width: auto !important;
 }
 

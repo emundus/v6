@@ -33,23 +33,11 @@
         <div class="form-group" :class="{ 'mb-0': translate.label}">
             <label>{{Name}} :</label>
           <div class="input-can-translate">
-            <input v-model="label.fr" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors}"/>
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" @click="translate.label = !translate.label"></button>
+            <input v-model="label[actualLanguage]" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors}"/>
+            <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" v-if="manyLanguages !== '0'" @click="translate.label = !translate.label"></button>
           </div>
+          <translation :label="label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
         </div>
-        <transition :name="'slide-down'" type="transition">
-        <div class="inlineflex" v-if="translate.label">
-          <label class="translate-label">
-            {{TranslateEnglish}}
-          </label>
-          <em class="fas fa-sort-down"></em>
-        </div>
-        </transition>
-        <transition :name="'slide-down'" type="transition">
-        <div class="form-group mb-1" v-if="translate.label">
-          <input v-model="label.en" type="text" maxlength="40" class="form__input field-general w-input"/>
-        </div>
-        </transition>
         <p v-if="errors" class="error col-md-12 mb-2">
           <span class="error">{{LabelRequired}}</span>
         </p>
@@ -57,23 +45,11 @@
         <div class="form-group mt-1" :class="{'mb-0': translate.intro}">
           <label>{{Intro}} :</label>
           <div class="input-can-translate">
-            <textarea v-model="intro.fr" class="form__input field-general w-input" rows="3" maxlength="300" style="margin: 0"></textarea>
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
+            <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="300" style="margin: 0"></textarea>
+            <button class="translate-icon" :class="{'translate-icon-selected': translate.intro}" type="button" v-if="manyLanguages !== '0'" @click="translate.intro = !translate.intro"></button>
           </div>
+          <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>
         </div>
-        <transition :name="'slide-down'" type="transition">
-        <div class="inlineflex" v-if="translate.intro">
-          <label class="translate-label">
-            {{TranslateEnglish}}
-          </label>
-          <em class="fas fa-sort-down"></em>
-        </div>
-        </transition>
-        <transition :name="'slide-down'" type="transition">
-        <div class="form-group mb-1" v-if="translate.intro">
-          <textarea v-model="intro.en" rows="3" class="form__input field-general w-input" maxlength="300"></textarea>
-        </div>
-        </transition>
 
         <div class="col-md-12 d-flex mb-1" style="align-items: center">
           <input type="checkbox" v-model="template">
@@ -103,13 +79,16 @@
 <script>
 import axios from "axios";
 import Swal from "sweetalert2";
+import Translation from "@/components/translation"
 
 const qs = require("qs");
 
 export default {
   name: "modalSide",
-  props: { ID: Number, element: Object, index: Number, menus: Array, files: Number, link: String },
-  components: {},
+  components: {
+    Translation
+  },
+  props: { ID: Number, element: Object, index: Number, menus: Array, files: Number, link: String, manyLanguages: Number, actualLanguage: String },
   data() {
     return {
       tempEl: [],
@@ -145,19 +124,13 @@ export default {
   methods: {
     UpdateParams() {
       this.changes = true;
-      if(this.label.en == '') {
-        this.label.en = this.label.fr;
-      }
-      if(this.intro.en == '') {
-        this.intro.en = this.intro.fr;
-      }
       this.axioschange(this.intro, this.tempEl.intro_raw);
       this.axioschange(this.label, this.tempEl.show_title.titleraw);
       this.updatefalang(this.label);
       this.saveAsTemplate();
       this.element = JSON.parse(JSON.stringify(this.tempEl));
-      this.$emit("UpdateName", this.index, this.label.fr);
-      this.$emit("UpdateIntro", this.index, this.intro.fr);
+      this.$emit("UpdateName", this.index, this.label[this.actualLanguage]);
+      this.$emit("UpdateIntro", this.index, this.intro[this.actualLanguage]);
     },
     beforeClose(event) {
       if (this.changes != false) {

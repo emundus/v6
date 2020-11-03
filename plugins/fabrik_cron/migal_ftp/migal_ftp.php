@@ -186,7 +186,7 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 						->select([
 							't.*',
 							$db->quoteName('c.description', 'desc'),
-							$db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('p.prerequisite'), $db->quoteName('p.audience'), $db->quoteName('p.tagline'), $db->quoteName('p.objectives'), $db->quoteName('p.content'), $db->quoteName('p.numcpf'), $db->quoteName('p.manager_lastname'), $db->quoteName('p.manager_firstname'), $db->quoteName('p.pedagogie', 'pedagogie'), $db->quoteName('p.certificate', 'certificate'), $db->quoteName('p.partner', 'partner'), $db->quoteName('p.target', 'target'), $db->quoteName('p.evaluation', 'evaluation')
+                            $db->quoteName('p.label', 'product_name'), $db->quoteName('p.url'), $db->quoteName('p.programmes', 'categ'), $db->quoteName('p.prerequisite'), $db->quoteName('p.audience'), $db->quoteName('p.tagline'), $db->quoteName('p.objectives'), $db->quoteName('p.content'), $db->quoteName('p.numcpf'), $db->quoteName('p.manager_lastname'), $db->quoteName('p.manager_firstname'), $db->quoteName('p.pedagogie', 'pedagogie'), $db->quoteName('p.certificate', 'certificate'), $db->quoteName('p.partner', 'partner'), $db->quoteName('p.target', 'target'), $db->quoteName('p.evaluation', 'evaluation'), $db->quoteName('p.temoignagesclients', 'temoignagesclients'), $db->quoteName('p.accrochecom', 'accrochecom')
 						])
 						->from($db->quoteName('#__emundus_setup_teaching_unity','t'))
 						->leftJoin($db->quoteName('#__emundus_setup_programmes','p').' ON t.code = p.code')
@@ -459,7 +459,17 @@ class PlgFabrik_Cronmigal_ftp extends PlgFabrik_Cron {
 							$fields[] = $db->quoteName('p.evaluation').' = '.$db->quote($update_item['evaluation']);
 						}
 
-						// If any of the fields are different, we must run the UPDATE query.
+                        // temoignagesclients
+                        if ($db_item['temoignagesclients'] != $update_item['temoignagesclients']) {
+                            $fields[] = $db->quoteName('p.temoignagesclients').' = '.$db->quote($update_item['temoignagesclients']);
+                        }
+
+                        // temoignagesclients
+                        if ($db_item['accrochecom'] != $update_item['accrochecom']) {
+                            $fields[] = $db->quoteName('p.accrochecom').' = '.$db->quote($update_item['accrochecom']);
+                        }
+
+                        // If any of the fields are different, we must run the UPDATE query.
 						if (!empty($fields)) {
 
 							$db = JFactory::getDbo();

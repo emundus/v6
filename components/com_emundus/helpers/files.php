@@ -1968,7 +1968,7 @@ class EmundusHelperFiles
 				    'USER_EMAIL'     => $fnum['email']
 			    ];
 
-			    $tags = $m_emails->setTags($fnum['applicant_id'], $post);
+			    $tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum']);
 			    $htmlList[$fnum['fnum']] = preg_replace($tags['patterns'], $tags['replacements'], $html);
 			    $htmlList[$fnum['fnum']] = $m_emails->setTagsFabrik($htmlList[$fnum['fnum']], [$fnum['fnum']]);
 		    }
@@ -2170,7 +2170,7 @@ class EmundusHelperFiles
         $data = array();
         foreach ($evaluations as $eval) {
 
-            if ($eval['jos_emundus_evaluations___user_raw'] > 0) {
+            if ($eval['jos_emundus_evaluations___user_raw'] > 0 && ($eval['jos_emundus_evaluations___user_raw'] == JFactory::getUser()->id || EmundusHelperAccess::asAccessAction(5,'r'))) {
 
                 $str = '<br><hr>';
                 $str .= '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';

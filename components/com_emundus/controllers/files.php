@@ -1558,7 +1558,7 @@ class EmundusControllerFiles extends JControllerLegacy
         // Here we filter elements which are already present but under a different name or ID, by looking at tablename___element_name.
         $elts_present = [];
         foreach ($ordered_elements as $elt_id => $o_elt) {
-        	$element = $o_elt->tab_name.'___'.$o_elt->element_name;
+            $element = !empty($o_elt->table_join) ? $o_elt->table_join.'___'.$o_elt->element_name : $o_elt->tab_name.'___'.$o_elt->element_name;
         	if (in_array($element, $elts_present)) {
         		unset($ordered_elements[$elt_id]);
 	        } else {
@@ -3039,7 +3039,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 if (count($val) > 0) {
                                     foreach ($val as $k => $v) {
                                         $index = array_search(trim($v), $params->sub_options->sub_values);
-                                        $val[$k] = $params->sub_options->sub_labels[$index];
+                                        $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
                                     }
                                     $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                                 } else {
@@ -3624,10 +3624,10 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         $query = $this->_db->getQuery(true);
         $query
-            ->select([
+            ->select(['DISTINCT(tu.session_code) AS session_code',
                 $this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'), $this->_db->quoteName('p.evaluation', 'evaluation'),
                 $this->_db->quoteName('t.label','theme'), $this->_db->quoteName('t.color','class'),
-                $this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours','hours'), $this->_db->quoteName('tu.time_in_company', 'time_in_company'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
+                $this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours','hours'), $this->_db->quoteName('tu.time_in_company', 'time_in_company'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
             ])
             ->from($this->_db->quoteName('#__emundus_setup_programmes','p'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_thematiques','t').' ON '.$this->_db->quoteName('t.id').' = '.$this->_db->quoteName('p.programmes'))
@@ -3694,10 +3694,10 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
             '/{PARTNER_LOGO}/' => $partner,
             '/{PRODUCT_CODE}/' => str_replace('FOR', '', $product_code),
             '/{PRODUCT_NAME}/' => ucfirst(mb_strtolower($product[0]['session_label'])),
-            '/{PRODUCT_OBJECTIVES}/' => $product[0]['objectives'],
-            '/{PRODUCT_PREREQUISITES}/' => $product[0]['prerec'],
-            '/{PRODUCT_AUDIENCE}/' => $product[0]['audience'],
-            '/{PRODUCT_CONTENT}/' => $product[0]['content'],
+            '/{PRODUCT_OBJECTIVES}/' => str_replace("\n","",$product[0]['objectives']),
+            '/{PRODUCT_PREREQUISITES}/' => str_replace("\n","",$product[0]['prerec']),
+            '/{PRODUCT_AUDIENCE}/' => str_replace("\n","",$product[0]['audience']),
+            '/{PRODUCT_CONTENT}/' => str_replace("\n","",$product[0]['content']),
             '/{PRODUCT_MANAGER}/' => $product[0]['manager_firstname'].' '.mb_strtoupper($product[0]['manager_lastname']),
             '/{EXPORT_DATE}/' => date('d F Y'),
             '/{DAYS}/' => $days,
@@ -3706,15 +3706,15 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
             '/{INTERVENANT}/' => (!empty($product[0]['intervenant']))?$product[0]['intervenant']:'Formateur consultant sélectionné par la CCI pour son expertise dans ce domaine',
             '/{PEDAGOGIE}/' => $product[0]['pedagogie'],
             '/{CPF}/' => (!empty($product[0]['cpf']))?'<h2 style="padding-left: 30px;">'.JText::_('CODE').'</h2><p style="padding-left: 30px;">'.$product[0]['cpf'].' </p>':'',
-            '/{EVALUATION}/' => $product[0]['evaluation']
+            '/{EVALUATION}/' => $product[0]['evaluation'],
+            '/{TEMOINAGE}/' => $product[0]['temoignagesclients'],
+            '/{ACCROCHECOM}/' => ucfirst(mb_strtolower(strip_tags($product[0]['accrochecom'])))
         ];
 
         $export_date = strftime('%e')." ".strftime('%B')." ".date('Y');
 
         $body = html_entity_decode(preg_replace('~<(\w+)[^>]*>(?>[\p{Z}\p{C}]|<br\b[^>]*>|&(?:(?:nb|thin|zwnb|e[nm])sp|zwnj|#xfeff|#xa0|#160|#65279);)*</\1>~iu', '', preg_replace(array_keys($post), $post, preg_replace("/<br[^>]+\>/i", "<br>", $article))));
-        $footer = '<hr><p>La CCI Rochefort et Saintonge (CCIRS) se réserve le droit d’adapter les informations de cette fiche.</br>
-					La CCIRS est un organisme de formation enregistré sous le numéro 5417 P00 1017, certifié « Facilitateur en Acquisition de Compétences » sous la référence CPS FAC 041</p>
-					<p>{PRODUCT_MANAGER} - competencesetformation@rochefort.cci.fr - 05 46 84 70 92 - www.competencesetformation.fr</p> <p>Fiche pédagogique éditée le '.$export_date.' - ';
+        $footer = '<hr style="margin=0; padding=0;"><span>Les CCI de Charente-Maritime se réservent le droit d’adapter les informations de cette fiche.</br>La CCIRS est un organisme de formation enregistré sous le numéro 5417 P00 1017. La CCI La Rochelle est un organisme de formation déclaré sous le n° 54 17 P00 04 17. Les CCI de Charente-Maritime sont référencées Datadock.</span><br/><span>{PRODUCT_MANAGER} - competencesetformation@rochefort.cci.fr - 05 46 84 70 92 - www.competencesetformation.fr</span><br/><span>Consultez les CGV dans la rubrique Infos Pratiques sur le site <a href="https://www.competencesetformation.fr" target=""blank>www.competencesetformation.fr</a></span><br/><span>Fiche pédagogique éditée le '.$export_date.' - ';
         $footer = html_entity_decode(preg_replace('~<(\w+)[^>]*>(?>[\p{Z}\p{C}]|<br\b[^>]*>|&(?:(?:nb|thin|zwnb|e[nm])sp|zwnj|#xfeff|#xa0|#160|#65279);)*</\1>~iu', '', preg_replace(array_keys($post), $post, preg_replace("/<br[^>]+\>/i", "<br>", $footer))));
 
         require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');

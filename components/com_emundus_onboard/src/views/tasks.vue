@@ -72,12 +72,13 @@ name: "tasks",
 
             setTimeout(() => {
               document.getElementById("close-tasks").click();
-            }, 10000);
+            }, 3000);
 
             html += "</ul>";
             Swal.fire({
               position: 'bottom-end',
               backdrop: false,
+              allowOutsideClick: false,
               title: 'Progression',
               html: html,
               customClass: {

@@ -276,6 +276,10 @@ class EmundusonboardModelcampaign extends JModelList
 
         if (count($data) > 0) {
             try {
+                JPluginHelper::importPlugin('emundus', 'setup_category');
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onCampaignDelete', $data);
+
                 foreach (array_values($data) as $id) {
                     $falang->deleteFalang($id,'emundus_setup_campaigns','label');
                 }
@@ -509,6 +513,10 @@ class EmundusonboardModelcampaign extends JModelList
                     $email->createTrigger($trigger, array(), $user);
                 }
                 //
+
+                JPluginHelper::importPlugin('emundus', 'setup_category');
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onCampaignCreate', $campaign_id);
 
                 return $campaign_id;
             } catch (Exception $e) {
@@ -857,9 +865,268 @@ class EmundusonboardModelcampaign extends JModelList
 
             $falang->updateFalang($document['name']['fr'],$document['name']['en'],$did,'emundus_setup_attachments','value');
             $falang->updateFalang($document['description']['fr'],$document['description']['en'],$did,'emundus_setup_attachments','description');
+
+            return true;
         } catch (Exception $e) {
             JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
             return $e->getMessage();
+        }
+    }
+
+    function getCampaignCategory($cid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $campaign_dropfile_cat = null;
+            $query->select('id,params')
+                ->from($db->quoteName('#__categories'))
+                ->where('json_extract(`params`, "$.idCampaign") LIKE ' . $db->quote('"'.$cid.'"'))
+                ->andWhere($db->quoteName('extension') . ' LIKE ' . $db->quote('com_dropfiles'));
+            $db->setQuery($query);
+            $campaign_dropfile_cat = $db->loadResult();
+
+            if(!$campaign_dropfile_cat){
+                JPluginHelper::importPlugin('emundus', 'setup_category');
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onCampaignCreate', $cid);
+                $this->getCampaignCategory($cid);
+            }
+            return $campaign_dropfile_cat;
+        } catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function getCampaignDropfilesDocuments($campaign_cat) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('*')
+                ->from($db->quoteName('#__dropfiles_files'))
+                ->where($db->quoteName('catid') . ' = ' . $db->quote($campaign_cat))
+                ->group($db->quoteName('ordering'));
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function getDropfileDocument($did){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('*')
+                ->from($db->quoteName('#__dropfiles_files'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($did));
+            $db->setQuery($query);
+            return $db->loadObject();
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function deleteDocumentDropfile($did){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            $query->select('file,catid')
+                ->from($db->quoteName('#__dropfiles_files'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote(($did)));
+            $db->setQuery($query);
+            $file = $db->loadObject();
+            unlink('media/com_dropfiles/' . $file->catid . '/' . $file->file);
+
+            $query->clear()
+                ->delete($db->quoteName('#__dropfiles_files'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote(($did)));
+            $db->setQuery($query);
+            return $db->execute();
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function editDocumentDropfile($did,$name){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            $query->update($db->quoteName('#__dropfiles_files'))
+                ->set($db->quoteName('title') . ' = ' . $db->quote($name))
+                ->where($db->quoteName('id') . ' = ' . $db->quote(($did)));
+            $db->setQuery($query);
+            return $db->execute();
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function updateOrderDropfileDocuments($documents){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            foreach ($documents as $document) {
+                $query->clear()
+                    ->update($db->quoteName('#__dropfiles_files'))
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote($document['ordering']))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote(($document['id'])));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            return true;
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function getFormDocuments($pid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            $query->select('*')
+                ->from($db->quoteName('#__modules'))
+                ->where('json_extract(`note`, "$.pid") LIKE ' . $db->quote('"'.$pid.'"'));
+            $db->setQuery($query);
+            $form_module = $db->loadObject();
+
+            $files = array();
+
+            if($form_module != null) {
+                // create the DOMDocument object, and load HTML from string
+                $dochtml = new DOMDocument();
+                $dochtml->loadHTML($form_module->content);
+
+                // gets all DIVs
+                $links = $dochtml->getElementsByTagName('a');
+                foreach($links as $link) {
+                    $file = new stdClass;
+                    if($link->hasAttribute('href')) {
+                        $file->link = $link->getAttribute('href');
+                        $file->name = $link->textContent;
+                    }
+                    if($link->parentNode->hasAttribute('id')) {
+                        $file->id = $link->parentNode->getAttribute('id');
+                    }
+                    $files[] = $file;
+                }
+            }
+
+            return $files;
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    public function editDocumentForm($did,$name,$pid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            $query->select('*')
+                ->from($db->quoteName('#__modules'))
+                ->where('json_extract(`note`, "$.pid") LIKE ' . $db->quote('"'.$pid.'"'));
+            $db->setQuery($query);
+            $form_module = $db->loadObject();
+
+            if($form_module != null) {
+                // create the DOMDocument object, and load HTML from string
+                $dochtml = new DOMDocument();
+                $dochtml->loadHTML($form_module->content);
+
+                // gets all DIVs
+                $link_li = $dochtml->getElementById($did);
+                $link = $link_li->firstChild;
+                $link->textContent = $name;
+                $link->parentNode->replaceChild($link,$link_li->firstChild);
+
+                $newcontent = explode('</body>',explode('<body>',$dochtml->saveHTML())[1])[0];
+
+                $query->clear()
+                    ->update('#__modules')
+                    ->set($db->quoteName('content') . ' = ' . $db->quote($newcontent))
+                    ->where($db->quoteName('id') . '=' .  $db->quote($form_module->id));
+                $db->setQuery($query);
+                return $db->execute();
+            } else {
+                return true;
+            }
+        }  catch (Exception $e) {
+            JLog::add('Error updating form document in component/com_emundus_onboard/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function deleteDocumentForm($did,$pid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            $query->select('*')
+                ->from($db->quoteName('#__modules'))
+                ->where('json_extract(`note`, "$.pid") LIKE ' . $db->quote('"'.$pid.'"'));
+            $db->setQuery($query);
+            $form_module = $db->loadObject();
+
+            // create the DOMDocument object, and load HTML from string
+            $dochtml = new DOMDocument();
+            $dochtml->loadHTML($form_module->content);
+
+            // gets all DIVs
+            $link = $dochtml->getElementById($did);
+            unlink($link->firstChild->getAttribute('href'));
+            $link->parentNode->removeChild($link);
+
+            $newcontent = explode('</body>',explode('<body>',$dochtml->saveHTML())[1])[0];
+
+            if(strpos($newcontent,'<li') === false) {
+                $query->clear()
+                    ->select('m.id')
+                    ->from($db->quoteName('#__menu', 'm'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'sp') . ' ON ' . $db->quoteName('sp.menutype') . ' = ' . $db->quoteName('m.menutype'))
+                    ->where($db->quoteName('sp.id') . ' = ' . $db->quote($pid));
+                $db->setQuery($query);
+                $mids = $db->loadObjectList();
+
+                foreach ($mids as $mid) {
+                    $query->clear()
+                        ->delete($db->quoteName('#__modules_menu'))
+                        ->where($db->quoteName('moduleid') . ' = ' . $db->quote($form_module->id))
+                        ->andWhere($db->quoteName('menuid') . ' = ' . $db->quote($mid->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+
+                $query->clear()
+                    ->delete('#__modules')
+                    ->where($db->quoteName('id') . '=' .  $db->quote($form_module->id));
+                $db->setQuery($query);
+                return $db->execute();
+            } else {
+                $query->clear()
+                    ->update('#__modules')
+                    ->set($db->quoteName('content') . ' = ' . $db->quote($newcontent))
+                    ->where($db->quoteName('id') . '=' .  $db->quote($form_module->id));
+                $db->setQuery($query);
+                return $db->execute();
+            }
+        }  catch (Exception $e) {
+            JLog::add('Error updating form document in component/com_emundus_onboard/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 }

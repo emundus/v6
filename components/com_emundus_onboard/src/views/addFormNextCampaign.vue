@@ -4,7 +4,7 @@
   echo ltrim($str, "0");
 -->
 <template>
-    <div class="column-menu-main w-row" style="margin-top: 120px">
+    <div class="column-menu-main w-row" style="margin-top: 120px; margin-bottom: 10em">
         <ModalWarningFormBuilder
                 :pid="profileId"
                 :cid="campaignId"
@@ -71,11 +71,30 @@
                             :funnelCategorie="formCategories[langue][menuHighlight]"
                             :profileId="profileId"
                             :campaignId="campaignId"
-                            :langue="langue"
                             :menuHighlight="menuHighlight"
                             :langue="actualLanguage"
                             :manyLanguages="manyLanguages"
                     ></addDocuments>
+
+                  <add-documents-dropfiles
+                      v-if="menuHighlight == 2"
+                      :funnelCategorie="formCategories[langue][menuHighlight]"
+                      :profileId="profileId"
+                      :campaignId="campaignId"
+                      :menuHighlight="menuHighlight"
+                      :langue="actualLanguage"
+                      :manyLanguages="manyLanguages"
+                    />
+
+                  <add-documents-form
+                      v-if="menuHighlight == 3"
+                      :funnelCategorie="formCategories[langue][menuHighlight]"
+                      :profileId="profileId"
+                      :campaignId="campaignId"
+                      :menuHighlight="menuHighlight"
+                      :langue="actualLanguage"
+                      :manyLanguages="manyLanguages"
+                    ></add-documents-form>
 
                     <!--          <addEvalEval
                                       v-if="menuHighlight == 6"
@@ -113,6 +132,8 @@
     import addEvalEval from "../views/funnelFormulaire/addEvalEval";
     import ModalWarningFormBuilder from "./advancedModals/ModalWarningFormBuilder";
     import Tasks from "@/views/tasks";
+    import AddDocumentsDropfiles from "@/views/funnelFormulaire/addDocumentsDropfiles";
+    import AddDocumentsForm from "@/views/funnelFormulaire/addDocumentsForm";
 
     const qs = require("qs");
 
@@ -120,7 +141,9 @@
         name: "addFormNextCampaign",
 
         components: {
+          AddDocumentsForm,
           Tasks,
+          AddDocumentsDropfiles,
             ModalWarningFormBuilder,
             Datetime,
             addFormulaire,
@@ -168,12 +191,16 @@
 
             formCategories: [
                 [
-                    "Aperçu du formulaire",
-                    "Documents"
+                  "Aperçu du formulaire",
+                  "Documents",
+                  "Documents d'informations",
+                  "Documents a télécharger",
                 ],
                 [
-                    "Form Preview",
-                    "Documents"
+                  "Form Preview",
+                  "Documents",
+                  "Informations documents",
+                  "Documents to download",
                 ]
             ],
 
