@@ -1210,19 +1210,6 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
       width: 12px;
 }
 
- .fabrikForm select {
-    height: 50px !important;
-    background-position-x: 98%;
-    background-position-y: 58%;
-    -webkit-appearance: none;
-    background: transparent url(images/custom/arrow-down.png) no-repeat 98% 52%;
-    background-size: 10px;
-    background: #fff; 
-    padding: 0 30px 0 10px;
-}
-
-
-
 /* FORMULAIRE D'INSCRIPTION */
 
 .view-form .em-formRegistrationCenter h1::after {
