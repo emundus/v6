@@ -230,20 +230,38 @@ class modEmundusCustomHelper {
 			die(json_encode((object)['status' => false, 'msg' => 'Aucun rang envoyé.']));
 		}
 
-		$query->select($db->quoteName('id'))
-			->from($db->quoteName('#__emundus_final_grade', 'fg'))
-			->where($db->quoteName('fg.fnum').' LIKE '.$db->quote($fnum));
-		$db->setQuery($query);
-		try {
-			$fg_id = $db->loadResult();
-		} catch (Exception $e) {
-			$fg_id = null;
+		if ($type === 'eval') {
+
+			$table = '#__emundus_evaluations';
+			$query->select($db->quoteName('id'))
+				->from($db->quoteName('#__emundus_evaluations'))
+				->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum))
+				->andWhere($db->quoteName('user').' = '.$user->id);
+			$db->setQuery($query);
+			try {
+				$entry_id = $db->loadResult();
+			} catch (Exception $e) {
+				$entry_id = null;
+			}
+
+		} else {
+
+			$table = '#__emundus_final_grade';
+			$query->select($db->quoteName('id'))
+				->from($db->quoteName('#__emundus_final_grade', 'fg'))
+				->where($db->quoteName('fg.fnum').' LIKE '.$db->quote($fnum));
+			$db->setQuery($query);
+			try {
+				$entry_id = $db->loadResult();
+			} catch (Exception $e) {
+				$entry_id = null;
+			}
 		}
 
-		if (!empty($fg_id)) {
+		if (!empty($entry_id)) {
 
 			$query->clear()
-				->update($db->quoteName('#__emundus_final_grade'));
+				->update($db->quoteName($table));
 
 			switch ($type) {
 
@@ -262,6 +280,11 @@ class modEmundusCustomHelper {
 						$db->quoteName('classement_general').' = '.$db->quote($rank),
 					];
 					break;
+				case 'eval':
+					$fields = [
+						$db->quoteName('ranking').' = '.$db->quote($rank),
+					];
+					break;
 				default:
 					$fields = [];
 					break;
@@ -269,7 +292,7 @@ class modEmundusCustomHelper {
 			}
 
 			$query->set($fields)
-				->where($db->quoteName('id').' = '.$fg_id);
+				->where($db->quoteName('id').' = '.$entry_id);
 			$db->setQuery($query);
 
 			try {
@@ -311,6 +334,9 @@ class modEmundusCustomHelper {
 				case 'general':
 					$columns[] = 'classement_general';
 					break;
+				case 'eval':
+					$columns[] = 'ranking';
+					break;
 				default:
 					break;
 
@@ -319,7 +345,7 @@ class modEmundusCustomHelper {
 			$values = $db->quote($now).', '.$db->quote($fnum).', '.(int)substr($fnum, -7).', '.$user->id.', '.(int)substr($fnum, 14, 7).', '.$rank;
 
 			$query->clear()
-				->insert($db->quoteName('#__emundus_final_grade'))
+				->insert($db->quoteName($table))
 				->columns($db->quoteName($columns))
 				->values($values);
 			$db->setQuery($query);
@@ -332,6 +358,7 @@ class modEmundusCustomHelper {
 				die(json_encode((object)['status' => false, 'msg' => 'Erreur de sauvegarde de commission.']));
 			}
 		}
+
 	}
 
     /**
