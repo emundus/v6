@@ -53,6 +53,14 @@ JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
 
+## TUTORIAL ##
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORM');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
+## END ##
+
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0 , 2);
 $languages = JLanguageHelper::getLanguages();

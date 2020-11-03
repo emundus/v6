@@ -45,7 +45,7 @@
           class="bouton-sauvergarder-et-continuer-3"
           @click.prevent="affectToForm"
         >{{ Continuer }}</a>
-        <a
+        <a v-if="!testing"
           class="bouton-sauvergarder-et-continuer-3"
           style="margin-right: 20px"
           @click.prevent="goAddCampaign"
@@ -61,7 +61,7 @@ const qs = require("qs");
 
 export default {
   name: "modalAffectCampaign",
-  props: { prid: Number },
+  props: { prid: Number, testing: Boolean },
   data() {
     return {
       campaigns: [],
@@ -99,11 +99,21 @@ export default {
             campaigns: campaigns
           })
         }).then(() => {
-          this.$modal.hide('modalAffectCampaign');
-          window.location.href = '/configuration-forms'
+          if(!this.testing) {
+            window.location.href = '/configuration-forms'
+          } else {
+            if(campaigns.length > 0){
+              this.$emit("testForm");
+              this.$modal.hide('modalAffectCampaign');
+            }
+          }
         });
       } else {
-        window.location.href = '/configuration-forms'
+        if(!this.testing) {
+          window.location.href = '/configuration-forms'
+        } else {
+          this.$modal.hide('modalAffectCampaign');
+        }
       }
     },
     goAddCampaign() {

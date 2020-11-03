@@ -87,6 +87,13 @@ JText::script('COM_EMUNDUS_ONBOARD_COLUMN');
 JText::script('COM_EMUNDUS_ONBOARD_PREVIEW');
 JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
 
+## TUTORIAL ##
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORM');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
+## END ##
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0 , 2);

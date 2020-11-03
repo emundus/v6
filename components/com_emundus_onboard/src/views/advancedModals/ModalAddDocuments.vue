@@ -38,14 +38,14 @@
         <div class="form-group">
           <label for="description">{{Description}} :</label>
           <div class="input-can-translate">
-            <textarea type="text" maxlength="200" class="form__input field-general w-input mb-0" v-model="form.description[langue]" id="description" />
+            <textarea type="text" class="form__input field-general w-input mb-0" v-model="form.description[langue]" id="description" />
             <button class="translate-icon" :class="{'translate-icon-selected': translate.description}" v-if="manyLanguages !== '0'" type="button" @click="translate.description = !translate.description"></button>
           </div>
           <translation :label="form.description" :actualLanguage="langue" v-if="translate.description"></translation>
         </div>
         <div class="form-group">
           <label for="nbmax">{{MaxPerUser}}* :</label>
-          <input type="number" max="100" min="1" class="form__input field-general w-input" v-model="form.nbmax" id="nbmax" :class="{ 'is-invalid': errors.nbmax}" />
+          <input type="number" min="1" class="form__input field-general w-input" v-model="form.nbmax" id="nbmax" :class="{ 'is-invalid': errors.nbmax}" />
           <p v-if="errors.nbmax" class="error col-md-12 mb-2">
             <span class="error">{{MaxRequired}}</span>
           </p>
@@ -66,14 +66,14 @@
         </div>
       </div>
       <div class="col-md-12 mb-1">
-        <a class="bouton-sauvergarder-et-continuer-3"
+        <button class="bouton-sauvergarder-et-continuer"
            @click.prevent="createNewDocument()">
           {{ Continuer }}
-        </a>
-        <a class="bouton-sauvergarder-et-continuer-3 w-retour"
+        </button>
+        <button class="bouton-sauvergarder-et-continuer w-retour"
            @click.prevent="$modal.hide('modalAddDocuments')">
           {{Retour}}
-        </a>
+        </button>
       </div>
     </modal>
   </span>
@@ -202,7 +202,7 @@
           nbmax: false,
           selectedTypes: false
         };
-        if(this.form.name.fr === ''){
+        if(this.form.name[this.langue] === ''){
           this.errors.name = true;
           return 0;
         }
@@ -260,30 +260,6 @@
 </script>
 
 <style scoped>
-  .modalC-content {
-    height: 100%;
-    box-sizing: border-box;
-    padding: 10px;
-    font-size: 15px;
-    overflow: auto;
-  }
-  .topright {
-    font-size: 25px;
-    float: right;
-  }
-  .btnCloseModal {
-    background-color: inherit;
-  }
-  .update-field-header{
-    margin-bottom: 1em;
-  }
-
-  .update-title-header{
-    margin-top: 0;
-    display: flex;
-    align-items: center;
-  }
-
   .require{
     margin-bottom: 10px !important;
   }

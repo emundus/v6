@@ -154,9 +154,6 @@
         margin-right: 1em;
         display: flex;
     }
-    input {
-        background-color: #ececec;
-    }
     .translate-block{
         display: flex;
         margin: 10px;

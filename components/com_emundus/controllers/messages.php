@@ -354,7 +354,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             'USER_EMAIL' => $fnum->email
         ];
 
-        $tags = $m_emails->setTags($fnum->applicant_id, $post);
+        $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum);
         $message = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
         $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 
@@ -595,10 +595,21 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             // Tags are replaced with their corresponding values using the PHP preg_replace function.
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
-            if ($template) {
-	            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+
+            if (empty($template) || empty($template->Template)) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select($db->quoteName('Template'))
+                    ->from($db->quoteName('#__emundus_email_templates'))
+                    ->where($db->quoteName('id').' = 1');
+                $db->setQuery($query);
+
+                $template->Template = $db->loadResult();
             }
-	        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
+            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+            $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
 	        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 	        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);

@@ -1,6 +1,3 @@
-/* .introP {
-  margin-bottom: -27px;
-} */
 .fabrikgrid_radio {
   display: flex !important;
   align-items: center !important;
@@ -212,6 +209,7 @@ fieldset {
 .element-updating {
   background: #eaeaea;
   border-radius: 5px;
+  //transform: scale(1.05);
 }
 .draggable-item {
   background: #8a8989 !important;
@@ -249,9 +247,10 @@ fieldset {
 .send-form-button {
   width: 100%;
   margin-top: 3em;
+  margin-bottom: 1em;
   background-color: #de6339;
   border: 1px solid #de6339;
-  border-radius: 0;
+  border-radius: 4px;
   height: 50px;
   padding: 10px 30px;
   float: right;
@@ -268,6 +267,13 @@ fieldset {
     color: #de6339;
     text-decoration: none;
     background: transparent;
+  }
+}
+.test-form-button{
+  background-color: #1B1F3C;
+  border: 1px solid #1B1F3c;
+  &:hover {
+    color: #1B1F3C;
   }
 }
 select.fabrikinput.form-control {
