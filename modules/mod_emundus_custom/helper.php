@@ -295,8 +295,30 @@ class modEmundusCustomHelper {
 				->where($db->quoteName('id').' = '.$entry_id);
 			$db->setQuery($query);
 
+
 			try {
 				$db->execute();
+
+				if ($type === 'eval') {
+					// We need to remove the ranking on the other eval.
+					$query->clear()
+						->update($db->quoteName($table))
+						->set([$db->quoteName('ranking').' = '.$db->quote('')])
+						->where($db->quoteName('id').' <> '.$entry_id)
+						->andWhere($db->quoteName('user').' = '.$user->id)
+						->andWhere($db->quoteName('ranking').' = '.$db->quote($rank))
+						->andWhere($db->quoteName('campaign_id').' = '.(int)substr($fnum, 14, 7));
+
+					$db->setQuery($query);
+					try {
+						$db->execute();
+					} catch (Exception $e) {
+						JLog::add('Erreur de suppression de classement -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+						echo '<pre>'; var_dump($e->getMessage()); echo '</pre>'; die;
+
+					}
+				}
+
 				die(json_encode((object)['status' => true, 'msg' => 'Classement mis à jour.']));
 			} catch (Exception $e) {
 				JLog::add('Erreur de sauvegarde de classement -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
