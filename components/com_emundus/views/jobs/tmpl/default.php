@@ -17,7 +17,7 @@ $document = JFactory::getDocument();
 $app = JFactory::getApplication();
 $jinput = $app->input;
 $itemid = $jinput->get('Itemid', 0, 'int');
-$document->addStyleSheet('components/com_emundus/assets/css/list.css');
+//$document->addStyleSheet('components/com_emundus/assets/css/list.css');
 
 $user = JFactory::getUser();
 $userId = $user->get('id');
@@ -30,6 +30,11 @@ $canCheckin = $user->authorise('core.manage', 'com_emundus');
 $canChange = $user->authorise('core.edit.state', 'com_emundus');
 $canDelete = $user->authorise('core.delete', 'com_emundus');
 $canView = $user->authorise('core.viewjob', 'com_emundus');
+
+//dropdown values for $item->domaine
+$domaines = @EmundusHelperFiles::getElementsValuesOther(2262);
+$values = $domaines->sub_values;
+$labels = $domaines->sub_labels;
 ?>
 
 <?php if ($user->guest): ?>
@@ -93,7 +98,7 @@ $canView = $user->authorise('core.viewjob', 'com_emundus');
                         </a>
                     </td>
                     <td>
-                        <?php echo $item->domaine; ?>
+                        <?php echo $labels[$item->domaine-1]; ?>
                     </td>
                     <td>
                         <?php echo $item->etablissement; ?>

@@ -2202,9 +2202,9 @@ class EmundusModelApplication extends JModelList {
         return $forms;
     }
 
-    public function getFormsPDFElts($aid, $elts, $options) {
+    public function getFormsPDFElts($aid, $elts, $options, $checklevel=true) {
 
-        $tableuser = @EmundusHelperList::getFormsListByProfileID($options['profile_id']);
+        $tableuser = @EmundusHelperList::getFormsListByProfileID($options['profile_id'], $checklevel);
 
         $forms = "<style>
 					table {
@@ -2242,15 +2242,24 @@ class EmundusModelApplication extends JModelList {
                                       fe.group_id = "'.$itemg->group_id.'" AND
                                       fe.id IN ('.implode(',', $elts).')
                                 ORDER BY fe.ordering';
+                    
                     $this->_db->setQuery( $query );
+
                     $elements = $this->_db->loadObjectList();
+
                     if(count($elements)>0) {
                         $forms .= ($options['show_group_label']==1)?'<h3>'.JText::_($itemg->label).'</h3>':'';
-                        foreach($elements as &$iteme) {
-                            $where = 'user='.$aid;
-                            $where .= $options['rowid']>0?' AND id='.$options['rowid']:'';
+                        
+                        foreach($elements as &$iteme) {                            
+                            $where = $options['rowid']>0 ? ' id='.$options['rowid'] : ' 1=1 ';
+
+                            if($checklevel) {
+                                $where .= ' AND user='.$aid;
+                            }
+
                             $query = 'SELECT `'.$iteme->name .'` FROM `'.$itemt->db_table_name.'` WHERE '.$where;
                             $this->_db->setQuery( $query );
+
                             $iteme->content = $this->_db->loadResult();
                         }
                         unset($iteme);
@@ -2263,7 +2272,7 @@ class EmundusModelApplication extends JModelList {
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = $element->content;
-                                    $forms .= '<p><b>'.JText::_($element->label).': </b>'.JText::_($elt).'</p>';
+                                    $forms .= '<p class="form-element"><b>'.JText::_($element->label).': </b>'.JText::_($elt).'</p>';
                                 }
                             }
 
@@ -2378,6 +2387,10 @@ class EmundusModelApplication extends JModelList {
                                                 $elt = "";
                                             }
                                         }
+                                        elseif($elements[$j]->plugin == 'fileupload') {
+                                            $filename = end(explode('/', $r_elt));
+                                            $elt = '<a href="'.JUri::base().$elt.'" target="_blank">'.$filename.'</a>';
+                                        }
                                         else
                                             $elt = $r_elt;
 
@@ -2392,7 +2405,7 @@ class EmundusModelApplication extends JModelList {
                             // AFFICHAGE EN LIGNE
                         } else {
                             foreach($elements as $element) {
-                                if(!empty($element->label) && $element->label!=' '  && $elements->plugin != 'display') {
+                                if(!empty($element->label) && $element->label!=' ' && $element->plugin != 'display') {
 
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
@@ -2487,9 +2500,15 @@ class EmundusModelApplication extends JModelList {
                                             $elt = "";
                                         }
                                     }
-                                    else
+                                    elseif($element->plugin == 'fileupload') {
+                                        $filename = end(explode('/', @$element->content));
+                                        $elt = '<a href="'.JUri::base().$element->content.'" target="_blank">'.$filename.'</a>';
+                                    }
+                                    else {
                                         $elt = $element->content;
-                                    $forms .= '<p><b>'.JText::_($element->label).': </b>'.JText::_($elt).'</p>';
+                                    }
+
+                                    $forms .= '<p class="form-element"><b>'.JText::_($element->label).': </b>'.JText::_($elt).'</p>';
                                 }
                             }
                         }
