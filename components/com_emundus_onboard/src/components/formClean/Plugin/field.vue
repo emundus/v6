@@ -41,9 +41,8 @@
 <!--      v-show - shox this div when option 4 is checked-->
       <div class="form-group" v-show="selected">
         <label>{{inputmasktitle}}</label>
-        <input type="text" id="format" class="form__input field-general w-input" @input="addFormat" v-model="format" :placeholder="[[ inputmaskplaceholder ]]" v-mask="format"/>
-        <div class="hint_line" style="font-size: xx-small">{{tipData}}</div>
-        <p>Preview : {{ format }}</p>
+        <input type="text" id="format" class="form__input field-general w-input" v-model="element.params.text_input_mask" :placeholder="[[ inputmaskplaceholder ]]"/>
+        <label style="font-size: xx-small">{{tipData}}</label>
       </div>
     </div>
   </div>
@@ -54,6 +53,7 @@ export default {
   name: "fieldF",
   props: { element: Object, files: Number },
   data() {
+
     return {
       msg: '',
       path: window.location.protocol + '//' + window.location.host + '/media/com_emundus_onboard/',
@@ -67,20 +67,14 @@ export default {
       emailfield: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EMAIL"),
       numberfield: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NUMBER"),
       placeholderHelp: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER_HELP"),
-
+      text_input_mask: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK"),
       inputmasktitle: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_TITLE"),
       inputmaskplaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_PLACEHOLDER"),
       selected: false,
       tipData: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_HINT"),
-      format: ""
     };
   },
-  methods: {
-    addFormat: function () {
-      format = this.format;
-      return format;
-    }
-  },
+  methods: {},
   created(){
     this.msg =
             '<p style="color: white">' + this.placeholderHelp + '</p>' +
@@ -90,6 +84,10 @@ export default {
     }
     if(typeof this.element.params.maxlength == 'undefined'){
       this.element.params.maxlength = 255;
+    }
+
+    if(typeof this.element.params.text_input_mask == 'undefined'){
+      this.element.params.text_input_mask = ''
     }
   },
 };

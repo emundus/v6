@@ -197,6 +197,11 @@ class EmundusonboardModelformbuilder extends JModelList {
                     "1",
                 ),
             );
+
+            //if plugin == field
+            if($plugin == 'field'){
+                $params['text_input_format'] = array();
+            }
             $params['notempty-message'] = array();
             $params['notempty-validation_condition'] = array();
         }
