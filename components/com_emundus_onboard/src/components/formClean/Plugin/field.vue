@@ -4,12 +4,12 @@
       <div class="form-group">
         <label>{{fieldtype}} :</label>
         <select v-model="element.params.password" id='selectIdTest' class="dropdown-toggle" :disabled="files != 0 && element.params.password == 6">
-          <option value="0" selected v-on:click="selected = false" >{{textfield}}</option>
+          <option value="0" v-on:click="selected = false" >{{textfield}}</option>
           <option value="2" v-on:click="selected = false">{{phonefield}}</option>
           <option value="3" v-on:click="selected = false">{{emailfield}}</option>
           <option value="6" v-if="files == 0 || (files != 0 && element.params.password == 6)" v-on:click="selected = false">{{numberfield}}</option>
           <!-- candidat number format -->
-          <option value="4" v-on:click="selected = true">{{inputmasktitle}}</option>
+          <option value="4" selected v-on:click="selected = true">{{inputmasktitle}}</option>
         </select>
       </div>
       <div class="form-group">
@@ -70,7 +70,7 @@ export default {
       text_input_mask: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK"),
       inputmasktitle: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_TITLE"),
       inputmaskplaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_PLACEHOLDER"),
-      selected: false,
+      selected: true,
       tipData: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_HINT"),
     };
   },
