@@ -117,7 +117,7 @@
                        :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id}">
                     <modalEditElement
                             :ID="element.id"
-                            :element="element"
+                            :gid="element.group_id"
                             :files="files"
                             :manyLanguages="manyLanguages"
                             :actualLanguage="actualLanguage"

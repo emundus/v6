@@ -2,9 +2,6 @@
   <div id="birthdayF">
     <div class="rowmodal">
       <div class="form-group">
-<!--        <input type="checkbox" class="form__input field-general w-input" value="0" v-model="datepicker" />-->
-<!--        <label class="ml-10px mb-0">{{displaycalendar}}</label>-->
-      <!-- 3 radio buttons pour 3 options -->
         <label>{{ Format }}</label>
         <div class="flex mr-2">
           <input type="radio" id = 'radio_default' value='1' v-model="datepicker"/>
@@ -19,10 +16,6 @@
           <span class="ml-10px">{{dateSelect}}</span>
         </div>
       </div>
-<!--      <div class="form-group">
-        <label>{{helptext}} :</label>
-        <input type="text" class="form__input field-general w-input" v-model="element.params.rollover" />
-      </div>-->
     </div>
   </div>
   </template>
@@ -34,42 +27,32 @@ export default {
   props: { element: Object },
   data() {
     return {
-      datepicker: 1,
+      datepicker: null,
       birthdaySelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMAT_BIRTHDAY"),
       yearSelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMAT_YEAR"),
       dateSelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_CALENDAR"),
       Format: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMATTING"),
-      // calendarShow:false,
     }
   },
 
   created() {
-    setTimeout(() => {
       if(this.element.plugin == 'birthday'){
         this.datepicker = 1;
-      }
-      else if(this.element.plugin == 'date') {
+      } else if(this.element.plugin == 'date') {
         this.datepicker = 3;
         // this.calendarShow = true;
-      }
-      else {
+      } else {
         this.datepicker = 2; //year
       }
-    },1000);
   },
   watch:{
     datepicker: function(value) {
       // check radio button i is selected
       if(value == 3) {
         this.element.plugin = 'date';
-      }
-      else if(value == 2) {
+      } else if(value == 2) {
         this.element.plugin = 'years';
-      }
-      // else if(document.getElementsById("jos_emundus_1002_00___e_349_7674_cal_cal_img").clicked == true) {
-      //   this.element.plugin = 'years';
-      // }
-      else{
+      } else {
         this.element.plugin = 'birthday';
       }
 
