@@ -41,9 +41,6 @@
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
         </div>
-        <div class="loading-form" v-if="loading">
-          <Ring-Loader :color="'#de6339'" />
-        </div>
       </div>
       <div class="col-md-12 mb-1">
         <button type="button"
@@ -54,6 +51,9 @@
                 class="bouton-sauvergarder-et-continuer w-retour"
                 @click.prevent="$modal.hide('modalEditElement' + ID)"
         >{{Retour}}</button>
+      </div>
+      <div class="loading-form" v-if="loading">
+        <Ring-Loader :color="'#de6339'" />
       </div>
     </modal>
   </span>
@@ -72,7 +72,7 @@
 
   export default {
     name: "modalEditElement",
-    props: { ID: Number, element: Object, files: Number, manyLanguages: Number, actualLanguage: String },
+    props: { ID: Number, gid: Number, files: Number, manyLanguages: Number, actualLanguage: String },
     components: {
       fieldF,
       birthdayF,
@@ -93,6 +93,7 @@
         loading: false,
         sublabel: "",
         plugin: '',
+        element: null,
         translate: {
           label: false,
         },
@@ -184,25 +185,35 @@
         });
       },
       getElement() {
+        this.loading = true;
         axios({
           method: "get",
           url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
           params: {
-            element: this.element.id,
-            gid: this.element.group_id
+            element: this.ID,
+            gid: this.gid
           },
           paramsSerializer: params => {
             return qs.stringify(params);
           }
         }).then(response => {
           this.element = response.data;
+
           if(this.element.plugin == 'databasejoin'){
             this.plugin = this.element.params.database_join_display_type;
-          } else if (this.element.plugin == 'date') {
+          } else if (this.element.plugin == 'date' || this.element.plugin == 'years') {
             this.plugin = 'birthday';
           } else {
             this.plugin = this.element.plugin;
           }
+
+          this.axiostrad(this.element.label_tag)
+              .then(rep => {
+                this.label.fr = rep.data.fr;
+                this.label.en = rep.data.en;
+              });
+
+          this.loading = false;
         });
       },
       getDatabases(){
@@ -229,18 +240,8 @@
         this.initialisation();
       },
       initialisation() {
-        this.loading = true;
         this.getElement();
-        this.axiostrad(this.element.label_tag)
-                .then(response => {
-                  this.label.fr = response.data.fr;
-                  this.label.en = response.data.en;
-                })
-                .catch(function(response) {
-                  console.log(response);
-                });
         this.getDatabases();
-        this.loading = false;
       },
       checkPlugin(){
         if(this.element.plugin === 'databasejoin'){
@@ -258,7 +259,7 @@
         this.tempEl = JSON.parse(JSON.stringify(this.element));
       },
       plugin: function(value) {
-        if (this.element.plugin !== 'databasejoin') {
+        if (this.element.plugin !== 'databasejoin' && this.element.plugin !== 'date' && this.element.plugin !== 'years') {
           this.element.plugin = value;
         }
       }

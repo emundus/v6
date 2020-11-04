@@ -2274,6 +2274,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
                 ${"element".$o_element->id}->id = $o_element->id;
                 ${"element".$o_element->id}->group_id = $gid;
+
                 ${"element".$o_element->id}->hidden = $content_element->hidden;
                 ${"element".$o_element->id}->default = $o_element->default;
                 ${"element".$o_element->id}->labelsAbove=$labelsAbove;
@@ -2310,9 +2311,16 @@ class EmundusonboardModelformbuilder extends JModelList {
                     if ($el_params->tipLocation == 'above') :
                         ${"element".$o_element->id}->tipAbove=$content_element->tipAbove;
                     endif;
+                    ///// ici
                     if ($content_element->element) :
-                        ${"element".$o_element->id}->element=$content_element->element;
+                        if($o_element->plugin == 'date') {
+                            ${"element" . $o_element->id}->element = '<input data-v-8d3bb2fa="" class="form-control" type="date">';
+                        }
+                        else {
+                            ${"element" . $o_element->id}->element = $content_element->element;
+                        }
                     endif;
+                    //// ici
                     if ($content_element->error) :
                         ${"element".$o_element->id}->error=$content_element->error;
                         ${"element".$o_element->id}->errorClass=$el_params->class;

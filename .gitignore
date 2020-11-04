@@ -59,3 +59,9 @@ administrator/templates/isis/images/logo.png
 *~
 /components/com_emundus_onboard/node_modules/
 media/com_emundus_onboard/
+
+components/com_emundus_onboard/src/components/formClean/Plugin/autocomplete.vue
+
+components/com_emundus_onboard/src/components/formClean/Plugin/cascadingdropdown.vue
+
+components/com_emundus_onboard/src/components/formClean/Plugin/media.vue
