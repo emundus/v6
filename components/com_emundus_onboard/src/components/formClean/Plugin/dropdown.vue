@@ -10,6 +10,19 @@
       </div>
       <div class="col-md-10 form-group flex">
         <div class="toggle">
+        <input type="checkbox"
+               true-value="true"
+               false-value="false"
+               id="no_default_value"
+               class="check"
+               v-model="no_default_value" />
+          <strong class="b switch"></strong>
+          <strong class="b track"></strong>
+        </div>
+        <label for="no_default_value" class="ml-10px mb-0">{{ No_Default_Value }}</label>
+      </div>
+      <div class="col-md-10 form-group flex">
+        <div class="toggle">
           <input type="checkbox"
                  true-value="1"
                  false-value="0"
@@ -29,7 +42,7 @@
                 v-if="databasejoin != 1"
                 @end="needtoemit()"
                 handle=".handle">
-        <div v-for="(sub_values, i) in arraySubValues" :key="i" class="dpflex">
+        <div v-for="(sub_values, i) in arraySubValues" :key="i" class="dpflex" v-if="display_first_option != i">
           <span class="icon-handle">
             <em class="fas fa-grip-vertical handle"></em>
           </span>
@@ -63,11 +76,14 @@ export default {
     return {
       arraySubValues: [],
       databasejoin: "0",
+      no_default_value: false,
+      display_first_option: null,
       databasejoin_data: 0,
       helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
       suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
       AddOption: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
       DataTables: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
+      No_Default_Value: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NO_DEFAULT_VALUE"),
     };
   },
   methods: {
@@ -93,7 +109,20 @@ export default {
           }
         })
       } else  {
+        this.element.params.default_value = false;
+        this.no_default_value = false;
         if(typeof this.element.params.sub_options !== 'undefined') {
+          if(typeof this.element.params.sub_options.sub_initial_selection !== 'undefined') {
+            this.element.params.sub_options.sub_values.forEach((value,i) => {
+              if(value == this.element.params.sub_options.sub_initial_selection[0]){
+                this.display_first_option = i;
+              }
+            })
+            if(this.display_first_option != null) {
+              this.element.params.default_value = true;
+              this.no_default_value = true;
+            }
+          }
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXTA",
@@ -162,8 +191,9 @@ export default {
   },
   watch: {
     databasejoin: function(value){
-      if(value) {
+      if(value == 1) {
         this.checkOnboarding();
+        this.element.plugin = 'databasejoin';
         this.element.params.join_db_name = this.databases[this.databasejoin_data].database_name;
         this.element.params.database_join_display_type = 'dropdown';
         this.element.params.join_key_column = this.databases[this.databasejoin_data].join_column_id;
@@ -201,6 +231,10 @@ export default {
         this.element.params.join_val_column = this.databases[value].join_column_val;
         this.element.params.join_val_column_concat = '';
       }
+    },
+
+    no_default_value: function(value){
+      this.element.params.default_value = value;
     }
   }
 };

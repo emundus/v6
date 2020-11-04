@@ -592,7 +592,7 @@ class EmundusModelEmails extends JModelList {
                                 $val[$k] = '';
                             }
                         }
-                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
+                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", JText::_($val));
                     }
                 }
 

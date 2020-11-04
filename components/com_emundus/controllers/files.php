@@ -1558,7 +1558,7 @@ class EmundusControllerFiles extends JControllerLegacy
         // Here we filter elements which are already present but under a different name or ID, by looking at tablename___element_name.
         $elts_present = [];
         foreach ($ordered_elements as $elt_id => $o_elt) {
-        	$element = $o_elt->tab_name.'___'.$o_elt->element_name;
+            $element = !empty($o_elt->table_join) ? $o_elt->table_join.'___'.$o_elt->element_name : $o_elt->tab_name.'___'.$o_elt->element_name;
         	if (in_array($element, $elts_present)) {
         		unset($ordered_elements[$elt_id]);
 	        } else {
@@ -3039,7 +3039,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 if (count($val) > 0) {
                                     foreach ($val as $k => $v) {
                                         $index = array_search(trim($v), $params->sub_options->sub_values);
-                                        $val[$k] = $params->sub_options->sub_labels[$index];
+                                        $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
                                     }
                                     $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
                                 } else {
@@ -3624,10 +3624,10 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         $query = $this->_db->getQuery(true);
         $query
-            ->select([
-                $this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'), $this->_db->quoteName('p.evaluation', 'evaluation'), $this->_db->quoteName('p.temoignagesclients', 'temoignagesclients'), $this->_db->quoteName('p.accrochecom', 'accrochecom'),
+            ->select(['DISTINCT(tu.session_code) AS session_code',
+                $this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'), $this->_db->quoteName('p.evaluation', 'evaluation'),
                 $this->_db->quoteName('t.label','theme'), $this->_db->quoteName('t.color','class'),
-                $this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.session_code','session_code'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours','hours'), $this->_db->quoteName('tu.time_in_company', 'time_in_company'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
+                $this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours','hours'), $this->_db->quoteName('tu.time_in_company', 'time_in_company'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
             ])
             ->from($this->_db->quoteName('#__emundus_setup_programmes','p'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_thematiques','t').' ON '.$this->_db->quoteName('t.id').' = '.$this->_db->quoteName('p.programmes'))

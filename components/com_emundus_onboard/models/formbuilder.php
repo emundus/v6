@@ -188,7 +188,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     "both",
                 ),
                 'validate_hidden' => array(
-                    "1",
+                    "0",
                 ),
                 'must_validate' => array(
                     "0",
@@ -1779,7 +1779,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             $old_params['validations']['plugin_published'][] = "1";
             $old_params['validations']['validate_in'][] = "both";
             $old_params['validations']['validation_on'][] = "both";
-            $old_params['validations']['validate_hidden'][] = "1";
+            $old_params['validations']['validate_hidden'][] = "0";
             $old_params['validations']['must_validate'][] = "0";
             $old_params['validations']['show_icon'][] = "1";
             $old_params['notempty-message'] = array("");
@@ -1890,6 +1890,17 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $element['params'] = $this->deleteDatabaseJoinParams($element['params']);
                     $sub_values = [];
                     $sub_labels = [];
+                    $sub_initial_selection = [];
+
+                    if($element['params']['default_value'] == 'true') {
+                        if (!array_search('PLEASE_SELECT', $old_params['sub_options']['sub_labels'])) {
+                            $sub_labels[] = 'PLEASE_SELECT';
+                            $sub_values[] = '';
+                            $sub_initial_selection[] = '';
+                        } else {
+                            $sub_initial_selection[0] = '';
+                        }
+                    }
 
                     foreach ($element['params']['sub_options']['sub_values'] as $index => $sub_value) {
                         if ($old_params['sub_options']) {
@@ -1898,16 +1909,19 @@ class EmundusonboardModelformbuilder extends JModelList {
                                 'en' => $sub_value,
                             );
                             if ($old_params['sub_options']['sub_labels'][$index]) {
-                                $this->formsTrad($old_params['sub_options']['sub_labels'][$index], $new_label);
-                                $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
+                                if($old_params['sub_options']['sub_labels'][$index] != 'PLEASE_SELECT'){
+                                    $this->formsTrad($old_params['sub_options']['sub_labels'][$index], $new_label);
+                                    $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
+                                    $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
+                                }
                             } else {
                                 $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
                                 $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
                                 $this->addTransationFr($contentToAdd);
                                 $this->addTransationEn($contentToAdd);
                                 $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
+                                $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
                             }
-                            $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
                         } else {
                             $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
                             $this->addTransationFr($contentToAdd);
@@ -1919,7 +1933,8 @@ class EmundusonboardModelformbuilder extends JModelList {
 
                     $element['params']['sub_options'] = array(
                         'sub_values' => $sub_values,
-                        'sub_labels' => $sub_labels
+                        'sub_labels' => $sub_labels,
+                        'sub_initial_selection' => $sub_initial_selection,
                     );
                 }
 
@@ -2360,7 +2375,9 @@ class EmundusonboardModelformbuilder extends JModelList {
             if ($params['sub_options']) {
                 $sub_labels = json_decode($fabrik_element->params, true)['sub_options']['sub_labels'];
                 foreach ($sub_labels as $sub_label) {
-                    $this->deleteTranslation($sub_label);
+                    if($sub_label != 'PLEASE_SELECT') {
+                        $this->deleteTranslation($sub_label);
+                    }
                 }
             }
 
