@@ -306,6 +306,7 @@
 		<field name="addpipe_size" type="text" default="{width:640,height:510}" label="COM_EMUNDUS_ADDPIPE_SIZE" description="COM_EMUNDUS_ADDPIPE_SIZE_DESC" />
 		<field name="addpipe_path_ftp" type="text" default="/home/sftpusers/emundus" label="COM_EMUNDUS_ADDPIPE_PATH_FTP" description="COM_EMUNDUS_ADDPIPE_PATH_FTP_DESC" />
 		<field name="addpipe_account_hash" type="text" default="" label="COM_EMUNDUS_ADDPIPE_ACCOUNT_HASH" description="COM_EMUNDUS_ADDPIPE_ACCOUNT_HASH_DESC" />
+		<field name="addpipe_video_link" type="text" default="https://eu1-addpipe.s3.eu-central-1.amazonaws.com/" label="COM_EMUNDUS_ADDPIPE_ACCOUNT_VIDEO_LINK" description="COM_EMUNDUS_ADDPIPE_ACCOUNT_VIDEO_LINK_DESC" />
 		<field name="addpipe_eid" type="text" default="" label="COM_EMUNDUS_ADDPIPE_EID" description="COM_EMUNDUS_ADDPIPE_EID_DESC" />
 		<field name="addpipe_api_key" type="text" default="" label="COM_EMUNDUS_ADDPIPE_API_KEY" description="COM_EMUNDUS_ADDPIPE_API_KEY_DESC" />
 		<field
