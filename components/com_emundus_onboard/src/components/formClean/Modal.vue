@@ -40,6 +40,7 @@
           <radiobtnF v-if="plugin == 'radiobutton'" :element="element" @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
+          <calcF v-if="plugin =='calc'" :element="element" :elements="elements" :actualLanguage="actualLanguage"></calcF>
         </div>
       </div>
       <div class="col-md-12 mb-1">
@@ -68,11 +69,12 @@
   import radiobtnF from "./Plugin/radiobtn";
   import textareaF from "./Plugin/textarea";
   import displayF from "./Plugin/display";
+  import calcF from "./Plugin/calc"
   const qs = require("qs");
 
   export default {
     name: "modalEditElement",
-    props: { ID: Number, gid: Number, files: Number, manyLanguages: Number, actualLanguage: String },
+    props: { ID: Number, gid: Number, files: Number, manyLanguages: Number, actualLanguage: String, elements: Array },
     components: {
       fieldF,
       birthdayF,
@@ -80,7 +82,8 @@
       dropdownF,
       radiobtnF,
       textareaF,
-      displayF
+      displayF,
+      calcF
     },
     data() {
       return {
@@ -126,6 +129,10 @@
           display: {
             value: 'display',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
+          },
+          calc: {
+            value: 'calc',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_CALC")
           },
         },
         databases: [],

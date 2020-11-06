@@ -173,7 +173,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             'can_order' => 0,
         );
 
-        if($plugin != 'display'){
+        if($plugin != 'display' && $plugin != 'calc'){
             $params['validations'] = array(
                 'plugin' => array(
                     "notempty",
@@ -197,11 +197,6 @@ class EmundusonboardModelformbuilder extends JModelList {
                     "1",
                 ),
             );
-
-            //if plugin == field
-            if($plugin == 'field'){
-                $params['text_input_format'] = array();
-            }
             $params['notempty-message'] = array();
             $params['notempty-validation_condition'] = array();
         }
@@ -310,6 +305,14 @@ class EmundusonboardModelformbuilder extends JModelList {
                 case 'display':
                     unset($params['display_showlabel']);
                     break;
+                case 'calc':
+                    unset ($params['calc_calculation']);
+                    unset ($params['calc_format_string']);
+                    unset ($params['calc_on_save_only']);
+                    unset ($params['calc_ajax']);
+                    unset ($params['calc_ajax_observe_all']);
+                    unset ($params['calc_on_load']);
+                    break;
                 default:
                     break;
             }
@@ -414,6 +417,14 @@ class EmundusonboardModelformbuilder extends JModelList {
                 break;
             case 'display':
                 $params['display_showlabel'] = 1;
+                break;
+            case 'calc':
+                $params['calc_calculation'] = '';
+                $params['calc_format_string'] = '';
+                $params['calc_on_save_only'] = 0;
+                $params['calc_ajax'] = 1;
+                $params['calc_ajax_observe_all'] = 0;
+                $params['calc_on_load'] = 1;
                 break;
             default:
                 break;

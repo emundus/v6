@@ -194,6 +194,12 @@
             icon: 'fas fa-paragraph',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
+          calc: {
+            id: 7,
+            value: 'calc',
+            icon: 'fas fa-calculator',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_CALC")
+          },
         },
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
         addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),

@@ -119,6 +119,7 @@
                             :ID="element.id"
                             :gid="element.group_id"
                             :files="files"
+                            :elements="group.elts"
                             :manyLanguages="manyLanguages"
                             :actualLanguage="actualLanguage"
                             @reloadElement="reloadElement(element)"
@@ -185,7 +186,7 @@
                         </div>
                         <span class="ml-10px">{{Required}}</span>
                       </a>
-                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="openParameters(element)">
+                      <a class="d-flex mr-2 text-orange" @click="openParameters(element)">
                         <em class="fas fa-cog"></em>
                         <span class="ml-10px">{{Settings}}</span>
                       </a>
