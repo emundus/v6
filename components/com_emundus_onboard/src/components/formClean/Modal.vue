@@ -40,7 +40,7 @@
           <radiobtnF v-if="plugin == 'radiobutton'" :element="element" @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
-          <calcF v-if="plugin =='calc'" :element="element" :elements="elements" :actualLanguage="actualLanguage"></calcF>
+          <calcF v-if="plugin =='calc'" :element="element" :elements="elements" :actualLanguage="actualLanguage" @addToCalc="addToCalc"></calcF>
         </div>
       </div>
       <div class="col-md-12 mb-1">
@@ -97,6 +97,7 @@
         sublabel: "",
         plugin: '',
         element: null,
+        calc: null,
         translate: {
           label: false,
         },
@@ -153,6 +154,22 @@
     methods: {
       subOptions(sO) {
         this.sublabel = sO;
+      },
+      addToCalc(calc_elements){
+        if(calc_elements.length > 0){
+          this.calc = 'return ';
+
+          calc_elements.forEach((value,key) => {
+            this.calc += "'{" +  value.element + '_raw' + "}'";
+            if(value.operator != null){
+              this.calc += value.operator;
+            }
+          })
+          this.calc += ';';
+          this.element.params.calc_calculation = this.calc;
+        } else {
+          this.calc = null;
+        }
       },
       UpdateParams() {
         this.changes = true;

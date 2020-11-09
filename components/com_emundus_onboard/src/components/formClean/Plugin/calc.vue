@@ -16,15 +16,15 @@
             </div>
           </div>
           <div class="flex" v-if="calc_element.element != null">
-            <div @click="updateOperator(calc_element,'+')" class="operator" :id="'plus_' + calc_element.id">
+            <span @click="updateOperator(calc_element,'+')" class="operator" :class="calc_element.operator == '+' ? 'operator-selected' : ''" :id="'plus_' + calc_element.id">
               <em class="fas fa-plus"></em>
-            </div>
-            <div @click="updateOperator(calc_element,'-')" class="operator" :id="'minus_' + calc_element.id">
+            </span>
+            <span @click="updateOperator(calc_element,'-')" class="operator" :class="calc_element.operator == '-' ? 'operator-selected' : ''" :id="'minus_' + calc_element.id">
               <em class="fas fa-minus"></em>
-            </div>
-            <div @click="updateOperator(calc_element,'*')" class="operator" :id="'multiple_' + calc_element.id">
+            </span>
+            <span @click="updateOperator(calc_element,'*')" class="operator" :class="calc_element.operator == '*' ? 'operator-selected' : ''" :id="'multiple_' + calc_element.id">
               <em class="fas fa-times"></em>
-            </div>
+            </span>
           </div>
         </div>
       </div>
@@ -46,6 +46,8 @@ export default {
     return {
       calc_elements: [],
       raw_elements: [],
+      operators_regex: /(\*|\+|\-)/,
+      operators: ['-','+','*','/'],
       calculation: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_CALC"),
       SelectElementToStart: Joomla.JText._("COM_EMUNDUS_ONBOARD_CALC_SELECT_ELEMENT"),
     };
@@ -65,7 +67,7 @@ export default {
 
       this.findObjectByKey(this.raw_elements, 'id', id).disabled = true;
 
-      //Check if we update an element
+      // Check if we update an element
       if(calc_elt.old != null) {
         this.findObjectByKey(this.raw_elements, 'id', calc_elt.old).disabled = false;
       }
@@ -77,6 +79,8 @@ export default {
       el.innerHTML = elementToAdd.label_value;
       calc_elt.element =  el.getElementsByTagName('label')[0].getAttribute('for');
       //
+
+      this.needtoemit();
     },150),
 
     removeElementFromCalc: _.debounce(function(key) {
@@ -91,50 +95,66 @@ export default {
           'element': null,
           'operator': null
         });
-      }
-
-      calc_element.operator = operator;
-      switch (operator) {
-        case '+':
-          document.getElementById('minus_' + calc_element.id).classList.remove('operator-selected')
-          document.getElementById('multiple_' + calc_element.id).classList.remove('operator-selected')
-          document.getElementById('plus_' + calc_element.id).classList.add('operator-selected')
-          break;
-        case '*':
-          document.getElementById('minus_' + calc_element.id).classList.remove('operator-selected')
-          document.getElementById('plus_' + calc_element.id).classList.remove('operator-selected')
-          document.getElementById('multiple_' + calc_element.id).classList.add('operator-selected')
-          break;
-        case '-':
-          document.getElementById('plus_' + calc_element.id).classList.remove('operator-selected')
-          document.getElementById('multiple_' + calc_element.id).classList.remove('operator-selected')
-          document.getElementById('minus_' + calc_element.id).classList.add('operator-selected')
-          break;
-        default:
-          document.getElementById('plus_' + calc_element.id).classList.remove('operator-selected')
-          document.getElementById('multiple_' + calc_element.id).classList.remove('operator-selected')
-          document.getElementById('minus_' + calc_element.id).classList.remove('operator-selected')
+        calc_element.operator = operator;
+      } else {
+        calc_element.operator = operator;
+        this.needtoemit();
       }
     },
 
-    leave: function(index) {},
-    initialised: function() {
-      this.raw_elements = this.elements;
-      if(this.calc_elements.length == 0){
-        this.calc_elements.push({
-          'old': null,
-          'id': null,
-          'element': null,
-          'operator': null
-        });
-      }
-    },
-    needtoemit: _.debounce(function() {}),
+    needtoemit: _.debounce(function() {
+      this.$emit("addToCalc", this.calc_elements);
+    }),
   },
+
   created: function() {
-    this.initialised();
-  },
-  watch: {}
+    this.raw_elements = this.elements;
+
+    if(this.element.params.calc_calculation != '') {
+      let splitByOperators = this.element.params.calc_calculation.split(this.operators_regex);
+      let criteria_id = null;
+
+      splitByOperators.forEach((value) => {
+        if (value != '-' && value != '+' && value != '*' && value != '/') {
+          // Get only the criteria without raw
+          let criteria = value.split(/({|})/).filter(element => element.match(/\W*(jos_)\W*/))[0].split('_raw')[0];
+
+          // Get the element id
+          this.raw_elements.forEach((element) => {
+            var el = document.createElement('html');
+            el.innerHTML = element.label_value;
+            if (criteria == el.getElementsByTagName('label')[0].getAttribute('for')) {
+              criteria_id = element.id;
+            }
+          });
+
+          // Push to our calculation array
+          this.calc_elements.push({
+            'old': null,
+            'id': criteria_id,
+            'element': criteria,
+            'operator': null
+          });
+
+          // Disable the element from the dropdown list
+          this.findObjectByKey(this.raw_elements, 'id', criteria_id).disabled = true;
+        } else {
+          // Add the operator to previous element
+          this.findObjectByKey(this.calc_elements, 'id', criteria_id).operator = value;
+        }
+      });
+    }
+
+    // If calculation is empty create a first element
+    if(this.calc_elements.length == 0){
+      this.calc_elements.push({
+        'old': null,
+        'id': null,
+        'element': null,
+        'operator': null
+      });
+    }
+  }
 };
 </script>
 <style scoped>
