@@ -10,6 +10,12 @@
 				<option value="mail">PLG_FABRIK_FORM_EMUNDUSYOUSIGN_METHOD_EMAIL</option>
 			</field>
 
+			<field name="embed_url" type="field" showon="method:embed" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_EMBED_URL_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_EMBED_URL_LABEL" />
+
+			<field name="signer_name" type="field" default="jos_emundus_personal_detail___full_name" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_NAME_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_NAME_LABEL" />
+			<field name="signer_email" type="field" default="jos_emundus_personal_detail___email" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_EMAIL_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_EMAIL_LABEL" />
+			<field name="signer_tel" type="field" default="jos_emundus_personal_detail___tel" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_TEL_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_TEL_LABEL" />
+
 			<field name="attachment_type" type="list" default="application_form" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_ATTACHMENT_TYPE_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_ATTACHMENT_TYPE_LABEL">
 				<option value="application_form">PLG_FABRIK_FORM_EMUNDUSYOUSIGN_ATTACHMENT_TYPE_APPLICATION_FORM</option>
 				<option value="letter">PLG_FABRIK_FORM_EMUNDUSYOUSIGN_ATTACHMENT_TYPE_LETTER</option>
@@ -22,12 +28,6 @@
 				<option value="student">PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_TYPE_STUDENT</option>
 				<option value="other_user">PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_TYPE_OTHER</option>
 			</field>
-
-			<field name="signer_name" type="field" default="jos_emundus_personal_detail___full_name" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_NAME_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_NAME_LABEL" />
-			<field name="signer_email" type="field" default="jos_emundus_personal_detail___email" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_EMAIL_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_EMAIL_LABEL" />
-			<field name="signer_tel" type="field" default="jos_emundus_personal_detail___tel" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_TEL_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_TEL_LABEL" />
-
-			<field name="email_subject" type="field" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_EMAIL_SUBJECT_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_EMAIL_SUBJECT_LABEL" />
 		</fieldset>
 	</fields>
 </form>

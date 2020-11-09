@@ -80,9 +80,11 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 
 	/**
-	 * @param $signer_value
+	 * @param array $signer_value
+	 *
+	 * @return array|false
 	 */
-	private function proccessSignerValues($signer_value) {
+	private function proccessSignerValues(array $signer_value) {
 
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -132,7 +134,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 	 * @return void
 	 * @throws Exception
 	 */
-	public function onAfterProcess() {
+	public function onAfterProcess() : void {
 		
 		// Attach logging system.
 		jimport('joomla.log.log');
@@ -145,6 +147,9 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
+		// Warning: For expert invitations, which may have multiple fnums, this does not support making and signing a doc for each file.
+		// Only batch signing of a single doc generated based on a single file will work.
+		// However, in the case of expert invitations, multiple files_requests will be generated and updated for the signature requests.
 		$fnum = $jinput->get->get('rowid');
 
 		$signer_names = explode(',', $this->getParam('signer_name'));
@@ -189,7 +194,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 			try {
 				$attachment_label = $db->loadResult();
 			} catch (Exception $e) {
-				JLog::add('Error getting attachment label in plugin/docusign at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+				JLog::add('Error getting attachment label in plugin/yousign at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.yousign');
 				return;
 			}
 
@@ -281,9 +286,9 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 		$http = new JHttp();
 
 		// Step 1. Send file to API.
-		// TODO: POST file. WITHOUT base64 header
 		$file = new stdClass();
 		$file->name = $fileName;
+		// API Docs specify not to send the application/pdf part of the base64.
 		$file->content = str_replace('data:application/pdf;base64', '', $base64FileContent);
 		$response = $http->post($host.'/files', json_encode($file),
 		[
@@ -301,8 +306,6 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 		}
 
 		// Step 2: Create procedure.
-
-
 		$procedure = new stdClass();
 		$procedure->name = ''; // TODO: Add param.
 
@@ -332,111 +335,124 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 			'Content-Type' => 'application/json',
 			'Authorization' => 'Bearer '.$api_key
 		]);
-		
-		echo '<pre>'; var_dump($response); echo '</pre>'; die;
 
 		// Code 201 = CREATED
 		if ($response->code === 201) {
 			$response->body = json_decode($response->body);
 			$procedure_id = $response->body->id;
 			// TODO: Log success.
-		} else {
-			throw new Exception('ERROR '.$response->code.' FROM YOUSIGN.');
-		}
 
-		// Next, create the top level envelope definition and populate it.
-		$envelopeDefinition = new DocuSign\eSign\Model\EnvelopeDefinition([
-			'email_subject' => $this->getParam('email_subject', 'eMundus - Please sign this document'),
-			'documents' => [$document],
-			'recipients' => new DocuSign\eSign\Model\Recipients(['signers' => $signers]),
-			'status' => "sent"
-		]);
-
-		// Step 2. Create/send the envelope.
-		$config = new DocuSign\eSign\Configuration();
-		$config->setHost($host);
-		$config->addDefaultHeader("X-DocuSign-Authentication", "{\"Username\":\"".$this->getParam('username')."\",\"Password\":\"".$this->getParam('password')."\",\"IntegratorKey\":\"".$this->getParam('integrator_key')."\"}");
-		$apiClient = new DocuSign\eSign\ApiClient($config);
-
-		//*** STEP 1 - Login API: get first Account ID and baseURL
-		$authenticationApi = new DocuSign\eSign\Api\AuthenticationApi($apiClient);
-		$options = new \DocuSign\eSign\Api\AuthenticationApi\LoginOptions();
-		try {
-			$loginInformation = $authenticationApi->login($options);
-		} catch (DocuSign\eSign\ApiException $e) {
-			JLog::add('Error logging in to API -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-			try {
-				JFactory::getApplication()->enqueueMessage(JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SEND_ERROR'));
-			} catch (Exception $e) {
-				JLog::add('Error initiating JApplication in plugin/docusign -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-			}
-			return;
-		}
-
-		if (!empty($loginInformation)) {
-			$loginAccount = $loginInformation->getLoginAccounts()[0];
-			$host = $loginAccount->getBaseUrl();
-			$host = explode("/v2",$host);
-			$host = $host[0];
-
-			// UPDATE configuration object
-			$config->setHost($host);
-
-			// instantiate a NEW docusign api client (that has the correct baseUrl/host)
-			$apiClient = new DocuSign\eSign\ApiClient($config);
-
-			$account_id = $loginAccount->getAccountId();
-			if (!empty($account_id)) {
-				$envelopeApi = new DocuSign\eSign\Api\EnvelopesApi($apiClient);
-				try {
-					$results = $envelopeApi->createEnvelope($account_id, $envelopeDefinition);
-				} catch (DocuSign\eSign\ApiException $e) {
-					JLog::add('Error creating DocuSign envelope -> '.$e->getResponseBody()->message, JLog::ERROR, 'com_emundus');
-					try {
-						JFactory::getApplication()->enqueueMessage(JText::_('PLG_FABRIK_FORM_EMUNDUSDOCUSIGN_SEND_ERROR'));
-					} catch (Exception $e) {
-						JLog::add('Error initiating JApplication in plugin/docusign -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			foreach ($response->body->members as $webserviceResponseMember) {
+				foreach ($signers['emails'] as $key => $email) {
+					if ($email === $webserviceResponseMember->email) {
+						$signers['yousign'][$key] = $webserviceResponseMember->id;
+						continue 2;
 					}
-					return;
-				}
-
-				// Docusign envelope has been sent, now adding it to the eMundus data model.
-				$query->clear()
-					->insert($db->quoteName('#__emundus_uploads'))
-					->columns($db->quoteName(['user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename']))
-					->values('62, '.$db->quote($student->fnum).', '.$fnum['id'].', '.$attachment_id.', '.$db->quote($fileName));
-				$db->setQuery($query);
-				try {
-					$db->execute();
-				} catch (Exception $e) {
-					JLog::add('Error adding upload to table in plugin/docusign at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-				}
-
-				$query->clear()
-					->insert($db->quoteName('#__emundus_files_request'))
-					->columns($db->quoteName(['time_date', 'student_id', 'fnum', 'keyid', 'attachment_id', 'filename', 'campaign_id', 'email', 'email_other']))
-					->values($db->quote(date('Y-m-d H:i:s', strtotime($results->getStatusDateTime()))).', '.$student->id.', '.$db->quote($student->fnum).', '.$db->quote($results->getEnvelopeId()).', '.$attachment_id.', '.$db->quote($fileName).', '.$fnum['id'].', '.$db->quote($signer_email_1).', '.$db->quote($signer_email_2));
-				$db->setQuery($query);
-				try {
-					$db->execute();
-				} catch (Exception $e) {
-					JLog::add('Error adding file_request to table in plugin/docusign at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 				}
 			}
+
+			$key_id = $jinput->get->get('keyid');
+			if ($this->signer_type === 'other_user' && !empty($key_id)) {
+
+				// Files_requests uses fnum field but in the case of expert invitations there can be multiple fnums.
+				// This means we hace to use the expert invite procedure for getting the array of fnums by keyid and picked files.
+				$files_picked = $jinput->get('jos_emundus_files_request___your_files');
+				$query->clear()
+					->select($db->quoteName('fnum'))
+					->from($db->quoteName('#__emundus_files_request'))
+					->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id));
+				$db->setQuery($query);
+				$fnums = $db->loadColumn();
+
+				// This means that if the re is nothing in the your_files element we will get all fnums for the keyid.
+				if (!empty($files_picked)) {
+					// Only get fnums that are found in BOTH arrays, this both allows filtering (only accept files which were picked by the user) and prevents the user from cheating and entering someone else's fnum.
+					$fnums = array_intersect($fnums, $files_picked);
+				}
+			} else {
+				$fnums = [$fnum];
+			}
+
+			// Save procedure to file_requests, used for keeping track of requested/signed procedures.
+			// We are going to save the YouSign procedure ID as the keyid and the YouSign file ID as the filename.
+			$query->clear()
+				->insert($db->quoteName('#__emundus_files_request'))
+				->columns($db->quoteName(['time_date', 'student_id', 'fnum', 'keyid', 'attachment_id', 'filename', 'campaign_id']));
+
+			$now = JFactory::getDate();
+			foreach ($fnums as $fnum) {
+				$query->values(implode(',', [
+					$db->quote($now->toSql()), // time_date
+					(int)substr($fnum, -7), // student_id
+					$db->quote($fnums), // fnums
+					$db->quote($procedure_id), // keyid
+					$attachment_id, // attachement_id
+					$db->quote($file_id), // filename
+					(int)substr($fnum, 7, 14) // Campagin id
+				]));
+			}
+			$db->setQuery($query);
+
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error writing file request in plugin/yousign at query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.yousign');
+				return;
+			}
+
+			// Now that we have a procedure response, it's time we give the user access to the iFrame OR send him the email.
+			$user_is_signer = false;
+			foreach ($signers['emails'] as $key => $email) {
+
+				if (JFactory::getUser()->email === $email) {
+					$user_is_signer = true;
+				}
+
+				// Add user param containing the member ID.
+				if ($this->setUserParam($email, 'yousignMemberId', $signers['yousign'][$key])) {
+					// TODO: Log success
+				} elseif ($this->getParam('method') === 'embed') {
+
+					// Problem: Here we're in a case where we DID NOT add the memeber ID to the user, yet the settings are set to embed.
+					// Solution: Add it to the session, continue adding the other user's params, and then redirect to the iFrame for that user.
+					// This means if we have other users meant to sign, they will still get their user param added :)
+					// This session is used to prevent someone sniping a YouSign member ID from some URL and using it to look at a potentially super sensitive document.
+					$session = JFactory::getSession();
+					$session->set('youSignTmp', $signers['yousign'][$key]);
+
+					/* But Hugo, you ask, as you realize that this creates a case where technically we can have two signers, one is the current user and
+					 the other is simply an incoreectly entered email or a link that will be manually sent by the ccordinator or something (this system is meant to be super flexible).
+					 This means that we could accidentally redirect to the iFrame of the OTHER user and not the currently logged in one ? */
+
+					// Nope, this is fine, because the iFrame page will lookup the currently logged in user's info in preference to looking at the session :).
+
+				}
+
+				// No need to handle email case, this part handles itself :).
+
+			}
+
+			if ($this->getParam('method') === 'embed' && $user_is_signer) {
+				$application->redirect($this->getParam('embed_url', 'index.php?option=com_emundus&view=yousign'));
+			}
+
+		} else {
+			// TODO: Log errors.
+			throw new Exception('ERROR '.$response->code.' FROM YOUSIGN.');
 		}
 	}
 
 	/**
 	 * Raise an error - depends on whether you are in admin or not as to what to do
 	 *
-	 * @param   array   &$err   Form models error array
-	 * @param   string   $field Name
-	 * @param   string   $msg   Message
+	 * @param array   &$err   Form models error array
+	 * @param string   $field Name
+	 * @param string   $msg   Message
 	 *
 	 * @return  void
 	 * @throws Exception
 	 */
-	protected function raiseError(&$err, $field, $msg) {
+	protected function raiseError(array &$err, string $field, string $msg) : void {
 		$app = JFactory::getApplication();
 
 		if ($app->isAdmin()) {
@@ -444,5 +460,58 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 		} else {
 			$err[$field][0][] = $msg;
 		}
+	}
+
+
+	/**
+	 * @param string $user_email
+	 * @param        $param
+	 * @param string $value
+	 *
+	 * @return bool
+	 * @since version
+	 */
+	private function setUserParam(string $user_email, $param, string $value) : bool {
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('id'))
+			->from($db->quoteName('jos_user'))
+			->where($db->quoteName('email').' LIKE '.$db->quote($user_email));
+		$db->setQuery($query);
+
+		try {
+			$user_id = $db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('Error getting user by email when saving param : '.$e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
+			return false;
+		}
+
+		if (empty($user_id)) {
+			JLog::add('User not found', JLog::ERROR, 'com_emundus.yousign');
+			return false;
+		}
+
+		$user = JFactory::getUser($user_id);
+
+		$table = JTable::getInstance('user', 'JTable');
+		$table->load($user->id);
+
+		// Store token in User's Parameters
+		$user->setParam($param, $value);
+
+		// Get the raw User Parameters
+		$params = $user->getParameters();
+
+		// Set the user table instance to include the new token.
+		$table->params = $params->toString();
+
+		// Save user data
+		if (!$table->store()) {
+			JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'com_emundus.yousign');
+			return false;
+		}
+		return true;
 	}
 }
