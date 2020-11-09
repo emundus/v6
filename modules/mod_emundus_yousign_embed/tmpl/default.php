@@ -11,5 +11,5 @@
 defined('_JEXEC') or die;
 ?>
 <div class="em-yousign-embed">
-    <iframe src="https://staging-app.yousign.com/procedure/sign?<?= $yousign_member_id; ?>"></iframe>
+    <iframe src="https://staging-app.yousign.com/procedure/sign?members=<?= $yousign_member_id.(!empty($signature_ui)?'&signatureUi='.$signature_ui:''); ?>"></iframe>
 </div>

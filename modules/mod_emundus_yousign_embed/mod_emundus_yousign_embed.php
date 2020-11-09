@@ -25,5 +25,6 @@ if (!empty($user_params->get('yousignMemberId'))) {
 }
 
 if (!empty($yousign_member_id)) {
+	$signature_ui = $params->get('signature_ui');
 	require JModuleHelper::getLayoutPath('mod_emundus_yousign_embed', 'default');
 }

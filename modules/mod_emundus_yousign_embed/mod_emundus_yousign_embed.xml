@@ -20,6 +20,7 @@
 	<config>
 		<fields name="params">
 			<fieldset name="standard" label="Settings">
+				<field name="signature_ui" type="text"  size="5" label="Signature UI ID" description="For custom iFrame styling, provide signature UI ID here." />
 			</fieldset>
 		</fields>
 	</config>
