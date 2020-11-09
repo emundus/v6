@@ -155,17 +155,34 @@
       subOptions(sO) {
         this.sublabel = sO;
       },
-      addToCalc(calc_elements){
+      addToCalc(calc_elements,no_coefficients){
         if(calc_elements.length > 0){
-          this.calc = 'return ';
+          let coefficients = '';
+          this.calc = 'return (';
 
           calc_elements.forEach((value,key) => {
-            this.calc += "'{" +  value.element + '_raw' + "}'";
-            if(value.operator != null){
-              this.calc += value.operator;
+            if(value.element != null) {
+              this.calc += "'{" + value.element + '_raw' + "}'";
+              if (!no_coefficients) {
+                this.calc += '*' + value.coefficient;
+                if (coefficients == '') {
+                  coefficients += value.coefficient;
+                } else {
+                  coefficients += '+' + value.coefficient;
+                }
+              }
+              if (value.operator != null) {
+                this.calc += ' ' + value.operator + ' ';
+              }
+            } else {
+              alert('Veuillez choisir un élément')
             }
           })
-          this.calc += ';';
+          if(coefficients == '') {
+            this.calc += ';';
+          } else {
+            this.calc += ') / ' + coefficients + ';';
+          }
           this.element.params.calc_calculation = this.calc;
         } else {
           this.calc = null;

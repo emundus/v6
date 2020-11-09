@@ -5,12 +5,20 @@
         <label class="require col-md-3">{{calculation}} :</label>
       </div>
       <div class="col-md-10">
+        <div class="flex" style="margin-top: 0">
+          <input type="checkbox" v-model="no_coefficients" />
+          <span class="ml-10px">{{ SameCoefficients }}</span>
+        </div>
         <div v-for="(calc_element,key) in calc_elements">
           <div class="flex">
             <select class="dropdown-toggle" @change="addElement($event,calc_element)" v-model="calc_element.id">
               <option disabled v-if="calc_elements.length < 2" :value="null">{{SelectElementToStart}}</option>
               <option v-for="(raw_element,index) in raw_elements" :disabled="raw_element.disabled" :value="raw_element.id">{{raw_element.label[actualLanguage]}}</option>
             </select>
+            <div v-if="!no_coefficients" class="col-md-2 flex">
+              <input type="number" min="0" max="100" class="ml-10px" @keyup="checkNumber" style="padding: 10px" v-model="calc_element.coefficient" />
+              <span class="ml-10px">%</span>
+            </div>
             <div @click="removeElementFromCalc(key)" class="remove-elt" v-if="key != 0">
               <em class="fas fa-trash-alt"></em>
             </div>
@@ -46,10 +54,12 @@ export default {
     return {
       calc_elements: [],
       raw_elements: [],
-      operators_regex: /(\*|\+|\-)/,
+      no_coefficients: false,
+      operators_regex: /(\*|\+|\-|\/)/,
       operators: ['-','+','*','/'],
       calculation: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_CALC"),
       SelectElementToStart: Joomla.JText._("COM_EMUNDUS_ONBOARD_CALC_SELECT_ELEMENT"),
+      SameCoefficients: Joomla.JText._("COM_EMUNDUS_ONBOARD_CALC_SAME_COEFFICIENTS"),
     };
   },
   methods: {
@@ -93,7 +103,8 @@ export default {
         this.calc_elements.push({
           'id': null,
           'element': null,
-          'operator': null
+          'operator': null,
+          'coefficient': 0
         });
         calc_element.operator = operator;
       } else {
@@ -103,42 +114,61 @@ export default {
     },
 
     needtoemit: _.debounce(function() {
-      this.$emit("addToCalc", this.calc_elements);
+      this.$emit("addToCalc", this.calc_elements,this.no_coefficients);
     }),
+
+    checkNumber(value) {
+      let val = value.target.value;
+      if(val > 100){
+        value.target.value = 100;
+      } else if (val < 0 || val == '') {
+        value.target.value = 0;
+      }
+      this.needtoemit();
+    }
   },
 
   created: function() {
     this.raw_elements = this.elements;
 
     if(this.element.params.calc_calculation != '') {
-      let splitByOperators = this.element.params.calc_calculation.split(this.operators_regex);
+      let operation = this.element.params.calc_calculation.split(/(\(|\))/);
+      operation.splice(0,operation.indexOf('(') + 1)
+      operation.splice(operation.indexOf(')'),operation.length - operation.indexOf(')'))
+
+      let splitByOperators = operation[0].split(this.operators_regex);
       let criteria_id = null;
 
       splitByOperators.forEach((value) => {
-        if (value != '-' && value != '+' && value != '*' && value != '/') {
-          // Get only the criteria without raw
-          let criteria = value.split(/({|})/).filter(element => element.match(/\W*(jos_)\W*/))[0].split('_raw')[0];
+        if (value != '-' && value != '+' && value != '*' && value != '/' && value != '(' && value != ')' && value != 'return ') {
+          if(isNaN(value)) {
+            // Get only the criteria without raw
+            let criteria = value.split(/({|})/).filter(element => element.match(/\W*(jos_)\W*/))[0].split('_raw')[0];
 
-          // Get the element id
-          this.raw_elements.forEach((element) => {
-            var el = document.createElement('html');
-            el.innerHTML = element.label_value;
-            if (criteria == el.getElementsByTagName('label')[0].getAttribute('for')) {
-              criteria_id = element.id;
-            }
-          });
+            // Get the element id
+            this.raw_elements.forEach((element) => {
+              var el = document.createElement('html');
+              el.innerHTML = element.label_value;
+              if (criteria == el.getElementsByTagName('label')[0].getAttribute('for')) {
+                criteria_id = element.id;
+              }
+            });
 
-          // Push to our calculation array
-          this.calc_elements.push({
-            'old': null,
-            'id': criteria_id,
-            'element': criteria,
-            'operator': null
-          });
+            // Push to our calculation array
+            this.calc_elements.push({
+              'old': null,
+              'id': criteria_id,
+              'element': criteria,
+              'operator': null,
+              'coefficient': 0
+            });
 
-          // Disable the element from the dropdown list
-          this.findObjectByKey(this.raw_elements, 'id', criteria_id).disabled = true;
-        } else {
+            // Disable the element from the dropdown list
+            this.findObjectByKey(this.raw_elements, 'id', criteria_id).disabled = true;
+          } else {
+            this.findObjectByKey(this.calc_elements, 'id', criteria_id).coefficient = Number(value);
+          }
+        } else if(value != '(' && value != ')' && value != 'return ') {
           // Add the operator to previous element
           this.findObjectByKey(this.calc_elements, 'id', criteria_id).operator = value;
         }
@@ -151,10 +181,11 @@ export default {
         'old': null,
         'id': null,
         'element': null,
-        'operator': null
+        'operator': null,
+        'coefficient': 0
       });
     }
-  }
+  },
 };
 </script>
 <style scoped>
@@ -183,7 +214,7 @@ export default {
   color: white;
   cursor: pointer;
   position: absolute;
-  right: -4em;
+  right: -6em;
 }
 .operator:hover{
   background: #de6339;
