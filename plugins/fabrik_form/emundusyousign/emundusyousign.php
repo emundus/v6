@@ -384,11 +384,11 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 				$query->values(implode(',', [
 					$db->quote($now->toSql()), // time_date
 					(int)substr($fnum, -7), // student_id
-					$db->quote($fnums), // fnums
+					$db->quote($fnum), // fnums
 					$db->quote($procedure_id), // keyid
 					$attachment_id, // attachement_id
 					$db->quote($file_id), // filename
-					(int)substr($fnum, 7, 14) // Campagin id
+					(int)substr($fnum, 14, 7) // Campagin id
 				]));
 			}
 			$db->setQuery($query);
@@ -472,12 +472,11 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 	 * @since version
 	 */
 	private function setUserParam(string $user_email, $param, string $value) : bool {
-
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName('id'))
-			->from($db->quoteName('jos_user'))
+			->from($db->quoteName('jos_users'))
 			->where($db->quoteName('email').' LIKE '.$db->quote($user_email));
 		$db->setQuery($query);
 
