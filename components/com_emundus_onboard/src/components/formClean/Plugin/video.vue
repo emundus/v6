@@ -17,8 +17,8 @@
       <div class="form-group">
         <label>{{includerelatedvideo}}</label>
         <select v-model="element.params.include_related" id="selectedVideos" class="dropdown-toggle">
-          <option value="0">{{no}}</option>
-          <option value="1">{{yes}}</option>
+          <option value="0">{{isNo}}</option>
+          <option value="1">{{isYes}}</option>
         </select>
       </div>
 
