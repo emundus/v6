@@ -77,9 +77,9 @@ class EmundusController extends JControllerLegacy {
         $m_campaign = $this->getModel('campaign');
 
         $infos 		= $m_profile->getFnumDetails($fnum);
-        $profile 	= $m_profile->getProfileByCampaign($infos['campaign_id']);
+        $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
         $h_menu = new EmundusHelperMenu;
-        $getformids = $h_menu->getUserApplicationMenu($profile['profile_id']);
+        $getformids = $h_menu->getUserApplicationMenu($profile);
 
         foreach ($getformids as $getformid) {
             $formid[] = $getformid->form_id;
