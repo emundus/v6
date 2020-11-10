@@ -116,7 +116,7 @@
 export default {
   name: "videoM",
   props: { element: Object },
-  data: function () {
+  data() {
     return {
       iswidth: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_VIDEO_WIDTH_TITLE"),
       width: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_VIDEO_WIDTH"),

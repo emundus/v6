@@ -40,7 +40,8 @@
           <radiobtnF v-if="plugin == 'radiobutton'" :element="element" @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
-<!--          <videoM v-if="plugin =='video'" :element="element"></videoM>-->
+          <videoM v-if="plugin =='video'" :element="element"></videoM>
+          <imageM v-if="plugin =='video'" :element="element"></imageM>
         </div>
         <div class="loading-form" v-if="loading">
           <Ring-Loader :color="'#de6339'" />
@@ -70,6 +71,7 @@
   import textareaF from "./Plugin/textarea";
   import displayF from "./Plugin/display";
   import videoM from "./Plugin/video";
+  import imageM from "./Plugin/image";
   const qs = require("qs");
 
   export default {
@@ -83,7 +85,8 @@
       radiobtnF,
       textareaF,
       displayF,
-      videoM
+      videoM,
+      imageM
     },
     data() {
       return {
@@ -132,6 +135,10 @@
           video: {
             value: 'video',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_VIDEO")
+          },
+          image: {
+            value: 'image',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_IMAGE")
           },
         },
         databases: [],
