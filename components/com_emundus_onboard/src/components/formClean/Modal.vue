@@ -41,7 +41,7 @@
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
           <videoM v-if="plugin =='video'" :element="element"></videoM>
-          <imageM v-if="plugin =='video'" :element="element"></imageM>
+          <imageM v-if="plugin =='image'" :element="element"></imageM>
         </div>
         <div class="loading-form" v-if="loading">
           <Ring-Loader :color="'#de6339'" />
