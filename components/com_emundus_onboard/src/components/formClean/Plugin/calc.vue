@@ -132,16 +132,30 @@ export default {
     this.raw_elements = this.elements;
 
     if(this.element.params.calc_calculation != '') {
+      // Get the operation between ()
       let operation = this.element.params.calc_calculation.split(/(\(|\))/);
       operation.splice(0,operation.indexOf('(') + 1)
       operation.splice(operation.indexOf(')'),operation.length - operation.indexOf(')'))
 
-      let splitByOperators = operation[0].split(this.operators_regex);
+      // Get coefficients
+      let coefficients = operation[0].match(/(\*\d*)/gi);
+      if(coefficients != null) {
+        coefficients.forEach((coefficient, index) => {
+          coefficients[index] = coefficient.replace('*', '');
+        });
+      } else {
+        this.no_coefficients = true;
+      }
+
+      // Get the operation without coefficients
+      let operationWithoutCoefficients = operation[0].replaceAll(/(\*\d*)/gi,'');
+
+      let splitByOperators = operationWithoutCoefficients.split(this.operators_regex);
       let criteria_id = null;
+      let key = 0;
 
       splitByOperators.forEach((value) => {
-        if (value != '-' && value != '+' && value != '*' && value != '/' && value != '(' && value != ')' && value != 'return ') {
-          if(isNaN(value)) {
+        if (value != '-' && value != '+' && value != '*' && value != '/') {
             // Get only the criteria without raw
             let criteria = value.split(/({|})/).filter(element => element.match(/\W*(jos_)\W*/))[0].split('_raw')[0];
 
@@ -155,6 +169,15 @@ export default {
             });
 
             // Push to our calculation array
+          if(coefficients != null) {
+            this.calc_elements.push({
+              'old': null,
+              'id': criteria_id,
+              'element': criteria,
+              'operator': null,
+              'coefficient': coefficients[key]
+            });
+          } else {
             this.calc_elements.push({
               'old': null,
               'id': criteria_id,
@@ -162,13 +185,13 @@ export default {
               'operator': null,
               'coefficient': 0
             });
+          }
+
+            key += 1;
 
             // Disable the element from the dropdown list
             this.findObjectByKey(this.raw_elements, 'id', criteria_id).disabled = true;
-          } else {
-            this.findObjectByKey(this.calc_elements, 'id', criteria_id).coefficient = Number(value);
-          }
-        } else if(value != '(' && value != ')' && value != 'return ') {
+        } else {
           // Add the operator to previous element
           this.findObjectByKey(this.calc_elements, 'id', criteria_id).operator = value;
         }
@@ -186,6 +209,12 @@ export default {
       });
     }
   },
+
+  watch: {
+    no_coefficients: function(){
+      this.needtoemit();
+    }
+  }
 };
 </script>
 <style scoped>

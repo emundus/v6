@@ -179,7 +179,7 @@
             }
           })
           if(coefficients == '') {
-            this.calc += ';';
+            this.calc += ');';
           } else {
             this.calc += ') / ' + coefficients + ';';
           }
