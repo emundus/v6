@@ -27,11 +27,121 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 	public function __construct(array $config = array()) {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-
 		$this->m_files = new EmundusModelFiles;
+
+		JLog::addLogger(['text_file' => 'com_emundus.webhook.php'], JLog::ALL, array('com_emundus.webhook'));
 
 		parent::__construct($config);
 	}
+
+
+	/**
+	 * Downloads the file associated to the YouSign procedure that was pushed.
+	 */
+	public function yousign() {
+
+		$app = JFactory::getApplication();
+		$jinput = $app->input;
+
+		// 'procedure.finished' runs when all signatures are done and blissful harmony is restored to the universe.
+		if ($jinput->post->getString('eventName') === 'procedure.finished') {
+
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$eMConfig = JComponentHelper::getParams('com_emundus');
+
+			$procedure = $jinput->post->get('procedure');
+
+			// Now that the procedure is signed, we can remove the member ID used for loading the iFrame.
+			foreach ($procedure->members as $member) {
+				$this->setUserParam($member->email, 'yousignMemberId', false);
+			}
+
+			$files = [];
+			foreach ($procedure->files as $file) {
+				$files[] = $file->id;
+			}
+
+			// Set all of the file requests as uploaded.
+			$query->update($db->quoteName('jos_emundus_files_requeest'))
+				->set($db->quoteName('uploaded').' = 1')
+				->where($db->quoteName('file_name').' IN ("'.implode('","', $files).'")');
+			$db->setQuery($query);
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				JLog::add('Could not load files_requests : '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+				return;
+			}
+
+			$query->clear()
+				->select([$db->quoteName('fr.fnum'), $db->quoteName('a.lbl'), $db->quoteName('fr.attachment_id')])
+				->from($db->quoteName('jos_emundus_files_requeest', 'fr'))
+				->leftJoin($db->quoteName('jos_emundus_setup_attachments', 'a').' ON '.$db->quoteName('fr.attachment_id').' = '.$db->quoteName('id'))
+				->where($db->quoteName('file_name').' IN ("'.implode('","', $files).'")');
+			$db->setQuery($query);
+			try {
+				$attachments = $db->loadObjectList();
+			} catch (Exception $e) {
+				JLog::add('Could not load files_requests : '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+				return;
+			}
+
+			$http = new JHttp();
+
+			$host = $eMConfig->get('yousign_prod', 'https://staging-api.yousign.com');
+			$api_key = $eMConfig->get('yousign_api_key', 'https://staging-api.yousign.com');
+			if (empty($host) || empty($api_key)) {
+				JLog::add('Missing YouSign info.', JLog::ERROR, 'com_emundus.webhook');
+				return;
+			}
+
+			foreach ($files as $file) {
+
+				// Time to download the files from the WebService.
+				$response = $http->get($host.'/files/'.$file.'/download?alt=media', [
+					'Content-Type' => 'application/json',
+					'Authorization' => 'Bearer '.$api_key
+				]);
+
+				// File exists, time to write it to the right place.
+				if ($response->code === 200) {
+
+					// Prepare the query to save the files into the upload table.
+					$query->clear()
+						->insert($db->quoteName('jos_emundus_uploads'))
+						->columns($db->quoteName(['user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed']));
+
+					$success = [];
+					foreach ($attachments as $attachment) {
+
+						// Save the signed file into the users folder.
+						$fileName = $attachment->lbl.'_signed';
+						$uid = (int)substr($attachment->fnum, -7);
+						if (file_put_contents(EMUNDUS_PATH_ABS.$uid.DS.$fileName, $response->body) !== false) {
+
+							$success[] = $attachment->fnum;
+							$query->values(implode(',', [$uid, $attachment->fnum, (int)substr($attachment->fnum, 14, 7), $attachment->attachment_id, $attachment->lbl, 'YouSign signed document', '0', '0']));
+
+						} else {
+							JLog::add('Error downloading file from YouSign -> RESPONSE ('.$response->code.') '.$response->body, JLog::ERROR, 'com_emundus.webhook');
+						}
+					}
+
+					// Link the files to the users' files.
+					$db->setQuery($query);
+					try {
+						$db->execute();
+						JLog::add('Saved YouSigned saved file "'.$file.'" to fnums : '.implode(', ', $success), JLog::INFO, 'com_emundus.webhook');
+					} catch (Exception $e) {
+						JLog::add('Error adding attachemnts to files: '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+					}
+				}
+			}
+		}
+	}
+
+
 
 	/**
 	 * Gets video info from addpipe webhook
@@ -178,7 +288,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 	/**
 	 * Check if video upladed by addpipe has been moved to applicant files.
-	 * @return boolean
+	 * @return void
 	 * @throws Exception
 	 */
 	public function is_file_uploaded() {
@@ -215,5 +325,57 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		    echo json_encode((object)(array('status' => false)));
 			exit();
         }
+	}
+
+
+	/**
+	 * @param string $user_email
+	 * @param        $param
+	 * @param string $value
+	 *
+	 * @return bool
+	 * @since version
+	 */
+	private function setUserParam(string $user_email, $param, string $value) : bool {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('id'))
+			->from($db->quoteName('jos_users'))
+			->where($db->quoteName('email').' LIKE '.$db->quote($user_email));
+		$db->setQuery($query);
+
+		try {
+			$user_id = $db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('Error getting user by email when saving param : '.$e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
+			return false;
+		}
+
+		if (empty($user_id)) {
+			JLog::add('User not found', JLog::ERROR, 'com_emundus.yousign');
+			return false;
+		}
+
+		$user = JFactory::getUser($user_id);
+
+		$table = JTable::getInstance('user', 'JTable');
+		$table->load($user->id);
+
+		// Store token in User's Parameters
+		$user->setParam($param, $value);
+
+		// Get the raw User Parameters
+		$params = $user->getParameters();
+
+		// Set the user table instance to include the new token.
+		$table->params = $params->toString();
+
+		// Save user data
+		if (!$table->store()) {
+			JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'com_emundus.yousign');
+			return false;
+		}
+		return true;
 	}
 }
