@@ -142,6 +142,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
+		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$application = JFactory::getApplication();
 		$jinput = $application->input;
 		$db = JFactory::getDbo();
@@ -172,8 +173,8 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 			throw new Exception('Missing attachment ID.');
 		}
 
-		$host = $this->getParam('host');
-		$api_key = $this->getParam('api_key');
+		$host = $eMConfig->get('yousign_prod', 'https://staging-api.yousign.com');
+		$api_key = $eMConfig->get('yousign_api_key', 'https://staging-api.yousign.com');
 		if (empty($host) || empty($api_key)) {
 			throw new Exception('Missing YouSign info.');
 		}
@@ -300,18 +301,26 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 		if ($response->code === 201) {
 			$response->body = json_decode($response->body);
 			$file_id = $response->body->id;
-			// TODO: Log success.
+			JLog::add('File uploaded to YouSign -> ID: '.$response->body->id, JLog::INFO, 'com_emundus.yousign');
 		} else {
 			throw new Exception('ERROR '.$response->code.' FROM YOUSIGN.');
 		}
 
 		// Step 2: Create procedure.
 		$procedure = new stdClass();
-		$procedure->name = ''; // TODO: Add param.
+		$procedure->name = $fileName;
+		$procedure->description = 'Created by eMundus.';
+
+		// Set the webhook up to
+		$webhook = new stdClass();
+		$webhook->url = urlencode(JUri::base().'index.php?option=com_emundus&controller=webhook&task=yousign&format=raw&token='.JFactory::getConfig()->get('secret'));
+		$webhook->method = 'POST';
+
+		$procedure->config->webhook->{'procedure.finished'}[] = $webhook;
 
 		$members = [];
 		foreach ($signers['names'] as $key => $name) {
-			$name = explode(' ', $name); // TODO: Handle first/lastnames separately ?
+			$name = explode(' ', $name);
 			$member = new stdClass();
 			$member->firstname = $name[0];
 			$member->lastname = $name[1];
@@ -320,8 +329,8 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 			$fileObject = new stdClass();
 			$fileObject->file = $file_id;
-			$fileObject->page = 1; //TODO: Page param ?
-			$fileObject->position = '230,499,464,589'; // TODO: Handle position.
+			$fileObject->page = $this->getParam('signature_page', '1');
+			$fileObject->position = $this->getParam('signature_position', '230,499,464,589');
 			$fileObject->mention = ''; // TODO: Handle mention ?
 
 			$member->fileObjects = [$fileObject];
@@ -340,7 +349,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 		if ($response->code === 201) {
 			$response->body = json_decode($response->body);
 			$procedure_id = $response->body->id;
-			// TODO: Log success.
+			JLog::add('YouSign procedure created -> ID: '.$response->body->id, JLog::INFO, 'com_emundus.yousign');
 
 			foreach ($response->body->members as $webserviceResponseMember) {
 				foreach ($signers['emails'] as $key => $email) {
@@ -410,7 +419,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 				// Add user param containing the member ID.
 				if ($this->setUserParam($email, 'yousignMemberId', $signers['yousign'][$key])) {
-					// TODO: Log success
+					JLog::add('Added YouSign member ID to user params: '.$response->body->id, JLog::INFO, 'com_emundus.yousign');
 				} elseif ($this->getParam('method') === 'embed') {
 
 					// Problem: Here we're in a case where we DID NOT add the memeber ID to the user, yet the settings are set to embed.
@@ -429,6 +438,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 				}
 
 				// No need to handle email case, this part handles itself :).
+				// TODO: Add email procedure handling when making YouSign procedure; this was cut out due to shortened delays.
 
 			}
 
@@ -438,6 +448,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 		} else {
 			// TODO: Log errors.
+			echo '<pre>'; var_dump($response); echo '</pre>'; die;
 			throw new Exception('ERROR '.$response->code.' FROM YOUSIGN.');
 		}
 	}

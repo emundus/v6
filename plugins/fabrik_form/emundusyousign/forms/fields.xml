@@ -2,15 +2,14 @@
 <form>
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
 		<fieldset name="plg-form-emundusyousign" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_FIELDS">
-			<field name="host" type="field" default="https://staging-api.yousign.com" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_HOST_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_HOST_LABEL" />
-			<field name="api_key" type="field" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_KEY_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_KEY_LABEL" />
 
 			<field name="method" type="list" default="embed" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_METHOD_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_METHOD_LABEL">
 				<option value="embed">PLG_FABRIK_FORM_EMUNDUSYOUSIGN_METHOD_EMBED</option>
 				<option value="mail">PLG_FABRIK_FORM_EMUNDUSYOUSIGN_METHOD_EMAIL</option>
 			</field>
-
 			<field name="embed_url" type="field" showon="method:embed" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_EMBED_URL_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_EMBED_URL_LABEL" />
+			<field name="signature_position" type="field" default="230,499,464,589" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNATURE_POSITION_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNATURE_POSITION" />
+			<field name="signature_page" type="field" default="1" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNATURE_PAGE_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNATURE_PAGE" />
 
 			<field name="signer_name" type="field" default="jos_emundus_personal_detail___full_name" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_NAME_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_NAME_LABEL" />
 			<field name="signer_email" type="field" default="jos_emundus_personal_detail___email" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_EMAIL_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_SIGNER_EMAIL_LABEL" />
