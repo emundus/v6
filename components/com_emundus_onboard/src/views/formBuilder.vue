@@ -322,6 +322,19 @@
             icon: 'fas fa-paragraph',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
+          video: {
+            id: 7,
+            value: 'video',
+            icon: 'fas fa-video',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_VIDEO")
+          },
+          image: {
+            id: 8,
+            value: 'image',
+            icon: 'fas fa-camera',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_IMAGE")
+          },
+
         },
         addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
         addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),

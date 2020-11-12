@@ -40,6 +40,8 @@
           <radiobtnF v-if="plugin == 'radiobutton'" :element="element" @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
+          <videoM v-if="plugin =='video'" :element="element"></videoM>
+          <imageM v-if="plugin =='image'" :element="element"></imageM>
         </div>
       </div>
       <div class="col-md-12 mb-1">
@@ -68,6 +70,8 @@
   import radiobtnF from "./Plugin/radiobtn";
   import textareaF from "./Plugin/textarea";
   import displayF from "./Plugin/display";
+  import videoM from "./Plugin/video";
+  import imageM from "./Plugin/image";
   const qs = require("qs");
 
   export default {
@@ -80,7 +84,9 @@
       dropdownF,
       radiobtnF,
       textareaF,
-      displayF
+      displayF,
+      videoM,
+      imageM
     },
     data() {
       return {
@@ -126,6 +132,14 @@
           display: {
             value: 'display',
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
+          },
+          video: {
+            value: 'video',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_VIDEO")
+          },
+          image: {
+            value: 'image',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_IMAGE")
           },
         },
         databases: [],
