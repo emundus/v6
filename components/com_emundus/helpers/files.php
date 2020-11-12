@@ -938,7 +938,7 @@ class EmundusHelperFiles
 	                        $current_filter .= ' selected';
                         }
 
-                        $current_filter .= '>'.$value->elt_val.'</option>';
+                        $current_filter .= '>'.JText::_($value->elt_val).'</option>';
                     }
                 }
                 $current_filter .= '</select>';
@@ -957,7 +957,7 @@ class EmundusHelperFiles
 	                        $current_filter .= ' selected';
                         }
 
-                        $current_filter .= '>'.$value->elt_val.'</option>';
+                        $current_filter .= '>'.JText::_($value->elt_val).'</option>';
                     }
                 }
                 $current_filter .= '</select>';

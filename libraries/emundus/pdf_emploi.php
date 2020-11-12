@@ -14,22 +14,23 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
-
-	$menu = new EmundusHelperMenu;
-	
+	$eMConfig = JComponentHelper::getParams('com_emundus');
+	$fabrik_elements_title = $eMConfig->get('fabrik_elements_title', '2113');
+	$fabrik_elements_pdf = $eMConfig->get('fabrik_elements_pdf', '2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127, 2116, 2118, 2122');
+	$menu = new EmundusHelperMenu;	
 	$user =  JFactory::getUser($user_id); 
-
 	$application = new EmundusModelApplication;
 
 	// Element Fabrik ID list to display in PDF
-	$elts = array(2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127, 2116, 2118, 2122);
+	//$elts = array(2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127, 2116, 2118, 2122);
+	$elts = array($fabrik_elements_pdf);
 	
 	$options = array('show_list_label' => 0, 'show_form_label' => 0, 'show_group_label' => 0, 'rowid' => $rowid, 'profile_id' => '13');
 
 	$forms = $application->getFormsPDFElts($user_id, $elts, $options);
 
 	// Set title for PDF
-	$title = @EmundusHelperList::getElementsDetailsByID(2113); 
+	$title = @EmundusHelperList::getElementsDetailsByID($fabrik_elements_title); 
 
 	$where = 'user='.$user_id;
 	$where .= $options['rowid']>0?' AND id='.$options['rowid']:'';
@@ -47,21 +48,44 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	$pdf->SetCreator(PDF_CREATOR);
 	$pdf->SetAuthor('www.emundus.fr');
-	$pdf->SetTitle('Fiches emplois étudiants');
+	$pdf->SetTitle(JText::_('COM_EMUNDUS_TITLE_OFFER'));
 	
 	//get logo
 	$app 		= JFactory::getApplication();
     $template 	= $app->getTemplate(true);
     $params     = $template->params;
+	
+	if (!empty($params->get('logo')->custom->image)) {
+	    $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+	    $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+    } else {
+    	$logo_module = JModuleHelper::getModuleById('90');
+	    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
 
-    $logo   	= json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-    $logo 		= !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+	    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+	    if ((bool) preg_match($pattern, $tab[1])) {
+	    	$tab[1] = parse_url($tab[1], PHP_URL_PATH);
+	    }
+
+	    $logo = JPATH_BASE.DS.$tab[1];
+	}
+	
+	// manage logo by programme
+    $ext = substr($logo, -3);
+    $logo_prg = substr($logo, 0, -4).'-'.$item->training.'.'.$ext;
+    if (is_file($logo_prg)) {
+	    $logo = $logo_prg;
+    }
 	
 	//get title
-	//$config = JFactory::getConfig(); 
-	//$title = $config->getValue('config.sitename');
-	$title = 'Emplois étudiants Sorbonne Université';
-	$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+	$title = $app->getCfg('sitename');
+	if (is_file($logo)) {
+		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+	}
+
 	unset($logo);
 	unset($title);
 

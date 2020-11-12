@@ -194,6 +194,8 @@ class EmundusModelJobs extends JModelList
 	{
         $user = JFactory::getUser();
 		$config = JFactory::getConfig();
+		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$validation = $eMConfig->get('validation', '0');
         
 		// Get the application date and set it to the timezone defined in settings
         $timezone = new DateTimeZone( $config->get('offset') );
@@ -234,6 +236,9 @@ class EmundusModelJobs extends JModelList
         if (!JFactory::getUser()->authorise('core.edit.state', 'com_emundus'))
         {
             //$query->where('a.valide_comite = 1');
+			if($validation == 1) {
+				$query->where('a.valide = 1');
+			}
             $query->where('a.published = 1');
             $query->where('a.state = 1');
             $query->where('a.date_limite >= "'.$now.'"');
@@ -278,7 +283,8 @@ class EmundusModelJobs extends JModelList
 		if ($orderCol && $orderDirn && ($orderCol!='step' && $user->guest))	{	
 			$query->order($db->escape($orderCol . ' ' . $orderDirn));
 		}
-
+//echo($query->__toString());
+		
 		return $query;
 	}
 
@@ -311,7 +317,7 @@ class EmundusModelJobs extends JModelList
 			    $item->etablissement = !empty($textValue) ? implode(', ', $textValue) : $item->etablissement;
 
 			}
-}
+		}
 
 		return $items;
 	}
