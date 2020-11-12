@@ -411,6 +411,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $params['date_allow_func'] = '';
                 $params['date_allow_php_func'] = '';
                 $params['date_observe'] = '';
+                $params['bootstrap_class'] = 'input-medium';
                 break;
             case 'display':
                 $params['display_showlabel'] = 1;
@@ -1886,6 +1887,8 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             //$element['params'] = $this->updateElementParams($element['plugin'],$db_element->plugin,$element['params']);
 
+            $element['params']['bootstrap_class'] = 'input-xlarge';
+
             // Filter by plugin
             if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown') {
                 $old_params = json_decode($db_element->params, true);
@@ -1968,6 +1971,11 @@ class EmundusonboardModelformbuilder extends JModelList {
                     " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
                 $db->setQuery($query);
                 $db->execute();
+
+                if($element['plugin'] === 'date'){
+                    $element['params']['bootstrap_class'] = 'input-medium';
+                }
+
             } elseif ($element['plugin'] === 'field') {
                 if ($element['params']['password'] != 6) {
                     $dbtype = 'VARCHAR(' . $element['params']['maxlength'] . ')';
@@ -2352,7 +2360,12 @@ class EmundusonboardModelformbuilder extends JModelList {
                         ${"element".$o_element->id}->tipAbove=$content_element->tipAbove;
                     endif;
                     if ($content_element->element) :
-                        ${"element".$o_element->id}->element=$content_element->element;
+                        if($o_element->plugin == 'date') {
+                            ${"element" . $o_element->id}->element = '<input data-v-8d3bb2fa="" class="form-control" type="date">';
+                        }
+                        else {
+                            ${"element" . $o_element->id}->element = $content_element->element;
+                        }
                     endif;
                     if ($content_element->error) :
                         ${"element".$o_element->id}->error=$content_element->error;
