@@ -71,7 +71,6 @@ class PlgEmundusReferent_status extends JPlugin {
                 $mailer->SMTPDebug = true;
 
                 $baseurl = JURI::root();
-                $link_upload = $baseurl . 'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid=' . $applicant->keyid . '&sid=' . $applicant->applicant_id;
 
                 $referents_emails = array();
                 $elts = explode(',',$fabrik_elts);
@@ -94,6 +93,8 @@ class PlgEmundusReferent_status extends JPlugin {
 
 
                 foreach ($referents_emails as $key => $referentEmail) {
+                    $referent_key = md5($this->rand_string(20).time());
+                    $link_upload = $baseurl . 'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid=' . $referent_key . '&sid=' . $applicant->applicant_id;
 
                     $post = array(
                         'FNUM' => $applicant->fnum,
@@ -154,7 +155,7 @@ class PlgEmundusReferent_status extends JPlugin {
                         $this->log .= "\n Error sending email : " . $to;
                     } else {
                         $attachments = explode(',',$attachments_id);
-                        $this->setEmailSend($applicant->fnum,$attachments[$key],$applicant->id,$referentEmail,$applicant->campaign_id);
+                        $this->setEmailSend($applicant->fnum,$attachments[$key],$applicant->id,$referentEmail,$applicant->campaign_id,$referent_key);
                         $message = array(
                             'user_id_from' => $from_id,
                             'user_id_to' => $to_id,
@@ -214,18 +215,17 @@ class PlgEmundusReferent_status extends JPlugin {
         }
     }
 
-    private function setEmailSend($fnum,$attachment_id,$applicant_id,$referent_email,$campaign_id){
+    private function setEmailSend($fnum,$attachment_id,$applicant_id,$referent_email,$campaign_id,$referent_key){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         JLog::addLogger(['text_file' => 'com_emundus.cron.referentStatus.error.php'], JLog::ERROR, 'com_emundus');
         try {
-            $key = $key = md5($this->rand_string(20).time());
             $query->clear()
                 ->insert($db->quoteName('#__emundus_files_request'));
             $query->set($db->quoteName('time_date') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
                 ->set($db->quoteName('student_id') . ' = ' . $db->quote($applicant_id))
                 ->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
-                ->set($db->quoteName('keyid') . ' = ' . $db->quote($key))
+                ->set($db->quoteName('keyid') . ' = ' . $db->quote($referent_key))
                 ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($attachment_id))
                 ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign_id))
                 ->set($db->quoteName('email') . ' = ' . $db->quote($referent_email));
