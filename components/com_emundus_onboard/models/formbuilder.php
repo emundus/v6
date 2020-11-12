@@ -214,6 +214,20 @@ class EmundusonboardModelformbuilder extends JModelList {
         if($oldplugin != null){
             switch ($oldplugin){
                 case 'field':
+                    if ($params['password'] == 3) {
+                        $key = array_search("isemail", $params['validations']['plugin']);
+                        unset($params['validations']['plugin'][$key]);
+                        unset($params['validations']['plugin_published'][$key]);
+                        unset($params['validations']['validate_in'][$key]);
+                        unset($params['validations']['validation_on'][$key]);
+                        unset($params['validations']['validate_hidden'][$key]);
+                        unset($params['validations']['must_validate'][$key]);
+                        unset($params['validations']['show_icon'][$key]);
+                        unset($params['isemail-message']);
+                        unset($params['isemail-validation_condition']);
+                        unset($params['isemail-allow_empty']);
+                        unset($params['isemail-check_mx']);
+                    }
                     unset($params['placeholder']);
                     unset($params['password']);
                     unset($params['maxlength']);
@@ -250,6 +264,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     unset($params['textarea-truncate']);
                     unset($params['textarea-hover']);
                     unset($params['textarea_hover_location']);
+                    unset($params['textarea-maxlength']);
                     break;
                 case 'dropdown':
                     unset($params['multiple']);
@@ -259,6 +274,31 @@ class EmundusonboardModelformbuilder extends JModelList {
                     unset($params['dd-savenewadditions']);
                     unset($params['options_split_str']);
                     unset($params['dropdown_populate']);
+                    if(isset($params['join_db_name'])){
+                        unset($params['join_conn_id']);
+                        unset($params['join_val_column_concat']);
+                        unset($params['database_join_where_sql']);
+                        unset($params['database_join_where_access']);
+                        unset($params['database_join_where_when']);
+                        unset($params['databasejoin_where_ajax']);
+                        unset($params['database_join_filter_where_sql']);
+                        unset($params['database_join_show_please_select']);
+                        unset($params['database_join_noselectionvalue']);
+                        unset($params['database_join_noselectionlabel']);
+                        unset($params['databasejoin_popupform']);
+                        unset($params['fabrikdatabasejoin_frontend_add']);
+                        unset($params['join_popupwidth']);
+                        unset($params['databasejoin_readonly_link']);
+                        unset($params['fabrikdatabasejoin_frontend_select']);
+                        unset($params['dbjoin_options_per_row']);
+                        unset($params['dbjoin_multiselect_max']);
+                        unset($params['dbjoin_multilist_size']);
+                        unset($params['dbjoin_autocomplete_size']);
+                        unset($params['dbjoin_autocomplete_rows']);
+                        unset($params['dabase_join_label_eval']);
+                        unset($params['join_desc_column']);
+                        unset($params['dbjoin_autocomplete_how']);
+                    }
                     break;
                 case 'checkbox':
                     unset($params['ck_options_per_row']);
@@ -306,6 +346,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     unset($params['date_allow_func']);
                     unset($params['date_allow_php_func']);
                     unset($params['date_observe']);
+                    $params['bootstrap_class'] = 'input-xlarge';
                     break;
                 case 'display':
                     unset($params['display_showlabel']);
@@ -319,9 +360,22 @@ class EmundusonboardModelformbuilder extends JModelList {
         // Prepare new params
         switch ($plugin){
             case 'field':
-                $params['placeholder'] = '';
-                $params['password'] = 0;
-                $params['maxlength'] = 255;
+                // User params
+                if(!isset($params['placeholder'])) {
+                    $params['placeholder'] = '';
+                }
+                if(!isset($params['password'])) {
+                    $params['password'] = 0;
+                }
+                if(!isset($params['maxlength'])) {
+                    $params['maxlength'] = 255;
+                }
+                if(!isset($params['text_input_mask'])) {
+                    $params['text_input_mask'] = '';
+                }
+                //
+
+                // Default params
                 $params['disable'] = 0;
                 $params['readonly'] = 0;
                 $params['autocomplete'] = 0;
@@ -335,18 +389,32 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $params['field_decimal_sep'] = '.';
                 $params['text_format_string'] = '';
                 $params['field_format_string_blank'] = 1;
-                $params['text_input_mask'] = '';
                 $params['text_input_mask_autoclear'] = 0;
+                //
                 break;
             case 'textarea':
-                $params['textarea_placeholder'] = '';
+                // User params
+                if(!isset($params['textarea_placeholder'])) {
+                    $params['textarea_placeholder'] = '';
+                }
+                if(!isset($params['height'])) {
+                    $params['height'] = 6;
+                }
+                if(!isset($params['use_wysiwyg'])) {
+                    $params['use_wysiwyg'] = 0;
+                }
+                if(!isset($params['maxlength'])) {
+                    $params['maxlength'] = 255;
+                }
+                if(!isset($params['textarea-showmax'])) {
+                    $params['textarea-showmax'] = 0;
+                }
+                //
+
+                // Default params
                 $params['width'] = 60;
-                $params['height'] = 6;
-                $params['use_wysiwyg'] = 0;
-                $params['maxlength'] = 255;
                 $params['wysiwyg_extra_buttons'] = 1;
                 $params['textarea_field_type'] = 'TEXT';
-                $params['textarea-showmax'] = 0;
                 $params['textarea_limit_type'] = 'char';
                 $params['textarea-tagify'] = 0;
                 $params['textarea_tagifyurl'] = '';
@@ -355,6 +423,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $params['textarea-truncate'] = 0;
                 $params['textarea-hover'] = 1;
                 $params['textarea_hover_location'] = 'top';
+                //
                 break;
             case 'dropdown':
                 $params['multiple'] = 0;
@@ -1850,7 +1919,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        // Update column type
+        // Get old element
         $query->select([
             'el.name AS name',
             'el.plugin AS plugin',
@@ -1885,9 +1954,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $element['default'] = '';
             }
 
-            //$element['params'] = $this->updateElementParams($element['plugin'],$db_element->plugin,$element['params']);
-
-            $element['params']['bootstrap_class'] = 'input-xlarge';
+            // If we change the plugin we set new params for our element
+            if($db_element->plugin != $element['plugin']){
+                $element['params'] = $this->updateElementParams($element['plugin'],$db_element->plugin,$element['params']);
+            }
 
             // Filter by plugin
             if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown') {
@@ -1971,29 +2041,29 @@ class EmundusonboardModelformbuilder extends JModelList {
                     " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
                 $db->setQuery($query);
                 $db->execute();
-
-                if($element['plugin'] === 'date'){
-                    $element['params']['bootstrap_class'] = 'input-medium';
-                }
-
             } elseif ($element['plugin'] === 'field') {
+                $key = array_search("isemail", $element['params']['validations']['plugin']);
+
                 if ($element['params']['password'] != 6) {
                     $dbtype = 'VARCHAR(' . $element['params']['maxlength'] . ')';
                 } else {
                     $dbtype = 'INT(' . $element['params']['maxlength'] . ')';
                 }
+
                 if ($element['params']['password'] == 3) {
-                    $element['params']['isemail-message'] = array("");
-                    $element['params']['isemail-validation_condition'] = array("");
-                    $element['params']['isemail-allow_empty'] = array("1");
-                    $element['params']['isemail-check_mx'] = array("0");
-                    $element['params']['validations']['plugin'][] = "isemail";
-                    $element['params']['validations']['plugin_published'][] = "1";
-                    $element['params']['validations']['validate_in'][] = "both";
-                    $element['params']['validations']['validation_on'][] = "both";
-                    $element['params']['validations']['validate_hidden'][] = "0";
-                    $element['params']['validations']['must_validate'][] = "0";
-                    $element['params']['validations']['show_icon'][] = "0";
+                    if($key === false) {
+                        $element['params']['isemail-message'] = array("");
+                        $element['params']['isemail-validation_condition'] = array("");
+                        $element['params']['isemail-allow_empty'] = array("1");
+                        $element['params']['isemail-check_mx'] = array("0");
+                        $element['params']['validations']['plugin'][] = "isemail";
+                        $element['params']['validations']['plugin_published'][] = "1";
+                        $element['params']['validations']['validate_in'][] = "both";
+                        $element['params']['validations']['validation_on'][] = "both";
+                        $element['params']['validations']['validate_hidden'][] = "0";
+                        $element['params']['validations']['must_validate'][] = "0";
+                        $element['params']['validations']['show_icon'][] = "0";
+                    }
                 } else {
                     //$element['params']['validations']['plugin'] = array_merge(array_diff($element['params']['validations']['plugin'], array("isemail")));
                     $key = array_search("isemail", $element['params']['validations']['plugin']);
@@ -2015,8 +2085,6 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
             } elseif ($element['plugin'] === 'textarea') {
-                $element['params']['width'] = 60;
-
                 $query = "ALTER TABLE " . $db_element->dbtable .
                     " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
                 $db->setQuery($query);
