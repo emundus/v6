@@ -37,6 +37,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
             $user = $session->id;
             $fnum = $session->fnum;
             $cid = $session->campaign_id;
+            $status = $session->status;
         }
         else {
             JLog::add('Could not get session on order ID. -> '. $order_id, JLog::ERROR, 'com_emundus');
@@ -82,6 +83,14 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
                     ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('user_id') . ' = ' . $user);
                 break;
 
+            case 'status':
+                $query
+                    ->clear()
+                    ->select('*')
+                    ->from($db->quoteName('#__emundus_hikashop'))
+                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR (' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum).' AND '. $db->quoteName('status').' = '.$status);
+                break;
+
         }
         try {
             $db->setQuery($query);
@@ -90,8 +99,8 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
             if(empty($em_hika)) {
 
-                $columns = ['user', 'fnum', 'campaign_id', 'order_id'];
-                $values = [$user, $db->quote($fnum), $cid, $order_id];
+                $columns = ['user', 'fnum', 'campaign_id', 'order_id', 'status'];
+                $values = [$user, $db->quote($fnum), $cid, $order_id, $status];
 
                 $query
                     ->clear()
