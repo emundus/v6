@@ -63,7 +63,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 			}
 
 			// Set all of the file requests as uploaded.
-			$query->update($db->quoteName('jos_emundus_files_requeest'))
+			$query->update($db->quoteName('jos_emundus_files_request'))
 				->set($db->quoteName('uploaded').' = 1')
 				->where($db->quoteName('file_name').' IN ("'.implode('","', $files).'")');
 			$db->setQuery($query);
@@ -76,7 +76,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 			$query->clear()
 				->select([$db->quoteName('fr.fnum'), $db->quoteName('a.lbl'), $db->quoteName('fr.attachment_id')])
-				->from($db->quoteName('jos_emundus_files_requeest', 'fr'))
+				->from($db->quoteName('jos_emundus_files_request', 'fr'))
 				->leftJoin($db->quoteName('jos_emundus_setup_attachments', 'a').' ON '.$db->quoteName('fr.attachment_id').' = '.$db->quoteName('id'))
 				->where($db->quoteName('file_name').' IN ("'.implode('","', $files).'")');
 			$db->setQuery($query);
