@@ -135,6 +135,7 @@
 			<option value="fnum">FNUM</option>
 			<option value="status">STATUS</option>
 		</field>
+		<field name="application_payment_status" type="text" default="0" label="COM_EMUNDUS_APPLICATION_PAYMENT_STATUS" description="COM_EMUNDUS_APPLICATION_PAYMENT_STATUS_DESC" />
 	</fieldset>
 
 	<fieldset label="COM_EMUNDUS_EXPORTS" name="exports" description="COM_EMUNDUS_EXPORTS_DESC">
