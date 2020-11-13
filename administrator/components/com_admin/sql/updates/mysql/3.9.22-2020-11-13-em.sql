@@ -1,18 +1,17 @@
-DELIMITER $$
-DROP PROCEDURE IF EXISTS addFieldIfNotExists 
-$$
-DROP FUNCTION IF EXISTS isFieldExisting 
-$$
-CREATE FUNCTION isFieldExisting (table_name_IN VARCHAR(100), field_name_IN VARCHAR(100)) 
+SET GLOBAL log_bin_trust_function_creators = 1;
+
+DROP PROCEDURE IF EXISTS addFieldIfNotExists;
+DROP FUNCTION IF EXISTS isFieldExisting;
+
+CREATE FUNCTION isFieldExisting (table_name_IN VARCHAR(100), field_name_IN VARCHAR(100))
 RETURNS INT
 RETURN (
-    SELECT COUNT(COLUMN_NAME) 
-    FROM INFORMATION_SCHEMA.columns 
-    WHERE TABLE_SCHEMA = DATABASE() 
-    AND TABLE_NAME = table_name_IN 
+    SELECT COUNT(COLUMN_NAME)
+    FROM INFORMATION_SCHEMA.columns
+    WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = table_name_IN
     AND COLUMN_NAME = field_name_IN
-)
-$$
+);
 CREATE PROCEDURE addFieldIfNotExists (
     IN table_name_IN VARCHAR(100)
     , IN field_name_IN VARCHAR(100)
@@ -30,13 +29,12 @@ BEGIN
         DEALLOCATE PREPARE stmt;
     END IF;
 END;
-$$
 
 CALL addFieldIfNotExists ('jos_emundus_hikashop', 'status', 'INT(2) NULL DEFAULT NULL AFTER `order_id`');
 
 ALTER TABLE `jos_emundus_hikashop` ADD INDEX(`status`);
 
-ALTER TABLE `jos_emundus_hikashop` ADD CONSTRAINT jos_emundus_hikashop_ibfk_3 FOREIGN KEY (`status`) REFERENCES `jos_emundus_setup_status`(`step`) ON DELETE RESTRICT ON UPDATE CASCADE; 
+ALTER TABLE `jos_emundus_hikashop` ADD CONSTRAINT jos_emundus_hikashop_ibfk_3 FOREIGN KEY if not exists (`status`) REFERENCES `jos_emundus_setup_status`(`step`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 
 
