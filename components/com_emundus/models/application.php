@@ -2229,7 +2229,9 @@ class EmundusModelApplication extends JModelList {
                             WHERE ff.group_id = fg.id AND fg.published = 1 AND  
                                   ff.form_id = "'.$itemt->form_id.'"
                             ORDER BY ff.ordering';
+
                 $this->_db->setQuery( $query );
+
                 $groupes = $this->_db->loadObjectList();
 
                 /*-- Liste des groupes -- */
@@ -3051,6 +3053,31 @@ class EmundusModelApplication extends JModelList {
                                 AND ho.order_created <= '.strtotime($endDate).'
                                 ORDER BY ho.order_created desc';
                 }
+                break;
+
+                case 'status' :
+                    if ($sent) {
+                        $query = 'SELECT ho.*, eh.user as user_cms_id
+                                    FROM #__emundus_hikashop eh
+                                    LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                    WHERE eh.status='.$fnumInfos['status'].' 
+                                    AND eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
+                                    AND (ho.order_status like "created" OR ho.order_status like "confirmed")
+                                    AND ho.order_created >= '.strtotime($startDate).'
+                                    AND ho.order_created <= '.strtotime($endDate).'
+                                    ORDER BY ho.order_created desc';
+                    }
+                    else {
+                        $query = 'SELECT ho.*, eh.user as user_cms_id
+                                    FROM #__emundus_hikashop eh
+                                    LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                    WHERE eh.status='.$fnumInfos['status'].' 
+                                    AND eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
+                                    AND ho.order_status like "confirmed"
+                                    AND ho.order_created >= '.strtotime($startDate).'
+                                    AND ho.order_created <= '.strtotime($endDate).'
+                                    ORDER BY ho.order_created desc';
+                    }
                 break;
         }
 
