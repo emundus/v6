@@ -62,15 +62,16 @@ class EmundusViewChecklist extends JViewLegacy {
                 $m_files = new EmundusModelFiles;
                 $attachments = $m_application->getAttachmentsProgress($this->_user->fnum);
                 $forms = $m_application->getFormsProgress($this->_user->fnum);
+                
                 if ((int)($attachments)>=100 && (int)($forms)>=100) {
                     $accept_created_payments = $eMConfig->get('accept_created_payments', 0);
                     $fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
 
-                    $paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
+                    $paid = (!(array)$m_application->getHikashopOrder($fnumInfos)) ? 0 : 1;
 
                     // If created payments aren't accepted then we don't need to check.
                     if ($accept_created_payments) {
-                        $payment_created_offline = count($m_application->getHikashopOrder($fnumInfos, true)) > 0 ? 1 : 0;
+                        $payment_created_offline = (!(array)$m_application->getHikashopOrder($fnumInfos, true)) ? 0 : 1;
                     } else {
                         $payment_created_offline = false;
                     }
