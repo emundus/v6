@@ -133,6 +133,7 @@
 			<option value="user">USER</option>
 			<option value="campaign">CAMPAIGN</option>
 			<option value="fnum">FNUM</option>
+			<option value="status">STATUS</option>
 		</field>
 	</fieldset>
 
