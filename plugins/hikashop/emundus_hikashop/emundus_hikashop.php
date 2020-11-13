@@ -73,6 +73,14 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
                     ->from($db->quoteName('#__emundus_hikashop'))
                     ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
                 break;
+            
+            case 'status':
+                $query
+                    ->clear()
+                    ->select('*')
+                    ->from($db->quoteName('#__emundus_hikashop'))
+                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR (' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum).' AND '. $db->quoteName('status').' = '.$status.')');
+                break;
 
             case 'user':
             default :
@@ -81,14 +89,6 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
                     ->select('*')
                     ->from($db->quoteName('#__emundus_hikashop'))
                     ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR ' . $db->quoteName('user_id') . ' = ' . $user);
-                break;
-
-            case 'status':
-                $query
-                    ->clear()
-                    ->select('*')
-                    ->from($db->quoteName('#__emundus_hikashop'))
-                    ->where($db->quoteName('order_id') . ' = ' . $order_id . ' OR (' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum).' AND '. $db->quoteName('status').' = '.$status.')');
                 break;
 
         }
