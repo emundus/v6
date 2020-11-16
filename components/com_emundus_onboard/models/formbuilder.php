@@ -350,6 +350,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     break;
                 case 'display':
                     unset($params['display_showlabel']);
+                    $params['store_in_db'] = 1;
                     break;
                 default:
                     break;
@@ -484,6 +485,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 break;
             case 'display':
                 $params['display_showlabel'] = 1;
+                $params['store_in_db'] = 0;
                 break;
             default:
                 break;
