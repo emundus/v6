@@ -87,7 +87,7 @@
                     <a @click="updateLabelGroup(group)" :title="Validate">
                       <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
                     </a>
-                    <a @click="enableRepatedGroup(group)" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon" :title="RepeatGroup">
+                    <a @click="enableRepatedGroup(group)" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon" :title="RepeatGroup" v-if="files == 0">
                       <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
                     </a>
                     <a @click="deleteAGroup(group,index_group)" style="margin-left: 1em;color: black" v-if="files == 0" :title="Delete">
