@@ -186,8 +186,13 @@ a {
     align-items: center;
     justify-content: center;
     text-align: center;
+}
 
-
+/* TCHOOZ MENU */
+.tchooz-vertical-toplevel{
+    display: flex;
+    flex-direction: column;
+    text-align: left;
 }
 
 
