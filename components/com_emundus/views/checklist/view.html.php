@@ -79,13 +79,14 @@ class EmundusViewChecklist extends JViewLegacy {
                     if ($accept_created_payments == 2 || $paid || $payment_created_offline) {
 
                         if ($eMConfig->get('redirect_after_payment')) {
-
+/*
+// status is changed in emundus_hikashop plugin
                             if (!empty($eMConfig->get('status_after_payment'))) {
                                 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
                                 $m_files = new EmundusModelFiles();
                                 $m_files->updateState($this->_user->fnum,$eMConfig->get('status_after_payment'));
                             }
-
+*/
                             // If redirect after payment is active then the file is not sent and instead we redirect to the submitting form.
                             $app->redirect($m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$this->_user->fnum);
 
