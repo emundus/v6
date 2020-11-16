@@ -16,6 +16,32 @@ jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
 
 class EmundusonboardModelformbuilder extends JModelList {
+    var $model_language = null;
+    public function __construct($config = array()) {
+        parent::__construct($config);
+        JModelLegacy::addIncludePath(JPATH_SITE . '/administrator/components/com_languages/models');
+        $this->model_language = JModelLegacy::getInstance('Override', 'LanguagesModel');
+    }
+
+    public function translate($key,$values){
+        $app = JFactory::getApplication();
+        $languages = JLanguageHelper::getLanguages();
+        foreach ($languages as $language) {
+            $app->setUserState('com_languages.overrides.filter.language', $language->lang_code);
+            $language_datas = array(
+                'language' => 'NULL',
+                'client' => 'NULL',
+                'key' => $key,
+                'override' => $values[$language->sef],
+                'file' => 'NULL',
+                'searchstring' => "",
+                'searchtype' => "value",
+                'id' => ""
+            );
+            $this->model_language->save($language_datas);
+            $this->copyFileToAdministration($language->lang_code);
+        }
+    }
 
     function getSpecialCharacters() {
         return array('=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%');
@@ -669,40 +695,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         $this->copyFileToAdministration($codelang);
     }
 
-    function addTransationFr($text) {
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
-
-        $lines = file($path_to_file_fr);
-        $last_line = $lines[count($lines)-1];
-
-        if (strpos($last_line,'COM_USERS_RESET_REQUEST_LABEL') === 0) {
-            file_put_contents($path_to_file_fr,"\r\n" . $text . PHP_EOL, FILE_APPEND | LOCK_EX);
-        } else {
-            file_put_contents($path_to_file_fr,$text . PHP_EOL, FILE_APPEND | LOCK_EX);
-        }
-        $this->removeEmptyLinesFr();
-
-        $this->copyFileToAdministration('fr-FR');
-    }
-
-    function addTransationEn($text) {
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_file_en = $path_to_file . 'en-GB.override.ini' ;
-
-        $lines = file($path_to_file_en);
-        $last_line = $lines[count($lines)-1];
-
-        if (strpos($last_line,'INSTITUTION_NAME') === 0) {
-            file_put_contents($path_to_file_en,"\r\n" . $text . PHP_EOL, FILE_APPEND | LOCK_EX);
-        } else {
-            file_put_contents($path_to_file_en,$text . PHP_EOL, FILE_APPEND | LOCK_EX);
-        }
-        $this->removeEmptyLinesEn();
-
-        $this->copyFileToAdministration('en-GB');
-    }
-
     /**
      * Update translation of a menu label
      *
@@ -895,10 +887,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->execute();
 
             // Add translation to translation files
-            $this->addTransationFr('FORM_' . $prid . '_' . $formid . '=' . "\"" . $label['fr'] . "\"");
-            $this->addTransationFr('FORM_' . $prid . '_INTRO_' . $formid . '=' . "\"" . $intro['fr'] . "\"");
-            $this->addTransationEn('FORM_' . $prid . '_' . $formid . '=' . "\"" . $label['en'] . "\"");
-            $this->addTransationEn('FORM_' . $prid . '_INTRO_' . $formid . '=' . "\"" . $intro['en'] . "\"");
+            $this->translate('FORM_' . $prid . '_' . $formid,$label);
+            $this->translate('FORM_' . $prid . '_INTRO_' . $formid,$intro);
             //
 
             // CREATE TABLE
@@ -1128,10 +1118,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->execute();
 
             // Add translation to translation files
-            $this->addTransationFr('FORM_' . $prid . '_' . $formid . '=' . "\"" . $label['fr'] . "\"");
-            $this->addTransationFr('FORM_' . $prid . '_INTRO_' . $formid . '=' . "\"" . $intro['fr'] . "\"");
-            $this->addTransationEn('FORM_' . $prid . '_' . $formid . '=' . "\"" . $label['en'] . "\"");
-            $this->addTransationEn('FORM_' . $prid . '_INTRO_' . $formid . '=' . "\"" . $intro['en'] . "\"");
+            $this->translate('FORM_' . $prid . '_' . $formid,$label);
+            $this->translate('FORM_' . $prid . '_INTRO_' . $formid,$intro);
             //
 
             // INSERT FABRIK LIST
@@ -1447,8 +1435,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             $tag = 'GROUP_' . $fid . '_' . $groupid;
 
-            $this->addTransationFr($tag . '=' . "\"" . $label['fr'] . "\"");
-            $this->addTransationEn($tag . '=' . "\"" . $label['en'] . "\"");
+            $this->translate($tag,$label);
 
             $query->clear()
                 ->update($db->quoteName('#__fabrik_groups'))
@@ -1576,6 +1563,9 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        JModelLegacy::addIncludePath(JPATH_SITE . '/administrator/components/com_languages/models');
+        $language = JModelLegacy::getInstance('Override', 'LanguagesModel');
+
         // Default parameters
         $dbtype = 'VARCHAR(255)';
         $dbnull = 'NULL';
@@ -1644,8 +1634,12 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->execute();
             $elementId = $db->insertid();
 
-            $this->addTransationFr('ELEMENT_' . $gid . '_' . $elementId . '=' . "\"" . 'Element sans titre' . "\"");
-            $this->addTransationEn('ELEMENT_' . $gid . '_' . $elementId . '=' . "\"" . 'Unnamed item' . "\"");
+            $label = array(
+                'fr' => 'Element sans titre',
+                'en' => 'Unnamed item',
+            );
+
+            $this->translate('ELEMENT_' . $gid . '_' . $elementId,$label);
 
             $query->clear()
                 ->update($db->quoteName('#__fabrik_elements'))
@@ -1697,9 +1691,12 @@ class EmundusonboardModelformbuilder extends JModelList {
 
                 $sub_labels[] = strtoupper('sublabel_' . $gid . '_' . $elementId . '_0');
                 $sub_values[] = 'Option 1';
-                $contentToAdd = strtoupper('sublabel_' . $gid . '_' . $elementId . '_0') . '=Option 1';
-                $this->addTransationFr($contentToAdd);
-                $this->addTransationEn($contentToAdd);
+                $labels = array(
+                    'fr' => 'Option 1',
+                    'en' => 'Option 1'
+                );
+
+                $this->translate(strtoupper('sublabel_' . $gid . '_' . $elementId . '_0'),$labels);
 
                 $params['sub_options'] = array(
                     'sub_values' => $sub_values,
@@ -1929,17 +1926,22 @@ class EmundusonboardModelformbuilder extends JModelList {
                                     $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
                                 }
                             } else {
-                                $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
                                 $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
-                                $this->addTransationFr($contentToAdd);
-                                $this->addTransationEn($contentToAdd);
+                                $labels = array(
+                                    'fr' => $sub_value,
+                                    'en' => $sub_value,
+                                );
+                                $this->translate('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index,$labels);
                                 $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
                                 $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
                             }
                         } else {
-                            $contentToAdd = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index . '=' . "\"" . $sub_value . "\"";
-                            $this->addTransationFr($contentToAdd);
-                            $this->addTransationEn($contentToAdd);
+                            $labels = array(
+                                'fr' => $sub_value,
+                                'en' => $sub_value,
+                            );
+                            $this->translate('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index,$labels);
+
                             $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
                             $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
                         }
@@ -2635,10 +2637,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             $query->clear();
             $query->update($db->quoteName('#__fabrik_forms'));
 
-            $this->addTransationFr('FORM_' . $prid. '_' . $newformid . '=' . "\"" . $label['fr'] . "\"");
-            $this->addTransationEn('FORM_' . $prid. '_' . $newformid . '=' . "\"" . $label['en'] . "\"");
-            $this->addTransationFr('FORM_' . $prid . '_INTRO_' . $newformid . '=' . "\"" . $intro['fr'] . "\"");
-            $this->addTransationEn('FORM_' . $prid . '_INTRO_' . $newformid . '=' . "\"" . $intro['en'] . "\"");
+            $this->translate('FORM_' . $prid. '_' . $newformid,$label);
+            $this->translate('FORM_' . $prid . '_INTRO_' . $newformid,$intro);
             //
 
             $query->set('label = ' . $db->quote('FORM_' . $prid . '_' . $newformid));
@@ -2765,8 +2765,11 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $query->update($db->quoteName('#__fabrik_groups'));
 
                 if($formid == 258) {
-                    $this->addTransationFr('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . 'Confirmation d\'envoi de dossier' . "\"");
-                    $this->addTransationEn('GROUP_' . $newformid . '_' . $newgroupid . '=' . "\"" . 'Confirmation of file sending' . "\"");
+                    $labels = array(
+                        'fr' => 'Confirmation d\'envoi de dossier',
+                        'en' => 'Confirmation of file sending',
+                    );
+                    $this->translate('GROUP_' . $newformid . '_' . $newgroupid,$labels);
                 } else {
                     foreach ($languages as $language) {
                         $duplicate_translation = $this->duplicateFileTranslation($group_model->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'GROUP_' . $newformid . '_' . $newgroupid,$language->lang_code);
