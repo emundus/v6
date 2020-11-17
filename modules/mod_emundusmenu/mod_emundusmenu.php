@@ -56,5 +56,9 @@ $showAll = $params->get('showAllChildren');
 $class_sfx = htmlspecialchars($params->get('class_sfx'));
 
 if (count($list)) {
-	require JModuleHelper::getLayoutPath('mod_emundusmenu', $params->get('menu_style', $layout));
+    if($params->get('menu_style') != 'tchooz_vertical') {
+        require JModuleHelper::getLayoutPath('mod_emundusmenu', $params->get('layout', $layout));
+    } else {
+        require JModuleHelper::getLayoutPath('mod_emundusmenu', $params->get('menu_style', $layout));
+    }
 }

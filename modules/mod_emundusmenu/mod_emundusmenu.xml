@@ -34,7 +34,6 @@
 					<option value="horiz_flat">Legacy - Horizontal</option>
 					<option value="list_flat">Legacy - Flat List</option>
 					<option value="tchooz_vertical">Tchooz</option>
-					<option value="gantry5">Gantry</option>
 				</field>
 				<field name="@spacer" type="spacer" default="" label="" description="" />
 				<field name="startLevel" type="text" default="0" size="5" label="Start Level"		 description="PARAMSTARTLEVEL" />
