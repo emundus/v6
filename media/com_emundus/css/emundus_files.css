@@ -112,7 +112,7 @@ button.close {
     width: 15px;
     position: fixed;
     top: 25%;
-    left: 0;
+    left: 70px;
     cursor: pointer;
 }
 /*TABLEAUX*/
@@ -1331,7 +1331,7 @@ thead th:hover {
     top: 50%;
     left: 0;
     background-color: rgba(142, 142, 142, 0.83);
-    z-index: 999;
+    z-index: 10;
 }
 
 #em-hide-filters:hover {

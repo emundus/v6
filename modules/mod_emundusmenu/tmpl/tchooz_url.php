@@ -14,11 +14,16 @@ $class = $item->anchor_css ? 'class="'.$item->anchor_css.'" ' : '';
 $title = $item->anchor_title ? 'title="'.$item->anchor_title.'" ' : '';
 if ($item->menu_image) {
 		$item->params->get('menu_text', 1 ) ?
-		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" style="width: 30px" /><span class="image-title"></span>' :
-		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" style="width: 30px" />';
+		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" /><span class="image-title" style="display: none;opacity: 0">'.$item->title.'</span>' :
+		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" />';
 } else {
     $linktype = $item->title;
 }
+
+if($item->deeper) {
+    $linktype .= '<span class="g-menu-parent-indicator parent-indicator-close" style="display: none;" id="parent_' . $item->id .'" data-g-menuparent=""></span>';
+}
+
 $flink = $item->flink;
 $flink = JFilterOutput::ampReplace(htmlspecialchars($flink));
 
@@ -33,7 +38,7 @@ switch ($item->browserNav) :
                 </span>
             </a>
         <?php else :?>
-            <a <?php echo $class; ?>href="<?php echo $flink; ?>" <?php echo $title; ?>><?php echo $linktype; ?></a>
+            <a <?php echo $class; ?>href="<?php echo $flink; ?>" <?php if ($item->deeper) echo 'onclick="enableSubLevel(' . $item->id . ')"'; ?> <?php echo $title; ?>><?php echo $linktype; ?></a>
         <?php endif;
     break;
 

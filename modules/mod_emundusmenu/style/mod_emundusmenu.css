@@ -193,6 +193,18 @@ a {
     display: flex;
     flex-direction: column;
     text-align: left;
+    width: 55px;
+    transition: width 0.3s ease-in-out;
+}
+
+.grey-navbar-icons{
+    width: 70px;
+    background: #f8f8f8;
+    position: fixed;
+    height: 100%;
+    left: 0;
+    top: 5px;
+    transition: opacity 0.3s ease-in-out;
 }
 
 
