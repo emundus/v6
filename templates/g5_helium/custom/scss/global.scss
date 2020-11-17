@@ -12,7 +12,7 @@
 /* GENERAL */
 body {
   font-family: "Lato", sans-serif;
-  border-top: 5px solid $base-secondary-color;
+  //border-top: 5px solid $base-secondary-color;
   line-height: normal;
 
   p {
@@ -305,10 +305,16 @@ input[type="text"],
 .ui.warning.message {
   color: #000;
 }
+#g-container-main{
+  min-height: 100%;
+  height: auto;
+  margin: 0 auto auto;
+  width: 100%;
+}
 
 #g-container-main .g-container {
   padding: 0 10px;
-  left: 70px;
+  left: 75px;
   position: relative;
 }
 
@@ -363,7 +369,7 @@ input[type="text"],
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
 
       .platform-content {
         margin: 0px 10px;
@@ -400,10 +406,10 @@ input[type="text"],
 
 #g-navigation {
   #header-c.without-tchooz {
-    max-width: 20rem;
-    min-height: 67px;
+    max-width: 30rem;
+    min-height: auto;
     .g-content {
-      justify-content: space-between;
+      justify-content: flex-end;
     }
   }
 }
@@ -413,7 +419,7 @@ input[type="text"],
 #g-navigation {
   #header-c.without-tchooz-and-lang-switcher {
     max-width: 30rem;
-    min-height: 67px;
+    min-height: auto;
     .g-content {
       justify-content: flex-end;
     }
@@ -611,10 +617,16 @@ body>.g-container {
   }
 
   #userDropdownIcon {
-    background-color: $base-primary-color;
+    background-color: white;
     border: 2px solid $base-primary-color;
-    color: #ffffff;
+    color: $base-primary-color;
     box-shadow: none;
+    font-size: 1.5em;
+    width: 1.5em !important;
+    height: 1.5em !important;
+    align-items: center;
+    display: flex;
+    justify-content: center;
 
     &:hover,
     &.active,
@@ -877,7 +889,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background-color: $base-secondary-color;
     background: $base-secondary-color;
     color: white;
-    margin-bottom: -1px;
+    //margin-bottom: -1px;
   }
 
   /* COULEURS TITRES  */

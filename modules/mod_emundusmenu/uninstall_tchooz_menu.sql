@@ -1,4 +1,4 @@
-# ADDING ICONS TO ONBOARDING MENU #
+# REMOVE ICONS TO ONBOARDING MENU #
 UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
 WHERE menutype = 'onboardingmenu' AND link = 'index.php?option=com_emundus_onboard&view=campaign';
 
@@ -20,9 +20,12 @@ WHERE template = 'emundus';
 
 UPDATE jos_menu SET template_style_id = @templateId
 WHERE menutype = 'onboardingmenu';
+
+UPDATE jos_modules SET published = 1
+WHERE title LIKE 'mod_emundus_switch_funnel';
 # END #
 
-# ADDING ICONS TO COORDINATOR MENU #
+# REMOVE ICONS TO COORDINATOR MENU #
 UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
 WHERE menutype = 'coordinatormenu' AND alias = 'evaluations';
 
@@ -37,4 +40,26 @@ WHERE menutype = 'coordinatormenu' AND alias = 'decisions';
 
 UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
 WHERE menutype = 'coordinatormenu' AND alias = 'rapport-d-activite';
+# END #
+
+# REMOVE ICONS TO EVALUATOR MENU #
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
+WHERE menutype = 'partnermenu' AND alias = 'evaluation-list';
+# END #
+
+# REMOVE ICONS TO PROGRAM MANAGER MENU #
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
+WHERE menutype = 'localcoordinator-menu' AND alias = 'applicants-lists-543';
+
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
+WHERE menutype = 'localcoordinator-menu' AND alias = 'evaluation-146';
+
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
+WHERE menutype = 'localcoordinator-menu' AND alias = 'admission-144';
+
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
+WHERE menutype = 'localcoordinator-menu' AND alias = 'decisions-2';
+
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
+WHERE menutype = 'localcoordinator-menu' AND alias = 'users';
 # END #

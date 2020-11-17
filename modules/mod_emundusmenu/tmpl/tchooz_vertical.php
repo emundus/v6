@@ -28,7 +28,7 @@ defined('_JEXEC') or die;
     /*** Navbar ***/
     #header-a{
         position: relative;
-        left: 10%;
+        left: 5%;
     }
 
     #header-b{
@@ -53,7 +53,7 @@ defined('_JEXEC') or die;
     /*** END ***/
 
     /*** Sublevel parent ***/
-    .parent-active .item::before{
+    .parent-active .item::before,.active .item::before{
         background: #33df5c;
         width: 3px;
         height: 100%;
@@ -286,7 +286,7 @@ defined('_JEXEC') or die;
         let ids = [];
         let close_menu = false;
         Object.values(jQuery('ul[id^=sublevel_list_]')).forEach((elt) => {
-            if(typeof elt.id !== 'undefined') {
+            if(typeof elt.id === 'string') {
                 ids.push(elt.id.split('_')[2]);
             }
         });
