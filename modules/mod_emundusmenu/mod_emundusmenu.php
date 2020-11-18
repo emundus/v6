@@ -46,6 +46,7 @@ if (isset($user->menutype)) {
     if(EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
         $tchooz_list = modEmundusMenuHelper::getList($params,'onboardingmenu');
     }
+    $help_list = modEmundusMenuHelper::getList($params,'usermenu');
 }
 $app = JFactory::getApplication();
 $menu = $app->getMenu();

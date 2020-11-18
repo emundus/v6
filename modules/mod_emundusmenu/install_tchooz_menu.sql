@@ -63,3 +63,11 @@ WHERE menutype = 'localcoordinator-menu' AND alias = 'decisions-2';
 UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '\/images\/emundus\/menus\/group.png')
 WHERE menutype = 'localcoordinator-menu' AND alias = 'users';
 # END #
+
+# ADDING ICONS TO USER MENU #
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '\/images\/emundus\/menus\/alert.png')
+WHERE menutype = 'usermenu' AND alias = 'rapport-d-erreurs';
+
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '\/images\/emundus\/menus\/help.png')
+WHERE menutype = 'usermenu' AND alias = 'besoin-d-aide';
+# END #

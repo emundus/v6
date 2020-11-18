@@ -74,7 +74,7 @@ defined('_JEXEC') or die;
     /*** List style ***/
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li{
         width: 50px;
-        margin: 10px !important;
+        margin: 5px 10px !important;
     }
     #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container{
         border-bottom: unset !important;
@@ -87,7 +87,7 @@ defined('_JEXEC') or die;
         transition: all 0.3s ease-in-out;
     }
     .tchooz-vertical-item a img{
-        width: 35px;
+        width: 30px;
         padding: 5px;
     }
 
@@ -255,6 +255,68 @@ defined('_JEXEC') or die;
                 echo '</li>';
             }
         endforeach;
+
+        echo '<hr id="menu_separator">';
+
+        foreach ($help_list as $i => &$item) :
+            $item->anchor_css="item";
+            $class = 'item-'.$item->id.' g-standard';
+            if ($item->id == $active_id) {
+                $class .= ' current';
+            }
+
+            if (in_array($item->id, $path)) {
+                $class .= ' active';
+            }
+            elseif ($item->type == 'alias') {
+                $aliasToId = $item->params->get('aliasoptions');
+                if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
+                    $class .= ' active';
+                }
+                elseif (in_array($aliasToId, $path)) {
+                    $class .= ' alias-parent-active';
+                }
+            }
+
+            if ($item->parent) {
+                $class .= ' g-parent';
+            }
+
+            if (!empty($class)) {
+                $class = ' class="tchooz-vertical-item g-menu-item g-menu-'.trim($class) .'"';
+            }
+
+            echo '<li'.$class.'>';
+
+            // Render the menu item.
+            switch ($item->type) :
+                case 'separator':
+                case 'url':
+                case 'component':
+                    require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_'.$item->type);
+                    break;
+
+                default:
+                    require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_url');
+                    break;
+            endswitch;
+
+            // The next item is deeper.
+            if ($item->deeper) {
+                echo '<ul class="g-sublevel-list" id="sublevel_list_' . $item->id . '" style="display: none">';
+                echo '<li class="g-dropdown-column">';
+                echo '<div class="g-grid"><div class="g-block size-100"><ul class="g-sublevel"><li class="g-level-'.($item->level).' g-go-back"><a class="g-menu-item-container" href="#" onclick="backToParentMenu(' . $item->id . ')" data-g-menuparent=""><span class="g-menu-item-content"><span class="g-menu-item-title">' . JText::_("COM_EMUNDUS_BACK") . '</span></span></a></li>';
+            }
+            // The next item is shallower.
+            elseif ($item->shallower) {
+                echo '</li>';
+                echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
+            }
+            // The next item is on the same level.
+            else {
+                echo '</li>';
+            }
+        endforeach;
         ?>
     </ul>
 </nav>
@@ -355,4 +417,11 @@ defined('_JEXEC') or die;
         jQuery(".image-title").css("display","block");
         jQuery(".image-title").css("opacity","1");
     }
+
+    document.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if(jQuery(".image-title").css("display") == 'block') {
+            enableTitles();
+        }
+    });
 </script>

@@ -1,10 +1,31 @@
 /* USER MENU */
+@keyframes increase-width {
+    from {width: 0;}
+    to {width: 250px;}
+}
+
+@keyframes increase-opacity {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
 #g-navigation .header-c .open > .dropdown-menu {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    left: auto;
-    margin-top: 10px;
+    align-items: start;
+    top: 0;
+    position: fixed;
+    right: 0 !important;
+    width: 250px;
+    min-width: 0;
+    margin-top: 0;
+    height: 100%;
+    border: unset;
+    box-shadow: unset;
+    animation: increase-width 0.3s;
+    animation-fill-mode: forwards;
+    transition: all 0.3s ease-in-out;
+    padding: 70px 30px 30px 30px;
 }
 #g-navigation:not(.g-flushed) .header-c .open > .dropdown-menu {
     right: 0;
@@ -13,9 +34,17 @@
     right: 0;
 }
 
+#g-navigation .header-c .open > #userDropdownMenu *{
+    opacity: 0;
+    animation: increase-opacity 0.3s;
+    animation-fill-mode: forwards;
+    animation-delay: 0.2s;
+    transition: all 0.3s ease-in-out;
+}
+
 
 #userDropdownMenu li {
-    text-align: center;
+    text-align: left;
     width: 100%;
     height: auto !important;
     margin: 0 !important;
@@ -62,6 +91,8 @@ li>a:hover {
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    z-index: 9999;
+    position: relative;
 }
 
 #g-navigation #header-c .header-right a.btn.btn-danger {
@@ -95,6 +126,21 @@ li>a:hover {
 /* CORRECTION  */
 .login .btn, .logout .btn, .registration .btn, .profile-edit .btn, .remind .btn, .reset .btn {
     margin-right: 0px !important;
+}
+
+.logout-button-user{
+    padding: 5px !important;
+    border-radius: 25px;
+    text-align: center;
+    background-color: #c60a0a;
+    color: white !important;
+    margin-top: 10px;
+}
+.logout-button-user:hover{
+    background: #c60a0a !important;
+}
+.logout-button-user:focus{
+    background: #c60a0a !important;
 }
 
 @media all and (max-width: 767px) {

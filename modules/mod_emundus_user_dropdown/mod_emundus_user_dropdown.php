@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 $layout = $params->get('layout', 'default');
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
+include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
 
 $user = JFactory::getSession()->get('emundusUser');
 
@@ -40,6 +41,18 @@ if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0') {
 if (!$show_registration && $user === null && modEmundusUserDropdownHelper::isCampaignActive()) {
 	$show_registration = true;
 }
+
+//
+$m_profiles = new EmundusModelProfile;
+$app_prof = $m_profiles->getApplicantsProfilesArray();
+
+$user_prof = [];
+foreach ($user->emProfiles as $prof) {
+    $user_prof[] = $prof->id;
+}
+
+// If all of the user's profiles are found in the list of applicant profiles, then the user is only an applicant.
+$only_applicant = !array_diff($user_prof, $app_prof);
 
 
 // used for getting the page we are currently on.
