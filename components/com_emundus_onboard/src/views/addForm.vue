@@ -53,31 +53,32 @@
             <label for="published" class="ml-10px">{{ Publish }}</label>
           </div>-->
         </div>
+
         <div class="divider"></div>
+
         <div class="section-sauvegarder-et-continuer">
           <div class="w-container">
-            <div class="container-evaluation w-clearfix">
+            <div class="container-evaluation d-flex justify-content-between">
               <button
-                      type="button"
-                      class="bouton-sauvergarder-et-continuer"
-                      @click="quit = 1; submit()"
-              >
-                {{ Continuer }}
-              </button>
-              <button
-                      type="button"
-                      class="bouton-sauvergarder-et-continuer w-quitter"
-                      @click="quit = 0; submit()"
-              >
-                {{ Quitter }}
-              </button>
-              <button
-                      type="button"
-                      class="bouton-sauvergarder-et-continuer w-retour"
-                      onclick="history.go(-1)"
-              >
+                  type="button"
+                  class="bouton-sauvergarder-et-continuer w-retour"
+                  onclick="history.go(-1)">
                 {{ Retour }}
               </button>
+              <div class="d-flex">
+                <button
+                    type="button"
+                    class="bouton-sauvergarder-et-continuer w-quitter"
+                    @click="quit = 0; submit()">
+                  {{ Quitter }}
+                </button>
+                <button
+                        type="button"
+                        class="bouton-sauvergarder-et-continuer"
+                        @click="quit = 1; submit()">
+                  {{ Continuer }}
+                </button>
+              </div>
             </div>
           </div>
         </div>

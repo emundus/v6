@@ -126,7 +126,7 @@ defined('_JEXEC') or die;
     ?>>
     <div style="opacity: 0" class="grey-navbar-icons"></div>
     <ul class="g-toplevel tchooz-vertical-toplevel">
-        <a class="g-menu-item g-standard tchooz-vertical-item" style="margin: 10px" href="#" onclick="enableTitles()"><img src="/images/emundus/menus/menu.png" style="width: 30px"></a>
+        <button class="g-menu-item g-standard" style="margin: 10px;background: transparent;padding: 0;width: 30px" onclick="enableTitles()"><img src="/images/emundus/menus/menu.png" style="width: 30px"></button>
         <?php
 
         echo '<li class="g-menu-item g-standard tchooz-vertical-item" style="margin-bottom: 50px !important;"><a class="item" href="/"><img src="/images/emundus/tchooz_favicon.png" alt="Accueil" style="width: 30px"></a>
@@ -363,6 +363,12 @@ defined('_JEXEC') or die;
         if(jQuery(".image-title").css("display") == 'none' && close_menu == false){
             jQuery(".tchooz-vertical-toplevel").css("width","250px")
             jQuery(".tchooz-vertical-item").css("width","auto")
+            //Check for formbuilder
+            if(jQuery(".tchooz-vertical-item").css("transform") == 'matrix(1, 0, 0, 1, -100, 0)') {
+                jQuery(".sidebar-formbuilder").css("transform", "translateX(-100px)")
+                jQuery(".tchooz-vertical-item").css("transform", "translateX(0)")
+                jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(0)")
+            }
             jQuery(".grey-navbar-icons").css("opacity","1")
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
@@ -380,6 +386,12 @@ defined('_JEXEC') or die;
                 jQuery(".grey-navbar-icons").css("opacity","0")
                 setTimeout(() => {
                     jQuery(".tchooz-vertical-item").css("width","50px")
+                    //Check for formbuilder
+                    if(jQuery(".tchooz-vertical-item").css("transform") == 'matrix(1, 0, 0, 1, 0, 0)') {
+                        jQuery(".tchooz-vertical-item").css("transform", "translateX(-100px)")
+                        jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)")
+                        jQuery(".sidebar-formbuilder").css("transform", "translateX(0)")
+                    }
                 },200)
             },50)
         }

@@ -45,43 +45,23 @@
             @UpdateVue="updateFormObjectAndComponent"
             @removeMenu="removeMenu"
     />
-    <div class="row form-builder">
+    <div class="row">
       <div class="sidebar-formbuilder">
-        <div class="heading-block">
-          <h1 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h1>
-          <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit">
-            <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
-          </a>
-        </div>
-        <transition name="little-move-right">
-          <div v-if="!actions_menu">
-            <button class="actions-button" type="button" @click="actions_menu = true">
-              {{Actions}}
-              <em class="fas fa-plus-circle"></em>
-            </button>
-          </div>
-        </transition>
         <transition name="move-right">
-          <div class="actions-menu menu-block" v-if="actions_menu">
+          <div class="actions-menu menu-block">
             <div>
-              <div class="heading-actions">
-                <label class="form-title" style="padding: 0; margin: 0">{{Actions}}</label>
-                <button type="button" class="btnCloseModal" @click="actions_menu = false">
-                  <em class="fas fa-times-circle pointer" ></em>
-                </button>
-              </div>
               <div class="action-links">
                   <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')">
                     <em class="add-page-icon col-md-offset-1 col-sm-offset-1"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{addMenu}}</label>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{addMenu}}</label>
                   </a>
                   <a class="d-flex action-link" @click="createGroup()">
                     <em class="add-group-icon col-md-offset-1 col-sm-offset-1"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{addGroup}}</label>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{addGroup}}</label>
                   </a>
                   <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements">
                     <em class="add-element-icon col-md-offset-1 col-sm-offset-1"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
                   </a>
                 <transition :name="'slide-down'" type="transition">
                   <draggable
@@ -103,19 +83,19 @@
                 </transition>
               </div>
             </div>
-            <a class="send-form-button" @click="sendForm">
+            <!--<a class="send-form-button" @click="sendForm">
               <label style="cursor: pointer" class="mb-0">{{sendFormButton}}</label>
               <em class="fas fa-paper-plane" style="font-size: 20px"></em>
             </a>
             <a class="send-form-button test-form-button" style="margin-top: 1em" @click="testForm">
               <label style="cursor: pointer">{{testingForm}}</label>
               <em class="fas fa-vial" style="font-size: 20px"></em>
-            </a>
+            </a>-->
           </div>
         </transition>
       </div>
-      <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : 'col-md-10 col-md-offset-2 col-sm-11 col-sm-offset-1'" class="menu-block">
-        <ul class="form-section">
+      <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
+        <ul class="form-section" style="display: none">
           <li>
             <a :class="menuHighlight === 0 ? 'form-section__current' : ''" @click="menuHighlight = 0;indexHighlight = 0">{{FormPage}}</a>
           </li>
@@ -123,27 +103,14 @@
             <a :class="menuHighlight === 1 ? 'form-section__current' : ''" @click="menuHighlight = 1;indexHighlight = 0">{{SubmitPage}}</a>
           </li>
         </ul>
+        <div class="heading-block col-md-8">
+          <h2 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h2>
+          <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
+            <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
+          </a>
+        </div>
         <div v-if="menuHighlight === 0">
-          <ul class="menus-row">
-            <draggable
-                    handle=".handle"
-                    v-model="formObjectArray"
-                    :class="'draggables-list'"
-                    @end="SomethingChange"
-            >
-              <li v-for="(value, index) in formObjectArray" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-                <span class="icon-handle" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
-                  <em class="fas fa-grip-vertical handle"></em>
-                </span>
-                <a @click="changeGroup(index,value.rgt)"
-                   class="MenuFormItem"
-                   :class="indexHighlight == index ? 'MenuFormItem_current' : ''">
-                  {{value.object.show_title.value}}
-                </a>
-              </li>
-            </draggable>
-          </ul>
-          <div class="col-md-12 form-viewer-builder">
+          <div class="col-md-8 form-viewer-builder">
             <Builder
                     :object="formObjectArray[indexHighlight]"
                     v-if="formObjectArray[indexHighlight]"
@@ -163,7 +130,7 @@
           </div>
         </div>
         <div v-if="menuHighlight === 1">
-          <div class="col-md-12 form-viewer-builder">
+          <div class="col-md-8 form-viewer-builder">
             <Builder
                     :object="submittionPages[indexHighlight]"
                     v-if="submittionPages[indexHighlight]"
@@ -182,10 +149,33 @@
             />
           </div>
         </div>
+        <ul class="col-md-3" style="margin-top: 0">
+          <h3 class="mb-1" style="padding: 0;">Pages du formulaire :</h3>
+          <div class="form-pages">
+            <h4 class="p-1" style="margin: 0">Formulaire</h4>
+            <draggable
+                handle=".handle"
+                v-model="formObjectArray"
+                :class="'draggables-list'"
+                @end="SomethingChange"
+            >
+              <li v-for="(value, index) in formObjectArray" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+                  <span class="icon-handle" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
+                    <em class="fas fa-grip-vertical handle"></em>
+                  </span>
+                <a @click="changeGroup(index,value.rgt)"
+                   class="MenuFormItem"
+                   :class="indexHighlight == index ? 'MenuFormItem_current' : ''">
+                  {{value.object.show_title.value}}
+                </a>
+              </li>
+            </draggable>
+          </div>
+        </ul>
       </div>
     </div>
     <div class="loading-form" v-if="loading">
-      <Ring-Loader :color="'#de6339'" />
+      <Ring-Loader :color="'#12DB42'" />
     </div>
     <tasks></tasks>
   </div>
@@ -235,7 +225,7 @@
     data() {
       return {
         // UX variables
-        actions_menu: true,
+        actions_menu: false,
         UpdateUx: false,
         menuHighlight: 0,
         indexHighlight: "0",
@@ -897,13 +887,7 @@
   };
 </script>
 
-<style scoped lang="scss">
-  .form-builder{
-    margin-top: 6em;
-    padding: 1em;
-    min-height: 50em;
-  }
-
+<style lang="scss">
   .menu-block {
     margin-top: 0;
   }
@@ -917,9 +901,6 @@
     .form-title{
       max-width: 250px;
     }
-    .form-builder{
-      margin-top: 0;
-    }
   }
   .container-fluid{
     margin-bottom: 10em;
@@ -931,7 +912,7 @@
     left: 5px;
   }
   .form-viewer-builder{
-    background: #fafafa;
+    background: white;
   }
   .action-label{
     color: black;
@@ -944,5 +925,11 @@
   .fa-pencil-alt{
     color: #de6339;
     cursor: pointer;
+  }
+  #g-navigation .g-main-nav .tchooz-vertical-toplevel > li{
+    transform: translateX(-100px);
+  }
+  .tchooz-vertical-toplevel hr{
+    transform: translateX(-100px);
   }
 </style>

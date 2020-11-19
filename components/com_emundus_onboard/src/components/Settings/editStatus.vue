@@ -1,7 +1,7 @@
 <template>
     <div class="container-evaluation">
         <div v-for="(statu, index) in status" class="status-item" :id="'step_' + statu.step">
-            <div :style="{background: statu.class}" class="status-field">
+            <div class="status-field">
                 <div style="width: 100%">
                     <input type="text" v-model="statu.label[actualLanguage]">
                     <translation :label="statu.label" :actualLanguage="actualLanguage" v-if="statu.translate"></translation>
@@ -140,12 +140,13 @@
         }
     };
 </script>
-<style>
+<style scoped>
     .status-item{
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 1em;
+        max-width: 95%;
     }
     .status-field{
         padding: 5px;
@@ -161,5 +162,8 @@
     }
     .translate-icon-selected{
       top: 0;
+    }
+    .container-evaluation{
+      margin-top: 10%;
     }
 </style>

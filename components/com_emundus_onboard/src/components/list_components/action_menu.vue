@@ -3,8 +3,21 @@
     <div class="container-2 w-container" style="max-width: unset">
       <transition :name="'slide-down'" type="transition">
       <div class="w-row">
+        <div class="d-flex" v-if="data.type === 'campaign'">
+          <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
+          <h2 class="tchooz-section-titles">{{ Campaigns }}</h2>
+        </div>
+        <div class="d-flex" v-if="data.type === 'email'">
+          <img src="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
+          <h2 class="tchooz-section-titles">{{ Emails }}</h2>
+        </div>
+        <div class="d-flex" v-if="data.type === 'form'">
+          <img src="/images/emundus/menus/form.png" class="tchooz-icon-title" alt="form">
+          <h2 class="tchooz-section-titles">{{ Forms }}</h2>
+        </div>
+
         <div class="actions-add-block">
-          <div data-hover="1"
+          <!--<div data-hover="1"
                data-delay="0"
                class="dropdown w-dropdown"
                @mouseover="actionHover = true"
@@ -36,31 +49,32 @@
                 {{ Archive }}
               </a>
             </nav>
-          </div>
+          </div>-->
 
-          <div>
-            <a @click="redirectToAdd" class="bouton-ajouter w-inline-block pointer" v-if="!addHidden">
-              <div v-if="data.type === 'program'" class="add-button-div">
+            <p v-if="data.type === 'campaign'" class="tchooz-section-description">{{ CampaignsDesc }}</p>
+            <p v-if="data.type === 'form'" class="tchooz-section-description">{{ FormsDesc }}</p>
+            <p v-if="data.type === 'email'" class="tchooz-section-description">{{ EmailsDesc }}</p>
+            <a @click="redirectToAdd" class="bouton-ajouter pointer" v-if="!addHidden">
+<!--              <div v-if="data.type === 'program'" class="add-button-div">
                 {{ AddProgram }}
-                <div class="addCampProgEmail"></div>
-              </div>
+                <i class="fas fa-plus"></i>
+              </div>-->
               <div v-if="data.type === 'campaign'" class="add-button-div">
+                <em class="fas fa-plus mr-1"></em>
                 {{ AddCampaign }}
-                <div class="addCampProgEmail"></div>
               </div>
               <div v-if="data.type === 'email'" class="add-button-div">
+                <em class="fas fa-plus mr-1"></em>
                 {{ AddEmail }}
-                <div class="addCampProgEmail"></div>
               </div>
               <div v-if="data.type === 'form'" class="add-button-div">
+                <em class="fas fa-plus mr-1"></em>
                 {{ AddForm }}
-                <div class="addCampProgEmail"></div>
               </div>
             </a>
           </div>
-        </div>
 
-        <div class="search">
+        <!--<div class="search">
           <input class="searchTerm"
                  :placeholder="Rechercher"
                  v-model="recherche"
@@ -184,7 +198,7 @@
               </nav>
             </div>
           </div>
-        </div>
+        </div>-->
 
       </div>
       </transition>
@@ -259,6 +273,12 @@
         Archive: Joomla.JText._("COM_EMUNDUS_ONBOARD_ARCHIVE"),
         Archived: Joomla.JText._("COM_EMUNDUS_ONBOARD_ARCHIVED"),
         Restore: Joomla.JText._("COM_EMUNDUS_ONBOARD_RESTORE"),
+        Campaigns: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS"),
+        CampaignsDesc: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS_DESC"),
+        Emails: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILS"),
+        Forms: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMS"),
+        FormsDesc: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMS_DESC"),
+        EmailsDesc: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILS_DESC"),
         filtre: "all",
         tri: "DESC",
         afficher: 25,
@@ -812,14 +832,6 @@
 
   div nav a:hover {
     cursor: pointer;
-  }
-
-  .w-row{
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0;
   }
 
   @media (max-width: 991px) {

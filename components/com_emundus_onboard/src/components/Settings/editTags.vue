@@ -113,7 +113,7 @@
         }
     };
 </script>
-<style>
+<style scoped>
     .create-tag{
         text-align: center;
         width: 100%;
@@ -143,5 +143,8 @@
 
     .tags-item .vue-swatches__wrapper{
         right: 3.8em;
+    }
+    .container-evaluation{
+      margin-top: 10%;
     }
 </style>

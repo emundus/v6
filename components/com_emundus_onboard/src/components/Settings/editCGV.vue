@@ -73,46 +73,5 @@
         }
     };
 </script>
-<style>
-    .menus-home-row{
-        display: flex;
-        flex-direction: row;
-        padding-left: 0 !important;
-        padding-top: 1em;
-        margin: 0 auto;
-        overflow-x: scroll;
-    }
-
-    .MenuFormHome {
-        list-style: none;
-        text-decoration: none;
-        margin: 10px 10px 30px 10px;
-        min-width: 100px;
-    }
-
-    .MenuFormItemHome {
-        text-decoration: none;
-        color: black;
-        cursor: pointer;
-        padding: 5px;
-        border-radius: 5px;
-        white-space: nowrap;
-    }
-    .MenuFormItemHome:not(.MenuFormItemHome_current):hover {
-        color: grey;
-        text-decoration: none;
-    }
-    .MenuFormItemHome_current {
-        color: white;
-        cursor: pointer;
-        background-color: #de6339;
-    }
-    .MenuFormItemHome_current:hover {
-        text-decoration: none;
-        color: white;
-    }
-    .MenuFormItemHome_current:after, .MenuFormItemHome_current:before {
-        opacity: 1 !important;
-        width: 50% !important;
-    }
+<style scoped>
 </style>

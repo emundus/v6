@@ -41,7 +41,7 @@ class EmundusonboardModelform extends JModelList {
 			$fullRecherche = $rechercheLbl.' OR '.$rechercheResume;
 		}
 
-		$filterId = $db->quoteName('sp.publised') . ' = 1';
+		$filterId = $db->quoteName('sp.published') . ' = 1';
 
 		$query->select('COUNT(sp.id)')
 			->from($db->quoteName('#__emundus_setup_profiles', 'sp'))

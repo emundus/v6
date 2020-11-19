@@ -1,6 +1,6 @@
 <template class="form-item">
-  <div class="main-column-block w-row max900">
-    <div class="column-block w-col w-col-11">
+  <div class="main-column-block w-row">
+    <div class="column-block w-100">
       <div class="block-dash" :class="isPublished ? '' : 'unpublishedBlock'">
         <div class="column-blocks w-row">
           <div class="column-inner-block w-col w-col-8 pl-30px">
@@ -10,19 +10,17 @@
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }">
                 </a>
-                <h1 class="nom-campagne-block white">{{ data.form_label }}</h1>
+                <h1 class="nom-campagne-block">{{ data.form_label }}</h1>
+              </div>
+              <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
+                {{ isPublished ? publishedTag : unpublishedTag }}
               </div>
             </div>
-          </div>
-          <div class="column-inner-block-2 w-clearfix w-col w-col-4">
-            <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
-              {{ isPublished ? publishedTag : unpublishedTag }}
-            </div>
-            <div v-if="updateAccess" class="container-gerer-modifier-visualiser">
+            <div class="stats-block" style="justify-content: end">
               <a class="cta-block pointer"
                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
                  :title="Modify">
-                <em class="fas fa-edit"></em>
+                <em class="fas fa-pen"></em>
               </a>
             </div>
           </div>
@@ -93,17 +91,7 @@ export default {
 };
 </script>
 <style scoped>
-a.button-programme:hover {
-  color: white;
-  cursor: default;
-}
-
   .w-row{
     margin-bottom: 0;
   }
-
-.description-block{
-  max-height: 160px;
-  overflow: hidden;
-}
 </style>

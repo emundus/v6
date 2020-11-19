@@ -1,5 +1,5 @@
 <template>
-  <div id="list" :style="type == 'email' ? 'margin-top: 13em' : ''">
+  <div id="list">
     <actions
       v-if="type != 'files'"
       :data="actions"
@@ -27,9 +27,9 @@
       </li>
     </ul>
 
-    <transition :name="'slide-down'" type="transition">
+<!--    <transition :name="'slide-down'" type="transition">
       <h2 v-show="total > 0">{{ Total }} : {{ total }}</h2>
-    </transition>
+    </transition>-->
 
     <transition :name="'slide-down'" type="transition">
     <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
@@ -77,16 +77,16 @@
       </transition>
 
       <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin-bottom: 5%;width: 100%">
-        <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6">
+        <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
-        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6">
+        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
-        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6">
+        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
-        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6">
+        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
       </transition-group>
@@ -149,7 +149,7 @@
     <div class="loading-form" v-if="loading">
       <RingLoader :color="'#de6339'" />
     </div>
-    <tasks></tasks>
+<!--    <tasks></tasks>-->
   </div>
 </template>
 
@@ -167,6 +167,7 @@ import Swal from "sweetalert2";
 
 import "../assets/css/normalize.css";
 import "../assets/css/emundus-webflow.scss";
+import "../assets/css/bootstrap.css";
 import "../assets/css/codemirror.css";
 import "../assets/css/codemirror.min.css";
 import "../assets/css/views_emails.css";

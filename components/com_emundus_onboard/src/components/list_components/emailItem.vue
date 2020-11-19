@@ -1,6 +1,6 @@
 <template class="email-item">
   <div class="main-column-block w-row">
-    <div class="column-block w-col w-col-11">
+    <div class="column-block w-100">
       <div class="block-dash" :class="isPublished ? '' : 'unpublishedBlock'">
         <div class="column-blocks w-row">
           <div class="column-inner-block w-col w-col-8 pl-30px">
@@ -11,28 +11,26 @@
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }"
                 ></a>
-                <h1 class="nom-campagne-block white">{{ data.subject }}</h1>
+                <h1 class="nom-campagne-block" :style="data.type != 2 ? 'margin-left: 35px' : ''">{{ data.subject }}</h1>
+              </div>
+              <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
+                {{ isPublished ? publishedTag : unpublishedTag }}
               </div>
             </div>
-            <p class="description-block white"><span v-html="data.message"></span></p>
-          </div>
-          <div class="column-inner-block-2 w-clearfix w-col w-col-4" style="min-height: 150px !important">
-            <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
-              {{ isPublished ? publishedTag : unpublishedTag }}
-            </div>
-            <a href="#" class="button-programme ml-10px">{{ type[langue][data.type - 1] }}</a>
-            <div class="container-gerer-modifier-visualiser">
+            <a href="#" class="button-programme" style="margin-left: 35px">{{ type[langue][data.type - 1] }}</a>
+            <p class="description-block"><span v-html="data.message"></span></p>
+            <div class="stats-block" style="justify-content: end">
               <a class="cta-block pointer"
                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
                  :title="Modify">
-                <em class="fas fa-edit"></em>
+                <em class="fas fa-pen"></em>
               </a>
             </div>
+          </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -102,10 +100,6 @@ export default {
 </script>
 
 <style scoped>
-a.button-programme:hover {
-  color: white;
-  cursor: default;
-}
 .w-row{
   margin-bottom: 0;
 }

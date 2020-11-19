@@ -10,13 +10,15 @@
         <ModalUpdateLogo
                 @UpdateLogo="updateView"
         />
-        <div class="d-flex">
-            <h2 style="margin: 0">Logo</h2>
-            <a style="margin-left: 1em" @click="$modal.show('modalUpdateLogo')">
-                <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
+        <div class="section-sub-menu col-lg-6 col-sm-12">
+          <h2 style="margin: 0">Logo</h2>
+          <div class="d-flex"></div>
+            <img class="logo-settings" :src="imageLink">
+            <a class="settings-edit-icon cta-block" @click="$modal.show('modalUpdateLogo')">
+              <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
             </a>
+          </div>
         </div>
-        <img class="logo-settings" :src="imageLink">
         <!--<h2>{{Colors}}</h2>
         <div class="d-flex" style="margin-bottom: 20px;">
             <label style="margin: 0" class="col-md-2">{{PrimaryColor}} : </label>
@@ -141,9 +143,15 @@
         }*/
     };
 </script>
-<style>
-    .fa-pencil-alt{
-        color: #de6339;
-        cursor: pointer;
-    }
+<style scoped>
+  .section-sub-menu{
+    padding: 20px;
+    margin: 0;
+  }
+  .settings-edit-icon{
+    display: block;
+    width: 100%;
+    text-align: end;
+    font-size: 20px;
+  }
 </style>

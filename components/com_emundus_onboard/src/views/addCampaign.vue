@@ -10,11 +10,11 @@
     <div class="w-container">
       <form id="campaign-form" @submit.prevent="submit">
         <div class="sous-container">
-          <p class="required">{{RequiredFieldsIndicate}}</p>
-          <div class="heading-form">
+          <p class="required mb-1">{{RequiredFieldsIndicate}}</p>
+<!--          <div class="heading-form">
             <div class="icon-title"></div>
             <h2 class="heading">{{ Parameter }}</h2>
-          </div>
+          </div>-->
           <div class="form-group campaign-label">
             <label for="campLabel">{{CampName}} *</label>
             <div class="input-can-translate">
@@ -36,7 +36,7 @@
             <span class="error">{{LabelRequired}}</span>
           </p>
           <div class="w-row">
-            <div class="w-col w-col-6">
+            <div class="w-col col-md-5">
               <div class="w-form">
                 <label for="campLabel">{{StartDate}} *</label>
                 <datetime
@@ -48,7 +48,7 @@
                 ></datetime>
               </div>
             </div>
-            <div class="w-col w-col-6">
+            <div class="w-col col-md-5">
               <div class="w-form">
                 <label for="campLabel">{{EndDate}} *</label>
                 <datetime
@@ -285,25 +285,27 @@
 
         <div class="section-sauvegarder-et-continuer">
           <div class="w-container">
-            <div class="container-evaluation w-clearfix">
+            <div class="container-evaluation d-flex justify-content-between">
               <button
-                type="button"
-                class="bouton-sauvergarder-et-continuer"
-                @click="quit = 1; submit()">
-                {{ Continuer }}
-              </button>
-              <button
-                type="button"
-                class="bouton-sauvergarder-et-continuer w-quitter"
-                @click="quit = 0; submit()">
-                {{ Quitter }}
-              </button>
-              <button
-                type="button"
-                class="bouton-sauvergarder-et-continuer w-retour"
-                onclick="history.go(-1)">
+                  type="button"
+                  class="bouton-sauvergarder-et-continuer w-retour"
+                  onclick="history.go(-1)">
                 {{ Retour }}
               </button>
+              <div class="d-flex">
+                <button
+                    type="button"
+                    class="bouton-sauvergarder-et-continuer w-quitter"
+                    @click="quit = 0; submit()">
+                  {{ Quitter }}
+                </button>
+                <button
+                    type="button"
+                    class="bouton-sauvergarder-et-continuer"
+                    @click="quit = 1; submit()">
+                  {{ Continuer }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -831,5 +833,6 @@ export default {
 .addCampProgEmail{
   width: 32px;
   height: 30px;
+  filter: invert(1);
 }
 </style>

@@ -63,7 +63,7 @@ if($user != null) {
         text-align: left;
     }
     .select .profile-select{
-        height: 30px;
+        height: 36px;
         padding: 0 5px;
         border: 1px solid #e5e5e5;
         background-color: white !important;
@@ -72,6 +72,9 @@ if($user != null) {
         background-repeat: no-repeat !important;
         background-position-x: 98% !important;
         background-position-y: 54% !important;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        width: 200px;
     }
     .select .profile-select:hover{
         background-color: white !important;

@@ -319,6 +319,7 @@ select.fabrikinput.form-control {
   padding: 0;
   justify-content: space-around;
   width: 100%;
+  list-style: none;
   li {
     padding: 0 1em 0 1em;
     a {
@@ -362,4 +363,8 @@ select.fabrikinput.form-control {
 
 input[type="date"].form-control, input[type="time"].form-control, input[type="datetime-local"].form-control, input[type="month"].form-control{
   line-height: unset !important;
+}
+
+.form-pages{
+  background: white;
 }

@@ -10,7 +10,7 @@
     <div class="w-container">
       <form id="program-form" @submit.prevent="submit">
         <div class="sous-container">
-          <p class="required">{{RequiredFieldsIndicate}}</p>
+          <p class="required mb-1">{{RequiredFieldsIndicate}}</p>
           <div class="heading-form">
             <div class="icon-title informations"></div>
             <h2 class="heading">{{ Informations }}</h2>
@@ -155,16 +155,15 @@
 
         <div class="section-sauvegarder-et-continuer">
           <div class="w-container">
-            <div class="container-evaluation w-clearfix">
-              <button type="submit" class="bouton-sauvergarder-et-continuer">
-                {{ continuer }}
-              </button>
+            <div class="container-evaluation d-flex justify-content-between">
               <button
-                      type="button"
-                      class="bouton-sauvergarder-et-continuer w-retour"
-                      onclick="history.go(-1)"
-              >
+                  type="button"
+                  class="bouton-sauvergarder-et-continuer w-retour"
+                  onclick="history.go(-1)">
                 {{ retour }}
+              </button>
+              <button type="button" class="bouton-sauvergarder-et-continuer">
+                {{ continuer }}
               </button>
             </div>
           </div>

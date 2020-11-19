@@ -316,6 +316,11 @@ input[type="text"],
   padding: 0 10px;
   left: 75px;
   position: relative;
+  width: 90%;
+}
+
+.g-container.g-flushed{
+  width: 100% !important;
 }
 
 .row-fluid .span3 {
