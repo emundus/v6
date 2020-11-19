@@ -20,6 +20,7 @@
 				<option value="letter">PLG_FABRIK_FORM_EMUNDUSYOUSIGN_ATTACHMENT_TYPE_LETTER</option>
 			</field>
 			<field name="custom_application_form" showon="attachment_type:application_form" type="field" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_CUSTOM_APPLICATION_FORM_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_CUSTOM_APPLICATION_FORM_LABEL" />
+			<field name="letter_id" showon="attachment_type:letter" type="field" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_LETTER_ID_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_LETTER_ID_LABEL" />
 
 			<field name="attachment_id" type="field" description="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_ATTACHMENT_ID_DESC" label="PLG_FABRIK_FORM_EMUNDUSYOUSIGN_ATTACHMENT_ID_LABEL" />
 

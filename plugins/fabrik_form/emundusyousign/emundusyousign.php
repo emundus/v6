@@ -233,7 +233,12 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 			$m_messages = new EmundusModelMessages();
 			$m_files = new EmundusModelFiles();
 
-			$letter = $m_messages->get_letter($attachment_id);
+			$letter_id = $this->getParam('letter_id');
+			if (empty($letter_id)) {
+				throw new Exception('Missing letter ID.');
+			}
+
+			$letter = $m_messages->get_letter($letter_id);
 			$fnumInfos = $m_files->getFnumsInfos([$fnum])[$fnum];
 
 			// We only get the letters if they are for that particular programme.
