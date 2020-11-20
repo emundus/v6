@@ -247,11 +247,10 @@ class EmundusonboardModelsettings extends JModelList {
         $results = [];
 
         try {
-            foreach ($status as $statu) {
+            foreach($status as $statu) {
                 $class = array_search($statu['class'], $classes);
                 $query->clear()
                     ->update('#__emundus_setup_status')
-                    ->set($db->quoteName('value') . ' = ' . $db->quote($statu['label']['fr'] . '_' . $statu['step']))
                     ->set($db->quoteName('class') . ' = ' . $db->quote($class))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
                 $db->setQuery($query);

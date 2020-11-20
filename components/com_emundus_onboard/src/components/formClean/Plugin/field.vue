@@ -86,6 +86,10 @@ export default {
     if(typeof this.element.params.text_input_mask == 'undefined'){
       this.element.params.text_input_mask = ''
     }
+
+    if(typeof this.element.params.placeholder == 'undefined'){
+      this.element.params.placeholder = ''
+    }
   },
 };
 </script>

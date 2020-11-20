@@ -820,6 +820,7 @@ export default {
   watch: {
     'form.start_date': function (val, oldVal) {
       this.minDate = LuxonDateTime.fromISO(val).plus({ days: 1 });
+      this.form.end_date = LuxonDateTime.fromISO(val).plus({ days: 1 });
     }
   }
 };

@@ -136,7 +136,7 @@ echo $description;
                             <?php endif; ?>
                         </section>
                         <div class="main-page-file-progress-label">
-                            <strong><?= JText::_('STATUS'); ?> :</strong>
+                            <?= ($application->status == 2) ? '<a class="c-white" href="'.JRoute::_($first_page_url).'">'.$application->value.'</a>' : $application->value; ?>
                             <span class="label label-<?= $application->class; ?>">
                         <?= $application->value; ?>
                     </span><br>

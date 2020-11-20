@@ -134,8 +134,14 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                 }
             }
             else {
-                $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->end_date)) ? true : false;
-                $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->start_date)) ? true : false;
+                if(!empty($fnum)) {
+                    $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$fnum]->end_date)) ? true : false;
+                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$fnum]->start_date)) ? true : false;
+                }
+                else{
+                    $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$user->fnum]->end_date)) ? true : false;
+                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$user->fnum]->start_date)) ? true : false;
+                }
             }
 
             $is_app_sent = !in_array(@$user->status, explode(',', $this->getParam('applicationsent_status', 0)));
