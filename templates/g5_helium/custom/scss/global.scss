@@ -2694,6 +2694,10 @@ div#em-appli-block {
     padding: 10px;
   }
 
+  h1::after {
+    display: none !important;
+  }
+
   /* HEADER */
   #g-navigation #header-a {
     display: flex;
@@ -2802,7 +2806,7 @@ footer#g-footer .g-grid {
 
 @media all and (min-width: 480px) and (max-width: 767px)  {
 
-  .homepage h1::after {
+  h1::after {
     display: none !important;
   }
 
