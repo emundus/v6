@@ -2748,7 +2748,8 @@ div#em-appli-block {
   /* BURGER OUVERT */
 #g-offcanvas {
   background: #FAFAFA;
-  display: grid;
+  .g-grid {
+    margin: 50px 0px;
 
   .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
     background: #FAFAFA;
@@ -2787,6 +2788,7 @@ div#em-appli-block {
        color:#fff;
      }
     }
+  }
   }
 }
 
