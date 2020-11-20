@@ -171,7 +171,6 @@
       </form>
     </div>
   </div>
-  <tasks></tasks>
 </template>
 
 <script>

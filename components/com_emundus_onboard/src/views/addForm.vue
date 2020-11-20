@@ -85,9 +85,8 @@
       </form>
     </div>
     <div class="loading-form" v-if="submitted">
-      <Ring-Loader :color="'#de6339'" />
+      <Ring-Loader :color="'#12DB42'" />
     </div>
-    <tasks></tasks>
   </div>
 </template>
 

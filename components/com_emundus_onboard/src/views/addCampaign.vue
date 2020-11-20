@@ -312,9 +312,8 @@
       </form>
     </div>
     <div class="loading-form" v-if="submitted">
-      <RingLoader :color="'#de6339'" />
+      <RingLoader :color="'#12DB42'" />
     </div>
-    <tasks></tasks>
   </div>
 </template>
 

@@ -9,8 +9,8 @@
     />
     <div class="d-flex" v-if="eval == 0 && !updatePage">
       <h2 v-if="object_json.show_title" class="page_header" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
-      <span @click="$modal.show('modalSide' + object.rgt)" :title="Edit">
-        <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
+      <span @click="$modal.show('modalSide' + object.rgt)" :title="Edit" class="cta-block pointer" style="font-size: 16px">
+        <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
       </span>
     </div>
     <div style="width: max-content;margin-left: 20px" v-show="updatePage && indexPage == object_json.id">
@@ -63,8 +63,8 @@
                     class="legend ViewerLegend">
                     {{group.group_showLegend}}
                   </legend>
-                  <a @click="enableUpdatingGroup(group)" style="margin-left: 1em" :title="Edit">
-                    <em class="fas fa-pencil-alt" data-toggle="tooltip" data-placement="top"></em>
+                  <a @click="enableUpdatingGroup(group)" style="margin-left: 1em;font-size: 16px" :title="Edit" class="cta-block pointer">
+                    <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
                   </a>
                   <a v-if="group.repeat_group" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px pointer" :title="RepeatedGroup" @click="enableRepatedGroup(group)">
                     <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
@@ -99,6 +99,10 @@
               </div>
               <div v-if="group.group_intro" class="groupintro">{{group.group_intro}}</div>
 
+              <template v-if="typeof group.elts !== 'undefined'">
+                <div v-if="group.elts.length == 0" class="no-elements-tip">{{ NoElementsTips }}</div>
+              </template>
+
               <div class="elements-block" v-show="openGroup[group.group_id]">
                 <draggable
                         handle=".handle"
@@ -122,6 +126,7 @@
                             :manyLanguages="manyLanguages"
                             :actualLanguage="actualLanguage"
                             @reloadElement="reloadElement(element)"
+                            @modalClosed="$emit('modalClosed')"
                             :id="element.id"
                             :key="keyElements['element' + element.id]"
                     />
@@ -139,10 +144,10 @@
                         <em class="fas fa-grip-vertical handle"></em>
                       </span>
                       <div class="w-100">
-                        <div class="d-flex" style="align-items: baseline">
-                          <span v-if="element.label_value" @click="enableLabelInput(element.id)" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
-                          <a @click="enableLabelInput(element.id)" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'" :title="Edit">
-                            <em class="fas fa-pencil-alt ml-10px" data-toggle="tooltip" data-placement="top"></em>
+                        <div class="d-flex" style="align-items: baseline" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
+                          <span v-if="element.label_value" @click="enableLabelInput(element.id)" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
+                          <a @click="enableLabelInput(element.id)" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'" :title="Edit" class="cta-block pointer" style="font-size: 16px">
+                            <em class="fas fa-pen ml-10px" data-toggle="tooltip" data-placement="top"></em>
                           </a>
                         </div>
                         <div class="input-can-translate" v-show="clickUpdatingLabel && indexHighlight == element.id">
@@ -172,12 +177,12 @@
                       </div>
                     </div>
                     <div class="actions-item-bar d-flex" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
-                      <a class="d-flex mr-2 text-orange" @click="publishUnpublishElement(element)">
+                      <a class="d-flex mr-2" @click="publishUnpublishElement(element)">
                         <em :class="[element.publish ? 'fa-eye-slash' : 'fa-eye','far']" :id="'publish_icon_' + element.id"></em>
                         <span class="ml-10px" v-if="element.publish">{{Unpublish}}</span>
                         <span class="ml-10px" v-if="!element.publish">{{Publish}}</span>
                       </a>
-                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'display'">
+                      <a class="d-flex mr-2" v-if="element.plugin != 'display'">
                         <div class="toggle">
                           <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
                           <strong class="b switch"></strong>
@@ -185,15 +190,15 @@
                         </div>
                         <span class="ml-10px">{{Required}}</span>
                       </a>
-                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="openParameters(element)">
+                      <a class="d-flex mr-2" v-if="element.plugin != 'calc'" @click="openParameters(element)">
                         <em class="fas fa-cog"></em>
                         <span class="ml-10px">{{Settings}}</span>
                       </a>
-                      <a class="d-flex mr-2 text-orange" v-if="element.plugin != 'calc'" @click="openDuplicate(element)">
+                      <a class="d-flex mr-2" v-if="element.plugin != 'calc'" @click="openDuplicate(element)">
                         <em class="fas fa-copy"></em>
                         <span class="ml-10px">{{Duplicate}}</span>
                       </a>
-                      <a class="d-flex mr-2" style="color: black" @click="deleteElement(element,index)" v-if="files == 0">
+                      <a class="d-flex mr-2" style="color: red" @click="deleteElement(element,index)" v-if="files == 0">
                         <em class="fas fa-trash-alt"></em>
                         <span class="ml-10px">{{Delete}}</span>
                       </a>
@@ -305,6 +310,7 @@ export default {
       RepeatGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
       RepeatedGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEATED_GROUP"),
       Duplicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_DUPLICATE"),
+      NoElementsTips: Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS"),
     };
   },
   methods: {
@@ -497,6 +503,7 @@ export default {
         this.updateLabelElement(element);
       }
       this.repeat = false;
+      this.$emit('modalOpen')
       this.$modal.show('modalEditElement' + element.id)
     },
 
@@ -1194,9 +1201,6 @@ export default {
     left: 15px;
     background-color: #fff;
   }
-  .check:checked ~ .track{
-    box-shadow: inset 0 0 0 20px #de6339;
-  }
   .dropdown-toggle-plugin{
     width: 30%;
     margin-left: 2em;
@@ -1206,14 +1210,16 @@ export default {
     color: #cecece;
     position: absolute;
     cursor: grab;
-    left: 4em;
-    margin-bottom: 0;
+    left: auto;
+    margin-bottom: 1em;
+    right: 3em;
   }
   .icon-handle-group{
     color: #cecece;
     position: absolute;
     cursor: grab;
     left: 1em;
+    margin-top: 8px;
     margin-bottom: 0;
   }
   .icon-handle-unpublished{

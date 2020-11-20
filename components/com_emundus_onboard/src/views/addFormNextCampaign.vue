@@ -115,7 +115,6 @@
             </div>
         </div>
     </div>
-  <tasks></tasks>
 </template>
 
 <script>

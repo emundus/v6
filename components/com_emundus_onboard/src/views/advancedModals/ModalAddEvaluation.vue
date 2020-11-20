@@ -90,7 +90,7 @@
         >{{Retour}}</button>
       </div>
       <div class="loading-form" style="top: 10vh" v-if="submitted">
-        <Ring-Loader :color="'#de6339'" />
+        <Ring-Loader :color="'#12DB42'" />
       </div>
     </modal>
   </span>

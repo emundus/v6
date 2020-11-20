@@ -4,22 +4,22 @@
     <modal
             :name="'modalEditElement' + ID"
             height="auto"
-            transition="nice-modal-fade"
+            transition="little-move-left"
             :min-width="200"
             :min-height="200"
             :delay="100"
             :adaptive="true"
-            :clickToClose="false"
+            :clickToClose="true"
             @closed="beforeClose"
             @before-open="beforeOpen"
     >
       <div class="modalC-content">
-        <div class="update-field-header">
-          <div class="topright">
+        <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalEditElement' + ID)">
-              <em class="fas fa-times-circle"></em>
+              <em class="fas fa-times"></em>
             </button>
           </div>
+        <div class="update-field-header">
           <h2 class="update-title-header">
             {{label[actualLanguage]}}
           </h2>
@@ -42,15 +42,16 @@
           <displayF v-if="plugin =='display'" :element="element"></displayF>
         </div>
       </div>
-      <div class="col-md-12 mb-1">
+      <div class="d-flex justify-content-between">
+        <button type="button"
+                class="bouton-sauvergarder-et-continuer w-retour"
+                @click.prevent="$modal.hide('modalEditElement' + ID)">
+          {{Retour}}
+        </button>
         <button type="button"
                 class="bouton-sauvergarder-et-continuer"
                 @click.prevent="UpdateParams"
         >{{ Continuer }}</button>
-        <button type="button"
-                class="bouton-sauvergarder-et-continuer w-retour"
-                @click.prevent="$modal.hide('modalEditElement' + ID)"
-        >{{Retour}}</button>
       </div>
       <div class="loading-form" v-if="loading">
         <Ring-Loader :color="'#de6339'" />
@@ -133,7 +134,7 @@
         Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
         Require: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_REQUIRED"),
         Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
         dataSaved: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
         informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
         fieldType: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_TYPE"),
@@ -235,6 +236,7 @@
                   this.informations
           );
         }
+        this.$emit("modalClosed");
       },
       beforeOpen(event) {
         this.initialisation();

@@ -89,7 +89,6 @@
         </transition>
       </div>
     </div>
-    <tasks></tasks>
 
     <!--<div
             class="section-sauvegarder-et-continuer-funnel"

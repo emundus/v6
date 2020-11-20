@@ -25,6 +25,7 @@
             :actualLanguage="actualLanguage"
             :manyLanguages="manyLanguages"
             @AddMenu="pushMenu"
+            @modalClosed="optionsModal = false"
     />
     <ModalSide
             v-for="(value, index) in formObjectArray"
@@ -63,7 +64,11 @@
                     <em class="add-element-icon col-md-offset-1 col-sm-offset-1"></em>
                     <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
                   </a>
-                <transition :name="'slide-down'" type="transition">
+                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="testForm">
+                    <em class="far fa-play-circle col-md-offset-1 col-sm-offset-1" style="font-size: 30px"></em>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{testingForm}}</label>
+                  </a>
+                <transition :name="'slide-right'" type="transition">
                   <draggable
                           v-model="plugins"
                           v-bind="dragOptions"
@@ -74,8 +79,9 @@
                           drag-class="plugin-drag"
                           chosen-class="plugin-chosen"
                           ghost-class="plugin-ghost"
+                          class="plugins-list"
                           style="padding-bottom: 2em">
-                      <div class="d-flex plugin-link col-md-offset-3 col-sm-offset-2 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
+                      <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
                         <em :class="plugin.icon"></em>
                         <span class="ml-10px">{{plugin.name}}</span>
                       </div>
@@ -95,22 +101,14 @@
         </transition>
       </div>
       <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
-        <ul class="form-section" style="display: none">
-          <li>
-            <a :class="menuHighlight === 0 ? 'form-section__current' : ''" @click="menuHighlight = 0;indexHighlight = 0">{{FormPage}}</a>
-          </li>
-          <li>
-            <a :class="menuHighlight === 1 ? 'form-section__current' : ''" @click="menuHighlight = 1;indexHighlight = 0">{{SubmitPage}}</a>
-          </li>
-        </ul>
-        <div class="heading-block col-md-8">
-          <h2 class="form-title" style="padding: 0; margin: 0">{{profileLabel}}</h2>
+        <div class="heading-block" :class="addingElement ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
+          <h2 class="form-title" style="padding: 0; margin: 0"><em class="far fa-file-alt mr-1"></em>{{profileLabel}}</h2>
           <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
             <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
           </a>
         </div>
         <div v-if="menuHighlight === 0">
-          <div class="col-md-8 form-viewer-builder">
+          <div class="form-viewer-builder" :class="[addingElement ? 'col-md-offset-2 col-md-6' : 'col-md-8',optionsModal ? 'col-md-6' : 'col-md-8']">
             <Builder
                     :object="formObjectArray[indexHighlight]"
                     v-if="formObjectArray[indexHighlight]"
@@ -118,6 +116,8 @@
                     @show="show"
                     @UpdateFormBuilder="updateFormObjectAndComponent"
                     @removeGroup="removeGroup"
+                    @modalClosed="optionsModal = false"
+                    @modalOpen="optionsModal = true"
                     :key="builderKey"
                     :rgt="rgt"
                     :prid="prid"
@@ -130,7 +130,7 @@
           </div>
         </div>
         <div v-if="menuHighlight === 1">
-          <div class="col-md-8 form-viewer-builder">
+          <div class="form-viewer-builder" :class="[addingElement ? 'col-md-offset-2 col-md-6' : 'col-md-8',optionsModal ? 'col-md-6' : 'col-md-8']">
             <Builder
                     :object="submittionPages[indexHighlight]"
                     v-if="submittionPages[indexHighlight]"
@@ -138,6 +138,8 @@
                     @show="show"
                     @UpdateFormBuilder="updateFormObjectAndComponent"
                     @removeGroup="removeGroup"
+                    @modalClosed="optionsModal = false"
+                    @modalOpen="optionsModal = true"
                     :key="builderSubmitKey"
                     :rgt="rgt"
                     :prid="prid"
@@ -149,10 +151,10 @@
             />
           </div>
         </div>
-        <ul class="col-md-3" style="margin-top: 0">
-          <h3 class="mb-1" style="padding: 0;">Pages du formulaire :</h3>
+        <ul class="col-md-3" style="margin-top: 0" v-if="formObjectArray">
+          <h3 class="mb-1" style="padding: 0;">{{ FormPage }} :</h3>
           <div class="form-pages">
-            <h4 class="p-1" style="margin: 0">Formulaire</h4>
+            <h4 class="ml-10px" style="margin-bottom: 0"><em class="far fa-file-alt mr-1"></em>{{ Form }}</h4>
             <draggable
                 handle=".handle"
                 v-model="formObjectArray"
@@ -160,16 +162,28 @@
                 @end="SomethingChange"
             >
               <li v-for="(value, index) in formObjectArray" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-                  <span class="icon-handle" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
+<!--                  <span class="icon-handle" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
                     <em class="fas fa-grip-vertical handle"></em>
-                  </span>
-                <a @click="changeGroup(index,value.rgt)"
+                  </span>-->
+                <a @click="changeGroup(index,value.rgt);menuHighlight = 0"
                    class="MenuFormItem"
-                   :class="indexHighlight == index ? 'MenuFormItem_current' : ''">
+                   :class="indexHighlight == index && menuHighlight === 0 ? 'MenuFormItem_current' : ''">
                   {{value.object.show_title.value}}
                 </a>
               </li>
             </draggable>
+            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 10px">{{addMenu}}</button>
+          </div>
+          <div class="form-pages" style="padding-top: 20px" v-if="submittionPages">
+            <h4 class="ml-10px" style="margin-bottom: 10px"><em class="far fa-paper-plane mr-1"></em>{{SubmitPage}}</h4>
+            <li v-for="(value, index) in submittionPages" :key="index" class="MenuForm">
+              <a @click="menuHighlight = 1;indexHighlight = index"
+                 class="MenuFormItem"
+                 style="margin-left: 5px"
+                 :class="indexHighlight == index && menuHighlight === 1 ? 'MenuFormItem_current' : ''">
+                {{value.object.show_title.value}}
+              </a>
+            </li>
           </div>
         </ul>
       </div>
@@ -177,7 +191,7 @@
     <div class="loading-form" v-if="loading">
       <Ring-Loader :color="'#12DB42'" />
     </div>
-    <tasks></tasks>
+<!--    <tasks></tasks>-->
   </div>
 </template>
 
@@ -226,6 +240,7 @@
       return {
         // UX variables
         actions_menu: false,
+        optionsModal: false,
         UpdateUx: false,
         menuHighlight: 0,
         indexHighlight: "0",
@@ -322,6 +337,7 @@
         FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
         SubmitPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
         testingForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
+        Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
       };
     },
 
@@ -865,6 +881,8 @@
       //
     },
     created() {
+      jQuery("#g-navigation .g-main-nav .tchooz-vertical-toplevel > li").css("transform", "translateX(-100px)")
+      jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)")
       this.getForms();
       this.getSubmittionPage();
       this.getFilesByForm();
@@ -887,7 +905,7 @@
   };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .menu-block {
     margin-top: 0;
   }
@@ -913,6 +931,7 @@
   }
   .form-viewer-builder{
     background: white;
+    transition: all 0.3s ease-in-out;
   }
   .action-label{
     color: black;
@@ -926,10 +945,8 @@
     color: #de6339;
     cursor: pointer;
   }
-  #g-navigation .g-main-nav .tchooz-vertical-toplevel > li{
-    transform: translateX(-100px);
-  }
-  .tchooz-vertical-toplevel hr{
-    transform: translateX(-100px);
+  .MenuFormItem
+  {
+    margin-left: 0;
   }
 </style>

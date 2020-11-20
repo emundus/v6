@@ -366,6 +366,7 @@ defined('_JEXEC') or die;
             //Check for formbuilder
             if(jQuery(".tchooz-vertical-item").css("transform") == 'matrix(1, 0, 0, 1, -100, 0)') {
                 jQuery(".sidebar-formbuilder").css("transform", "translateX(-100px)")
+                jQuery(".plugins-list").css("transform", "translateX(-300px)")
                 jQuery(".tchooz-vertical-item").css("transform", "translateX(0)")
                 jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(0)")
             }
@@ -391,6 +392,7 @@ defined('_JEXEC') or die;
                         jQuery(".tchooz-vertical-item").css("transform", "translateX(-100px)")
                         jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)")
                         jQuery(".sidebar-formbuilder").css("transform", "translateX(0)")
+                        jQuery(".plugins-list").css("transform", "translateX(0px)")
                     }
                 },200)
             },50)

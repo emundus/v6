@@ -10,6 +10,8 @@
         :changedElement="this.changedElement"
         :changedGroup="this.changedGroup"
         @show="show"
+        @modalClosed="$emit('modalClosed')"
+        @modalOpen="$emit('modalOpen')"
         :UpdateUx="UpdateUx"
         @UpdateUxf="UpdateUXF"
         :key="builderViewKey"

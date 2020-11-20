@@ -4,22 +4,23 @@
     <modal
       :name="'modalMenu'"
       height="auto"
-      transition="nice-modal-fade"
+      :scrollable="true"
+      transition="little-move-left"
       :min-width="200"
       :min-height="200"
       :delay="100"
       :adaptive="true"
-      :clickToClose="false"
+      :clickToClose="true"
       @closed="beforeClose"
       @before-open="beforeOpen"
     >
       <div class="modalC-content">
-        <div class="update-field-header">
-          <div class="topright">
+        <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalMenu')">
-              <em class="fas fa-times-circle"></em>
+              <em class="fas fa-times"></em>
             </button>
           </div>
+        <div class="update-field-header">
           <h2 class="update-title-header">
              {{addMenu}}
           </h2>
@@ -53,20 +54,22 @@
         <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>
         <div class="col-md-12 d-flex" v-if="model_id == -1">
           <input type="checkbox" v-model="template">
-          <label class="ml-10px mb-0">{{SaveAsTemplate}} :</label>
+          <label class="ml-10px mb-0">{{SaveAsTemplate}}</label>
         </div>
       </div>
-      <div class="col-md-12 mb-1">
+      <div class="d-flex justify-content-between">
         <button
             type="button"
-          class="bouton-sauvergarder-et-continuer"
-          @click.prevent="createMenu()"
-        >{{ Continuer }}</button>
+            class="bouton-sauvergarder-et-continuer w-retour"
+            @click.prevent="$modal.hide('modalMenu')">
+          {{Retour}}
+        </button>
         <button
             type="button"
-          class="bouton-sauvergarder-et-continuer w-retour"
-          @click.prevent="$modal.hide('modalMenu')"
-        >{{Retour}}</button>
+            class="bouton-sauvergarder-et-continuer"
+            @click.prevent="createMenu()">
+          {{ Add }}
+        </button>
       </div>
       <div class="loading-form" style="top: 10vh" v-if="submitted">
         <Ring-Loader :color="'#de6339'" />
@@ -113,7 +116,7 @@ export default {
       Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
       Intro: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_INTRO"),
       Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+      Add: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD"),
       dataSaved: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
       informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
       addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
@@ -134,6 +137,7 @@ export default {
           this.informations
         );
       }
+      this.$emit("modalClosed");
       this.changes = false;
     },
     beforeOpen(event) {
