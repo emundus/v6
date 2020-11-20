@@ -2701,6 +2701,18 @@ div#em-appli-block {
     justify-content: center;
   }
 
+  /* HEADER C */
+  #g-navigation #header-c .g-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    .mod-languages.advanced-dropdown {
+      margin-left: -25px;
+    }
+  }
+
   /* BURGER */
   #g-page-surround .g-offcanvas-toggle {
     top: 20px !important;
