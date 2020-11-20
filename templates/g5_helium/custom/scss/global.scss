@@ -2684,20 +2684,27 @@ div#em-appli-block {
 
 @media all and (max-width: 479px) {
 
-  .gantry.view-registration .login.em-formRegistrationCenter, .gantry.view-form .em-formRegistrationCenter:not(.componentheading) {
-    width: 100% !important;
+  .gantry.view-registration, .gantry.view-form.em-formRegistrationCenter {
+    main#g-main-mainbody {
+      padding: 0;
+      .login.em-formRegistrationCenter, .em-formRegistrationCenter:not(.componentheading) {
 
-      ol {
-        width: 90%;
-        text-align: justify;
-        margin-left: 0px !important;
+        width: 100% !important;
+
+        ol {
+          width: 90%;
+          text-align: justify;
+          margin-left: 0px !important;
+        }
+
+        div.em-heading-registration {
+          width: 86%;
+        }
+
+        form.fabrikForm {
+          width: 75%;
+        }
       }
-
-    div.em-heading-registration {
-        width: 86%;
-    }
-    form.fabrikForm {
-      width: 75%;
     }
   }
 
@@ -2741,6 +2748,7 @@ div#em-appli-block {
   /* BURGER OUVERT */
 #g-offcanvas {
   background: #FAFAFA;
+  display: grid;
 
   .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
     background: #FAFAFA;
@@ -2761,6 +2769,7 @@ div#em-appli-block {
         color: $base-primary-color;
         padding: 15px 30px;
         width: auto;
+        display: block;
       }
     }
 
