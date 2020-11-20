@@ -2684,6 +2684,22 @@ div#em-appli-block {
 
 @media all and (max-width: 479px) {
 
+  .gantry.view-registration .login.em-formRegistrationCenter, .gantry.view-form .em-formRegistrationCenter:not(.componentheading) {
+    width: 100% !important;
+
+      ol {
+        width: 90%;
+        text-align: justify;
+        margin-left: 0px !important;
+      }
+
+    div.em-heading-registration {
+        width: 86%;
+    }
+    form.fabrikForm {
+      width: 75%;
+    }
+  }
 
   .g-back-office-emundus-tableau.view-syncs.experts-synchro-page .app-container.ng-scope  {
     overflow-x: scroll;
@@ -2805,6 +2821,7 @@ footer#g-footer .g-grid {
 }
 
 @media all and (min-width: 480px) and (max-width: 767px)  {
+
 
   h1::after {
     display: none !important;

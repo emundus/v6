@@ -1706,12 +1706,10 @@ a.btn-attach:active {
 }
 
 @media all and (max-width: 479px) {
-    .view-registration .login div.em-heading-registration, .view-form .em-formRegistrationCenter div.em-heading-registration {
-        width: 85%;     
-    }
-    .view-registration form.fabrikForm, .view-form .em-formRegistrationCenter form.fabrikForm {
-        width: 75%;
-    }
+
+  
+ 
+    
     
     .view-form .btn.send_the_request_for_individual_assessment {
        margin-left: 0px !important; 
@@ -1721,26 +1719,9 @@ a.btn-attach:active {
        align-items: end;
     }
     
-        
 }
 
-@media all and (max-width: 767px) {
-
-/* INSCRIPTION */ 
-
-.view-registration .login.em-formRegistrationCenter, .view-form .em-formRegistrationCenter:not(.componentheading) {
-    width: 100%; 
-}
-
-.view-registration .login div.em-heading-registration, .view-form .em-formRegistrationCenter div.em-heading-registration {
-    width: 93%;     
-}
-
-ol {
-    width: 90%;
-    text-align: justify;
-    margin-left: 0px !important;
-}
+@media all and (min-width 480px) and (max-width: 767px) {
 
 .view-registration form.fabrikForm {
     width:100%;
