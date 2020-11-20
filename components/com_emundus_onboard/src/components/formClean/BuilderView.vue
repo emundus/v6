@@ -9,7 +9,7 @@
     />
     <div class="d-flex" v-if="eval == 0 && !updatePage">
       <h2 v-if="object_json.show_title" class="page_header" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
-      <span @click="$modal.show('modalSide' + object.rgt)" :title="Edit" class="cta-block pointer" style="font-size: 16px">
+      <span @click="this.$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="Edit" class="cta-block pointer" style="font-size: 16px">
         <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
       </span>
     </div>
@@ -137,6 +137,7 @@
                             :id="element.id"
                             :prid="prid"
                             @reloadElement="reloadElement(element)"
+                            @modalClosed="$emit('modalClosed')"
                             :key="keyElements['element' + element.id]"
                     />
                     <div class="d-flex builder-item-element__properties">
@@ -495,6 +496,7 @@ export default {
       if(this.clickUpdatingLabel) {
         this.updateLabelElement(element);
       }
+      this.$emit('modalOpen')
       this.$modal.show('modalDuplicateElement' + element.id)
     },
 

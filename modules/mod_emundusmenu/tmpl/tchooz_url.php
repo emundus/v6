@@ -38,7 +38,7 @@ switch ($item->browserNav) :
                 </span>
             </a>
         <?php else :?>
-            <a <?php echo $class; ?>href="<?php echo $flink; ?>" <?php if ($item->deeper) echo 'onclick="enableSubLevel(' . $item->id . ')"'; ?> <?php echo $title; ?>><?php echo $linktype; ?></a>
+            <a <?php echo $class; ?><?php if ($item->deeper): echo 'onclick="enableSubLevel(' . $item->id . ')"'; else: echo 'href="' . $flink . '"'; endif; ?><?php echo $title; ?>><?php echo $linktype; ?></a>
         <?php endif;
     break;
 

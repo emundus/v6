@@ -2,20 +2,19 @@
   <!-- modalC -->
   <span :id="'modalMenu'">
     <modal
-      :name="'modalMenu'"
-      height="auto"
-      :scrollable="true"
-      transition="little-move-left"
-      :min-width="200"
-      :min-height="200"
-      :delay="100"
-      :adaptive="true"
-      :clickToClose="true"
-      @closed="beforeClose"
-      @before-open="beforeOpen"
+        :name="'modalMenu'"
+        height="auto"
+        transition="little-move-left"
+        :min-width="200"
+        :min-height="200"
+        :delay="100"
+        :adaptive="true"
+        :clickToClose="true"
+        @closed="beforeClose"
+        @before-open="beforeOpen"
     >
-      <div class="modalC-content">
-        <div class="topright">
+            <div class="fixed-header-modal">
+              <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalMenu')">
               <em class="fas fa-times"></em>
             </button>
@@ -25,6 +24,9 @@
              {{addMenu}}
           </h2>
         </div>
+            </div>
+      <div class="modalC-content">
+
 
         <div class="form-group">
           <label>{{ChooseExistingPageModel}} :</label>
@@ -57,7 +59,7 @@
           <label class="ml-10px mb-0">{{SaveAsTemplate}}</label>
         </div>
       </div>
-      <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-between mb-1">
         <button
             type="button"
             class="bouton-sauvergarder-et-continuer w-retour"
@@ -130,11 +132,11 @@ export default {
     beforeClose(event) {
       if (this.changes === true) {
         this.$emit(
-          "show",
-          "foo-velocity",
-          "warn",
-          this.dataSaved,
-          this.informations
+            "show",
+            "foo-velocity",
+            "warn",
+            this.dataSaved,
+            this.informations
         );
       }
       this.$emit("modalClosed");
@@ -159,7 +161,7 @@ export default {
         axios({
           method: "post",
           url:
-                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=createMenu",
+              "index.php?option=com_emundus_onboard&controller=formbuilder&task=createMenu",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },

@@ -31,7 +31,7 @@
             ></v-swatches>
           <button type="button" v-if="statu.step != 0 && statu.step != 1" @click="removeStatus(statu,index)" class="remove-tag"><i class="fas fa-trash"></i></button>
         </div>
-        <a @click="pushStatus" class="bouton-sauvergarder-et-continuer-3 create-tag">{{ addStatus }}</a>
+        <a @click="pushStatus" class="bouton-sauvergarder-et-continuer create-tag">{{ addStatus }}</a>
     </div>
 </template>
 
@@ -141,20 +141,6 @@
     };
 </script>
 <style scoped>
-    .status-item{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1em;
-        max-width: 95%;
-    }
-    .status-field{
-        padding: 5px;
-        border-radius: 5px;
-        width: 100%;
-        margin-right: 1em;
-        display: flex;
-    }
     .translate-block{
         display: flex;
         margin: 10px;
@@ -165,5 +151,8 @@
     }
     .container-evaluation{
       margin-top: 10%;
+    }
+    .bouton-sauvergarder-et-continuer{
+      justify-content: center;
     }
 </style>

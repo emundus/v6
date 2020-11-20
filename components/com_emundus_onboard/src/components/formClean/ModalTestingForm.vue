@@ -4,27 +4,28 @@
     <modal
       :name="'modalTestingForm'"
       height="auto"
-      transition="nice-modal-fade"
+      transition="little-move-left"
       :min-width="200"
       :min-height="200"
       :delay="100"
       :adaptive="true"
-      :clickToClose="false"
+      :clickToClose="true"
       @closed="beforeClose"
       @before-open="beforeOpen"
     >
-      <div class="modalC-content">
-        <div class="update-field-header">
-          <div class="topright">
+      <div class="fixed-header-modal">
+        <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalTestingForm')">
-              <em class="fas fa-times-circle"></em>
+              <em class="fas fa-times"></em>
             </button>
           </div>
+        <div class="update-field-header">
           <h2 class="update-title-header">
              {{testingForm}}
           </h2>
         </div>
-
+      </div>
+      <div class="modalC-content">
         <div class="form-group" v-if="campaigns.length > 1">
           <label>{{ChooseCampaign}} :</label>
           <select v-model="cid" class="dropdown-toggle">
@@ -36,14 +37,14 @@
           <p>{{ FileExistsBeforeTesting }}</p>
         </div>
       </div>
-      <div class="col-md-12 mb-1">
+      <div class="d-flex justify-content-between mb-1">
+        <button type="button" v-if="filesExist"
+                @click="goExistingFile"
+                class="bouton-sauvergarder-et-continuer"
+        >{{ ContinueFile }}</button>
         <button type="button" @click="createNewFile"
           class="bouton-sauvergarder-et-continuer ml-10px"
         >{{ CreateFile }}</button>
-        <button type="button" v-if="filesExist"
-          @click="goExistingFile"
-          class="bouton-sauvergarder-et-continuer"
-        >{{ ContinueFile }}</button>
       </div>
     </modal>
   </span>
@@ -74,7 +75,9 @@ export default {
     };
   },
   methods: {
-    beforeClose(event) {},
+    beforeClose(event) {
+      this.$emit("modalClosed");
+    },
     beforeOpen(event) {
       setTimeout(() => {
         this.cid = this.campaigns[0].id

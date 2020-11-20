@@ -19,6 +19,7 @@
         :currentForm="formObjectArray[indexHighlight].object.id"
         :currentMenu="formObjectArray[indexHighlight].object.menu_id"
         @testForm="testForm"
+        @modalClosed="optionsModal = false"
     />
     <ModalMenu
             :profileId="prid"
@@ -45,6 +46,7 @@
             @UpdateIntro="UpdateIntro"
             @UpdateVue="updateFormObjectAndComponent"
             @removeMenu="removeMenu"
+            @modalClosed="optionsModal = false"
     />
     <div class="row">
       <div class="sidebar-formbuilder">

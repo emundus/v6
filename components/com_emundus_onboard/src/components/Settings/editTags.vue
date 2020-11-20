@@ -1,7 +1,7 @@
 <template>
     <div class="container-evaluation">
         <div v-for="(tag, index) in tags" class="status-item tags-item" :id="'tag_' + tag.id">
-            <div :style="{background: tag.class}" class="status-field">
+            <div class="status-field">
                 <input type="text" v-model="tag.label">
                 <input type="hidden" :class="tag.class">
             </div>
@@ -16,7 +16,7 @@
             ></v-swatches>
             <button type="button" @click="removeTag(tag,index)" class="remove-tag"><i class="fas fa-trash"></i></button>
         </div>
-        <a @click="pushTag" class="bouton-sauvergarder-et-continuer-3 create-tag">{{ addTag }}</a>
+        <a @click="pushTag" class="bouton-sauvergarder-et-continuer create-tag">{{ addTag }}</a>
     </div>
 </template>
 
@@ -146,5 +146,8 @@
     }
     .container-evaluation{
       margin-top: 10%;
+    }
+    .bouton-sauvergarder-et-continuer{
+      justify-content: center;
     }
 </style>

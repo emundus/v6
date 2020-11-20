@@ -13,17 +13,19 @@
             @closed="beforeClose"
             @before-open="beforeOpen"
     >
-      <div class="modalC-content">
-        <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalEditElement' + ID)">
-              <em class="fas fa-times"></em>
-            </button>
+      <div class="fixed-header-modal">
+            <div class="topright">
+              <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalEditElement' + ID)">
+                <em class="fas fa-times"></em>
+              </button>
+            </div>
+          <div class="update-field-header">
+            <h2 class="update-title-header">
+              {{label[actualLanguage]}}
+            </h2>
           </div>
-        <div class="update-field-header">
-          <h2 class="update-title-header">
-            {{label[actualLanguage]}}
-          </h2>
         </div>
+      <div class="modalC-content">
         <div class="form-group mb-2">
           <label>{{fieldType}} :</label>
           <select id="select_type" class="dropdown-toggle" v-model="plugin" :disabled="(files != 0 && element.plugin == 'birthday') || (files != 0 && element.params.password == 6)">
@@ -42,7 +44,7 @@
           <displayF v-if="plugin =='display'" :element="element"></displayF>
         </div>
       </div>
-      <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-between mb-1">
         <button type="button"
                 class="bouton-sauvergarder-et-continuer w-retour"
                 @click.prevent="$modal.hide('modalEditElement' + ID)">

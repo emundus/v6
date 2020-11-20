@@ -4,13 +4,33 @@
   echo ltrim($str, "0");
 -->
 <template>
-    <div class="column-menu-main w-row" style="margin-top: 120px; margin-bottom: 10em">
+    <div>
         <ModalWarningFormBuilder
                 :pid="profileId"
                 :cid="campaignId"
         />
         <div class="w-row">
-            <div class="col-md-4 p-1">
+          <div class="col-md-2 tchooz-sidebar-menu">
+            <transition name="slide-right">
+              <div class="col-md-12 tchooz-sidebar-menus">
+                <div class="container-menu-funnel">
+                  <div v-if="profileId == null" style="display: flex;" class="required">
+                    <em class="fas fa-exclamation-circle icon-warning-margin"></em>
+                    <p>{{chooseProfileWarning}}</p>
+                  </div>
+                  <div v-for="(formCat, index) in formCategories[langue]" :key="index">
+                    <a @click="profileId != null ? menuHighlight = index : ''"
+                       class="menu-item"
+                       :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]"
+                    >{{ formCat }}</a>
+                  </div>
+                </div>
+              </div>
+            </transition>
+          </div>
+
+
+            <!--<div class="col-md-4 p-1">
                 <div class="mb-1">
                     <h1 class="nom-campagne">{{ CAMPAIGN }} : {{ form.label }}</h1>
                     <div class="date-menu orange">
@@ -37,37 +57,29 @@
 
                 <div class="divider-menu"></div>
 
-                <transition name="slide-right">
-                    <div class="col-md-12" :class="profileId == null ? 'mt-1' : 'mt-2'">
-                        <div class="container-menu-funnel">
-                            <div v-if="profileId == null" style="display: flex;" class="required">
-                                <em class="fas fa-exclamation-circle icon-warning-margin"></em>
-                                <p>{{chooseProfileWarning}}</p>
-                            </div>
-                            <div v-for="(formCat, index) in formCategories[langue]" :key="index">
-                                <a @click="profileId != null ? menuHighlight = index : ''"
-                                   class="menu-item"
-                                   :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]"
-                                >{{ formCat }}</a>
-                            </div>
-                        </div>
-                    </div>
-                </transition>
-            </div>
 
-            <div class="col-md-8 p-1" style="padding-left: 2em !important;border-left: solid 1px #cecece;">
+            </div>-->
+
+            <div class="col-md-10 col-md-offset-2 p-1" style="padding-left: 2em !important">
                 <h2>{{formCategories[langue][menuHighlight]}}</h2>
-                <p class="paragraphe-sous-titre">{{funnelDescription[langue][menuHighlight]}}</p>
+<!--                <p class="paragraphe-sous-titre">{{funnelDescription[langue][menuHighlight]}}</p>-->
                 <transition name="slide-right">
+                  <add-campaign
+                      v-if="menuHighlight == 0"
+                      :campaign="campaignId"
+                      :coordinatorAccess="true"
+                      :actualLanguage="actualLanguage"
+                      :manyLanguages="manyLanguages"
+                  ></add-campaign>
                     <addFormulaire
-                            v-if="menuHighlight == 0"
+                            v-if="menuHighlight == 2"
                             :profileId="profileId"
                             :key="formReload"
                             :visibility="null"
                     ></addFormulaire>
 
                     <addDocuments
-                            v-if="menuHighlight == 1"
+                            v-if="menuHighlight == 4"
                             :funnelCategorie="formCategories[langue][menuHighlight]"
                             :profileId="profileId"
                             :campaignId="campaignId"
@@ -77,7 +89,7 @@
                     ></addDocuments>
 
                   <add-documents-dropfiles
-                      v-if="menuHighlight == 2"
+                      v-if="menuHighlight == 1"
                       :funnelCategorie="formCategories[langue][menuHighlight]"
                       :profileId="profileId"
                       :campaignId="campaignId"
@@ -104,7 +116,7 @@
             </div>
         </div>
 
-        <div class="section-sauvegarder-et-continuer-funnel">
+<!--        <div class="section-sauvegarder-et-continuer-funnel">
             <div class="w-container">
                 <div class="container-evaluation w-clearfix">
                     <button @click="next()" class="bouton-sauvergarder-et-continuer" type="button">{{ Continuer }}</button>
@@ -113,7 +125,7 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
 </template>
 
@@ -133,6 +145,7 @@
     import Tasks from "@/views/tasks";
     import AddDocumentsDropfiles from "@/views/funnelFormulaire/addDocumentsDropfiles";
     import AddDocumentsForm from "@/views/funnelFormulaire/addDocumentsForm";
+    import addCampaign from "@/views/addCampaign";
 
     const qs = require("qs");
 
@@ -143,6 +156,7 @@
           AddDocumentsForm,
           Tasks,
           AddDocumentsDropfiles,
+          addCampaign,
             ModalWarningFormBuilder,
             Datetime,
             addFormulaire,
@@ -177,7 +191,7 @@
 
             langue: 0,
 
-            funnelDescription: [
+            /*funnelDescription: [
                 [
                     Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION"),
                     Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCSDESCRIPTION"),
@@ -186,20 +200,22 @@
                     Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION"),
                     Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCSDESCRIPTION"),
                 ]
-            ],
+            ],*/
 
             formCategories: [
                 [
-                  "Aperçu du formulaire",
-                  "Documents",
+                  "Informations générales",
+                  "Documents préalables",
+                  "Formulaire",
                   "Documents d'informations",
-                  "Documents a télécharger",
+                  "Documents",
                 ],
                 [
-                  "Form Preview",
-                  "Documents",
+                  "Global informations",
+                  "Preliminary documents",
+                  "Form",
                   "Informations documents",
-                  "Documents to download",
+                  "Documents",
                 ]
             ],
 

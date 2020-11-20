@@ -467,6 +467,7 @@ input[type="reset"] {
   padding: 10px;
   font-size: 16px;
   overflow: auto;
+  margin-top: 30%;
 }
 .topright {
   font-size: 25px;
@@ -2050,19 +2051,25 @@ label.label__placeholder {
   }
 }
 .remove-option {
-  height: 30px;
+  height: 28px;
   width: 30px;
   border-radius: 50%;
-  background: #1b1f3c;
+  background: red;
   color: white;
   margin-left: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .add-option {
-  height: 30px;
+  height: 28px;
   width: 30px;
   border-radius: 50%;
-  background: #1b1f3c;
+  background: $dark-blue;
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .vue-notification-custom {
   font-size: 12px;
@@ -2070,7 +2077,7 @@ label.label__placeholder {
   margin: 0 5px 5px;
   color: #fff;
   background: $light-green !important;
-  border-left: 5px solid #1b1f3c;
+  border-left: 5px solid $dark-blue;
   .notification-content {
     line-height: 20px;
   }
@@ -2082,12 +2089,12 @@ label.label__placeholder {
     background-size: 13px;
   }
   &.success{
-    background: green !important;
-    border-left: 5px solid #1b1f3c;
+    background: $light-green !important;
+    border-left: 5px solid $dark-blue;
   }
   &.error{
     background: darkred !important;
-    border-left: 5px solid #1b1f3c;
+    border-left: 5px solid $dark-blue;
   }
 }
 .MenuForm {
@@ -2645,5 +2652,31 @@ label.label__placeholder {
   font-size: small;
   margin-bottom: 0;
   white-space: nowrap;
+}
+
+.fixed-header-modal{
+  position: fixed;
+  background: white;
+  width: -moz-available;
+  padding-right: 20px;
+  z-index: 11;
+  top: 0;
+  padding-top: 10px;
+}
+
+.status-field{
+  padding: 5px;
+  border-radius: 5px;
+  width: 100%;
+  margin-right: 1em;
+  display: flex;
+}
+
+.status-item{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1em;
+  max-width: 95%;
 }
 

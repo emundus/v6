@@ -4,27 +4,29 @@
     <modal
       :name="'modalDuplicateElement' + ID"
       height="auto"
-      transition="nice-modal-fade"
+      transition="little-move-left"
       :min-width="200"
       :min-height="200"
       :delay="100"
       :adaptive="true"
-      :clickToClose="false"
+      :clickToClose="true"
       @closed="beforeClose"
       @before-open="beforeOpen"
     >
-      <div class="modalC-content">
-        <div class="update-field-header">
-          <div class="topright">
+      <div class="fixed-header-modal">
+        <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalDuplicateElement' + ID)">
-              <em class="fas fa-times-circle"></em>
+              <em class="fas fa-times"></em>
             </button>
           </div>
+        <div class="update-field-header">
           <h2 class="update-title-header">
              {{DuplicateElement}}
           </h2>
           <p>{{Target}}</p>
         </div>
+      </div>
+      <div class="modalC-content">
         <div class="form-group mb-2">
           <label>{{Page}}* :</label>
           <select id="select_page" class="dropdown-toggle" v-model="page" :class="{ 'is-invalid': errors.page}">
@@ -50,15 +52,16 @@
           <span class="error">{{GroupRequired}}</span>
         </p>
       </div>
-      <div class="col-md-12 mb-1">
+      <div class="d-flex justify-content-between mb-1">
+        <button type="button"
+                class="bouton-sauvergarder-et-continuer w-retour"
+                @click.prevent="$modal.hide('modalDuplicateElement' + ID)">
+          {{Retour}}
+        </button>
         <button type="button"
           class="bouton-sauvergarder-et-continuer"
           @click.prevent="duplicate()"
         >{{ Continuer }}</button>
-        <button type="button"
-          class="bouton-sauvergarder-et-continuer w-retour"
-          @click.prevent="$modal.hide('modalDuplicateElement' + ID)"
-        >{{Retour}}</button>
       </div>
       <div class="loading-form" style="top: 10vh" v-if="submitted">
         <Ring-Loader :color="'#12DB42'" />
@@ -93,7 +96,7 @@ export default {
       Page: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDMENU"),
       Group: Joomla.JText._("COM_EMUNDUS_ONBOARD_GROUP"),
       Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
       PageRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FORM"),
       GroupRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_GROUP"),
       Target: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_TARGET"),
@@ -110,6 +113,7 @@ export default {
           this.informations
         );
       }
+      this.$emit("modalClosed");
       this.changes = false;
     },
     beforeOpen(event) {
