@@ -1723,16 +1723,10 @@ a.btn-attach:active {
 
 @media all and (min-width 480px) and (max-width: 767px) {
 
-.view-registration form.fabrikForm {
-    width:100%;
-    padding: 5px; 
-}
-
-.fabrikActions.form-actions .row-fluid .span4 {
-    width: 98% !important;
-}
-
-    
+    .fabrikActions.form-actions .row-fluid .span4 {
+        width: 98% !important;
+    }
+        
     .view-form .btn.btn-primary.save-btn.sauvegarder.save_continue {
         margin-left: 0px !important;
         margin-bottom: 10px; 
