@@ -209,10 +209,11 @@ label {
     padding: 0;
 }
 
-label.fabrikLabel.fabrikTip, span.fabrikTip {
-    display: inline-flex !important;
-    align-items: center;
+.referents-sollicitation-page .fb_el_jos_emundus_files_request___student_id .controls .input-append {
+    display: flex !important;
+    flex-direction:row;
 }
+
 
 #g-navigation .g-main-nav .g-dropdown > .g-dropdown-column {
     border: none;
@@ -446,11 +447,7 @@ form#member-profile .form-horizontal .control-label {
 .fabrikLabel[opts*="Validation"] > .icon-star{
     display: none !important;
 }*/
-.fabrikForm .fabrikLabel[opts*="Validation"] {
-    flex-direction: row-reverse;
-    align-items: center !important;
-    justify-content: flex-end;
-}
+
 .icon-star.small {
     margin-top: -10px;
     padding-top: 0px;
@@ -508,9 +505,7 @@ form#member-profile .form-horizontal .control-label {
 }
 
 /* ---- ALLOW * TO BE AT THE END OF TEXT ----- */
-.view-form form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
-    display: inline;
-}
+
 /* Inscription */
 
   .view-registration .login.em-formRegistrationCenter,  .view-form .em-formRegistrationCenter:not(.componentheading) {
@@ -920,7 +915,6 @@ input:not([type]).mce-textbox {
 
 /* --- add attachment --- */
 .form-horizontal .control-group .control-label {
-    display: flex;
     text-align: left;
     color: #000;
 }
@@ -1276,8 +1270,9 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 .form-horizontal .control-group .controls {
     margin: 0;
     width: 100%;
-    display: inline-flex;
-    align-items: center;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
 }
 
 .radio input[type="radio"],
@@ -1463,8 +1458,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm label.radio {
-  display: flex !important;
-  align-items: center !important;
   padding-left: 0px; 
 }
 

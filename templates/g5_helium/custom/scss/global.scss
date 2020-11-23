@@ -97,7 +97,12 @@ label {
   color: #000;
   margin-bottom: 5px;
   font-weight: bold;
-  display: inline;
+}
+
+.view-form label.fabrikLabel.fabrikTip {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .hidden {
