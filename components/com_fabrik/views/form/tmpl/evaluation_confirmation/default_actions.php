@@ -64,8 +64,9 @@ if ($this->hasActions) : ?>
 
 <script>
     function confirmEvaluation() {
+        window.parent.ScrollToTop();
         Swal.fire({
-            position: 'center',
+            position: 'top',
             type: 'warning',
             title: '<?= JText::_('CONFIRM_ARE_YOU_SURE'); ?>',
             text: '<?= JText::_('CONFIRM_EXPLANATION'); ?>',
