@@ -1,20 +1,22 @@
 <template>
   <div class="container-fluid">
-    <div class="row card">
-      <div class="col-md-12">
-        <ul class="menus-row">
-          <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
-            <a
-              @click="ChangeIndex(index)"
-              class="MenuFormItem"
-              :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
-            >{{value.value}}</a>
-          </li>
-        </ul>
-      </div>
-      <div class="col-md-12 card-body" style="margin-bottom: 50%">
+    <div class="menu-block">
+      <div class="col-md-8 form-viewer-builder" style="margin-bottom: 50%">
         <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility" v-if="formLinkArray[indexHighlight]" />
       </div>
+        <ul class="col-md-3">
+          <h3 class="mb-1" style="padding: 0;">{{ FormPage }} :</h3>
+          <div class="form-pages">
+            <h4 class="ml-10px" style="margin-bottom: 0"><em class="far fa-file-alt mr-1"></em>{{ Form }}</h4>
+            <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
+              <a
+                @click="ChangeIndex(index)"
+                class="MenuFormItem"
+                :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
+              >{{value.value}}</a>
+            </li>
+          </div>
+        </ul>
     </div>
   </div>
 </template>
@@ -40,7 +42,9 @@ export default {
       indexHighlight: "0",
       formNameArray: [],
       formLinkArray: [],
-      formArray: []
+      formArray: [],
+      FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
+      Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
     };
   },
   methods: {

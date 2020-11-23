@@ -70,6 +70,7 @@
                       :coordinatorAccess="true"
                       :actualLanguage="actualLanguage"
                       :manyLanguages="manyLanguages"
+                      @nextSection="menuHighlight++"
                   ></add-campaign>
                     <addFormulaire
                             v-if="menuHighlight == 2"
