@@ -449,7 +449,7 @@ form#member-profile .form-horizontal .control-label {
 }*/
 
 .icon-star.small {
-    margin-top: -10px;
+    margin-top: 0px;
     padding-top: 0px;
     position: relative;
     padding-left: 2px;
@@ -1095,6 +1095,10 @@ ol li {
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input {
    border-radius : 4px; 
+}
+
+.view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input[type="radio"] {
+   margin-top: 5px;
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid:nth-child(4) .controls label.radio {
