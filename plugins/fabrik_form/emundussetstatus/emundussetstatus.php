@@ -261,7 +261,7 @@ class PlgFabrik_FormEmundussetstatus extends plgFabrik_Form {
 			$current_user = $session->get('emundusUser');
 			if (!empty($current_user->fnum) && $current_user->fnum === $fnum) {
 				$current_user->status = $status;
-				$session->set($current_user, 'emundusUser');
+				$session->set('emundusUser',$current_user);
 			}
 		}
 
