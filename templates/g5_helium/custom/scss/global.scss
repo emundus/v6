@@ -1012,10 +1012,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   border-radius: 0px !important;
   margin-right: 0px;
 }
+
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn:not(.active), .plg-radiobutton label.btn:not(.active) {
   background: #ccc;
   margin-left: 0px;
   border-radius: 0px !important;
+}
 
 .fabrikForm select {
   background-position-x: 98%;
