@@ -2287,15 +2287,30 @@ if (JFactory::getUser()->id == 63)
                 if ($methode == 1) {
                     if ($elt->element_plugin == 'databasejoin') {
                         $element_attribs = json_decode($elt->element_attribs);
-                        $select = !empty($element_attribs->join_val_column_concat)?"CONCAT(".$element_attribs->join_val_column_concat.")":$element_attribs->join_val_column;
 
-                        $from   = $element_attribs->join_db_name;
-                        $where  = $element_attribs->join_key_column.'='.$elt->table_join.'.'.$elt->element_name;
-                        $sub_query = 'SELECT '.$select.' FROM '.$from.' WHERE '.$where;
-                        $sub_query = preg_replace('#{thistable}#', $from, $sub_query);
-                        $sub_query = preg_replace('#{shortlang}#', $locales, $sub_query);
+                        if ($element_attribs->database_join_display_type == "checkbox") {
+                            $t = $elt->table_join.'_repeat_'.$elt->element_name;
+                            $select = '(
+                                SELECT GROUP_CONCAT('.$t.'.'.$elt->element_name.' SEPARATOR ", ")
+                                FROM '.$t.'
+                                WHERE '.$t.'.parent_id='.$elt->table_join.'.id
+                              ) ';
+                        } else {
+                            $join_val_column = !empty($element_attribs->join_val_column_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.$element_attribs->join_val_column;
 
-                        $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
+	                        if ($methode == 2) {
+		                        $select = '(SELECT GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ") ';
+	                        } else {
+		                        $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ") ';
+	                        }
+
+                            $select .= 'FROM '.$tableAlias[$elt->tab_name].'
+                                LEFT JOIN '.$elt->table_join.' ON '.$elt->table_join.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
+                                LEFT JOIN '.$element_attribs->join_db_name.' as t ON t.'.$element_attribs->join_key_column.' = '.$elt->table_join.'.'.$elt->element_name.'
+                                WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
+                        }
+
+                        $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
 
                     } elseif ($elt->element_plugin == 'cascadingdropdown') {
                         $element_attribs = json_decode($elt->element_attribs);
