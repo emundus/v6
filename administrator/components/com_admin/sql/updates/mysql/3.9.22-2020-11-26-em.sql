@@ -1,0 +1,1 @@
+ALTER TABLE `jos_emundus_logs` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;
