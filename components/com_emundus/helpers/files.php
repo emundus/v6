@@ -597,7 +597,8 @@ class EmundusHelperFiles
                         AND element.hidden=0
                         AND element.label!=" "
                         AND element.label!=""
-                        AND menu.menutype IN ( "' . implode('","', $menutype) . '" )';
+                        AND menu.menutype IN ( "' . implode('","', $menutype) . '" ) 
+                        AND element.plugin!="display"';
                 $order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
             }
 
