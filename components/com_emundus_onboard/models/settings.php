@@ -585,7 +585,7 @@ class EmundusonboardModelsettings extends JModelList {
      * @return bool
      * @since version
      */
-    private function createParam($param, $user_id) {
+    function createParam($param, $user_id) {
 
         $user = JFactory::getUser($user_id);
 
@@ -930,6 +930,86 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             $db->execute();
             return $db->insertid();
+        }  catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            return false;
+        }
+    }
+
+    function addDocumentToForm($file,$filename,$dir,$pid){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $user = JFactory::getUser();
+        $form_module = null;
+
+        $html = '<li class="col-md-6 em-print-button" id="' . explode('.',$file)[0] . '" style="margin-bottom: 10px"><a id="print" style="border-radius: 4px;text-decoration: unset" href="' . $dir . $file . '" download="">' . $filename . '</a></li>';
+
+        try {
+            $query->select('*')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('note') . '!=' .  $db->quote(''));
+            $db->setQuery($query);
+            $modules = $db->loadObjectList();
+            foreach ($modules as $module){
+                if(json_decode($module->note,true)['pid'] == $pid){
+                    $form_module = $module;
+                    break;
+                }
+            }
+
+            if($form_module == null) {
+                $content = '<ul style="width: 100%">' . $html . '</ul>';
+                $query->clear()
+                    ->insert($db->quoteName('#__modules'));
+                $query->set($db->quoteName('asset_id') . ' = ' . $db->quote(0))
+                    ->set($db->quoteName('title') . ' = ' . $db->quote('Documents à télécharger'))
+                    ->set($db->quoteName('note') . ' = ' . $db->quote('{"pid":"' . $pid . '"}'))
+                    ->set($db->quoteName('content') . ' = ' . $db->quote($content))
+                    ->set($db->quoteName('position') . ' = ' . $db->quote('sidebar-a'))
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(1))
+                    ->set($db->quoteName('checked_out') . ' = ' . $db->quote($user->id))
+                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('publish_up') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('publish_down') . ' = ' . $db->quote('2099-30-12 00:00:00'))
+                    ->set($db->quoteName('published') . ' = ' . $db->quote(1))
+                    ->set($db->quoteName('module') . ' = ' . $db->quote('mod_custom'))
+                    ->set($db->quoteName('access') . ' = ' . $db->quote(1))
+                    ->set($db->quoteName('language') . ' = ' . $db->quote('*'));
+                $db->setQuery($query);
+                $db->execute();
+
+                $moduleid = $db->insertid();
+
+                $query->clear()
+                    ->select('m.id')
+                    ->from($db->quoteName('#__menu','m'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_profiles','sp').' ON '.$db->quoteName('sp.menutype').' = '.$db->quoteName('m.menutype'))
+                    ->where($db->quoteName('sp.id') . ' = ' . $db->quote($pid));
+                $db->setQuery($query);
+                $mids = $db->loadObjectList();
+
+                foreach ($mids as $mid){
+                    $query->clear()
+                        ->insert($db->quoteName('#__modules_menu'));
+                    $query->set($db->quoteName('moduleid') . ' = ' . $db->quote($moduleid))
+                        ->set($db->quoteName('menuid') . ' = ' . $db->quote($mid->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+
+                return true;
+
+            } else {
+                $content_to_complete = explode('</ul>',$form_module->content);
+                $new_content = $content_to_complete[0] . $html . '</ul>';
+                $query->clear()
+                    ->update($db->quoteName('#__modules'))
+                    ->set($db->quoteName('content') . ' = ' . $db->quote($new_content))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($form_module->id));
+                $db->setQuery($query);
+                return $db->execute();
+            }
         }  catch (Exception $e) {
             JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;

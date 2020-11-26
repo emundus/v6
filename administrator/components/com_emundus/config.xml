@@ -201,6 +201,18 @@
             <field name="export_pdf" type="text" size="60" default="" label="Select items for the pdf export"/>
         </fieldset>
     -->
+	
+	<fieldset label="COM_EMUNDUS_OFFERS" name="offers" description="COM_EMUNDUS_OFFERS_DESC">
+		<field name="fabrik_elements_title" type="text" required="false" label="COM_EMUNDUS_OFFERS_PDF_TITLE_LABEL" description="COM_EMUNDUS_OFFERS_PDF_TITLE_DESC" class="inputbox" default="2113" />
+		<field name="fabrik_elements_pdf" type="text" required="false" label="COM_EMUNDUS_OFFERS_PDF_ELEMENTS_LABEL" description="COM_EMUNDUS_OFFERS_PDF_ELEMENTS_DESC" class="inputbox" default="2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127, 2116, 2118, 2122" ForcedDisplay="value"/>
+		<field name="fabrik_elements_html" type="text" required="false" label="COM_EMUNDUS_OFFERS_HTML_ELEMENTS_LABEL" description="COM_EMUNDUS_OFFERS_HTML_ELEMENTS_DESC" class="inputbox" default="2111, 2113, 2134, 2135, 2112, 2116, 2114, 2117, 2128, 2121, 2133, 2124, 2125, 2126"/>
+		<field name="category_note" type="text" required="false" label="COM_EMUNDUS_OFFERS_CATEGORY_NOTE_LABEL" description="COM_EMUNDUS_OFFERS_CATEGORY_NOTE_DESC" class="inputbox" default="emplois-su"/>
+		<field name="program_code" type="text" required="false" label="COM_EMUNDUS_OFFERS_PROGRAM_CODE_LABEL" description="COM_EMUNDUS_OFFERS_PROGRAM_CODE_DESC" class="inputbox" default="utc-dfp-dri"/>
+		<field name="validation" menu="hide" type="list" default="0" label="COM_EMUNDUS_OFFERS_VALIDATION_LABEL" description="COM_EMUNDUS_OFFERS_VALIDATION_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>	
+	</fieldset>
 
 	<fieldset label="COM_EMUNDUS_CALENDAR" name="calendar" description="COM_EMUNDUS_CALENDAR_DESC">
 		<field name="useGoogle" menu="hide" type="list" default="0" label="COM_EMUNDUS_USE_GOOGLE" description="COM_EMUNDUS_USE_GOOGLE_DESC">
