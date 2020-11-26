@@ -90,6 +90,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		$group = $this->getParam('group');
 		$profile_id = $this->getParam('profile_id');
 		$pick_fnums = $this->getParam('pick_fnums', 0);
+		$redirect = $this->getParam('redirect', 1);
 
 		if ($pick_fnums) {
 			$files_picked = $jinput->get('jos_emundus_files_request___your_files');
@@ -258,7 +259,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 				];
 				$m_application->addComment($row);
 			}
-			$m_users->encryptLogin(['username' => $user->username, 'password' => $user->password]);
+			$m_users->encryptLogin(['username' => $user->username, 'password' => $user->password], (int)$redirect);
+			return;
 
 		} else {
 
@@ -356,7 +358,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 				$m_application->addComment($row);
 			}
 
-			$m_users->plainLogin(['username' => $user->username, 'password' => $password]);
+			$m_users->plainLogin(['username' => $user->username, 'password' => $password], (int)$redirect);
 			$app->enqueueMessage(JText::_('USER_LOGGED'), 'message');
 			return;
 		}
