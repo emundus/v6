@@ -66,7 +66,7 @@ class PlgEmundusReferent_status extends JPlugin {
                 $email = $m_emails->getEmail('referent_letter');
             }
 
-            if ($this->getFilesExist($applicant->fnum, $attachments_id) == 0 && $this->getFilesRequest($applicant->fnum,$attachments_id) == 0) {
+            if ($this->getFilesExist($applicant->fnum, $attachments_id) == 0) {
                 $mailer = JFactory::getMailer();
                 $mailer->SMTPDebug = true;
 
