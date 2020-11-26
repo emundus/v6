@@ -4760,6 +4760,7 @@ $(document).ready(function() {
                                 html: '<div id="email-recap">'+result.html+'</div>',
                                 width: 1000,
                                 showCancelButton: true,
+                                cancelButtonText: Joomla.JText._('CANCEL_EMAIL'),
                                 confirmButtonText: Joomla.JText._('SEND_CUSTOM_EMAIL')
                             }).then(function(confirm) {
 
