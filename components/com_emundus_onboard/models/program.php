@@ -1137,10 +1137,8 @@ class EmundusonboardModelprogram extends JModelList {
             $query->clear();
             $query->update($db->quoteName('#__fabrik_forms'));
 
-            $formbuilder->addTransationFr('FORM_' . $pid. '_' . $formid . '=' . "\"" . $label['fr'] . "\"");
-            $formbuilder->addTransationEn('FORM_' . $pid. '_' . $formid . '=' . "\"" . $label['en'] . "\"");
-            $formbuilder->addTransationFr('FORM_' . $pid . '_INTRO_' . $formid . '=' . "\"" . $intro['fr'] . "\"");
-            $formbuilder->addTransationEn('FORM_' . $pid . '_INTRO_' . $formid . '=' . "\"" . $intro['en'] . "\"");
+            $formbuilder->translate('FORM_' . $pid. '_' . $formid,$label);
+            $formbuilder->translate('FORM_' . $pid . '_INTRO_' . $formid,$intro);
             //
 
             $query->set('label = ' . $db->quote('FORM_' . $pid . '_' . $formid));
@@ -1211,7 +1209,7 @@ class EmundusonboardModelprogram extends JModelList {
                 foreach ($languages as $language) {
                     $duplicate_translation = $formbuilder->duplicateFileTranslation($group_model->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'GROUP_' . $formid . '_' . $newgroupid,$language->lang_code);
                     if(!$duplicate_translation){
-                        $formbuilder->addTransationFr('GROUP_' . $formid . '_' . $newgroupid . '=' . "\"" . $group_model->label . "\"");
+                        $formbuilder->addTranslation('GROUP_' . $formid . '_' . $newgroupid . '=' . "\"" . $group_model->label . "\"", $path_to_files[$language->sef],$language->lang_code);
                     }
                 }
                 //
@@ -1249,7 +1247,7 @@ class EmundusonboardModelprogram extends JModelList {
                                 foreach ($languages as $language) {
                                     $duplicate_translation = $formbuilder->duplicateFileTranslation($sub_label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index,$language->lang_code);
                                     if(!$duplicate_translation){
-                                        $formbuilder->addTransationFr('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index . '=' . "\"" . $sub_label . "\"");
+                                        $formbuilder->addTranslation('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index . '=' . "\"" . $sub_label . "\"", $path_to_files[$language->sef],$language->lang_code);
                                     }
                                 }
                                 $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
@@ -1261,7 +1259,7 @@ class EmundusonboardModelprogram extends JModelList {
                         foreach ($languages as $language) {
                             $duplicate_translation = $formbuilder->duplicateFileTranslation($element->element->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'ELEMENT_' . $newgroupid . '_' . $newelementid,$language->lang_code);
                             if(!$duplicate_translation){
-                                $formbuilder->addTransationFr('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . $element->element->label . "\"");
+                                $formbuilder->addTranslation('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . $element->element->label . "\"", $path_to_files[$language->sef],$language->lang_code);
                             }
                         }
                         //
@@ -1365,10 +1363,8 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query);
             $db->execute();
 
-            $formbuilder->addTransationFr('FORM_' . $pid. '_' . $formid . '=' . "\"" . $label['fr'] . "\"");
-            $formbuilder->addTransationFr('FORM_' . $pid. '_INTRO_' . $formid . '=' . "\"" . $intro['fr'] . "\"");
-            $formbuilder->addTransationEn('FORM_' . $pid. '_' . $formid . '=' . "\"" . $label['en'] . "\"");
-            $formbuilder->addTransationEn('FORM_' . $pid. '_INTRO_' . $formid . '=' . "\"" . $intro['en'] . "\"");
+            $formbuilder->translate('FORM_' . $pid. '_' . $formid,$label);
+            $formbuilder->translate('FORM_' . $pid. '_INTRO_' . $formid,$intro);
             //
 
             // INSERT FABRIK LIST
