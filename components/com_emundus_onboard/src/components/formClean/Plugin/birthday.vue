@@ -1,43 +1,61 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <div id="birthdayF">
     <div class="rowmodal">
-      <div class="form-group dpflex">
-        <input type="checkbox" class="form__input field-general w-input" value="0" v-model="datepicker" />
-        <label class="ml-10px mb-0">{{displaycalendar}}</label>
-      </div>
       <div class="form-group">
-        <label>{{helptext}} :</label>
-        <input type="text" class="form__input field-general w-input" v-model="element.params.rollover" />
+        <label>{{ Format }}</label>
+        <div class="flex mr-2">
+          <input type="radio" id = 'radio_default' value='1' v-model="datepicker"/>
+          <span class="ml-10px">{{birthdaySelect}}</span>
+        </div>
+        <div class="flex mr-2">
+          <input type="radio" id = 'radio_years' value='2' v-model="datepicker"/>
+          <span class="ml-10px">{{yearSelect}}</span>
+        </div>
+        <div class="flex mr-2">
+          <input type="radio" id = 'radio_dayMonth' value='3' v-model="datepicker"/>
+          <span class="ml-10px">{{dateSelect}}</span>
+        </div>
       </div>
     </div>
   </div>
-</template>
+  </template>
 
 <script>
 export default {
   name: "birthdayF",
+  components:{},
   props: { element: Object },
   data() {
     return {
-      datepicker: false,
-      displaycalendar: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_CALENDAR"),
-      helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT")
+      datepicker: null,
+      birthdaySelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMAT_BIRTHDAY"),
+      yearSelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMAT_YEAR"),
+      dateSelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_CALENDAR"),
+      Format: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMATTING"),
     }
   },
+
   created() {
-    setTimeout(() => {
-      if(this.element.plugin == 'date'){
-        this.datepicker = true;
+      if(this.element.plugin == 'birthday'){
+        this.datepicker = 1;
+      } else if(this.element.plugin == 'date') {
+        this.datepicker = 3;
+        // this.calendarShow = true;
+      } else {
+        this.datepicker = 2; //year
       }
-    },1000);
   },
   watch:{
     datepicker: function(value) {
-      if(value == 1){
+      // check radio button i is selected
+      if(value == 3) {
         this.element.plugin = 'date';
+      } else if(value == 2) {
+        this.element.plugin = 'years';
       } else {
         this.element.plugin = 'birthday';
       }
+
     }
   }
 };
@@ -53,7 +71,12 @@ export default {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
   }
-  #birthdayF{
+  birthdayF {
     padding: 10px;
   }
+
+  input[type='radio']{
+    width: auto;
+  }
+
 </style>

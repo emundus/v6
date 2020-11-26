@@ -36,7 +36,7 @@ class EmundusViewJob extends JViewLegacy {
         $this->params = $app->getParams('com_emundus');
 
         if (!empty($this->item))
-		    $this->form	= $this->get('Form');
+            $this->form = $this->get('Form');
 
         // Check for errors.
         if (count($errors = $this->get('Errors')))

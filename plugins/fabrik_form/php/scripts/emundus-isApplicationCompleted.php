@@ -78,11 +78,11 @@ if ($jinput->get('view') == 'form') {
 		$accept_created_payments = $params->get('accept_created_payments', 0);
 
 		if (count($fnumInfos) > 0) {
-			$paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
+			$paid = (!(array)$m_application->getHikashopOrder($fnumInfos)) ? 0 : 1;
 
 			// If created payments aren't accepted then we don't need to check.
 			if ($accept_created_payments)
-				$payment_created_offline = count($m_application->getHikashopOrder($fnumInfos, true))>0?1:0;
+				$payment_created_offline = (!(array)$m_application->getHikashopOrder($fnumInfos, true)) ? 0 : 1;
 			else
 				$payment_created_offline = false;
 

@@ -209,10 +209,11 @@ label {
     padding: 0;
 }
 
-label.fabrikLabel.fabrikTip, span.fabrikTip {
-    display: inline-flex !important;
-    align-items: center;
+.referents-sollicitation-page .fb_el_jos_emundus_files_request___student_id .controls .input-append {
+    display: flex !important;
+    flex-direction:row;
 }
+
 
 #g-navigation .g-main-nav .g-dropdown > .g-dropdown-column {
     border: none;
@@ -446,13 +447,9 @@ form#member-profile .form-horizontal .control-label {
 .fabrikLabel[opts*="Validation"] > .icon-star{
     display: none !important;
 }*/
-.fabrikForm .fabrikLabel[opts*="Validation"] {
-    flex-direction: row-reverse;
-    align-items: center !important;
-    justify-content: flex-end;
-}
+
 .icon-star.small {
-    margin-top: -10px;
+    margin-top: 0px;
     padding-top: 0px;
     position: relative;
     padding-left: 2px;
@@ -508,9 +505,7 @@ form#member-profile .form-horizontal .control-label {
 }
 
 /* ---- ALLOW * TO BE AT THE END OF TEXT ----- */
-.view-form form.fabrikForm .row-fluid label.fabrikLabel.control-label.fabrikTip {
-    display: inline;
-}
+
 /* Inscription */
 
   .view-registration .login.em-formRegistrationCenter,  .view-form .em-formRegistrationCenter:not(.componentheading) {
@@ -920,7 +915,6 @@ input:not([type]).mce-textbox {
 
 /* --- add attachment --- */
 .form-horizontal .control-group .control-label {
-    display: flex;
     text-align: left;
     color: #000;
 }
@@ -1103,6 +1097,10 @@ ol li {
    border-radius : 4px; 
 }
 
+.view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input[type="radio"] {
+   margin-top: 5px;
+}
+
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid:nth-child(4) .controls label.radio {
   padding-left: 0px;
 }
@@ -1210,19 +1208,6 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
       width: 12px;
 }
 
- .fabrikForm select {
-    height: 50px !important;
-    background-position-x: 98%;
-    background-position-y: 58%;
-    -webkit-appearance: none;
-    background: transparent url(images/custom/arrow-down.png) no-repeat 98% 52%;
-    background-size: 10px;
-    background: #fff; 
-    padding: 0 30px 0 10px;
-}
-
-
-
 /* FORMULAIRE D'INSCRIPTION */
 
 .view-form .em-formRegistrationCenter h1::after {
@@ -1276,8 +1261,9 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 .form-horizontal .control-group .controls {
     margin: 0;
     width: 100%;
-    display: inline-flex;
-    align-items: center;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
 }
 
 .radio input[type="radio"],
@@ -1463,8 +1449,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm label.radio {
-  display: flex !important;
-  align-items: center !important;
   padding-left: 0px; 
 }
 
@@ -1706,12 +1690,10 @@ a.btn-attach:active {
 }
 
 @media all and (max-width: 479px) {
-    .view-registration .login div.em-heading-registration, .view-form .em-formRegistrationCenter div.em-heading-registration {
-        width: 85%;     
-    }
-    .view-registration form.fabrikForm, .view-form .em-formRegistrationCenter form.fabrikForm {
-        width: 75%;
-    }
+
+  
+ 
+    
     
     .view-form .btn.send_the_request_for_individual_assessment {
        margin-left: 0px !important; 
@@ -1721,37 +1703,14 @@ a.btn-attach:active {
        align-items: end;
     }
     
+}
+
+@media all and (min-width 480px) and (max-width: 767px) {
+
+    .fabrikActions.form-actions .row-fluid .span4 {
+        width: 98% !important;
+    }
         
-}
-
-@media all and (max-width: 767px) {
-
-/* INSCRIPTION */ 
-
-.view-registration .login.em-formRegistrationCenter, .view-form .em-formRegistrationCenter:not(.componentheading) {
-    width: 100%; 
-}
-
-.view-registration .login div.em-heading-registration, .view-form .em-formRegistrationCenter div.em-heading-registration {
-    width: 93%;     
-}
-
-ol {
-    width: 90%;
-    text-align: justify;
-    margin-left: 0px !important;
-}
-
-.view-registration form.fabrikForm {
-    width:100%;
-    padding: 5px; 
-}
-
-.fabrikActions.form-actions .row-fluid .span4 {
-    width: 98% !important;
-}
-
-    
     .view-form .btn.btn-primary.save-btn.sauvegarder.save_continue {
         margin-left: 0px !important;
         margin-bottom: 10px; 

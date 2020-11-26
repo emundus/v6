@@ -3,7 +3,7 @@
     <div class="row rowmodal">
       <div class="form-group">
         <label>{{fieldtype}} :</label>
-        <select v-model="element.params.password" class="dropdown-toggle" :disabled="files != 0 && element.params.password == 6">
+        <select v-model="element.params.password" id='selectIdTest' class="dropdown-toggle" :disabled="files != 0 && element.params.password == 6">
           <option value="0">{{textfield}}</option>
           <option value="2">{{phonefield}}</option>
           <option value="3">{{emailfield}}</option>
@@ -35,6 +35,13 @@
         <label>{{maxlength}} :</label>
         <input type="number" max="255" min="1" class="form__input field-general w-input" v-model="element.params.maxlength" />
       </div>
+
+<!--      v-show - shox this div when option 4 is checked-->
+      <div class="form-group" v-if="element.params.password == 0">
+        <label>{{inputmasktitle}}</label>
+        <input type="text" id="format" class="form__input field-general w-input" v-model="element.params.text_input_mask" :placeholder="[[ inputmaskplaceholder ]]"/>
+        <label style="font-size: xx-small">{{tipData}}</label>
+      </div>
     </div>
   </div>
 </template>
@@ -44,6 +51,7 @@ export default {
   name: "fieldF",
   props: { element: Object, files: Number },
   data() {
+
     return {
       msg: '',
       path: window.location.protocol + '//' + window.location.host + '/media/com_emundus_onboard/',
@@ -57,6 +65,10 @@ export default {
       emailfield: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EMAIL"),
       numberfield: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NUMBER"),
       placeholderHelp: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER_HELP"),
+      text_input_mask: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK"),
+      inputmasktitle: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_TITLE"),
+      inputmaskplaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_PLACEHOLDER"),
+      tipData: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_HINT"),
     };
   },
   methods: {},
@@ -70,7 +82,15 @@ export default {
     if(typeof this.element.params.maxlength == 'undefined'){
       this.element.params.maxlength = 255;
     }
-  }
+
+    if(typeof this.element.params.text_input_mask == 'undefined'){
+      this.element.params.text_input_mask = ''
+    }
+
+    if(typeof this.element.params.placeholder == 'undefined'){
+      this.element.params.placeholder = ''
+    }
+  },
 };
 </script>
 <style scoped>

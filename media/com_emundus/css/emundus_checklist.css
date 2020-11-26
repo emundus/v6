@@ -416,7 +416,7 @@ button#back:hover, button#back:active, button#back:focus,
 .radio input[type="radio"], .checkbox input[type="checkbox"] {
     margin-left: 0px !important;
     margin-right: 10px;
-
+    margin-top: 5px;
 }
 /*.fabrikLabel[opts*="Validation"]::after,
 body.view-login label#password-lbl::after,

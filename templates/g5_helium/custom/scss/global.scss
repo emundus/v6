@@ -97,7 +97,12 @@ label {
   color: #000;
   margin-bottom: 5px;
   font-weight: bold;
-  display: inline;
+}
+
+.view-form label.fabrikLabel.fabrikTip {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .hidden {
@@ -873,7 +878,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background-color: $base-secondary-color;
     background: $base-secondary-color;
     color: white;
-    margin-bottom: -1px;
+    margin-bottom: 0px;
   }
 
   /* COULEURS TITRES  */
@@ -999,6 +1004,30 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 /* FORMULAIRE  */
+
+.controls .fabrikElement .radio.btn-radio.btn-group label.btn.active, .plg-radiobutton label.btn.active {
+  background-color: $base-secondary-color;
+  color: #fff;
+  border-color: $base-secondary-color;
+  border-radius: 0px !important;
+  margin-right: 0px;
+}
+
+.controls .fabrikElement .radio.btn-radio.btn-group label.btn:not(.active), .plg-radiobutton label.btn:not(.active) {
+  background: #ccc;
+  margin-left: 0px;
+  border-radius: 0px !important;
+}
+
+.fabrikForm select {
+  background-position-x: 98%;
+  background-position-y: 54%;
+  -webkit-appearance: none;
+  background-image: url(/images/emundus/arrow-down.png);
+  background-size: 12px;
+  background-repeat: no-repeat;
+  padding: 0 30px 0 10px;
+}
 
 #sidebar-a .em-send-button a.btn.btn-success.btn-xs {
   color: #fff;
@@ -2684,6 +2713,29 @@ div#em-appli-block {
 
 @media all and (max-width: 479px) {
 
+  .gantry.view-registration, .gantry.view-form.em-formRegistrationCenter {
+    main#g-main-mainbody {
+      padding: 0;
+      .login.em-formRegistrationCenter, .em-formRegistrationCenter:not(.componentheading) {
+
+        width: 100% !important;
+
+        ol {
+          width: 90%;
+          text-align: justify;
+          margin-left: 0px !important;
+        }
+
+        div.em-heading-registration {
+          width: 86%;
+        }
+
+        form.fabrikForm {
+          width: 75%;
+        }
+      }
+    }
+  }
 
   .g-back-office-emundus-tableau.view-syncs.experts-synchro-page .app-container.ng-scope  {
     overflow-x: scroll;
@@ -2694,11 +2746,27 @@ div#em-appli-block {
     padding: 10px;
   }
 
+  h1::after {
+    display: none !important;
+  }
+
   /* HEADER */
   #g-navigation #header-a {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  /* HEADER C */
+  #g-navigation #header-c .g-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    .mod-languages.advanced-dropdown {
+      margin-left: -25px;
+    }
   }
 
   /* BURGER */
@@ -2709,6 +2777,8 @@ div#em-appli-block {
   /* BURGER OUVERT */
 #g-offcanvas {
   background: #FAFAFA;
+  .g-grid {
+    margin: 50px 0px;
 
   .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
     background: #FAFAFA;
@@ -2729,6 +2799,7 @@ div#em-appli-block {
         color: $base-primary-color;
         padding: 15px 30px;
         width: auto;
+        display: block;
       }
     }
 
@@ -2746,6 +2817,7 @@ div#em-appli-block {
        color:#fff;
      }
     }
+  }
   }
 }
 
@@ -2790,7 +2862,8 @@ footer#g-footer .g-grid {
 
 @media all and (min-width: 480px) and (max-width: 767px)  {
 
-  .homepage h1::after {
+
+  h1::after {
     display: none !important;
   }
 

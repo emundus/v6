@@ -47,10 +47,9 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadResult();
         } catch(Exception $e) {
-            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/email | Error when try to get number of emails : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return 0;
         }
-
     }
 
      function getAllEmails($lim, $page, $filter, $sort, $recherche) {
@@ -103,7 +102,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query, $offset, $limit);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/email | Error when try to get emails : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -124,7 +123,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add('component/com_emundus_onboard/models/email | Cannot delete emails: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;
             }
         } else {
@@ -156,7 +155,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add('component/com_emundus_onboard/models/email | Cannot unpublish emails: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;
             }
         } else {
@@ -188,7 +187,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add('component/com_emundus_onboard/models/email | Cannot publish emails: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();
             }
         } else {
@@ -234,7 +233,7 @@ class EmundusonboardModelemail extends JModelList {
                 return $db->execute();
 
             } catch(Exception $e) {
-                JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add('component/com_emundus_onboard/models/email | Cannot duplicate emails: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;
             }
         } else {
@@ -260,7 +259,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadObject();
         } catch(Exception $e) {
-            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/email | Cannot get the email by id ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -286,7 +285,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
             } catch(Exception $e) {
-                JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add('component/com_emundus_onboard/models/email | Cannot create an email: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;
             }
         } else {
@@ -315,7 +314,7 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add('component/com_emundus_onboard/models/email | Cannot update the email ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;
             }
 
@@ -339,7 +338,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadColumn();
         } catch(Exception $e) {
-            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/email | Cannot get emails types : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -359,7 +358,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadColumn();
         } catch(Exception $e) {
-            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/email | Cannot get emails categories : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -376,7 +375,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/email | Cannot get status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -436,7 +435,7 @@ class EmundusonboardModelemail extends JModelList {
 
             return $triggers;
         } catch(Exception $e) {
-            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/email | Error at getting triggers by program id ' . $pid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -468,7 +467,7 @@ class EmundusonboardModelemail extends JModelList {
 
             return $trigger;
         } catch(Exception $e) {
-            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/email | Error at getting trigger ' . $tid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -526,7 +525,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
-            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/email | Cannot create a trigger : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -595,7 +594,7 @@ class EmundusonboardModelemail extends JModelList {
                 }
             }
         } catch(Exception $e) {
-            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/email | Cannot update the trigger ' . $tid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -611,7 +610,7 @@ class EmundusonboardModelemail extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
-            JLog::add(preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/email | Error at remove the trigger ' . $tid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

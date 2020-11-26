@@ -80,8 +80,8 @@ class EmundusModelActions extends JModelList {
 
             if (!empty($gid)) {
                 $query
-                    ->leftJoin($dbo->quoteName('#__emundus_group_assoc','jega').' ON '.$dbo->quoteName('jesa.id').' = '.$dbo->quoteName('jega.action_id'))
-                    ->andWhere($dbo->quoteName('jega.group_id') . ' = ' . $gid);
+                    ->leftJoin($dbo->quoteName('#__emundus_groups','jeg').' ON '.$dbo->quoteName('jeua.user_id').' = '.$dbo->quoteName('jeg.user_id'))
+                    ->andWhere($dbo->quoteName('jeg.group_id') . ' = ' . $gid);
             }
 
             $dbo->setQuery($query);

@@ -918,7 +918,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	/*** Applicant   ***/
 	$htmldata .= "<style>
 
-    @import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
+    @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
     
     .en-tete { width :100%;  }
     .candidat { width :80%;  }
@@ -926,15 +926,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     .dossier { width :100%;  }
     
           
-	.card  { border: none; display:block; font-family: 'Poppins', sans-serif; }
-	.name  { display: block;  display:block; font-family: 'Poppins', sans-serif; }
-	.maidename  {display: block; font-family: 'Poppins', sans-serif; }
-    .nationality { display: block; font-weight:normal!important; font-family: 'Poppins', sans-serif; }
-    .idcandidat{ display: block; font-weight:normal!important;  color: ".$cTitle."; font-family: 'Poppins', sans-serif;  }
-    .sent { display: block; font-family: 'Poppins', sans-serif; text-align:left;  }
-    .statut { display: block; font-family: 'Poppins', sans-serif; text-align:left; color: ".$cTitle."  }
-	.birthday { display: block; font-family: 'Poppins', sans-serif; }
-
+	.card  { border: none; display:block; font-family: 'Roboto', sans-serif; }
+	.name  { display: block;  display:block; font-family: 'Roboto', sans-serif; }
+	.maidename  {display: block; font-family: 'Roboto', sans-serif; }
+    .nationality { display: block; font-weight:normal!important; font-family: 'Roboto', sans-serif; }
+    .idcandidat{ display: block; font-weight:normal!important;  color: ".$cTitle."; font-family: 'Roboto', sans-serif;  }
+    .sent { display: block; font-family: 'Roboto', sans-serif; text-align:left;  }
+    .statut { display: block; font-family: 'Roboto', sans-serif; text-align:left; color: ".$cTitle."  }
+	.birthday { display: block; font-family: 'Roboto', sans-serif; }
 	.label		   {color:black;  }
 	.label-default {background-color:#999999;}
 	.label-primary {background-color:#337ab7;}
@@ -963,75 +962,47 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	.label-lightpink { background-color: #e08283; }
 	.label-pink { background-color: #d2527f; }
     .label-darkpink { background-color: #db0a5b; }
-    h3 {  font-family: 'Poppins', sans-serif; font-size:35px;  color: #000000; text-align:left!important; font-weight:bold;}
+    h3 {  font-family: 'Roboto', sans-serif; font-size:35px;  color: #000000; text-align:left!important; font-weight:bold;}
             
 
-            table {
-                font-family: 'Poppins', sans-serif;  
-            }
-
             h2 {
-                font-family: 'Poppins', sans-serif;
-                font-size:40px;
-                 color: ".$cTitle.";
+               font-size:40px;
+               color: ".$cTitle.";
                font-weight:500;
     
             }
   
            h3 {
-                font-family: 'Poppins', sans-serif;
                 font-size:35px;
-                 color: #000000;
+                color: #000000;
                 text-align:left!important;
              
             }
 
             h5 {
-                font-family: 'Poppins', sans-serif;
                 color: #000000;
                 font-size: 18px;
                 text-align: left;
             }
 
-            tr  {
-                font-family: 'Poppins', sans-serif;
-
-            }
-
-     
             th {
                 color: #000000;
                 font-size: 33px!important;
-
-                font-family: 'Poppins', sans-serif;
-             
             }
 
             td {
                 color: #000000;
-                font-size: 33px!important;
-                font-family: 'Poppins', sans-serif;
-           
-            }
-
-            p {
-                font-family: 'Poppins', sans-serif;
+                font-size: 33px!important;           
             }
 
            .background {
+	            background-color: #F7F7F7;
+           }
 
-            background-color: #F7F7F7;
-       
-            
-             }
-
-             .background-light {
-
+           .background-light {
               border-top: 0.5px solid #D3D3D3;
               border-bottom: 0.5px solid #D3D3D3;
-                
-    
-            }
+           }
 
             
             @media print {

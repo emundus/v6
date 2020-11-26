@@ -39,7 +39,7 @@ class EmundusViewJobs extends JViewLegacy {
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_emundus');
         $this->filterForm = $this->get('FilterForm');
-		$this->activeFilters = $this->get('ActiveFilters');
+        $this->activeFilters = $this->get('ActiveFilters');
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
