@@ -862,21 +862,31 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $params = $template->params;
 
     if (!empty($params->get('logo')->custom->image)) {
-	    $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-	    $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+
+        $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+        $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+
     } else {
-    	$logo_module = JModuleHelper::getModuleById('90');
-	    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
 
-	    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-	    if ((bool) preg_match($pattern, $tab[1])) {
-	    	$tab[1] = parse_url($tab[1], PHP_URL_PATH);
-	    }
+        if(file_exists(JPATH_ROOT.DS.'images'.DS.'custom'.DS.$item->training.'.png')) {
+            $logo = JPATH_ROOT.DS.'images'.DS.'custom'.DS.$item->training.'.png';
+        } else {
 
-	    $logo = JPATH_BASE.DS.$tab[1];
+            $logo_module = JModuleHelper::getModuleById('90');
+            preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+
+            $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+            (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+            (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+            (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+            if ((bool) preg_match($pattern, $tab[1])) {
+                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+            }
+
+            $logo = JPATH_BASE.DS.$tab[1];
+
+        }
     }
 
     // manage logo by programme
