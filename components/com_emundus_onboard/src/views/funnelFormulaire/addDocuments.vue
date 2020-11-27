@@ -221,6 +221,8 @@ export default {
                             };
                             return infos;
                           });
+
+                          this.currentDoc = null;
                         }).catch(e => {
                           console.log(e);
                         });
