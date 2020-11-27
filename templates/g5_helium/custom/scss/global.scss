@@ -463,6 +463,7 @@ footer#g-footer {
   bottom: 0;
   width: 100vw;
   position: relative;
+  margin-top: auto !important;
 }
 
 footer#g-footer img {
@@ -488,10 +489,6 @@ footer#g-footer img {
 }
 
 .g-container>#g-footer {
-  width: 100vw;
-  margin-top: auto !important;
-}
-#g-footer >.g-container {
   width: 100vw;
   margin-top: auto !important;
 }
