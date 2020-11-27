@@ -37,7 +37,6 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 	public function __construct(&$subject, $config = array()) {
 		parent::__construct($subject, $config);
-		$this->signer_type = $this->getParam('signer_type', 'student');
 	}
 
 	/**
@@ -88,6 +87,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
+		$jinput = JFactory::getApplication()->input;
 
 		// Run ___ table/column analysis.
 		$s_queries = [];
@@ -112,7 +112,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 				if ($this->signer_type === 'student') {
 					$query->where($db->quoteName('fnum').' = '.$db->quote(JFactory::getSession()->get('emundusUser')->fnum));
 				} else {
-					$query->where($db->quoteName('user_id').' = '.$db->quote(JFactory::getUser()->id));
+					$query->where($db->quoteName('user_id').' = '.JFactory::getUser()->id);
 				}
 
 				$db->setQuery($query);
@@ -120,7 +120,14 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 				try {
 					$signer_value = array_merge($signer_value, $db->loadRow());
 				} catch (Exception $e) {
-					return false;
+
+					// This backup solution gets the value in the INPUT, in case all else fails.
+					if (count($columns) === 1 && !empty($jinput->getRaw($table.'___'.$columns[0]))) {
+						$signer_value[] = $jinput->getRaw($table.'___'.$columns[0]);
+					} else {
+						return false;
+					}
+
 				}
 			}
 		}
@@ -135,12 +142,14 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 	 * @throws Exception
 	 */
 	public function onAfterProcess() : void {
-		
+
 		// Attach logging system.
 		jimport('joomla.log.log');
 		JLog::addLogger(['text_file' => 'com_emundus.yousign.php'], JLog::ALL, array('com_emundus.yousign'));
 
 		include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+
+		$this->signer_type = $this->getParam('signer_type', 'student');
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$application = JFactory::getApplication();
@@ -152,6 +161,33 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 		// Only batch signing of a single doc generated based on a single file will work.
 		// However, in the case of expert invitations, multiple files_requests will be generated and updated for the signature requests.
 		$fnum = $jinput->get->get('rowid');
+
+		$key_id = $jinput->get('jos_emundus_files_request___keyid');
+		if ($this->signer_type === 'other_user' && !empty($key_id)) {
+
+			// Files_requests uses fnum field but in the case of expert invitations there can be multiple fnums.
+			// This means we hace to use the expert invite procedure for getting the array of fnums by keyid and picked files.
+			$files_picked = $jinput->get('jos_emundus_files_request___your_files');
+			$query->clear()
+				->select($db->quoteName('fnum'))
+				->from($db->quoteName('#__emundus_files_request'))
+				->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id));
+			$db->setQuery($query);
+			$fnums = $db->loadColumn();
+
+			// This means that if the re is nothing in the your_files element we will get all fnums for the keyid.
+			if (!empty($files_picked)) {
+				// Only get fnums that are found in BOTH arrays, this both allows filtering (only accept files which were picked by the user) and prevents the user from cheating and entering someone else's fnum.
+				$fnums = array_intersect($fnums, $files_picked);
+			}
+
+			// Signular fnum is used for getting meta information such as campaign ID and such.
+			$fnum = $fnums[0];
+
+
+		} else {
+			$fnums = [$fnum];
+		}
 
 		$signer_names = explode(',', $this->getParam('signer_name'));
 		$signer_emails = explode(',', $this->getParam('signer_email'));
@@ -308,6 +344,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 			$file_id = $response->body->id;
 			JLog::add('File uploaded to YouSign -> ID: '.$response->body->id, JLog::INFO, 'com_emundus.yousign');
 		} else {
+			JLog::add('ERROR : ('.$response->code.') '.json_decode($response->body)->detail, JLog::ERROR, 'com_emundus.yousign');
 			throw new Exception('ERROR '.$response->code.' FROM YOUSIGN.');
 		}
 
@@ -334,7 +371,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 			$fileObject = new stdClass();
 			$fileObject->file = $file_id;
-			$fileObject->page = $this->getParam('signature_page', '1');
+			$fileObject->page = (int)$this->getParam('signature_page', 1);
 			$fileObject->position = $this->getParam('signature_position', '230,499,464,589');
 			$fileObject->mention = ''; // TODO: Handle mention ?
 
@@ -363,28 +400,6 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 						continue 2;
 					}
 				}
-			}
-
-			$key_id = $jinput->get->get('keyid');
-			if ($this->signer_type === 'other_user' && !empty($key_id)) {
-
-				// Files_requests uses fnum field but in the case of expert invitations there can be multiple fnums.
-				// This means we hace to use the expert invite procedure for getting the array of fnums by keyid and picked files.
-				$files_picked = $jinput->get('jos_emundus_files_request___your_files');
-				$query->clear()
-					->select($db->quoteName('fnum'))
-					->from($db->quoteName('#__emundus_files_request'))
-					->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id));
-				$db->setQuery($query);
-				$fnums = $db->loadColumn();
-
-				// This means that if the re is nothing in the your_files element we will get all fnums for the keyid.
-				if (!empty($files_picked)) {
-					// Only get fnums that are found in BOTH arrays, this both allows filtering (only accept files which were picked by the user) and prevents the user from cheating and entering someone else's fnum.
-					$fnums = array_intersect($fnums, $files_picked);
-				}
-			} else {
-				$fnums = [$fnum];
 			}
 
 			// Save procedure to file_requests, used for keeping track of requested/signed procedures.
@@ -452,8 +467,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 			}
 
 		} else {
-			// TODO: Log errors.
-			echo '<pre>'; var_dump($response); echo '</pre>'; die;
+			JLog::add('Error from API: ('.$response->code.')  '.json_decode($response->body)->detail, JLog::ERROR, 'com_emundus.yousign');
 			throw new Exception('ERROR '.$response->code.' FROM YOUSIGN.');
 		}
 	}
