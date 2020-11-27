@@ -491,6 +491,10 @@ footer#g-footer img {
   width: 100vw;
   margin-top: auto !important;
 }
+#g-footer >.g-container {
+  width: 100vw;
+  margin-top: auto !important;
+}
 
 footer#g-footer>.g-container {
   width: 95%;
@@ -2862,7 +2866,7 @@ footer#g-footer .g-grid {
 
 @media all and (min-width: 480px) and (max-width: 767px)  {
 
-  .gantry.homepage h1::after {
+  .gantry h1::after {
     display: none !important;
   }
 
