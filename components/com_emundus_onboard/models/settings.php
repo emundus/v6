@@ -183,7 +183,7 @@ class EmundusonboardModelsettings extends JModelList {
         $query->clear()
             ->select('COUNT(*)')
             ->from($db->quoteName('#__emundus_setup_status'))
-            ->where($db->quoteName('value') . ' LIKE ' . $db->quote('Nouveau statut'));
+            ->where($db->quoteName('value') . ' LIKE ' . $db->quote('Nouveau statut%'));
         $db->setQuery($query);
         $existing = $db->loadResult();
         if($existing > 0) {

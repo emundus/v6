@@ -1871,7 +1871,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $dbtype = 'DATETIME';
             }
 
-            if($db_element->plugin == 'display' && $db_element->default_text != ''){
+            if($db_element->plugin == 'display' && $element['plugin'] != 'display'){
                 $element['default'] = '';
             }
 
@@ -3030,6 +3030,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             $query->clear()
                 ->update($db->quoteName('#__fabrik_groups'))
+                ->set($db->quoteName('is_join') . ' = ' . $db->quote(1))
                 ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
