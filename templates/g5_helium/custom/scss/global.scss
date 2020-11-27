@@ -2079,6 +2079,10 @@ ul.unstyled.em-linkForgot li a {
 
 /************************ GESTIONNAIRE - COORDINATOR *********************/
 
+.files-board a:hover, .files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
+  background: $base-secondary-color !important;
+}
+
 .edit-comment-container button.edit-comment  {
   color: white;
   background: $base-primary-color;
