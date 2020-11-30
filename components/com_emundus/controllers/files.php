@@ -1782,9 +1782,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_campaign = new EmundusModelCampaign();
         $h_menu = new EmundusHelperMenu();
 
-        $jinput     = JFactory::getApplication()->input;
-        $code    = $jinput->getVar('code', null);
-        $camp    = $jinput->getVar('camp', null);
+        $jinput = JFactory::getApplication()->input;
+        $code = $jinput->getVar('code', null);
+        $camp = $jinput->getVar('camp', null);
 
 
         $code = explode(',', $code);
@@ -1793,22 +1793,26 @@ class EmundusControllerFiles extends JControllerLegacy
         $profile = $m_profile->getProfileIDByCourse($code, $camp);
         $pages = $h_menu->buildMenuQuery((int)$profile[0]);
 
-        if($camp[0] != 0)
-            $campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
-        else
-            $campaign = $m_campaign->getCampaignsByCourse($code[0]);
+        if ($camp[0] != 0) {
+        	$campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
+        } else {
+        	$campaign = $m_campaign->getCampaignsByCourse($code[0]);
+        }
 
 
         $html1 = '';
         $html2 = '';
 
         for ($i = 0; $i < count($pages); $i++) {
+            $title = explode('-', $pages[$i]->label); 
+            $title = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
+
             if ($i < count($pages)/2)
-                $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($pages[$i]->label).'</label><br/>';
+                $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($title).'</label><br/>';
             else
-                $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($pages[$i]->label).'</label><br/>';
+                $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($title).'</label><br/>';
         }
-        //var_dump($camp[0]);
+
         $html = '<div class="panel panel-default pdform">
                     <div class="panel-heading">
                         <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].$camp[0]."'".')">
