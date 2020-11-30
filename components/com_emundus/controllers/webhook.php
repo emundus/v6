@@ -29,7 +29,10 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 		$this->m_files = new EmundusModelFiles;
 
-		JLog::addLogger(['text_file' => 'com_emundus.webhook.php'], JLog::ALL, array('com_emundus.webhook'));
+		// Attach logging system.
+		jimport('joomla.log.log');
+		JLog::addLogger(['text_file' => 'com_emundus.webhook.info.php'], JLog::INFO, array('com_emundus.webhook'));
+		JLog::addLogger(['text_file' => 'com_emundus.webhook.error.php'], JLog::ERROR, array('com_emundus.webhook'));
 
 		parent::__construct($config);
 	}
@@ -42,15 +45,20 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 		$app = JFactory::getApplication();
 		$jinput = $app->input;
+		$eventName = $jinput->post->getString('eventName');
+
+		JLog::add('YouSign event : '.$eventName, JLog::INFO, 'com_emundus.webhook');
 
 		// 'procedure.finished' runs when all signatures are done and blissful harmony is restored to the universe.
-		if ($jinput->post->getString('eventName') === 'procedure.finished') {
+		if ($eventName === 'procedure.finished') {
 
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 			$eMConfig = JComponentHelper::getParams('com_emundus');
 
 			$procedure = $jinput->post->get('procedure');
+
+			JLog::add('YouSign procedure : '.print_r($eventName, true), JLog::INFO, 'com_emundus.webhook');
 
 			// Now that the procedure is signed, we can remove the member ID used for loading the iFrame.
 			foreach ($procedure->members as $member) {
@@ -60,6 +68,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 			$files = [];
 			foreach ($procedure->files as $file) {
 				$files[] = $file->id;
+				JLog::add('YouSign procedure file : '.$file->id, JLog::INFO, 'com_emundus.webhook');
 			}
 
 			// Set all of the file requests as uploaded.
@@ -172,45 +181,45 @@ class EmundusControllerWebhook extends JControllerLegacy {
 			$payload = $_POST["payload"];
 
 			//the data is JSON encoded, so we must decode it in an associative array
-	        $webhookData = json_decode($payload, true);
-	        $webhookDataApplication = json_decode($webhookData["data"]["payload"], true);
+			$webhookData = json_decode($payload, true);
+			$webhookDataApplication = json_decode($webhookData["data"]["payload"], true);
 
-	        $vidName = $webhookData["data"]["videoName"].'.'.$webhookData["data"]["type"];
+			$vidName = $webhookData["data"]["videoName"].'.'.$webhookData["data"]["type"];
 
-	        //you can get the webhook type by accessing the event element in the array
-	        //$type = $webhookData["event"];
+			//you can get the webhook type by accessing the event element in the array
+			//$type = $webhookData["event"];
 
-	        if (empty($webhookDataApplication["userId"])) {
-	        	$error = JUri::getInstance().' APPLICANT_ID is NULL';
-                JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
+			if (empty($webhookDataApplication["userId"])) {
+				$error = JUri::getInstance().' APPLICANT_ID is NULL';
+				JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
 
-                return false;
-	        }
+				return false;
+			}
 
 			//move video from ftp to applicant documents
 			if (!file_exists(EMUNDUS_PATH_ABS.$webhookDataApplication["userId"])) {
-	            // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
-	            if (!file_exists(EMUNDUS_PATH_ABS.'index.html')) {
-	            	touch(EMUNDUS_PATH_ABS.'index.html');
-	            }
+				// An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
+				if (!file_exists(EMUNDUS_PATH_ABS.'index.html')) {
+					touch(EMUNDUS_PATH_ABS.'index.html');
+				}
 
-	            if (!mkdir(EMUNDUS_PATH_ABS.$webhookDataApplication["userId"]) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.'index.html')){
-	                $error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> Unable to create user file';
-	                JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
+				if (!mkdir(EMUNDUS_PATH_ABS.$webhookDataApplication["userId"]) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.'index.html')){
+					$error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> Unable to create user file';
+					JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
 
-	                return false;
-	            }
-	        }
-	        chmod(EMUNDUS_PATH_ABS.$webhookDataApplication["userId"], 0755);
+					return false;
+				}
+			}
+			chmod(EMUNDUS_PATH_ABS.$webhookDataApplication["userId"], 0755);
 
-	        if (!file_exists($ftp_path.DS.$vidName)) {
-	        	$error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> File not found: '.$ftp_path.DS.$vidName;
-                JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
+			if (!file_exists($ftp_path.DS.$vidName)) {
+				$error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> File not found: '.$ftp_path.DS.$vidName;
+				JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
 
-                return false;
-	        }
+				return false;
+			}
 
-	        if (!copy($ftp_path.DS.$vidName, EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.$vidName)) {
+			if (!copy($ftp_path.DS.$vidName, EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.$vidName)) {
 
                 $error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> Cannot move file: '.$ftp_path.DS.$vidName.' to '.EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.$vidName;
                 JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
@@ -237,12 +246,12 @@ class EmundusControllerWebhook extends JControllerLegacy {
 			JLog::add('Unable to handle addpipe webhook: '.$payload, JLog::ERROR, 'com_emundus.webhook');
 			return false;
 		}
-		
+
 		//log webhook
 		JLog::add('Webhook START: '.$webhookDataApplication["aid"].' :: '.$webhookDataApplication["userId"].' :: '.$webhookDataApplication["fnum"].' :: '.$webhookDataApplication["jobId"].' :: '.$vidName.' :: '.$payload, JLog::WARNING, 'com_emundus.webhook');
 		return true;
 	}
-	
+
 
 	/**
 	* Converts bytes into human readable file size.
