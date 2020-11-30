@@ -248,7 +248,7 @@ ul {
 }
 
 .modal-header {
-  background: #4E5B6D;
+  background: #fff;
   padding: 10px 20px;
   border-bottom: 1px solid #eee;
   min-height: 90px;
@@ -1378,6 +1378,17 @@ button.close {
   color: #fff;
 }
 
+.modal-body .panel-heading button.btn.btn-info.btn-xs {
+  background: $base-secondary-color;
+  color: #fff;
+}
+
+.modal-body .panel-heading .btn-xs.btn.btn-elements-success {
+  background-color: $base-primary-color !important;
+  color: #fff;
+}
+
+
 .btn-warning.active.focus,
 .btn-warning.active:focus,
 .btn-warning.active:hover,
@@ -2079,7 +2090,7 @@ ul.unstyled.em-linkForgot li a {
 
 /************************ GESTIONNAIRE - COORDINATOR *********************/
 
-.files-board a:hover, .files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
+.files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
   background: $base-secondary-color !important;
 }
 
