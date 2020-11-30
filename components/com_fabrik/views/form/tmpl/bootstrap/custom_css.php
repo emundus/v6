@@ -1291,14 +1291,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
   position: absolute;
-  top: -10px;
-  right: 10px;
-  display: flex;
-}
-
-.fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
-  position: absolute;
-  top: -10px;
+  top: -5px;
   right: 10px;
   display: flex;
 }
