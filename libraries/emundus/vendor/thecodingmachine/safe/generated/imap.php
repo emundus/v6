@@ -181,6 +181,154 @@ function imap_deletemailbox($imap_stream, string $mailbox): void
 
 
 /**
+ * Fetches all the structured information for a given message.
+ *
+ * @param resource $imap_stream An IMAP stream returned by
+ * imap_open.
+ * @param int $msg_number The message number
+ * @param int $options This optional parameter only has a single option,
+ * FT_UID, which tells the function to treat the
+ * msg_number argument as a
+ * UID.
+ * @return \stdClass Returns an object with properties listed in the table below.
+ *
+ *
+ *
+ * Returned Object for imap_fetchstructure
+ *
+ *
+ *
+ *
+ * type
+ * Primary body type
+ *
+ *
+ * encoding
+ * Body transfer encoding
+ *
+ *
+ * ifsubtype
+ * TRUE if there is a subtype string
+ *
+ *
+ * subtype
+ * MIME subtype
+ *
+ *
+ * ifdescription
+ * TRUE if there is a description string
+ *
+ *
+ * description
+ * Content description string
+ *
+ *
+ * ifid
+ * TRUE if there is an identification string
+ *
+ *
+ * id
+ * Identification string
+ *
+ *
+ * lines
+ * Number of lines
+ *
+ *
+ * bytes
+ * Number of bytes
+ *
+ *
+ * ifdisposition
+ * TRUE if there is a disposition string
+ *
+ *
+ * disposition
+ * Disposition string
+ *
+ *
+ * ifdparameters
+ * TRUE if the dparameters array exists
+ *
+ *
+ * dparameters
+ * An array of objects where each object has an
+ * "attribute" and a "value"
+ * property corresponding to the parameters on the
+ * Content-disposition MIME
+ * header.
+ *
+ *
+ * ifparameters
+ * TRUE if the parameters array exists
+ *
+ *
+ * parameters
+ * An array of objects where each object has an
+ * "attribute" and a "value"
+ * property.
+ *
+ *
+ * parts
+ * An array of objects identical in structure to the top-level
+ * object, each of which corresponds to a MIME body
+ * part.
+ *
+ *
+ *
+ *
+ *
+ *
+ * Primary body type (value may vary with used library, use of constants is recommended)
+ *
+ *
+ * ValueTypeConstant
+ *
+ *
+ * 0textTYPETEXT
+ * 1multipartTYPEMULTIPART
+ * 2messageTYPEMESSAGE
+ * 3applicationTYPEAPPLICATION
+ * 4audioTYPEAUDIO
+ * 5imageTYPEIMAGE
+ * 6videoTYPEVIDEO
+ * 7modelTYPEMODEL
+ * 8otherTYPEOTHER
+ *
+ *
+ *
+ *
+ *
+ * Transfer encodings (value may vary with used library, use of constants is recommended)
+ *
+ *
+ * ValueTypeConstant
+ *
+ *
+ * 07bitENC7BIT
+ * 18bitENC8BIT
+ * 2BinaryENCBINARY
+ * 3Base64ENCBASE64
+ * 4Quoted-PrintableENCQUOTEDPRINTABLE
+ * 5otherENCOTHER
+ *
+ *
+ *
+ * @throws ImapException
+ *
+ */
+function imap_fetchstructure($imap_stream, int $msg_number, int $options = 0): \stdClass
+{
+    error_clear_last();
+    $result = \imap_fetchstructure($imap_stream, $msg_number, $options);
+    if ($result === false) {
+        throw ImapException::createFromPhpError();
+    }
+    return $result;
+}
+
+
+/**
  * Purges the cache of entries of a specific type.
  *
  * @param resource $imap_stream An IMAP stream returned by
@@ -423,6 +571,124 @@ function imap_headerinfo($imap_stream, int $msg_number, int $fromlength = 0, int
 {
     error_clear_last();
     $result = \imap_headerinfo($imap_stream, $msg_number, $fromlength, $subjectlength, $defaulthost);
+    if ($result === false) {
+        throw ImapException::createFromPhpError();
+    }
+    return $result;
+}
+
+
+/**
+ * Create a MIME message based on the given envelope
+ * and body sections.
+ *
+ * @param array $envelope An associative array of header fields. Valid keys are: "remail",
+ * "return_path", "date", "from", "reply_to", "in_reply_to", "subject",
+ * "to", "cc", "bcc" and "message_id", which set the respective message headers to the given string.
+ * To set additional headers, the key "custom_headers" is supported, which expects
+ * an array of those headers, e.g. ["User-Agent: My Mail Client"].
+ * @param array $body An indexed array of bodies. The first body is the main body of the message;
+ * only if it has a type of TYPEMULTIPART, further bodies
+ * are processed; these bodies constitute the bodies of the parts.
+ *
+ *
+ * Body Array Structure
+ *
+ *
+ *
+ * Key
+ * Type
+ * Description
+ *
+ *
+ *
+ *
+ * type
+ * int
+ *
+ * The MIME type.
+ * One of TYPETEXT (default), TYPEMULTIPART,
+ * TYPEMESSAGE, TYPEAPPLICATION,
+ * TYPEAUDIO, TYPEIMAGE,
+ * TYPEMODEL or TYPEOTHER.
+ *
+ *
+ *
+ * encoding
+ * int
+ *
+ * The Content-Transfer-Encoding.
+ * One of ENC7BIT (default), ENC8BIT,
+ * ENCBINARY, ENCBASE64,
+ * ENCQUOTEDPRINTABLE or ENCOTHER.
+ *
+ *
+ *
+ * charset
+ * string
+ * The charset parameter of the MIME type.
+ *
+ *
+ * type.parameters
+ * array
+ * An associative array of Content-Type parameter names and their values.
+ *
+ *
+ * subtype
+ * string
+ * The MIME subtype, e.g. 'jpeg' for TYPEIMAGE.
+ *
+ *
+ * id
+ * string
+ * The Content-ID.
+ *
+ *
+ * description
+ * string
+ * The Content-Description.
+ *
+ *
+ * disposition.type
+ * string
+ * The Content-Disposition, e.g. 'attachment'.
+ *
+ *
+ * disposition
+ * array
+ * An associative array of Content-Disposition parameter names and values.
+ *
+ *
+ * contents.data
+ * string
+ * The payload.
+ *
+ *
+ * lines
+ * int
+ * The size of the payload in lines.
+ *
+ *
+ * bytes
+ * int
+ * The size of the payload in bytes.
+ *
+ *
+ * md5
+ * string
+ * The MD5 checksum of the payload.
+ *
+ *
+ *
+ *
+ * @return string Returns the MIME message as string.
+ * @throws ImapException
+ *
+ */
+function imap_mail_compose(array $envelope, array $body): string
+{
+    error_clear_last();
+    $result = \imap_mail_compose($envelope, $body);
     if ($result === false) {
         throw ImapException::createFromPhpError();
     }
@@ -990,6 +1256,83 @@ function imap_setflag_full($imap_stream, string $sequence, string $flag, int $op
     if ($result === false) {
         throw ImapException::createFromPhpError();
     }
+}
+
+
+/**
+ * Gets and sorts message numbers by the given parameters.
+ *
+ * @param resource $imap_stream An IMAP stream returned by
+ * imap_open.
+ * @param int $criteria Criteria can be one (and only one) of the following:
+ *
+ *
+ *
+ * SORTDATE - message Date
+ *
+ *
+ *
+ *
+ * SORTARRIVAL - arrival date
+ *
+ *
+ *
+ *
+ * SORTFROM - mailbox in first From address
+ *
+ *
+ *
+ *
+ * SORTSUBJECT - message subject
+ *
+ *
+ *
+ *
+ * SORTTO - mailbox in first To address
+ *
+ *
+ *
+ *
+ * SORTCC - mailbox in first cc address
+ *
+ *
+ *
+ *
+ * SORTSIZE - size of message in octets
+ *
+ *
+ *
+ * @param int $reverse Set this to 1 for reverse sorting
+ * @param int $options The options are a bitmask of one or more of the
+ * following:
+ *
+ *
+ *
+ * SE_UID - Return UIDs instead of sequence numbers
+ *
+ *
+ *
+ *
+ * SE_NOPREFETCH - Don't prefetch searched messages
+ *
+ *
+ *
+ * @param string $search_criteria IMAP2-format search criteria string. For details see
+ * imap_search.
+ * @param string $charset MIME character set to use when sorting strings.
+ * @return array Returns an array of message numbers sorted by the given
+ * parameters.
+ * @throws ImapException
+ *
+ */
+function imap_sort($imap_stream, int $criteria, int $reverse, int $options = 0, string $search_criteria = null, string $charset = null): array
+{
+    error_clear_last();
+    $result = \imap_sort($imap_stream, $criteria, $reverse, $options, $search_criteria, $charset);
+    if ($result === false) {
+        throw ImapException::createFromPhpError();
+    }
+    return $result;
 }
 
 

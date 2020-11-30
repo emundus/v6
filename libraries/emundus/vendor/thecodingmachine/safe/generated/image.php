@@ -405,8 +405,8 @@ function imagecolordeallocate($image, int $color): void
 /**
  * Makes the colors of the palette version of an image more closely match the true color version.
  *
- * @param resource $image1 A truecolor image link resource.
- * @param resource $image2 A palette image link resource pointing to an image that has the same
+ * @param resource $image1 A truecolor image resource.
+ * @param resource $image2 A palette image resource pointing to an image that has the same
  * size as image1.
  * @throws ImageException
  *
@@ -452,8 +452,8 @@ function imageconvolution($image, array $matrix, float $div, float $offset): voi
  * onto the x,y coordinates, dst_x and
  * dst_y.
  *
- * @param resource $dst_im Destination image link resource.
- * @param resource $src_im Source image link resource.
+ * @param resource $dst_im Destination image resource.
+ * @param resource $src_im Source image resource.
  * @param int $dst_x x-coordinate of destination point.
  * @param int $dst_y y-coordinate of destination point.
  * @param int $src_x x-coordinate of source point.
@@ -482,8 +482,8 @@ function imagecopy($dst_im, $src_im, int $dst_x, int $dst_y, int $src_x, int $sr
  * onto the x,y coordinates, dst_x and
  * dst_y.
  *
- * @param resource $dst_im Destination image link resource.
- * @param resource $src_im Source image link resource.
+ * @param resource $dst_im Destination image resource.
+ * @param resource $src_im Source image resource.
  * @param int $dst_x x-coordinate of destination point.
  * @param int $dst_y y-coordinate of destination point.
  * @param int $src_x x-coordinate of source point.
@@ -522,8 +522,8 @@ function imagecopymerge($dst_im, $src_im, int $dst_x, int $dst_y, int $src_x, in
  * that when merging it preserves the hue of the source by converting
  * the destination pixels to gray scale before the copy operation.
  *
- * @param resource $dst_im Destination image link resource.
- * @param resource $src_im Source image link resource.
+ * @param resource $dst_im Destination image resource.
+ * @param resource $src_im Source image resource.
  * @param int $dst_x x-coordinate of destination point.
  * @param int $dst_y y-coordinate of destination point.
  * @param int $src_x x-coordinate of source point.
@@ -571,8 +571,8 @@ function imagecopymergegray($dst_im, $src_im, int $dst_x, int $dst_y, int $src_x
  * src_image) but if the regions overlap the
  * results will be unpredictable.
  *
- * @param resource $dst_image Destination image link resource.
- * @param resource $src_image Source image link resource.
+ * @param resource $dst_image Destination image resource.
+ * @param resource $src_image Source image resource.
  * @param int $dst_x x-coordinate of destination point.
  * @param int $dst_y y-coordinate of destination point.
  * @param int $src_x x-coordinate of source point.
@@ -616,8 +616,8 @@ function imagecopyresampled($dst_image, $src_image, int $dst_x, int $dst_y, int 
  * src_image) but if the regions overlap the
  * results will be unpredictable.
  *
- * @param resource $dst_image Destination image link resource.
- * @param resource $src_image Source image link resource.
+ * @param resource $dst_image Destination image resource.
+ * @param resource $src_image Source image resource.
  * @param int $dst_x x-coordinate of destination point.
  * @param int $dst_y y-coordinate of destination point.
  * @param int $src_x x-coordinate of source point.
@@ -1868,92 +1868,6 @@ function imagepolygon($image, array $points, int $num_points, int $color): void
 
 
 /**
- * Loads a character encoding vector from a file and changes the fonts
- * encoding vector to it. As a PostScript fonts default vector lacks most of
- * the character positions above 127, you'll definitely want to change this
- * if you use a language other than English.
- *
- * If you find yourself using this function all the time, a much
- * better way to define the encoding is to set ps.default_encoding in
- * the configuration file
- * to point to the right encoding file and all fonts you load will
- * automatically have the right encoding.
- *
- * @param resource $font_index A font resource, returned by imagepsloadfont.
- * @param string $encodingfile The exact format of this file is described in T1libs documentation.
- * T1lib comes with two ready-to-use files,
- * IsoLatin1.enc and
- * IsoLatin2.enc.
- * @throws ImageException
- *
- */
-function imagepsencodefont($font_index, string $encodingfile): void
-{
-    error_clear_last();
-    $result = \imagepsencodefont($font_index, $encodingfile);
-    if ($result === false) {
-        throw ImageException::createFromPhpError();
-    }
-}
-
-
-/**
- * Extend or condense a font (font_index), if
- * the value of the extend parameter is less
- * than one you will be condensing the font.
- *
- * @param resource $font_index A font resource, returned by imagepsloadfont.
- * @param float $extend Extension value, must be greater than 0.
- * @throws ImageException
- *
- */
-function imagepsextendfont($font_index, float $extend): void
-{
-    error_clear_last();
-    $result = \imagepsextendfont($font_index, $extend);
-    if ($result === false) {
-        throw ImageException::createFromPhpError();
-    }
-}
-
-
-/**
- * imagepsfreefont frees memory used by a PostScript
- * Type 1 font.
- *
- * @param resource $font_index A font resource, returned by imagepsloadfont.
- * @throws ImageException
- *
- */
-function imagepsfreefont($font_index): void
-{
-    error_clear_last();
-    $result = \imagepsfreefont($font_index);
-    if ($result === false) {
-        throw ImageException::createFromPhpError();
-    }
-}
-
-
-/**
- * Slant a given font.
- *
- * @param resource $font_index A font resource, returned by imagepsloadfont.
- * @param float $slant Slant level.
- * @throws ImageException
- *
- */
-function imagepsslantfont($font_index, float $slant): void
-{
-    error_clear_last();
-    $result = \imagepsslantfont($font_index, $slant);
-    if ($result === false) {
-        throw ImageException::createFromPhpError();
-    }
-}
-
-
-/**
  * imagerectangle creates a rectangle starting at
  * the specified coordinates.
  *
@@ -1990,15 +1904,15 @@ function imagerectangle($image, int $x1, int $y1, int $x2, int $y2, int $color):
  * @param float $angle Rotation angle, in degrees. The rotation angle is interpreted as the
  * number of degrees to rotate the image anticlockwise.
  * @param int $bgd_color Specifies the color of the uncovered zone after the rotation
- * @param int $ignore_transparent If set and non-zero, transparent colors are ignored (otherwise kept).
+ * @param int $dummy This parameter is unused.
  * @return resource Returns an image resource for the rotated image.
  * @throws ImageException
  *
  */
-function imagerotate($image, float $angle, int $bgd_color, int $ignore_transparent = 0)
+function imagerotate($image, float $angle, int $bgd_color, int $dummy = 0)
 {
     error_clear_last();
-    $result = \imagerotate($image, $angle, $bgd_color, $ignore_transparent);
+    $result = \imagerotate($image, $angle, $bgd_color, $dummy);
     if ($result === false) {
         throw ImageException::createFromPhpError();
     }
@@ -2039,9 +1953,6 @@ function imagesavealpha($image, bool $saveflag): void
  * @param int $new_width The width to scale the image to.
  * @param int $new_height The height to scale the image to. If omitted or negative, the aspect
  * ratio will be preserved.
- *
- * You should always provide the height if using PHP 5.5.18 or earlier, or
- * PHP 5.6.2 or earlier, as the aspect ratio calculation was incorrect.
  * @param int $mode One of IMG_NEAREST_NEIGHBOUR,
  * IMG_BILINEAR_FIXED,
  * IMG_BICUBIC,
@@ -2681,7 +2592,7 @@ function imagewebp($image, $to = null, int $quality = 80): void
  *
  * @param resource $image An image resource, returned by one of the image creation functions,
  * such as imagecreatetruecolor.
- * @param string|null $filename The path to save the file to. If not set or NULL, the raw image stream will be outputted directly.
+ * @param string|null $filename The path to save the file to, given as string. If NULL, the raw image stream will be output directly.
  *
  * The filename (without the .xbm extension) is also
  * used for the C identifiers of the XBM, whereby non
@@ -2695,7 +2606,7 @@ function imagewebp($image, $to = null, int $quality = 80): void
  * @throws ImageException
  *
  */
-function imagexbm($image, ?string $filename = null, int $foreground = null): void
+function imagexbm($image, ?string $filename, int $foreground = null): void
 {
     error_clear_last();
     if ($foreground !== null) {

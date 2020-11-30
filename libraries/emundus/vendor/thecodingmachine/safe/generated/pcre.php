@@ -97,7 +97,7 @@ use Safe\Exceptions\PcreException;
  *
  *
  * If this flag is passed, for every occurring match the appendant string
- * offset will also be returned. Note that this changes the value of
+ * offset (in bytes) will also be returned. Note that this changes the value of
  * matches into an array of arrays where every element is an
  * array consisting of the matched string at offset 0
  * and its string offset into subject at offset
@@ -233,7 +233,7 @@ use Safe\Exceptions\PcreException;
  * The above example will output:
  *
  * If this flag is passed, for every occurring match the appendant string
- * offset will also be returned. Note that this changes the value of
+ * offset (in bytes) will also be returned. Note that this changes the value of
  * matches into an array of arrays where every element is an
  * array consisting of the matched string at offset 0
  * and its string offset into subject at offset
@@ -602,9 +602,7 @@ function preg_match(string $pattern, string $subject, array &$matches = null, in
  * @param string $subject The input string.
  * @param int|null $limit If specified, then only substrings up to limit
  * are returned with the rest of the string being placed in the last
- * substring.  A limit of -1 or 0 means "no limit"
- * and, as is standard across PHP, you can use NULL to skip to the
- * flags parameter.
+ * substring.  A limit of -1 or 0 means "no limit".
  * @param int $flags flags can be any combination of the following
  * flags (combined with the | bitwise operator):
  *

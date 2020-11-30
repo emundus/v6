@@ -4,7 +4,7 @@
 [![License](https://poser.pugx.org/thecodingmachine/safe/license.svg)](https://packagist.org/packages/thecodingmachine/safe)
 [![Build Status](https://travis-ci.org/thecodingmachine/safe.svg?branch=master)](https://travis-ci.org/thecodingmachine/safe)
 [![Continuous Integration](https://github.com/thecodingmachine/safe/workflows/Continuous%20Integration/badge.svg)](https://github.com/thecodingmachine/safe/actions)
-[![Coverage Status](https://coveralls.io/repos/thecodingmachine/safe/badge.svg?branch=master&service=github)](https://coveralls.io/github/thecodingmachine/safe?branch=master)
+[![codecov](https://codecov.io/gh/thecodingmachine/safe/branch/master/graph/badge.svg)](https://codecov.io/gh/thecodingmachine/safe)
 
 Safe PHP
 ========
@@ -123,7 +123,7 @@ to install `rector/rector`.
 Run
 
 ```bash
-vendor/bin/rector process src/ --config vendor/thecodingmachine/safe/rector-migrate-0.7.yml
+vendor/bin/rector process src/ --config vendor/thecodingmachine/safe/rector-migrate-0.7.php
 ```
 
 to run `rector/rector`.
