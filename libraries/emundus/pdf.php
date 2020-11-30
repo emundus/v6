@@ -444,7 +444,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
         } elseif ($letter['template_type'] == 3) { // Template file .docx
 
-            require_once JPATH_LIBRARIES . DS . 'vendor' . DS . 'autoload.php';
+	        require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'vendor'.DS.'autoload.php');
             $tags = $m_emails->setTagsWord($user_id, $post, $fnum);
 
             $file_path = explode(DS, $letter['file']);
