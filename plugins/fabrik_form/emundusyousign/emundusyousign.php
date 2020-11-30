@@ -355,7 +355,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 		// Set the webhook up to
 		$webhook = new stdClass();
-		$webhook->url = urlencode(JUri::base().'index.php?option=com_emundus&controller=webhook&task=yousign&format=raw&token='.JFactory::getConfig()->get('secret'));
+		$webhook->url = JUri::base().'index.php?option=com_emundus&controller=webhook&task=yousign&format=raw&token='.JFactory::getConfig()->get('secret');
 		$webhook->method = 'POST';
 
 		$procedure->config->webhook->{'procedure.finished'}[] = $webhook;
