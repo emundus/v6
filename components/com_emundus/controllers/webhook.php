@@ -31,8 +31,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 		// Attach logging system.
 		jimport('joomla.log.log');
-		JLog::addLogger(['text_file' => 'com_emundus.webhook.info.php'], JLog::INFO, array('com_emundus.webhook'));
-		JLog::addLogger(['text_file' => 'com_emundus.webhook.error.php'], JLog::ERROR, array('com_emundus.webhook'));
+		JLog::addLogger(['text_file' => 'com_emundus.webhook.php'], JLog::ALL, array('com_emundus.webhook'));
 
 		parent::__construct($config);
 	}
@@ -43,22 +42,26 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	 */
 	public function yousign() {
 
-		$app = JFactory::getApplication();
-		$jinput = $app->input;
-		$eventName = $jinput->post->getString('eventName');
+		// For some absolutely MAGICAL reason, webhook data does not appear in $_POST or $jinput->post
+		// It does appear however with file_get_contents('php://input'), so we're using that.
+		$post = json_decode(file_get_contents('php://input'));
+		if ($post === null) {
+			JLog::add('YouSign bad JSON : '.file_get_contents('php://input'), JLog::ERROR, 'com_emundus.webhook');
+			return;
+		}
 
-		JLog::add('YouSign event : '.$eventName, JLog::INFO, 'com_emundus.webhook');
+		JLog::add('Reveived WebHook : '.print_r(file_get_contents('php://input'), true), JLog::INFO, 'com_emundus.webhook');
 
 		// 'procedure.finished' runs when all signatures are done and blissful harmony is restored to the universe.
-		if ($eventName === 'procedure.finished') {
+		if ($post->eventName === 'procedure.finished') {
 
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 			$eMConfig = JComponentHelper::getParams('com_emundus');
 
-			$procedure = $jinput->post->get('procedure');
+			$procedure = $post->procedure;
 
-			JLog::add('YouSign procedure : '.print_r($eventName, true), JLog::INFO, 'com_emundus.webhook');
+			JLog::add('YouSign procedure : '.print_r($procedure, true), JLog::INFO, 'com_emundus.webhook');
 
 			// Now that the procedure is signed, we can remove the member ID used for loading the iFrame.
 			foreach ($procedure->members as $member) {
@@ -86,7 +89,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 			$query->clear()
 				->select([$db->quoteName('fr.fnum'), $db->quoteName('a.lbl'), $db->quoteName('fr.attachment_id')])
 				->from($db->quoteName('jos_emundus_files_request', 'fr'))
-				->leftJoin($db->quoteName('jos_emundus_setup_attachments', 'a').' ON '.$db->quoteName('fr.attachment_id').' = '.$db->quoteName('id'))
+				->leftJoin($db->quoteName('jos_emundus_setup_attachments', 'a').' ON '.$db->quoteName('fr.attachment_id').' = '.$db->quoteName('a.id'))
 				->where($db->quoteName('filename').' IN ("'.implode('","', $files).'")');
 			$db->setQuery($query);
 			try {
@@ -130,7 +133,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 						if (file_put_contents(EMUNDUS_PATH_ABS.$uid.DS.$fileName, $response->body) !== false) {
 
 							$success[] = $attachment->fnum;
-							$query->values(implode(',', [$uid, $attachment->fnum, (int)substr($attachment->fnum, 14, 7), $attachment->attachment_id, $attachment->lbl, 'YouSign signed document', '0', '0']));
+							$query->values(implode(',', [$uid, $db->quote($attachment->fnum), (int)substr($attachment->fnum, 14, 7), $attachment->attachment_id, $db->quote($attachment->lbl), $db->quote('YouSign signed document'), '0', '0']));
 
 						} else {
 							JLog::add('Error downloading file from YouSign -> RESPONSE ('.$response->code.') '.$response->body, JLog::ERROR, 'com_emundus.webhook');
@@ -333,7 +336,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	
 		    echo json_encode((object)(array('status' => false)));
 			exit();
-        }
+		}
 	}
 
 
