@@ -786,7 +786,7 @@ class EmundusonboardModelform extends JModelList {
 
                 // Create submittion page
                 $label = array(
-                    'fr' => 'Confirmation d\'envoi de dossier',
+                    'fr' => "Confirmation d'envoi de dossier",
                     'en' => 'Data & disclaimer confirmation'
                 );
                 $intro = array(
