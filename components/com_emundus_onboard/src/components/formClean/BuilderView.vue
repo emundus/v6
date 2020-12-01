@@ -521,7 +521,7 @@ export default {
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateelementlabelwithouttranslation",
@@ -650,7 +650,7 @@ export default {
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updategrouplabelwithouttranslation",
@@ -864,7 +864,7 @@ export default {
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepagelabelwithouttranslation",
@@ -928,7 +928,7 @@ export default {
           NewSubLabel: intros
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepageintrowithouttranslation",
