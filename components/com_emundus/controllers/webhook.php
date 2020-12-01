@@ -128,7 +128,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 					foreach ($attachments as $attachment) {
 
 						// Save the signed file into the users folder.
-						$fileName = $attachment->lbl.'_signed';
+						$fileName = $attachment->lbl.'_signed.pdf';
 						$uid = (int)substr($attachment->fnum, -7);
 						if (file_put_contents(EMUNDUS_PATH_ABS.$uid.DS.$fileName, $response->body) !== false) {
 
