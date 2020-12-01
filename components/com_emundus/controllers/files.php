@@ -1804,13 +1804,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $html2 = '';
 
         for ($i = 0; $i < count($pages); $i++) {
+            $title = explode('-', $pages[$i]->label); 
+            $title = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
 
-        	$title = explode('-', $pages[$i]->label);
-            if ($i < count($pages)/2) {
-            	$html1 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.(!empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]))).'</label><br/>';
-            } else {
-            	$html2 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.(!empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]))).'</label><br/>';
-            }
+            if ($i < count($pages)/2)
+                $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($title).'</label><br/>';
+            else
+                $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($title).'</label><br/>';
         }
 
         $html = '<div class="panel panel-default pdform">
