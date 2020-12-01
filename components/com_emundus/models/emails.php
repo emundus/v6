@@ -588,7 +588,7 @@ class EmundusModelEmails extends JModelList {
                             // is_numeric allows for the variable to be equal to 0, 0.0 or '0' (the empty function considers those to be null).
                             if (!empty($v) || is_numeric($v)) {
                                 $index = array_search(trim($v), $params->sub_options->sub_values);
-                                $val[$k] = $params->sub_options->sub_labels[$index];
+                                $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
                             } else {
                                 $val[$k] = '';
                             }

@@ -87,7 +87,6 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                         <th><?= JText::_('ATTACHMENT_FILENAME'); ?></th>
                                         <th><?= JText::_('ATTACHMENT_DATE'); ?></th>
                                         <th><?= JText::_('ATTACHMENT_DESCRIPTION'); ?></th>
-                                        <th><?= JText::_('CAMPAIGN'); ?></th>
                                         <th><?= JText::_('ACADEMIC_YEAR'); ?></th>
                                         <th><?= JText::_('VALIDATION_STATE'); ?></th>
                                     </tr>
@@ -140,7 +139,6 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                                         <th>' . JText::_('ATTACHMENT_FILENAME') . '</th>
                                                         <th>' . JText::_('ATTACHMENT_DATE') . '</th>
                                                         <th>' . JText::_('ATTACHMENT_DESCRIPTION') . '</th>
-                                                        <th>' . JText::_('CAMPAIGN') . '</th>
                                                         <th>' . JText::_('ACADEMIC_YEAR') . '</th>
                                                         <th>' . JText::_('VALIDATION_STATE') . '</th>
                                                     </tr>
@@ -190,7 +188,6 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
                                       <td>'.$label.'</td>
                                       <td>' . date('l, d F Y H:i', strtotime($attachment->timedate)) . '</td>
                                       <td>' . $attachment->description . '</td>
-                                      <td>' . $attachment->campaign_label . '</td>
                                       <td>' . $attachment->year . '</td>
                                       <td>' . $validation . '</td>
                                   </tr>';

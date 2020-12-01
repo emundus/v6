@@ -68,17 +68,21 @@ export default {
   created(){
     this.msg = '<p style="color: black">' + this.placeholderHelp + '</p>' +
             '<img src="' + this.path + 'placeholder.gif" />'
-    if(this.element.params.use_wysiwyg == '1'){
-      this.wysiwyg = true;
-    }
-    if(this.element.params['textarea-showmax'] == '1'){
-      this.showmax = true;
-    }
-    if(typeof this.element.params['height'] == "undefined"){
-      this.element.params['height'] = 6;
+    if(typeof this.element.params.height == "undefined"){
+      this.element.params.height = 6;
     }
     if(typeof this.element.params['textarea-maxlength'] == "undefined"){
       this.element.params['textarea-maxlength'] = 255;
+    }
+    if(typeof this.element.params.use_wysiwyg == "undefined"){
+      this.element.params.use_wysiwyg = 0;
+    } else if(this.element.params.use_wysiwyg == '1') {
+      this.wysiwyg = true;
+    }
+    if(typeof this.element.params['textarea-showmax'] == "undefined"){
+      this.element.params['textarea-showmax'] = 0;
+    } else if(this.element.params['textarea-showmax'] == '1'){
+      this.showmax = true;
     }
   },
   watch: {

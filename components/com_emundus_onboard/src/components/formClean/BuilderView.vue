@@ -87,7 +87,7 @@
                     <a @click="updateLabelGroup(group)" :title="Validate">
                       <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
                     </a>
-                    <a @click="enableRepatedGroup(group)" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon" :title="RepeatGroup">
+                    <a @click="enableRepatedGroup(group)" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon" :title="RepeatGroup" v-if="files == 0">
                       <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
                     </a>
                     <a @click="deleteAGroup(group,index_group)" style="margin-left: 1em;color: black" v-if="files == 0" :title="Delete">
@@ -521,7 +521,7 @@ export default {
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateelementlabelwithouttranslation",
@@ -650,7 +650,7 @@ export default {
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updategrouplabelwithouttranslation",
@@ -864,7 +864,7 @@ export default {
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepagelabelwithouttranslation",
@@ -928,7 +928,7 @@ export default {
           NewSubLabel: intros
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepageintrowithouttranslation",
