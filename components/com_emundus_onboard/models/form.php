@@ -126,7 +126,7 @@ class EmundusonboardModelform extends JModelList {
             $query
                 ->select('id')
                 ->from($db->quoteName('#__emundus_setup_profiles'))
-                ->where($db->quoteName('id') . ' > 1000')
+                ->where($db->quoteName('published') . ' = 1')
                 ->andWhere($db->quoteName('status') . ' = 1')
                 ->andWhere($db->quoteName('acl_aro_groups') . ' = ' . $db->quote(2));
             $db->setQuery($query);

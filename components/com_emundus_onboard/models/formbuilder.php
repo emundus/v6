@@ -43,6 +43,26 @@ class EmundusonboardModelformbuilder extends JModelList {
         }
     }
 
+    public function updateTranslation($key,$values){
+        $app = JFactory::getApplication();
+        $languages = JLanguageHelper::getLanguages();
+        foreach ($languages as $language) {
+            $app->setUserState('com_languages.overrides.filter.language', $language->lang_code);
+            $language_datas = array(
+                'language' => 'NULL',
+                'client' => 'NULL',
+                'key' => $key,
+                'override' => $values[$language->sef],
+                'file' => 'NULL',
+                'searchstring' => "",
+                'searchtype' => "value",
+                'id' => $key
+            );
+            $this->model_language->save($language_datas);
+            $this->copyFileToAdministration($language->lang_code);
+        }
+    }
+
     function getSpecialCharacters() {
         return array('=','&',',','#','_','*',';','!','?',':','+','$','\'',' ','£',')','(','@','%');
     }
@@ -692,39 +712,6 @@ class EmundusonboardModelformbuilder extends JModelList {
         return true;
     }
 
-    function updateFileTranslation($oldtext,$content,$pathfile,$newtext,$codelang) {
-        $matches = [];
-
-        // Prepare new text
-        $textWithoutTags = str_replace('\'', '', strip_tags($oldtext));
-        $newtext = str_replace(array("\n","\r"),'',$newtext);
-        $replacetext = $textWithoutTags . '=' . '"' . str_replace("\"",'',$newtext) . '"';
-        //
-
-        // Prepare text to find
-        $textTofind = $textWithoutTags . "=";
-        $textTofind = "/^" . $textTofind . ".*/mi";
-        //
-
-        // Search and replace
-        preg_match_all($textTofind, $content, $matches, PREG_SET_ORDER, 0);
-        $ContentToAdd = str_replace($matches[0][0], $replacetext, $content);
-        file_put_contents($pathfile, $ContentToAdd . PHP_EOL);
-        //
-
-        // Replace the administration file for developers
-        $this->copyFileToAdministration($codelang);
-        //
-
-        // Return false if translation not found in the file
-        if(empty($matches)){
-            return false;
-        }
-        //
-
-        return true;
-    }
-
     function deleteTranslation($text) {
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_file_fr = $path_to_file . 'fr-FR.override.ini' ;
@@ -762,7 +749,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         } else {
             file_put_contents($pathfile,$text . PHP_EOL, FILE_APPEND | LOCK_EX);
         }
-        $this->removeEmptyLinesFr();
+        //$this->removeEmptyLinesFr();
 
         $this->copyFileToAdministration($codelang);
     }
@@ -775,20 +762,8 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $NewSubLabel
      */
     function formsTrad($labelTofind, $NewSubLabel) {
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_files = array();
-        $Content_Folder = array();
-        $results = array();
-
         try {
-            $languages = JLanguageHelper::getLanguages();
-            foreach ($languages as $language) {
-                $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-                $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-                $results[] = $this->updateFileTranslation($labelTofind,$Content_Folder[$language->sef],$path_to_files[$language->sef],$NewSubLabel[$language->sef],$language->lang_code);
-            }
-
-            return $results;
+            return $this->updateTranslation($labelTofind,$NewSubLabel);
         }  catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/formbuilder | Error when update the translation of ' . $labelTofind . ' : ' .$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
