@@ -108,7 +108,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 			foreach ($files as $file) {
 
 				// Time to download the files from the WebService.
-				$response = $http->get($host.'/files/'.$file.'/download?alt=media', [
+				$response = $http->get($host.$file.'/download?alt=media', [
 					'Content-Type' => 'application/json',
 					'Authorization' => 'Bearer '.$api_key
 				]);
