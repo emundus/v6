@@ -78,7 +78,6 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 
 		$app = JFactory::getApplication();
 		$mailer = JFactory::getMailer();
-		$baseurl = JURI::base();
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
 
@@ -260,7 +259,6 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 				$m_application->addComment($row);
 			}
 			$m_users->encryptLogin(['username' => $user->username, 'password' => $user->password], (int)$redirect);
-			return;
 
 		} else {
 
@@ -360,12 +358,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 
 			$m_users->plainLogin(['username' => $user->username, 'password' => $password], (int)$redirect);
 			$app->enqueueMessage(JText::_('USER_LOGGED'), 'message');
-			return;
 		}
-
-		$app->enqueueMessage(JText::_('PLEASE_LOGIN'), 'message');
-		$app->redirect($baseurl.'index.php?option=com_users&view=login');
-
 	}
 
 	/**
@@ -389,8 +382,10 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 	}
 
 	/**
-	 * @param $fnums
-	 * @param $user
+	 * @param      $fnums
+	 * @param      $user
+	 *
+	 * @param null $group
 	 *
 	 * @return bool
 	 *
