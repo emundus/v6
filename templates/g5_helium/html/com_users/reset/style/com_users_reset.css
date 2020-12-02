@@ -16,11 +16,11 @@
    text-align: left !important;
 }
 
-form#user-registration.form-validate.form-horizontal.well,
+
 .reset-confirm .form-validate.form-horizontal.well,
 .reset-complete .form-validate.form-horizontal.well
 {
-    width: 60%;
+    width: 63%;
     margin-left: auto !important;
     margin-right: auto !important;
     background: #fafafa;
@@ -30,16 +30,30 @@ form#user-registration.form-validate.form-horizontal.well,
     padding: 50px;
 }
 
-form#user-registration.form-validate.form-horizontal.well .control-group,
+form#user-registration.form-validate.form-horizontal.well
+{
+    width: 63%;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+
+.reset-confirm .form-validate.form-horizontal.well .control-label,
+.reset-complete .form-validate.form-horizontal.well .control-label,
+{
+text-align: left;
+}
+
+
 .reset-confirm .form-validate.form-horizontal.well .control-group,
 .reset-complete .form-validate.form-horizontal.well .control-group
 {
-display: flex;
-flex-direction: column;
-align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-form#user-registration.form-validate.form-horizontal.well .control-group .controls,
+
 .reset-confirm .form-validate.form-horizontal.well .control-group .controls,
 .reset-complete .form-validate.form-horizontal.well .control-group .controls
 {
