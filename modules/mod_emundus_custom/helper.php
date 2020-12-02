@@ -95,7 +95,7 @@ class modEmundusCustomHelper {
 		$fnum = $jinput->post->get('fnum');
 		$decision = (int)$jinput->post->getInt('decision');
 		$wait_rank = (int)$jinput->post->getInt('waitlistRank', 0);
-		$comment = $jinput->post->get('comment', '');
+		$comment = $jinput->post->getString('comment', '');
 
 		if (empty($fnum) || empty($decision)) {
 			JLog::add('Aucun numéro de dossier ou décision envoyé.', JLog::ERROR, 'com_emundus');

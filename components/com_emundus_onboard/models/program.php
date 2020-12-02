@@ -74,7 +74,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query, $offset, $limit);
             return $db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting list of programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
         }
     }
@@ -114,7 +114,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query);
             return $db->loadResult();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting number of programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return 0;
         }
     }
@@ -152,7 +152,7 @@ class EmundusonboardModelprogram extends JModelList {
         try {
             return $programme;
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting program by id ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -228,7 +228,7 @@ class EmundusonboardModelprogram extends JModelList {
 
                 return $prog_id;
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add('component/com_emundus_onboard/models/program | Error when creating a program : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();
             }
 
@@ -265,7 +265,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add('component/com_emundus_onboard/models/program | Error when updating the program ' . $id . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();
             }
 
@@ -311,7 +311,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add('component/com_emundus_onboard/models/program | Error wen delete programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();
             }
 
@@ -351,7 +351,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add('component/com_emundus_onboard/models/program | Error when unpublish programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();
             }
 
@@ -391,7 +391,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add('component/com_emundus_onboard/models/program | Error when publish programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();
             }
 
@@ -420,7 +420,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query);
             return $db->loadColumn();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting program categories : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -447,7 +447,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting teaching unities of the program ' . $code . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
         }
     }
@@ -498,7 +498,7 @@ class EmundusonboardModelprogram extends JModelList {
 
             return $users;
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting users that can be affected to the group ' . $group . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -557,7 +557,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting users that can be affected to the group with a search term ' . $group . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -577,7 +577,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting administrators of the group ' . $group . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -597,7 +597,7 @@ class EmundusonboardModelprogram extends JModelList {
             return $db->loadObjectList();
         }
         catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting evaluators of the group ' . $group . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -629,7 +629,7 @@ class EmundusonboardModelprogram extends JModelList {
 
             return $uid;
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Cannot affect the user ' . $email . ' to the group ' . $group . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -654,7 +654,7 @@ class EmundusonboardModelprogram extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
             } catch (Exception $e) {
-                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                JLog::add('component/com_emundus_onboard/models/program | Cannot affect users to the group ' . $group . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;
             }
         }
@@ -678,7 +678,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Cannot remove user ' . $userid . ' from the group ' . $group . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -750,7 +750,7 @@ class EmundusonboardModelprogram extends JModelList {
                 'users_count' => $users_count,
             );
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting users : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -770,7 +770,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting users without applicants : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -794,7 +794,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting users by term without applicants : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -1007,71 +1007,86 @@ class EmundusonboardModelprogram extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('fabrik_group_id')
-            ->from($db->quoteName('#__emundus_setup_programmes'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
-        $db->setQuery($query);
-        $fabrik_groups = explode(',',$db->loadResult());
+        try {
+            $query->select('fabrik_group_id')
+                ->from($db->quoteName('#__emundus_setup_programmes'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
+            $db->setQuery($query);
+            $fabrik_groups = explode(',', $db->loadResult());
 
-        $query->clear()
-            ->select('form_id')
-            ->from($db->quoteName('#__fabrik_formgroup'))
-            ->where($db->quoteName('group_id') . ' = ' . $db->quote($fabrik_groups[0]));
-        $db->setQuery($query);
-        return $db->loadResult();
+            $query->clear()
+                ->select('form_id')
+                ->from($db->quoteName('#__fabrik_formgroup'))
+                ->where($db->quoteName('group_id') . ' = ' . $db->quote($fabrik_groups[0]));
+            $db->setQuery($query);
+            return $db->loadResult();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting evaluation grid of the program ' . $pid . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
     }
 
     function affectGroupToProgram($group, $pid) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query
-            ->select('fabrik_group_id')
-            ->from($db->quoteName('#__emundus_setup_programmes'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
-        $db->setQuery($query);
-        $program_groups = $db->loadResult();
+        try {
+            $query
+                ->select('fabrik_group_id')
+                ->from($db->quoteName('#__emundus_setup_programmes'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
+            $db->setQuery($query);
+            $program_groups = $db->loadResult();
 
-        if ($program_groups == '') {
-            $program_groups = $group;
-        } else {
-            $program_groups = $program_groups . ',' . $group;
+            if ($program_groups == '') {
+                $program_groups = $group;
+            } else {
+                $program_groups = $program_groups . ',' . $group;
+            }
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_setup_programmes'))
+                ->set($db->quoteName('fabrik_group_id') . ' = ' . $db->quote($program_groups))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/program | Cannot affect fabrik_group ' . $group . ' to program ' . $pid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
         }
-
-        $query->clear()
-            ->update($db->quoteName('#__emundus_setup_programmes'))
-            ->set($db->quoteName('fabrik_group_id') . ' = ' . $db->quote($program_groups))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
-        $db->setQuery($query);
-        return $db->execute();
     }
 
     function deleteGroupFromProgram($group, $pid) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('fabrik_group_id')
-            ->from($db->quoteName('#__emundus_setup_programmes'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
-        $db->setQuery($query);
-        $program_groups = $db->loadResult();
+        try {
+            $query->select('fabrik_group_id')
+                ->from($db->quoteName('#__emundus_setup_programmes'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
+            $db->setQuery($query);
+            $program_groups = $db->loadResult();
 
-        $program_groups = str_replace($group,'',$program_groups);
-        $program_groups = str_replace(',,',',',$program_groups);
+            $program_groups = str_replace($group, '', $program_groups);
+            $program_groups = str_replace(',,', ',', $program_groups);
 
-        var_dump(strrpos($program_groups,','));
-        var_dump(strlen($program_groups));
+            var_dump(strrpos($program_groups, ','));
+            var_dump(strlen($program_groups));
 
-        if (strrpos($program_groups,',') == (strlen($program_groups) - 1)) {
-            $program_groups = substr($program_groups,0,-1);
+            if (strrpos($program_groups, ',') == (strlen($program_groups) - 1)) {
+                $program_groups = substr($program_groups, 0, -1);
+            }
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_setup_programmes'))
+                ->set($db->quoteName('fabrik_group_id') . ' = ' . $db->quote($program_groups))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/program | Cannot remove fabrik_group ' . $group . ' from the program ' . $pid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
         }
-
-        $query->clear()
-            ->update($db->quoteName('#__emundus_setup_programmes'))
-            ->set($db->quoteName('fabrik_group_id') . ' = ' . $db->quote($program_groups))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($pid));
-        $db->setQuery($query);
-        return $db->execute();
     }
 
     function createGridFromModel($label, $intro, $model, $pid) {
@@ -1122,10 +1137,8 @@ class EmundusonboardModelprogram extends JModelList {
             $query->clear();
             $query->update($db->quoteName('#__fabrik_forms'));
 
-            $formbuilder->addTransationFr('FORM_' . $pid. '_' . $formid . '=' . "\"" . $label['fr'] . "\"");
-            $formbuilder->addTransationEn('FORM_' . $pid. '_' . $formid . '=' . "\"" . $label['en'] . "\"");
-            $formbuilder->addTransationFr('FORM_' . $pid . '_INTRO_' . $formid . '=' . "\"" . $intro['fr'] . "\"");
-            $formbuilder->addTransationEn('FORM_' . $pid . '_INTRO_' . $formid . '=' . "\"" . $intro['en'] . "\"");
+            $formbuilder->translate('FORM_' . $pid. '_' . $formid,$label);
+            $formbuilder->translate('FORM_' . $pid . '_INTRO_' . $formid,$intro);
             //
 
             $query->set('label = ' . $db->quote('FORM_' . $pid . '_' . $formid));
@@ -1193,12 +1206,17 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->clear();
                 $query->update($db->quoteName('#__fabrik_groups'));
 
-                foreach ($languages as $language) {
-                    $duplicate_translation = $formbuilder->duplicateFileTranslation($group_model->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'GROUP_' . $formid . '_' . $newgroupid,$language->lang_code);
-                    if(!$duplicate_translation){
-                        $formbuilder->addTransationFr('GROUP_' . $formid . '_' . $newgroupid . '=' . "\"" . $group_model->label . "\"");
-                    }
+                $labels_to_duplicate = array(
+                    'fr' => $formbuilder->getTranslation($group_model->label, $Content_Folder['fr']),
+                    'en' => $formbuilder->getTranslation($group_model->label, $Content_Folder['en'])
+                );
+                if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
+                    $labels_to_duplicate = array(
+                        'fr' => $group_model->label,
+                        'en' => $group_model->label
+                    );
                 }
+                $formbuilder->translate('GROUP_' . $formid . '_' . $newgroupid,$labels_to_duplicate);
                 //
 
                 $query->set('label = ' . $db->quote('GROUP_' . $formid . '_' . $newgroupid));
@@ -1231,24 +1249,35 @@ class EmundusonboardModelprogram extends JModelList {
                         if(($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options){
                             $sub_labels = [];
                             foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
-                                foreach ($languages as $language) {
-                                    $duplicate_translation = $formbuilder->duplicateFileTranslation($sub_label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index,$language->lang_code);
-                                    if(!$duplicate_translation){
-                                        $formbuilder->addTransationFr('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index . '=' . "\"" . $sub_label . "\"");
-                                    }
+                                $labels_to_duplicate = array(
+                                    'fr' => $formbuilder->getTranslation($sub_label, $Content_Folder['fr']),
+                                    'en' => $formbuilder->getTranslation($sub_label, $Content_Folder['en'])
+                                );
+                                if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
+                                    $labels_to_duplicate = array(
+                                        'fr' => $sub_label,
+                                        'en' => $sub_label
+                                    );
                                 }
+                                $formbuilder->translate('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index,$labels_to_duplicate);
                                 $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
                             }
                             $el_params->sub_options->sub_labels = $sub_labels;
                         }
                         $query->clear();
                         $query->update($db->quoteName('#__fabrik_elements'));
-                        foreach ($languages as $language) {
-                            $duplicate_translation = $formbuilder->duplicateFileTranslation($element->element->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'ELEMENT_' . $newgroupid . '_' . $newelementid,$language->lang_code);
-                            if(!$duplicate_translation){
-                                $formbuilder->addTransationFr('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . $element->element->label . "\"");
-                            }
+
+                        $labels_to_duplicate = array(
+                            'fr' => $formbuilder->getTranslation($element->element->label, $Content_Folder['fr']),
+                            'en' => $formbuilder->getTranslation($element->element->label, $Content_Folder['en'])
+                        );
+                        if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
+                            $labels_to_duplicate = array(
+                                'fr' => $element->element->label,
+                                'en' => $element->element->label
+                            );
                         }
+                        $formbuilder->translate('ELEMENT_' . $newgroupid . '_' . $newelementid,$labels_to_duplicate);
                         //
 
                         $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
@@ -1270,7 +1299,7 @@ class EmundusonboardModelprogram extends JModelList {
                         $db->execute();
                         $query = $db->getQuery(true);
                     } catch (Exception $e) {
-                        JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+                        JLog::add('component/com_emundus_onboard/models/program | Cannot create a grid from the model ' . $model . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                         return false;
                     }
                 }
@@ -1286,7 +1315,7 @@ class EmundusonboardModelprogram extends JModelList {
             return $db->execute();
             //
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Cannot create a grid from the model ' . $model . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1310,7 +1339,7 @@ class EmundusonboardModelprogram extends JModelList {
 
             return $models;
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting evaluation models : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1350,10 +1379,8 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query);
             $db->execute();
 
-            $formbuilder->addTransationFr('FORM_' . $pid. '_' . $formid . '=' . "\"" . $label['fr'] . "\"");
-            $formbuilder->addTransationFr('FORM_' . $pid. '_INTRO_' . $formid . '=' . "\"" . $intro['fr'] . "\"");
-            $formbuilder->addTransationEn('FORM_' . $pid. '_' . $formid . '=' . "\"" . $label['en'] . "\"");
-            $formbuilder->addTransationEn('FORM_' . $pid. '_INTRO_' . $formid . '=' . "\"" . $intro['en'] . "\"");
+            $formbuilder->translate('FORM_' . $pid. '_' . $formid,$label);
+            $formbuilder->translate('FORM_' . $pid. '_INTRO_' . $formid,$intro);
             //
 
             // INSERT FABRIK LIST
@@ -1408,7 +1435,8 @@ class EmundusonboardModelprogram extends JModelList {
 
             return true;
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Cannot create a grid in the program' . $pid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 
@@ -1436,7 +1464,7 @@ class EmundusonboardModelprogram extends JModelList {
 
             return $progs;
         }  catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting programs of the user ' . $user_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1447,30 +1475,35 @@ class EmundusonboardModelprogram extends JModelList {
 
         $groups = array();
 
-        foreach ($programs as $id => $program) {
-            if($program == 'true'){
-                $query->clear()
-                    ->select('code')
-                    ->from($db->quoteName('#__emundus_setup_programmes'))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($id));
-                $db->setQuery($query);
-                $code = $db->loadResult();
-                $groups[$id] = new stdClass();
-                $groups[$id]->manager = $this->getGroupByParent($code,3);
-                $groups[$id]->evaluator = $this->getGroupByParent($code,2);
+        try {
+            foreach ($programs as $id => $program) {
+                if ($program == 'true') {
+                    $query->clear()
+                        ->select('code')
+                        ->from($db->quoteName('#__emundus_setup_programmes'))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($id));
+                    $db->setQuery($query);
+                    $code = $db->loadResult();
+                    $groups[$id] = new stdClass();
+                    $groups[$id]->manager = $this->getGroupByParent($code, 3);
+                    $groups[$id]->evaluator = $this->getGroupByParent($code, 2);
 
-                $query->clear()
-                    ->select('sg.id')
-                    ->from ($db->quoteName('#__emundus_setup_groups_repeat_course','sgr'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_groups','sg').' ON '.$db->quoteName('sgr.parent_id').' = '.$db->quoteName('sg.id'))
-                    ->where($db->quoteName('sgr.course') . ' = '. $db->quote($code))
-                    ->andWhere($db->quoteName('sg.parent_id') . ' IS NULL');
-                $db->setQuery($query);
-                $groups[$id]->prog = $db->loadResult();
+                    $query->clear()
+                        ->select('sg.id')
+                        ->from($db->quoteName('#__emundus_setup_groups_repeat_course', 'sgr'))
+                        ->leftJoin($db->quoteName('#__emundus_setup_groups', 'sg') . ' ON ' . $db->quoteName('sgr.parent_id') . ' = ' . $db->quoteName('sg.id'))
+                        ->where($db->quoteName('sgr.course') . ' = ' . $db->quote($code))
+                        ->andWhere($db->quoteName('sg.parent_id') . ' IS NULL');
+                    $db->setQuery($query);
+                    $groups[$id]->prog = $db->loadResult();
+                }
             }
-        }
 
-        return $groups;
+            return $groups;
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting groups of programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
     }
 
     function addGroupToProgram($label,$code,$parent) {
@@ -1534,7 +1567,7 @@ class EmundusonboardModelprogram extends JModelList {
 
             return true;
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Cannot add the group ' . $parent . ' to the program ' . $code . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1552,7 +1585,7 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query);
             return $db->loadResult();
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting groups by parent ' . $parent . ' of the program ' . $code . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

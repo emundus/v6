@@ -26,7 +26,7 @@
         </div>
         <div class="form-group mb-2">
           <label>{{fieldType}} :</label>
-          <select id="select_type" class="dropdown-toggle" v-model="plugin" @change="checkPlugin" :disabled="(files != 0 && element.plugin == 'birthday') || (files != 0 && element.params.password == 6)">
+          <select id="select_type" class="dropdown-toggle" v-model="plugin" :disabled="(files != 0 && element.plugin == 'birthday') || (files != 0 && element.params.password == 6)">
             <option v-for="(plugin, index) in plugins" :key="index" :value="plugin.value">
               {{plugin.name}}
             </option>
@@ -243,11 +243,6 @@
         this.getElement();
         this.getDatabases();
       },
-      checkPlugin(){
-        if(this.element.plugin === 'databasejoin'){
-          this.plugin = this.element.params.database_join_display_type;
-        }
-      }
     },
     computed: {
       getlabel: function() {
@@ -259,8 +254,19 @@
         this.tempEl = JSON.parse(JSON.stringify(this.element));
       },
       plugin: function(value) {
-        if (this.element.plugin !== 'databasejoin' && this.element.plugin !== 'date' && this.element.plugin !== 'years') {
-          this.element.plugin = value;
+        switch (value){
+          case 'dropdown':
+            if(this.element.plugin !== 'databasejoin'){
+              this.element.plugin = value;
+            }
+            break;
+          case 'birthday':
+            if(this.element.plugin !== 'date' && this.element.plugin !== 'years'){
+              this.element.plugin = value;
+            }
+            break;
+          default:
+            this.element.plugin = value;
         }
       }
     },
