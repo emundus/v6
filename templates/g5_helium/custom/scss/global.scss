@@ -721,6 +721,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 .view-programme {
 
+  h1.title.em-program-title::after {
+    display: none !important;
+  }
+
   .right-side.campaingapply {
     padding-left: 0px !important;
   }
@@ -1824,6 +1828,11 @@ textarea:hover {
   border: 1px solid $base-primary-color;
 }
 
+.step a[title="Retour à mes dossiers"]:hover, .step a[title="Retour à mes dossiers"]:focus, .step a[title="Retour à mes dossiers"]:active  {
+  color: $base-secondary-color;
+}
+
+
 .candidacy-files-list h2,
 #em-panel h2 {
   color: $base-primary-color;
@@ -2753,6 +2762,17 @@ div#em-appli-block {
     }
   }
 
+  .gantry footer#g-footer .logo a  {
+    display: flex;
+    justify-content: center;
+  }
+
+  .gantry footer#g-footer .credits-emundus {
+    display: flex;
+    justify-content: center;
+  }
+
+
   .g-back-office-emundus-tableau.view-syncs.experts-synchro-page .app-container.ng-scope  {
     overflow-x: scroll;
   }
@@ -2812,6 +2832,10 @@ div#em-appli-block {
 
     li {
       border-bottom: 1px solid #F2F2F2;
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: space-between;
 
       span {
         width: 10%;
@@ -2897,6 +2921,18 @@ footer#g-footer .g-grid {
   }
 
   /* FOOTER */
+
+  .gantry footer#g-footer .logo a  {
+    display: flex;
+    justify-content: center;
+  }
+
+  .gantry footer#g-footer .credits-emundus {
+    display: flex;
+    justify-content: center;
+  }
+
+
   footer#g-footer {
 
     img.logo {
