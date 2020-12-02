@@ -2822,12 +2822,12 @@ div#em-appli-block {
 
   /* BURGER OUVERT */
 #g-offcanvas {
-  background: #FAFAFA;
+  background: #F2F2F2;
   .g-grid {
     margin: 50px 0px;
 
   .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
-    background: #FAFAFA;
+    background: #F2F2F2;
     margin: 0;
     padding: 0;
 
@@ -2837,12 +2837,14 @@ div#em-appli-block {
       flex-direction: row;
       align-items: baseline;
       justify-content: space-between;
-
+      background: #F2F2F2;
+      width: 100% !important;
       span {
         width: 10%;
         margin-top: 15px;
         &::after {
           color: #000;
+          opacity: initial;
         }
       }
       a {
