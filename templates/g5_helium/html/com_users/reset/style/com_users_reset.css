@@ -28,7 +28,7 @@
     padding: 50px;
 }
 
-.reset-confirm
+.reset-confirm,
 .reset-complete
 {
     display: flex !important;
@@ -39,7 +39,7 @@
     margin-left: auto;
     margin-right: auto;
     margin-top: 50px;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
 }
 
 
@@ -52,7 +52,7 @@ form#user-registration.form-validate.form-horizontal.well
 
 
 .reset-confirm .form-validate.form-horizontal.well .control-label,
-.reset-complete .form-validate.form-horizontal.well .control-label,
+.reset-complete .form-validate.form-horizontal.well .control-label
 {
 text-align: left;
 }
@@ -129,7 +129,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     margin-left: auto;
     margin-right: auto;
     margin-top: 50px;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
 }
 
 #user-registration .required .star,

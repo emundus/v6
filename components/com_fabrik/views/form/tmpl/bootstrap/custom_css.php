@@ -518,7 +518,7 @@ form#member-profile .form-horizontal .control-label {
     margin-right: auto;
     margin-top: 50px;
     padding-bottom: 50px;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
 }
 
   .view-registration .login.em-formRegistrationCenter .row-fluid {

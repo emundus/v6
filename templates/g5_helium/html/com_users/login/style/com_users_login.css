@@ -75,6 +75,7 @@ ul.nav.nav-tabs.nav-stacked {
     margin-right: auto !important;
    padding-bottom: 50px !important;
     margin-top: 0px;
+    margin-bottom: 50px;
 }
 
 ul.nav.nav-tabs.nav-stacked a::before {
