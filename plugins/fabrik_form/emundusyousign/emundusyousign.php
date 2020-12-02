@@ -468,7 +468,20 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 		} else {
 			JLog::add('Error from API: ('.$response->code.')  '.json_decode($response->body)->detail, JLog::ERROR, 'com_emundus.yousign');
-			throw new Exception('ERROR '.$response->code.' FROM YOUSIGN.');
+
+			// In the case of a YouSign error, unassign the file.
+			$query->clear()
+				->delete($db->quoteName('#__emundus_users_assoc'))
+				->where($db->quoteName('user_id').' = '.JFactory::getUser()->id)
+				->andWhere($db->quoteName('fnum').' IN ("'.implode('","', $fnums).'")');
+			$db->setQuery($query);
+
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error removing assoc users : '.$e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
+			}
+			throw new Exception(JText::_('ERROR_WITH_YOUSIGN'));
 		}
 	}
 
