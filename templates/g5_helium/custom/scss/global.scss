@@ -2805,7 +2805,8 @@ div#em-appli-block {
     }
   }
   #g-navigation #header-c.without-lang-switcher {
-    max-width: 100%;
+    max-width: 30rem !important;
+    min-height: 67px;
      .g-content {
       display: flex;
       align-items: center;
