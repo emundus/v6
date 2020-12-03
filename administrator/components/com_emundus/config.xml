@@ -121,10 +121,14 @@
 		</field>
 		<field name="application_payment_status" type="text" default="0" label="COM_EMUNDUS_APPLICATION_PAYMENT_STATUS" description="COM_EMUNDUS_APPLICATION_PAYMENT_STATUS_DESC" />
 		<field name="status_after_payment" menu="hide" type="text" default="1" label="COM_EMUNDUS_STATUS_AFTER_PAYMENT" description="COM_EMUNDUS_STATUS_AFTER_PAYMENT_DESC" />
+
 		<field name="redirect_after_payment" menu="hide" type="list" default="0" label="COM_EMUNDUS_REDIRECT_AFTER_PAYMENT" description="COM_EMUNDUS_REDIRECT_AFTER_PAYMENT_DESC" >
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
+			<option value="0">COM_EMUNDUS_CHECKLIST_PAGE</option>
+			<option value="1">COM_EMUNDUS_CONFIRMATION_PAGE</option>
+			<option value="2">COM_EMUNDUS_HOMEPAGE</option>
+			<option value="3">COM_EMUNDUS_CANDIDATE_FIRST_PAGE</option>
 		</field>
+
 		<field name="scholarship_document_id" menu="hide" type="text" label="COM_EMUNDUS_SCHOLARSHIP_DOCUMENT_ID" description="COM_EMUNDUS_SCHOLARSHIP_DOCUMENT_ID_DESC"/>
 		<field name="pay_scholarship" menu="hide" type="list" default="0" label="COM_EMUNDUS_PAY_SCHOLARSHIP" description="COM_EMUNDUS_PAY_SCHOLARSHIP_DESC">
 			<option value="0">JNO</option>
