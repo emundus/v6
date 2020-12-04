@@ -74,18 +74,6 @@ class EmundusControllerWebhook extends JControllerLegacy {
 				JLog::add('YouSign procedure file : '.$file->id, JLog::INFO, 'com_emundus.webhook');
 			}
 
-			// Set all of the file requests as uploaded.
-			$query->update($db->quoteName('jos_emundus_files_request'))
-				->set($db->quoteName('uploaded').' = 1')
-				->where($db->quoteName('filename').' IN ("'.implode('","', $files).'")');
-			$db->setQuery($query);
-			try {
-				$db->execute();
-			} catch (Exception $e) {
-				JLog::add('Could not load files_requests : '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
-				return;
-			}
-
 			$query->clear()
 				->select([$db->quoteName('fr.fnum'), $db->quoteName('a.lbl'), $db->quoteName('fr.attachment_id')])
 				->from($db->quoteName('jos_emundus_files_request', 'fr'))
@@ -108,6 +96,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 				return;
 			}
 
+			$frQuery = $db->getQuery(true);
 			foreach ($files as $file) {
 
 				// Time to download the files from the WebService.
@@ -131,6 +120,22 @@ class EmundusControllerWebhook extends JControllerLegacy {
 						$fileName = $attachment->lbl.'_signed.pdf';
 						$uid = (int)substr($attachment->fnum, -7);
 						if (file_put_contents(EMUNDUS_PATH_ABS.$uid.DS.$fileName, $response->body) !== false) {
+
+							// Set the filerequest as uploaded.
+							$frQuery->clear()
+								->update($db->quoteName('jos_emundus_files_request'))
+								->set([
+									$db->quoteName('uploaded').' = 1',
+									$db->quoteName('signed_file').' = '.$db->quote($fileName)
+								])
+								->where($db->quoteName('filename').' LIKE '.$db->quote($file).'');
+							$db->setQuery($frQuery);
+							try {
+								$db->execute();
+							} catch (Exception $e) {
+								JLog::add('Could not update files_requests : '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+								return;
+							}
 
 							$success[] = $attachment->fnum;
 							$query->values(implode(',', [$uid, $db->quote($attachment->fnum), (int)substr($attachment->fnum, 14, 7), $attachment->attachment_id, $db->quote($attachment->lbl), $db->quote('YouSign signed document'), '0', '0']));

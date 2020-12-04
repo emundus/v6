@@ -406,7 +406,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 			// We are going to save the YouSign procedure ID as the keyid and the YouSign file ID as the filename.
 			$query->clear()
 				->insert($db->quoteName('#__emundus_files_request'))
-				->columns($db->quoteName(['time_date', 'student_id', 'fnum', 'keyid', 'attachment_id', 'filename', 'campaign_id']));
+				->columns($db->quoteName(['time_date', 'student_id', 'fnum', 'keyid', 'attachment_id', 'filename', 'campaign_id', 'signer_id']));
 
 			$now = JFactory::getDate();
 			foreach ($fnums as $fnum) {
@@ -417,7 +417,8 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 					$db->quote($procedure_id), // keyid
 					$attachment_id, // attachement_id
 					$db->quote($file_id), // filename
-					(int)substr($fnum, 14, 7) // Campagin id
+					(int)substr($fnum, 14, 7), // Campagin id
+					JFactory::getUser()->id
 				]));
 			}
 			$db->setQuery($query);
