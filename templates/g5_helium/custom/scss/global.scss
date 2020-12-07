@@ -2914,6 +2914,66 @@ footer#g-footer .g-grid {
 
 @media all and (min-width: 480px) and (max-width: 767px)  {
 
+
+  /* BURGER */
+  #g-page-surround .g-offcanvas-toggle {
+    top: 20px !important;
+  }
+
+  /* BURGER OUVERT */
+  #g-offcanvas {
+    background: #F2F2F2;
+    .g-grid {
+      margin: 50px 0px;
+
+      .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
+        background: #F2F2F2;
+        margin: 0;
+        padding: 0;
+
+        li {
+          border-bottom: 1px solid #F2F2F2;
+          display: flex;
+          flex-direction: row;
+          align-items: baseline;
+          justify-content: space-between;
+          background: #F2F2F2;
+          width: 100% !important;
+          span {
+            width: 10%;
+            margin-top: 15px;
+            &::after {
+              color: #000;
+              opacity: initial;
+            }
+          }
+          a {
+            color: $base-primary-color;
+            padding: 15px 30px;
+            width: auto;
+            display: block;
+          }
+        }
+
+        li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module).active {
+          background: #FAFAFA;
+          border-left: 6px solid $base-secondary-color;
+          a {
+            color: $base-primary-color;
+          }
+        }
+
+        li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module):hover {
+          background: #ccc;
+          a {
+            color:#fff;
+          }
+        }
+      }
+    }
+  }
+
+  
   .gantry h1::after {
     display: none !important;
   }
