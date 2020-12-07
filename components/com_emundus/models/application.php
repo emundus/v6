@@ -564,6 +564,11 @@ class EmundusModelApplication extends JModelList {
                 $query = 'SELECT COUNT(profiles.id)
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
+
+                if (!empty($profile_id)) {
+                    $query .= ' AND profile_id = ' . $profile_id;
+                }
+                
                 $this->_db->setQuery($query);
                 $attachments = $this->_db->loadResult();
             }
