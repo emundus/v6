@@ -12,6 +12,7 @@ JHTML::_('behavior.modal');
 JHTML::_('behavior.tooltip');
 
 $jinput = JFactory::getApplication()->input;
+$doc_to_attach = $jinput->get->get('attach', null);
 
 $document = JFactory::getDocument();
 $document->addStyleSheet(JURI::base()."media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css" );
@@ -54,7 +55,7 @@ $email = $m_emails->getEmail($this->default_email_tmpl);
 $files = [];
 foreach ($fnums as $fnum => $fnumInfo) {
     
-	$attachments = $m_evaluations->getEvaluationDocuments($fnum, $fnumInfo['campaign_id']);
+	$attachments = $m_evaluations->getEvaluationDocuments($fnum, $fnumInfo['campaign_id'], $doc_to_attach);
 	
 	if (empty($attachments)) {
 	    
