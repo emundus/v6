@@ -487,12 +487,12 @@ class EmundusModelApplication extends JModelList {
                 $nb = 0;
                 $formLst = array();
                 foreach ($forms as $form) {
-                    $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($f);
-                    $this->_db->setQuery($query);
-                    $cpt = $this->_db->loadResult();
-                    if ($cpt==1) {
-                        $nb++;
-                    } else {
+                        $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($f);
+                        $this->_db->setQuery($query);
+                        $cpt = $this->_db->loadResult();
+                        if ($cpt==1) {
+                            $nb++;
+                        } else {
                         $formLst[] = $form->label;
                     }
                 }
@@ -553,6 +553,11 @@ class EmundusModelApplication extends JModelList {
                 $query = 'SELECT COUNT(profiles.id)
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
+
+                if (!empty($profile_id)) {
+                    $query .= ' AND profile_id = ' . $profile_id;
+                }
+                
                 $this->_db->setQuery($query);
                 $attachments = $this->_db->loadResult();
             }
