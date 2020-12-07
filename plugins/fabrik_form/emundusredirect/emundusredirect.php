@@ -98,7 +98,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 		$applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
 		$copy_form = (Int)$this->getParam('copy_form', '0');
-		
+
 		// duplication is defined
 		if ($copy_form === 1 && isset($user->fnum)) {
 
@@ -337,6 +337,14 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			}
 		}
 
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+        $m_application = new EmundusModelApplication();
+
+        if(isset($user->fnum)) {
+            $m_application->getFormsProgress($user->fnum);
+            $m_application->getAttachmentsProgress($user->fnum);
+        }
+
 
 		/*
 		* REDIRECTION ONCE DUPLICATION IS DONE
@@ -503,6 +511,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			}
 
 		}
+
         header('Location: '.$link);
         exit();
 	}
