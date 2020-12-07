@@ -340,11 +340,6 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
         $m_application = new EmundusModelApplication();
 
-        if(isset($user->fnum)) {
-            $m_application->getFormsProgress($user->fnum);
-            $m_application->getAttachmentsProgress($user->fnum);
-        }
-
 
 		/*
 		* REDIRECTION ONCE DUPLICATION IS DONE
@@ -357,6 +352,11 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 
 		if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
 			$levels = JAccess::getAuthorisedViewLevels($user->id);
+
+            if(isset($user->fnum)) {
+                $m_application->getFormsProgress($user->fnum);
+                $m_application->getAttachmentsProgress($user->fnum);
+            }
 
 			try {
 

@@ -507,7 +507,7 @@ class EmundusModelApplication extends JModelList {
     public function updateFormProgressByFnum($result,$fnum){
         $query = $this->_db->getQuery(true);
         $query->update($this->_db->quoteName('#__emundus_campaign_candidature'))
-            ->set($this->_db->quoteName('form_progress') . ' = ' . $this->_db->quote($result . ' %'))
+            ->set($this->_db->quoteName('form_progress') . ' = ' . $this->_db->quote($result))
             ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
         $this->_db->setQuery($query);
         return $this->_db->execute();
@@ -639,7 +639,7 @@ class EmundusModelApplication extends JModelList {
     public function updateAttachmentProgressByFnum($result,$fnum){
         $query = $this->_db->getQuery(true);
         $query->update($this->_db->quoteName('#__emundus_campaign_candidature'))
-            ->set($this->_db->quoteName('attachment_progress') . ' = ' . $this->_db->quote($result . ' %'))
+            ->set($this->_db->quoteName('attachment_progress') . ' = ' . $this->_db->quote($result))
             ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
         $this->_db->setQuery($query);
         return $this->_db->execute();
