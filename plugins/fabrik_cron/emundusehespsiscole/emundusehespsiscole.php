@@ -19,27 +19,32 @@ class emundusehespsiscole extends JApplicationCli
 
         if(!empty($resultlogs)){
             $query = $db->getQuery(true);
-            foreach ($resultlogs as $fnums)
-            $query->select($db->quoteName(
-                array('ep.user','ep.fnum', 'ep.time_date', 'e_344_7643', 'e_344_7649', 'e_344_8078', 'e_344_8081', 'e_344_7712', 'e_344_7646',
-                    'e_344_7652', 'e_344_7655', 'e_344_7658', 'e_344_7661', 'e_344_7688', 'code_insee_commune_naissance',
-                    'e_344_8012', 'e_344_7664', 'e_344_7667', 'e_344_7673', 'e_344_7679', 'e_344_7682', 'e_344_7685',
-                    'e_344_7697', 'e_344_7691', 'e_344_7688', 'code_insee_commune_rersidence', 'e_344_7694', 'e_344_7697',
-                    'e_344_7700', 'e_344_7703', 'e_344_7706', 'e_344_7709', 'e_344_7715','domaines_interventions','e_350_7748',
-                    'e_350_7751','e_353_7766','e_356_7811','e_356_7805','e_356_7808','e_359_7850','e_359_7829','e_359_7832',
-                    'pays_emploi','e_359_7835','e_359_7838','e_359_7841','e_359_8144','code_insee_commune_employeur',
-                    'e_359_8147','e_359_7865','e_359_7871','e_359_7853','e_359_7856','e_362_7895','e_362_7898','e_362_7901','e_362_7904')));
-            $query->from($db->quoteName('#__emundus_1001_00','ep'));
-            $query->join('LEFT ' . $db->quoteName('#__emundus_1001_02', 'ei') . ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('ei.fnum'));
-            $query->join('LEFT ' . $db->quoteName('#__emundus_1001_03', 'ecomp') . ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('ecomp.fnum'));
-            $query->join('LEFT ' . $db->quoteName('#__emundus_1001_04', 'ec') . ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('ec.fnum'));
-            $query->join('LEFT ' . $db->quoteName('#__emundus_1001_05', 'ee') . ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('ee.fnum'));
-            $query->join('LEFT ' . $db->quoteName('#__emundus_1001_06', 'eib') . ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('eib.fnum'));
-            $query->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnums->fnum));
+            foreach ($resultlogs as $fnums) {
 
-            $db->setQuery($query);
-            $results = $db->loadObjectList();
+                $query->select($db->quoteName(
+                    array('ep.user','eu.id_ehesp', 'ep.fnum', 'ep.time_date','ecc.status','eta.id_tag','ecc.campaign_id', 'e_344_7643', 'e_344_7649', 'e_344_8078', 'e_344_8081', 'e_344_7712', 'e_344_7646',
+                        'e_344_7652', 'e_344_7655', 'e_344_7658', 'e_344_7661', 'e_344_7688', 'code_insee_commune_naissance',
+                        'e_344_8012', 'e_344_7664', 'e_344_7667', 'e_344_7673', 'e_344_7679', 'e_344_7682', 'e_344_7685',
+                        'e_344_7697', 'e_344_7691', 'e_344_7688', 'code_insee_commune_rersidence', 'e_344_7694', 'e_344_7697',
+                        'e_344_7700', 'e_344_7703', 'e_344_7706', 'e_344_7709', 'e_344_7715', 'domaines_interventions', 'e_350_7748',
+                        'e_350_7751', 'e_353_7766', 'e_356_7811', 'e_356_7805', 'e_356_7808', 'e_359_7850', 'e_359_7829', 'e_359_7832',
+                        'pays_emploi', 'e_359_7835', 'e_359_7838', 'e_359_7841', 'e_359_8144', 'code_insee_commune_employeur',
+                        'e_359_8147', 'e_359_7865', 'e_359_7871', 'e_359_7853', 'e_359_7856', 'e_362_7895', 'e_362_7898', 'e_362_7901', 'e_362_7904')));
+                $query->from($db->quoteName('#__emundus_1001_00', 'ep'));
+                $query->join('LEFT' . $db->quoteName('#__emundus_1001_02', 'ei') . ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('ei.fnum'));
+                $query->join('LEFT' . $db->quoteName('#__emundus_1001_03', 'ecomp') . ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('ecomp.fnum'));
+                $query->join('LEFT' . $db->quoteName('#__emundus_1001_04', 'ec') . ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('ec.fnum'));
+                $query->join('LEFT' . $db->quoteName('#__emundus_1001_05', 'ee') . ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('ee.fnum'));
+                $query->join('LEFT' . $db->quoteName('#__emundus_1001_06', 'eib') . ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('eib.fnum'));
+                $query->join('LEFT' . $db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('ecc.fnum'));
+                $query->join('LEFT' . $db->quoteName('#__emundus_tag_assoc', 'eta') . ' ON ' . $db->quoteName('ep.fnum') . ' = ' . $db->quoteName('eta.fnum'));
+                $query->join('LEFT' . $db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('ep.user') . ' = ' . $db->quoteName('eu.user_id'));
+                $query->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnums->fnum));
 
+                $db->setQuery($query);
+                $results = $db->loadObjectList();
+
+            }
             $post[0] = [
                 'ID_EHESP',
                 'ID_EMUNDUS',
@@ -109,13 +114,13 @@ class emundusehespsiscole extends JApplicationCli
 
             for($i = 1; $i <= count($results); $i++) {
                 $post[$i] = [
-                    $results[$i]->,
+                    $results[$i]->id_ehesp,
                     $results[$i]->user,
                     $results[$i]->fnum,
                     $results[$i]->time_date,
-                    $results[$i]->,
-                    $results[$i]->,
-                    $results[$i]->,
+                    $results[$i]->status,
+                    $results[$i]->id_tag,
+                    $results[$i]->campaign_id,
                     $results[$i]->e_344_7643,
                     $results[$i]->e_344_7649,
                     $results[$i]->e_344_8078,
