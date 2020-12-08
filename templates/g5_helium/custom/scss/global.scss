@@ -453,6 +453,35 @@ input[type="text"],
 
 /* FOOTER */
 
+.footer-b {
+  .container-link-footer {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+
+    ul {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 0px;
+
+      li {
+        list-style: none;
+          a {
+            text-decoration: none;
+          }
+      }
+
+      li:nth-child(1) a {
+        margin: 10px;
+        border-right: 1px solid #cccccc;
+        padding: 0px 10px;
+      }
+    }
+
+  }
+}
+
+
 .g-back-office-emundus-tableau #g-navigation.g-flushed .g-container {
   padding: 10px !important;
 }
