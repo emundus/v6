@@ -1969,7 +1969,7 @@ textarea:hover {
 .step.completed i.icon.attach::before,
 .step.completed i.icon.add.to.cart::before,
 .step.completed i.icon.time::before {
-  color: $base-primary-color;
+  color: #21ba45;
 }
 
 /* 3 Cercles Accueil Coordinateur */
@@ -2756,7 +2756,7 @@ div#em-appli-block {
         }
 
         form.fabrikForm {
-          width: 75%;
+          width: 90%;
         }
       }
     }
@@ -2973,7 +2973,7 @@ footer#g-footer .g-grid {
     }
   }
 
-  
+
   .gantry h1::after {
     display: none !important;
   }

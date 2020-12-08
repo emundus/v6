@@ -111,6 +111,10 @@ echo <<<EOT
     padding: 20px;
 }
 
+.view-form.view-registration .fabrikGroup {
+    padding: 0px;
+}
+
 .view-form p.select-program + form .fabrikGroup {
     background: #fff;
 }
@@ -121,6 +125,10 @@ echo <<<EOT
 
 .view-form:not(.em-formRegistrationCenter) .size-100 .size-100 .fabrikGroup {
     background: #fff;
+}
+
+.view-form.view-registration .size-100 .size-100 .fabrikGroup {
+    background: #fafafa;
 }
 
 .view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
@@ -1287,6 +1295,10 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 .view-details .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid 
 .view-checklist .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
   padding: 2px 30px;
+}
+
+.view-form.view-registration .fabrikForm fieldset > .row-fluid {
+  padding: 0px;
 }
 
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
