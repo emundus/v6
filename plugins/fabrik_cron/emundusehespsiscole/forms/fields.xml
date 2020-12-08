@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-cron-emundusehespsiscole" label="COM_FABRIK_OPTIONS">
+
+			<field name="filename"
+				type="text"
+				description="PLG_CRON_FILENAME_DESC"
+				label="PLG_CRON_FILENAME"
+				size="30" 
+				default="" />
+
+		</fieldset>
+
+	</fields>
+</form>
