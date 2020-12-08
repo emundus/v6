@@ -100,6 +100,11 @@ echo <<<EOT
     padding-right: 5%;
 }
 
+.view-registration main#g-main-mainbody {
+    padding-right: 0;
+}
+
+
 .view-form .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions{
     padding: 0;
 }
