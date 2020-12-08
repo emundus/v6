@@ -32,8 +32,8 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 	 *
 	 * @var  string
 	 */
-	protected $URLfield = '';
-	protected $signer_type = '';
+	protected string $URLfield = '';
+	protected string $signer_type = '';
 
 	public function __construct(&$subject, $config = array()) {
 		parent::__construct($subject, $config);
@@ -42,10 +42,10 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 	/**
 	 * Get an element name
 	 *
-	 * @param   string  $pname  Params property name to look up
-	 * @param   bool    $short  Short (true) or full (false) element name, default false/full
+	 * @param string $pname Params property name to look up
+	 * @param bool   $short Short (true) or full (false) element name, default false/full
 	 *
-	 * @return	string	element full name
+	 * @return    string    element full name
 	 */
 	public function getFieldName($pname, $short = false) {
 		$params = $this->getParams();
@@ -62,12 +62,12 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 	/**
 	 * Get the fields value regardless of whether its in joined data or no
 	 *
-	 * @param   string $pname   Params property name to get the value for
-	 * @param   mixed  $default Default value
+	 * @param string $pname   Params property name to get the value for
+	 * @param mixed  $default Default value
 	 *
 	 * @return  mixed  value
 	 */
-	public function getParam($pname, $default = '') {
+	public function getParam(string $pname, $default = '') {
 		$params = $this->getParams();
 
 		if ($params->get($pname) == '') {
@@ -81,9 +81,10 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 	/**
 	 * @param array $signer_value
 	 *
-	 * @return array|false
+	 * @return array
+	 * @throws Exception
 	 */
-	private function proccessSignerValues(array $signer_value) {
+	private function proccessSignerValues(array $signer_value) : array {
 
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -125,9 +126,8 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 					if (count($columns) === 1 && !empty($jinput->getRaw($table.'___'.$columns[0]))) {
 						$signer_value[] = $jinput->getRaw($table.'___'.$columns[0]);
 					} else {
-						return false;
+						return [];
 					}
-
 				}
 			}
 		}
