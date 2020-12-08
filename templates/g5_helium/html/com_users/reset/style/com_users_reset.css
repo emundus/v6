@@ -20,7 +20,7 @@
 .reset-confirm .form-validate.form-horizontal.well,
 .reset-complete .form-validate.form-horizontal.well
 {
-    width: 63%;
+    width: 60%;
     margin-left: auto !important;
     margin-right: auto !important;
     background: #fafafa;
@@ -45,9 +45,10 @@
 
 form#user-registration.form-validate.form-horizontal.well
 {
-    width: 63%;
+    width: 59%;
     margin-left: auto !important;
     margin-right: auto !important;
+    padding: 0px;
 }
 
 
