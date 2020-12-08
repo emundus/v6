@@ -258,30 +258,30 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     .form-validate.form-horizontal.well {
         width: 100%;
     }
-    .em-formRegistrationCenter .form-horizontal fieldset .control-group {
+    .view-login .form-horizontal fieldset .control-group {
         width: 100% !important;
     }
 
 }
 
 @media all and (max-width: 479px) {
-    .view-login #g-container-main div.login.em-formRegistrationCenter {
+    .view-login #g-container-main div.login {
         width: 100%;
     }
 }
 
 @media all and (max-width: 767px) {
 
-    .view-login .login.em-formRegistrationCenter  {
-         width: 100%;
+    .view-login .login  {
+         width: 100% !important;
     }
 
-    .view-login .login.em-formRegistrationCenter .page-header {
+    .view-login .login .page-header {
         width: 100% !important;
         padding: 0px 20px;
     }
 
-    .em-formRegistrationCenter .form-horizontal fieldset .control-group {
+    .view-login .form-horizontal fieldset .control-group {
         width: 100% !important;
     }
 
