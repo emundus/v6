@@ -191,7 +191,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 
 				$usertype = $m_users->found_usertype($acl_aro_groups[0]);
 				$user->usertype = $usertype;
-				$user->name = ucfirst($firstname).' '.strtoupper($lastname);
+				$user->name = $firstname.' '.$lastname;
 
 				if (!$user->save()) {
 					$app->enqueueMessage(JText::_('CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
@@ -273,10 +273,9 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			if (!empty($expert)) {
 				$firstname = ucfirst($expert['first_name']);
 				$lastname = strtoupper($expert['last_name']);
-				$name = $firstname.' '.$lastname;
-			} else {
-				$name = $email;
 			}
+			
+			$name = $firstname.' '.$lastname;
 
 			$password = JUserHelper::genRandomPassword();
 			$user = clone(JFactory::getUser(0));
@@ -364,14 +363,14 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 	/**
 	 * Raise an error - depends on whether you are in admin or not as to what to do
 	 *
-	 * @param   array   &$err   Form models error array
-	 * @param   string   $field Name
-	 * @param   string   $msg   Message
+	 * @param array   &$err   Form models error array
+	 * @param string   $field Name
+	 * @param string   $msg   Message
 	 *
 	 * @return  void
 	 * @throws Exception
 	 */
-	protected function raiseError(&$err, $field, $msg) {
+	protected function raiseError(array &$err, string $field, string $msg) {
 		$app = JFactory::getApplication();
 
 		if ($app->isAdmin()) {
@@ -382,16 +381,16 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 	}
 
 	/**
-	 * @param      $fnums
-	 * @param      $user
+	 * @param array    $fnums
+	 * @param          $user
 	 *
-	 * @param null $group
+	 * @param int|null $group
 	 *
 	 * @return bool
 	 *
 	 * @since version
 	 */
-	private function assocFiles($fnums, $user, $group = null) {
+	private function assocFiles(array $fnums, $user, $group = null) {
 
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
