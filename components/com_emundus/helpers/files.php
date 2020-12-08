@@ -1942,22 +1942,38 @@ class EmundusHelperFiles
     }
 
     public function createFormProgressList($formsprogress) {
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+        $m_application = new EmundusModelApplication();
+
         $formsprogressList = array();
         foreach ($formsprogress as $form_progress) {
             $fnum = $form_progress['fnum'];
             if (!isset($formsprogressList[$fnum])) {
-                $formsprogressList[$fnum] = $form_progress['form_progress'].' %';
+                if($form_progress['form_progress'] != null) {
+                    $formsprogressList[$fnum] = $form_progress['form_progress'].' %';
+                } else {
+                    $result = $m_application->getFormsProgress($form_progress['fnum']);
+                    $formsprogressList[$fnum] = $result.' %';
+                }
             }
         }
         return $formsprogressList;
     }
 
     public function createAttachmentProgressList($attachmentsprogress) {
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+        $m_application = new EmundusModelApplication();
+
         $attachmentsprogressList = array();
         foreach ($attachmentsprogress as $attachmentprogress) {
             $fnum = $attachmentprogress['fnum'];
             if (!isset($attachmentsprogressList[$fnum])) {
-                $attachmentsprogressList[$fnum] = $attachmentprogress['attachment_progress'].' %';
+                if($attachmentprogress['attachment_progress'] != null) {
+                    $attachmentsprogressList[$fnum] = $attachmentprogress['attachment_progress'] . ' %';
+                } else {
+                    $result = $m_application->getAttachmentsProgress($attachmentprogress['fnum']);
+                    $attachmentsprogressList[$fnum] = $result.' %';
+                }
             }
         }
         return $attachmentsprogressList;
