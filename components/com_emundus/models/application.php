@@ -451,6 +451,10 @@ class EmundusModelApplication extends JModelList {
             $nb = 0;
             $formLst = array();
 
+            if(empty($forms)){
+                return 100;
+            }
+
             foreach ($forms as $form) {
                 $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum);
                 $this->_db->setQuery($query);
@@ -487,18 +491,23 @@ class EmundusModelApplication extends JModelList {
                 $forms = @EmundusHelperMenu::buildMenuQuery($this->_db->loadResult());
                 $nb = 0;
                 $formLst = array();
-                foreach ($forms as $form) {
-                    $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($f);
-                    $this->_db->setQuery($query);
-                    $cpt = $this->_db->loadResult();
-                    if ($cpt==1) {
-                        $nb++;
-                    } else {
-                        $formLst[] = $form->label;
+
+                if(empty($forms)){
+                    $result[$f] = 100;
+                } else {
+                    foreach ($forms as $form) {
+                        $query = 'SELECT count(*) FROM ' . $form->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($f);
+                        $this->_db->setQuery($query);
+                        $cpt = $this->_db->loadResult();
+                        if ($cpt == 1) {
+                            $nb++;
+                        } else {
+                            $formLst[] = $form->label;
+                        }
                     }
+                    $this->updateFormProgressByFnum(@floor(100 * $nb / count($forms)), $f);
+                    $result[$f] = @floor(100 * $nb / count($forms));
                 }
-                $this->updateFormProgressByFnum(@floor(100*$nb/count($forms)),$f);
-                $result[$f] = @floor(100*$nb/count($forms));
             }
             return $result;
         }
@@ -568,7 +577,7 @@ class EmundusModelApplication extends JModelList {
                 if (!empty($profile_id)) {
                     $query .= ' AND profile_id = ' . $profile_id;
                 }
-                
+
                 $this->_db->setQuery($query);
                 $attachments = $this->_db->loadResult();
             }
