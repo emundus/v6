@@ -469,6 +469,18 @@ form#member-profile .form-horizontal .control-label {
     color: #c30505;
     font-size: 5px;
 }
+
+.view-registration .icon-star.small {
+    margin-top: 0px;
+    padding-top: 0px;
+    position: relative;
+    padding-left: 2px;
+    color: #c30505;
+    font-size: 5px;
+    order: 2;
+    top: -10px;
+}
+
 .icon-.small {
     display: none;
 }
