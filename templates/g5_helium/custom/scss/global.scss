@@ -249,7 +249,7 @@ ul {
 }
 
 .modal-header {
-  background: #4E5B6D;
+  background: #fff;
   padding: 10px 20px;
   border-bottom: 1px solid #eee;
   min-height: 90px;
@@ -402,7 +402,7 @@ input[type="text"],
     max-width: 15rem;
     min-height: 67px;
     .g-content {
-      justify-content: space-between;
+      justify-content: flex-end;
       .platform-content:nth-child(2) {
         order: 1;
       }
@@ -478,6 +478,7 @@ footer#g-footer {
   width: 100vw;
   position: relative;
   z-index: 11;
+  margin-top: auto !important;
 }
 
 footer#g-footer img {
@@ -487,7 +488,7 @@ footer#g-footer img {
 #g-page-surround {
   display: flex;
   flex-direction: column;
-  min-height: 100% !important;
+  min-height: 100vh !important;
   width: 100%;
   background: #f8f8f8;
 }
@@ -520,47 +521,47 @@ body>.g-container {
   height: 140px;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
-}
+    justify-content: center;
+  }
 
-.bas-footer {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-
-  .em-containerAdresseLogo {
-    width: 55%;
+  .bas-footer {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center
+    align-items: center;
+
+    .em-containerAdresseLogo {
+      width: 55%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .adresse {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      align-self: baseline;
+
+      p {
+        color: $base-primary-color;
+      }
+
+      .street {
+        text-align: left;
+      }
+    }
   }
 
-  .adresse {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    align-self: baseline;
-
+  .credits-emundus {
     p {
       color: $base-primary-color;
-    }
-
-    .street {
-      text-align: left;
+      float: right;
     }
   }
-}
 
-.credits-emundus {
-  p {
-    color: $base-primary-color;
-    float: right;
-  }
-}
-
-.customfooter-legal p {
+  .customfooter-legal p {
   text-align: center;
 }
 
@@ -604,10 +605,10 @@ body>.g-container {
 
         &:hover,
         &:active,
-        &:focus {
-          background: transparent;
-          color: $base-secondary-color;
-          border-color: $base-secondary-color;
+      &:focus {
+        background: transparent;
+        color: $base-secondary-color;
+        border-color: $base-secondary-color;
         }
       }
 
@@ -616,12 +617,12 @@ body>.g-container {
         border: 1px solid $base-primary-color;
         color: $base-primary-color;
 
-        &:hover,
-        &:active,
-        &:focus {
-          background: $base-primary-color;
-          color: #fff;
-          border-color: $base-primary-color;
+      &:hover,
+      &:active,
+      &:focus {
+        background: $base-primary-color;
+        color: #fff;
+        border-color: $base-primary-color;
         }
       }
     }
@@ -1399,6 +1400,17 @@ button.close {
   color: #fff;
 }
 
+.modal-body .panel-heading button.btn.btn-info.btn-xs {
+  background: $base-secondary-color;
+  color: #fff;
+}
+
+.modal-body .panel-heading .btn-xs.btn.btn-elements-success {
+  background-color: $base-primary-color !important;
+  color: #fff;
+}
+
+
 .btn-warning.active.focus,
 .btn-warning.active:focus,
 .btn-warning.active:hover,
@@ -2100,6 +2112,10 @@ ul.unstyled.em-linkForgot li a {
 
 /************************ GESTIONNAIRE - COORDINATOR *********************/
 
+.files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
+  background: $base-secondary-color !important;
+}
+
 .edit-comment-container button.edit-comment  {
   color: white;
   background: $base-primary-color;
@@ -2790,8 +2806,17 @@ div#em-appli-block {
       margin-left: -25px;
     }
   }
+  #g-navigation #header-c.without-lang-switcher {
+    max-width: 100%;
+     .g-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: row;
+    }
+  }
 
-  /* BURGER */
+    /* BURGER */
   #g-page-surround .g-offcanvas-toggle {
     top: 20px !important;
   }
@@ -2884,8 +2909,7 @@ footer#g-footer .g-grid {
 
 @media all and (min-width: 480px) and (max-width: 767px)  {
 
-
-  h1::after {
+  .gantry h1::after {
     display: none !important;
   }
 

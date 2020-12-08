@@ -1060,6 +1060,7 @@ footer#g-footer {
 
 .radio input[type="radio"], .checkbox input[type="checkbox"] {
     margin-left: 0px !important;
+    margin-top: 5px !important;
 }
 
 .header-right a.btn.btn-danger.connexion, .header-right a.btn.btn-danger.inscription  {
@@ -1206,6 +1207,7 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
 .view-form input[type='radio']:checked {
       height: 12px;
       width: 12px;
+    
 }
 
 /* FORMULAIRE D'INSCRIPTION */
@@ -1289,14 +1291,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
   position: absolute;
-  top: -10px;
-  right: 10px;
-  display: flex;
-}
-
-.fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
-  position: absolute;
-  top: -10px;
+  top: -5px;
   right: 10px;
   display: flex;
 }

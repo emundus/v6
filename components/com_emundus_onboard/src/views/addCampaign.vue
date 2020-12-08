@@ -682,7 +682,6 @@ export default {
         data: qs.stringify({ body: this.programForm })
       }).then(() => {
           if (this.campaign !== "") {
-            console.log(typeof this.form.start_date)
             if(typeof this.form.start_date == 'object'){
               this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
             }

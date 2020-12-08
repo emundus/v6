@@ -582,13 +582,18 @@ div#em-modal-form {
     margin-left: 0;
 }
 
+
+.modal-header button.close {
+    color: #565656;
+}
+
 div#em-modal-actions div.modal-header table,
 div.modal-header table td {
     border-style: none;
 }
 
 div#em-modal-actions h4#em-modal-actions-title {
-    color: #ffffff !important;
+    color: #858585 !important;
     font-weight: 700;
     font-size: 2rem;
 }
