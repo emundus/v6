@@ -177,6 +177,7 @@ class PlgFabrik_FormEmundusconfirmpostehesp extends plgFabrik_Form
 
 		try {
 			$db->execute();
+            EmundusModelLogs::log($student->id, $student->id, $student->fnum, 13, 'u', $status_after_sent);
 
 		} catch (Exception $e) {
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
