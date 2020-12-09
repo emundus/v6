@@ -550,6 +550,11 @@ form#member-profile .form-horizontal .control-label {
     background: #fafafa;
 }
 
+  .view-registration form .row-fluid .plg-password span, .view-form.em-formRegistrationCenter form .row-fluid .plg-password span {
+    color: #000; 
+    margin-top: 5px;
+}
+
   /* ICON  TITRE INSCRIPTION */
 
   .view-registration .login div.em-heading-registration,  .view-form .em-formRegistrationCenter div.em-heading-registration  {
