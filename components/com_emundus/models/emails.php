@@ -924,15 +924,15 @@ class EmundusModelEmails extends JModelList {
         return true;
     }
 
-	/** Used for sending the expert invitation email with the link to the form.
+    /**
+     * Used for sending the expert invitation email with the link to the form.
 	 * @param $fnums array
 	 *
 	 * @return array
 	 *
 	 * @throws Exception
-	 * @since version
 	 */
-	public function sendExpertMail($fnums) {
+	public function sendExpertMail(array $fnums) : array {
 
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
@@ -966,7 +966,7 @@ class EmundusModelEmails extends JModelList {
 		$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 		$mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 
-		$mail_to = explode(',', $jinput->post->getRaw('mail_to'));
+		$mail_to = $jinput->post->getRaw('mail_to');
 
 		$mail_body = $this->setBody($example_user, $jinput->post->getRaw('mail_body'));
 
