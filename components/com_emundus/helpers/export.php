@@ -47,7 +47,8 @@ class EmundusHelperExport
         application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order);
 
 		return EMUNDUS_PATH_ABS.$sid.DS.$fnum.'_application.pdf';
-    }
+	}
+	
     public static function buildHeaderPDF($fnumInfos, $sid, $fnum, $options = null) {
 		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
         

@@ -1,4 +1,106 @@
 <?php
+// Load autoloader (using Composer)
+require_once JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
+
+if (class_exists('MYPDF') === false || !class_exists('MYPDF')) {
+    class MYPDF extends TCPDF {
+
+        var $logo = "";
+        var $logo_footer = "";
+        var $footer = "";
+        var $header ="";
+
+        //Page header
+        public function Header() {
+            // Logo
+            if (is_file($this->logo)) {
+                $this->Image($this->logo, 10, 10, PDF_HEADER_LOGO_WIDTH, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            }
+            // Set font
+            //$this->SetFont('helvetica', 'B', 10);
+            // Title
+            //$this->Cell(-15, 15, $this->header, 0, $ln=0, 'C', 0, '', 0, false, 'L', 'T');
+            $this->Cell(100, 5, $this->header, 0, $ln=0, 'C', 0, '', 0, false, 'T', 'B');
+
+        }
+
+        // Page footer
+        public function Footer() {
+            // Position at 15 mm from bottom
+            $this->SetY(-15);
+            // Set font
+            //$this->SetFont('helvetica', 'I', 8);
+            // Page number
+            $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            // footer
+            $this->writeHTMLCell($w = 0, $h = 0, $x = '', $y = 250, $this->footer, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
+            //logo
+            if (is_file($this->logo_footer)) {
+                $this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            }
+        }
+    }
+}
+
+function getLogo($campaign_id) {
+    $db = JFactory::getDBO();
+    $app = JFactory::getApplication();
+
+    try {
+
+        // Users informations
+        $query = 'SELECT training
+					FROM #__emundus_setup_campaigns AS esc ON esc.id = '.$campaign_id.'
+					WHERE id = '.$campaign_id;
+        $db->setQuery($query);
+        $item = $db->loadObject();
+
+    } catch (Exception $e) {
+        JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+    }
+
+    //get logo
+    $template = $app->getTemplate(true);
+    $params = $template->params;
+
+    if (!empty($params->get('logo')->custom->image)) {
+
+        $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+        $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+
+    } else {
+
+        if(file_exists(JPATH_ROOT.DS.'images'.DS.'custom'.DS.$item->training.'.png')) {
+            $logo = JPATH_ROOT.DS.'images'.DS.'custom'.DS.$item->training.'.png';
+        } else {
+
+            $logo_module = JModuleHelper::getModuleById('90');
+            preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+
+            $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+            (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+            (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+            (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+            if ((bool) preg_match($pattern, $tab[1])) {
+                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+            }
+
+            $logo = JPATH_BASE.DS.$tab[1];
+
+        }
+    }
+
+    // manage logo by programme
+    $ext = substr($logo, -3);
+    $logo_prg = substr($logo, 0, -4).'-'.$item->training.'.'.$ext;
+    if (is_file($logo_prg)) {
+	    $logo = $logo_prg;
+    }
+
+    return $logo;
+}
+
 function age($naiss) {
     @list($annee, $mois, $jour) = preg_split('[-.]', $naiss);
     $today['mois'] = date('n');
@@ -62,8 +164,8 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
     }
 
     set_time_limit(0);
-    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
-    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+    //require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
+    //require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
@@ -78,50 +180,11 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
     $campaign = $m_campaign->getCampaignsByCourse($training);
 
-    if (class_exists('MYPDF') === false || !class_exists('MYPDF')) {
-        // Extend the TCPDF class to create custom Header and Footer
-        class MYPDF extends TCPDF {
-
-            var $logo = "";
-            var $logo_footer = "";
-            var $footer = "";
-
-            //Page header
-            public function Header() {
-                // Logo
-                if (is_file($this->logo)) {
-	                $this->Image($this->logo, 0, 0, 200, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                }
-                // Set font
-                $this->SetFont('helvetica', 'B', 16);
-                // Title
-                $this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
-            }
-
-            // Page footer
-            public function Footer() {
-                // Position at 15 mm from bottom
-                $this->SetY(-15);
-                // Set font
-                $this->SetFont('helvetica', 'I', 8);
-                // Page number
-                $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-                // footer
-                $this->writeHTMLCell($w=0, $h=0, $x='', $y=250, $this->footer, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
-                //logo
-                if (is_file($this->logo_footer)) {
-	                $this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                }
-            }
-        }
-    }
-
     $error = 0;
 
     $attachment = $m_application->getAttachmentByID($letter->attachment_id);
 
     try {
-
         // Test if letter type has already been created for that user/campaign/attachment and delete before if true.
         $query = 'SELECT * FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter->attachment_id.' AND campaign_id='.$campaign['id']. ' AND fnum like '.$db->Quote($fnum);
         $db->setQuery($query);
@@ -243,8 +306,8 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
  */
 function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluation_id, $output = true, $fnum = null) {
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+    //require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
+    //require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
@@ -299,44 +362,6 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
     }
 
     $campaign = $m_campaign->getCampaignByID($campaign_id);
-
-    // Extend the TCPDF class to create custom Header and Footer
-	if (!class_exists('MYPDF')) {
-		class MYPDF extends TCPDF {
-
-			var $logo = "";
-			var $logo_footer = "";
-			var $footer = "";
-
-			//Page header
-			public function Header() {
-				// Logo
-				if (is_file($this->logo)) {
-					$this->Image($this->logo, 0, 0, 200, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-				}
-				// Set font
-				$this->SetFont('helvetica', 'B', 16);
-				// Title
-				$this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
-			}
-
-			// Page footer
-			public function Footer() {
-				// Position at 15 mm from bottom
-				$this->SetY(-15);
-				// Set font
-				$this->SetFont('helvetica', 'I', 8);
-				// Page number
-				$this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-				// footer
-				$this->writeHTMLCell($w = 0, $h = 0, $x = '', $y = 250, $this->footer, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
-				//logo
-				if (is_file($this->logo_footer)) {
-					$this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-				}
-			}
-		}
-	}
 
     //
     // Evaluation result
@@ -573,8 +598,8 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+    //require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
+    //require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
@@ -615,42 +640,6 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
         $courses_list .= $ds.' - '.$de.'<br />';
         $courses_fee  .= 'Euro '.$c['price'].'<br>';
         $programme = $c['label'];
-    }
-
-    // Extend the TCPDF class to create custom Header and Footer
-    class MYPDF extends TCPDF {
-
-        var $logo = "";
-        var $logo_footer = "";
-        var $footer = "";
-
-        //Page header
-        public function Header() {
-            // Logo
-            if (is_file($this->logo)) {
-	            $this->Image($this->logo, 0, 0, 200, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-            }
-            // Set font
-            $this->SetFont('helvetica', 'B', 16);
-            // Title
-            $this->Cell(0, 15, '', 0, false, 'C', 0, '', 0, false, 'M', 'M');
-        }
-
-        // Page footer
-        public function Footer() {
-            // Position at 15 mm from bottom
-            $this->SetY(-15);
-            // Set font
-            $this->SetFont('helvetica', 'I', 8);
-            // Page number
-            $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-            // footer
-            $this->writeHTMLCell($w=0, $h=0, $x='', $y=250, $this->footer, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
-            //logo
-            if (is_file($this->logo_footer)) {
-	            $this->Image($this->logo_footer, 150, 280, 40, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-            }
-        }
     }
 
     //
@@ -788,15 +777,18 @@ function data_to_img($match) {
     return "$img$fn$end";  // new <img> tag
 }
 
+
+
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
+    //require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
+    //require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
     if (empty($file_lbl)) {
     	$file_lbl = "_application";
@@ -830,11 +822,11 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     }
 
     // Create PDF object
-    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('eMundus');
-    $pdf->SetTitle('Application Form');
+    $pdf->SetTitle(JText::_('APPLICATION_FORM'));
 
     try {
 
@@ -857,51 +849,17 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
     }
 
-    //get logo
-    $template = $app->getTemplate(true);
-    $params = $template->params;
-
-    if (!empty($params->get('logo')->custom->image)) {
-
-        $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-        $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
-
-    } else {
-
-        if(file_exists(JPATH_ROOT.DS.'images'.DS.'custom'.DS.$item->training.'.png')) {
-            $logo = JPATH_ROOT.DS.'images'.DS.'custom'.DS.$item->training.'.png';
-        } else {
-
-            $logo_module = JModuleHelper::getModuleById('90');
-            preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-
-            $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-            (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-            (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-            (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-
-            if ((bool) preg_match($pattern, $tab[1])) {
-                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
-            }
-
-            $logo = JPATH_BASE.DS.$tab[1];
-
-        }
-    }
-
-    // manage logo by programme
-    $ext = substr($logo, -3);
-    $logo_prg = substr($logo, 0, -4).'-'.$item->training.'.'.$ext;
-    if (is_file($logo_prg)) {
-	    $logo = $logo_prg;
-    }
-
 	//get title
-	$title = $config->get('sitename');
-	if (is_file($logo)) {
-		$pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
-	}
+    $title = $config->get('sitename');
+    $pdf->logo = getLogo($campaign_id);
+    $pdf->header = $title;
 
+    if (is_file($logo)) {
+        //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $title, $item->label);
+        $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+	}
+    
 	unset($logo);
 	unset($title);
 
@@ -913,7 +871,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
     $pdf->setCellPaddings('L');//Set Padding
- 
     //$pdf->SetLineWidth();
 
 	// set default monospaced font
@@ -921,106 +878,21 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	// set default font subsetting mode
 	$pdf->setFontSubsetting(true);
 	// set font
-    $pdf->SetFont('freeserif', '', 10);
+    $pdf->SetFont('dejavusans', '', 10);
 	$pdf->AddPage();
-	$dimensions = $pdf->getPageDimensions();
+    $dimensions = $pdf->getPageDimensions();
+    
+    $css_file = JURI::base().'media/com_emundus/css/emundus_pdf.css';
 
 	/*** Applicant   ***/
-	$htmldata .= "<style>
+    $htmldata .= '
+<style> 
+    '.file_get_contents($css_file).'
+    .idcandidat {color: '.$cTitle.';}
+    .statut {color: '.$cTitle.';}
+    h2 {color: '.$cTitle.';}
 
-    @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
-    
-    .en-tete { width :100%;  }
-    .candidat { width :80%;  }
-    .avatar { width :20%;  }
-    .dossier { width :100%;  }
-    
-          
-	.card  { border: none; display:block; font-family: 'Roboto', sans-serif; }
-	.name  { display: block;  display:block; font-family: 'Roboto', sans-serif; }
-	.maidename  {display: block; font-family: 'Roboto', sans-serif; }
-    .nationality { display: block; font-weight:normal!important; font-family: 'Roboto', sans-serif; }
-    .idcandidat{ display: block; font-weight:normal!important;  color: ".$cTitle."; font-family: 'Roboto', sans-serif;  }
-    .sent { display: block; font-family: 'Roboto', sans-serif; text-align:left;  }
-    .statut { display: block; font-family: 'Roboto', sans-serif; text-align:left; color: ".$cTitle."  }
-	.birthday { display: block; font-family: 'Roboto', sans-serif; }
-	.label		   {color:black;  }
-	.label-default {background-color:#999999;}
-	.label-primary {background-color:#337ab7;}
-	.label-success {background-color:#5cb85c;}
-	.label-info    {background-color:#033c73;}
-	.label-warning {background-color:#dd5600;}
-	.label-danger  {background-color:#c71c22;}
-	.label-lightpurple { background-color: #DCC6E0 }
-	.label-purple { background-color: #947CB0 }
-	.label-darkpurple {background-color: #663399 }
-	.label-lightblue { background-color: #6bb9F0 }
-	.label-blue { background-color: #19B5FE }
-	.label-darkblue { background-color: #013243 }
-	.label-lightgreen { background-color: #00E640 }
-	.label-green { background-color: #3FC380 }
-	.label-darkgreen { background-color: #1E824C }
-	.label-lightyellow { background-color: #FFFD7E }
-	.label-yellow { background-color: #FFFD54 }
-	.label-darkyellow { background-color: #F7CA18 }
-	.label-lightorange { background-color: #FABE58 }
-	.label-orange { background-color: #E87E04 }
-	.label-darkorange {background-color: #D35400 }
-	.label-lightred { background-color: #EC644B }
-	.label-red { background-color: #CF000F }
-	.label-darkred { background-color: #96281B }
-	.label-lightpink { background-color: #e08283; }
-	.label-pink { background-color: #d2527f; }
-    .label-darkpink { background-color: #db0a5b; }
-    h3 {  font-family: 'Roboto', sans-serif; font-size:35px;  color: #000000; text-align:left!important; font-weight:bold;}
-            
-
-            h2 {
-               font-size:40px;
-               color: ".$cTitle.";
-               font-weight:500;
-    
-            }
-  
-           h3 {
-                font-size:35px;
-                color: #000000;
-                text-align:left!important;
-             
-            }
-
-            h5 {
-                color: #000000;
-                font-size: 18px;
-                text-align: left;
-            }
-
-            th {
-                color: #000000;
-                font-size: 33px!important;
-            }
-
-            td {
-                color: #000000;
-                font-size: 33px!important;           
-            }
-
-           .background {
-	            background-color: #F7F7F7;
-           }
-
-           .background-light {
-              border-top: 0.5px solid #D3D3D3;
-              border-bottom: 0.5px solid #D3D3D3;
-           }
-
-            
-            @media print {
-                .breaker{ 
-                    page-break-before: always;
-                }
-            }
-	</style>";
+</style>';
 
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 
@@ -1067,7 +939,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             $htmldata .= '<tr><td class="statut">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</td></tr>';
         }
         if (in_array("adoc-print", $options)) {
-            $htmldata .= '<tr class="sent"><td>'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</td></tr>';
+            $htmldata .= '<tr class="sent"><td>'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('DATE_FORMAT_LC5').'</td></tr>';
         }
         if (in_array("status", $options)) {
             $status = $m_files->getStatusByFnums(explode(',', $fnum));
@@ -1090,20 +962,15 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 	    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
-        $htmldata .= '
-                
+        $htmldata .= '    
         <table class="en-tete"> 
             <tr>
             ';
                      /* td candidat */
-                    $htmldata .= '
-                   
-                    <td class="candidat">
-                    
+                    $htmldata .= ' 
+                    <td class="candidat"> 
                     <h3>'.JText::_('PDF_HEADER_INFO_CANDIDAT').'</h3>
-
                     <table>
-
                     <tr><td class="name">'.@$item->firstname.' '.strtoupper(@$item->lastname).'</td></tr>';
 
                         $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
@@ -1142,25 +1009,18 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $dt->setTimezone(new DateTimeZone($offset));
 
                 $htmldata .= '
-                
                     <tr>
-                    <td class="dossier">
-                
+                    <td class="dossier">          
                     <h3>'.JText::_('PDF_HEADER_INFO_DOSSIER').'</h3>
-
                         <table>
                             <tr><td class="name">'.@$item->label.' ('.@$item->cb_schoolyear.')</td></tr>
                             <tr><td class="nationality">'.JText::_('FNUM').' : '.$fnum.'</td></tr>
                             <tr><td class="statut">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</td></tr>
-                            <tr><td class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</td></tr>
-                        
+                            <tr><td class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</td></tr>   
                         </table>
-
                     </td>
                     </tr>
         </table>
-     
-     
         ';
 
     }
@@ -1198,7 +1058,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     $htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', "data_to_img", $htmldata);
     $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
-
+//die($htmldata);
     if (!empty($htmldata)) {
         $pdf->startTransaction();
         $start_y = $pdf->GetY();
@@ -1243,8 +1103,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+    //require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
+    //require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
@@ -1252,6 +1112,10 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 
     $config = JFactory::getConfig();
     $offset = $config->get('offset');
+
+    $eMConfig = JComponentHelper::getParams('com_emundus');
+    $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25'); //déclaration couleur principale
+
 
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
@@ -1270,7 +1134,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $htmldata = '';
 
     // Create PDF object
-    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('eMundus');
@@ -1297,24 +1161,15 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
         JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
     }
 
-    //get logo
-    $template = $app->getTemplate(true);
-    $params = $template->params;
-
-    $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-    $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
-
-    // manage logo by programme
-    $ext = substr($logo, -3);
-    $logo_prg = substr($logo, 0, -4).'-'.$item->training.'.'.$ext;
-    if (is_file($logo_prg)) {
-	    $logo = $logo_prg;
-    }
-
     //get title
     $title = $config->get('sitename');
+    $pdf->logo = getLogo($campaign_id);
+    $pdf->header = $title;
+
     if (is_file($logo)) {
-	    $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+        //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $title, $item->label);
+        $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
     }
 
     unset($logo);
@@ -1338,44 +1193,17 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 
 
     /*** Applicant   ***/
-    $htmldata .=
-        '<style>
-	.card  { border: none; display:block; line-height:80%;}
-	.name  { display: block; margin: 0 0 0 20px; padding:0; display:block; line-height:110%;}
-	.maidename  { display: block; margin: 0 0 0 20px; padding:0; }
-	.nationality { display: block; margin: 0 0 0 20px;  padding:0;}
-	.sent { display: block; font-family: monospace; margin: 0 0 0 10px; padding:0; text-align:right;}
-	.birthday { display: block; margin: 0 0 0 20px; padding:0;}
+    $css_file = JURI::base().'media/com_emundus/css/emundus_pdf.css';
 
-    .label		   {white-space:nowrap; color:black; border-radius: 2px; padding:2px 2px 2px 2px;}
-	.label-default {background-color:#999999;}
-	.label-primary {background-color:#337ab7;}
-	.label-success {background-color:#5cb85c;}
-	.label-info    {background-color:#033c73;}
-	.label-warning {background-color:#dd5600;}
-	.label-danger  {background-color:#c71c22;}
-	.label-lightpurple { background-color: #DCC6E0 }
-	.label-purple { background-color: #947CB0 }
-	.label-darkpurple {background-color: #663399 }
-	.label-lightblue { background-color: #6bb9F0 }
-	.label-blue { background-color: #19B5FE }
-	.label-darkblue { background-color: #013243 }
-	.label-lightgreen { background-color: #00E640 }
-	.label-green { background-color: #3FC380 }
-	.label-darkgreen { background-color: #1E824C }
-	.label-lightyellow { background-color: #FFFD7E }
-	.label-yellow { background-color: #FFFD54 }
-	.label-darkyellow { background-color: #F7CA18 }
-	.label-lightorange { background-color: #FABE58 }
-	.label-orange { background-color: #E87E04 }
-	.label-darkorange {background-color: #D35400 }
-	.label-lightred { background-color: #EC644B }
-	.label-red { background-color: #CF000F }
-	.label-darkred { background-color: #96281B }
-	.label-lightpink { background-color: #e08283; }
-	.label-pink { background-color: #d2527f; }
-	.label-darkpink { background-color: #db0a5b; }
-	</style>';
+	/*** Applicant   ***/
+    $htmldata .= '
+<style> 
+    '.file_get_contents($css_file).'
+    .idcandidat {color: '.$cTitle.';}
+    .statut {color: '.$cTitle.';}
+    h2 {color: '.$cTitle.';}
+</style>';
+  
 
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
@@ -1527,8 +1355,8 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 function generatePDFfromHTML($html, $path = null, $footer = '') {
 
     set_time_limit(0);
-    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
-    require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+    //require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
+    //require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
 
     if (class_exists('MYPDF') === false || !class_exists('MYPDF')) {
