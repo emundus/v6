@@ -2943,6 +2943,16 @@ footer#g-footer .g-grid {
 
 @media all and (min-width: 480px) and (max-width: 767px)  {
 
+/* HEADER */
+#g-navigation #header-a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#g-navigation #header-c {
+  max-width: 100%;
+}
 
   /* BURGER */
   #g-page-surround .g-offcanvas-toggle {
@@ -3024,6 +3034,22 @@ footer#g-footer .g-grid {
     justify-content: center;
   }
 
+  .em-containerAdresseLogo {
+    width: 100% !important;
+    justify-content: center !important ;
+  }
+
+  .bas-footer .adresse {
+    align-items : center;
+  }
+
+  .bas-footer .adresse  p{
+    text-align : center !important;
+  }
+
+  #g-page-surround > .g-container:not(.g-flushed) {
+    height: auto;
+  }
 
   footer#g-footer {
 
@@ -3400,8 +3426,8 @@ footer#g-footer .g-grid {
   @media all and (max-width: 1239px) {
 
     /* FOOTER */
-    .em-containerAdresseLogo {
-      width: 60% !important;
+    #g-footer .em-containerAdresseLogo {
+      width: 60%;
     }
 
     /* STRUCUTURE */
