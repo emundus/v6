@@ -1839,6 +1839,15 @@ a.btn-attach:active {
           padding-left: 1rem;
           padding-right: 1rem;
     }
+    
+    .view-form.em-formRegistrationCenter form {
+          width:100%;
+          padding: 20px;
+    }
+    
+    .view-form.em-formRegistrationCenter .fabrikForm fieldset > .row-fluid,{
+          padding: 0px;
+    }
 
     .view-registration .em-register-table {
           border: none;
