@@ -100,6 +100,11 @@ echo <<<EOT
     padding-right: 5%;
 }
 
+.view-registration main#g-main-mainbody {
+    padding-right: 0;
+}
+
+
 .view-form .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions{
     padding: 0;
 }
@@ -109,6 +114,10 @@ echo <<<EOT
     margin-bottom: 20px;
     border-radius: 0;
     padding: 20px;
+}
+
+.view-form.view-registration .fabrikGroup {
+    padding: 0px;
 }
 
 .view-form p.select-program + form .fabrikGroup {
@@ -121,6 +130,10 @@ echo <<<EOT
 
 .view-form:not(.em-formRegistrationCenter) .size-100 .size-100 .fabrikGroup {
     background: #fff;
+}
+
+.view-form.view-registration .size-100 .size-100 .fabrikGroup {
+    background: #fafafa;
 }
 
 .view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
@@ -456,6 +469,18 @@ form#member-profile .form-horizontal .control-label {
     color: #c30505;
     font-size: 5px;
 }
+
+.view-registration .icon-star.small {
+    margin-top: 0px;
+    padding-top: 0px;
+    position: relative;
+    padding-left: 2px;
+    color: #c30505;
+    font-size: 5px;
+    order: 2;
+    top: -10px;
+}
+
 .icon-.small {
     display: none;
 }
@@ -518,11 +543,16 @@ form#member-profile .form-horizontal .control-label {
     margin-right: auto;
     margin-top: 50px;
     padding-bottom: 50px;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
 }
 
   .view-registration .login.em-formRegistrationCenter .row-fluid {
     background: #fafafa;
+}
+
+  .view-registration form .row-fluid .plg-password span, .view-form.em-formRegistrationCenter form .row-fluid .plg-password span {
+    color: #000; 
+    margin-top: 5px;
 }
 
   /* ICON  TITRE INSCRIPTION */
@@ -1289,6 +1319,10 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   padding: 2px 30px;
 }
 
+.view-form.view-registration .fabrikForm fieldset > .row-fluid {
+  padding: 0px;
+}
+
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
   position: absolute;
   top: -5px;
@@ -1809,6 +1843,15 @@ a.btn-attach:active {
     .view-registration form {
           padding-left: 1rem;
           padding-right: 1rem;
+    }
+    
+    .view-form.em-formRegistrationCenter form {
+          width:100%;
+          padding: 20px;
+    }
+    
+    .view-form.em-formRegistrationCenter .fabrikForm fieldset > .row-fluid {
+          padding: 0px;
     }
 
     .view-registration .em-register-table {

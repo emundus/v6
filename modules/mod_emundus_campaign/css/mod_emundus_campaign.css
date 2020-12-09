@@ -343,6 +343,10 @@
         text-align: left;
     }
 
+    .left-side, .right-side {
+        padding: 10px 10px 10px 10px !important;
+    }
+
 }
 
 @media all and (max-width: 959px) {
@@ -381,7 +385,7 @@
     }
 
     .left-side, .right-side {
-        padding: 10px 10px 10px 40px !important;
+        padding: 10px 10px 10px 40px;
     }
 
     .below-content {
