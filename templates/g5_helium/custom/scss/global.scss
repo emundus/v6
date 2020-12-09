@@ -2468,7 +2468,7 @@ div#em-appli-block {
     }
     a:hover b.caret,
     a:hover b.caret,
-    a:hover b.caret, {
+    a:hover b.caret {
       color: $base-secondary-color;
       border-top-color: $base-secondary-color;
       border-bottom-color: $base-secondary-color;
@@ -3073,7 +3073,7 @@ footer#g-footer .g-grid {
     max-width: 100%;
   }
 
-  
+
   #g-navigation #header-c .g-content {
     flex-direction: column !important;
     justify-content: center !important;
