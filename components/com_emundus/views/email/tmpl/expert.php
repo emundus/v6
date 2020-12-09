@@ -140,10 +140,7 @@ if (!empty($files)) {
 
                 echo '<div id="em_attachment">
                 <div id="em_dl_'.$file['id'].'" class="em_dl">
-                    <a class="dO" target="_blank" href="'.$file['url'].'">
-                        <div class="vI"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.$file['name'].'" title="'.$file['name'].'" width="22" height="22" align="absbottom" /> '.$file['name'].'</div>
-                        <div class="vJ"></div>
-                    </a>
+                    <div class="vI"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.$file['name'].'" title="'.$file['name'].'" width="22" height="22" align="absbottom" /> '.$file['name'].'</div>
                     <div class="em_email_icon" id="attachment_'.$file['id'].'">
                         <img src="'.JURI::base().'media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].'); document.getElementById(\'mail_attachments\').value=\'\';}"/>
                     </div>
