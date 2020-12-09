@@ -138,7 +138,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 							}
 
 							$success[] = $attachment->fnum;
-							$query->values(implode(',', [$uid, $db->quote($attachment->fnum), (int)substr($attachment->fnum, 14, 7), $attachment->attachment_id, $db->quote($attachment->lbl), $db->quote('YouSign signed document'), '0', '0']));
+							$query->values(implode(',', [$uid, $db->quote($attachment->fnum), (int)substr($attachment->fnum, 14, 7), $attachment->attachment_id, $db->quote($fileName), $db->quote('YouSign signed document'), '0', '0']));
 
 						} else {
 							JLog::add('Error downloading file from YouSign -> RESPONSE ('.$response->code.') '.$response->body, JLog::ERROR, 'com_emundus.webhook');
