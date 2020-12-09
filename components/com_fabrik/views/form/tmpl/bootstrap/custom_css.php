@@ -1845,7 +1845,7 @@ a.btn-attach:active {
           padding: 20px;
     }
     
-    .view-form.em-formRegistrationCenter .fabrikForm fieldset > .row-fluid,{
+    .view-form.em-formRegistrationCenter .fabrikForm fieldset > .row-fluid {
           padding: 0px;
     }
 
