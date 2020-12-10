@@ -1678,9 +1678,9 @@ a.btn-attach:active {
     border-radius: 0;
     background: #fafafa;
     border-radius: 0;
-    padding: 0px;
+    padding: 0px !important;
     box-shadow: none;
-    width: 58%;
+    width: 59%;
     margin-left: auto;
     margin-right: auto;
 }

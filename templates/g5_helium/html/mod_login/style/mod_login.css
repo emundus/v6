@@ -28,7 +28,7 @@ form[action="/connexion-candidater"] .em_label-user, .em_label-passwd{
     border: none;
     margin-bottom: 0 !important;
     border-radius: 0;
-    padding: 20px !important;
+    padding: 20px;
     box-shadow: none;
     width: 50%;
     margin-left: auto !important;
