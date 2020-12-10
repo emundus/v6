@@ -71,7 +71,11 @@ class EmundusModelActions extends JModelList {
             /** Get all user assoc
              *  When using the $gid param, we only get the files linked to the group we are looking at
              */
-            $query
+
+			/*
+			 * We're taking this code out of the Sync as it is an a (probably) useless abomination of efficiency that probably uses as much CPU power as IMBs Deep Blue just to write 0s in a DB.
+			 * Might as well replace this bit of code with a crypto miner, we would be rich.
+			$query
                 ->clear()
                 ->select([$dbo->quoteName('jeua.fnum'), $dbo->quoteName('jeua.user_id'), $dbo->quoteName('jeua.action_id')])
                 ->from($dbo->quoteName('#__emundus_users_assoc', 'jeua'))
@@ -86,6 +90,7 @@ class EmundusModelActions extends JModelList {
 
             $dbo->setQuery($query);
             $arrayUserAssoc = $dbo->loadAssocList();
+            */
 
             /* Get all actions in acl table */
             $query
@@ -117,7 +122,7 @@ class EmundusModelActions extends JModelList {
 
 			$acl = array();
 			$aclGroupAssoc = array();
-			$aclUserAssoc = array();
+			//$aclUserAssoc = array();
 
 			foreach ($aclAction as $action) {
 				$acl[$action['group_id']][] = $action['action_id'];
@@ -125,9 +130,15 @@ class EmundusModelActions extends JModelList {
 			foreach ($arrayGroupAssoc as $aga) {
 				$aclGroupAssoc[$aga['fnum']][$aga['group_id']][] = $aga['action_id'];
 			}
+
+			/*
+			AAAAND we loop over it, did I mention the query commented above will return 6 MILLION lines for 182 files and a few evaluators ?
+
 			foreach ($arrayUserAssoc as $aua) {
 				$aclUserAssoc[$aua['fnum']][$aua['user_id']][] = $aua['action_id'];
 			}
+			*/
+
 			foreach ($acl as $gId => $groupAction) {
 				$acl[$gId] = array_diff($actionsId, $groupAction);
 			}
@@ -140,11 +151,17 @@ class EmundusModelActions extends JModelList {
 					$aclGroupAssoc[$fnum][$gid] = array_diff($actionsId, $action);
 				}
 			}
+
+			/*
+			AND WE LOOP AGAIN, this time with complexity multiplied by the number of users.
+			RIP Server.
+
 			foreach ($aclUserAssoc as $fnum => $users) {
 				foreach ($users as $uid => $action) {
 					$aclUserAssoc[$fnum][$uid] = array_diff($actionsId, $action);
 				}
 			}
+			*/
 
 			$canInsert = false;
 			$insert = "INSERT INTO jos_emundus_acl (action_id, group_id, c, r, u, d) values ";
@@ -190,6 +207,10 @@ class EmundusModelActions extends JModelList {
 				}
 				$dbo->execute();
 			}
+
+			/*
+			This is the part where we enter a ton of 0s in the db...
+
 			$canInsert = false;
 			$insert = "INSERT INTO jos_emundus_users_assoc (fnum, action_id, user_id, c, r, u, d) values ";
 
@@ -217,6 +238,7 @@ class EmundusModelActions extends JModelList {
 				}
 				$dbo->execute();
 			}
+			*/
 
 			if ($echo) {
 				echo "END";
