@@ -533,12 +533,12 @@ form#member-profile .form-horizontal .control-label {
 
 /* Inscription */
 
-  .view-registration .login.em-formRegistrationCenter,  .view-form .em-formRegistrationCenter:not(.componentheading) {
+  .view-registration .login.em-formRegistrationCenter,  .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) {
      display: flex !important;
     flex-direction: column;
     align-items: center;
     background: #fafafa;
-    width: 60%;
+    width: 59%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 50px;
@@ -546,7 +546,20 @@ form#member-profile .form-horizontal .control-label {
     margin-bottom: 50px;
 }
 
-  .view-registration .login.em-formRegistrationCenter .row-fluid {
+ .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .span4 .btn-group {
+        width: 100% !important; 
+}
+
+.view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .row-fluid .span4  {
+        width: 100% !important; 
+}
+
+.view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .row-fluid .span4 button {
+        width: 100% !important; 
+}
+
+
+.view-registration .login.em-formRegistrationCenter .row-fluid {
     background: #fafafa;
 }
 
@@ -1118,10 +1131,11 @@ ol li {
    margin-bottom: 10px;
 }
 
-.view-registration form .button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form .em-formRegistrationCenter .button.btn.btn-primary.save-btn.sauvegarder.button.register {
+.view-registration form .button.btn.btn-primary, .view-form .em-formRegistrationCenter #login-form #form-login-submit button {
     height: 50px !important;
-    text-transform: capitalize;
+    text-transform: initial;
     width:100%;
+    padding: 8px 12px; 
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input:not([type="radio"]) {
@@ -1141,7 +1155,7 @@ ol li {
     height: 50px !important;
 }
 
-.view-registration form .fabrikActions.form-actions{
+.view-registration form .fabrikActions.form-actions {
     padding: 0 !important;
 }
 .view-registration form .span4{
@@ -1150,7 +1164,7 @@ ol li {
 .view-registration form .btn-group{
     width:100%;
 }
-.view-registration form button.register{
+.view-registration form button.register {
     width:100% !important;
     font-weight: 300; 
 }
@@ -1320,8 +1334,12 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   padding: 2px 30px;
 }
 
-.view-form.view-registration .fabrikForm fieldset > .row-fluid {
+.view-form.view-registration .fabrikForm fieldset > .row-fluid, .view-form.em-formRegistrationCenter .fabrikForm fieldset > .row-fluid {
   padding: 0px;
+}
+
+.view-form.em-formRegistrationCenter main#g-main-mainbody {
+    padding-right: 0%;
 }
 
 .fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
