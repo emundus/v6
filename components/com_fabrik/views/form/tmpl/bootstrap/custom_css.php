@@ -1124,12 +1124,13 @@ ol li {
     width:100%;
 }
 
-.view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input {
+.view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input:not([type="radio"]) {
    border-radius : 4px; 
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input[type="radio"] {
    margin-top: 5px;
+      border-radius : 20px; 
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid:nth-child(4) .controls label.radio {
