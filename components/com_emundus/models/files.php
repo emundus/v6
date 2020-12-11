@@ -2423,7 +2423,7 @@ if (JFactory::getUser()->id == 63)
                 if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
                     $element_attribs = json_decode($elt->element_attribs);
                     foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                        $if[] = 'IF('.$select.'="'.$value.'","'.$element_attribs->sub_options->sub_labels[$key].'"';
+                        $if[] = 'IF('.$select.'="'.$value.'","'.$db->escape($element_attribs->sub_options->sub_labels[$key]).'"';
                         $endif .= ')';
                     }
                     $select = implode(',', $if).','.$select.$endif;

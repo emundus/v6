@@ -70,6 +70,10 @@ ul.unstyled.em-linkForgot li {
     border: none;
 }
 
+ul.unstyled.em-linkForgot li:nth-child(1) {
+    display: none;
+}
+
 ul.unstyled.em-linkForgot li a::before {
     content: "\f101";
     font-family: FontAwesome;
