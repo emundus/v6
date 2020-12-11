@@ -1,6 +1,6 @@
 <template>
     <div class="w-row">
-      <div class="col-md-2 tchooz-sidebar-menu">
+      <div class="tchooz-sidebar-menu">
         <transition name="slide-right">
           <div class="col-md-12 tchooz-sidebar-menus">
             <div class="container-menu-funnel">
@@ -15,16 +15,16 @@
         </transition>
       </div>
 
-      <div class="col-md-10 col-md-offset-2 p-1" style="padding-left: 2em !important;">
+      <div class="col-md-10 col-md-offset-1 p-1" style="padding-left: 2em !important;">
         <div class="d-flex justify-content-between" style="margin-bottom: 10px">
           <div class="d-flex" v-if="menuHighlight != 0 && menuHighlight != 6  && menuHighlight != 7">
             <transition name="slide-right">
               <div class="loading-form-save" v-if="saving">
-                <Ring-Loader :color="'#de6339'" />
+                <Ring-Loader :color="'#12DB42'" />
               </div>
             </transition>
             <transition name="slide-right">
-              <div v-if="endSaving" class="d-flex">
+              <div class="loading-form-save" v-if="endSaving">
                 <i class="fas fa-check"></i><span class="mr-1">{{Saved}}</span>
               </div>
             </transition>
@@ -179,7 +179,7 @@ export default {
 
   methods: {
     updateStatus(status) {
-      this.updateLoading();
+      this.updateLoading(true);
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatestatus',
@@ -190,12 +190,12 @@ export default {
           status: status
         })
       }).then(() => {
-        this.updateLoading();
+        this.updateLoading(false);
       });
     },
 
     updateTags(tags){
-      this.updateLoading();
+      this.updateLoading(true);
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatetags',
@@ -206,12 +206,12 @@ export default {
           tags: tags
         })
       }).then(() => {
-        this.updateLoading();
+        this.updateLoading(false);
       });
     },
 
     updateFooter(content) {
-      this.updateLoading();
+      this.updateLoading(true);
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatefooter',
@@ -222,12 +222,12 @@ export default {
           content: content
         })
       }).then(() => {
-        this.updateLoading();
+        this.updateLoading(false);
       });
     },
 
     updateHomepage(content) {
-      this.updateLoading();
+      this.updateLoading(true);
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatehomepage',
@@ -238,12 +238,12 @@ export default {
           content: content
         })
       }).then(() => {
-        this.updateLoading();
+        this.updateLoading(false);
       });
     },
 
     updateCgv(content) {
-      this.updateLoading();
+      this.updateLoading(true);
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatecgv',
@@ -254,7 +254,7 @@ export default {
           content: content
         })
       }).then(() => {
-        this.updateLoading();
+        this.updateLoading(false);
       });
     },
 
@@ -308,11 +308,16 @@ export default {
 .fa-check{
   width: 40px;
   font-size: 25px;
-  color: green;
+  color: #12DB42;
 }
-.bouton-sauvergarder-et-continuer{
+.bouton-sauvergarder-et-continuer,.loading-form-save{
   position: absolute;
-  right: 10%;
+  right: 4%;
   top: 7%;
+  z-index: 999;
+  width: auto;
+}
+.loading-form-save{
+  right: 10% !important;
 }
 </style>

@@ -92,7 +92,8 @@ if($user != null) {
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown' id="userDropdown" style="float: right;">
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-        <i class="<?= $icon; ?>" id="userDropdownIcon"></i>
+<!--        <i class="--><?//= $icon; ?><!--" id="userDropdownIcon"></i>-->
+        <img src="/images/emundus/menus/user.png" id="userDropdownIcon">
     </div>
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
         <?php

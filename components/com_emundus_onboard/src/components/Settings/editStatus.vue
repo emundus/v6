@@ -1,5 +1,11 @@
 <template>
     <div class="container-evaluation">
+      <a @click="pushStatus" class="bouton-ajouter-green bouton-ajouter pointer mb-1" style="width: max-content">
+        <div class="add-button-div">
+          <em class="fas fa-plus mr-1"></em>
+          {{ addStatus }}
+        </div>
+      </a>
         <div v-for="(statu, index) in status" class="status-item" :id="'step_' + statu.step">
             <div class="status-field">
                 <div style="width: 100%">
@@ -17,7 +23,7 @@
                         <input type="text" v-model="statu.value.en" v-if="statu.translate">
                     </transition>-->
                 </div>
-                <button class="translate-icon" style="height: 10%;margin-top: 10px;" v-if="manyLanguages !== '0'" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
+                <button class="translate-icon" v-if="manyLanguages !== '0'" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
                 <input type="hidden" :class="'label-' + statu.class">
             </div>
             <v-swatches
@@ -31,7 +37,6 @@
             ></v-swatches>
           <button type="button" v-if="statu.step != 0 && statu.step != 1" @click="removeStatus(statu,index)" class="remove-tag"><i class="fas fa-trash"></i></button>
         </div>
-        <a @click="pushStatus" class="bouton-sauvergarder-et-continuer create-tag">{{ addStatus }}</a>
     </div>
 </template>
 
@@ -147,12 +152,14 @@
         color: white
     }
     .translate-icon-selected{
-      top: 0;
-    }
-    .container-evaluation{
-      margin-top: 10%;
+      margin-top: 10px;
+      height: max-content;
     }
     .bouton-sauvergarder-et-continuer{
       justify-content: center;
+    }
+    .create-tag{
+      width: max-content;
+      margin-bottom: 20px;
     }
 </style>

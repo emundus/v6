@@ -8,6 +8,14 @@
             :classes="'vue-notification-custom'"
     />
     <div class="w-container">
+      <div class="section-sub-menu sub-form" v-if="campaign == ''">
+        <div class="container-2 w-container" style="max-width: unset">
+          <div class="d-flex">
+            <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
+            <h2 class="tchooz-section-titles">{{AddCampaign}}</h2>
+          </div>
+        </div>
+      </div>
       <form id="campaign-form" @submit.prevent="submit">
         <div class="sous-container">
           <p class="required mb-1">{{RequiredFieldsIndicate}}</p>
@@ -84,7 +92,7 @@
               <strong class="b switch"></strong>
               <strong class="b track"></strong>
             </div>
-            <label for="published" class="ml-10px">{{ Publish }}</label>
+            <span for="published" class="ml-10px">{{ Publish }}</span>
           </div>
           <div class="form-group d-flex">
             <div class="toggle">
@@ -99,7 +107,7 @@
               <strong class="b switch"></strong>
               <strong class="b track"></strong>
             </div>
-            <label for="limit" class="ml-10px">{{ FilesLimit }}</label>
+            <span for="limit" class="ml-10px">{{ FilesLimit }}</span>
           </div>
           <transition name="'slide-down'">
             <div v-if="form.is_limited == 1">
@@ -136,12 +144,8 @@
 
         <div class="sous-container">
           <div class="heading-form">
-            <div class="icon-title informations"></div>
             <h2 class="heading">{{ Information }}</h2>
           </div>
-          <p class="paragraphe-sous-titre">
-            {{ InformationDesc }}
-          </p>
           <div class="form-group campaign-label">
             <label for="campResume" style="top: 5em">{{Resume}} *</label>
             <textarea
@@ -179,12 +183,8 @@
 
         <div class="sous-container last-container">
           <div class="heading-form">
-            <div class="icon-title programme"></div>
             <h2 class="heading">{{ Program }}</h2>
           </div>
-          <p class="paragraphe-sous-titre">
-            {{ ProgramDesc }}
-          </p>
           <div class="form-group container-flexbox-choisir-ou-plus w-clearfix">
             <select
               class="dropdown-toggle w-select" style="margin-bottom: 0"
@@ -202,19 +202,13 @@
                 {{ item.label }}
               </option>
             </select>
-            <div v-if="coordinatorAccess != 0"
-              @click="displayProgram"
-              id="add-program"
-              class="addCampProgEmail">
-            </div>
+            <button v-if="coordinatorAccess != 0" type="button" @click="displayProgram" class="buttonAddDoc" id="add-program">
+              <em class="fas fa-plus"></em>
+            </button>
           </div>
 
           <transition name="slide-fade">
-            <div class="sous-container program-addCampaign" v-if="isHiddenProgram">
-              <h2 class="heading">{{ AddProgram }}</h2>
-              <p class="paragraphe-sous-titre">
-                {{ AddProgramDesc }}
-              </p>
+            <div class="program-addCampaign" v-if="isHiddenProgram">
               <div class="w-form">
                 <div class="form-group prog-label">
                   <label for="prog_label" style="top: 5.7em">{{ProgName}} *</label>
@@ -232,7 +226,7 @@
                   <span class="error">{{ProgLabelRequired}}</span>
                 </p>
 
-                <div class="form-group campaign-label">
+<!--                <div class="form-group campaign-label">
                   <label style="top: 10.7em">{{ChooseCategory}}</label>
                   <autocomplete
                     @searched="onSearchCategory"
@@ -275,7 +269,7 @@
                     <strong class="b track"></strong>
                   </div>
                   <label for="apply" class="ml-10px mb-0">{{ DepotDeDossier }}</label>
-                </div>
+                </div>-->
               </div>
             </div>
           </transition>
@@ -294,15 +288,8 @@
               </button>
               <div class="d-flex">
                 <button
-                    v-if="!campaign"
                     type="button"
-                    class="bouton-sauvergarder-et-continuer w-quitter"
-                    @click="quit = 0; submit()">
-                  {{ Quitter }}
-                </button>
-                <button
-                    type="button"
-                    class="bouton-sauvergarder-et-continuer"
+                    class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green"
                     @click="quit = 1; submit()">
                   {{ Continuer }}
                 </button>
@@ -454,6 +441,7 @@ export default {
     StatusLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS"),
     StatusLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
     FilesLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED"),
+    AddCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
 
     submitted: false
   }),

@@ -7,3 +7,11 @@ WHERE module LIKE 'mod_falang';
 UPDATE jos_menu set published = 0
 WHERE menutype = 'usermenu' AND alias = 'mon-profil';
 # END #
+
+# Disable translation field useless #
+UPDATE jos_falang_content SET published = 0
+WHERE reference_table = 'menu' and reference_id IN (
+    SELECT @menus := id FROM jos_menu
+    WHERE menutype = 'onboardingmenu'
+) and reference_field != 'title';
+# END #

@@ -2,7 +2,7 @@
   <div class="section-sub-menu">
     <div class="container-2 w-container" style="max-width: unset">
       <transition :name="'slide-down'" type="transition">
-      <div class="w-row">
+      <div>
         <div class="d-flex" v-if="data.type === 'campaign'">
           <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
           <h2 class="tchooz-section-titles">{{ Campaigns }}</h2>
@@ -17,40 +17,6 @@
         </div>
 
         <div class="actions-add-block">
-          <!--<div data-hover="1"
-               data-delay="0"
-               class="dropdown w-dropdown"
-               @mouseover="actionHover = true"
-               @mouseleave="actionHover = false"
-               style="margin-right: 3em;">
-            <div v-show="isEmpty" class="dropdown-toggle-2 w-dropdown-toggle">
-              <div class="icon w-icon-dropdown-toggle"></div>
-              <div>{{ Action }}</div>
-            </div>
-            <nav aria-label="action" v-if="actionHover" class="dropdown-list w-dropdown-list">
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu w-dropdown-link" v-if="data.type !== 'form'">
-                {{ ActionPublish }}
-              </a>
-              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu w-dropdown-link" v-if="data.type !== 'form'">
-                {{ ActionUnpublish }}
-              </a>
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu w-dropdown-link" v-if="data.type === 'form'">
-                {{ Restore }}
-              </a>
-              <a v-if="data.type === 'campaign' || data.type === 'form'"
-                 v-on:click="duplicateSelected(checkItem)"
-                 class="action-submenu w-dropdown-link">
-                {{ ActionDuplicate }}
-              </a>
-              <a v-on:click="deleteSelected(checkItem)" class="action-submenu w-dropdown-link" v-if="data.type !== 'form'">
-                {{ ActionDelete }}
-              </a>
-              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu w-dropdown-link" v-if="data.type === 'form'">
-                {{ Archive }}
-              </a>
-            </nav>
-          </div>-->
-
             <p v-if="data.type === 'campaign'" class="tchooz-section-description">{{ CampaignsDesc }}</p>
             <p v-if="data.type === 'form'" class="tchooz-section-description">{{ FormsDesc }}</p>
             <p v-if="data.type === 'email'" class="tchooz-section-description">{{ EmailsDesc }}</p>
@@ -81,124 +47,161 @@
                  @keyup="cherche(recherche) | debounce"
                  @keyup.enter="chercheGo(recherche)"/>
           <a @click="chercheGo(recherche)" class="searchButton"><em class="fa fa-search"></em></a>
+        </div>-->
+
+        <div data-hover="1"
+             data-delay="0"
+             class="dropdown w-dropdown actions-block"
+             :style="data.type === 'email' ? 'left: 30px' : ''"
+             @mouseover="actionHover = true"
+             @mouseleave="actionHover = false"
+             style="margin-right: 3em;">
+          <div v-show="isEmpty" class="dropdown-toggle-2 w-dropdown-toggle">
+            <div class="icon w-icon-dropdown-toggle"></div>
+            <div>{{ Action }}</div>
+          </div>
+          <nav aria-label="action" v-if="actionHover" class="dropdown-list w-dropdown-list">
+            <a v-on:click="publishSelected(checkItem)" class="action-submenu w-dropdown-link" v-if="data.type !== 'form'">
+              {{ ActionPublish }}
+            </a>
+            <a v-on:click="unpublishSelected(checkItem)" class="action-submenu w-dropdown-link" v-if="data.type !== 'form'">
+              {{ ActionUnpublish }}
+            </a>
+            <a v-on:click="publishSelected(checkItem)" class="action-submenu w-dropdown-link" style="border-right: 0" v-if="data.type === 'form'">
+              {{ Restore }}
+            </a>
+            <a v-if="data.type === 'campaign' || data.type === 'form'"
+               v-on:click="duplicateSelected(checkItem)"
+               class="action-submenu w-dropdown-link" style="border-left: 0;border-right: 0">
+              {{ ActionDuplicate }}
+            </a>
+            <a v-on:click="deleteSelected(checkItem)" class="action-submenu w-dropdown-link" v-if="data.type !== 'form'">
+              {{ ActionDelete }}
+            </a>
+            <a v-on:click="unpublishSelected(checkItem)" class="action-submenu w-dropdown-link" style="border-left: 0"  v-if="data.type === 'form'">
+              {{ Archive }}
+            </a>
+          </nav>
         </div>
 
-        <div class="filters-action">
-          <div>
-            <div data-hover="1"
-                 data-delay="0"
-                 class="dropdown w-dropdown"
-                 @mouseover="sortHover = true"
-                 @mouseleave="sortHover = false">
-              <div class="dropdown-toggle-2 w-dropdown-toggle">
-                <div class="icon w-icon-dropdown-toggle"></div>
-                <div>{{ Sort }}</div>
+        <div class="actions-filters-block">
+          <div class="filters-action">
+            <div>
+              <div data-hover="1"
+                   data-delay="0"
+                   class="dropdown"
+                   @mouseover="sortHover = true"
+                   @mouseleave="sortHover = false">
+                <div class="dropdown-toggle-2 w-dropdown-toggle">
+                  <div class="icon w-icon-dropdown-toggle"></div>
+                  <div>{{ Sort }}</div>
+                </div>
+                <nav aria-label="sort" v-if="sortHover" class="dropdown-list w-dropdown-list">
+                  <a @click="sort('DESC');updateSort('DESC');"
+                     class="action-submenu w-dropdown-link"
+                     :class="tri == 'DESC' ? 'selected' : ''">
+                    {{ SortCreasing }}
+                  </a>
+                  <a @click="sort('ASC');updateSort('ASC');"
+                     :class="tri == 'ASC' ? 'selected' : ''"
+                     class="action-submenu w-dropdown-link">
+                    {{ SortDecreasing }}
+                  </a>
+                </nav>
               </div>
-              <nav aria-label="sort" v-if="sortHover" class="dropdown-list w-dropdown-list">
-                <a @click="sort('DESC');updateSort('DESC');"
-                   class="action-submenu w-dropdown-link"
-                   :class="tri == 'DESC' ? 'selected' : ''">
-                  {{ SortCreasing }}
-                </a>
-                <a @click="sort('ASC');updateSort('ASC');"
-                   :class="tri == 'ASC' ? 'selected' : ''"
-                   class="action-submenu w-dropdown-link">
-                  {{ SortDecreasing }}
-                </a>
-              </nav>
             </div>
-          </div>
 
-          <div>
-            <div data-hover="1"
-                 data-delay="0"
-                 class="dropdown w-dropdown"
-                 @mouseover="filterHover = true"
-                 @mouseleave="filterHover = false">
-              <div class="dropdown-toggle-2 w-dropdown-toggle">
-                <div class="icon w-icon-dropdown-toggle"></div>
-                <div>{{ Filter }}</div>
+            <div>
+              <div data-hover="1"
+                   data-delay="0"
+                   class="dropdown"
+                   @mouseover="filterHover = true"
+                   @mouseleave="filterHover = false">
+                <div class="dropdown-toggle-2 w-dropdown-toggle">
+                  <div class="icon w-icon-dropdown-toggle"></div>
+                  <div>{{ Filter }}</div>
+                </div>
+                <nav aria-label="filter" v-if="filterHover" class="dropdown-list w-dropdown-list">
+                  <a @click="filter('all');updateFilter('all');"
+                     :class="filtre == 'all' ? 'selected' : ''"
+                     class="action-submenu w-dropdown-link">
+                    {{ FilterAll }}
+                  </a>
+                  <a v-if="data.type == 'campaign'"
+                     @click="filter('notTerminated');updateFilter('notTerminated');"
+                     :class="filtre == 'notTerminated' ? 'selected' : ''"
+                     class="action-submenu w-dropdown-link">
+                    {{ FilterOpen }}
+                  </a>
+                  <a v-if="data.type == 'campaign'"
+                     @click="filter('Terminated');updateFilter('Terminated');"
+                     :class="filtre == 'Terminated' ? 'selected' : ''"
+                     class="action-submenu w-dropdown-link">
+                    {{ FilterClose }}
+                  </a>
+                  <a @click="filter('Publish');updateFilter('Publish');"
+                     :class="filtre == 'Publish' ? 'selected' : ''"
+                     class="action-submenu w-dropdown-link"
+                     v-if="data.type !== 'form'">
+                    {{ FilterPublish }}
+                  </a>
+                  <a @click="filter('Unpublish');updateFilter('Unpublish');"
+                     :class="filtre == 'Unpublish' ? 'selected' : ''"
+                     class="action-submenu w-dropdown-link"
+                     v-if="data.type !== 'form'">
+                    {{ FilterUnpublish }}
+                  </a>
+                  <a @click="filter('Unpublish');updateFilter('Unpublish');"
+                     :class="filtre == 'Unpublish' ? 'selected' : ''"
+                     class="action-submenu w-dropdown-link"
+                     v-if="data.type === 'form'">
+                    {{ Archived }}
+                  </a>
+                </nav>
               </div>
-              <nav aria-label="filter" v-if="filterHover" class="dropdown-list w-dropdown-list">
-                <a @click="filter('all');updateFilter('all');"
-                   :class="filtre == 'all' ? 'selected' : ''"
-                   class="action-submenu w-dropdown-link">
-                  {{ FilterAll }}
-                </a>
-                <a v-if="data.type == 'campaign'"
-                   @click="filter('notTerminated');updateFilter('notTerminated');"
-                   :class="filtre == 'notTerminated' ? 'selected' : ''"
-                   class="action-submenu w-dropdown-link">
-                  {{ FilterOpen }}
-                </a>
-                <a v-if="data.type == 'campaign'"
-                   @click="filter('Terminated');updateFilter('Terminated');"
-                   :class="filtre == 'Terminated' ? 'selected' : ''"
-                   class="action-submenu w-dropdown-link">
-                  {{ FilterClose }}
-                </a>
-                <a @click="filter('Publish');updateFilter('Publish');"
-                   :class="filtre == 'Publish' ? 'selected' : ''"
-                   class="action-submenu w-dropdown-link"
-                   v-if="data.type !== 'form'">
-                  {{ FilterPublish }}
-                </a>
-                <a @click="filter('Unpublish');updateFilter('Unpublish');"
-                   :class="filtre == 'Unpublish' ? 'selected' : ''"
-                   class="action-submenu w-dropdown-link"
-                   v-if="data.type !== 'form'">
-                  {{ FilterUnpublish }}
-                </a>
-                <a @click="filter('Unpublish');updateFilter('Unpublish');"
-                   :class="filtre == 'Unpublish' ? 'selected' : ''"
-                   class="action-submenu w-dropdown-link"
-                   v-if="data.type === 'form'">
-                  {{ Archived }}
-                </a>
-              </nav>
             </div>
-          </div>
 
-          <div>
-            <div data-hover="1"
-                 data-delay="0"
-                 class="dropdown w-dropdown"
-                 @mouseover="resultsHover = true"
-                 @mouseleave="resultsHover = false">
-              <div class="dropdown-toggle-2 w-dropdown-toggle">
-                <div class="icon w-icon-dropdown-toggle"></div>
-                <div>{{ NbResults }}</div>
+            <div>
+              <div data-hover="1"
+                   data-delay="0"
+                   class="dropdown"
+                   @mouseover="resultsHover = true"
+                   @mouseleave="resultsHover = false">
+                <div class="dropdown-toggle-2 w-dropdown-toggle">
+                  <div class="icon w-icon-dropdown-toggle"></div>
+                  <div>{{ NbResults }}</div>
+                </div>
+                <nav aria-label="Nb Results" v-if="resultsHover" class="dropdown-list w-dropdown-list">
+                  <a @click="nbresults(999999);updateDisplay('max');"
+                     :class="afficher == 'max' ? 'selected' : ''"
+                     class="action-submenu w-dropdown-link">
+                    {{ AllResults }}
+                  </a>
+                  <a @click="nbresults(10);updateDisplay(10);"
+                     :class="afficher == 10 ? 'selected' : ''"
+                     class="action-submenu w-dropdown-link">
+                    10
+                  </a>
+                  <a @click="nbresults(25);updateDisplay(25);"
+                     :class="afficher == 25 ? 'selected' : ''"
+                     class="action-submenu w-dropdown-link">
+                    25
+                  </a>
+                  <a @click="nbresults(50);updateDisplay(50);"
+                     :class="afficher == 50 ? 'selected' : ''"
+                     class="action-submenu w-dropdown-link">
+                    50
+                  </a>
+                  <a @click="nbresults(100);updateDisplay(100);"
+                     :class="afficher == 100 ? 'selected' : ''"
+                     class="action-submenu w-dropdown-link">
+                    100
+                  </a>
+                </nav>
               </div>
-              <nav aria-label="Nb Results" v-if="resultsHover" class="dropdown-list w-dropdown-list">
-                <a @click="nbresults(999999);updateDisplay('max');"
-                   :class="afficher == 'max' ? 'selected' : ''"
-                   class="action-submenu w-dropdown-link">
-                  {{ AllResults }}
-                </a>
-                <a @click="nbresults(10);updateDisplay(10);"
-                   :class="afficher == 10 ? 'selected' : ''"
-                   class="action-submenu w-dropdown-link">
-                  10
-                </a>
-                <a @click="nbresults(25);updateDisplay(25);"
-                   :class="afficher == 25 ? 'selected' : ''"
-                   class="action-submenu w-dropdown-link">
-                  25
-                </a>
-                <a @click="nbresults(50);updateDisplay(50);"
-                   :class="afficher == 50 ? 'selected' : ''"
-                   class="action-submenu w-dropdown-link">
-                  50
-                </a>
-                <a @click="nbresults(100);updateDisplay(100);"
-                   :class="afficher == 100 ? 'selected' : ''"
-                   class="action-submenu w-dropdown-link">
-                  100
-                </a>
-              </nav>
             </div>
           </div>
-        </div>-->
+        </div>
 
       </div>
       </transition>
@@ -243,6 +246,12 @@
 
     data() {
       return {
+        form: {
+          label: "Nouveau formulaire",
+          description: "",
+          published: 1
+        },
+
         recherche: "",
         filterHover: false,
         actionHover: false,
@@ -744,17 +753,43 @@
       },
 
       redirectToAdd() {
+        if(this.data.add_url == 'index.php?option=com_emundus_onboard&view=form&layout=add'){
+          this.createForm();
+        } else {
+          this.redirectJRoute(this.data.add_url);
+        }
+      },
+
+      redirectJRoute(link) {
         axios({
           method: "get",
           url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
           params: {
-            link: this.data.add_url,
+            link: link,
           },
           paramsSerializer: params => {
-             return qs.stringify(params);
+            return qs.stringify(params);
           }
         }).then(response => {
           window.location.href = window.location.pathname + response.data.data;
+        });
+      },
+
+      createForm(){
+        this.loading = true;
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=form&task=createform",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({body: this.form})
+        }).then(response => {
+          this.loading = false;
+          this.profileId = response.data.data;
+          this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=');
+        }).catch(error => {
+          console.log(error);
         });
       }
     },
@@ -827,7 +862,7 @@
   }
 
   .selected {
-    color: #de6339;
+    color: #12DB42;
   }
 
   div nav a:hover {

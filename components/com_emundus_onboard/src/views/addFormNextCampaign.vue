@@ -10,20 +10,34 @@
                 :cid="campaignId"
         />
         <div class="w-row">
-          <div class="col-md-2 tchooz-sidebar-menu">
+          <div class="tchooz-sidebar-menu">
             <transition name="slide-right">
               <div class="col-md-12 tchooz-sidebar-menus">
                 <div class="container-menu-funnel">
-                  <div v-if="profileId == null" style="display: flex;" class="required">
+                  <div v-if="profileId == null && loading == false" style="display: flex;" class="required">
                     <em class="fas fa-exclamation-circle icon-warning-margin"></em>
                     <p>{{chooseProfileWarning}}</p>
                   </div>
-                  <div v-for="(formCat, index) in formCategories[langue]" :key="index">
-                    <a @click="profileId != null ? menuHighlight = index : ''"
-                       class="menu-item"
-                       :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]"
-                    >{{ formCat }}</a>
-                  </div>
+<!--                  <a class="close-submenu pointer" @click="closeSubmenu = !closeSubmenu" :class="!closeSubmenu ? 'rotate-icon' : ''">
+                    <img src="/images/emundus/menus/exit.png">
+                  </a>-->
+                  <transition-group name="slide-right">
+                    <div v-for="(formCat, index) in formCategories[langue]" :key="index" v-show="closeSubmenu">
+                      <a @click="profileId != null ? changeToCampMenu(index): ''"
+                         class="menu-item"
+                         :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]"
+                      >{{ formCat }}</a>
+                    </div>
+                  </transition-group>
+                  <hr>
+                  <transition-group name="slide-right">
+                    <div v-for="(formProg, index) in formPrograms[langue]" :key="index" v-show="closeSubmenu">
+                      <a @click="profileId != null ? changeToProgMenu(index) : ''"
+                         class="menu-item"
+                         :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]"
+                      >{{ formProg }}</a>
+                    </div>
+                  </transition-group>
                 </div>
               </div>
             </transition>
@@ -60,9 +74,19 @@
 
             </div>-->
 
-            <div class="col-md-10 col-md-offset-2 p-1" style="padding-left: 2em !important">
-                <h2>{{formCategories[langue][menuHighlight]}}</h2>
-<!--                <p class="paragraphe-sous-titre">{{funnelDescription[langue][menuHighlight]}}</p>-->
+            <div class="col-md-10 col-md-offset-1 p-1" style="padding-left: 2em !important">
+              <p v-if="menuHighlightProg != -1" class="warning-message-program"><em class="fas fa-exclamation-triangle mr-1 red"></em>{{ProgramWarning}}</p>
+                <div class="section-sub-menu">
+                  <div class="container-2 w-container" style="max-width: unset">
+                    <div class="d-flex">
+                      <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
+                      <h2 class="tchooz-section-titles" v-if="menuHighlight != -1">{{formCategories[langue][menuHighlight]}}</h2>
+                      <h2 class="tchooz-section-titles" v-if="menuHighlightProg != -1">{{formPrograms[langue][menuHighlightProg]}}</h2>
+                    </div>
+                    <p class="tchooz-section-description" v-if="menuHighlight != -1" v-html="formCategoriesDesc[langue][menuHighlight]" style="margin-top: 20px"></p>
+                    <p class="tchooz-section-description" v-if="menuHighlightProg != -1" v-html="formProgramsDesc[langue][menuHighlightProg]" style="margin-top: 20px"></p>
+                  </div>
+                </div>
                 <transition name="slide-right">
                   <add-campaign
                       v-if="menuHighlight == 0"
@@ -75,6 +99,7 @@
                     <addFormulaire
                             v-if="menuHighlight == 2"
                             :profileId="profileId"
+                            :profiles="profiles"
                             :key="formReload"
                             :visibility="null"
                     ></addFormulaire>
@@ -109,6 +134,25 @@
                       :manyLanguages="manyLanguages"
                     ></add-documents-form>
 
+                  <add-gestionnaires
+                      v-if="menuHighlightProg == 0"
+                      :funnelCategorie="formPrograms[langue][menuHighlight]"
+                      :group="this.prog_group"
+                      :coordinatorAccess="true"
+                  ></add-gestionnaires>
+
+                  <add-evaluation-grid
+                      v-if="menuHighlightProg == 1"
+                      :funnelCategorie="formPrograms[langue][menuHighlight]"
+                      :prog="this.program.id"
+                  ></add-evaluation-grid>
+
+                  <add-email
+                      v-if="menuHighlightProg == 2"
+                      :funnelCategorie="formPrograms[langue][menuHighlight]"
+                      :prog="this.program.id"
+                  ></add-email>
+
                     <!--          <addEvalEval
                                       v-if="menuHighlight == 6"
                                       :funnelCategorie="formCategories[langue][menuHighlight]"
@@ -127,6 +171,9 @@
                 </div>
             </div>
         </div>-->
+      <div class="loading-form" v-if="loading">
+        <Ring-Loader :color="'#12DB42'" />
+      </div>
     </div>
 </template>
 
@@ -147,6 +194,7 @@
     import AddDocumentsDropfiles from "@/views/funnelFormulaire/addDocumentsDropfiles";
     import AddDocumentsForm from "@/views/funnelFormulaire/addDocumentsForm";
     import addCampaign from "@/views/addCampaign";
+    import AddEvaluationGrid from "@/views/funnelFormulaire/addEvaluationGrid";
 
     const qs = require("qs");
 
@@ -154,6 +202,7 @@
         name: "addFormNextCampaign",
 
         components: {
+          AddEvaluationGrid,
           AddDocumentsForm,
           Tasks,
           AddDocumentsDropfiles,
@@ -180,9 +229,15 @@
             prid: "",
             EmitIndex: "0",
             menuHighlight: 0,
+            menuHighlightProg: -1,
             formReload: 0,
             selectedform: "default",
             formList: "",
+            prog: 0,
+
+          loading: false,
+
+            closeSubmenu: true,
 
             profileId: null,
             profiles: [],
@@ -192,16 +247,22 @@
 
             langue: 0,
 
-            /*funnelDescription: [
+            formCategoriesDesc: [
                 [
-                    Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION"),
-                    Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCSDESCRIPTION"),
+                  "Vous pouvez modifier vos dates limites de campagne, vos descriptifs et définir une limite de dossiers",
+                  "Proposez à vos visiteurs des documents d'informations avant même qu'il se connecte. Ces documents seront disponibles dans la section <em>Plus d'informations</em> de votre campagne",
+                  "Choississez le formulaire de votre campagne. Nous vous proposons des modèles que vous pouvez modifier à tout moment.",
+                  "Proposez des documents des documents à vos candidats qui remplissent le formulaire. Cela peut être des modèles que les candidats doivent compléter puis déposer ou simplement des documents complémentaires à certains informations demandées",
+                  "Ajoutez des types de documents que le candidat doit déposer à la suite du formulaire. Glissez simplement les documents entre les 2 colonnes ou ajouter un nouveau type de document",
                 ],
                 [
-                    Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION"),
-                    Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCSDESCRIPTION"),
+                  "Vous pouvez modifier vos dates limites de campagne, vos descriptifs et définir une limite de dossiers",
+                  "Proposez à vos visiteurs des documents d'informations avant même qu'il se connecte. Ces documents seront disponibles dans la section <em>Plus d'informations</em> de votre campagne",
+                  "Choississez le formulaire de votre campagne. Nous vous proposons des modèles que vous pouvez modifier à tout moment.",
+                  "Proposez des documents des documents à vos candidats qui remplissent le formulaire. Cela peut être des modèles que les candidats doivent compléter puis déposer ou simplement des documents complémentaires à certains informations demandées",
+                  "Ajoutez des types de documents que le candidat doit déposer à la suite du formulaire. Glissez simplement les documents entre les 2 colonnes ou ajouter un nouveau type de document",
                 ]
-            ],*/
+            ],
 
             formCategories: [
                 [
@@ -220,34 +281,31 @@
                 ]
             ],
 
-            /*formCategories: [
+          formPrograms: [
               [
-                "Aperçu du formulaire",
-                "Documents",
-                "Gestionnaires",
-                "Email",
-                "Évaluations",
-                "Visibilité",
-                "Évaluateurs",
-                "Attribution",
-                "Paramètres",
-                "Invitation",
-                "Paramètres de campagne"
+              "Utilisateurs",
+              "Grille d'évaluation",
+              "Emails",
               ],
-              [
-                "Form Preview",
-                "Documents",
-                "Managers",
-                "Email",
-                "Evaluations",
-                "Visibility",
-                "Evaluators",
-                "Attribution",
-                "Settings",
-                "Invitation",
-                "Campaign Settings"
-              ]
-            ],*/
+            [
+              "Users",
+              "Evaluation grid",
+              "Emails",
+            ]
+          ],
+
+          formProgramsDesc: [
+            [
+              "Ajoutez des utilisateurs, affectez-les à des rôles qui va leur donner des droits sur les dossiers.",
+              "Définissez une phase d'évaluation en créeant une grille avec différents critères.",
+              "Configurer des envois d'emails automatique aux changements de statuts de vos différents candidats.",
+            ],
+            [
+              "Users",
+              "Evaluation grid",
+              "Emails",
+            ]
+          ],
 
             form: {
                 label: "",
@@ -255,6 +313,28 @@
                 start_date: "",
                 end_date: ""
             },
+
+          program: {
+            id: 0,
+            label: "",
+            code: "",
+            programmes: "",
+            notes: "",
+            synthesis:
+                '<ul><li><strong>[APPLICANT_NAME]</strong></li><li><a href="mailto:[EMAIL]">[EMAIL]</a></li></ul>',
+            tmpl_trombinoscope:
+                '<table cellpadding="2" style="width: 100%;"><tbody><tr style="border-collapse: collapse;"><td align="center" valign="top" style="text-align: center;"><p style="text-align: center;"><img src="[PHOTO]" alt="Photo" height="100" /> </p><p style="text-align: center;"><b>[NAME]</b><br /></p></td></tr></tbody></table>',
+            tmpl_badge:
+                '<table width="100%"><tbody><tr><td style="vertical-align: top; width: 100px;" align="left" valign="middle" width="30%"><img src="[LOGO]" alt="Logo" height="50" /></td><td style="vertical-align: top;" align="left" valign="top" width="70%"><b>[NAME]</b></td></tr></tbody></table>\n',
+            published: 1,
+            apply_online: 1
+          },
+
+          prog_group: {
+            prog: null,
+            evaluator: null,
+            manager: null,
+          },
 
             From: Joomla.JText._("COM_EMUNDUS_ONBOARD_FROM"),
             To: Joomla.JText._("COM_EMUNDUS_ONBOARD_TO"),
@@ -269,9 +349,20 @@
             Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
             chooseForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
             chooseProfileWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING"),
+            ProgramWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_WARNING"),
         }),
 
         methods: {
+          changeToProgMenu(index){
+            this.menuHighlightProg = index;
+            this.menuHighlight = -1;
+          },
+
+          changeToCampMenu(index){
+            this.menuHighlight = index;
+            this.menuHighlightProg = -1;
+          },
+
             moment(date) {
                 return moment(date);
             },
@@ -292,22 +383,6 @@
                 }
             },
 
-            formbuilder() {
-                axios.get("index.php?option=com_emundus_onboard&controller=form&task=getfilesbyform&pid=" + this.profileId)
-                    .then(response => {
-                        if(response.data.data != 0){
-                            this.$modal.show('modalWarningFormBuilder');
-                        } else {
-                            this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' +
-                                this.profileId +
-                                '&index=' +
-                                this.EmitIndex +
-                                '&cid=' +
-                                this.campaignId)
-                        }
-                    });
-            },
-
             redirectJRoute(link) {
                 axios({
                     method: "get",
@@ -322,26 +397,6 @@
                     window.location.href = window.location.pathname + response.data.data;
                 });
             },
-
-            addNewForm() {
-                this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=add&cid=' + this.campaignId)
-            },
-
-            updateProfileCampaign(profileId){
-                axios({
-                    method: "post",
-                    url: "index.php?option=com_emundus_onboard&controller=campaign&task=updateprofile",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    data: qs.stringify({
-                        profile: profileId,
-                        campaign: this.campaignId
-                    })
-                }).then(response => {
-                    this.formReload += 1;
-                })
-            }
         },
 
         computed: {
@@ -349,12 +404,14 @@
         },
 
         created() {
+          this.loading = true;
             if (this.actualLanguage == "en") {
                 this.langue = 1;
             }
 
             axios.get(`index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaignId}`
             ).then(response => {
+              console.log(response);
                 this.form.label = response.data.data.campaign.label;
                 this.form.profile_id = response.data.data.campaign.profile_id;
                 this.form.start_date = response.data.data.campaign.start_date;
@@ -367,6 +424,31 @@
                 } else {
                     this.form.end_date = moment(this.form.end_date).format("DD/MM/YYYY");
                 }
+              axios.get(`index.php?option=com_emundus_onboard&controller=program&task=getprogrambyid&id=${response.data.data.campaign.progid}`)
+                  .then(rep => {
+                    this.program.id = response.data.data.campaign.progid;
+                    this.program.code = rep.data.data.code;
+                    this.program.label = rep.data.data.label;
+                    this.program.notes = rep.data.data.notes;
+                    this.program.programmes = rep.data.data.programmes;
+                    this.program.tmpl_badge = rep.data.data.tmpl_badge;
+                    this.program.published = rep.data.data.published;
+                    this.program.apply_online = rep.data.data.apply_online;
+                    if (rep.data.data.synthesis != null) {
+                      this.program.synthesis = rep.data.data.synthesis.replace(/>\s+</g, "><");
+                    }
+                    if (rep.data.data.tmpl_trombinoscope != null) {
+                      this.program.tmpl_trombinoscope = rep.data.data.tmpl_trombinoscope.replace(
+                          />\s+</g,
+                          "><"
+                      );
+                    }
+                    this.prog_group.prog = rep.data.data.group;
+                    this.prog_group.evaluator = rep.data.data.evaluator_group;
+                    this.prog_group.manager = rep.data.data.manager_group;
+                  }).catch(e => {
+                console.log(e);
+              });
                 axios.get(
                     `index.php?option=com_emundus_onboard&controller=form&task=getallformpublished`
                 ).then(profiles => {
@@ -381,6 +463,7 @@
                         this.formReload += 1;
                         this.profileId = this.form.profile_id;
                     }
+                    this.loading = false;
                 });
             }).then(() => {}).catch(e => {
                 console.log(e);
@@ -393,20 +476,8 @@
 </script>
 
 <style scoped>
-.edit-icon{
-  margin-left: 10px;
-  border: solid 1px #de6339;
-  border-radius: 50%;
-  background-color: #de6339;
-  color: white;
-  height: 32px;
-  width: 32px;
-  transition: all 0.2s ease-in-out;
-}
-
-.edit-icon:hover{
-  border-color: #de6339;
-  background-color: white;
-  color: black;
+.section-sub-menu{
+  margin-top: 10px;
+  margin-bottom: 30px;
 }
 </style>

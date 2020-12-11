@@ -1,6 +1,25 @@
 <template>
   <div class="container-evaluation formulairedepresentation">
-    <FormCarrousel :formList="this.formList" :visibility="this.visibility" v-if="this.formList" @getEmitIndex="getEmitIndex" />
+    <p class="heading">{{ChooseForm}}</p>
+    <div class="heading-block">
+      <select class="dropdown-toggle" id="select_profile" v-model="profileId">
+        <option v-for="(profile, index) in profiles" :key="index" :value="profile.id" @click="updateProfileCampaign(profile.id)">
+          {{profile.form_label}} :
+        </option>
+      </select>
+      <a @click="addNewForm" class="bouton-ajouter bouton-ajouter-green pointer">
+        <div class="add-button-div">
+          <em class="fas fa-plus mr-1"></em>
+          {{ AddForm }}
+        </div>
+      </a>
+<!--      <a @click="formbuilder" class="bouton-ajouter pointer">
+        <div class="add-button-div" v-if="profileId != null">
+          <em class="fas fa-edit"></em>
+        </div>
+      </a>-->
+    </div>
+    <FormCarrousel :formList="this.formList" :visibility="this.visibility" v-if="this.formList" @formbuilder="formbuilder" />
   </div>
 </template>
 
@@ -17,6 +36,7 @@ export default {
 
   props: {
     profileId: String,
+    profiles: Array,
     formulaireEmundus: Number,
     visibility: Number
   },
@@ -27,8 +47,15 @@ export default {
   data() {
     return {
       ChooseForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
+      AddForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FORM"),
       EmitIndex: "0",
       formList: "",
+
+      form: {
+        label: "Nouveau formulaire",
+        description: "",
+        published: 1
+      },
 
       formdescription: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION")
     };
@@ -36,14 +63,6 @@ export default {
   methods: {
     getEmitIndex(value) {
       this.EmitIndex = value;
-    },
-    formbuilder() {
-      this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' +
-              this.profileId +
-              '&index=' +
-              this.EmitIndex +
-              '&fid=' +
-              this.formulaireEmundus);
     },
     getForms(profile_id) {
       axios({
@@ -78,7 +97,57 @@ export default {
       }).then(response => {
         window.location.href = window.location.pathname + response.data.data;
       });
-    }
+    },
+
+    addNewForm() {
+      this.loading = true;
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_onboard&controller=form&task=createform",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({body: this.form})
+      }).then(response => {
+        this.loading = false;
+        this.profileId = response.data.data;
+        this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=' + this.campaignId);
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+
+    updateProfileCampaign(profileId){
+      axios({
+        method: "post",
+        url: "index.php?option=com_emundus_onboard&controller=campaign&task=updateprofile",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: qs.stringify({
+          profile: profileId,
+          campaign: this.campaignId
+        })
+      }).then(response => {
+        this.formReload += 1;
+      })
+    },
+
+    formbuilder(index) {
+      axios.get("index.php?option=com_emundus_onboard&controller=form&task=getfilesbyform&pid=" + this.profileId)
+          .then(response => {
+            if(response.data.data != 0){
+              this.$modal.show('modalWarningFormBuilder');
+            } else {
+              this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' +
+                  this.profileId +
+                  '&index=' +
+                  index +
+                  '&cid=' +
+                  this.campaignId)
+            }
+          });
+    },
   },
   created() {
     this.getForms(this.profileId);
@@ -90,4 +159,11 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+#select_profile{
+  width: 20%;
+  margin-right: 10px;
+}
+</style>
 

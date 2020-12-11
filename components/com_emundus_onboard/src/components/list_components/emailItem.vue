@@ -1,5 +1,5 @@
 <template class="email-item">
-  <div class="main-column-block w-row">
+  <div class="main-column-block">
     <div class="column-block w-100">
       <div class="block-dash" :class="isPublished ? '' : 'unpublishedBlock'">
         <div class="column-blocks w-row">

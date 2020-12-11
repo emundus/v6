@@ -632,9 +632,10 @@ class EmundusonboardModelcampaign extends JModelList
 
         $results = new stdClass();
 
-        $query->select(['sc.*', 'spr.label AS profileLabel'])
+        $query->select(['sc.*', 'spr.label AS profileLabel','sp.id as progid'])
             ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
             ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'spr').' ON '.$db->quoteName('spr.id').' = '.$db->quoteName('sc.profile_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'sp').' ON '.$db->quoteName('sp.code').' = '.$db->quoteName('sc.training'))
             ->where($db->quoteName('sc.id') . ' = ' . $id);
 
         try {

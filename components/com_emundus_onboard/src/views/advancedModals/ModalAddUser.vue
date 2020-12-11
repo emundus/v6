@@ -13,17 +13,20 @@
       @closed="beforeClose"
       @before-open="beforeOpen"
     >
-      <div class="modalC-content">
-        <div class="update-field-header">
+      <div class="fixed-header-modal">
           <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddUser')">
-              <em class="fas fa-times-circle"></em>
+              <em class="fas fa-times"></em>
             </button>
           </div>
+                        <div class="update-field-header">
           <h2 class="update-title-header">
              {{addUser}}
           </h2>
+                        </div>
         </div>
+
+      <div class="modalC-content">
         <div class="form-group">
           <label>{{Lastname}}* :</label>
           <input v-model="form.lastname" type="text" class="form__input field-general w-input" maxlength="40" :class="{ 'is-invalid': errors.lastname}" />
@@ -73,15 +76,15 @@
           </p>
         </div>
       </div>
-      <div class="col-md-12 mb-1">
+      <div class="d-flex justify-content-between mb-1">
+                <button type="button"
+                        class="bouton-sauvergarder-et-continuer w-retour"
+                        @click.prevent="$modal.hide('modalAddUser')"
+                >{{Retour}}</button>
         <button type="button"
           class="bouton-sauvergarder-et-continuer"
           @click.prevent="createUser()"
         >{{ Continuer }}</button>
-        <button type="button"
-          class="bouton-sauvergarder-et-continuer w-retour"
-          @click.prevent="$modal.hide('modalAddUser')"
-        >{{Retour}}</button>
       </div>
       <div class="loading-form" v-if="loading">
         <Ring-Loader :color="'#12DB42'" />

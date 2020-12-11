@@ -54,7 +54,7 @@ form[action="/connexion-candidater"] i.icon-star.small  {
 /* CONNEXION - CANDIDATER */
 
 ul.unstyled.em-linkForgot{
-    background:#fafafa;
+    background:#fff;
     display: flex;
     justify-content: space-between;
     border: none;

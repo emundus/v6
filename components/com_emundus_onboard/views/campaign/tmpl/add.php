@@ -15,6 +15,7 @@ $document->addStyleSheet('media/com_emundus_onboard/app.css');
 
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 
+JText::script('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN');
 JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
 JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME');
 JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE');

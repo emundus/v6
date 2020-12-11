@@ -1,5 +1,5 @@
 <template class="campaign-item">
-  <div class="main-column-block w-row">
+  <div class="main-column-block">
     <div class="column-block w-100">
       <div class="block-dash" :class="isPublished ? '' : isFinish ? 'passee' : 'unpublishedBlock'">
         <div class="column-blocks w-row">
@@ -30,7 +30,7 @@
             <p class="description-block">{{ data.short_description }}</p>
             <div class="stats-block">
               <div class="nb-dossier" style="margin-left: 35px">
-                <div>{{ data.nb_files }} {{ Files }}</div>
+                <div>{{ data.nb_files }} <span v-if="data.nb_files > 1">{{ Files }}</span><span v-else>{{ File }}</span></div>
               </div>
               <a
                   @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + data.id + '&index=0')"
@@ -92,7 +92,8 @@ export default {
       Since: Joomla.JText._("COM_EMUNDUS_ONBOARD_SINCE"),
       AdvancedSettings: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADVANCED_SETTINGS"),
       Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOSSIERS_PROGRAM"),
-      Files: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES")
+      Files: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES"),
+      File: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE")
     };
   },
 

@@ -11,7 +11,7 @@
 
 /* GENERAL */
 body {
-  font-family: "Lato", sans-serif;
+  //font-family: "Lato", sans-serif;
   //border-top: 5px solid $base-secondary-color;
   line-height: normal;
 
@@ -34,7 +34,7 @@ h6 {
   margin-top: 50px;
   margin-bottom: 50px;
   font-weight: 700;
-  font-family: "Lato", sans-serif;
+  //font-family: "Lato", sans-serif;
 }
 
 h1 {
@@ -49,22 +49,17 @@ h1 {
   display: none !important;
 }
 
-h1::after,
-.swal2-title::after {
-  content: '';
-  position: absolute;
-  margin-top: 45px !important;
-  width: 2.7rem !important;
-  height: 0.2rem;
-  background: $base-secondary-color !important;
-  left: 0;
-  display: block !important;
-  top: 4px;
-}
-
 .swal2-title {
   color: #000;
   margin: 10px 0 20px 0;
+}
+
+button.swal2-styled{
+  padding: 5px 20px;
+  border-radius: 25px !important;
+}
+button.swal2-confirm{
+  background: #12DB42 !important;
 }
 
 h2 {
@@ -287,6 +282,14 @@ legend {
   margin: 0 !important;
 }
 
+#g-utility{
+  background: transparent;
+}
+
+#g-sidebar{
+  border-radius: 5px;
+}
+
 #g-page-surround {
   min-height: auto;
 }
@@ -299,7 +302,7 @@ textarea,
 label,
 input[type="text"],
 .ui.warning.message {
-  font-family: "Lato", sans-serif;
+  //font-family: "Lato", sans-serif;
 }
 
 p,
@@ -312,10 +315,10 @@ input[type="text"],
   color: #000;
 }
 #g-container-main{
-  min-height: 100%;
   height: auto;
   margin: 0 auto auto;
   width: 100%;
+  transition: all ease-in-out 0.3s;
 }
 
 #g-container-main .g-container {
@@ -326,7 +329,8 @@ input[type="text"],
 }
 
 .g-container.g-flushed{
-  width: 100% !important;
+  width: calc(100% - 75px) !important;
+  margin: unset;
 }
 
 .row-fluid .span3 {
@@ -350,6 +354,7 @@ input[type="text"],
 .view-details #g-container-main {
   .page-header {
     padding-bottom: 15px;
+    background: #fff;
   }
 }
 
@@ -421,6 +426,7 @@ input[type="text"],
     min-height: auto;
     .g-content {
       justify-content: flex-end;
+      align-items: center;
     }
   }
 }
@@ -442,16 +448,23 @@ input[type="text"],
 #g-navigation {
   //border-bottom: 1px solid #eeeeee;
   width: 100vw;
+  position: relative;
+  max-height: 100px;
+  height: 100px;
+  background: transparent;
 
   .g-container {
     padding: 10px;
     width: 100%;
     margin: auto !important;
+    position: fixed;
+    background: #fff;
   }
 
   #header-a {
     display: flex;
     align-items: center;
+    transition: all 0.3s ease-in-out;
   }
 }
 
@@ -507,7 +520,8 @@ footer#g-footer {
   width: 100vw;
   position: relative;
   z-index: 11;
-  margin-top: auto !important;
+  //margin-top: auto !important;
+  margin-top: 75px !important;
 }
 
 footer#g-footer img {
@@ -659,15 +673,16 @@ body>.g-container {
 
   #userDropdownIcon {
     background-color: white;
-    border: 2px solid $base-primary-color;
+    //border: 2px solid $base-primary-color;
     color: $base-primary-color;
     box-shadow: none;
     font-size: 1.5em;
-    width: 1.5em !important;
-    height: 1.5em !important;
+    width: 30px !important;
+    height: 30px !important;
     align-items: center;
     display: flex;
     justify-content: center;
+    border: unset !important;
 
     &:hover,
     &.active,
@@ -772,7 +787,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 .view-programme {
 
-  h1.title.em-program-title::after {
+  #g-sidebar{
+    margin-top: 50px;
+    width: max-content !important;
+    padding: 0 !important;
+  }
+
+  h1::after {
     display: none !important;
   }
 
@@ -893,7 +914,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       background-color: $base-secondary-color;
       border-color: $base-secondary-color;
       color: #fff;
-      font-family: "Lato", sans-serif;
+      //font-family: "Lato", sans-serif;
 
       &:hover,
       &:active,
@@ -908,7 +929,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       background-color: transparent;
       border-color: $base-primary-color;
       color: $base-primary-color;
-      font-family: "Lato", sans-serif;
+      //font-family: "Lato", sans-serif;
 
       &:hover,
       &:active,
@@ -941,7 +962,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .campaign-title {
     color: $base-primary-color;
-    font-family: "Lato", sans-serif;
+    //font-family: "Lato", sans-serif;
   }
 
   h3.g-title {
@@ -983,7 +1004,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     margin-right: 0;
     border-radius: 4px;
     padding: 8px 12px;
-    font-family: "Lato", sans-serif;
+    font-family: "Maven Pro", sans-serif;
     line-height: normal;
     font-weight: 300;
     font-size: 14px;
@@ -993,7 +1014,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background-color: $base-secondary-color;
     border-color: $base-secondary-color;
     color: #fff;
-    font-family: "Lato", sans-serif;
+    //font-family: "Lato", sans-serif;
 
     &:hover,
     &:active,
@@ -2106,7 +2127,7 @@ ul.nav.nav-tabs.nav-stacked li a {
   background-color: $base-secondary-color;
   border-color: $base-secondary-color;
   color: #fff;
-  font-family: "Lato", sans-serif;
+  //font-family: "Lato", sans-serif;
   text-transform: capitalize;
 
   &:hover,

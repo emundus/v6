@@ -2,40 +2,6 @@
   <div class="container-evaluation">
     <transition :name="'slide-down'" type="transition">
     <div class="w-form">
-      <ul style="padding-left: 0">
-        <draggable
-            v-model="documents"
-            tag="ul"
-            class="list-group"
-            handle=".handle"
-            v-bind="dragOptions"
-            @end="updateDocumentsOrder"
-        >
-          <transition-group type="transition" :value="!drag ? 'flip-list' : null">
-            <li class="list-group-item"
-                :id="'itemDoc' + document.id"
-                v-for="(document, indexDoc) in documents"
-                :key="indexDoc">
-              <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
-              <div style="display: inline;">
-                <span class="draggable">
-                  {{ document.title }}
-                  <span class="document-allowed_types">({{ document.ext }})</span>
-                </span>
-                <button type="button" class="buttonDeleteDoc" @click="editName(document)" style="margin-left: 0">
-                  <em class="fas fa-pencil-alt"></em>
-                </button>
-                <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
-                  <em class="fas fa-times"></em>
-                </button>
-              </div>
-            </li>
-          </transition-group>
-        </draggable>
-      </ul>
-
-      <hr>
-
       <vue-dropzone
           ref="dropzone"
           id="customdropzone"
@@ -51,6 +17,43 @@
           {{DropHere}}
         </div>
       </vue-dropzone>
+
+      <hr>
+
+      <ul style="padding-left: 0;margin: 0" class="w-100">
+        <draggable
+            v-model="documents"
+            tag="ul"
+            class="list-group"
+            style="margin: 0"
+            handle=".handle"
+            v-bind="dragOptions"
+            @end="updateDocumentsOrder"
+        >
+          <transition-group type="transition" :value="!drag ? 'flip-list' : null">
+            <li class="list-group-item"
+                :id="'itemDoc' + document.id"
+                v-for="(document, indexDoc) in documents"
+                :key="indexDoc">
+              <div class="d-flex justify-content-between">
+                <div class="d-flex w-100">
+                  <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
+                  <span class="draggable">
+                    {{ document.title }}
+                    <span class="document-allowed_types">({{ document.ext }})</span>
+                  </span>
+                </div>
+                <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
+                  <em class="fas fa-times"></em>
+                </button>
+              </div>
+              <a @click="editName(document)" class="cta-block pointer" style="font-size: 27px;float: right;position: relative;bottom: -20px;">
+                <em class="fas fa-pen"></em>
+              </a>
+            </li>
+          </transition-group>
+        </draggable>
+      </ul>
     </div>
     </transition>
   </div>
@@ -244,5 +247,12 @@ export default {
   .fa-file-upload{
     font-size: 25px;
     margin-right: 20px;
+  }
+
+  .list-group-item{
+    border: 2px solid #ececec;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    height: 100px;
   }
 </style>

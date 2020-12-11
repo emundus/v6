@@ -331,28 +331,54 @@ class EmundusonboardControllerform extends JControllerLegacy {
         exit;
     }
 
+    public function updatemandatory() {
+        $user = JFactory::getUser();
 
-    public function updatedocuments() {
-	    $user = JFactory::getUser();
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
 
-	    if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-		    $result = 0;
-		    $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-	    } else {
+            $jinput = JFactory::getApplication()->input;
+            $did = $jinput->getInt('did');
+            $prid = $jinput->getInt('prid');
+            $cid = $jinput->getInt('cid');
+            $m_form = $this->model;
 
-		    $jinput = JFactory::getApplication()->input;
-	        $data = $jinput->getRaw('body');
-	        $prid = $jinput->getInt('prid');
-	        $cid = $jinput->getInt('cid');
-	        $m_form = $this->model;
+            $documents = $m_form->updateMandatory($did,$prid,$cid);
 
-	        $documents = $m_form->updateDocuments($data, $prid, $cid);
+            if ($documents) {
+                $tab = array('status' => 1, 'msg' => JText::_('DOCUMENTS_UPDATED'), 'data' => $documents);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
+            }
+        }
 
-	        if ($documents) {
-	            $tab = array('status' => 1, 'msg' => JText::_('DOCUMENTS_UPDATED'), 'data' => $documents);
-	        } else {
-	            $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
-	        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function adddocument() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $did = $jinput->getInt('did');
+            $prid = $jinput->getInt('prid');
+            $cid = $jinput->getInt('cid');
+            $m_form = $this->model;
+
+            $documents = $m_form->addDocument($did, $prid, $cid);
+
+            if ($documents) {
+                $tab = array('status' => 1, 'msg' => JText::_('DOCUMENTS_UPDATED'), 'data' => $documents);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
+            }
         }
 
         echo json_encode((object)$tab);

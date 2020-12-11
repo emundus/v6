@@ -7,8 +7,8 @@
       :class="object_json.show_page_heading.class"
       v-html="object_json.show_page_heading.page_heading"
     />
-    <div class="d-flex" v-if="eval == 0 && !updatePage">
-      <h2 v-if="object_json.show_title" class="page_header" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
+    <div class="d-flex header-form-page mb-1" v-if="eval == 0 && !updatePage">
+      <h2 v-if="object_json.show_title" class="page_header mr-1" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
       <span @click="this.$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="Edit" class="cta-block pointer" style="font-size: 16px">
         <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
       </span>
@@ -70,14 +70,14 @@
                     <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
                   </a>
                 </div>
-                <div>
+<!--                <div>
                   <div v-show="!openGroup[group.group_id]">
                     <em class="fas fa-chevron-right"></em>
                   </div>
                   <div v-show="openGroup[group.group_id]">
                     <em class="fas fa-chevron-down"></em>
                   </div>
-                </div>
+                </div>-->
               </div>
               <div style="width: max-content" v-show="updateGroup && indexGroup == group.group_id">
                 <div class="input-can-translate">
@@ -117,8 +117,7 @@
                        v-show="element.hidden === false"
                        @mouseover="enableActionBar(element.id)"
                        @mouseleave="disableActionBar()"
-                       class="builder-item-element"
-                       :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id}">
+                       class="builder-item-element">
                     <modalEditElement
                             :ID="element.id"
                             :gid="element.group_id"
@@ -126,6 +125,8 @@
                             :manyLanguages="manyLanguages"
                             :actualLanguage="actualLanguage"
                             @reloadElement="reloadElement(element)"
+                            @publishUnpublishEvent="publishUnpublishEvent(element)"
+                            @updateRequireEvent="updateRequireEvent(element)"
                             @modalClosed="$emit('modalClosed')"
                             :id="element.id"
                             :key="keyElements['element' + element.id]"
@@ -140,7 +141,7 @@
                             @modalClosed="$emit('modalClosed')"
                             :key="keyElements['element' + element.id]"
                     />
-                    <div class="d-flex builder-item-element__properties">
+                    <div class="d-flex builder-item-element__properties" :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id}">
                       <span :class="element.publish ? 'icon-handle' : 'icon-handle-unpublished'" v-show="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel">
                         <em class="fas fa-grip-vertical handle"></em>
                       </span>
@@ -177,31 +178,24 @@
                         <span v-if="element.tipBelow" v-html="element.tipBelow"></span>
                       </div>
                     </div>
-                    <div class="actions-item-bar d-flex" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
-                      <a class="d-flex mr-2" @click="publishUnpublishElement(element)">
-                        <em :class="[element.publish ? 'fa-eye-slash' : 'fa-eye','far']" :id="'publish_icon_' + element.id"></em>
-                        <span class="ml-10px" v-if="element.publish">{{Unpublish}}</span>
-                        <span class="ml-10px" v-if="!element.publish">{{Publish}}</span>
-                      </a>
-                      <a class="d-flex mr-2" v-if="element.plugin != 'display'">
+                    <div class="actions-item-bar" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
+<!--                      <a class="d-flex mr-2" v-if="element.plugin != 'display'">
                         <div class="toggle">
                           <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
                           <strong class="b switch"></strong>
                           <strong class="b track"></strong>
                         </div>
                         <span class="ml-10px">{{Required}}</span>
+                      </a>-->
+                      <a class="d-flex mr-2 mb-1" v-if="element.plugin != 'calc'" @click="openParameters(element)">
+                        <em class="fas fa-cog settings-elt"></em>
                       </a>
-                      <a class="d-flex mr-2" v-if="element.plugin != 'calc'" @click="openParameters(element)">
-                        <em class="fas fa-cog"></em>
-                        <span class="ml-10px">{{Settings}}</span>
-                      </a>
-                      <a class="d-flex mr-2" v-if="element.plugin != 'calc'" @click="openDuplicate(element)">
+<!--                      <a class="d-flex mr-2" v-if="element.plugin != 'calc'" @click="openDuplicate(element)">
                         <em class="fas fa-copy"></em>
                         <span class="ml-10px">{{Duplicate}}</span>
-                      </a>
+                      </a>-->
                       <a class="d-flex mr-2" style="color: red" @click="deleteElement(element,index)" v-if="files == 0">
-                        <em class="fas fa-trash-alt"></em>
-                        <span class="ml-10px">{{Delete}}</span>
+                        <em class="fas fa-trash-alt delete-icon-elt"></em>
                       </a>
                     </div>
                   </div>
@@ -358,95 +352,38 @@ export default {
       });
     },
 
-    updateRequireElement(element) {
-      if(this.clickUpdatingLabel) {
-        this.updateLabelElement(element);
-      }
-      setTimeout(() => {
-        axios({
-          method: "post",
-          url:
-                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            element: element
-          })
-        }).then(() => {
-          axios({
-            method: "get",
-            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
-            params: {
-              element: element.id,
-              gid: element.group_id
-            },
-            paramsSerializer: params => {
-              return qs.stringify(params);
-            }
-          }).then(response => {
-            element.label_value = response.data.label_value;
-            this.$emit(
-                    "show",
-                    "foo-velocity",
-                    "success",
-                    this.updateSuccess,
-                    this.update
-            );
-          });
-        }).catch(e => {
-          this.$emit(
-                  "show",
-                  "foo-velocity",
-                  "error",
-                  this.updateFailed,
-                  this.updating
-          );
-          console.log(e);
-        });
-      }, 300);
+    updateRequireEvent(element) {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+        params: {
+          element: element.id,
+          gid: element.group_id
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        element.label_value = response.data.label_value;
+        this.$emit(
+            "show",
+            "foo-velocity",
+            "success",
+            this.updateSuccess,
+            this.update
+        );
+      });
     },
 
-    publishUnpublishElement(element) {
-      if(this.clickUpdatingLabel) {
-        this.updateLabelElement(element);
+    publishUnpublishEvent(element) {
+      element.publish = !element.publish;
+      if(element.publish){
+        document.getElementById('publish_icon_' + element.id).classList.remove('fa-eye');
+        document.getElementById('publish_icon_' + element.id).classList.add('fa-eye-slash');
+      } else {
+        document.getElementById('publish_icon_' + element.id).classList.add('fa-eye');
+        document.getElementById('publish_icon_' + element.id).classList.remove('fa-eye-slash');
       }
-      axios({
-        method: "post",
-        url:
-                "index.php?option=com_emundus_onboard&controller=formbuilder&task=publishunpublishelement",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          element: element.id,
-        })
-      }).then(response => {
-        element.publish = !element.publish;
-        if(element.publish){
-          document.getElementById('publish_icon_' + element.id).classList.remove('fa-eye');
-          document.getElementById('publish_icon_' + element.id).classList.add('fa-eye-slash');
-        } else {
-          document.getElementById('publish_icon_' + element.id).classList.add('fa-eye');
-          document.getElementById('publish_icon_' + element.id).classList.remove('fa-eye-slash');
-        }
-        this.$emit(
-                "show",
-                "foo-velocity",
-                "success",
-                this.updateSuccess,
-                this.update
-        );
-      }).catch(e => {
-        this.$emit(
-                "show",
-                "foo-velocity",
-                "error",
-                this.updateFailed,
-                this.updating
-        );
-        console.log(e);
-      });
     },
 
     deleteElement(element,index) {
@@ -1175,7 +1112,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../assets/variables";
+@import "../../assets/css/variables";
 
   .hidden {
     display: none;
@@ -1213,29 +1150,28 @@ export default {
     position: absolute;
     cursor: grab;
     left: auto;
-    margin-bottom: 1em;
-    right: 3em;
+    margin-bottom: 30px;
+    right: 50px;
   }
   .icon-handle-group{
     color: #cecece;
     position: absolute;
     cursor: grab;
-    left: 1em;
-    margin-top: 8px;
-    margin-bottom: 0;
+    left: 15px;
+    margin-bottom: 20px;
   }
   .icon-handle-unpublished{
     color: #cecece;
     position: absolute;
     cursor: grab;
-    left: 1em;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
+    right: 50px;
   }
   .hidden{
     display: none;
   }
   .active-repeat{
-    background: #de6339;
+    background: $dark-blue;
     color: white !important;
   }
   .group-repeat-icon{

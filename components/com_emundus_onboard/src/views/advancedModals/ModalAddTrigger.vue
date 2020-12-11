@@ -4,7 +4,7 @@
     <modal
       :name="'modalAddTrigger' + triggerAction"
       height="auto"
-      transition="nice-modal-fade"
+      transition="little-move-left"
       :min-width="200"
       :min-height="200"
       :delay="100"
@@ -17,17 +17,21 @@
                 :model="this.form.model"
                 :models="this.models"
         />
-      <div class="modalC-content">
-        <div class="update-field-header">
+
+      <div class="fixed-header-modal">
           <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)">
-              <em class="fas fa-times-circle"></em>
+              <em class="fas fa-times"></em>
             </button>
           </div>
+                        <div class="update-field-header">
           <h2 class="update-title-header">
              {{addTrigger}}
           </h2>
+                        </div>
         </div>
+
+      <div class="modalC-content">
         <div class="form-group">
           <label>{{Model}}* :</label>
           <div class="input-can-translate">
@@ -93,15 +97,15 @@
           </p>
         </div>
       </div>
-      <div class="col-md-12 mb-1">
+      <div class="d-flex justify-content-between mb-1">
+                <button type="button"
+                        class="bouton-sauvergarder-et-continuer w-retour"
+                        @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)"
+                >{{Retour}}</button>
         <button type="button"
           class="bouton-sauvergarder-et-continuer"
           @click.prevent="createTrigger()"
         >{{ Continuer }}</button>
-        <button type="button"
-          class="bouton-sauvergarder-et-continuer w-retour"
-          @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)"
-        >{{Retour}}</button>
       </div>
     </modal>
   </span>

@@ -196,7 +196,7 @@ button#back:hover, button#back:active, button#back:focus,
 #g-sidebar {
     padding: 0;
     margin: 20px 15px;
-    background: transparent;
+    background: transparent !important;
 }
 
 #g-sidebar h3 {

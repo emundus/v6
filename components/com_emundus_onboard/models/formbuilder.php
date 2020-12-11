@@ -2317,7 +2317,13 @@ class EmundusonboardModelformbuilder extends JModelList {
                 if (empty($el_params->validations)) {
                     $FRequire = false;
                 } else {
-                    $FRequire = true;
+                    if(isset($el_params->validations->plugin)){
+                        if(empty($el_params->validations->plugin)){
+                            $FRequire = false;
+                        } else {
+                            $FRequire = true;
+                        }
+                    }
                 }
 
                 if ($el_params->sub_options) {

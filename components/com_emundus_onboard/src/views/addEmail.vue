@@ -8,11 +8,18 @@
         :classes="'vue-notification-custom'"
     />
     <div class="w-container">
+      <div class="section-sub-menu sub-form" v-if="email == ''">
+        <div class="container-2 w-container" style="max-width: unset">
+          <div class="d-flex">
+            <img src="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
+            <h2 class="tchooz-section-titles">{{AddEmail}}</h2>
+          </div>
+        </div>
+      </div>
       <form id="program-form" @submit.prevent="submit">
         <div class="sous-container">
           <p class="required mb-1">{{RequiredFieldsIndicate}}</p>
           <div class="heading-form">
-            <div class="icon-title informations"></div>
             <h2 class="heading">{{ Informations }}</h2>
           </div>
           <div class="w-form">
@@ -42,7 +49,6 @@
         <div class="divider"></div>
         <div class="sous-container last-container">
           <div class="heading-form">
-            <div class="icon-title"></div>
             <h2 class="heading">{{ Advanced }}</h2>
           </div>
           <div class="form-group">
@@ -75,7 +81,6 @@
         <div class="divider"></div>
         <div class="sous-container last-container" v-if="email == ''">
           <div class="heading-form">
-            <div class="icon-title"></div>
             <h2 class="heading">{{ Trigger }}</h2>
           </div>
 
@@ -162,7 +167,7 @@
                   onclick="history.go(-1)">
                 {{ retour }}
               </button>
-              <button type="button" class="bouton-sauvergarder-et-continuer">
+              <button type="button" class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green">
                 {{ continuer }}
               </button>
             </div>
@@ -200,6 +205,7 @@
 
       dynamicComponent: false,
 
+      AddEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
       Advanced: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
       Informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
       Trigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER"),

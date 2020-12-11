@@ -50,16 +50,24 @@ defined('_JEXEC') or die;
     #header-b #em_user_menu li.parent-active:hover a{
         color: black;
     }
+
+    #header-b #em_user_menu li:hover a, #header-b #em_user_menu li:active a, #header-b #em_user_menu li:focus a{
+        color: #12DB42;
+        filter: brightness(90%);
+    }
     /*** END ***/
 
     /*** Sublevel parent ***/
     .parent-active .item::before,.active .item::before{
-        background: #33df5c;
-        width: 3px;
+        background: #12DB42;
+        width: 5px;
         height: 100%;
         content: "";
         position: absolute;
         left: -20px;
+    }
+    .active .item .image-title{
+        color: #12DB42;
     }
     .g-menu-parent-indicator{
         margin-left: 20px;
@@ -97,7 +105,7 @@ defined('_JEXEC') or die;
     }
 
     .g-sublevel-list{
-        margin-left: 70px !important;
+        margin-left: 40px !important;
         margin-top: 10px !important;
         position: fixed;
         top: 90px;
@@ -114,6 +122,11 @@ defined('_JEXEC') or die;
         display: block;
         margin-left: 10px;
     }
+    .burger-button{
+        margin: 0 10px 10px 10px;
+        background: transparent;
+        padding: 0;width: 30px
+    }
     /*** END ***/
 </style>
 <nav class="g-main-nav <?php echo $class_sfx;?>" data-g-hover-expand="true"
@@ -126,7 +139,7 @@ defined('_JEXEC') or die;
     ?>>
     <div style="opacity: 0" class="grey-navbar-icons"></div>
     <ul class="g-toplevel tchooz-vertical-toplevel">
-        <button class="g-menu-item g-standard" style="margin: 10px;background: transparent;padding: 0;width: 30px" onclick="enableTitles()"><img src="/images/emundus/menus/menu.png" style="width: 30px"></button>
+        <button class="g-menu-item g-standard burger-button" onclick="enableTitles()"><img src="/images/emundus/menus/menu.png" style="width: 30px"></button>
         <?php
 
         echo '<li class="g-menu-item g-standard tchooz-vertical-item" style="margin-bottom: 50px !important;"><a class="item" href="/"><img src="/images/emundus/tchooz_favicon.png" alt="Accueil" style="width: 30px"></a>
@@ -363,6 +376,8 @@ defined('_JEXEC') or die;
         if(jQuery(".image-title").css("display") == 'none' && close_menu == false){
             jQuery(".tchooz-vertical-toplevel").css("width","250px")
             jQuery(".tchooz-vertical-item").css("width","auto")
+            jQuery("#g-container-main").css("padding-left","200px");
+            jQuery("#header-a").css("padding-left","200px");
             //Check for formbuilder
             if(jQuery(".tchooz-vertical-item").css("transform") == 'matrix(1, 0, 0, 1, -100, 0)') {
                 jQuery(".sidebar-formbuilder").css("transform", "translateX(-100px)")
@@ -382,6 +397,8 @@ defined('_JEXEC') or die;
             jQuery(".tchooz-vertical-toplevel").css("width","55px")
             jQuery(".image-title").css("opacity","0");
             jQuery(".g-menu-parent-indicator").css("display","none");
+            jQuery("#g-container-main").css("padding-left","0");
+            jQuery("#header-a").css("padding-left","0");
             setTimeout(() =>{
                 jQuery(".image-title").css("display","none");
                 jQuery(".grey-navbar-icons").css("opacity","0")

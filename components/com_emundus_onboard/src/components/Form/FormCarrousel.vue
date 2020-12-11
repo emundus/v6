@@ -1,17 +1,17 @@
 <template>
   <div class="container-fluid">
     <div class="menu-block">
-      <div class="col-md-8 form-viewer-builder" style="margin-bottom: 50%">
-        <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility" v-if="formLinkArray[indexHighlight]" />
+      <div class="col-md-8 form-viewer-builder" style="padding: 30px">
+        <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility" v-if="formLinkArray[indexHighlight]" @editPage="EditPage" />
       </div>
         <ul class="col-md-3">
           <h3 class="mb-1" style="padding: 0;">{{ FormPage }} :</h3>
           <div class="form-pages">
-            <h4 class="ml-10px" style="margin-bottom: 0"><em class="far fa-file-alt mr-1"></em>{{ Form }}</h4>
+            <h4 class="ml-10px form-title" style="margin-bottom: 0"><img src="/images/emundus/menus/form.png" class="mr-1">{{ Form }}</h4>
             <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
               <a
-                @click="ChangeIndex(index)"
                 class="MenuFormItem"
+                @click="ChangeIndex(index)"
                 :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
               >{{value.value}}</a>
             </li>
@@ -50,8 +50,11 @@ export default {
   methods: {
     ChangeIndex(index) {
       this.indexHighlight = index;
-      document.cookie = 'page='+index+'; expires=Session; path=/'
-      this.$emit("getEmitIndex", this.indexHighlight);
+      //document.cookie = 'page='+index+'; expires=Session; path=/'
+      //this.$emit("getEmitIndex", this.indexHighlight);
+    },
+    EditPage() {
+      this.$emit("formbuilder", this.indexHighlight);
     },
     getDataObject: function() {
       this.formList.forEach(element => {
@@ -84,5 +87,17 @@ export default {
 <style scoped>
 .container-fluid {
   margin-bottom: 5%;
+}
+.menu-block{
+  padding: 0;
+}
+
+.form-title{
+  display: flex;
+  align-items: center;
+  padding: 1em;
+}
+.form-title img{
+  width: 25px;
 }
 </style>

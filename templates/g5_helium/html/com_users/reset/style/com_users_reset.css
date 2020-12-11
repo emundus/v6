@@ -23,7 +23,7 @@
     width: 60%;
     margin-left: auto !important;
     margin-right: auto !important;
-    background: #fafafa;
+    background: #fff;
     border: none;
     padding: 50px;
 }
@@ -34,7 +34,7 @@
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: #fafafa;
+    background: #fff;
     width: 60%;
     margin-left: auto;
     margin-right: auto;
@@ -76,7 +76,7 @@ text-align: left;
 }
 
 form#user-registration.form-validate.form-horizontal.well {
-    background: #fafafa;
+    background: #fff;
     border: none;
     margin-top: 20px !important;
 }
@@ -100,7 +100,6 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     margin-right:0;
     border-radius: 4px;
     padding: 8px 12px;
-    font-family: "Open Sans";
     line-height: normal;
     font-weight: 300;
     font-size: 14px;
@@ -125,7 +124,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: #fafafa;
+    background: #fff;
     width: 60%;
     margin-left: auto;
     margin-right: auto;

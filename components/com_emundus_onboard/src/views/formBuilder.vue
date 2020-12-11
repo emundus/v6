@@ -71,23 +71,28 @@
                     <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{testingForm}}</label>
                   </a>
                 <transition :name="'slide-right'" type="transition">
-                  <draggable
-                          v-model="plugins"
-                          v-bind="dragOptions"
-                          v-if="addingElement"
-                          handle=".handle"
-                          @start="dragging = true;draggingIndex = index"
-                          @end="addingNewElement($event)"
-                          drag-class="plugin-drag"
-                          chosen-class="plugin-chosen"
-                          ghost-class="plugin-ghost"
-                          class="plugins-list"
-                          style="padding-bottom: 2em">
-                      <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
-                        <em :class="plugin.icon"></em>
-                        <span class="ml-10px">{{plugin.name}}</span>
-                      </div>
-                  </draggable>
+                  <div class="plugins-list" v-if="addingElement">
+                    <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement">
+                      <em class="fas fa-arrow-left mr-1"></em>
+                      {{ Back }}
+                    </a>
+                    <hr style="width: 80%;margin: 10px auto;">
+                    <draggable
+                            v-model="plugins"
+                            v-bind="dragOptions"
+                            handle=".handle"
+                            @start="startDragging();dragging = true;draggingIndex = index"
+                            @end="addingNewElement($event)"
+                            drag-class="plugin-drag"
+                            chosen-class="plugin-chosen"
+                            ghost-class="plugin-ghost"
+                            style="padding-bottom: 2em;margin-top: 10%">
+                        <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
+                          <em :class="plugin.icon"></em>
+                          <span class="ml-10px">{{plugin.name}}</span>
+                        </div>
+                    </draggable>
+                  </div>
                 </transition>
               </div>
             </div>
@@ -104,7 +109,7 @@
       </div>
       <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
         <div class="heading-block" :class="addingElement ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
-          <h2 class="form-title" style="padding: 0; margin: 0"><em class="far fa-file-alt mr-1"></em>{{profileLabel}}</h2>
+          <h2 class="form-title" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1">{{profileLabel}}</h2>
           <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
             <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
           </a>
@@ -156,7 +161,7 @@
         <ul class="col-md-3" style="margin-top: 0" v-if="formObjectArray">
           <h3 class="mb-1" style="padding: 0;">{{ FormPage }} :</h3>
           <div class="form-pages">
-            <h4 class="ml-10px" style="margin-bottom: 0"><em class="far fa-file-alt mr-1"></em>{{ Form }}</h4>
+            <h4 class="ml-10px form-title" style="margin-bottom: 0;padding: 0"><img src="/images/emundus/menus/form.png" class="mr-1">{{ Form }}</h4>
             <draggable
                 handle=".handle"
                 v-model="formObjectArray"
@@ -164,9 +169,9 @@
                 @end="SomethingChange"
             >
               <li v-for="(value, index) in formObjectArray" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-<!--                  <span class="icon-handle" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
+                  <span class="icon-handle" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
                     <em class="fas fa-grip-vertical handle"></em>
-                  </span>-->
+                  </span>
                 <a @click="changeGroup(index,value.rgt);menuHighlight = 0"
                    class="MenuFormItem"
                    :class="indexHighlight == index && menuHighlight === 0 ? 'MenuFormItem_current' : ''">
@@ -177,7 +182,7 @@
             <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 10px">{{addMenu}}</button>
           </div>
           <div class="form-pages" style="padding-top: 20px" v-if="submittionPages">
-            <h4 class="ml-10px" style="margin-bottom: 10px"><em class="far fa-paper-plane mr-1"></em>{{SubmitPage}}</h4>
+            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><img src="/images/emundus/menus/confirmation.png" class="mr-1">{{SubmitPage}}</h4>
             <li v-for="(value, index) in submittionPages" :key="index" class="MenuForm">
               <a @click="menuHighlight = 1;indexHighlight = index"
                  class="MenuFormItem"
@@ -259,6 +264,7 @@
           }
         },
         loading: false,
+        first_loading: false,
         //
 
         // Forms variables
@@ -340,6 +346,7 @@
         SubmitPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
         testingForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
         Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
+        Back: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
       };
     },
 
@@ -397,6 +404,9 @@
       addingNewElement: function(evt) {
         this.dragging = false;
         this.draggingIndex = -1;
+        /*document.getElementsByClassName('no-elements-tip')[0].style.background = '#e4e4e9';
+        document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #c3c3ce';
+        document.getElementsByClassName('no-elements-tip')[0].innerHTML = Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS");*/
         let plugin = evt.clone.id.split('_')[1];
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
         if(typeof gid != 'undefined'){
@@ -616,11 +626,11 @@
               });
         });
         this.loading = false;
-        if(this.getCookie('page_' + this.prid) !== '') {
+        /*if(this.getCookie('page_' + this.prid) !== '') {
           this.indexHighlight = this.getCookie('page_' + this.prid);
         } else {
           this.indexHighlight = 0;
-        }
+        }*/
         this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
         this.rgt = this.formObjectArray[this.indexHighlight].rgt;
       },
@@ -880,6 +890,11 @@
         this.indexGrab = 0;
         this.grab = false;
       },
+      startDragging(){
+        /*document.getElementsByClassName('no-elements-tip')[0].style.background = '#fff';
+        document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #16afe1';
+        document.getElementsByClassName('no-elements-tip')[0].innerHTML = '';*/
+      }
       //
     },
     created() {
@@ -887,7 +902,7 @@
       jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)")
       this.getForms();
       this.getSubmittionPage();
-      this.getFilesByForm();
+      //this.getFilesByForm();
     },
 
     computed: {
@@ -913,8 +928,12 @@
   }
 
   .form-title{
-    text-align: center;
+    display: flex;
+    align-items: center;
     padding: 1em;
+  }
+  .form-title img{
+    width: 25px;
   }
 
   @media (max-width: 768px) {

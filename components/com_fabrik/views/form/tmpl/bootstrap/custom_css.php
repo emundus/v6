@@ -537,17 +537,17 @@ form#member-profile .form-horizontal .control-label {
      display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: #fafafa;
+    background: #fff;
     width: 60%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 50px;
+    margin-top: 150px;
     padding-bottom: 50px;
     margin-bottom: 50px;
 }
 
   .view-registration .login.em-formRegistrationCenter .row-fluid {
-    background: #fafafa;
+    background: #fff;
 }
 
   .view-registration form .row-fluid .plg-password span, .view-form.em-formRegistrationCenter form .row-fluid .plg-password span {
@@ -596,7 +596,7 @@ button.register {
   border: none;
     margin-bottom: 0 !important;
     border-radius: 0;
-    background: #fafafa;
+    background: #fff;
     border-radius: 0;
     padding: 0px;
     box-shadow: none;
@@ -1641,19 +1641,19 @@ a.btn-attach:active {
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: #fafafa;
+    background: #fff;
     width: 60%;
     margin-left: auto !important;
     margin-right: auto !important;
     padding-bottom: 50px !important;
-    margin-top: 50px !important; 
+    margin-top: 150px !important; 
 }
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {
     border: none;
     margin-bottom: 0 !important;
     border-radius: 0;
-    background: #fafafa;
+    background: #fff;
     border-radius: 0;
     padding: 0px;
     box-shadow: none;

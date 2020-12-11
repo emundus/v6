@@ -10,14 +10,25 @@
         <ModalUpdateLogo
                 @UpdateLogo="updateView"
         />
-        <div class="section-sub-menu col-lg-6 col-sm-12">
+      <ModalUpdateIcon
+          @UpdateIcon="updateIcon"
+        />
+        <div class="section-sub-menu col-lg-5 mr-2 col-sm-12">
           <h2 style="margin: 0">Logo</h2>
           <div class="d-flex"></div>
             <img class="logo-settings" :src="imageLink">
-            <a class="settings-edit-icon cta-block" @click="$modal.show('modalUpdateLogo')">
+            <a class="settings-edit-icon cta-block pointer" @click="$modal.show('modalUpdateLogo')">
               <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
             </a>
-          </div>
+        </div>
+
+        <div class="section-sub-menu col-lg-5 col-sm-12">
+          <h2 style="margin: 0">Icône</h2>
+          <div class="d-flex"></div>
+          <img class="logo-settings" style="max-width: 50px" :src="iconLink">
+          <a class="settings-edit-icon cta-block pointer" @click="$modal.show('modalUpdateIcon')">
+            <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
+          </a>
         </div>
         <!--<h2>{{Colors}}</h2>
         <div class="d-flex" style="margin-bottom: 20px;">
@@ -40,6 +51,7 @@
     import ModalUpdateLogo from "../../views/advancedModals/ModalUpdateLogo";
     import VSwatches from 'vue-swatches'
     import 'vue-swatches/dist/vue-swatches.css'
+    import ModalUpdateIcon from "@/views/advancedModals/ModalUpdateIcon";
 
     const qs = require("qs");
 
@@ -47,6 +59,7 @@
         name: "editStyle",
 
         components: {
+          ModalUpdateIcon,
             ModalUpdateLogo,
             VSwatches
         },
@@ -58,6 +71,7 @@
         data() {
             return {
                 imageLink: '/images/custom/logo.png',
+                iconLink: '/images/custom/favicon.png',
                 primary: '',
                 secondary: '',
                 changes: false,
@@ -71,6 +85,10 @@
             updateView(image) {
                 this.imageLink = image;
                 this.$forceUpdate();
+            },
+            updateIcon(image) {
+              this.iconLink = image;
+              this.$forceUpdate();
             },
 
             /*updateColor(type,color) {
@@ -147,6 +165,7 @@
   .section-sub-menu{
     padding: 20px;
     margin: 0;
+    height: 15em;
   }
   .settings-edit-icon{
     display: block;

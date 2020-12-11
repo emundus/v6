@@ -307,6 +307,35 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         }
     }
 
+    public function updateicon() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $image = $jinput->files->get('file');
+
+            if(isset($image)) {
+                $target_dir = "images/custom/";
+                unlink($target_dir . 'favicon.png');
+
+                $target_file = $target_dir . basename('favicon.png');
+
+                if (move_uploaded_file($image["tmp_name"], $target_file)) {
+                    $tab = array('status' => 1, 'msg' => JText::_('ICON_UPDATED'));
+                } else {
+                    $tab = array('status' => 0, 'msg' => JText::_('ICON_NOT_UPDATED'));
+                }
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ICON_NOT_UPDATED'));
+            }
+            echo json_encode((object)$tab);
+            exit;
+        }
+    }
+
     public function getappcolors(){
         $user = JFactory::getUser();
 

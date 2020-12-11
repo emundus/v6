@@ -21,11 +21,26 @@
             </div>
           <div class="update-field-header">
             <h2 class="update-title-header">
-              {{label[actualLanguage]}}
+              {{ElementOptions}}
             </h2>
           </div>
         </div>
       <div class="modalC-content">
+        <div v-if="element != null" class="mb-1">
+          <a class="d-flex tool-icon mb-1" @click="publishUnpublishElement()">
+            <em :class="[element.publish ? 'fa-eye-slash' : 'fa-eye','far']" style="width: 45px" :id="'publish_icon_' + element.id"></em>
+            <span class="ml-10px" v-if="element.publish">{{Unpublish}}</span>
+            <span class="ml-10px" v-if="!element.publish">{{Publish}}</span>
+          </a>
+          <a class="d-flex tool-icon" v-if="plugin != 'display'">
+            <div class="toggle">
+              <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement()"/>
+              <strong class="b switch"></strong>
+              <strong class="b track"></strong>
+            </div>
+            <span class="ml-10px">{{Required}}</span>
+          </a>
+        </div>
         <div class="form-group mb-2">
           <label>{{fieldType}} :</label>
           <select id="select_type" class="dropdown-toggle" v-model="plugin" :disabled="(files != 0 && element.plugin == 'birthday') || (files != 0 && element.params.password == 6)">
@@ -56,7 +71,7 @@
         >{{ Continuer }}</button>
       </div>
       <div class="loading-form" v-if="loading">
-        <Ring-Loader :color="'#de6339'" />
+        <Ring-Loader :color="'#12DB42'" />
       </div>
     </modal>
   </span>
@@ -143,6 +158,14 @@
         Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
         LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
         TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+        ElementOptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ELEMENT_OPTIONS"),
+        Unpublish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH"),
+        Publish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_PUBLISH"),
+        Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
+        update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+        updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
+        updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
+        updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
         //
       };
     },
@@ -247,6 +270,66 @@
         this.getElement();
         this.getDatabases();
       },
+
+      publishUnpublishElement() {
+        axios({
+          method: "post",
+          url:
+              "index.php?option=com_emundus_onboard&controller=formbuilder&task=publishunpublishelement",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            element: this.element.id,
+          })
+        }).then(response => {
+          this.element.publish = !this.element.publish;
+          this.$emit("publishUnpublishEvent");
+          this.$emit(
+              "show",
+              "foo-velocity",
+              "success",
+              this.updateSuccess,
+              this.update
+          );
+        }).catch(e => {
+          this.$emit(
+              "show",
+              "foo-velocity",
+              "error",
+              this.updateFailed,
+              this.updating
+          );
+          console.log(e);
+        });
+      },
+
+      updateRequireElement() {
+        setTimeout(() => {
+          axios({
+            method: "post",
+            url:
+                "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              element: this.element
+            })
+          }).then(() => {
+            this.$emit("updateRequireEvent");
+          }).catch(e => {
+            this.$emit(
+                "show",
+                "foo-velocity",
+                "error",
+                this.updateFailed,
+                this.updating
+            );
+            console.log(e);
+          });
+        }, 300);
+      },
     },
     computed: {
       getlabel: function() {
@@ -283,4 +366,7 @@
 </script>
 
 <style scoped>
+  .check{
+    width: 100%;
+  }
 </style>
