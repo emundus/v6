@@ -3610,4 +3610,26 @@ if (JFactory::getUser()->id == 63)
 			return array_keys(array_flip($result));
 		}
 	}
+
+	public function getFormProgress($fnums) {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query->select('fnum,form_progress')
+            ->from ($db->quoteName('#__emundus_campaign_candidature'))
+            ->where($db->quoteName('fnum') . ' IN (' . $db->quote(implode(',',$fnums)) . ')');
+        $db->setQuery($query);
+        return $db->loadAssocList();
+    }
+
+    public function getAttachmentProgress($fnums) {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query->select('fnum,attachment_progress')
+            ->from ($db->quoteName('#__emundus_campaign_candidature'))
+            ->where($db->quoteName('fnum') . ' IN (' . $db->quote(implode(',',$fnums)) . ')');
+        $db->setQuery($query);
+        return $db->loadAssocList();
+    }
 }
