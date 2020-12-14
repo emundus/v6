@@ -925,12 +925,17 @@ class EmundusModelUsers extends JModelList {
     }
 
 
-    /**
-     *
-     * PLAIN LOGIN
-     *
-     */
-    public function plainLogin($credentials) {
+	/**
+	 *
+	 * PLAIN LOGIN
+	 *
+	 * @param     $credentials
+	 * @param int $redirect
+	 *
+	 * @return bool|JException
+	 * @throws Exception
+	 */
+    public function plainLogin($credentials, $redirect = 1) {
         // Get the application object.
         $app = JFactory::getApplication();
 
@@ -940,16 +945,21 @@ class EmundusModelUsers extends JModelList {
         $credentials['password'] = $this->_passw;*/
 
         $options = array();
+        $options['redirect'] = $redirect;
         return $app->login($credentials, $options);
 
     }
 
-    /**
-     *
-     * ENCRYPT LOGIN
-     *
-     */
-    public function encryptLogin($credentials) {
+	/**
+	 *
+	 * ENCRYPT LOGIN
+	 *
+	 * @param $credentials
+	 * @param int $redirect
+	 *
+	 * @throws Exception
+	 */
+    public function encryptLogin($credentials, $redirect = 1) {
         // Get the application object.
         $app = JFactory::getApplication();
 
@@ -967,6 +977,7 @@ class EmundusModelUsers extends JModelList {
 
             $options = array();
             $options['action'] = 'core.login.site';
+            $options['redirect'] = $redirect;
 
             $response['username'] = $result->username;
             $app->triggerEvent('onUserLogin', array((array)$response, $options));

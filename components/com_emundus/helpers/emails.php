@@ -259,7 +259,7 @@ class EmundusHelperEmails {
 				$email .= '<option value="'.$email_template->id.'">'.$email_template->subject.'</option>';
 			}
 			$email .= '</select>
-						<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" />
+						<input placeholder="'.JText::_( 'SUBJECT' ).'" name="mail_subject" type="text" class="inputbox" id="mail_subject" value="" size="100" style="width: inherit !important;" multiple="multiple" />
 						<select name="mail_to[]" type="text" class="inputbox" id="mail_to" size="100" style="width: 100% !important;">
 							<option value="">'.JText::_('EMAIL_TO').'</option>';
 			foreach ($users as $expert) {
@@ -297,7 +297,13 @@ class EmundusHelperEmails {
 					        render: {
 					            item: function(data, escape) {
 					                return "<div>" + escape(data.value.trim()) + "</div>";
-					            }
+					            },
+								option: function(item, escape) {
+									const label = item.text.trim();
+									return \'<div>\' +
+										((label !== \'\')?\'<strong>\'+escape(label)+\' </strong>\'+escape(item.value):escape(item.value)) +
+									\'</div>\';
+								}
 					        },
 					        onDelete: function() {
 					            return true;
