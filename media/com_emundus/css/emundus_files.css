@@ -582,13 +582,18 @@ div#em-modal-form {
     margin-left: 0;
 }
 
+
+.modal-header button.close {
+    color: #565656;
+}
+
 div#em-modal-actions div.modal-header table,
 div.modal-header table td {
     border-style: none;
 }
 
 div#em-modal-actions h4#em-modal-actions-title {
-    color: #ffffff !important;
+    color: #858585 !important;
     font-weight: 700;
     font-size: 2rem;
 }
@@ -2227,9 +2232,9 @@ div#em-assoc-files .panel > .panel-heading {
     margin-top: 10px;
 }
 
-.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading .btn-group.pull-right {
+.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.admissions-page .main-panel .panel-heading .btn-group.pull-right {
     position: relative;
-    top: -26px;
+    top: -29px;
 }
 
 .g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right {
@@ -2247,7 +2252,7 @@ div#em-assoc-files .panel > .panel-heading {
     top: 0px;
 }
 .g-back-office-emundus-tableau.evaluations-page .em-container-share-table .em-container-share-table-left, .g-back-office-emundus-tableau.decision-page .em-container-share-table .em-container-share-table-left {
-    margin-top: 5px;
+    margin-top: 13px;
 }
 
 button#em-close-file {

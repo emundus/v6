@@ -9,11 +9,31 @@
 // no direct access
 defined('_JEXEC') or die;
 
+jimport( 'joomla.html.parameter' );
+
+require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+
 $doc = JFactory::getDocument();
 $user = JFactory::getUser();
+$application = new EmundusModelApplication;
 
-$doc->addStyleSheet('components/com_emundus/assets/css/item.css');
-$doc->addStyleSheet('components/com_emundus/assets/css/list.css');
+//$doc->addStyleSheet('components/com_emundus/assets/css/item.css');
+//$doc->addStyleSheet('components/com_emundus/assets/css/list.css');
+
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$fabrik_elements_title = $eMConfig->get('fabrik_elements_title', '2113');
+$fabrik_elements_html = $eMConfig->get('fabrik_elements_html', '2111, 2113, 2134, 2135, 2112, 2116, 2114, 2117, 2128, 2121, 2133, 2124, 2125, 2126');
+
+// Element Fabrik ID list to display 
+$title = array($fabrik_elements_title);
+$elts = array($fabrik_elements_html);
+$rowid = JFactory::getApplication()->input->get('id');
+$options = array('show_list_label' => 0, 'show_form_label' => 0, 'show_group_label' => 0, 'rowid' => $rowid, 'profile_id' => '13');
+$checklevel = false;
+
+$offer_title = $application->getFormsPDFElts(62, $title, $options, $checklevel);
+$offer = $application->getFormsPDFElts(62, $elts, $options, $checklevel);
 
 $offset = JFactory::getConfig()->get('offset');
 
@@ -21,7 +41,6 @@ $canEdit = $user->authorise('core.edit', 'com_emundus.' . $this->item->id);
 if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->id)) {
     $canEdit = $user->id == $this->item->created_by;
 }
-
 ?>
 <?php if ($user->guest): ?>
     <div class="alert alert-error">
@@ -29,69 +48,9 @@ if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus' . $this->item->
     </div>
 <?php endif; ?>
 <?php if ($this->item) : ?>
-    <h1><?php echo $this->item->intitule_poste; ?></h1>
-    <div class="item_fields">
-        <table class="table job">
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_ETABLISSEMENT'); ?></th>
-                <td><?php echo $this->item->etablissement; ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_SERVICE'); ?></th>
-                <td><?php echo $this->item->service; ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_DOMAINE'); ?></th>
-                <td><?php echo $this->item->domaine; ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_LOCALISATION'); ?></th>
-                <td><?php echo $this->item->localisation; ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_DESCRIPTION'); ?></th>
-                <td><?php echo $this->item->description; ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_NIVEAU'); ?></th>
-                <td><?php echo $this->item->niveau; ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_DOMAINE_ETUDES'); ?></th>
-                <td><?php echo $this->item->domaine_etudes; ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_COMPETENCES'); ?></th>
-                <td><?php echo $this->item->competences; ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_MISSION'); ?></th>
-                <td><?php echo $this->item->mission; ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_NB_HEURES'); ?></th>
-                <td><?php echo $this->item->nb_heures; ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_DATE_DEBUT'); ?></th>
-                <td><?php echo JFactory::getDate(new JDate($this->item->date_debut, $offset))->format('d/m/Y'); ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_DATE_FIN'); ?></th>
-                <td><?php echo JFactory::getDate(new JDate($this->item->date_fin, $offset))->format('d/m/Y'); ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_DATE_LIMITE'); ?></th>
-                <td><?php echo JFactory::getDate(new JDate($this->item->date_limite, $offset))->format('d/m/Y'); ?></td>
-            </tr>
-            <tr>
-                <th><?php echo JText::_('COM_EMUNDUS_FORM_LBL_JOB_RESPONSABLE_EMAIL'); ?></th>
-                <td><?php echo $this->item->adresse_correspondance; ?>
-                </td>
-            </tr>
-
-
-        </table>
+    <h1 class="offer-title"><?php echo $offer_title; ?></h1>
+    <div class="offer item_fields">
+        <?php echo $offer; ?>
     </div>
 
 <?php

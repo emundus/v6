@@ -97,7 +97,12 @@ label {
   color: #000;
   margin-bottom: 5px;
   font-weight: bold;
-  display: inline;
+}
+
+.view-form label.fabrikLabel.fabrikTip {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .hidden {
@@ -243,7 +248,7 @@ ul {
 }
 
 .modal-header {
-  background: #4E5B6D;
+  background: #fff;
   padding: 10px 20px;
   border-bottom: 1px solid #eee;
   min-height: 90px;
@@ -383,7 +388,7 @@ input[type="text"],
     max-width: 15rem;
     min-height: 67px;
     .g-content {
-      justify-content: space-between;
+      justify-content: flex-end;
       .platform-content:nth-child(2) {
         order: 1;
       }
@@ -398,7 +403,7 @@ input[type="text"],
 
 #g-navigation {
   #header-c.without-tchooz {
-    max-width: 20rem;
+    max-width: 30rem;
     min-height: 67px;
     .g-content {
       justify-content: space-between;
@@ -448,6 +453,35 @@ input[type="text"],
 
 /* FOOTER */
 
+.footer-b {
+  .container-link-footer {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+
+    ul {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 0px;
+
+      li {
+        list-style: none;
+          a {
+            text-decoration: none;
+          }
+      }
+
+      li:nth-child(1) a {
+        margin: 10px;
+        border-right: 1px solid #cccccc;
+        padding: 0px 10px;
+      }
+    }
+
+  }
+}
+
+
 .g-back-office-emundus-tableau #g-navigation.g-flushed .g-container {
   padding: 10px !important;
 }
@@ -458,6 +492,7 @@ footer#g-footer {
   bottom: 0;
   width: 100vw;
   position: relative;
+  margin-top: auto !important;
 }
 
 footer#g-footer img {
@@ -467,7 +502,7 @@ footer#g-footer img {
 #g-page-surround {
   display: flex;
   flex-direction: column;
-  min-height: 100% !important;
+  min-height: 100vh !important;
   width: 100%;
 }
 
@@ -499,47 +534,47 @@ body>.g-container {
   height: 140px;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
-}
+    justify-content: center;
+  }
 
-.bas-footer {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-
-  .em-containerAdresseLogo {
-    width: 55%;
+  .bas-footer {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center
+    align-items: center;
+
+    .em-containerAdresseLogo {
+      width: 55%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .adresse {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      align-self: baseline;
+
+      p {
+        color: $base-primary-color;
+      }
+
+      .street {
+        text-align: left;
+      }
+    }
   }
 
-  .adresse {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    align-self: baseline;
-
+  .credits-emundus {
     p {
       color: $base-primary-color;
-    }
-
-    .street {
-      text-align: left;
+      float: right;
     }
   }
-}
 
-.credits-emundus {
-  p {
-    color: $base-primary-color;
-    float: right;
-  }
-}
-
-.customfooter-legal p {
+  .customfooter-legal p {
   text-align: center;
 }
 
@@ -583,10 +618,10 @@ body>.g-container {
 
         &:hover,
         &:active,
-        &:focus {
-          background: transparent;
-          color: $base-secondary-color;
-          border-color: $base-secondary-color;
+      &:focus {
+        background: transparent;
+        color: $base-secondary-color;
+        border-color: $base-secondary-color;
         }
       }
 
@@ -595,12 +630,12 @@ body>.g-container {
         border: 1px solid $base-primary-color;
         color: $base-primary-color;
 
-        &:hover,
-        &:active,
-        &:focus {
-          background: $base-primary-color;
-          color: #fff;
-          border-color: $base-primary-color;
+      &:hover,
+      &:active,
+      &:focus {
+        background: $base-primary-color;
+        color: #fff;
+        border-color: $base-primary-color;
         }
       }
     }
@@ -714,6 +749,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 /* PAGE PLUS D INFO - COULEUR BTN  CANDIDATER */
 
 .view-programme {
+
+  h1.title.em-program-title::after {
+    display: none !important;
+  }
 
   .right-side.campaingapply {
     padding-left: 0px !important;
@@ -873,7 +912,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background-color: $base-secondary-color;
     background: $base-secondary-color;
     color: white;
-    margin-bottom: -1px;
+    margin-bottom: 0px;
   }
 
   /* COULEURS TITRES  */
@@ -999,6 +1038,30 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 /* FORMULAIRE  */
+
+.controls .fabrikElement .radio.btn-radio.btn-group label.btn.active, .plg-radiobutton label.btn.active {
+  background-color: $base-secondary-color;
+  color: #fff;
+  border-color: $base-secondary-color;
+  border-radius: 0px !important;
+  margin-right: 0px;
+}
+
+.controls .fabrikElement .radio.btn-radio.btn-group label.btn:not(.active), .plg-radiobutton label.btn:not(.active) {
+  background: #ccc;
+  margin-left: 0px;
+  border-radius: 0px !important;
+}
+
+.fabrikForm select {
+  background-position-x: 98%;
+  background-position-y: 54%;
+  -webkit-appearance: none;
+  background-image: url(/images/emundus/arrow-down.png);
+  background-size: 12px;
+  background-repeat: no-repeat;
+  padding: 0 30px 0 10px;
+}
 
 #sidebar-a .em-send-button a.btn.btn-success.btn-xs {
   color: #fff;
@@ -1348,6 +1411,17 @@ button.close {
   color: #fff;
 }
 
+.modal-body .panel-heading button.btn.btn-info.btn-xs {
+  background: $base-secondary-color;
+  color: #fff;
+}
+
+.modal-body .panel-heading .btn-xs.btn.btn-elements-success {
+  background-color: $base-primary-color !important;
+  color: #fff;
+}
+
+
 .btn-warning.active.focus,
 .btn-warning.active:focus,
 .btn-warning.active:hover,
@@ -1403,7 +1477,7 @@ p.readmore .btn,
     }
   }
 
-  .span12 button.goback-btn[name="Goback"] {
+  .span12 button.btn[name="Goback"] {
     background: transparent;
     border: 1px solid $base-secondary-color;
     border-radius: 4px !important;
@@ -1411,6 +1485,7 @@ p.readmore .btn,
     margin-right: 10px;
     font-weight: normal;
     padding: 8px 35px;
+    text-transform: initial;
 
     &:hover,
     &:active,
@@ -1783,6 +1858,11 @@ textarea:hover {
   border: 1px solid $base-primary-color;
 }
 
+.step a[title="Retour à mes dossiers"]:hover, .step a[title="Retour à mes dossiers"]:focus, .step a[title="Retour à mes dossiers"]:active  {
+  color: $base-secondary-color;
+}
+
+
 .candidacy-files-list h2,
 #em-panel h2 {
   color: $base-primary-color;
@@ -1919,7 +1999,7 @@ textarea:hover {
 .step.completed i.icon.attach::before,
 .step.completed i.icon.add.to.cart::before,
 .step.completed i.icon.time::before {
-  color: $base-primary-color;
+  color: #21ba45;
 }
 
 /* 3 Cercles Accueil Coordinateur */
@@ -2048,6 +2128,10 @@ ul.unstyled.em-linkForgot li a {
 
 
 /************************ GESTIONNAIRE - COORDINATOR *********************/
+
+.files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
+  background: $base-secondary-color !important;
+}
 
 .edit-comment-container button.edit-comment  {
   color: white;
@@ -2385,7 +2469,7 @@ div#em-appli-block {
     }
     a:hover b.caret,
     a:hover b.caret,
-    a:hover b.caret, {
+    a:hover b.caret {
       color: $base-secondary-color;
       border-top-color: $base-secondary-color;
       border-bottom-color: $base-secondary-color;
@@ -2684,6 +2768,40 @@ div#em-appli-block {
 
 @media all and (max-width: 479px) {
 
+  .gantry.view-registration, .gantry.view-form.em-formRegistrationCenter {
+    main#g-main-mainbody {
+      padding: 0;
+      .login.em-formRegistrationCenter, .em-formRegistrationCenter:not(.componentheading) {
+
+        width: 100% !important;
+
+        ol {
+          width: 90%;
+          text-align: justify;
+          margin-left: 0px !important;
+        }
+
+        div.em-heading-registration {
+          width: 86%;
+        }
+
+        form.fabrikForm {
+          width: 90%;
+        }
+      }
+    }
+  }
+
+  .gantry footer#g-footer .logo a  {
+    display: flex;
+    justify-content: center;
+  }
+
+  .gantry footer#g-footer .credits-emundus {
+    display: flex;
+    justify-content: center;
+  }
+
 
   .g-back-office-emundus-tableau.view-syncs.experts-synchro-page .app-container.ng-scope  {
     overflow-x: scroll;
@@ -2694,6 +2812,10 @@ div#em-appli-block {
     padding: 10px;
   }
 
+  h1::after {
+    display: none !important;
+  }
+
   /* HEADER */
   #g-navigation #header-a {
     display: flex;
@@ -2701,34 +2823,65 @@ div#em-appli-block {
     justify-content: center;
   }
 
-  /* BURGER */
+  /* HEADER C */
+  #g-navigation #header-c .g-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    .mod-languages.advanced-dropdown {
+      margin-left: -25px;
+    }
+  }
+  #g-navigation #header-c.without-lang-switcher {
+    max-width: 30rem !important;
+    min-height: 67px;
+     .g-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: row;
+    }
+  }
+
+    /* BURGER */
   #g-page-surround .g-offcanvas-toggle {
     top: 20px !important;
   }
 
   /* BURGER OUVERT */
 #g-offcanvas {
-  background: #FAFAFA;
+  background: #F2F2F2;
+  .g-grid {
+    margin: 50px 0px;
 
   .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
-    background: #FAFAFA;
+    background: #F2F2F2;
     margin: 0;
     padding: 0;
 
     li {
       border-bottom: 1px solid #F2F2F2;
-
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: space-between;
+      background: #F2F2F2;
+      width: 100% !important;
       span {
         width: 10%;
         margin-top: 15px;
         &::after {
           color: #000;
+          opacity: initial;
         }
       }
       a {
         color: $base-primary-color;
         padding: 15px 30px;
         width: auto;
+        display: block;
       }
     }
 
@@ -2746,6 +2899,7 @@ div#em-appli-block {
        color:#fff;
      }
     }
+  }
   }
 }
 
@@ -2790,7 +2944,66 @@ footer#g-footer .g-grid {
 
 @media all and (min-width: 480px) and (max-width: 767px)  {
 
-  .homepage h1::after {
+  /* BURGER */
+  #g-page-surround .g-offcanvas-toggle {
+    top: 20px !important;
+  }
+
+  /* BURGER OUVERT */
+  #g-offcanvas {
+    background: #F2F2F2;
+    .g-grid {
+      margin: 50px 0px;
+
+      .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
+        background: #F2F2F2;
+        margin: 0;
+        padding: 0;
+
+        li {
+          border-bottom: 1px solid #F2F2F2;
+          display: flex;
+          flex-direction: row;
+          align-items: baseline;
+          justify-content: space-between;
+          background: #F2F2F2;
+          width: 100% !important;
+          span {
+            width: 10%;
+            margin-top: 15px;
+            &::after {
+              color: #000;
+              opacity: initial;
+            }
+          }
+          a {
+            color: $base-primary-color;
+            padding: 15px 30px;
+            width: auto;
+            display: block;
+          }
+        }
+
+        li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module).active {
+          background: #FAFAFA;
+          border-left: 6px solid $base-secondary-color;
+          a {
+            color: $base-primary-color;
+          }
+        }
+
+        li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module):hover {
+          background: #ccc;
+          a {
+            color:#fff;
+          }
+        }
+      }
+    }
+  }
+
+
+  .gantry h1::after {
     display: none !important;
   }
 
@@ -2800,6 +3013,34 @@ footer#g-footer .g-grid {
   }
 
   /* FOOTER */
+
+  .gantry footer#g-footer .logo a  {
+    display: flex;
+    justify-content: center;
+  }
+
+  .gantry footer#g-footer .credits-emundus {
+    display: flex;
+    justify-content: center;
+  }
+
+  .em-containerAdresseLogo {
+    width: 100% !important;
+    justify-content: center !important ;
+  }
+
+  .bas-footer .adresse {
+    align-items : center;
+  }
+
+  .bas-footer .adresse  p{
+    text-align : center !important;
+  }
+
+  #g-page-surround > .g-container:not(.g-flushed) {
+    height: auto;
+  }
+
   footer#g-footer {
 
     img.logo {
@@ -2821,6 +3062,19 @@ footer#g-footer .g-grid {
   }
 
   /* HEADER */
+
+  /* HEADER */
+  #g-navigation #header-a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #g-navigation #header-c,  #g-navigation #header-c.without-tchooz-and-lang-switcher, #g-navigation #header-c.without-lang-switcher, #g-navigation #header-c.without-tchooz {
+    max-width: 100%;
+  }
+
+
   #g-navigation #header-c .g-content {
     flex-direction: column !important;
     justify-content: center !important;
@@ -3175,8 +3429,8 @@ footer#g-footer .g-grid {
   @media all and (max-width: 1239px) {
 
     /* FOOTER */
-    .em-containerAdresseLogo {
-      width: 60% !important;
+    #g-footer .em-containerAdresseLogo {
+      width: 60%;
     }
 
     /* STRUCUTURE */

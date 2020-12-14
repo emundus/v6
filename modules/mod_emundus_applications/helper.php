@@ -31,7 +31,7 @@ class modemundusApplicationsHelper {
 			}
 		}
 
-		$query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class ';
+        $query = 'SELECT ecc.date_time AS campDateTime, ecc.*, esc.*, ess.step, ess.value, ess.class ';
 
 		// CCI-RS layout needs to get the start and end date of each application
 		if ($layout == '_:ccirs') {
@@ -263,4 +263,29 @@ class modemundusApplicationsHelper {
 		}
 		return $return;
 	}
+
+    /** Get delivery data for a fnum.
+     *
+     * @param $fnum
+     *
+     * @return Object | null
+     * @since 1.7
+     */
+    static function getDeliveryData($fnum) {
+        $db	= JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select([$db->quoteName('tracking_number'), $db->quoteName('tracking_link')])
+            ->from($db->quoteName('#__emundus_admission'))
+            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObject();
+        } catch(Exception $e) {
+            JLog::add("Error at query : ".preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            return null;
+        }
+    }
 }

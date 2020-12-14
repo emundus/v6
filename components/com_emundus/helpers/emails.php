@@ -248,9 +248,7 @@ class EmundusHelperEmails {
 
 		if (in_array('expert', $params)) {
 
-			$editor = JFactory::getEditor('tinymce');
-			$params = array('mode' => 'simple');
-			$mail_body = $editor->display( 'mail_body', '[NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, $params);
+            $mail_body = '<textarea name="mail_body" id="mail_body">[NAME], </textarea>';
 
 			$email .= '<div>';
 
@@ -280,15 +278,17 @@ class EmundusHelperEmails {
 						
 					<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/tinymce.min.js"></script>
 					<script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/js/tinymce.min.js"></script>
-					<script data-cfasync="false" type="text/javascript">tinyMCE.init({menubar:false,statusbar: false})</script>
+					<script data-cfasync="false" type="text/javascript">tinyMCE.init({
+								selector: "#mail_body",
+                                document_base_url: "'.JURI::Base().'",
+                                relative_urls: false,
+                                remove_script_host: false,
+                                convert_urls: false,
+                                height : "480"
+                              });</script>
 					<script>
 					
-						// Editor loads disabled by default, we apply must toggle it active on page load.
-					    $(document).ready(function() {
-					        tinyMCE.execCommand(\'mceToggleEditor\', true, \'mail_body\');
-					    });
-					
-						const REGEX_EMAIL = "([a-z0-9!#$%&\\\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\\\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)";
+						var REGEX_EMAIL = "([a-z0-9!#$%&\\\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\\\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)";
 						$("#mail_to").selectize({
 					        plugins: ["remove_button"],
 					        delimiter: ",",

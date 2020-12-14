@@ -86,6 +86,16 @@
                       :manyLanguages="manyLanguages"
                     />
 
+                  <add-documents-form
+                      v-if="menuHighlight == 3"
+                      :funnelCategorie="formCategories[langue][menuHighlight]"
+                      :profileId="profileId"
+                      :campaignId="campaignId"
+                      :menuHighlight="menuHighlight"
+                      :langue="actualLanguage"
+                      :manyLanguages="manyLanguages"
+                    ></add-documents-form>
+
                     <!--          <addEvalEval
                                       v-if="menuHighlight == 6"
                                       :funnelCategorie="formCategories[langue][menuHighlight]"
@@ -123,6 +133,7 @@
     import ModalWarningFormBuilder from "./advancedModals/ModalWarningFormBuilder";
     import Tasks from "@/views/tasks";
     import AddDocumentsDropfiles from "@/views/funnelFormulaire/addDocumentsDropfiles";
+    import AddDocumentsForm from "@/views/funnelFormulaire/addDocumentsForm";
 
     const qs = require("qs");
 
@@ -130,6 +141,7 @@
         name: "addFormNextCampaign",
 
         components: {
+          AddDocumentsForm,
           Tasks,
           AddDocumentsDropfiles,
             ModalWarningFormBuilder,
@@ -182,11 +194,13 @@
                   "Aperçu du formulaire",
                   "Documents",
                   "Documents d'informations",
+                  "Documents a télécharger",
                 ],
                 [
                   "Form Preview",
                   "Documents",
                   "Informations documents",
+                  "Documents to download",
                 ]
             ],
 

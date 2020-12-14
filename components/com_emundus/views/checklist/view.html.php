@@ -62,15 +62,16 @@ class EmundusViewChecklist extends JViewLegacy {
                 $m_files = new EmundusModelFiles;
                 $attachments = $m_application->getAttachmentsProgress($this->_user->fnum);
                 $forms = $m_application->getFormsProgress($this->_user->fnum);
+                
                 if ((int)($attachments)>=100 && (int)($forms)>=100) {
                     $accept_created_payments = $eMConfig->get('accept_created_payments', 0);
                     $fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
 
-                    $paid = count($m_application->getHikashopOrder($fnumInfos))>0?1:0;
+                    $paid = (!(array)$m_application->getHikashopOrder($fnumInfos)) ? 0 : 1;
 
                     // If created payments aren't accepted then we don't need to check.
                     if ($accept_created_payments) {
-                        $payment_created_offline = count($m_application->getHikashopOrder($fnumInfos, true)) > 0 ? 1 : 0;
+                        $payment_created_offline = (!(array)$m_application->getHikashopOrder($fnumInfos, true)) ? 0 : 1;
                     } else {
                         $payment_created_offline = false;
                     }
@@ -78,13 +79,14 @@ class EmundusViewChecklist extends JViewLegacy {
                     if ($accept_created_payments == 2 || $paid || $payment_created_offline) {
 
                         if ($eMConfig->get('redirect_after_payment')) {
-
+/*
+// status is changed in emundus_hikashop plugin
                             if (!empty($eMConfig->get('status_after_payment'))) {
                                 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
                                 $m_files = new EmundusModelFiles();
                                 $m_files->updateState($this->_user->fnum,$eMConfig->get('status_after_payment'));
                             }
-
+*/
                             // If redirect after payment is active then the file is not sent and instead we redirect to the submitting form.
                             $app->redirect($m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$this->_user->fnum);
 

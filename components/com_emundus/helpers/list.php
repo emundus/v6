@@ -236,11 +236,12 @@ class EmundusHelperList{
     }
 
     // @description get forms list to create action block by profile_id
-    // @param	int profile id
-    // @return 	array Menu links of all forms needed to apply
-    function getFormsListByProfileID($profile_id){
+    // @param   int profile id
+    // @param   boolean checklevel : if true will check J! Access Level of logged user
+    // @return  array Menu links of all forms needed to apply
+    function getFormsListByProfileID($profile_id, $checklevel=true){
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
-        return EmundusHelperMenu::buildMenuQuery($profile_id);
+        return EmundusHelperMenu::buildMenuQuery($profile_id, null, $checklevel);
     }
 
     // @description Get applicants list

@@ -29,6 +29,7 @@ Vue.use(Notifications, { velocity });
 Vue.use(Vuelidate);
 Vue.use(VueJsModal);
 Vue.use(VueSpinnersCss);
+Vue.use(VTooltip);
 
 Vue.config.productionTip = false;
 Vue.config.devtools = true;

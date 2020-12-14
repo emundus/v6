@@ -528,7 +528,7 @@ class EmundusModelEmails extends JModelList {
 
     public function setTagsFabrik($str, $fnums = array()) {
         require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        $file = new EmundusModelFiles();
+        $m_files = new EmundusModelFiles();
 
         $jinput = JFactory::getApplication()->input;
 
@@ -539,25 +539,21 @@ class EmundusModelEmails extends JModelList {
             $fnumsArray = $fnums;
         }
 
-        $tags = $file->getVariables($str);
+        $tags = $m_files->getVariables($str);
 
         $idFabrik = array();
-        $setupTags = array();
-
         if (count($tags) > 0) {
 
             foreach ($tags as $val) {
                 $tag = strip_tags($val);
                 if (is_numeric($tag)) {
 	                $idFabrik[] = $tag;
-                } else {
-	                $setupTags[] = $tag;
                 }
             }
         }
 
-        if (count($idFabrik) > 0) {
-            $fabrikElts = $file->getValueFabrikByIds($idFabrik);
+        if (!empty($idFabrik)) {
+            $fabrikElts = $m_files->getValueFabrikByIds($idFabrik);
             $fabrikValues = array();
             foreach ($fabrikElts as $elt) {
 
@@ -567,12 +563,17 @@ class EmundusModelEmails extends JModelList {
                 $isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
 
                 if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
-                    $fabrikValues[$elt['id']] = $file->getFabrikValueRepeat($elt, $fnumsArray, $params, @$groupParams->repeat_group_button == 1);
+                    $fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, @$groupParams->repeat_group_button == 1);
+
+                    if (empty($fabrikValues[$elt['id']]['val'])) {
+                        $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+                    }
+
                 } else {
                     if ($isDate) {
-	                    $fabrikValues[$elt['id']] = $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+	                    $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
                     } else {
-	                    $fabrikValues[$elt['id']] = $file->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
+	                    $fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
                     }
                 }
 
@@ -587,12 +588,12 @@ class EmundusModelEmails extends JModelList {
                             // is_numeric allows for the variable to be equal to 0, 0.0 or '0' (the empty function considers those to be null).
                             if (!empty($v) || is_numeric($v)) {
                                 $index = array_search(trim($v), $params->sub_options->sub_values);
-                                $val[$k] = $params->sub_options->sub_labels[$index];
+                                $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
                             } else {
                                 $val[$k] = '';
                             }
                         }
-                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
+                        $fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", JText::_($val));
                     }
                 }
 

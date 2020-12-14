@@ -451,6 +451,10 @@ class EmundusModelApplication extends JModelList {
             $nb = 0;
             $formLst = array();
 
+            if(empty($forms)){
+                return 100;
+            }
+
             foreach ($forms as $form) {
                 $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum);
                 $this->_db->setQuery($query);
@@ -462,6 +466,7 @@ class EmundusModelApplication extends JModelList {
                 }
             }
 
+            $this->updateFormProgressByFnum(@floor(100*$nb/count($forms)),$fnum);
             return  @floor(100*$nb/count($forms));
 
         } else {
@@ -486,20 +491,35 @@ class EmundusModelApplication extends JModelList {
                 $forms = @EmundusHelperMenu::buildMenuQuery($this->_db->loadResult());
                 $nb = 0;
                 $formLst = array();
-                foreach ($forms as $form) {
-                    $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($f);
-                    $this->_db->setQuery($query);
-                    $cpt = $this->_db->loadResult();
-                    if ($cpt==1) {
-                        $nb++;
-                    } else {
-                        $formLst[] = $form->label;
+
+                if(empty($forms)){
+                    $result[$f] = 100;
+                } else {
+                    foreach ($forms as $form) {
+                        $query = 'SELECT count(*) FROM ' . $form->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($f);
+                        $this->_db->setQuery($query);
+                        $cpt = $this->_db->loadResult();
+                        if ($cpt == 1) {
+                            $nb++;
+                        } else {
+                            $formLst[] = $form->label;
+                        }
                     }
+                    $this->updateFormProgressByFnum(@floor(100 * $nb / count($forms)), $f);
+                    $result[$f] = @floor(100 * $nb / count($forms));
                 }
-                $result[$f] = @floor(100*$nb/count($forms));
             }
             return $result;
         }
+    }
+
+    public function updateFormProgressByFnum($result,$fnum){
+        $query = $this->_db->getQuery(true);
+        $query->update($this->_db->quoteName('#__emundus_campaign_candidature'))
+            ->set($this->_db->quoteName('form_progress') . ' = ' . $this->_db->quote($result))
+            ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+        $this->_db->setQuery($query);
+        return $this->_db->execute();
     }
 
 	/**
@@ -553,6 +573,11 @@ class EmundusModelApplication extends JModelList {
                 $query = 'SELECT COUNT(profiles.id)
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
+
+                if (!empty($profile_id)) {
+                    $query .= ' AND profile_id = ' . $profile_id;
+                }
+
                 $this->_db->setQuery($query);
                 $attachments = $this->_db->loadResult();
             }
@@ -570,7 +595,9 @@ class EmundusModelApplication extends JModelList {
             }
 
             $this->_db->setQuery($query);
-            return floor($this->_db->loadResult());
+            $doc_result = $this->_db->loadResult();
+            $this->updateAttachmentProgressByFnum(floor($doc_result),$fnum);
+            return floor($doc_result);
 
         } else {
 
@@ -615,10 +642,21 @@ class EmundusModelApplication extends JModelList {
                 }
 
                 $this->_db->setQuery($query);
-                $result[$f] = floor($this->_db->loadResult());
+                $doc_result = $this->_db->loadResult();
+                $this->updateAttachmentProgressByFnum(floor($doc_result),$f);
+                $result[$f] = floor($doc_result);
             }
             return $result;
         }
+    }
+
+    public function updateAttachmentProgressByFnum($result,$fnum){
+        $query = $this->_db->getQuery(true);
+        $query->update($this->_db->quoteName('#__emundus_campaign_candidature'))
+            ->set($this->_db->quoteName('attachment_progress') . ' = ' . $this->_db->quote($result))
+            ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+        $this->_db->setQuery($query);
+        return $this->_db->execute();
     }
 
 
@@ -2202,9 +2240,9 @@ class EmundusModelApplication extends JModelList {
         return $forms;
     }
 
-    public function getFormsPDFElts($aid, $elts, $options) {
+    public function getFormsPDFElts($aid, $elts, $options, $checklevel=true) {
 
-        $tableuser = @EmundusHelperList::getFormsListByProfileID($options['profile_id']);
+        $tableuser = @EmundusHelperList::getFormsListByProfileID($options['profile_id'], $checklevel);
 
         $forms = "<style>
 					table {
@@ -2229,7 +2267,9 @@ class EmundusModelApplication extends JModelList {
                             WHERE ff.group_id = fg.id AND fg.published = 1 AND  
                                   ff.form_id = "'.$itemt->form_id.'"
                             ORDER BY ff.ordering';
+
                 $this->_db->setQuery( $query );
+
                 $groupes = $this->_db->loadObjectList();
 
                 /*-- Liste des groupes -- */
@@ -2242,15 +2282,24 @@ class EmundusModelApplication extends JModelList {
                                       fe.group_id = "'.$itemg->group_id.'" AND
                                       fe.id IN ('.implode(',', $elts).')
                                 ORDER BY fe.ordering';
+
                     $this->_db->setQuery( $query );
+
                     $elements = $this->_db->loadObjectList();
+
                     if(count($elements)>0) {
                         $forms .= ($options['show_group_label']==1)?'<h3>'.JText::_($itemg->label).'</h3>':'';
+
                         foreach($elements as &$iteme) {
-                            $where = 'user='.$aid;
-                            $where .= $options['rowid']>0?' AND id='.$options['rowid']:'';
+                            $where = $options['rowid']>0 ? ' id='.$options['rowid'] : ' 1=1 ';
+
+                            if($checklevel) {
+                                $where .= ' AND user='.$aid;
+                            }
+
                             $query = 'SELECT `'.$iteme->name .'` FROM `'.$itemt->db_table_name.'` WHERE '.$where;
                             $this->_db->setQuery( $query );
+
                             $iteme->content = $this->_db->loadResult();
                         }
                         unset($iteme);
@@ -2263,7 +2312,7 @@ class EmundusModelApplication extends JModelList {
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
                                     } else $elt = $element->content;
-                                    $forms .= '<p><b>'.JText::_($element->label).': </b>'.JText::_($elt).'</p>';
+                                    $forms .= '<p class="form-element"><b>'.JText::_($element->label).': </b>'.JText::_($elt).'</p>';
                                 }
                             }
 
@@ -2378,6 +2427,10 @@ class EmundusModelApplication extends JModelList {
                                                 $elt = "";
                                             }
                                         }
+                                        elseif($elements[$j]->plugin == 'fileupload') {
+                                            $filename = end(explode('/', $r_elt));
+                                            $elt = '<a href="'.JUri::base().$elt.'" target="_blank">'.$filename.'</a>';
+                                        }
                                         else
                                             $elt = $r_elt;
 
@@ -2392,7 +2445,7 @@ class EmundusModelApplication extends JModelList {
                             // AFFICHAGE EN LIGNE
                         } else {
                             foreach($elements as $element) {
-                                if(!empty($element->label) && $element->label!=' '  && $elements->plugin != 'display') {
+                                if(!empty($element->label) && $element->label!=' ' && $element->plugin != 'display') {
 
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
@@ -2487,9 +2540,15 @@ class EmundusModelApplication extends JModelList {
                                             $elt = "";
                                         }
                                     }
-                                    else
+                                    elseif($element->plugin == 'fileupload') {
+                                        $filename = end(explode('/', @$element->content));
+                                        $elt = '<a href="'.JUri::base().$element->content.'" target="_blank">'.$filename.'</a>';
+                                    }
+                                    else {
                                         $elt = $element->content;
-                                    $forms .= '<p><b>'.JText::_($element->label).': </b>'.JText::_($elt).'</p>';
+                                    }
+
+                                    $forms .= '<p class="form-element"><b>'.JText::_($element->label).': </b>'.JText::_($elt).'</p>';
                                 }
                             }
                         }
@@ -2582,7 +2641,7 @@ class EmundusModelApplication extends JModelList {
 	            $query .= " AND eu.id in ($ids)";
             }
 
-            $query .= " ORDER BY sa.value DESC";
+            $query .= "ORDER BY sa.category,sa.ordering,sa.value ASC";
 
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();
@@ -2953,6 +3012,7 @@ class EmundusModelApplication extends JModelList {
         $dbo = $this->getDbo();
 
         $em_application_payment = $eMConfig->get('application_payment', 'user');
+        $em_application_payment_status = $eMConfig->get('application_payment_status', '0');
 
         switch ($em_application_payment) {
 
@@ -3033,6 +3093,58 @@ class EmundusModelApplication extends JModelList {
                                 ORDER BY ho.order_created desc';
                 }
                 break;
+
+                case 'status' :
+                    $payment_status = explode(',', $em_application_payment_status);
+
+                    if(in_array($fnumInfos['status'], $payment_status)) {
+
+                        if ($sent) {
+                            $query = 'SELECT ho.*, eh.user as user_cms_id
+                                        FROM #__emundus_hikashop eh
+                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                        WHERE eh.status='.$fnumInfos['status'].' 
+                                        AND eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
+                                        AND (ho.order_status like "created" OR ho.order_status like "confirmed")
+                                        AND ho.order_created >= '.strtotime($startDate).'
+                                        AND ho.order_created <= '.strtotime($endDate).'
+                                        ORDER BY ho.order_created desc';
+                        }
+                        else {
+                            $query = 'SELECT ho.*, eh.user as user_cms_id
+                                        FROM #__emundus_hikashop eh
+                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                        WHERE eh.status='.$fnumInfos['status'].' 
+                                        AND eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
+                                        AND ho.order_status like "confirmed"
+                                        AND ho.order_created >= '.strtotime($startDate).'
+                                        AND ho.order_created <= '.strtotime($endDate).'
+                                        ORDER BY ho.order_created desc';
+                        }
+                    } else{
+
+                        if ($sent) {
+                            $query = 'SELECT ho.*, eh.user as user_cms_id
+                                        FROM #__emundus_hikashop eh
+                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                        WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
+                                        AND (ho.order_status like "created" OR ho.order_status like "confirmed")
+                                        AND ho.order_created >= '.strtotime($startDate).'
+                                        AND ho.order_created <= '.strtotime($endDate).'
+                                        ORDER BY ho.order_created desc';
+                        }
+                        else {
+                            $query = 'SELECT ho.*, eh.user as user_cms_id
+                                        FROM #__emundus_hikashop eh
+                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
+                                        WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
+                                        AND ho.order_status like "confirmed"
+                                        AND ho.order_created >= '.strtotime($startDate).'
+                                        AND ho.order_created <= '.strtotime($endDate).'
+                                        ORDER BY ho.order_created desc';
+                        }
+                    }
+                    break;
         }
 
 
@@ -3356,20 +3468,22 @@ class EmundusModelApplication extends JModelList {
             $db->execute();
             $id = $db->loadResult();
 
-            $today = date('Y-m-d h:i:s');
+            $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+            $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+            $now = $dateTime->format('Y-m-d H:i:s');
 
             if ($id > 0) {
-                $query = 'UPDATE #__emundus_declaration SET time_date='.$db->quote($today). ', user='.$applicant->id.' WHERE id='.$id;
+                $query = 'UPDATE #__emundus_declaration SET time_date='.$db->quote($now). ', user='.$applicant->id.' WHERE id='.$id;
             } else {
                 $query = 'INSERT INTO #__emundus_declaration (time_date, user, fnum, type_mail)
-                                VALUE ('.$db->quote($today). ', '.$applicant->id.', '.$db->Quote($fnum).', "paid_validation")';
+                                VALUE ('.$db->quote($now). ', '.$applicant->id.', '.$db->Quote($fnum).', "paid_validation")';
             }
 
             $db->setQuery($query);
             $db->execute();
 
             // Insert data in #__emundus_campaign_candidature
-            $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=NOW(), status='.$status.' WHERE applicant_id='.$applicant->id.' AND campaign_id='.$applicant->campaign_id. ' AND fnum like '.$db->Quote($applicant->fnum);
+            $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted='.$db->quote($now).', status='.$status.' WHERE applicant_id='.$applicant->id.' AND campaign_id='.$applicant->campaign_id. ' AND fnum like '.$db->Quote($applicant->fnum);
             $db->setQuery($query);
             $db->execute();
 

@@ -212,7 +212,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 
 			// 2.0.1 Si Expert déjà déclaré comme expert
 			if (!$this->assocFiles($fnums, $user, $group)) {
-				throw new Exception('ERROR_CANNOT_ASSOC_USER', 500);
+				$app->redirect('index.php', JText::_('ERROR_CANNOT_ASSOC_USER'));
+				return;
 			}
 
 			// 2.1.2. Envoie des identifiants à l'expert + Envoie d'un message d'invitation à se connecter pour evaluer le dossier
@@ -305,11 +306,12 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			$user->id = $uid;
 
 			if (empty($uid) || (!mkdir(EMUNDUS_PATH_ABS.$user->id.DS, 0777, true) && !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user->id.DS.'index.html'))) {
-				throw new Exception('ERROR_CANNOT_CREATE_USER_FILE', 500);
+				throw new Exception(JText::_('ERROR_CANNOT_CREATE_USER_FILE'), 500);
 			}
 
 			if (!$this->assocFiles($fnums, $user, $group)) {
-				throw new Exception('ERROR_CANNOT_ASSOC_USER', 500);
+				$app->redirect('index.php', JText::_('ERROR_CANNOT_ASSOC_USER'));
+				return;
 			}
 
 			// 2.1.2. Envoie des identifiants à l'expert + Envoie d'un message d'invitation à se connecter pour evaluer le dossier
