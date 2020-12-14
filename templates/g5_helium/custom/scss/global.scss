@@ -1477,7 +1477,7 @@ p.readmore .btn,
     }
   }
 
-  .span12 button.goback-btn[name="Goback"] {
+  .span12 button.btn[name="Goback"] {
     background: transparent;
     border: 1px solid $base-secondary-color;
     border-radius: 4px !important;
@@ -1485,6 +1485,7 @@ p.readmore .btn,
     margin-right: 10px;
     font-weight: normal;
     padding: 8px 35px;
+    text-transform: initial;
 
     &:hover,
     &:active,
