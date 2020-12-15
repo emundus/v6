@@ -26,7 +26,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 	 *
 	 * @var  string
 	 */
-	protected $URLfield = '';
+	protected string $URLfield = '';
 
 	/**
 	 * Get an element name
@@ -51,12 +51,12 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 	/**
 	 * Get the fields value regardless of whether its in joined data or no
 	 *
-	 * @param   string $pname   Params property name to get the value for
-	 * @param   mixed  $default Default value
+	 * @param string $pname   Params property name to get the value for
+	 * @param mixed  $default Default value
 	 *
 	 * @return  mixed  value
 	 */
-	public function getParam($pname, $default = '') {
+	public function getParam(string $pname, $default = '') {
 		$params = $this->getParams();
 
 		if ($params->get($pname) == '') {
@@ -66,13 +66,78 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		return $params->get($pname);
 	}
 
+
+	/**
+	 * This is taken from the script emundus-expert_check.
+	 * A plugin always run in tandem with the plugin below.
+	 *
+	 * @throws Exception
+	 */
+	public function onBeforeLoad() : bool {
+
+		$app = JFactory::getApplication();
+		$jinput = $app->input;
+		$key_id = $jinput->get->get('keyid');
+		$campaign_id = $jinput->get->get('cid');
+		$formid = $jinput->get->get('formid');
+
+		$baseurl = JURI::base();
+		$db = JFactory::getDBO();
+
+		$query = $db->getQuery(true);
+		$query->select('*')
+			->from($db->quoteName('#__emundus_files_request'))
+			->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id).' AND ('.$db->quoteName('uploaded').' = 0 OR '.$db->quoteName('uploaded').' IS NULL)');
+		$db->setQuery($query);
+
+		try {
+			$obj = $db->loadObject();
+		} catch (Exception $e) {
+			return false;
+		}
+
+
+		if (!empty($obj)) {
+
+			$user = JFactory::getUser();
+			if ($user->id !== 0 && $user->email !== $obj->email) {
+				$app->enqueueMessage(JText::_('INCORRECT_USER'), 'message');
+				$app->redirect($baseurl);
+			}
+
+			$s = $jinput->get->getInt('s');
+			if ($s !== 1) {
+
+				$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$formid.'&jos_emundus_files_request___attachment_id='.$obj->attachment_id.'&jos_emundus_files_request___campaign_id='.$obj->campaign_id.'&keyid='.$key_id.'&cid='.$campaign_id.'&rowid='.$obj->id.'&s=1';
+				$app->redirect($link_upload);
+
+			} else {
+
+				$up_attachment = $jinput->get('jos_emundus_files_request___attachment_id');
+				$attachment_id = !empty($up_attachment)?$jinput->get('jos_emundus_files_request___attachment_id'):$jinput->get->get('jos_emundus_files_request___attachment_id');
+
+				if (empty($key_id) || empty($attachment_id) || $attachment_id != $obj->attachment_id) {
+					$app->redirect($baseurl);
+					throw new Exception(JText::_('ERROR: please try again'), 500);
+				}
+			}
+
+		} else {
+			$app->enqueueMessage(JText::_('PLEASE_LOGIN'), 'message');
+			$app->redirect($baseurl.'index.php?option=com_users&view=login');
+		}
+
+		return true;
+	}
+
+
 	/**
 	 * Main script.
 	 *
 	 * @return void
 	 * @throws Exception
 	 */
-	public function onAfterProcess() {
+	public function onAfterProcess() : void {
 
 		JLog::addLogger(['text_file' => 'com_emundus.expertAcceptation.error.php'], JLog::ERROR, 'com_emundus');
 
@@ -389,10 +454,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 	 * @param int|null $group
 	 *
 	 * @return bool
-	 *
-	 * @since version
 	 */
-	private function assocFiles(array $fnums, $user, $group = null) {
+	private function assocFiles(array $fnums, $user, $group = null) : bool {
 
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
