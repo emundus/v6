@@ -1,372 +1,24 @@
-/*******************LOGIN****************/
-button.btn-primary{
-    background: #e03c32;
-    border: 1px solid #e03c32;
-    border-radius: 4px!important;
-    padding: 8px 12px!important;
-}
-button.btn-primary:hover{
-    background-color: transparent;
-    color: #e03c32;
-    outline: none;
-}
-.form-horizontal .controls:first-child {
-    padding-left: 0 !important;
-    margin: auto;
-    text-align: center;
-    justify-content: center;
-}
-.form-horizontal .control-group {
-    display: flex;
-    justify-content: space-around;
-}
-#user-registration > .control-group {
-    margin-bottom: 0 !important;
-}
-.form-horizontal .controls {
-    margin: 0;
-    width: 70%;
-    display: inline-flex;
-    align-items: center;
-}
-/* Connexion */
-.nav-stacked > li {
-    display: inline-block;
-}
-.login form.form-validate.form-horizontal.well {
-    border: none;
-    margin-bottom: 0 !important;
-    border-radius: 0;
-    background: #fafafa;
-    border-radius: 0;
-    padding: 0px;
-    box-shadow: none;
-    width: 58%;
-    margin-left: auto;
-    margin-right: auto;
-}
+/* MOD LOGIN */
 
-#g-container-main div.em-formRegistrationCenter, #g-container-main div.login {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    background: #fafafa;
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 50px;
-}
-
-.invalid {
-    color: red !important;
-    font-weight: 600;
-}
-.login .well label {
-    color: #000;
-    font-size: 14px;
-}
-ul.nav.nav-tabs.nav-stacked {
-    background: #fafafa;
-    border-radius: 0;
-    display: flex;
-    justify-content: space-around;
-    width: 60%;
-    margin-left: auto !important;
-    margin-right: auto !important;
-   padding-bottom: 50px !important;
-    margin-top: 0px;
-    margin-bottom: 50px;
-}
-
-ul.nav.nav-tabs.nav-stacked a::before {
-    content: "\f101";
-    font-family: FontAwesome;
-    margin-right: 3px;
-}
-.login form > fieldset .control-group:nth-child(3) .controls {
-    justify-content: center;
-    margin-top: 20px;
-    width: 100%;
-}
-.view-login .form-horizontal .controls {
-    margin: 0 !important;
-    width: 100%;
-    display: inline-flex;
-    align-items: center;
-}
-.view-login  .form-horizontal .control-label {
-    width: 100%;
-    text-align: left;
-}
-.view-login .form-horizontal .control-group {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-}
-footer div{
-    line-height:1.5em;
-}
-.control-group .control-label label .star{
-    display: none;
-}
-.fabrikLabel[opts*="Validation"]::after,
-body.view-login label#password-lbl::after,
-body.view-login label#username-lbl::after,
-body.view-reset label#jform_email-lbl::after,
-body.view-reset label#jform_username-lbl::after,
-.control-label .required::after {
-    content: "\f005";
-    color: #c30505;
-    padding-left: 2px;
-    top: -10px;
-    position: relative;
-    font-family: FontAwesome;
-    font-size: 5px;
-}
-.control-group:nth-child(3) .controls button.btn.btn-primary {
-    text-transform: capitalize;
-    width: 100% !important;
-    height: 50px;
-    margin-right: 0px !important;
-    font-weight: 300;
-}
-form.form-validate.form-horizontal.well .control-group .controls input {
-    border-radius :4px;
-}
-
-h1.em-titre-connectez-vous {
-    margin-bottom: 20px !important;
-}
-
-h1.em-titre-connectez-vous::after {
-    content: '';
-    position: absolute;
-    margin-top: 6px;
-    width: 2.7rem;
-    height: 0.2rem;
-    background: #de6339;
-    left: 0;
-    display: block !important;
-}
-.header-right a.btn.btn-danger.connexion , a.btn.btn-danger.inscription  {
-    font-weight: 300;
-    line-height: inherit;
-    letter-spacing: inherit;
-}
-#g-page-surround {
-    width: 100%;
-}
-
-ul.nav.nav-tabs.nav-stacked span {
-    cursor: pointer;
-}
-ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, ul.nav.nav-tabs.nav-stacked span:active {
-    text-decoration: underline;
-}
-
-.logout .form-horizontal {
-    margin-top: 20px;
-    width: 60%;
-    border: none;
-    background: #fafafa;
-}
-
-#g-main-mainbody div.logout.login {
-    background: #fafafa !important;
-}
-
-#g-main-mainbody div.logout.login .page-header h1 {
-    margin-top: 50px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.logout .form-horizontal  .control-group {
-    margin-top: 20px;
-}
-
-/* Connexion candidater */
-.moduletable.em-formRegistrationCenter h1 {
-    margin: 27px 0 71px;
-}
-
-.moduletable.em-formRegistrationCenter .icon-user {
-    display: none;
-}
-
-.moduletable.em-formRegistrationCenter .icon-lock {
-    display: none;
-}
-
-.moduletable.em-formRegistrationCenter #login-form {
-    width: 50%;
-}
-
-.moduletable.em-formRegistrationCenter .input-prepend .input-small, .moduletable.em-formRegistrationCenter  #login-form .input-append .input-small {
-    width: 100%;
-}
-
-.moduletable.em-formRegistrationCenter #login-form    .control-group {
-    margin-bottom: 20px;
-}
-
-.moduletable.em-formRegistrationCenter #login-form .add-on {
-    background: transparent;
-    border: none;
-    height: unset;
-}
-
-.moduletable.em-formRegistrationCenter #login-form .add-on label {
-    color: #565656 !important;
-}
-
-.moduletable.em-formRegistrationCenter #login-form .unstyled {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: space-between;
-    border: none;
-    padding: 0.938rem 0;
-}
-
-.moduletable.em-formRegistrationCenter #login-form .unstyled li {
-    border: none;
-}
-
-.moduletable.em-formRegistrationCenter #login-form .unstyled li a .icon-arrow-right {
-    display: none;
-}
-
-.moduletable.em-formRegistrationCenter #login-form .unstyled li  a::before {
-    content: "\f101";
-    font-family: FontAwesome;
-    margin-right: 3px;
-}
-
-.moduletable.em-formRegistrationCenter #login-form .control-group .input-prepend {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: baseline;
-}
-
-.moduletable.em-formRegistrationCenter #login-form .control-group .input-prepend input {
-    border-left: 1px solid #e0e0e5;
-    max-width: 100%;
-}
-
-@media all and (max-width: 450px) {
-    .form-validate.form-horizontal.well {
-        width: 100%;
-    }
-    .view-login .form-horizontal fieldset .control-group {
-        width: 100% !important;
-    }
-
-}
-
-@media all and (max-width: 479px) {
-    .view-login #g-container-main div.login {
-        width: 100%;
-    }
-}
-
-@media all and (max-width: 767px) {
-
-    .view-login .login  {
-         width: 100% !important;
-    }
-
-    .view-login .login .page-header {
-        width: 100% !important;
-        padding: 0px 20px;
-    }
-
-    .view-login .form-horizontal fieldset .control-group {
-        width: 100% !important;
-    }
-
-    .view-login #g-page-surround {
-        width: 100%;
-    }
-
-    .login form {
-        width: 90% !important;
-    }
-
-    ul.nav.nav-tabs.nav-stacked {
-        justify-content: center;
-        flex-direction: column;
-        width: 100%;
-    }
-
-    ul.nav.nav-tabs.nav-stacked li {
-        text-align: center;
-    }
-
-}
-
-@media screen and (min-width: 768px) and (max-width: 959px) {
-    .login form {
-        padding-right: 8rem;
-        padding-left: 4rem;
-        width: 80%;
-    }
-
-    .view-login .login.em-formRegistrationCenter .page-header  {
-        width: 75% !important;
-    }
-
-    .login form.form-validate.form-horizontal.well {
-        width: 70%;
-    }
-
-}
-
-@media all and (max-width: 1150px) {
-    .form-validate.form-horizontal.well {
-        width: 50%;
-    }
-    .em-formRegistrationCenter .form-horizontal fieldset .control-group {
-        width: 100% !important;
-    }
-}
-
-@media screen and (min-width: 960px) and (max-width: 1199px) {
-    .login form {
-        padding-right: 10rem;
-        padding-left: 5rem;
-    }
-}
-
-@media all and (max-width: 1239px) {
-    .form-validate.form-horizontal.well {
-        width: 50%;
-    }
-    .view-login #g-page-surround {
-        width: 100%;
-    }
-}
-
-/* ICONE TITRE LOGIN */
-
-.view-login .login.em-formRegistrationCenter .page-header {
+.view-login .em-page-header {
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;
     flex-direction: row;
-    width: 59%;
+    width: 60%;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 30px;
 }
 
-.view-login .login.em-formRegistrationCenter .page-header div.icon-title.loginicon {
+.view-login .icon-title.icon-login {
     background-image: url(/components/com_emundus_onboard/src/assets/images/enter.svg);
     background-size: contain;
     background-repeat: no-repeat;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 }
 
-.view-login .login.em-formRegistrationCenter .page-header div.icon-title {
+.view-login .icon-title {
     margin-right: 10px;
     width: 35px;
     height: 35px;
@@ -376,3 +28,62 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     filter: brightness(.5);
     fill: grey;
 }
+
+.view-login .em-title {
+    margin-top: 50px;
+}
+
+.nav.nav-tabs.nav-stacked {
+    background: #fff;
+    border-radius: 0;
+    display: flex;
+    justify-content: space-around;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0px;
+    padding-bottom: 50px;
+}
+
+.view-login  .em-user-form-container {
+    margin-top: 50px;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.view-login .em-user-form {
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+    width: 60%;
+}
+
+.view-login  .em-form-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.view-login .em-form-label label {
+    text-align: left;
+    font-weight: 700;
+}
+
+.view-login .em-user-form .em-form-input {
+    margin: 0;
+}
+
+.view-login  .em-form-input  input {
+    margin: 0;
+    height: 50px;
+    border-radius: 4px;
+}
+

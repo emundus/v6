@@ -1,227 +1,49 @@
-#user-registration fieldset  {
-    background: transparent;
-}
-#user-registration fieldset  p {
-    margin-bottom: 20px !important;
-    text-align: justify;
-}
-
-.view-reset #user-registration .controls {
- width: 100%;
-    margin-left: 0px !important;
-}
-
-.view-reset #user-registration .control-label {
-    width: 100%;
-   text-align: left !important;
-}
-
-
-.reset-confirm .form-validate.form-horizontal.well,
-.reset-complete .form-validate.form-horizontal.well
-{
-    width: 60%;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    background: #fafafa;
-    border: none;
-    padding: 50px;
-}
-
-.reset-confirm,
-.reset-complete
-{
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    background: #fafafa;
+/* RESET PASSWORD */
+.view-reset .em-user-form-container {
+    margin-top: 50px;
     width: 60%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 50px;
-    margin-bottom: 50px;
-}
-
-
-form#user-registration.form-validate.form-horizontal.well
-{
-    width: 59%;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    padding: 0px;
-}
-
-
-.reset-confirm .form-validate.form-horizontal.well .control-label,
-.reset-complete .form-validate.form-horizontal.well .control-label
-{
-text-align: left;
-}
-
-
-.reset-confirm .form-validate.form-horizontal.well .control-group,
-.reset-complete .form-validate.form-horizontal.well .control-group
-{
+    background: #fff;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-}
-
-
-.reset-confirm .form-validate.form-horizontal.well .control-group .controls,
-.reset-complete .form-validate.form-horizontal.well .control-group .controls
-{
-    margin-left: 0px;
-    width: 100%;
-}
-
-form#user-registration.form-validate.form-horizontal.well {
-    background: #fafafa;
-    border: none;
-    margin-top: 20px !important;
-}
-
-form#user-registration.form-validate.form-horizontal.well label,
-.reset-confirm .form-validate.form-horizontal.well label,
-.reset-complete .form-validate.form-horizontal.well  label
-{
-    font-size: 14px;
-    margin-bottom: 5px !important;
-    font-weight: bold;
-}
-
-form#user-registration.form-validate.form-horizontal.well .control-group .controls button,
-.reset-confirm .form-validate.form-horizontal.well .control-group .controls button,
-.reset-complete .form-validate.form-horizontal.well .control-group .controls button
-{
-    width: 100%;
-    height: 41px;
-    text-transform: capitalize;
-    margin-right:0;
-    border-radius: 4px;
-    padding: 8px 12px;
-    font-family: "Open Sans";
-    line-height: normal;
-    font-weight: 300;
-    font-size: 14px;
-}
-
-form#user-registration.form-validate.form-horizontal.well .control-group .controls input,
-.reset-confirm .form-validate.form-horizontal.well .control-group .controls input,
-.reset-complete .form-validate.form-horizontal.well .control-group .controls input
-{
-    border-radius: 4px;
-}
-
-.view-reset .reset .page-header,
-.view-reset .reset-complete .page-header{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-}
-
-.view-reset .reset {
-    display: flex !important;
-    flex-direction: column;
     align-items: center;
-    background: #fafafa;
-    width: 60%;
+}
+
+.view-reset .em-user-form {
+    background: #fff;
+    border: none;
+    border-radius: 0;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 50px;
-    margin-bottom: 50px;
+    padding: 0;
+    width: 60%;
 }
 
-#user-registration .required .star,
-.reset-confirm .required .star,
-.reset-complete .required .star
-{
-    display:none;
+.view-reset  .em-form-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
-#user-registration .required::after,
-.reset-confirm .required::after,
-.reset-complete .required::after
-{
-    content: "\f005";
-    color: #c30505;
-    padding-left: 2px;
-    top: -10px;
-    position: relative;
-    font-family: FontAwesome;
-    font-size: 5px;
-}
-@media all and (max-width: 980px) {
-    form#user-registration.form-validate.form-horizontal.well,
-    .reset-confirm .form-validate.form-horizontal.well,
-    .reset-complete .form-validate.form-horizontal.well
-    {
-        width: 80%;
-    }
-}
-@media all and (max-width: 767px) {
-
-    .view-reset .reset .page-header {
-        width: 100% !important;
-        padding: 0px 15px;
-    }
-
-    .view-reset .reset {
-        width: 100% !important;
-        padding-bottom: 0px !important;
-    }
-
-    form#user-registration.form-validate.form-horizontal.well,
-    .reset-confirm .form-validate.form-horizontal.well,
-    .reset-complete .form-validate.form-horizontal.well {
-        width: 100%;
-    }
-
-    .view-reset #g-navigation {
-        height: auto !important;
-    }
-
-    .view-reset #g-navigation .g-container {
-        height: auto !important;
-    }
-
-    .reset .form-validate.form-horizontal.well {
-        padding: 20px !important;
-    }
-
-    .remind .form-validate.form-horizontal.well, .reset .form-validate.form-horizontal.well  {
-        padding: 2rem 4rem 2rem 4rem;
-    }
-
-    .reset-confirm, .reset-complete {
-        width: 100%;
-    }
-
-
+.view-reset  .em-form-label label {
+    text-align: left;
+    font-weight: 700;
 }
 
-@media screen and (min-width: 768px) and (max-width: 959px) {
-    .view-reset .reset .page-header {
-        width: 78% !important;
-    }
-
-    form#user-registration.form-validate.form-horizontal.well,
-    .reset-confirm .form-validate.form-horizontal.well,
-    .reset-complete .form-validate.form-horizontal.well {
-        width: 100%;
-    }
+.view-reset .em-form-input {
+    margin: 0;
 }
 
-@media screen and (min-width: 960px) and (max-width: 979px) {
-    .view-reset .reset .page-header {
-        width: 70% !important;
-    }
+.view-reset .em-form-input input {
+    margin: 0;
+    height: 50px;
+    border-radius: 4px;
 }
 
-/* TEST TITRE MDPO */
+/* TITRE MDPO */
 
-.view-reset .reset .page-header {
+.view-reset .em-page-header {
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;
@@ -229,15 +51,20 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     width: 60%;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 30px;
 }
 
-.view-reset .reset .page-header div.icon-title.resetpwd {
+.view-reset .em-title {
+    margin-top: 50px;
+}
+
+.view-reset .icon-title.resetpwd {
     background-image: url(/components/com_emundus_onboard/src/assets/images/password.svg);
     background-size: contain;
     background-repeat: no-repeat;
 }
 
-.view-reset .reset .page-header div.icon-title {
+.view-reset .icon-title {
     margin-right: 10px;
     width: 33px;
     height: 35px;
@@ -246,4 +73,30 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     -webkit-filter: brightness(.5);
     filter: brightness(.5);
     fill: grey;
+    margin-bottom: 5px;
+}
+
+.view-reset .em-user-form  .control-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.view-reset .em-user-form  .control-label label {
+    text-align: left;
+    font-weight: 700;
+}
+
+.view-reset .em-user-form  .control-label  {
+    text-align: left;
+}
+
+.view-reset .em-user-form .controls {
+    margin: 0;
+}
+
+.view-reset .em-user-form  .controls  input {
+    margin: 0;
+    height: 50px;
+    border-radius: 4px;
 }
