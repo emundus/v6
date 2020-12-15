@@ -15,9 +15,15 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field name="url" type="field" default="index.php" label="URL to redirect to" description="The URL to redirect the user to if they have no company." />
+                <field name="url" type="field" default="index.php" label="URL to redirect to" description="The URL to redirect the user to if the param is false." />
                 <field name="user_param" type="field" label="User parameter name" description="The params of the user, if the params is TRUE then the user will be redirected, this param is probably added to the user object by another plugin." />
                 <field name="trigger_urls" type="field" label="Trigger URLs" description="Enter a comma separated list of all URLs that should trigger the plugin, if blank: all pages will trigger it." />
+                <field name="type_of_check" type="list" default="true" label="Condition" description="TRUE means this will not redirect if the param is set to TRUE, FALSE is the inverse, NOTEMPTY will redirect if the param simply EXISTS" >
+                    <option value="true">TRUE</option>
+                    <option value="false">FALSE</option>
+                    <option value="notempty">NOTEMPTY</option>
+                </field>
+                <field name="message" type="field" label="Message to display" description="the message to enquque when the user is redirected." />
             </fieldset>
         </fields>
     </config>

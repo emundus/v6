@@ -78,7 +78,7 @@ class EmundusViewChecklist extends JViewLegacy {
 
                     if ($accept_created_payments == 2 || $paid || $payment_created_offline) {
 
-                        if ($eMConfig->get('redirect_after_payment')) {
+                        if ($eMConfig->get('redirect_after_payment') == 1) {
 /*
 // status is changed in emundus_hikashop plugin
                             if (!empty($eMConfig->get('status_after_payment'))) {
@@ -93,6 +93,18 @@ class EmundusViewChecklist extends JViewLegacy {
                         } else {
                             // Don't send the application if the payment has not been fully sent.
                             $m_application->sendApplication($this->_user->fnum, $this->_user, [], $eMConfig->get('status_after_payment', 1));
+
+                            // Send the user to the homepage
+                            if ($eMConfig->get('redirect_after_payment') == 2) {
+                                $app->redirect('index.php', JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE'), 'message');
+                                return;
+                            }
+
+                            // Send the user to the profiles first page
+                            if ($eMConfig->get('redirect_after_payment') == 3) {
+                                $app->redirect('index.php?option=com_emundus&task=openfile&fnum=' . $this->_user->fnum, JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE_CONTINUE_CANDIDATURE'), 'message');
+                                return;
+                            }
                         }
                     }
                     $app->redirect($m_checklist->getConfirmUrl($this->_user->profile).'&usekey=fnum&rowid='.$this->_user->fnum);

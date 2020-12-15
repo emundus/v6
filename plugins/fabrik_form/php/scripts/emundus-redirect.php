@@ -15,16 +15,18 @@ defined( '_JEXEC' ) or die();
 
 
 /********************************************
- * 
+ *
  * Duplicate data on each applicant file for current campaigns
  */
 jimport('joomla.log.log');
 JLog::addLogger(['text_file' => 'com_emundus.redirect.php'], JLog::ALL, ['com_emundus']);
 
 include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+include_once(JPATH_SITE.'/components/com_emundus/models/application.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
 $m_profile = new EmundusModelProfile();
+$m_application = new EmundusModelApplication();
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
 $user =  JFactory::getSession()->get('emundusUser');
@@ -35,7 +37,12 @@ $db = JFactory::getDBO();
 
 if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
 	$levels = JAccess::getAuthorisedViewLevels($user->id);
-	
+
+    if(isset($user->fnum)) {
+        $m_application->getFormsProgress($user->fnum);
+        $m_application->getAttachmentsProgress($user->fnum);
+    }
+
 	try {
 		$query = 'SELECT CONCAT(link,"&Itemid=",id) 
 				FROM #__menu 
@@ -69,7 +76,7 @@ if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asAppl
 
 			$db->setQuery( $query );
 			$link = $db->loadResult();
-		} 
+		}
 		catch (Exception $e){
 			$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 			JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -81,7 +88,7 @@ if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asAppl
 				WHERE published=1 AND menutype = "'.$user->menutype.'" AND type!="separator" AND published=1 AND alias LIKE "checklist%"';
 				$db->setQuery( $query );
 				$link = $db->loadResult();
-				} 
+				}
 			catch (Exception $e){
 				$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 				JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -101,7 +108,7 @@ if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asAppl
 			}
 		}
 	}
-} else { 
+} else {
 	try {
 		$query = 'SELECT db_table_name FROM `#__fabrik_lists` WHERE `form_id` ='.$formid;
 		$db->setQuery( $query );
@@ -112,16 +119,16 @@ if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asAppl
 	}
 
 	$fnum = $jinput->get($db_table_name.'___fnum');
-	$s1 = JRequest::getVar($db_table_name.'___user', null, 'POST'); 
+	$s1 = JRequest::getVar($db_table_name.'___user', null, 'POST');
 	$s2 = JRequest::getVar('sid', '', 'GET');
-	$student_id = !empty($s2)?$s2:$s1; 
+	$student_id = !empty($s2)?$s2:$s1;
 
 	$sid = is_array($student_id)?$student_id[0]:$student_id;
 	try {
-		$query = 'UPDATE `'.$db_table_name.'` SET `user`='.$sid.' WHERE fnum like '.$db->Quote($fnum); 
+		$query = 'UPDATE `'.$db_table_name.'` SET `user`='.$sid.' WHERE fnum like '.$db->Quote($fnum);
 		$db->setQuery( $query );
 		$db->execute();
-	} 
+	}
 	catch (Exception $e){
 		$error = JUri::getInstance().' :: USER ID : '.$user->id.'\n -> '.$query;
 		JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -133,7 +140,7 @@ if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asAppl
 	echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
 	echo "<hr>";
 	exit;
-	
+
 }
 header('Location: '.$link);
 exit();
