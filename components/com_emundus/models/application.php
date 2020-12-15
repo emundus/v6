@@ -120,7 +120,7 @@ class EmundusModelApplication extends JModelList {
             FROM #__emundus_uploads AS eu
             LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
             LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
-            WHERE eu.user_id = '.$id;'
+            WHERE eu.user_id = '.$id.'
             ORDER BY esa.category,esa.ordering,esa.value';
         $this->_db->setQuery($query);
         return $this->_db->loadObjectList();
@@ -2603,7 +2603,7 @@ class EmundusModelApplication extends JModelList {
 	            $query .= " AND eu.id in ($ids)";
             }
 
-            $query .= "ORDER BY sa.category,sa.ordering,sa.value ASC";
+            $query .= " ORDER BY sa.category,sa.ordering,sa.value ASC";
 
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();
