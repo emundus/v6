@@ -26,7 +26,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 	 *
 	 * @var  string
 	 */
-	protected string $URLfield = '';
+	protected $URLfield = '';
 
 	/**
 	 * Get an element name
