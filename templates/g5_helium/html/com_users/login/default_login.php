@@ -12,11 +12,11 @@ JHtml::_('behavior.formvalidator');
 $document = JFactory::getDocument();
 $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_users_login.css");
 ?>
-<div class="login<?php echo $this->pageclass_sfx; ?>">
+<div class="login em-user-form-container <?php echo $this->pageclass_sfx; ?>">
     <?php if ($this->params->get('show_page_heading')) : ?>
-        <div class="page-header">
-            <div class="icon-title loginicon"></div>
-            <h1 class="em-titre-connectez-vous">
+        <div class="page-header em-page-header">
+            <div class="icon-title icon-login"></div>
+            <h1 class="em-title">
                 <?php echo $this->escape($this->params->get('page_heading')); ?>
             </h1>
         </div>
@@ -33,45 +33,45 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
         <?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
     </div>
 <?php endif; ?>
-    <form action="<?php echo (!empty($this->redirect)) ? 'index.php?option=com_users&task=user.login&redirect='.$this->redirect : 'index.php?option=com_users&task=user.login'; ?>" method="post" class="form-validate form-horizontal well">
+    <form action="<?php echo (!empty($this->redirect)) ? 'index.php?option=com_users&task=user.login&redirect='.$this->redirect : 'index.php?option=com_users&task=user.login'; ?>" method="post" class="form-validate form-horizontal well em-user-form">
         <fieldset>
             <?php foreach ($this->form->getFieldset('credentials') as $field) : ?>
                 <?php if (!$field->hidden) : ?>
-                    <div class="control-group">
-                        <div class="control-label">
+                    <div class="control-group em-form-row">
+                        <div class="control-label em-form-label">
                             <?php echo $field->label; ?>
                         </div>
-                        <div class="controls">
+                        <div class="controls em-form-input">
                             <?php echo $field->input; ?>
                         </div>
                     </div>
                 <?php endif; ?>
             <?php endforeach; ?>
             <?php if ($this->tfa) : ?>
-                <div class="control-group">
-                    <div class="control-label">
+                <div class="control-group em-form-row">
+                    <div class="control-label em-form-label">
                         <?php echo $this->form->getField('secretkey')->label; ?>
                     </div>
-                    <div class="controls">
+                    <div class="controls em-form-input">
                         <?php echo $this->form->getField('secretkey')->input; ?>
                     </div>
                 </div>
             <?php endif; ?>
             <?php if (JPluginHelper::isEnabled('system', 'remember')) : ?>
-                <div class="control-group">
-                    <div class="control-label">
+                <div class="control-group em-form-row">
+                    <div class="control-label em-form-label">
                         <label for="remember">
                             <?php echo JText::_('COM_USERS_LOGIN_REMEMBER_ME'); ?>
                         </label>
                     </div>
-                    <div class="controls">
+                    <div class="controls em-form-input">
                         <input id="remember" type="checkbox" name="remember" class="inputbox" value="yes" />
                     </div>
                 </div>
             <?php endif; ?>
-            <div class="control-group">
-                <div class="controls">
-                    <button type="submit" class="btn btn-primary">
+            <div class="control-group em-form-row">
+                <div class="controls em-form-input">
+                    <button type="submit" class="btn btn-primary em-btn em-btn-primary">
                         <?php echo JText::_('JLOGIN'); ?>
                     </button>
                 </div>
@@ -85,12 +85,12 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
 <div class="nav link">
     <ul class="nav nav-tabs nav-stacked">
         <li>
-            <a href="<?php echo JRoute::_('index.php?option=com_users&view=reset'); ?>">
+            <a class="em-link" href="<?php echo JRoute::_('index.php?option=com_users&view=reset'); ?>">
                 <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
             </a>
         </li>
         <li>
-            <a href="<?php echo JRoute::_('index.php?option=com_users&view=remind'); ?>">
+            <a class="em-link" href="<?php echo JRoute::_('index.php?option=com_users&view=remind'); ?>">
                 <?php echo JText::_('COM_USERS_LOGIN_REMIND'); ?>
             </a>
         </li>
@@ -98,11 +98,11 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
         <?php if ($usersConfig->get('allowUserRegistration')) : ?>
             <li>
                 <?php if(!empty($this->campaign) && !empty($this->course)) :?>
-                    <a href="<?php echo JRoute::_('index.php?option=com_users&view=registration&course=' . $this->course . '&cid=' . $this->cid); ?>">
+                    <a class="em-link" href="<?php echo JRoute::_('index.php?option=com_users&view=registration&course=' . $this->course . '&cid=' . $this->cid); ?>">
                         <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
                     </a>
                 <?php else: ?>
-                    <a href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>">
+                    <a class="em-link" href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>">
                         <?php echo JText::_('COM_USERS_LOGIN_REGISTER'); ?>
                     </a>
                 <?php endif; ?>

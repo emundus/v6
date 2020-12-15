@@ -85,11 +85,11 @@ $site_offset = $config->get('offset');
 			<div class="navsearch-content">
 				<div class="g-block size-100">
 					<div class="input-group">
-                        <label for="searchword" style="display: inline-block">
+                        <label for="searchword">
                             <input name="searchword" type="text" class="form-control" placeholder="<?php  echo JText::_("SEARCH")."..." ; ?>" <?php if (isset($searchword) && !empty($searchword)) { echo "value=".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');}; ?>>
                         </label>
 						<span class="input-group-btn">
-                            <button class="btn btn-default sch" type="submit"><?php  echo JText::_("SEARCH"); ?></button>
+                            <button class="btn btn-default sch em-btn em-search-button" type="submit"><?php  echo JText::_("SEARCH"); ?></button>
                         </span>
 					</div><!-- /input-group -->
 				</div><!-- /.col-lg-6 -->
@@ -103,7 +103,7 @@ $site_offset = $config->get('offset');
 			<div class="campaigns-list">
 				<p class="campaigns-list-result"><?php echo $paginationCurrent->getResultsCounter(); ?></p>
 				<?php if (empty($currentCampaign)) {?>
-					<div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
+					<div class="alert alert-warning em-alert"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
 				<?php } else {
 					$oldmonth = '';
 
@@ -153,7 +153,7 @@ $site_offset = $config->get('offset');
 				<div class="campaign-content">
 					<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
 						<h4>
-                            <a href="<?php echo !empty($result->link) ? $result->link : JURI::base()."index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
+                            <a class="em-link" href="<?php echo !empty($result->link) ? $result->link : JURI::base()."index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
                                 <?php echo $result->label; ?>
                             </a>
                         </h4>
@@ -216,9 +216,9 @@ $site_offset = $config->get('offset');
 
 						<?php if ($result->apply_online == 1 && $m_campaign->isLimitObtained($result->id) !== true) :?>
                             <?php if ($mod_em_campaign_get_link) :?>
-                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary em-btn em-btn-secondary" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php else :?>
-							    <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+							    <a class="btn btn-primary em-btn em-btn-secondary" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php endif; ?>
 							<?php
                                 // The register URL does not work  with SEF, this workaround helps counter this.
@@ -231,12 +231,12 @@ $site_offset = $config->get('offset');
                                     $register_url = $redirect_url."?course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
                                 }
                             ?>
-							<a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+							<a class="btn btn-primary em-btn em-btn-primary" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
 						<?php else :?>
                             <?php if ($mod_em_campaign_get_link) :?>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary em-btn em-btn-primary" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php else :?>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary em-btn em-btn-primary" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php endif; ?>
 						<?php endif; ?>
 					</div>
@@ -257,7 +257,7 @@ $site_offset = $config->get('offset');
 		<div class="campaigns-list">
             <p class="campaigns-list-result"><?php echo $paginationFutur->getResultsCounter(); ?></p>
 			<?php if (empty($futurCampaign)) { ?>
-				<div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
+				<div class="alert alert-warning em-alert"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
 			<?php } else {
 			$oldmonth = '';
 
@@ -287,7 +287,7 @@ $site_offset = $config->get('offset');
 				<div class="campaign-content">
 					<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
                         <h4>
-                            <a href="<?php echo !empty($result->link) ? $result->link : JURI::base()."index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
+                            <a class="em-link" href="<?php echo !empty($result->link) ? $result->link : JURI::base()."index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
                                 <?php echo $result->label; ?>
                             </a>
                         </h4>
@@ -347,9 +347,9 @@ $site_offset = $config->get('offset');
 					</div>
 					<div class="below-content">
 						<?php if ($result->apply_online == 1) {
-						    $btn_class = "btn btn-primary btn-creux btn-orange";
+						    $btn_class = "btn btn-primary em-module-btn-secondaire";
 						} else {
-						    $btn_class = "btn btn-primary btn-plein btn-blue";
+						    $btn_class = "btn btn-primary em-module-btn-primaire";
                         } ?>
                         <?php if ($mod_em_campaign_get_link) :?>
                             <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
@@ -373,7 +373,7 @@ $site_offset = $config->get('offset');
 		<div class="campaigns-list">
             <p class="campaigns-list-result"><?php echo $paginationPast->getResultsCounter(); ?></p>
 			<?php if (empty($pastCampaign)) { ?>
-				<div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
+				<div class="alert alert-warning em-alert"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
 			<?php } else {
 					$oldmonth = '';
 
@@ -403,7 +403,7 @@ $site_offset = $config->get('offset');
 			<div class="campaign-content">
 				<div class="left-side campaigntext <?php echo $mod_em_campaign_class; ?>">
                     <h4>
-                        <a href="<?php echo !empty($result->link) ? $result->link : JURI::base()."index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
+                        <a class="em-link" href="<?php echo !empty($result->link) ? $result->link : JURI::base()."index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>">
                             <?php echo $result->label; ?>
                         </a>
                     </h4>
@@ -461,9 +461,9 @@ $site_offset = $config->get('offset');
 				</div>
 				<div class="below-content">
 					<?php if ($result->apply_online == 1) {
-						    $btn_class = "btn btn-primary btn-creux btn-orange";
+						    $btn_class = "btn btn-primary em-module-btn-secondaire";
 						} else {
-						    $btn_class = "btn btn-primary btn-plein btn-blue";
+						    $btn_class = "btn btn-primary em-module-btn-primaire";
                         } ?>
                         <?php if ($mod_em_campaign_get_link) :?>
                             <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
