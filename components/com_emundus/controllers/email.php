@@ -99,7 +99,7 @@ class EmundusControllerEmail extends JControllerLegacy {
 
 		require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
         $m_emails = new EmundusModelEmails();
-        $email = $m_emails->sendExpertMail($fnums);
+        $email = $m_emails->sendExpertMail((array) $fnums);
 
         echo json_encode(['status' => true, 'sent' => $email['sent'], 'failed' => $email['failed'], 'message' => $email['message']]);
         exit;

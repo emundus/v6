@@ -589,7 +589,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                 'USER_EMAIL' => $fnum->email
             ];
 
-            $tags = $m_emails->setTags($fnum->applicant_id, $post);
+            $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum);
             $body = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
             $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 

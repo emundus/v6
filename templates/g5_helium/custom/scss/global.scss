@@ -453,6 +453,35 @@ input[type="text"],
 
 /* FOOTER */
 
+.footer-b {
+  .container-link-footer {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+
+    ul {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 0px;
+
+      li {
+        list-style: none;
+          a {
+            text-decoration: none;
+          }
+      }
+
+      li:nth-child(1) a {
+        margin: 10px;
+        border-right: 1px solid #cccccc;
+        padding: 0px 10px;
+      }
+    }
+
+  }
+}
+
+
 .g-back-office-emundus-tableau #g-navigation.g-flushed .g-container {
   padding: 10px !important;
 }
@@ -720,6 +749,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 /* PAGE PLUS D INFO - COULEUR BTN  CANDIDATER */
 
 .view-programme {
+
+  h1.title.em-program-title::after {
+    display: none !important;
+  }
 
   .right-side.campaingapply {
     padding-left: 0px !important;
@@ -1444,7 +1477,7 @@ p.readmore .btn,
     }
   }
 
-  .span12 button.goback-btn[name="Goback"] {
+  .span12 button.btn[name="Goback"] {
     background: transparent;
     border: 1px solid $base-secondary-color;
     border-radius: 4px !important;
@@ -1452,6 +1485,7 @@ p.readmore .btn,
     margin-right: 10px;
     font-weight: normal;
     padding: 8px 35px;
+    text-transform: initial;
 
     &:hover,
     &:active,
@@ -1824,6 +1858,11 @@ textarea:hover {
   border: 1px solid $base-primary-color;
 }
 
+.step a[title="Retour à mes dossiers"]:hover, .step a[title="Retour à mes dossiers"]:focus, .step a[title="Retour à mes dossiers"]:active  {
+  color: $base-secondary-color;
+}
+
+
 .candidacy-files-list h2,
 #em-panel h2 {
   color: $base-primary-color;
@@ -1960,7 +1999,7 @@ textarea:hover {
 .step.completed i.icon.attach::before,
 .step.completed i.icon.add.to.cart::before,
 .step.completed i.icon.time::before {
-  color: $base-primary-color;
+  color: #21ba45;
 }
 
 /* 3 Cercles Accueil Coordinateur */
@@ -2430,7 +2469,7 @@ div#em-appli-block {
     }
     a:hover b.caret,
     a:hover b.caret,
-    a:hover b.caret, {
+    a:hover b.caret {
       color: $base-secondary-color;
       border-top-color: $base-secondary-color;
       border-bottom-color: $base-secondary-color;
@@ -2747,11 +2786,22 @@ div#em-appli-block {
         }
 
         form.fabrikForm {
-          width: 75%;
+          width: 90%;
         }
       }
     }
   }
+
+  .gantry footer#g-footer .logo a  {
+    display: flex;
+    justify-content: center;
+  }
+
+  .gantry footer#g-footer .credits-emundus {
+    display: flex;
+    justify-content: center;
+  }
+
 
   .g-back-office-emundus-tableau.view-syncs.experts-synchro-page .app-container.ng-scope  {
     overflow-x: scroll;
@@ -2785,7 +2835,8 @@ div#em-appli-block {
     }
   }
   #g-navigation #header-c.without-lang-switcher {
-    max-width: 100%;
+    max-width: 30rem !important;
+    min-height: 67px;
      .g-content {
       display: flex;
       align-items: center;
@@ -2801,23 +2852,29 @@ div#em-appli-block {
 
   /* BURGER OUVERT */
 #g-offcanvas {
-  background: #FAFAFA;
+  background: #F2F2F2;
   .g-grid {
     margin: 50px 0px;
 
   .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
-    background: #FAFAFA;
+    background: #F2F2F2;
     margin: 0;
     padding: 0;
 
     li {
       border-bottom: 1px solid #F2F2F2;
-
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: space-between;
+      background: #F2F2F2;
+      width: 100% !important;
       span {
         width: 10%;
         margin-top: 15px;
         &::after {
           color: #000;
+          opacity: initial;
         }
       }
       a {
@@ -2887,6 +2944,65 @@ footer#g-footer .g-grid {
 
 @media all and (min-width: 480px) and (max-width: 767px)  {
 
+  /* BURGER */
+  #g-page-surround .g-offcanvas-toggle {
+    top: 20px !important;
+  }
+
+  /* BURGER OUVERT */
+  #g-offcanvas {
+    background: #F2F2F2;
+    .g-grid {
+      margin: 50px 0px;
+
+      .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul  {
+        background: #F2F2F2;
+        margin: 0;
+        padding: 0;
+
+        li {
+          border-bottom: 1px solid #F2F2F2;
+          display: flex;
+          flex-direction: row;
+          align-items: baseline;
+          justify-content: space-between;
+          background: #F2F2F2;
+          width: 100% !important;
+          span {
+            width: 10%;
+            margin-top: 15px;
+            &::after {
+              color: #000;
+              opacity: initial;
+            }
+          }
+          a {
+            color: $base-primary-color;
+            padding: 15px 30px;
+            width: auto;
+            display: block;
+          }
+        }
+
+        li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module).active {
+          background: #FAFAFA;
+          border-left: 6px solid $base-secondary-color;
+          a {
+            color: $base-primary-color;
+          }
+        }
+
+        li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module):hover {
+          background: #ccc;
+          a {
+            color:#fff;
+          }
+        }
+      }
+    }
+  }
+
+
   .gantry h1::after {
     display: none !important;
   }
@@ -2897,6 +3013,34 @@ footer#g-footer .g-grid {
   }
 
   /* FOOTER */
+
+  .gantry footer#g-footer .logo a  {
+    display: flex;
+    justify-content: center;
+  }
+
+  .gantry footer#g-footer .credits-emundus {
+    display: flex;
+    justify-content: center;
+  }
+
+  .em-containerAdresseLogo {
+    width: 100% !important;
+    justify-content: center !important ;
+  }
+
+  .bas-footer .adresse {
+    align-items : center;
+  }
+
+  .bas-footer .adresse  p{
+    text-align : center !important;
+  }
+
+  #g-page-surround > .g-container:not(.g-flushed) {
+    height: auto;
+  }
+
   footer#g-footer {
 
     img.logo {
@@ -2918,6 +3062,19 @@ footer#g-footer .g-grid {
   }
 
   /* HEADER */
+
+  /* HEADER */
+  #g-navigation #header-a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #g-navigation #header-c,  #g-navigation #header-c.without-tchooz-and-lang-switcher, #g-navigation #header-c.without-lang-switcher, #g-navigation #header-c.without-tchooz {
+    max-width: 100%;
+  }
+
+
   #g-navigation #header-c .g-content {
     flex-direction: column !important;
     justify-content: center !important;
@@ -3272,8 +3429,8 @@ footer#g-footer .g-grid {
   @media all and (max-width: 1239px) {
 
     /* FOOTER */
-    .em-containerAdresseLogo {
-      width: 60% !important;
+    #g-footer .em-containerAdresseLogo {
+      width: 60%;
     }
 
     /* STRUCUTURE */

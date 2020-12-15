@@ -37,7 +37,15 @@ header('Content-type: text/css');
 $c = $_REQUEST['c'];
 echo <<<EOT
 /* BEGIN - Your CSS styling starts here */
-
+.em-formation .btn-download{
+width: 80%;
+align-self: center;
+text-transform: uppercase !important;
+font-weight: 700 !important;
+position: absolute;
+bottom: 35px;
+margin-bottom: 10px;
+}
 .em-formation #g-container-main .g-container{
 padding:0!important;
 width:100vw;
@@ -65,7 +73,7 @@ width:100vw;
 	position: relative;
 	background: white;
 	left:20px;
-	min-width: 300px;
+	min-width: 240px;
 	margin:0 45px;
 }
 .em-search .header{
@@ -117,7 +125,7 @@ color:white!important;
 padding: 5px;
 }
 .em-card{
-margin:0 45px;
+margin:0px;
 }
 .em-result h4{
 margin-left:33px;
@@ -128,22 +136,25 @@ margin-left:33px;
 	flex-wrap: wrap;
 }
 .card{
-	width: 400px;
-	background: white;
-	height: 450px;
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	margin:0 22px 45px 22px;
+    width: 17rem;
+    background: white;
+    height: 560px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin: 0px 0px 45px 22px;
+    flex: 0 0 17%;
 }
-.card:hover{
-	box-shadow: 3px 4px 5px 0px rgba(222, 222, 222, 1);
+
+.card .cardContainerContent p {
+    margin-bottom: 10px !important; 
 }
+
 .card .intitule{
 font-weight: 700;
 color: #002d72;
-width: 150px;
-display: inline-block;
+width: auto;
+padding-right: 10px;
 }
 .cardContainerHeader{
 	background:#002d72;
@@ -182,9 +193,8 @@ padding: 20px;
 	width:80%;
 }
 .em-formation .btn-connexion:hover{
-    background: #a10006 !important;
+    background:#730004!important;
     color:white!important;
-    
   }
   .em-formation .fabrikNav{
   	display:flex;
@@ -203,7 +213,11 @@ padding: 20px;
   .em-formation .fabrikNav .inputbox{
   	height:35px;
   }
-  
+@media screen and (max-width:1270px){
+    .gantry .em-cardContainer .card {
+        flex: 0 0 32%;
+    }
+} 
 @media screen and (max-width:768px){
     .em-searchContainer{
 	flex-direction:column;
@@ -216,6 +230,11 @@ padding: 20px;
         left:0;
         margin-bottom:50px;
     }
+
+    .card{
+        width: 18rem;
+        flex: auto;
+       }
     
 }
 @media screen and (max-width:480px){
@@ -224,6 +243,8 @@ width: 80%;
 }
 .card{
  margin:0 0 45px 0;
+ width: 20rem;
+ flex: auto;
 }
 
 /* END - Your CSS styling ends here */
