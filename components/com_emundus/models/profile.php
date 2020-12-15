@@ -372,11 +372,32 @@ class EmundusModelProfile extends JModelList
      * @param   int $step application file status
      * @return  array
      **/
-    function getProfileByStatus($step) {
-        $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype 
-                    FROM  #__emundus_setup_profiles AS esp
-                    LEFT JOIN #__emundus_setup_status AS ess ON ess.profile = esp.id
-                    WHERE ess.step='.$step;
+    function getProfileByStatus($step,$campaign_id = null) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $config = new JConfig();
+        $db_name = $config->db;
+
+        $query->select('COUNT(*)')
+            ->from($db->quoteName('information_schema.tables'))
+            ->where($db->quoteName('table_schema') . ' = ' . $db->quote($db_name))
+            ->andWhere($db->quoteName('table_name') . ' = ' . $db->quote('jos_emundus_campaign_workflow'));
+        $db->setQuery($query);
+        $exist = $db->loadResult();
+
+        if($exist){
+            $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype
+            FROM  #__emundus_campaign_workflow AS ecw
+            LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = ecw.profile
+            WHERE ecw.campaign='.$campaign_id.'
+            AND ecw.status='.$step;
+        } else {
+            $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype 
+            FROM  #__emundus_setup_profiles AS esp
+            LEFT JOIN #__emundus_setup_status AS ess ON ess.profile = esp.id
+            WHERE ess.step='.$step;
+        }
 
         try
         {
@@ -405,7 +426,7 @@ class EmundusModelProfile extends JModelList
             $query = 'SELECT DISTINCT(esc.profile_id)
 					FROM  #__emundus_setup_campaigns AS esc
 					WHERE esc.published = 1 AND esc.training IN ('.implode(",", $this->_db->quote($code)).') AND esc.id IN ('.implode(",", $camps).')';
-			
+
             try
             {
                 $this->_db->setQuery( $query );
@@ -582,7 +603,7 @@ class EmundusModelProfile extends JModelList
         if (in_array($profile['profile'], $profile_array)) {
 
             // Get the current user profile
-/* 
+/*
             // If the profile number is 8 that means he has been admitted
             // This means that regardless of his other applications he must be considered admitted
             if ($profile['profile'] != 8) {
