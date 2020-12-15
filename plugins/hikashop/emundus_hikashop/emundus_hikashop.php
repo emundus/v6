@@ -48,8 +48,6 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         $config = hikashop_config();
         $confirmed_statuses = explode(',', trim($config->get('invoice_order_statuses','confirmed,shipped'), ','));
 
-
-
         if(empty($confirmed_statuses)) {
             $confirmed_statuses = array('confirmed','shipped');
         }
@@ -177,7 +175,10 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         // get the step of paiement
         $key = array_search($status, $application_payment_status);
 
-        if ($status_after_payment[$key] > 0) {
+        $config = hikashop_config();
+        $confirmed_statuses = explode(',', trim($config->get('invoice_order_statuses','confirmed,shipped'), ','));
+
+        if ($status_after_payment[$key] > 0 && in_array($order->order_status, $confirmed_statuses)) {
             require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
             $m_files = new EmundusModelFiles();
             $m_files->updateState($fnum, $status_after_payment[$key]);
