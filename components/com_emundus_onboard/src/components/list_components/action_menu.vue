@@ -207,7 +207,7 @@
       </transition>
     </div>
     <div class="loading-form" style="top: 10vh" v-if="loading">
-      <Ring-Loader :color="'#de6339'" />
+      <Ring-Loader :color="'#12db42'" />
     </div>
   </div>
 </template>

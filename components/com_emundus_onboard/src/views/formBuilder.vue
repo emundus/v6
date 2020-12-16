@@ -404,9 +404,11 @@
       addingNewElement: function(evt) {
         this.dragging = false;
         this.draggingIndex = -1;
-        /*document.getElementsByClassName('no-elements-tip')[0].style.background = '#e4e4e9';
-        document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #c3c3ce';
-        document.getElementsByClassName('no-elements-tip')[0].innerHTML = Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS");*/
+        if(typeof document.getElementsByClassName('no-elements-tip')[0] != 'undefined') {
+          document.getElementsByClassName('no-elements-tip')[0].style.background = '#e4e4e9';
+          document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #c3c3ce';
+          document.getElementsByClassName('no-elements-tip')[0].innerHTML = Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS");
+        }
         let plugin = evt.clone.id.split('_')[1];
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
         if(typeof gid != 'undefined'){
@@ -631,6 +633,7 @@
         } else {
           this.indexHighlight = 0;
         }*/
+        this.indexHighlight = 0;
         this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
         this.rgt = this.formObjectArray[this.indexHighlight].rgt;
       },
@@ -891,9 +894,11 @@
         this.grab = false;
       },
       startDragging(){
-        /*document.getElementsByClassName('no-elements-tip')[0].style.background = '#fff';
-        document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #16afe1';
-        document.getElementsByClassName('no-elements-tip')[0].innerHTML = '';*/
+        if(typeof document.getElementsByClassName('no-elements-tip')[0] != 'undefined'){
+          document.getElementsByClassName('no-elements-tip')[0].style.background = '#fff';
+          document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #16afe1';
+          document.getElementsByClassName('no-elements-tip')[0].innerHTML = '';
+        }
       }
       //
     },

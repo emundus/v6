@@ -25,42 +25,33 @@ class EmundusonboardModelformbuilder extends JModelList {
 
     /** TRANSLATION SYSTEM */
     public function translate($key,$values){
-        $app = JFactory::getApplication();
-        $languages = JLanguageHelper::getLanguages();
-        foreach ($languages as $language) {
-            $app->setUserState('com_languages.overrides.filter.language', $language->lang_code);
-            $language_datas = array(
-                'language' => 'NULL',
-                'client' => 'NULL',
-                'key' => $key,
-                'override' => $values[$language->sef],
-                'file' => 'NULL',
-                'searchstring' => "",
-                'searchtype' => "value",
-                'id' => ""
-            );
-            $this->model_language->save($language_datas);
-            $this->copyFileToAdministration($language->lang_code);
-        }
+        $this->updateTranslation($key,$values);
     }
 
     public function updateTranslation($key,$values){
         $app = JFactory::getApplication();
         $languages = JLanguageHelper::getLanguages();
-        foreach ($languages as $language) {
-            $app->setUserState('com_languages.overrides.filter.language', $language->lang_code);
-            $language_datas = array(
-                'language' => 'NULL',
-                'client' => 'NULL',
-                'key' => $key,
-                'override' => $values[$language->sef],
-                'file' => 'NULL',
-                'searchstring' => "",
-                'searchtype' => "value",
-                'id' => $key
-            );
-            $this->model_language->save($language_datas);
-            $this->copyFileToAdministration($language->lang_code);
+        if(!empty(trim($key))) {
+            $key = strtoupper(preg_replace('/\s+/', '_', $key));
+            foreach ($languages as $language) {
+                $app->setUserState('com_languages.overrides.filter.language', $language->lang_code);
+                $language_datas = array(
+                    'language' => 'NULL',
+                    'client' => 'NULL',
+                    'key' => $key,
+                    'override' => $values[$language->sef],
+                    'file' => 'NULL',
+                    'searchstring' => "",
+                    'searchtype' => "value",
+                    'id' => $key
+                );
+                $this->model_language->save($language_datas);
+                $this->copyFileToAdministration($language->lang_code);
+            }
+            return $key;
+        } else {
+            JLog::add('component/com_emundus_onboard/models/formbuilder | Error when update the translation of key : ' . $key, JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 
@@ -170,9 +161,32 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $locallang
      * @param $NewSubLabel
      */
-    function formsTrad($labelTofind, $NewSubLabel) {
+    function formsTrad($labelTofind, $NewSubLabel, $element = null, $group = null, $page = null) {
         try {
-            return $this->updateTranslation($labelTofind,$NewSubLabel);
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $new_key = $this->updateTranslation($labelTofind,$NewSubLabel);
+            if($element != null && $new_key != false){
+                $query->update($db->quoteName('#__fabrik_elements'))
+                    ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($element));
+                $db->setQuery($query);
+                $db->execute();
+            } elseif ($group != null && $new_key != false){
+                $query->update($db->quoteName('#__fabrik_groups'))
+                    ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($group));
+                $db->setQuery($query);
+                $db->execute();
+            } elseif ($page != null && $new_key != false){
+                $query->update($db->quoteName('#__fabrik_forms'))
+                    ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($page));
+                $db->setQuery($query);
+                $db->execute();
+            }
+            return $new_key;
         }  catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/formbuilder | Error when update the translation of ' . $labelTofind . ' : ' .$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;

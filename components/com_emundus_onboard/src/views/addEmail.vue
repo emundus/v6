@@ -24,7 +24,7 @@
           </div>
           <div class="w-form">
             <div class="form-group">
-              <label>{{emailName}} *</label>
+              <label>{{emailName}} <span style="color: #E5283B">*</span></label>
               <input
                       type="text"
                       class="form__input field-general w-input"
@@ -37,7 +37,7 @@
             </p>
 
             <div class="form-group controls forms-emails-editor">
-              <label>{{emailBody}} *</label>
+              <label>{{emailBody}} <span style="color: #E5283B">*</span></label>
               <editor :text="form.message" v-if="dynamicComponent" :lang="actualLanguage" :enable_variables="true" v-model="form.message" :id="'email'" :placeholder="EmailResume" :class="{ 'is-invalid': errors.message}"></editor>
             </div>
             <p v-if="errors.message" class="error col-md-12 mb-2">
@@ -94,7 +94,7 @@
 
           <div v-if="triggered">
             <div class="form-group">
-              <label>{{Actions}}*</label>
+              <label>{{Actions}}<span style="color: #E5283B">*</span></label>
               <select v-model="trigger.action_status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.action_status}">
                 <option value="to_current_user">{{TheCandidate}}</option>
                 <option value="to_applicant">{{Manual}}</option>
@@ -105,7 +105,7 @@
             </div>
 
             <div class="form-group">
-              <label>{{Status}}*</label>
+              <label>{{Status}}<span style="color: #E5283B">*</span></label>
               <select v-model="trigger.status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.status}">
                 <option v-for="(statu,index) in status" :key="index" :value="statu.step">{{statu.value}}</option>
               </select>
@@ -115,7 +115,7 @@
             </div>
 
             <div class="form-group">
-              <label>{{Target}}*</label>
+              <label>{{Target}}<span style="color: #E5283B">*</span></label>
               <select v-model="trigger.target" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.target}">
                 <option value="5">{{Administrators}}</option>
                 <option value="6">{{Evaluators}}</option>
@@ -127,7 +127,7 @@
               </p>
             </div>
             <div class="form-group" v-if="trigger.target == 0" style="align-items: baseline">
-              <label>{{ChooseUsers}}* :</label>
+              <label>{{ChooseUsers}}<span style="color: #E5283B">*</span> :</label>
               <div class="wrap">
                 <div class="search">
                   <input type="text" class="searchTerm" :placeholder="Search" v-model="searchTerm" @keyup="searchUserByTerm">

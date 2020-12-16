@@ -8,6 +8,10 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
+			<field name="redirect" type="list" default="1" description="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_REDIRECT_DESC" label="PLG_FABRIK_FORM_EMUNDUSEXPERTAGREEMENT_REDIRECT_LABEL" >
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
 		</fieldset>
 	</fields>
 </form>

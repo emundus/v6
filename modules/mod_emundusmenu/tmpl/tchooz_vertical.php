@@ -145,6 +145,13 @@ defined('_JEXEC') or die;
         echo '<li class="g-menu-item g-standard tchooz-vertical-item" style="margin-bottom: 50px !important;"><a class="item" href="/"><img src="/images/emundus/tchooz_favicon.png" alt="Accueil" style="width: 30px"></a>
         </li>';
 
+        if ($coordinatorAccess) {
+            echo '<li class="g-menu-item g-standard tchooz-vertical-item"><a class="item" href="/"><img src="/images/emundus/menus/dashboard.png" alt="Accueil" style="width: 30px"></a>
+            </li>';
+        }
+
+        echo '<hr id="menu_separator">';
+
         foreach ($tchooz_list as $i => &$item) :
             $item->anchor_css="item";
             $class = 'item-'.$item->id.' g-standard';
@@ -408,8 +415,8 @@ defined('_JEXEC') or die;
                     if(jQuery(".tchooz-vertical-item").css("transform") == 'matrix(1, 0, 0, 1, 0, 0)') {
                         jQuery(".tchooz-vertical-item").css("transform", "translateX(-100px)")
                         jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)")
-                        jQuery(".sidebar-formbuilder").css("transform", "translateX(0)")
-                        jQuery(".plugins-list").css("transform", "translateX(0px)")
+                        jQuery(".sidebar-formbuilder").css("transform", "unset")
+                        jQuery(".plugins-list").css("transform", "unset")
                     }
                 },200)
             },50)

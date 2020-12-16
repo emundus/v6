@@ -119,7 +119,7 @@
                         {{ Mandatory }}
                       </div>
                     </div>
-                    <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
+                    <button type="button" @click="deleteDoc(indexDoc)" class="buttonDeleteDoc">
                       <em class="fas fa-times"></em>
                     </button>
                   </div>
@@ -276,7 +276,7 @@ export default {
       });
     },
 
-    addDocument(index,undoc){
+    addDocument(undoc){
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=form&task=adddocument",
@@ -291,6 +291,7 @@ export default {
     },
 
     removeDocument(id) {
+      console.log(id);
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=form&task=removedocument",
@@ -335,13 +336,10 @@ export default {
       });
     },
 
-    changeState(index, id) {
-      this.updateMandatory()
-    },
-
-    deleteDoc(index,doc) {
-      doc.need = -1;
-      this.removeDocument(doc.id);
+    deleteDoc(index) {
+      let newIndex = this.undocuments.push(this.documents[index])-1;
+      this.documents.splice(index,1);
+      this.removeDocument(this.undocuments[newIndex].id);
     },
 
     addingToDocs: function(evt) {
@@ -357,7 +355,7 @@ export default {
     addUndoc(index) {
       let newIndex = this.documents.push(this.undocuments[index])-1;
       this.undocuments.splice(index,1);
-      this.addDocument(index,this.documents[newIndex]);
+      this.addDocument(this.documents[newIndex]);
     },
 
     openUpdateDoc(document) {

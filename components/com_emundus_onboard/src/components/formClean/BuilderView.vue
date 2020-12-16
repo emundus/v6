@@ -463,6 +463,7 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
+          element: element.id,
           labelTofind: element.label_tag,
           NewSubLabel: labels
         })
@@ -592,6 +593,7 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
+          group: group.group_id,
           labelTofind: group.group_tag,
           NewSubLabel: labels
         })
@@ -806,6 +808,7 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
+          page: page.id,
           labelTofind: page.show_title.titleraw,
           NewSubLabel: labels
         })
@@ -1158,7 +1161,6 @@ export default {
     position: absolute;
     cursor: grab;
     left: 15px;
-    margin-bottom: 20px;
   }
   .icon-handle-unpublished{
     color: #cecece;

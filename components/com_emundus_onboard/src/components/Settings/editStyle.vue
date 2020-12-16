@@ -165,7 +165,7 @@
   .section-sub-menu{
     padding: 20px;
     margin: 0;
-    height: 15em;
+    height: 200px;
   }
   .settings-edit-icon{
     display: block;

@@ -126,13 +126,13 @@ class EmundusModelExport extends JModelList {
             } catch (RequestException $e) {
                 # this exception is thrown if given paper size or margins are not correct.
                 $res->status = false;
-                $res->msg = JText::_('COM_EMUNDUS_ERROR_EXPORT_MARGIN');
+                $res->msg = JText::_('COM_EMUNDUS_ERROR_EXPORT_MARGIN').' GOTEMBERG ERROR ('.$e->getCode().'): '.$e->getMessage();
                 JLog::add($res->msg, JLog::ERROR, 'com_emundus.export');
                 return json_encode($res);
             } catch (ClientException $e) {
                 # this exception is thrown by the client if the API has returned a code != 200.
                 $res->status = false;
-                $res->msg = JText::_('COM_EMUNDUS_ERROR_EXPORT_API');
+                $res->msg = JText::_('COM_EMUNDUS_ERROR_EXPORT_API').' GOTEMBERG ERROR ('.$e->getCode().'): '.$e->getMessage();
                 JLog::add($res->msg, JLog::ERROR, 'com_emundus.export');
                 return $res;
             }

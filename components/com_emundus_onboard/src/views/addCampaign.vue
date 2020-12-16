@@ -24,7 +24,7 @@
             <h2 class="heading">{{ Parameter }}</h2>
           </div>-->
           <div class="form-group campaign-label">
-            <label for="campLabel">{{CampName}} *</label>
+            <label for="campLabel">{{CampName}} <span style="color: #E5283B">*</span></label>
             <div class="input-can-translate">
                 <input
                   id="campLabel"
@@ -43,10 +43,10 @@
           <p v-if="errors.label" class="error col-md-12 mb-2">
             <span class="error">{{LabelRequired}}</span>
           </p>
-          <div class="w-row">
+          <div class="d-flex justify-content-between">
             <div class="w-col col-md-5">
               <div class="w-form">
-                <label for="campLabel">{{StartDate}} *</label>
+                <label for="campLabel">{{StartDate}} <span style="color: #E5283B">*</span></label>
                 <datetime
                   :placeholder="StartDate"
                   type="datetime"
@@ -58,7 +58,7 @@
             </div>
             <div class="w-col col-md-5">
               <div class="w-form">
-                <label for="campLabel">{{EndDate}} *</label>
+                <label for="campLabel">{{EndDate}} <span style="color: #E5283B">*</span></label>
                 <datetime
                   :placeholder="EndDate + ' *'"
                   type="datetime"
@@ -71,7 +71,7 @@
             </div>
           </div>
           <div class="form-group campaign-label">
-            <label for="campLabel">{{PickYear}} *</label>
+            <label for="campLabel">{{PickYear}} <span style="color: #E5283B">*</span></label>
             <autocomplete
                     :id="'year'"
                     @searched="onSearchYear"
@@ -112,7 +112,7 @@
           <transition name="'slide-down'">
             <div v-if="form.is_limited == 1">
               <div class="form-group campaign-label">
-                <label for="campLabel">{{FilesNumberLimit}} *</label>
+                <label for="campLabel">{{FilesNumberLimit}} <span style="color: #E5283B">*</span></label>
                 <input type="number"
                        class="form__input field-general w-input"
                        v-model="form.limit"
@@ -123,7 +123,7 @@
                 <span class="error">{{FilesLimitRequired}}</span>
               </p>
               <div class="form-group campaign-label">
-                <label for="campLabel">{{StatusLimit}} *</label>
+                <label for="campLabel">{{StatusLimit}} <span style="color: #E5283B">*</span></label>
                 <div class="users-block" :class="{ 'is-invalid': errors.limit_status}">
                   <div v-for="(statu, index) in status" :key="index" class="user-item">
                     <input type="checkbox" class="form-check-input bigbox" v-model="form.limit_status[statu.step]">
@@ -147,7 +147,7 @@
             <h2 class="heading">{{ Information }}</h2>
           </div>
           <div class="form-group campaign-label">
-            <label for="campResume" style="top: 5em">{{Resume}} *</label>
+            <label for="campResume" style="top: 5em">{{Resume}} <span style="color: #E5283B">*</span></label>
             <textarea
               type="textarea"
               rows="2"
@@ -211,7 +211,7 @@
             <div class="program-addCampaign" v-if="isHiddenProgram">
               <div class="w-form">
                 <div class="form-group prog-label">
-                  <label for="prog_label" style="top: 5.7em">{{ProgName}} *</label>
+                  <label for="prog_label" style="top: 5.7em">{{ProgName}} <span style="color: #E5283B">*</span></label>
                   <input
                     type="text"
                     id="prog_label"

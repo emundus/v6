@@ -202,9 +202,9 @@ class modEmundusCustomHelper {
 	}
 
 	/**
-	 * Ajax function to insert/update FG table for Nantes.
+	 * Ajax function to insert/update FG or Eval Ranking for SU Emergences.
 	 *
-	 * @since version
+	 * @returns void
 	 */
 	static function suPostRankingAjax() {
 
@@ -299,24 +299,92 @@ class modEmundusCustomHelper {
 			try {
 				$db->execute();
 
-				if ($type === 'eval') {
-					// We need to remove the ranking on the other eval.
-					$query->clear()
-						->update($db->quoteName($table))
-						->set([$db->quoteName('ranking').' = '.$db->quote('')])
-						->where($db->quoteName('id').' <> '.$entry_id)
-						->andWhere($db->quoteName('user').' = '.$user->id)
-						->andWhere($db->quoteName('ranking').' = '.$db->quote($rank))
-						->andWhere($db->quoteName('campaign_id').' = '.(int)substr($fnum, 14, 7));
+				switch ($type) {
 
-					$db->setQuery($query);
-					try {
-						$db->execute();
-					} catch (Exception $e) {
-						JLog::add('Erreur de suppression de classement -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-						echo '<pre>'; var_dump($e->getMessage()); echo '</pre>'; die;
+					case 'paquet':
+						// We need to remove the ranking on the other FG.
+						$query->clear()
+							->select('DISTINCT(g.group_id)')
+							->from($db->quoteName('#__emundus_group_assoc', 'g'))
+							->leftJoin($db->quoteName('#__emundus_setup_groups', 'sg').' ON '.$db->quoteName('g.group_id').' = '.$db->quoteName('sg.id'))
+							->where($db->quoteName('g.fnum').' = '.$db->quote($fnum))
+							->andWhere($db->quoteName('sg.label').' LIKE "%Paquet%"');
+						$db->setQuery($query);
 
-					}
+						try {
+							$group_id_candidat = $db->loadResult();
+						} catch (Exception $e) {
+							echo '<pre>'; var_dump($query->__toString()); echo '</pre>'; die;
+						}
+
+						$query->clear()
+							->update($db->quoteName($table, 'fg'))
+							->set([$db->quoteName('fg.classement_paquet').' = '.$db->quote('')])
+							->leftJoin($db->quoteName('#__emundus_group_assoc', 'g').' ON '.$db->quoteName('g.fnum').' = '.$db->quoteName('fg.fnum'))
+							->where($db->quoteName('fg.id').' <> '.$entry_id)
+							->andWhere($db->quoteName('fg.classement_paquet').' = '.$db->quote($rank))
+							->andWhere($db->quoteName('fg.campaign_id').' = '.(int)substr($fnum, 14, 7))
+							->andWhere($db->quoteName('g.group_id').' = '.$group_id_candidat);
+
+						break;
+					case 'thematique':
+						// We need to remove the ranking on the other FG.
+						$query->clear()
+							->select('DISTINCT(g.group_id)')
+							->from($db->quoteName('#__emundus_group_assoc', 'g'))
+							->leftJoin($db->quoteName('#__emundus_setup_groups', 'sg').' ON '.$db->quoteName('g.group_id').' = '.$db->quoteName('sg.id'))
+							->where($db->quoteName('g.fnum').' = '.$db->quote($fnum))
+							->andWhere($db->quoteName('sg.label').' LIKE "%Thématique%"');
+						$db->setQuery($query);
+
+						try {
+							$group_id_candidat = $db->loadResult();
+						} catch (Exception $e) {
+							echo '<pre>'; var_dump($query->__toString()); echo '</pre>'; die;
+						}
+
+						$query->clear()
+							->update($db->quoteName($table, 'fg'))
+							->set([$db->quoteName('fg.classement_thematique').' = '.$db->quote('')])
+							->leftJoin($db->quoteName('#__emundus_group_assoc', 'g').' ON '.$db->quoteName('g.fnum').' = '.$db->quoteName('fg.fnum'))
+							->where($db->quoteName('fg.id').' <> '.$entry_id)
+							->andWhere($db->quoteName('fg.classement_thematique').' = '.$db->quote($rank))
+							->andWhere($db->quoteName('fg.campaign_id').' = '.(int)substr($fnum, 14, 7))
+							->andWhere($db->quoteName('g.group_id').' = '.$group_id_candidat);
+						break;
+					case 'general':
+						// We need to remove the ranking on the other FG.
+						$query->clear()
+							->update($db->quoteName($table))
+							->set([$db->quoteName('classement_general').' = '.$db->quote('')])
+							->where($db->quoteName('id').' <> '.$entry_id)
+							->andWhere($db->quoteName('user').' = '.$user->id)
+							->andWhere($db->quoteName('classement_general').' = '.$db->quote($rank))
+							->andWhere($db->quoteName('campaign_id').' = '.(int)substr($fnum, 14, 7));
+						break;
+					case 'eval':
+						// We need to remove the ranking on the other eval.
+						$query->clear()
+							->update($db->quoteName($table))
+							->set([$db->quoteName('ranking').' = '.$db->quote('')])
+							->where($db->quoteName('id').' <> '.$entry_id)
+							->andWhere($db->quoteName('user').' = '.$user->id)
+							->andWhere($db->quoteName('ranking').' = '.$db->quote($rank))
+							->andWhere($db->quoteName('campaign_id').' = '.(int)substr($fnum, 14, 7));
+						break;
+					default:
+						$query->clear();
+						break;
+
+				}
+
+				$db->setQuery($query);
+				try {
+					$db->execute();
+				} catch (Exception $e) {
+					JLog::add('Erreur de suppression de classement -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+					echo '<pre>'; var_dump($e->getMessage()); echo '</pre>'; die;
+
 				}
 
 				die(json_encode((object)['status' => true, 'msg' => 'Classement mis à jour.']));

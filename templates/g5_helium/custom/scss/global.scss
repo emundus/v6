@@ -1066,8 +1066,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   background-position-x: 98%;
   background-position-y: 54%;
   -webkit-appearance: none;
-  background-image: url(/images/emundus/arrow-down.png);
-  background-size: 12px;
+  background-image: url(/images/emundus/arrow-2.png);
+  background-size: 25px;
   background-repeat: no-repeat;
   padding: 0 30px 0 10px;
 }
@@ -1486,7 +1486,7 @@ p.readmore .btn,
     }
   }
 
-  .span12 button.goback-btn[name="Goback"] {
+  .span12 button.btn[name="Goback"] {
     background: transparent;
     border: 1px solid $base-secondary-color;
     border-radius: 4px !important;
@@ -1494,6 +1494,7 @@ p.readmore .btn,
     margin-right: 10px;
     font-weight: normal;
     padding: 8px 35px;
+    text-transform: initial;
 
     &:hover,
     &:active,
