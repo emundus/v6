@@ -766,7 +766,7 @@ class EmundusHelperFiles
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                     LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
                     WHERE element.id IN ('.ltrim($elements_id, ',').')
-                    ORDER BY formgroup.ordering, element.ordering ';
+                    ORDER BY find_in_set(element.id, "' . ltrim($elements_id, ',') . '") ';
             try {
                 $db->setQuery($query);
                 $res = $db->loadObjectList('id');
