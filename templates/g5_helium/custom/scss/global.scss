@@ -2761,7 +2761,17 @@ div#em-appli-block {
 
 @media all and (max-width: 479px) {
 
-  .gantry.view-registration, .gantry.view-form.em-formRegistrationCenter {
+  .blog-featuredhomepage {
+    h1:first-child {
+      margin-bottom: 30px;
+      margin-top: 30px;
+    }
+    p {
+      text-align: justify;
+    }
+  }
+
+    .gantry.view-registration, .gantry.view-form.em-formRegistrationCenter {
     main#g-main-mainbody {
       padding: 0;
       .login.em-formRegistrationCenter, .em-formRegistrationCenter:not(.componentheading) {
@@ -2824,7 +2834,8 @@ div#em-appli-block {
     flex-direction: column;
 
     .mod-languages.advanced-dropdown {
-      margin-left: -25px;
+      margin-left: -15px;
+      margin-top: 15px;
     }
   }
   #g-navigation #header-c.without-lang-switcher {
