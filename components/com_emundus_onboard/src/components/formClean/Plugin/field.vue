@@ -11,20 +11,7 @@
         </select>
       </div>
       <div class="form-group">
-        <label>{{placeholdertext}}
-          <button v-tooltip="{
-          content: msg,
-          trigger: 'hover',
-          placement: 'top-center',
-          offset: 5,
-          popperOptions: {
-            preventOverflow: false
-          },
-          delay: {
-            show: 500,
-            hide: 300,
-            },
-          }"><em class="fas fa-question-circle"></em></button> :</label>
+        <label>{{placeholdertext}} :</label>
         <input type="text" class="form__input field-general w-input" v-model="element.params.placeholder" />
       </div>
       <div class="form-group">

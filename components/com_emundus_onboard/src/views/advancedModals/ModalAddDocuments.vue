@@ -20,8 +20,11 @@
             </button>
           </div>
                 <div class="update-field-header">
-            <h2 class="update-title-header">
+            <h2 class="update-title-header" v-if="doc == null">
                {{createDocument}}
+            </h2>
+            <h2 class="update-title-header" v-if="doc != null">
+               {{editDocument}}
             </h2>
                 </div>
         </div>
@@ -150,6 +153,7 @@ export default {
       ],
       selectedTypes: [],
       createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),
+      editDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_EDIT_DOCUMENT"),
       Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
       Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
       Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),

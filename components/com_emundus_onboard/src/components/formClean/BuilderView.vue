@@ -1158,7 +1158,6 @@ export default {
     position: absolute;
     cursor: grab;
     left: 15px;
-    margin-bottom: 20px;
   }
   .icon-handle-unpublished{
     color: #cecece;

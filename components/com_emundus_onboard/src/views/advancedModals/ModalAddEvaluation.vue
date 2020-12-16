@@ -16,7 +16,7 @@
       <div class="fixed-header-modal">
           <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddEvaluation')">
-              <em class="fas fa-times-circle"></em>
+              <em class="fas fa-times"></em>
             </button>
           </div>
                         <div class="update-field-header">

@@ -54,6 +54,7 @@ $active	= $menu->getActive();
 $active_id = isset($active) ? $active->id : $menu->getDefault()->id;
 $path = isset($active) ? $active->tree : array();
 $showAll = $params->get('showAllChildren');
+$coordinatorAccess = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $class_sfx = htmlspecialchars($params->get('class_sfx'));
 
 if (count($list)) {

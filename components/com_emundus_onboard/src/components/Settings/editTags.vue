@@ -20,7 +20,7 @@
                     popover-x="left"
                     popover-y="top"
             ></v-swatches>
-            <button type="button" @click="removeTag(tag,index)" class="remove-tag"><i class="fas fa-trash"></i></button>
+            <button type="button" @click="removeTag(tag,index)" class="remove-tag"><i class="fas fa-times"></i></button>
         </div>
     </div>
 </template>

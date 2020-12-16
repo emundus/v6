@@ -46,7 +46,7 @@
   font-weight: bold;
   width: auto;
   font-size: 18px;
-  margin: 0 0 20px 0 !important;
+  margin: 0;
 }
 .legend2 {
   display: flex;
@@ -234,9 +234,6 @@ fieldset {
   color: $red;
   font-weight: lighter;
 }
-.translate-builder {
-  margin-bottom: 12px;
-}
 .inlineflex {
   display: flex;
   align-content: center;
@@ -281,8 +278,8 @@ select.fabrikinput.form-control {
   padding: 0 5px;
   border: 2px solid #e5e5e5;
   background-color: white !important;
-  background-image: url(/images/emundus/arrow-down.png) !important;
-  background-size: 12px !important;
+  background-image: url(/images/emundus/arrow-2.png) !important;
+  background-size: 25px !important;
   background-repeat: no-repeat !important;
   background-position-x: 98% !important;
   background-position-y: 54% !important;
@@ -378,8 +375,8 @@ input[type="date"].form-control, input[type="time"].form-control, input[type="da
 }
 
 .no-elements-tip{
-  margin-top: 1em;
-  height: 50px;
+  margin-top: 28px;
+  height: 60px;
   border: 2px dashed #c3c3ce;
   border-radius: 4px;
   background-color: #e4e4e9;
