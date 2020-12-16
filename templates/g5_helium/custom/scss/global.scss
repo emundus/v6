@@ -2761,6 +2761,11 @@ div#em-appli-block {
 
 @media all and (max-width: 479px) {
 
+  .gantry #g-feature{
+    margin-top: 100px;
+   }
+
+
   .blog-featuredhomepage {
     h1:first-child {
       margin-bottom: 30px;
@@ -2834,8 +2839,7 @@ div#em-appli-block {
     flex-direction: column;
 
     .mod-languages.advanced-dropdown {
-      margin-left: -15px;
-      margin-top: 15px;
+      margin:  15px 15px 15px 0px;
     }
   }
   #g-navigation #header-c.without-lang-switcher {
@@ -2947,6 +2951,9 @@ footer#g-footer .g-grid {
 }
 
 @media all and (min-width: 480px) and (max-width: 767px)  {
+  .gantry #g-feature{
+      margin-top: 100px;
+  }
 
   /* BURGER */
   #g-page-surround .g-offcanvas-toggle {
