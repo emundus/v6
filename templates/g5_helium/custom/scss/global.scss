@@ -366,7 +366,7 @@ input[type="text"],
   width: 180px;
 }
 
-/* HEADER AVEC TCHOOZ ET LANG SWITCHER*/
+/* HEADER */
 
 #g-navigation {
   .g-grid {
@@ -396,20 +396,6 @@ input[type="text"],
     }
   }
 }
-
-/* HEADER SANS LANG SWITCHER ET AVEC TCHOOZ */
-
-#g-navigation {
-  #header-c.without-lang-switcher {
-    max-width: 30rem;
-    min-height: 67px;
-    .g-content {
-      justify-content: flex-end;
-      align-items: flex-start;
-    }
-  }
-}
-
 
 #g-navigation {
   //border-bottom: 1px solid #eeeeee;
@@ -602,8 +588,6 @@ body>.g-container {
   }
 
   .moduletable .header-right {
-    margin-top: 12px;
-
     a.btn.btn-danger {
 
       &.btn-creer-compte,
