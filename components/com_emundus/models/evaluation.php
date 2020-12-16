@@ -1760,23 +1760,31 @@ if (JFactory::getUser()->id == 63)
 		return $this->_db->loadAssocList();
 	}
 
-	/*
-	* 	Get list of documents generated for email attachment
-	*	@param fnum 		Application File number
-	*	@param campaign_id 	Campaign ID
-	* 	@return array
-	*/
-	function getEvaluationDocuments($fnum, $campaign_id) {
+	/**
+	 * Get list of documents generated for email attachment
+	 *
+	 * @param          $fnum
+	 * @param          $campaign_id
+	 * @param int|null $doc_to_attach
+	 *
+	 * @return array|mixed
+	 */
+	function getEvaluationDocuments($fnum, $campaign_id, $doc_to_attach = null) {
 		$query = 'SELECT *, eu.id as id, esa.id as attachment_id
 					FROM #__emundus_uploads eu
 					LEFT JOIN #__emundus_setup_attachments esa ON esa.id=eu.attachment_id
 					WHERE eu.fnum like '.$this->_db->Quote($fnum).' AND campaign_id='.$campaign_id.'
 					AND eu.attachment_id IN (
 						SELECT DISTINCT(esl.attachment_id) FROM #__emundus_setup_letters esl
-						)
-					AND eu.filename NOT LIKE "%lock%"
+					)';
+
+		if (!empty($doc_to_attach)) {
+			$query .= ' AND eu.attachment_id = '.(int)$doc_to_attach;
+		}
+
+		$query .= ' AND eu.filename NOT LIKE "%lock%"
 					ORDER BY eu.timedate';
-//die(str_replace('#_', 'jos', $query));
+
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
 	}

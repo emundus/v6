@@ -2388,7 +2388,7 @@ if (JFactory::getUser()->id == 63)
                         $element_attribs = json_decode($elt->element_attribs);
                         $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
                         $where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$elt->table_join.'.'.$elt->element_name;
-                        $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
+                        $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->cascadingdropdown_label_concat)).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
 
                         $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
                             FROM '.$tableAlias[$elt->tab_name].'
@@ -2460,7 +2460,7 @@ if (JFactory::getUser()->id == 63)
                 	$element_attribs = json_decode($elt->element_attribs);
 	                $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
 	                $where = explode('___', $element_attribs->cascadingdropdown_id)[1].'='.$elt->tab_name.'.'.$elt->element_name;
-	                $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
+	                $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat)?'CONCAT('.str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->cascadingdropdown_label_concat)).')':'t.'.explode('___', $element_attribs->cascadingdropdown_label)[1];
 
 	                $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ")
                             FROM '.$from.' as t
@@ -3610,4 +3610,26 @@ if (JFactory::getUser()->id == 63)
 			return array_keys(array_flip($result));
 		}
 	}
+
+	public function getFormProgress($fnums) {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query->select('fnum,form_progress')
+            ->from ($db->quoteName('#__emundus_campaign_candidature'))
+            ->where($db->quoteName('fnum') . ' IN (' . $db->quote(implode(',',$fnums)) . ')');
+        $db->setQuery($query);
+        return $db->loadAssocList();
+    }
+
+    public function getAttachmentProgress($fnums) {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query->select('fnum,attachment_progress')
+            ->from ($db->quoteName('#__emundus_campaign_candidature'))
+            ->where($db->quoteName('fnum') . ' IN (' . $db->quote(implode(',',$fnums)) . ')');
+        $db->setQuery($query);
+        return $db->loadAssocList();
+    }
 }

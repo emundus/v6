@@ -633,6 +633,7 @@
         } else {
           this.indexHighlight = 0;
         }*/
+        this.indexHighlight = 0;
         this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
         this.rgt = this.formObjectArray[this.indexHighlight].rgt;
       },

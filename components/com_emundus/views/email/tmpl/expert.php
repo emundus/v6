@@ -12,6 +12,7 @@ JHTML::_('behavior.modal');
 JHTML::_('behavior.tooltip');
 
 $jinput = JFactory::getApplication()->input;
+$doc_to_attach = $jinput->get->get('attach', null);
 
 $document = JFactory::getDocument();
 $document->addStyleSheet(JURI::base()."media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css" );
@@ -54,7 +55,7 @@ $email = $m_emails->getEmail($this->default_email_tmpl);
 $files = [];
 foreach ($fnums as $fnum => $fnumInfo) {
     
-	$attachments = $m_evaluations->getEvaluationDocuments($fnum, $fnumInfo['campaign_id']);
+	$attachments = $m_evaluations->getEvaluationDocuments($fnum, $fnumInfo['campaign_id'], $doc_to_attach);
 	
 	if (empty($attachments)) {
 	    
@@ -139,10 +140,7 @@ if (!empty($files)) {
 
                 echo '<div id="em_attachment">
                 <div id="em_dl_'.$file['id'].'" class="em_dl">
-                    <a class="dO" target="_blank" href="'.$file['url'].'">
-                        <div class="vI"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.$file['name'].'" title="'.$file['name'].'" width="22" height="22" align="absbottom" /> '.$file['name'].'</div>
-                        <div class="vJ"></div>
-                    </a>
+                    <div class="vI"><img src="'.$this->baseurl.'/media/com_emundus/images/icones/pdf.png" alt="'.$file['name'].'" title="'.$file['name'].'" width="22" height="22" align="absbottom" /> '.$file['name'].'</div>
                     <div class="em_email_icon" id="attachment_'.$file['id'].'">
                         <img src="'.JURI::base().'media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].'); document.getElementById(\'mail_attachments\').value=\'\';}"/>
                     </div>

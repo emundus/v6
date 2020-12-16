@@ -124,7 +124,7 @@ $form_id = $form->id;
             <div class="em-filter">
                 <div class="header">
                     <h2><?= JText::_('FILTER');?></h2>
-                    <a href="<?= $reset ?>"><img src="/images/custom/francediploma/reset.svg"></i></a>
+                    <a href="<?= $reset ?>"><img src="/images/custom/francediploma/trash.svg"></i></a>
                 </div>
                 <div class="em-select">
                     <?php
@@ -231,10 +231,6 @@ $form_id = $form->id;
                                     <div class="cardContainer">
                                         <div class="cardContainerHeader">
                                             <h4><?= $group[$i]->data->$label; ?></h4>
-                                            <a class="em-dowload" target="_blank"
-                                               href="<?= $group[$i]->data->$brochure; ?>" data-toggle="tooltip"
-                                               data-placement="top" title="<?= JText::_('DOWNLOAD_DOC'); ?>"><img
-                                                        src="images/custom/francediploma/cloud-computing.png"></a>
                                         </div>
                                         <div class="cardContainerContent">
                                             <p><span
@@ -262,6 +258,7 @@ $form_id = $form->id;
                                         </div>
                                     </div>
                                     <?php $link = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course=<?= $training;?>&cid=<?=$cid;?>'); ?>
+                                    <a class="btn btn-download" target="_blank" href="<?= $group[$i]->data->$brochure; ?>" data-toggle="tooltip" data-placement="top" title="<?= JText::_('DOWNLOAD_DOC'); ?>"><?= JText::_('DOWNLOAD_DOC'); ?></a>
                                     <a class="btn btn-connexion"
                                        href="<?= $apply ?>?course=<?= $training; ?>&cid=<?= $cid; ?>&itemId=2879"><?= JText::_('SUBMIT_APPLICATION_FILE'); ?></a>
                                 </div>
@@ -294,5 +291,3 @@ $form_id = $form->id;
 
 </form>
 
-
-}

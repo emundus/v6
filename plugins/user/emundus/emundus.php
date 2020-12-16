@@ -395,6 +395,10 @@ class plgUserEmundus extends JPlugin
 	        $user = JFactory::getSession()->get('emundusUser');
 	        EmundusModelLogs::log($user->id, $user->id, null, -2, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
 
+	        if ($options['redirect'] === 0) {
+	        	$previous_url = '';
+	        }
+
 	        if (!empty($previous_url)) {
 		        $app->redirect($previous_url);
 	        }
