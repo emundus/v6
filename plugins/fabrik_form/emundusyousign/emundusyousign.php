@@ -362,7 +362,7 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 
 		$members = [];
 		foreach ($signers['names'] as $key => $name) {
-			$name = explode(' ', $name);
+			$name = preg_split('/\s+/', $name);
 			$member = new stdClass();
 			$member->firstname = $name[0];
 			$member->lastname = $name[1];
