@@ -373,42 +373,31 @@ class EmundusModelProfile extends JModelList
      * @return  array
      **/
     function getProfileByStatus($step,$campaign_id = null) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype
+        FROM  #__emundus_campaign_workflow AS ecw
+        LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = ecw.profile
+        WHERE ecw.campaign='.$campaign_id.'
+        AND ecw.status='.$step;
 
-        $config = new JConfig();
-        $db_name = $config->db;
-
-        $query->select('COUNT(*)')
-            ->from($db->quoteName('information_schema.tables'))
-            ->where($db->quoteName('table_schema') . ' = ' . $db->quote($db_name))
-            ->andWhere($db->quoteName('table_name') . ' = ' . $db->quote('jos_emundus_campaign_workflow'));
-        $db->setQuery($query);
-        $exist = $db->loadResult();
-
-        if($exist){
-            $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype
-            FROM  #__emundus_campaign_workflow AS ecw
-            LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = ecw.profile
-            WHERE ecw.campaign='.$campaign_id.'
-            AND ecw.status='.$step;
-        } else {
+        try {
+            $this->_db->setQuery( $query );
+            return $this->_db->loadAssoc();
+        } catch(Exception $e) {
             $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype 
             FROM  #__emundus_setup_profiles AS esp
             LEFT JOIN #__emundus_setup_status AS ess ON ess.profile = esp.id
             WHERE ess.step='.$step;
-        }
 
-        try
-        {
-            $this->_db->setQuery( $query );
-            $res = $this->_db->loadAssoc();
-            return $res;
-        }
-        catch(Exception $e)
-        {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-            JError::raiseError(500, $e->getMessage());
+
+            try {
+                $this->_db->setQuery( $query );
+                return $this->_db->loadAssoc();
+            } catch(Exception $e) {
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+                JError::raiseError(500, $e->getMessage());
+            }
+
         }
     }
 
