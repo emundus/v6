@@ -1781,10 +1781,18 @@ button#back,
   &:active,
   &:focus {
     background: #fff;
-    border: 1px solid $base-primary-color;
-    color: $base-primary-color;
+    border: 1px solid $base-primary-color !important;
+    color: $base-primary-color !important;
   }
 }
+
+.files-board .em-container-tags .em-container-tags-heading #add-tags {
+  color: #fff;
+    &:hover, &:active, &:focus {
+      color: darken($base-secondary-color, 10%);
+    }
+}
+
 
 #em-see-files.btn.btn-info.btn-xs.pull-right {
   background-color: $base-primary-color;
