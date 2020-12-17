@@ -87,8 +87,9 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 		$jinput = $app->input;
 		$view = $jinput->get('view');
 		$itemid = $jinput->get('Itemid');
+		$r = $app->input->get('r', 0);
 
-		if (!$app->isAdmin() && $view == 'form') {
+		if (!$app->isAdmin() && $view == 'form' && $r == 1) {
 			require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
 			jimport('joomla.log.log');
@@ -129,9 +130,9 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 				if (!empty($confirm)) {
 					$app->enqueueMessage(JText::_('COM_EMUNDUS_EVALUATION_ALREADY_CONFIRMED'), 'info');
 					if (!empty($rowid)) {
-						$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&rowid=".$rowid);
+						$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&rowid=".$rowid.'&r='.$r);
 					} else {
-						$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum[0]);
+						$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum[0].'&r='.$r);
 					}
 				}
 			}
