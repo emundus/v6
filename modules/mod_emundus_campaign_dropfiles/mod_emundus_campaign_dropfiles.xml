@@ -17,7 +17,7 @@
 		<config>
 			<fields name="params">
 				<fieldset name="basic" addfieldpath="/modules/mod_emundus_campaign_dropfiles/tmpl" >
-					
+					<field type="text" name="mod_em_dropfile_column" default="" label="Colonne DB" description="Colonne à aller chercher pour afficher les documents"/>
 				</fieldset>
 			</fields>
 		</config>

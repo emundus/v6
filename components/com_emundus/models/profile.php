@@ -373,31 +373,47 @@ class EmundusModelProfile extends JModelList
      * @return  array
      **/
     function getProfileByStatus($step,$campaign_id = null) {
-        $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype
-        FROM  #__emundus_campaign_workflow AS ecw
-        LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = ecw.profile
-        WHERE ecw.campaign='.$campaign_id.'
-        AND ecw.status='.$step;
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-        try {
-            $this->_db->setQuery( $query );
-            return $this->_db->loadAssoc();
-        } catch(Exception $e) {
-            $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype 
-            FROM  #__emundus_setup_profiles AS esp
-            LEFT JOIN #__emundus_setup_status AS ess ON ess.profile = esp.id
-            WHERE ess.step='.$step;
+        $config = new JConfig();
+        $db_name = $config->db;
+        $res = array();
 
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+        try
+        {
+            //Check if the table exist
+            $query->select('COUNT(*)')
+                ->from($db->quoteName('information_schema.tables'))
+                ->where($db->quoteName('table_schema') . ' = ' . $db->quote($db_name))
+                ->andWhere($db->quoteName('table_name') . ' = ' . $db->quote('jos_emundus_campaign_workflow'));
+            $db->setQuery($query);
+            $exist = $db->loadResult();
 
-            try {
+            if($exist){
+                $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype
+                FROM  #__emundus_campaign_workflow AS ecw
+                LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = ecw.profile
+                WHERE ecw.campaign='.$campaign_id.'
+                AND ecw.status='.$step;
+
                 $this->_db->setQuery( $query );
-                return $this->_db->loadAssoc();
-            } catch(Exception $e) {
-                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-                JError::raiseError(500, $e->getMessage());
+                $res = $this->_db->loadAssoc();
             }
 
+            if(empty($res) || !$exist) {
+                $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype 
+                FROM  #__emundus_setup_profiles AS esp
+                LEFT JOIN #__emundus_setup_status AS ess ON ess.profile = esp.id
+                WHERE ess.step='.$step;
+
+                $this->_db->setQuery( $query );
+                $res = $this->_db->loadAssoc();
+            }
+            return $res;
+        } catch(Exception $e) {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
         }
     }
 

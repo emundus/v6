@@ -5,7 +5,8 @@ use Joomla\CMS\Date\Date;
 jimport( 'joomla.access.access' );
 
 class modEmundusCampaignDropfilesHelper {
-    public function getFiles() {
+
+    public function getFiles($column = null) {
 
         $config = new JConfig();
         $db_name = $config->db;
@@ -17,8 +18,8 @@ class modEmundusCampaignDropfilesHelper {
         $dateTime = new Date('now', 'UTC');
         $now = $dateTime->toSQL();
 
+        // If empty id module is probably on a form
         if (empty($id)) {
-            // If empty campaign id we are in a form
             $current_profile = JFactory::getSession()->get('emundusUser')->profile;
 
             $query->select('COUNT(*)')
@@ -28,18 +29,22 @@ class modEmundusCampaignDropfilesHelper {
             $db->setQuery($query);
             $exist = $db->loadResult();
 
-            if($exist && !empty($current_profile)){
-                $query->clear()
-                    ->select([$db->quoteName('df.id', 'id'), $db->quoteName('df.catid', 'catid'), $db->quoteName('df.title', 'title_file'), $db->quoteName('df.ext', 'ext'), $db->quoteName('cat.path', 'title_category')])
-                    ->from($db->quoteName('#__emundus_campaign_workflow_repeat_documents_prealables','cdf'))
-                    ->leftJoin($db->quoteName('jos_emundus_campaign_workflow','cw').' ON '.$db->quoteName('cw.id').' = '.$db->quoteName('cdf.parent_id'))
-                    ->leftJoin($db->quoteName('jos_dropfiles_files','df').' ON '.$db->quoteName('df.id').' = '.$db->quoteName('cdf.documents_prealables'))
-                    ->leftJoin($db->quoteName('jos_categories','cat').' ON '.$db->quoteName('cat.id').' = '.$db->quoteName('df.catid'))
-                    ->where($db->quoteName('cw.profile') . ' = ' . $db->quote($current_profile));
-                $db->setQuery($query);
-                return $db->loadObjectList();
+            if($exist && !empty($column)){
+                try {
+                    $query->clear()
+                        ->select([$db->quoteName('df.id', 'id'), $db->quoteName('df.catid', 'catid'), $db->quoteName('df.title', 'title_file'), $db->quoteName('df.ext', 'ext'), $db->quoteName('cat.path', 'title_category')])
+                        ->from($db->quoteName('#__emundus_campaign_workflow_repeat_' . $column,'cdf'))
+                        ->leftJoin($db->quoteName('jos_emundus_campaign_workflow','cw').' ON '.$db->quoteName('cw.id').' = '.$db->quoteName('cdf.parent_id'))
+                        ->leftJoin($db->quoteName('jos_dropfiles_files','df').' ON '.$db->quoteName('df.id').' = '.$db->quoteName('cdf.' . $column))
+                        ->leftJoin($db->quoteName('jos_categories','cat').' ON '.$db->quoteName('cat.id').' = '.$db->quoteName('df.catid'))
+                        ->where($db->quoteName('cw.profile') . ' = ' . $db->quote($current_profile));
+                    $db->setQuery($query);
+                    return $db->loadObjectList();
+                } catch(Exception $e) {
+                    return false;
+                }
             } else {
-                return -1;
+                return false;
             }
         } else {
             $query
