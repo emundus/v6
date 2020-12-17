@@ -1,7 +1,7 @@
 <?php
 
 require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
-
+require_once (JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
 {
 
@@ -13,7 +13,6 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         $params = $this->getParams();
         $link = $params->get('filename', '');
         $id_element = $params->get('element', '');
-        $table = $params->get('table', '');
         $entete = $params->get('entete', '');
         $id_ehesp = $params->get('id_ehesp', 0);
         $id_emundus = $params->get('id_emundus', 0);
@@ -21,7 +20,9 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         $tag = $params->get('tag', 0);
         $annee = $params->get('annee', 0);
         $modif = $params->get('modif', 0);
-        
+        $status = $params->get('status_emundus', 1);
+        $m_files = new EmundusModelFiles;
+
         $element = $this->getElementsName($id_element);
 
         $db = JFactory::getDbo();
@@ -29,23 +30,20 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         // Requête qui recherche les dossiers créés ou modifié à la date du lancement du cron
         $query = $db->getQuery(true);
 
-        $query->select($db->quoteName('fnum_to'));
+        $query->select($db->quoteName('fnum_to','fnum'));
         $query->from($db->quoteName('#__emundus_logs'));
-        $query->where($db->quoteName('message') . ' IN (1,10,14) AND '.$db->quoteName('timestamp').' BETWEEN '.$db->quote($date.' 00:00:00').' AND '.$db->quote($date.' 23:59:59') );
+        $query->where($db->quoteName('message') . ' IN ('.$status.') AND '.$db->quoteName('timestamp').' BETWEEN '.$db->quote($date.' 00:00:00').' AND '.$db->quote($date.' 23:59:59') );
 
         $db->setQuery($query);
 
-        $resultlogs = $db->loadObjectList();
+        $resultlogs = $db->loadAssocList();
 
         if(!empty($resultlogs)){
             $query = $db->getQuery(true);
-            $tab = array();
-            $elt = array();
+
+
             foreach ($resultlogs as $fnums) {
 
-                foreach ($element as $key => $el) {
-
-                    $elt[$fnums->fnum_to][] = $el->tab_name . '.' . $el->element_name;
                     $query = "SELECT ";
 
                     //id_ehesp
@@ -55,58 +53,23 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
                     if($id_emundus) {
                         $query .= ", eu.user_id ";
                     }
-                    $query .= ", ecc.fnum";
-                    if($modif) {
-                        $query .= ", ed.time_date ";
-                    }
-                    if ($tag) {
-                        $query .= ", esat.label ";
+                    $query .= ", jos_emundus_campaign_candidature.fnum";
+                    if($modif) { //5275
+                        $query .= ", CAST(ed.time_date AS DATE) ";
                     }
                     //status
-                    if ($status) {
+                    if ($status) { //6337
                         $query .= ", ess.value ";
                     }
+                    if ($tag) { //5846
+                        $query .= ", GROUP_CONCAT(esat.label) ";
+                    }
                     //année campagne
-                    if ($annee) {
+                    if ($annee) { //1891
                         $query .= ", esc.year ";
                     }
-                    $query .= ", ".implode(', ',$elt[$fnums->fnum_to]);
 
-                    $query .= " FROM #__emundus_campaign_candidature as ecc";
-
-                    $tab[] = $el->tab_name;
-                }
-                $arrayTab = array_unique($tab);
-                foreach($arrayTab as $arr){
-                    $query .= " LEFT JOIN " . $db->quoteName($arr) . " ON " . $db->quoteName('ecc.fnum') . " = " . $db->quoteName($arr. '.fnum');
-                }
-
-                //tag
-                if ($tag) {
-                    $query .= " LEFT JOIN " . $db->quoteName('#__emundus_tag_assoc', 'eta') . " ON " . $db->quoteName('ecc.fnum') . " = " . $db->quoteName('eta.fnum');
-                    $query .= " LEFT JOIN " . $db->quoteName('#__emundus_setup_action_tag', 'esat') . " ON " . $db->quoteName('esat.id') . " = " . $db->quoteName('eta.id_tag');
-                }
-                //id_ehesp
-                if ($id_ehesp) {
-                    $query .= " LEFT JOIN " . $db->quoteName('#__emundus_users', 'eu') . " ON " . $db->quoteName('ecc.user_id') . " = " . $db->quoteName('eu.user_id');
-                }
-                //status
-                if ($status) {
-                    $query .= " LEFT JOIN " . $db->quoteName('#__emundus_setup_status', 'ess') . " ON " . $db->quoteName('ess.step') . " = " . $db->quoteName('ecc.status');
-                }
-                //année campagne
-                if ($annee) {
-                    $query .= " LEFT JOIN " . $db->quoteName('#__emundus_setup_campaigns', 'esc') . " ON " . $db->quoteName('esc.id') . " = " . $db->quoteName('ecc.campaign_id');
-                }
-                //date envoie / modification dossier
-                if ($modif) {
-                    $query .= " LEFT JOIN " . $db->quoteName('#__emundus_declaration', 'ed') . " ON " . $db->quoteName('ed.fnum') . " = " . $db->quoteName('ecc.fnum');
-                }
-                $query .= " WHERE " . $db->quoteName('ecc.fnum') . " IN (" . $db->quote($fnums->fnum_to)." ) GROUP BY ecc.fnum";
-
-
-                $db->setQuery($query);
-                $results = $db->loadAssocList();
+                    $results = $m_files->getFnumArray($fnums,$element,2,0,0,0,$query);
 
             }
 
@@ -114,8 +77,10 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
             $post[0] = $entete;
 
             foreach($results as $key => $result){
+
                 $post[] = array_values($result);
             }
+
             $path = JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS.'archives'.DS.$link.'.csv'; // chemin du lien
 
             if(file_exists($path)){ // archive le fichier tout les jours

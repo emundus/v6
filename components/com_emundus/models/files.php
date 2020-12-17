@@ -2243,17 +2243,24 @@ if (JFactory::getUser()->id == 63)
     *   @param elements     array of element to get value
     *   @return array
     */
-    public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1) {
+    public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=1, $defaultElement='') {
 
     	$db = $this->getDbo();
         $locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
 
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-	    if ($anonymize_data) {
-		    $query = 'select jos_emundus_campaign_candidature.fnum, esc.label, sp.code, esc.id as campaign_id';
-	    } else {
-		    $query = 'select jos_emundus_campaign_candidature.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
-	    }
+
+	    if(empty($defaultElement)){
+            if ($anonymize_data) {
+                $query = 'select jos_emundus_campaign_candidature.fnum, esc.label, sp.code, esc.id as campaign_id';
+            } else {
+                $query = 'select jos_emundus_campaign_candidature.fnum, u.email, esc.label, sp.code, esc.id as campaign_id';
+            }
+        }
+	    else{
+	        $query = $defaultElement;
+        }
+
 
         $leftJoin = '';
         $leftJoinMulti = '';
@@ -2470,15 +2477,23 @@ if (JFactory::getUser()->id == 63)
                 $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
             }
         }
+
         $query .= ' from #__emundus_campaign_candidature as jos_emundus_campaign_candidature
                     left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
+                    left join #__emundus_users as eu on u.id = eu.user_id
                     left join #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id
-                    left join #__emundus_setup_programmes as sp on sp.code = esc.training ';
+                    left join #__emundus_setup_programmes as sp on sp.code = esc.training';
+
+        if(!empty($defaultElement)){
+            $query .= ' LEFT JOIN #__emundus_tag_assoc as eta ON  eta.fnum = jos_emundus_campaign_candidature.fnum
+                    LEFT JOIN #__emundus_setup_action_tag as esat ON esat.id= eta.id_tag
+                    LEFT JOIN #__emundus_setup_status as ess ON ess.step = jos_emundus_campaign_candidature.status
+                    LEFT JOIN #__emundus_declaration as ed ON ed.fnum = jos_emundus_campaign_candidature.fnum';
+        }
 
         $query .= $leftJoin. ' '. $leftJoinMulti;
 
         $query .= 'where u.block=0 AND jos_emundus_campaign_candidature.fnum in ("'.implode('","', $fnums).'") ';
-
 	    if (preg_match("/emundus_evaluations/i", $query)) {
 
             $current_user = JFactory::getSession()->get('emundusUser');
@@ -2494,7 +2509,7 @@ if (JFactory::getUser()->id == 63)
         if ($pas != 0) {
 	        $query .= ' LIMIT '.$pas.' OFFSET '.$start;
         }
-
+        
         try {
             $db->setQuery($query);
             return $db->loadAssocList();
