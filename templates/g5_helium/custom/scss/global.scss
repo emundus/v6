@@ -39,9 +39,13 @@
     color: #000;
   }
 
-  h1::after {
-    display: none;
+  .gantry h1::after {
+    display: none !important;
   }
+
+h1, h2, h3, h4, h5, h6 {
+  color: #000;
+}
 
   .gantry .em-btn {
     padding: 8px 12px;
@@ -51,11 +55,10 @@
     line-height: 20px;
     font-weight: 300;
     letter-spacing: 0.1rem;
-    background: #fff;
     font-size: 14px;
   }
 
-  .em-search-button {
+  .navsearch .em-search-button {
     border-radius: 0px 4px 4px 0px;
     height: 41px;
     background: $base-secondary-color;
@@ -161,7 +164,7 @@
   #g-page-surround >.g-container  {
     margin-top: auto;
     bottom: 0;
-    position: absolute;
+    position: relative;
     width: 100%;
     background: #fff;
   }

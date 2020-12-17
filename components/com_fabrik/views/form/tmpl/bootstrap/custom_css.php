@@ -89,6 +89,7 @@ echo <<<EOT
 
 .view-registration .span12 > .view-registration, .view-login-registration .span12.em-formRegistrationCenter {
     margin-top: 50px;
+    margin-bottom: 50px;
     width: 60%;
     margin-left: auto;
     margin-right: auto;

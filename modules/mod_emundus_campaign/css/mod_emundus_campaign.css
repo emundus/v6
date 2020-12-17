@@ -1,16 +1,18 @@
-.right-side {
+/* MODULE EMUNDUS CAMPAIGN */
+
+.campaign-content .right-side {
     width: 30%;
     padding-left: 10px;
     padding: 15px;
     border-left: 1px solid #d5d5d5
 }
 
-.left-side {
+.campaign-content .left-side {
     width: 70%;
     padding: 15px 15px 15px 45px;
 }
 
-.below-content {
+.campaign-content .below-content {
     width: 100%;
     text-align: right;
     border-top: 1px solid #d5d5d5;
@@ -107,3 +109,14 @@
     margin: 0px;
 }
 
+/* MODULE SINGLE CAMPAIGN */
+
+.view-programme .right-side {
+    width: 30%;
+    margin-bottom: 50px;
+}
+
+.view-programme .title.em-program-title {
+    margin-bottom: 30px;
+    margin-top: 50px;
+}
