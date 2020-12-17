@@ -33,3 +33,7 @@ div.advanced-dropdown {
     width: max-content;
     position: relative;
 }
+
+.langChoose div.langChoose__img_label {
+  margin-right: 15px;
+}
