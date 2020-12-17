@@ -172,6 +172,22 @@ echo <<<EOT
     margin-right: 10px;
 }
 
+.gantry.view-registration form.fabrikForm .fabrikActions.form-actions .row-fluid button, .gantry.view-login-registration form.fabrikForm .fabrikActions.form-actions button  {
+   height: 50px !important;
+   width: 100%;
+}
+
+.gantry.view-registration form.fabrikForm .fabrikActions.form-actions, .gantry.view-login-registration form.fabrikForm .fabrikActions.form-actions  {
+   padding: 20px 0px 20px 0px;
+   width: 100%; 
+}
+.gantry.view-registration form.fabrikForm .fabrikActions.form-actions .row-fluid, .gantry.view-login-registration form.fabrikForm .fabrikActions.form-actions row-fluid, 
+ .gantry.view-registration form.fabrikForm .fabrikActions.form-actions .row-fluid .span4, .gantry.view-login-registration form.fabrikForm .fabrikActions.form-actions row-fluid .span4 {
+   padding: 20px 0px 20px 0px;
+   width: 100%; 
+}
+
+
 /* END - Your CSS styling ends here */
 
 EOT;

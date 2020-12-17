@@ -1,6 +1,6 @@
 /* MOD LOGIN */
 
-.view-login .em-page-header {
+.view-login .em-page-header, .view-login-registration .em-page-header  {
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;
@@ -11,14 +11,14 @@
     margin-bottom: 30px;
 }
 
-.view-login .icon-title.icon-login {
+.view-login .icon-title.icon-login, .view-login-registration .em-page-header {
     background-image: url(/components/com_emundus_onboard/src/assets/images/enter.svg);
     background-size: contain;
     background-repeat: no-repeat;
     margin-bottom: 5px;
 }
 
-.view-login .icon-title {
+.view-login .icon-title, .view-login-registration .em-page-header {
     margin-right: 10px;
     width: 35px;
     height: 35px;
@@ -29,12 +29,12 @@
     fill: grey;
 }
 
-.view-login .em-title {
+.view-login .em-title, .view-login-registration .em-page-header {
     margin-top: 50px;
 }
 
 
-.nav.nav-tabs.nav-stacked {
+.nav.nav-tabs.nav-stacked, .view-login-registration .em-page-header{
     background: #fff;
     border-radius: 0;
     display: flex;
@@ -46,7 +46,7 @@
     padding-bottom: 50px;
 }
 
-.view-login  .em-user-form-container {
+.view-login  .em-user-form-container, .view-login-registration .em-page-header {
     margin-top: 50px;
     width: 60%;
     margin-left: auto;
@@ -57,7 +57,7 @@
     align-items: center;
 }
 
-.view-login .em-user-form {
+.view-login .em-user-form, .view-login-registration .em-page-header {
     background: #fff;
     border: none;
     border-radius: 0;
@@ -67,63 +67,30 @@
     width: 60%;
 }
 
-.view-login  .em-form-row {
+.view-login  .em-form-row, .view-login-registration .em-page-header{
     display: flex;
     flex-direction: column;
     width: 100%;
 }
 
-.view-login .em-form-label label {
+.view-login .em-form-label label, .view-login-registration .em-page-header {
     text-align: left;
     font-weight: 700;
 }
 
-.view-login .em-user-form .em-form-input {
+.view-login .em-user-form .em-form-input, .view-login-registration .em-page-header {
     margin: 0;
 }
 
-.view-login  .em-form-input  input {
+.view-login  .em-form-input  input, .view-login-registration .em-page-header {
     margin: 0;
     height: 50px;
     border-radius: 4px;
 }
 
-.view-login .em-user-form .em-btn {
+.view-login .em-user-form .em-btn, .view-login-registration .em-page-header {
     margin: 0;
     width: 100%;
-}
-
-.view-login .em-page-header {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-end;
-    flex-direction: row;
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 30px;
-}
-
-.view-login .icon-title.icon-login {
-    background-image: url(/components/com_emundus_onboard/src/assets/images/enter.svg);
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-bottom: 5px;
-}
-
-.view-login .icon-title {
-    margin-right: 10px;
-    width: 35px;
-    height: 35px;
-    background-position: 0 0;
-    background-size: contain;
-    -webkit-filter: brightness(.5);
-    filter: brightness(.5);
-    fill: grey;
-}
-
-.view-login .em-title {
-    margin-top: 50px;
 }
 
 .nav.nav-tabs.nav-stacked {
