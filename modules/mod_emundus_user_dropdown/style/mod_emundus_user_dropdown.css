@@ -4,3 +4,7 @@
     flex-direction: column;
     align-items: flex-end;
 }
+
+.header-c .header-mod-user-menu .em-link {
+  float: right;
+}
