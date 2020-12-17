@@ -57,25 +57,26 @@ echo <<<EOT
 /* BEGIN - Your CSS styling starts here */
 
 
-/* INSCRIPTION */ 
+/* INSCRIPTION + CONNEXION CANDIDATER  */ 
 
-.view-registration .em-heading-registration {
+.view-registration .em-heading-registration, .view-login-registration .em-heading-registration {
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;
     flex-direction: row;
-    width: 57%;
+    width: 60%;
     margin-left: auto;
     margin-right: auto;
+    background: #fff;
 }
 
-.view-registration .icon-title.registrationicon {
+.view-registration .icon-title.registrationicon, .view-login-registration .icon-title.registrationicon  {
       background-image: url(/components/com_emundus_onboard/src/assets/images/register.svg);
       background-size: contain;
       background-repeat: no-repeat;
 }
 
-.view-registration .icon-title {
+.view-registration .icon-title, .view-login-registration .icon-title {
       margin-right: 10px;
       width: 40px;
       height: 40px;
@@ -86,54 +87,7 @@ echo <<<EOT
       fill: grey;
 }
 
-
-
-.view-login .em-page-header {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-end;
-    flex-direction: row;
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 30px;
-}
-
-.view-login .icon-title.icon-login {
-    background-image: url(/components/com_emundus_onboard/src/assets/images/enter.svg);
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-bottom: 5px;
-}
-
-.view-login .icon-title {
-    margin-right: 10px;
-    width: 35px;
-    height: 35px;
-    background-position: 0 0;
-    background-size: contain;
-    -webkit-filter: brightness(.5);
-    filter: brightness(.5);
-    fill: grey;
-}
-
-.view-login .em-title {
-    margin-top: 50px;
-}
-
-.nav.nav-tabs.nav-stacked {
-    background: #fff;
-    border-radius: 0;
-    display: flex;
-    justify-content: space-around;
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 0px;
-    padding-bottom: 50px;
-}
-
-.view-registration .span12 > .view-registration  {
+.view-registration .span12 > .view-registration, .view-login-registration .span12.em-formRegistrationCenter {
     margin-top: 50px;
     width: 60%;
     margin-left: auto;
@@ -144,7 +98,7 @@ echo <<<EOT
     align-items: center;
 }
 
-.view-registration form {
+.view-registration form.fabrikForm, .view-login-registration form.fabrikForm {
     background: #fff;
     border: none;
     border-radius: 0;
@@ -154,45 +108,69 @@ echo <<<EOT
     width: 60%;
 }
 
-.view-registration .control-group {
+.view-registration .control-group, .view-login-registration .control-group {
     display: flex;
     flex-direction: column;
     width: 100%;
  
 }
 
-.view-registration form .control-group label {
+.view-registration form.fabrikForm .control-group label, .view-login-registration form.fabrikForm .control-group label {
     text-align: left;
     font-weight: 700;
 }
 
-.view-registration form .controls {
+.view-registration form.fabrikForm .controls, .view-login-registration form.fabrikForm .controls  {
     margin: 0;
 }
 
-.view-registration form .controls input {
+.view-registration form.fabrikForm .controls input, .view-login-registration form.fabrikForm .controls input  {
     margin: 0;
-    height: 50px;
-    border-radius: 4px;
 }
 
-.view-registration ol {
+.view-registration ol, .view-login-registration ol {
     width: 60%;
     text-align: justify;
-    margin-left: 0px !important;
+    margin-right: auto;
+    margin-left: auto;
+    background: #fff;
 }
 
-.view-registration h1 {
+.view-registration h1, .view-login-registration h1 {
     margin-top: 50px;
 }
 
-.view-registration .icon-star.small {
-    color: #c30505;
-    padding-left: 2px;
+.view-registration form.fabrikForm .plg-radiobutton .row-fluid, .view-login-registration form.fabrikForm .plg-radiobutton .row-fluid  {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
 }
 
+.view-registration form.fabrikForm .plg-radiobutton .row-fluid label, .view-login-registration form.fabrikForm .plg-radiobutton .row-fluid label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
 
-  
+.view-registration form.fabrikForm .plg-radiobutton .row-fluid .fabrikgrid_radio, .view-login-registration form.fabrikForm .plg-radiobutton .row-fluid .fabrikgrid_radio{
+    flex: 0 0 40%;
+}
+
+.view-registration form.fabrikForm .plg-radiobutton .row-fluid input, .view-login-registration form.fabrikForm .plg-radiobutton .row-fluid input  {
+    margin-right: 10px;
+}
+
+.view-registration form.fabrikForm label.checkbox, .view-login-registration form.fabrikForm label.checkbox  {
+     display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.view-registration form.fabrikForm label.checkbox input, .view-login-registration form.fabrikForm label.checkbox input   {
+    margin-right: 10px;
+}
+
 /* END - Your CSS styling ends here */
 
 EOT;

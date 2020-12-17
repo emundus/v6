@@ -10,89 +10,102 @@
 // - Laura.scss
 
 /* GENERAL */
-#g-container-main {
-  background: #f8f8f8;
-  min-height: 90vh;
+
+  .btn {
+    &:focus {
+      outline: none !important;
+    }
+  }
+
+  .gantry.view-form {
+    select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+      height: 50px !important;
+      border-radius: 4px;
+    }
+  }
+
+.view-form .icon-star.small, span.star {
+  display: none;
 }
 
-.em-alert {
-  background-color: #fff;
-  border-color: #e0e0e5;;
-  color: #000;
-}
+  #g-container-main {
+    background: #f8f8f8;
+    min-height: 90vh;
+  }
 
-span.star {
-  content: "\f005";
-  color: #c30505;
-  padding-left: 2px;
-}
+  .em-alert {
+    background-color: #fff;
+    border-color: #e0e0e5;;
+    color: #000;
+  }
 
-h1::after {
- display: none;
-}
+  h1::after {
+    display: none;
+  }
 
-.gantry .em-btn {
-  padding: 8px 12px;
-  border-radius: 4px;
-  text-shadow: none;
-  text-transform: initial;
-  line-height: 20px;
-  font-weight: 300;
-  letter-spacing: 0.1rem;
-  background: #fff;
-}
+  .gantry .em-btn {
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-shadow: none;
+    text-transform: initial;
+    line-height: 20px;
+    font-weight: 300;
+    letter-spacing: 0.1rem;
+    background: #fff;
+    font-size: 14px;
+  }
 
-.em-search-button {
-  border-radius: 0px 4px 4px 0px;
-  height: 41px;
-  background: $base-secondary-color;
-  color: #fff;
-  &:hover, &:focus, &:active {
-    background: darken($base-secondary-color, 10%);
+  .em-search-button {
+    border-radius: 0px 4px 4px 0px;
+    height: 41px;
+    background: $base-secondary-color;
     color: #fff;
+    &:hover, &:focus, &:active {
+      background: darken($base-secondary-color, 10%);
+      color: #fff;
+    }
+    &::before {
+      content: "\f002";
+      font-family: FontAwesome;
+      margin-right: 6px;
+    }
   }
-  &::before {
-    content: "\f002";
-    font-family: FontAwesome;
-    margin-right: 6px;
-  }
-}
 
-.gantry .em-btn-primary {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
-  color: #fff;
-  &:hover, &:focus, &:active {
-    color: $base-secondary-color;;
+  .gantry .em-btn-primary {
+    background: $base-secondary-color;
     border: 1px solid $base-secondary-color;
-    background: transparent;
-  }
-}
-
-.gantry .em-btn-secondary {
-  background: transparent;
-  border: 1px solid $base-primary-color;
-  color: $base-primary-color;
-  &:hover, &:focus, &:active {
-    background: $base-primary-color;
     color: #fff;
+    &:hover, &:focus, &:active {
+      color: $base-secondary-color;;
+      border: 1px solid $base-secondary-color;
+      background: transparent;
+    }
   }
-}
 
-.gantry .em-link {
-  color: $base-secondary-color;
-  &:hover, &:focus, &:active {
-    text-decoration: underline;
+  .gantry .em-btn-secondary {
+    background: transparent;
+    border: 1px solid $base-primary-color;
+    color: $base-primary-color;
+    &:hover, &:focus, &:active {
+      background: $base-primary-color;
+      color: #fff;
+    }
   }
-}
 
-/* HEADER */
+  .gantry .em-link {
+    color: $base-secondary-color;
+    &:hover, &:focus, &:active {
+      text-decoration: underline;
+    }
+  }
 
-#g-navigation {
-  width: 100vw;
-  .g-container {
-    width: 95%;
-    padding: 10px;
+  /* HEADER */
+
+  #g-navigation {
+    width: 100vw;
+    .g-container {
+      width: 95%;
+      padding: 10px;
       .g-grid {
         display: flex;
         justify-content: space-between;
@@ -131,111 +144,50 @@ h1::after {
           }
         }
       }
-  }
-}
-
-/* MODULE EMUNDUS CAMPAIGN  */
-.rotate-me {
-  background: $base-secondary-color;
-  border-color: $base-secondary-color;
-}
-
-/* FOOTER */
-#g-page-surround {
-  min-height: 100% !important;
-}
-
-#g-page-surround >.g-container  {
-  margin-top: auto;
-  bottom: 0;
-  position: absolute;
-  width: 100%;
-  background: #fff;
-}
-
-#g-footer {
-  padding: 0;
-  margin-top: auto;
-  background: #fff;
-  width: 95%;
-  margin-left: auto;
-  margin-right: auto;
-
-  .g-grid {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .logo {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-  }
-
-  .adresse p {
-    margin: 0;
-  }
-}
-
-/* CONNEXION*/
-.view-login .em-user-form {
-    .em-btn {
-      padding: 8px 12px;
-      border-radius: 4px;
-      text-shadow: none;
-      text-transform: initial;
-      line-height: 20px;
-      font-weight: 300;
-      letter-spacing: 0.1rem;
-      margin: 0;
-      width: 100%;
-
-      &.em-btn-primary {
-        background: $base-secondary-color;
-        border: 1px solid $base-secondary-color;
-        color: #fff;
-
-        &:hover, &:focus, &:active {
-          color: $base-secondary-color;
-          border: 1px solid $base-secondary-color;
-          background: transparent;
-        }
-      }
-  }
-  .em-link {
-    color: $base-secondary-color;
-
-    &:hover, &:focus, &:active {
-      text-decoration: underline;
     }
   }
-}
 
-/* MOT DE PASSE OUBLIE */
-.view-reset .em-user-form {
-  .em-btn {
-    padding: 8px 12px;
-    border-radius: 4px;
-    text-shadow: none;
-    text-transform: initial;
-    line-height: 20px;
-    font-weight: 300;
-    letter-spacing: 0.1rem;
-    margin: 0;
+  /* MODULE EMUNDUS CAMPAIGN  */
+  .rotate-me {
+    background: $base-secondary-color;
+    border-color: $base-secondary-color;
+  }
+
+  /* FOOTER */
+  #g-page-surround {
+    min-height: 100% !important;
+  }
+
+  #g-page-surround >.g-container  {
+    margin-top: auto;
+    bottom: 0;
+    position: absolute;
     width: 100%;
-    height: 50px;
-
-    &.em-btn-primary {
-      background: $base-secondary-color;
-      border: 1px solid $base-secondary-color;
-      color: #fff;
-
-      &:hover, &:focus, &:active {
-        color: $base-secondary-color;;
-        border: 1px solid $base-secondary-color;
-        background: transparent;
-      }
-    }
+    background: #fff;
   }
+
+  #g-footer {
+    padding: 0;
+    margin-top: auto;
+    background: #fff;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+
+    .g-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .adresse p {
+      margin: 0;
+    }
 }
+
