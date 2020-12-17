@@ -91,7 +91,7 @@ $currentCampaign = is_array($allCampaign) ? $allCampaign[0] : $allCampaign;
                         <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course='.$currentCampaign->code.'&cid='.$currentCampaign->id); ?>
 
 						<?php if ($currentCampaign->apply_online == 1) :?>
-                                <a class="btn btn-primary btn-creux"  role="button" href="index.php"><?= JText::_('GO_BACK');?></a>
+                                <a class="btn btn-primary em-btn em-btn-secondary"  role="button" href="index.php"><?= JText::_('GO_BACK');?></a>
 							<?php
                                 // The register URL does not work  with SEF, this workaround helps counter this.
                                 if ($sef == 0) {
@@ -103,12 +103,12 @@ $currentCampaign = is_array($allCampaign) ? $allCampaign[0] : $allCampaign;
                                     $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
                                 }
                             ?>
-							<a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+							<a class="btn btn-primary em-btn em-btn-primary" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
 						<?php else :?>
                             <?php if ($mod_em_campaign_get_link) :?>
-                                <a class="btn btn-primary btn-creux" role="button" href="index.php" data-toggle="sc-modal" ><?= JText::_('GO_BACK');?></a>
+                                <a class="btn btn-primary em-btn em-btn-secondary" role="button" href="index.php" data-toggle="sc-modal" ><?= JText::_('GO_BACK');?></a>
                             <?php else :?>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary em-btn em-btn-secondary" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php endif; ?>
 						<?php endif; ?>
 					</div>

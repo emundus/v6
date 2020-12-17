@@ -234,9 +234,9 @@ $site_offset = $config->get('offset');
 							<a class="btn btn-primary em-btn em-btn-primary" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
 						<?php else :?>
                             <?php if ($mod_em_campaign_get_link) :?>
-                                <a class="btn btn-primary em-btn em-btn-primary" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary em-btn em-btn-secondary" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php else :?>
-                                <a class="btn btn-primary em-btn em-btn-primary" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary em-btn em-btn-secondary" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                             <?php endif; ?>
 						<?php endif; ?>
 					</div>
@@ -347,14 +347,14 @@ $site_offset = $config->get('offset');
 					</div>
 					<div class="below-content">
 						<?php if ($result->apply_online == 1) {
-						    $btn_class = "btn btn-primary em-module-btn-secondaire";
+						    $btn_class = "btn btn-primary em-btn em-btn-primary";
 						} else {
-						    $btn_class = "btn btn-primary em-module-btn-primaire";
+						    $btn_class = "btn btn-primary em-btn em-btn-primary";
                         } ?>
                         <?php if ($mod_em_campaign_get_link) :?>
-                            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                            <a class="em-btn em-btn-primary <?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                         <?php else :?>
-                            <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                            <a class="btn btn-primary em-btn em-btn-primary" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                         <?php endif; ?>
 					</div>
 				</div><!-- Close campaign-content -->
@@ -461,9 +461,9 @@ $site_offset = $config->get('offset');
 				</div>
 				<div class="below-content">
 					<?php if ($result->apply_online == 1) {
-						    $btn_class = "btn btn-primary em-module-btn-secondaire";
+						    $btn_class = "btn btn-primary em-btn em-btn-primary";
 						} else {
-						    $btn_class = "btn btn-primary em-module-btn-primaire";
+						    $btn_class = "btn btn-primary em-btn em-btn-primary";
                         } ?>
                         <?php if ($mod_em_campaign_get_link) :?>
                             <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&id=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
