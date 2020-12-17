@@ -1,6 +1,6 @@
 /* MOD LOGIN */
 
-.view-login .em-page-header, .view-login-registration .em-page-header  {
+.view-login .em-page-header  {
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;
@@ -11,14 +11,14 @@
     margin-bottom: 30px;
 }
 
-.view-login .icon-title.icon-login, .view-login-registration .em-page-header {
+.view-login .icon-title.icon-login {
     background-image: url(/components/com_emundus_onboard/src/assets/images/enter.svg);
     background-size: contain;
     background-repeat: no-repeat;
     margin-bottom: 5px;
 }
 
-.view-login .icon-title, .view-login-registration .em-page-header {
+.view-login .icon-title {
     margin-right: 10px;
     width: 35px;
     height: 35px;
@@ -29,69 +29,10 @@
     fill: grey;
 }
 
-.view-login .em-title, .view-login-registration .em-page-header {
+.view-login .em-title {
     margin-top: 50px;
 }
 
-
-.nav.nav-tabs.nav-stacked, .view-login-registration .em-page-header{
-    background: #fff;
-    border-radius: 0;
-    display: flex;
-    justify-content: space-around;
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 0px;
-    padding-bottom: 50px;
-}
-
-.view-login  .em-user-form-container, .view-login-registration .em-page-header {
-    margin-top: 50px;
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-    background: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.view-login .em-user-form, .view-login-registration .em-page-header {
-    background: #fff;
-    border: none;
-    border-radius: 0;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0;
-    width: 60%;
-}
-
-.view-login  .em-form-row, .view-login-registration .em-page-header{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-.view-login .em-form-label label, .view-login-registration .em-page-header {
-    text-align: left;
-    font-weight: 700;
-}
-
-.view-login .em-user-form .em-form-input, .view-login-registration .em-page-header {
-    margin: 0;
-}
-
-.view-login  .em-form-input  input, .view-login-registration .em-page-header {
-    margin: 0;
-    height: 50px;
-    border-radius: 4px;
-}
-
-.view-login .em-user-form .em-btn, .view-login-registration .em-page-header {
-    margin: 0;
-    width: 100%;
-}
 
 .nav.nav-tabs.nav-stacked {
     background: #fff;
@@ -103,4 +44,51 @@
     margin-right: auto;
     margin-top: 0px;
     padding-bottom: 50px;
+}
+
+.view-login  .em-user-form-container {
+    margin-top: 50px;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.view-login .em-user-form {
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+    width: 60%;
+}
+
+.view-login  .em-form-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.view-login .em-form-label label {
+    text-align: left;
+    font-weight: 700;
+}
+
+.view-login .em-user-form .em-form-input {
+    margin: 0;
+}
+
+.view-login  .em-form-input  input {
+    margin: 0;
+    height: 50px;
+    border-radius: 4px;
+}
+
+.view-login .em-user-form .em-btn {
+    margin: 0;
+    width: 100%;
 }
