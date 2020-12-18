@@ -329,6 +329,19 @@
 		<field name="ametys_sync_default_eval" type="text" default="229,230,231" label="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_EVAL_GROUPS" description="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_EVAL_GROUPS_DESC" />
 		<field name="ametys_sync_default_decision" type="text" default="56" label="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_GROUPS" description="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_GROUPS_DESC" />
 		<field name="ametys_sync_default_synthesis" type="editor" default="[APPLICANT_NAME]" label="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_SYNTHESIS" description="COM_EMUNDUS_AMETYS_SYNC_DEFAULT_DECISION_SYNTHESIS_DESC" />
+		<field
+				name="spacer6"
+				type="spacer"
+				hr="true"
+		/>
+		<field
+				name="export_siscole"
+				type="note"
+				label="Export Siscole"
+		/>
+		<field name="filename" type="text" default="" label="COM_EMUNDUS_FILENAME" description="COM_EMUNDUS_FILENAME_DESC" />
+		<field name="filtre_ip" type="text" default="" label="COM_EMUNDUS_FILTRE_IP" description="COM_EMUNDUS_FILTRE_IP_DESC" />
+		<field name="attachment_id" type="text" default="" label="COM_EMUNDUS_ATTACHMENT_ID" description="COM_EMUNDUS_ATTACHMENT_ID_DESC" />
 	</fieldset>
 	<fieldset
 			name="permissions"

@@ -2509,7 +2509,7 @@ if (JFactory::getUser()->id == 63)
         if ($pas != 0) {
 	        $query .= ' LIMIT '.$pas.' OFFSET '.$start;
         }
-        
+
         try {
             $db->setQuery($query);
             return $db->loadAssocList();

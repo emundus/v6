@@ -11,7 +11,9 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         $date = date('Y-m-d');
 
         $params = $this->getParams();
-        $link = $params->get('filename', '');
+        $eMConfig 	= JComponentHelper::getParams('com_emundus');
+
+        $link = $eMConfig->get('filename');
         $id_element = $params->get('element', '');
         $entete = $params->get('entete', '');
         $id_ehesp = $params->get('id_ehesp', 0);

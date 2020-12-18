@@ -24,13 +24,19 @@ jimport('joomla.application.component.controller');
 class EmundusControllerWebhook extends JControllerLegacy {
 
 	private $m_files;
+	private $c_emundus;
 
 	public function __construct(array $config = array()) {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controller.php');
 
 		$this->m_files = new EmundusModelFiles;
+		$this->controller = new EmundusController;
 
 		parent::__construct($config);
+        // Attach logging system.
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.webhook.php'], JLog::ALL, array('com_emundus.webhook'));
 	}
 
 	/**
@@ -218,4 +224,73 @@ class EmundusControllerWebhook extends JControllerLegacy {
 			exit();
         }
 	}
+	public function export_siscole(){
+
+        $eMConfig 	= JComponentHelper::getParams('com_emundus');
+        $filtre_ip  = $eMConfig->get('filtre_ip');
+        $filtre_ip  = explode(',',$filtre_ip);
+        $secret 	= JFactory::getConfig()->get('secret');
+        $token 		= JFactory::getApplication()->input->get('token');
+        $fnum 		= JFactory::getApplication()->input->get('rowid');
+        $filename   = $eMConfig->get('filename');
+        $url        = 'images'.DS.'emundus'.DS.'files'.DS.'archives';
+        $file       = JPATH_BASE.DS.$url.DS.$filename.'.csv';
+        $file_name = basename($file);
+
+        $ip = $_SERVER['REMOTE_ADDR'];
+
+        if ($token != $secret) {
+
+            JLog::add('Bad token sent.', JLog::ERROR, 'com_emundus.webhook');
+            return false;
+        }
+
+        if(in_array($ip,$filtre_ip)){
+
+            $mime_type = $this->controller->get_mime_type($file);
+            header('Content-type: '.$mime_type);
+            header('Content-Disposition: inline; filename='.basename($file));
+            header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+            header('Cache-Control: no-store, no-cache, must-revalidate');
+            header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+            header('Pragma: anytextexeptno-cache', true);
+            header('Cache-control: private');
+            header('Expires: 0');
+
+            ob_clean();
+            flush();
+
+            if(file_put_contents($file_name,file_get_contents($file))){
+                $date = date('Y-m-d');
+                $attachment_id = $eMConfig->get('attachment_id');
+                $bytes = random_bytes(32);
+                $new_token = bin2hex($bytes);
+                $db = JFactory::getDbo();
+
+                $query = $db->getQuery(true);
+
+                $columns = array('fnum','keyid', 'attachment_id', 'filename');
+
+                $values = array($db->quote($fnum),$db->quote($new_token), $attachment_id, $db->quote($filename.$date.'.csv'));
+
+                $query
+                    ->insert($db->quoteName('#__emundus_files_request'))
+                    ->columns($db->quoteName($columns))
+                    ->values(implode(',', $values));
+
+                $db->setQuery($query);
+                try{
+                    $db->execute();
+                }
+                catch (Exception $e){
+                    JLog::add('An error occurring in sql request: '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+                }
+
+                JLog::add('File download with the ip address'.$ip, JLog::NOTICE, 'com_emundus.webhook');
+            }
+        }
+        else {
+            JLog::add('Your ip address is blocked', JLog::ERROR, 'com_emundus.webhook');
+        }
+    }
 }
