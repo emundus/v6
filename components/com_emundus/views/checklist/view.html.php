@@ -63,52 +63,41 @@ class EmundusViewChecklist extends JViewLegacy {
                 $attachments = $m_application->getAttachmentsProgress($this->_user->fnum);
                 $forms = $m_application->getFormsProgress($this->_user->fnum);
                 
-                if ((int)($attachments)>=100 && (int)($forms)>=100) {
-                    $accept_created_payments = $eMConfig->get('accept_created_payments', 0);
-                    $fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
+                $accept_created_payments = $eMConfig->get('accept_created_payments', 0);
+                $fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
 
-                    $paid = (!(array)$m_application->getHikashopOrder($fnumInfos)) ? 0 : 1;
+                $paid = (!(array)$m_application->getHikashopOrder($fnumInfos)) ? 0 : 1;
 
-                    // If created payments aren't accepted then we don't need to check.
-                    if ($accept_created_payments) {
-                        $payment_created_offline = (!(array)$m_application->getHikashopOrder($fnumInfos, true)) ? 0 : 1;
-                    } else {
-                        $payment_created_offline = false;
-                    }
-
-                    if ($accept_created_payments == 2 || $paid || $payment_created_offline) {
-
-                        if ($eMConfig->get('redirect_after_payment') == 1) {
-/*
-// status is changed in emundus_hikashop plugin
-                            if (!empty($eMConfig->get('status_after_payment'))) {
-                                require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-                                $m_files = new EmundusModelFiles();
-                                $m_files->updateState($this->_user->fnum,$eMConfig->get('status_after_payment'));
-                            }
-*/
-                            // If redirect after payment is active then the file is not sent and instead we redirect to the submitting form.
-                            $app->redirect($m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$this->_user->fnum);
-
-                        } else {
-                            // Don't send the application if the payment has not been fully sent.
-                            $m_application->sendApplication($this->_user->fnum, $this->_user, [], $eMConfig->get('status_after_payment', 1));
-
-                            // Send the user to the homepage
-                            if ($eMConfig->get('redirect_after_payment') == 2) {
-                                $app->redirect('index.php', JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE'), 'message');
-                                return;
-                            }
-
-                            // Send the user to the profiles first page
-                            if ($eMConfig->get('redirect_after_payment') == 3) {
-                                $app->redirect('index.php?option=com_emundus&task=openfile&fnum=' . $this->_user->fnum, JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE_CONTINUE_CANDIDATURE'), 'message');
-                                return;
-                            }
-                        }
-                    }
-                    $app->redirect($m_checklist->getConfirmUrl($this->_user->profile).'&usekey=fnum&rowid='.$this->_user->fnum);
+                // If created payments aren't accepted then we don't need to check.
+                if ($accept_created_payments) {
+                    $payment_created_offline = (!(array)$m_application->getHikashopOrder($fnumInfos, true)) ? 0 : 1;
+                } else {
+                    $payment_created_offline = false;
                 }
+
+                if ($accept_created_payments == 2 || $paid || $payment_created_offline) {
+
+                    switch ($eMConfig->get('redirect_after_payment')) {
+
+                        // If redirect after payment is active then the file is not sent and instead we redirect to the submitting form.
+                        default:
+                        case 1:
+                            $app->redirect($m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$this->_user->fnum);
+                        break;
+
+                        // Send the user to the homepage
+                        case 2:
+                            $app->redirect('index.php', JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE'), 'message');
+                        break;
+
+                        // Send the user to the profiles first page
+                        case 3:
+                            $app->redirect('index.php?option=com_emundus&task=openfile&fnum=' . $this->_user->fnum, JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE_CONTINUE_CANDIDATURE'), 'message');
+                        break;
+                    }
+                }
+
+                $app->redirect($m_checklist->getConfirmUrl($this->_user->profile).'&usekey=fnum&rowid='.$this->_user->fnum);
 
                 break;
 
