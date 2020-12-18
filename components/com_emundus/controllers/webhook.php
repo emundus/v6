@@ -272,7 +272,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
                 $columns = array('time_date','fnum','keyid', 'attachment_id', 'filename');
 
-                $values = array($time_date, $db->quote($fnum), $db->quote($new_token), $attachment_id, $db->quote($filename.$date.'.csv'));
+                $values = array($db->quote($time_date), $db->quote($fnum), $db->quote($new_token), $attachment_id, $db->quote($filename.$date.'.csv'));
 
                 $query
                     ->insert($db->quoteName('#__emundus_files_request'))
