@@ -559,12 +559,12 @@ form#member-profile .form-horizontal .control-label {
 
 .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .row-fluid .span4 button {
         width: 100% !important;
-        height: 50px;
+        height: 50px !important;
 }
 
 
 .view-registration .login.em-formRegistrationCenter .row-fluid {
-    background: #fafafa;
+    background: #fff;
 }
 
 
