@@ -123,7 +123,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $files = $jinput->files->get('file');
 
         $cid = $this->getCampaignId($fnum);
-        $uploadResult = $this->getUploads($attachId, $user, $cid);
+        $uploadResult = $this->getUploads($attachId, $user, $cid, $fnum);
         $nbAttachment = count($uploadResult);
         $lengthFile = count($files);
         $nbMaxFile = (int)$attachmentResult->nbmax;
@@ -300,7 +300,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         $attachId = $jinput->post->get('attachId');
         $cid = $this->getCampaignId($fnum);
-        $uploadResult = $this->getUploads($attachId, $user, $cid);
+        $uploadResult = $this->getUploads($attachId, $user, $cid, $fnum);
 
         foreach ($uploadResult as $upload) {
             if (!empty($upload->filename)) {
@@ -337,7 +337,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $user = (int)substr($fnum, -7);
 
         $cid = $this->getCampaignId($fnum);
-        $uploadResult = $this->getUploads($attachId, $user, $cid);
+        $uploadResult = $this->getUploads($attachId, $user, $cid, $fnum);
         $target = $this->getPath($user, $fileName);
 
         if (file_exists($target) && !empty($uploadResult)) {
@@ -365,7 +365,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         $attachId = $this->getAttachId();
         $cid = $this->getCampaignId($fnum);
-        $uploadResult = $this->getUploads($attachId,$user,$cid);
+        $uploadResult = $this->getUploads($attachId,$user,$cid, $fnum);
 
         return (empty($uploadResult) && $data == "");
     }
@@ -444,13 +444,13 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      *
      * @return mixed
      */
-    public function getUploads($attachId, $uid, $cid) {
+    public function getUploads($attachId, $uid, $cid, $fnum) {
         $db = JFactory::getDBO();
 
         $query = $db->getQuery(true);
         $query->select(array($db->quoteName('id'),$db->quoteName('filename')))
             ->from($db->quoteName('#__emundus_uploads'))
-            ->where($db->quoteName('attachment_id') . ' = ' . $attachId . ' AND ' . $db->quoteName('user_id') . ' = ' . $uid . " AND " . $db->quoteName('campaign_id') . " = " . $cid);
+            ->where($db->quoteName('attachment_id') . ' = ' . $attachId . ' AND ' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
         $db->setQuery($query);
 
         return $db->loadObjectList();
