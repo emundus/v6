@@ -133,7 +133,7 @@ echo <<<EOT
 }
 
 .view-form.view-registration .size-100 .size-100 .fabrikGroup {
-    background: #fafafa;
+    background: #fff;
 }
 
 .view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
@@ -558,7 +558,8 @@ form#member-profile .form-horizontal .control-label {
 }
 
 .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .row-fluid .span4 button {
-        width: 100% !important; 
+        width: 100% !important;
+        height: 50px;
 }
 
 
