@@ -75,7 +75,6 @@
             </div>-->
 
             <div class="col-md-10 col-md-offset-1 p-1" style="padding-left: 2em !important">
-              <p v-if="menuHighlightProg != -1" class="warning-message-program"><em class="fas fa-exclamation-triangle mr-1 red"></em>{{ProgramWarning}}</p>
                 <div class="section-sub-menu">
                   <div class="container-2 w-container" style="max-width: unset">
                     <div class="d-flex">
@@ -87,6 +86,7 @@
                     <p class="tchooz-section-description" v-if="menuHighlightProg != -1" v-html="formProgramsDesc[langue][menuHighlightProg]" style="margin-top: 20px"></p>
                   </div>
                 </div>
+              <p v-if="menuHighlightProg != -1" class="warning-message-program mb-1"><em class="fas fa-exclamation-triangle mr-1 red"></em>{{ProgramWarning}}</p>
                 <transition name="slide-right">
                   <add-campaign
                       v-if="menuHighlight == 0"

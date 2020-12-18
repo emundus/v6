@@ -1536,7 +1536,7 @@ class EmundusonboardModelform extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('id')
+        $query->select(['id as id','label as label'])
             ->from ($db->quoteName('#__emundus_setup_campaigns'))
             ->where($db->quoteName('profile_id') . ' = ' . $db->quote($profile_id));
 

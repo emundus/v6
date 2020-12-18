@@ -1995,9 +1995,9 @@ label.label__placeholder {
 }
 .searchButton {
   width: 40px;
-  height: 36px;
-  border: 2px solid #de6339;
-  background: #de6339;
+  height: 50px;
+  border: 2px solid $dark-blue;
+  background: $dark-blue;
   text-align: center;
   color: #fff;
   border-radius: 0 5px 5px 0;
@@ -2847,5 +2847,16 @@ label.label__placeholder {
     background: #fff;
     border: solid 2px #ececec;
   }
+}
+
+.campaigns-item{
+  list-style-type: none;
+  font-style: italic;
+  color: $dark-blue;
+  padding-left: 5px;
+}
+
+.check{
+  width: 100% !important;
 }
 
