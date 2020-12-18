@@ -237,7 +237,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $file       = JPATH_BASE.DS.$url.DS.$filename.'.csv';
         $file_name = basename($file);
 
-        $ip = $_SERVER['REMOTE_ADDR'];
+        $ip = $_SERVER['HTTP_X_REAL_IP'];
 
         if ($token != $secret) {
 
@@ -262,6 +262,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
             if(file_put_contents($file_name,file_get_contents($file))){
                 $date = date('Y-m-d');
+                $time_date = date('Y-m-d H:i:s');
                 $attachment_id = $eMConfig->get('attachment_id');
                 $bytes = random_bytes(32);
                 $new_token = bin2hex($bytes);
@@ -269,9 +270,9 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
                 $query = $db->getQuery(true);
 
-                $columns = array('fnum','keyid', 'attachment_id', 'filename');
+                $columns = array('time_date','fnum','keyid', 'attachment_id', 'filename');
 
-                $values = array($db->quote($fnum),$db->quote($new_token), $attachment_id, $db->quote($filename.$date.'.csv'));
+                $values = array($time_date, $db->quote($fnum), $db->quote($new_token), $attachment_id, $db->quote($filename.$date.'.csv'));
 
                 $query
                     ->insert($db->quoteName('#__emundus_files_request'))
