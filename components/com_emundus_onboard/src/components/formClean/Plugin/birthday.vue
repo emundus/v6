@@ -3,18 +3,32 @@
     <div class="rowmodal">
       <div class="form-group">
         <label>{{ Format }}</label>
+
         <div class="flex mr-2">
           <input type="radio" id = 'radio_default' value='1' v-model="datepicker"/>
           <span class="ml-10px">{{birthdaySelect}}</span>
+
+          <div class="form-group" v-if="datepicker == 1">
+            <label>{{yearrange}}</label>
+            <input type="text" id="format" class="form__input field-general w-input" v-model="element.params.birthday_forward"/>
+          </div>
+
         </div>
+
         <div class="flex mr-2">
           <input type="radio" id = 'radio_years' value='2' v-model="datepicker"/>
           <span class="ml-10px">{{yearSelect}}</span>
+          <div class="form-group" v-if="datepicker == 2">
+            <label>{{yearrange}}</label>
+            <input type="text" id="format" class="form__input field-general w-input" v-model="element.params.birthday_forward"/>
+          </div>
         </div>
+
         <div class="flex mr-2">
           <input type="radio" id = 'radio_dayMonth' value='3' v-model="datepicker"/>
           <span class="ml-10px">{{dateSelect}}</span>
         </div>
+
       </div>
     </div>
   </div>
@@ -32,8 +46,12 @@ export default {
       yearSelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMAT_YEAR"),
       dateSelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_CALENDAR"),
       Format: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMATTING"),
+      birthday_forward: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_FUTURE_YEARS"),    //FUTURE_YEARS_SELECTED
+      yearrange: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_YEAR_RANGE"),
     }
   },
+
+  // use element "birthday_forward"
 
   created() {
       if(this.element.plugin == 'birthday'){
@@ -54,8 +72,8 @@ export default {
         this.element.plugin = 'years';
       } else {
         this.element.plugin = 'birthday';
+        this.element.params = 'birthday_forward';
       }
-
     }
   }
 };

@@ -158,6 +158,10 @@ JText::script('COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_PREVIEW_TITLE');
 
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK');
 
+# PAST/FUTUR YEARS
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_FUTURE_YEARS');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_YEAR_RANGE');
+
 $vue = 'em-formBuilder-vue';
 if($this->eval != 0){
     $vue = 'em-evaluationBuilder-vue';
