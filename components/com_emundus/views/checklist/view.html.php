@@ -60,8 +60,6 @@ class EmundusViewChecklist extends JViewLegacy {
                 // 1. if application form not sent yet, send it // 2. trigger emails // 3. display reminder list
                 $m_application 	= new EmundusModelApplication;
                 $m_files = new EmundusModelFiles;
-                $attachments = $m_application->getAttachmentsProgress($this->_user->fnum);
-                $forms = $m_application->getFormsProgress($this->_user->fnum);
                 
                 $accept_created_payments = $eMConfig->get('accept_created_payments', 0);
                 $fnumInfos = $m_files->getFnumInfos($this->_user->fnum);
@@ -98,7 +96,6 @@ class EmundusViewChecklist extends JViewLegacy {
                 }
 
                 $app->redirect($m_checklist->getConfirmUrl($this->_user->profile).'&usekey=fnum&rowid='.$this->_user->fnum);
-
                 break;
 
             default :
