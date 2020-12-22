@@ -468,36 +468,9 @@ class EmundusController extends JControllerLegacy {
             return;
         }
 
-        $campaign = $m_profile->getCampaignById($infos['campaign_id']);
-        $application = $m_profile->getFnumDetails($fnum);
+	    $m_profile->initEmundusSession($fnum);
 
-        // Get profil depending on application status
-        $profile = $m_profile->getProfileByStatus($application['status']);
-
-        if (empty($profile['profile_id'])) {
-            // Get profil depending on campaign
-            $profile = $m_profile->getProfileByCampaign($infos['campaign_id']);
-        }
-
-        $aid->profile = $profile['profile_id'];
-        $aid->profile_label = $profile['label'];
-        $aid->menutype = $profile['menutype'];
-        $aid->start_date = $profile['start_date'];
-        $aid->end_date = $profile['end_date'];
-        $aid->admission_start_date = $infos['admission_start_date'];
-        $aid->admission_end_date = $infos['admission_end_date'];
-        $aid->candidature_posted = $infos['submitted'];
-        $aid->candidature_incomplete = $infos['status']==0?1:0;
-        $aid->schoolyear = $campaign['year'];
-        $aid->code = $campaign['training'];
-        $aid->campaign_id = $infos['campaign_id'];
-        $aid->campaign_name = $campaign['label'];
-        $aid->fnum = $fnum;
-        $aid->status = $application['status'];
-
-        $session->set('emundusUser', $aid);
-
-        if (empty($redirect)) {
+	    if (empty($redirect)) {
             $m_application 	= new EmundusModelApplication;
             if (empty($confirm)) {
                 $redirect = $m_application->getFirstPage();
