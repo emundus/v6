@@ -1,4 +1,36 @@
-#faq .section-sub-menu{
+<template>
+  <div class='col-md-2 col-sm-4 tchooz-widget'>
+    <div class='section-sub-menu' style='margin-bottom: 10px'>
+      <h3>Une question ?</h3>
+      <p>N'hésitez plus, consultez notre Foire aux questions.</p>
+      <a href='https://www.emundus.fr/ressources/centre-aide' target='_blank' rel="noopener noreferrer"><button class='bouton-faq'>F.A.Q</button></a>
+    </div>
+  </div>
+</template>
+
+<script>
+const qs = require("qs");
+
+export default {
+  name: "Faq",
+
+  props: {},
+
+  components: {},
+
+  data: () => ({
+  }),
+
+  created() {
+
+  },
+
+  methods: {},
+}
+</script>
+
+<style scoped lang="scss">
+  .section-sub-menu{
     display: block;
     width: 100%;
     height: 100%;
@@ -8,8 +40,8 @@
     color: #1f1f1f;
     box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);
     padding: 30px;
-}
-#faq .bouton-faq{
+  }
+  .bouton-faq{
     position: absolute;
     bottom: 15px;
     padding: 5px 20px;
@@ -25,13 +57,15 @@
     align-items: center;
     font-size: 14px;
     font-weight: 300;
-}
-#faq .bouton-faq:hover{
+  }
+  .bouton-faq:hover{
     cursor: pointer;
     background-color: transparent;
     color: #16afe1;
-}
+  }
 
-#faq h3{
+  h3{
     margin-bottom: 15px;
-}
+  }
+
+</style>
