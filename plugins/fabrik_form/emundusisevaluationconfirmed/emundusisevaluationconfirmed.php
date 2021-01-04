@@ -126,7 +126,9 @@ class PlgFabrik_FormEmundusisevaluationconfirmed extends plgFabrik_Form {
 					return false;
 				}
 
-				if (!empty($confirm)) {
+				$profiles_list = $this->getParam('profile');
+				
+				if (!empty($confirm) && (empty($profiles_list) || in_array($user->profile, explode(',', $profiles_list)))) {
 					$app->enqueueMessage(JText::_('COM_EMUNDUS_EVALUATION_ALREADY_CONFIRMED'), 'info');
 					if (!empty($rowid)) {
 						$app->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&tmpl=component&iframe=1&rowid=".$rowid);
