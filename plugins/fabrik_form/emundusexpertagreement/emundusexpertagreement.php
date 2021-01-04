@@ -78,8 +78,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		$app = JFactory::getApplication();
 		$jinput = $app->input;
 		$key_id = $jinput->get->get('keyid');
-		$campaign_id = $jinput->getInt('cid');
-		$formid = $jinput->getInt('formid');
+		$campaign_id = $jinput->get->getInt('cid');
+		$formid = $jinput->get->getInt('formid');
 
 		$baseurl = JURI::base();
 		$db = JFactory::getDBO();
