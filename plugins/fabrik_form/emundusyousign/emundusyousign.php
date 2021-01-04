@@ -32,8 +32,8 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 	 *
 	 * @var  string
 	 */
-	protected string $URLfield = '';
-	protected string $signer_type = '';
+	protected $URLfield = '';
+	protected $signer_type = '';
 
 	public function __construct(&$subject, $config = array()) {
 		parent::__construct($subject, $config);
