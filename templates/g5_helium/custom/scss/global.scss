@@ -2825,6 +2825,21 @@ div#em-appli-block {
     display: none !important;
   }
 
+  /* FAQ */
+  .com_content.view-category.layout-blog{
+    .blogfaq {
+
+      h1 {
+        margin-top: 50px;
+      }
+    }
+
+    .blogPost {
+      margin-bottom: 30px;
+    }
+}
+
+
   /* HEADER */
   #g-navigation #header-a {
     display: flex;
