@@ -25,18 +25,18 @@ if (!empty($tab)) :?>
             echo '<legend>'.$title.'</legend>';
 
 
-            if(!$only_applicant) {
+            if(!in_array($user->profile, $applicant_profiles)){
                 echo "<div class='section-sub-menu' style='margin-bottom: 10px'>
-                <div class='container-2 w-container' style='max-width: unset'>
-                    <div class='d-flex'>
-                        <img src='/images/emundus/menus/dashboard.png' class='tchooz-icon-title' alt='dashboard'>
-                        <h2 class='tchooz-section-titles'>Tableau de bord</h2>
+                    <div class='container-2 w-container' style='max-width: unset'>
+                        <div class='d-flex'>
+                            <img src='/images/emundus/menus/dashboard.png' class='tchooz-icon-title' alt='dashboard'>
+                            <h2 class='tchooz-section-titles'>Tableau de bord</h2>
+                        </div>
+                        <div class='actions-add-block'>
+                            <p class='tchooz-section-description'>Retrouvez vos statistiques</p>
+                        </div>
                     </div>
-                    <div class='actions-add-block'>
-                        <p class='tchooz-section-description'>Retrouvez vos statistiques</p>
-                    </div>
-                </div>
-                </div>";
+                    </div>";
             }
 
             $ids_array = array();

@@ -192,6 +192,7 @@ defined('_JEXEC') or die;
                 echo '</li>';
                 echo '<hr id="menu_separator">';
             endif;
+            break;
         endforeach;
 
         foreach ($tchooz_list as $i => &$item) :
@@ -259,7 +260,7 @@ defined('_JEXEC') or die;
         endif;
 
         foreach ($list as $i => &$item) :
-            if($item->alias != 'homepage') :
+            if($item->alias != 'homepage' && $item->params->get('menu_show') != 0) :
                 $item->anchor_css="item";
                 $class = 'item-'.$item->id.' g-standard';
                 if ($item->id == $active_id) {
@@ -323,63 +324,65 @@ defined('_JEXEC') or die;
         echo '<hr id="menu_separator">';
 
         foreach ($help_list as $i => &$item) :
-            $item->anchor_css="item";
-            $class = 'item-'.$item->id.' g-standard';
-            if ($item->id == $active_id) {
-                $class .= ' current';
-            }
+            if($item->params->get('menu_show') != 0) :
+                $item->anchor_css="item";
+                $class = 'item-'.$item->id.' g-standard';
+                if ($item->id == $active_id) {
+                    $class .= ' current';
+                }
 
-            if (in_array($item->id, $path)) {
-                $class .= ' active';
-            }
-            elseif ($item->type == 'alias') {
-                $aliasToId = $item->params->get('aliasoptions');
-                if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
+                if (in_array($item->id, $path)) {
                     $class .= ' active';
                 }
-                elseif (in_array($aliasToId, $path)) {
-                    $class .= ' alias-parent-active';
+                elseif ($item->type == 'alias') {
+                    $aliasToId = $item->params->get('aliasoptions');
+                    if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
+                        $class .= ' active';
+                    }
+                    elseif (in_array($aliasToId, $path)) {
+                        $class .= ' alias-parent-active';
+                    }
                 }
-            }
 
-            if ($item->parent) {
-                $class .= ' g-parent';
-            }
+                if ($item->parent) {
+                    $class .= ' g-parent';
+                }
 
-            if (!empty($class)) {
-                $class = ' class="tchooz-vertical-item g-menu-item g-menu-'.trim($class) .'"';
-            }
+                if (!empty($class)) {
+                    $class = ' class="tchooz-vertical-item g-menu-item g-menu-'.trim($class) .'"';
+                }
 
-            echo '<li'.$class.'>';
+                echo '<li'.$class.'>';
 
-            // Render the menu item.
-            switch ($item->type) :
-                case 'separator':
-                case 'url':
-                case 'component':
-                    require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_'.$item->type);
-                    break;
+                // Render the menu item.
+                switch ($item->type) :
+                    case 'separator':
+                    case 'url':
+                    case 'component':
+                        require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_'.$item->type);
+                        break;
 
-                default:
-                    require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_url');
-                    break;
-            endswitch;
+                    default:
+                        require JModuleHelper::getLayoutPath('mod_emundusmenu', 'tchooz_url');
+                        break;
+                endswitch;
 
-            // The next item is deeper.
-            if ($item->deeper) {
-                echo '<ul class="g-sublevel-list" id="sublevel_list_' . $item->id . '" style="display: none">';
-                echo '<li class="g-dropdown-column">';
-                echo '<div class="g-grid"><div class="g-block size-100"><ul class="g-sublevel"><li class="g-level-'.($item->level).' g-go-back"><a class="g-menu-item-container" href="#" onclick="backToParentMenu(' . $item->id . ')" data-g-menuparent=""><span class="g-menu-item-content"><span class="g-menu-item-title">' . JText::_("COM_EMUNDUS_BACK") . '</span></span></a></li>';
-            }
-            // The next item is shallower.
-            elseif ($item->shallower) {
-                echo '</li>';
-                echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
-            }
-            // The next item is on the same level.
-            else {
-                echo '</li>';
-            }
+                // The next item is deeper.
+                if ($item->deeper) {
+                    echo '<ul class="g-sublevel-list" id="sublevel_list_' . $item->id . '" style="display: none">';
+                    echo '<li class="g-dropdown-column">';
+                    echo '<div class="g-grid"><div class="g-block size-100"><ul class="g-sublevel"><li class="g-level-'.($item->level).' g-go-back"><a class="g-menu-item-container" href="#" onclick="backToParentMenu(' . $item->id . ')" data-g-menuparent=""><span class="g-menu-item-content"><span class="g-menu-item-title">' . JText::_("COM_EMUNDUS_BACK") . '</span></span></a></li>';
+                }
+                // The next item is shallower.
+                elseif ($item->shallower) {
+                    echo '</li>';
+                    echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
+                }
+                // The next item is on the same level.
+                else {
+                    echo '</li>';
+                }
+            endif;
         endforeach;
         ?>
     </ul>

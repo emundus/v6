@@ -352,7 +352,7 @@ input[type="text"],
 .view-details #g-container-main {
   .page-header {
     padding-bottom: 15px;
-    background: #fff;
+    background: transparent;
   }
 }
 
@@ -378,6 +378,9 @@ input[type="text"],
   #header-c {
     max-width: 30rem;
     min-height: 67px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
 
     .g-content {
       display: flex;

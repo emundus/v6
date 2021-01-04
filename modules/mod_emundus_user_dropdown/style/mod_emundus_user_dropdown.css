@@ -142,6 +142,20 @@ li>a:hover {
 .logout-button-user:focus{
     background: #c60a0a !important;
 }
+.edit-button-user{
+    padding: 5px !important;
+    border-radius: 25px;
+    text-align: center;
+    background-color: #16AFE1;
+    color: white !important;
+    margin-top: 10px;
+}
+.edit-button-user:hover{
+    background: #26CAEA !important;
+}
+.edit-button-user:focus{
+    background: #16AFE1 !important;
+}
 
 @media all and (max-width: 767px) {
     .header-right {

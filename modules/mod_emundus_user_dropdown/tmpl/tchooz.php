@@ -126,7 +126,7 @@ if($user != null) {
         <?php endif; ?>
         <hr style="width: 100%">
         <?php
-        echo '<h5 style="margin-bottom: 20px;margin-top: 0">'.JText::_('COM_USERS_PROFILE_DEFAULT_LABEL').'</h5>';
+        echo '<li><a class="edit-button-user" href="index.php?option=com_users&view=profile&layout=edit" style="margin-bottom: 20px;margin-top: 0">'.JText::_('COM_USERS_PROFILE_DEFAULT_LABEL').'</a></li>';
         ?>
     </ul>
 </div>

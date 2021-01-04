@@ -110,10 +110,11 @@ echo <<<EOT
 }
 
 .view-form:not(.em-formRegistrationCenter) .fabrikGroup {
-    background: #fafafa;
+    background: #fff;
     margin-bottom: 20px;
-    border-radius: 0;
+    border-radius: 5px !important;
     padding: 20px;
+    margin-top: 20px;
 }
 
 .view-form.view-registration .fabrikGroup {
@@ -560,11 +561,6 @@ form#member-profile .form-horizontal .control-label {
 .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .row-fluid .span4 button {
         width: 100% !important;
         height: 50px;
-}
-
-
-.view-registration .login.em-formRegistrationCenter .row-fluid {
-    background: #fafafa;
 }
 
 
