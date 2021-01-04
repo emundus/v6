@@ -714,7 +714,8 @@ class EmundusModelApplication extends JModelList {
         $query = 'SELECT fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name
                     FROM #__fabrik_forms AS fbforms
                     LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
-                    WHERE fbforms.id IN ('.implode(',', $formID) . ')';
+                    WHERE fbforms.id IN ('.implode(',', $formID) . ')
+                    ORDER BY find_in_set(fbforms.id, "'.implode(',', $formID) . '")';
 
         try {
             $this->_db->setQuery($query);
