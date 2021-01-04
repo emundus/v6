@@ -77,6 +77,7 @@
                     @searched="onSearchYear"
                     :items="this.session"
                     :year="form.year"
+                    :name="'2020 - 2021'"
             />
           </div>
           <div class="form-group d-flex">
@@ -669,6 +670,8 @@ export default {
         },
         data: qs.stringify({ body: this.programForm })
       }).then(() => {
+          let newsession = false;
+
           if (this.campaign !== "") {
             if(typeof this.form.start_date == 'object'){
               this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
@@ -709,17 +712,24 @@ export default {
                 console.log(error);
               });
           }
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=campaign&task=createyear",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({ body: this.year })
-          }).then(response => {})
-            .catch(error => {
+
+          this.years.forEach((elt) => {
+            if(elt.schoolyear == this.year.schoolyear){
+              newsession = true;
+            }
+          });
+          if(newsession){
+            axios({
+              method: "post",
+              url: "index.php?option=com_emundus_onboard&controller=campaign&task=createyear",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({ body: this.year })
+            }).then(response => {}).catch(error => {
               console.log(error);
             });
+          }
         }).catch(error => {
           console.log(error);
         });

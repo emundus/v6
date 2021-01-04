@@ -4,7 +4,7 @@
     <div class="heading-block">
       <select class="dropdown-toggle" id="select_profile" v-model="profileId">
         <option v-for="(profile, index) in profiles" :key="index" :value="profile.id" @click="updateProfileCampaign(profile.id)">
-          {{profile.form_label}} :
+          {{profile.form_label}}
         </option>
       </select>
       <a @click="addNewForm" class="bouton-ajouter bouton-ajouter-green pointer">

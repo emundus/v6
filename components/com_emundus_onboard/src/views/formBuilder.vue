@@ -109,10 +109,15 @@
       </div>
       <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
         <div class="heading-block" :class="addingElement ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
-          <h2 class="form-title" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1">{{profileLabel}}</h2>
-          <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
-            <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-          </a>
+          <div class="d-flex">
+            <h2 class="form-title" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1">{{profileLabel}}</h2>
+            <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
+              <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
+            </a>
+          </div>
+          <div>
+            <label class="saving-at">{{ Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
+          </div>
         </div>
         <div v-if="menuHighlight === 0">
           <div class="form-viewer-builder" :class="[addingElement ? 'col-md-offset-2 col-md-6' : 'col-md-8',optionsModal ? 'col-md-6' : 'col-md-8']">
@@ -265,6 +270,7 @@
         },
         loading: false,
         first_loading: false,
+        lastUpdate: new Date().getHours() + ':' + new Date().getMinutes(),
         //
 
         // Forms variables
@@ -347,6 +353,7 @@
         testingForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
         Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
         Back: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+        Savingat: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVING_AT"),
       };
     },
 
@@ -598,6 +605,8 @@
           text,
           type
         });
+        this.lastUpdate = new Date().getHours() + ':' + new Date().getMinutes();
+        document.getElementsByClassName('fa-sync')[0].style.transform = 'rotate(360deg)';
       },
       showTip(group, text = "", title = "Information") {
         this.$notify({
@@ -907,7 +916,7 @@
       jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)")
       this.getForms();
       this.getSubmittionPage();
-      //this.getFilesByForm();
+      this.getFilesByForm();
     },
 
     computed: {
@@ -974,5 +983,8 @@
   .MenuFormItem
   {
     margin-left: 0;
+  }
+  .fa-sync{
+    transition: all 1s ease-in-out;
   }
 </style>

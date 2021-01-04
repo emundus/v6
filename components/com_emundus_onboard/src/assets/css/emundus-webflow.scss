@@ -447,6 +447,7 @@ input.w-button {
 .w-delete {
   margin-right: 1em;
   background: #c60a0a;
+  border: 2px solid #c60a0a;
   &:hover {
     background: #c60a0a !important;
     color: white !important;
@@ -1995,9 +1996,9 @@ label.label__placeholder {
 }
 .searchButton {
   width: 40px;
-  height: 36px;
-  border: 2px solid #de6339;
-  background: #de6339;
+  height: 50px;
+  border: 2px solid $dark-blue;
+  background: $dark-blue;
   text-align: center;
   color: #fff;
   border-radius: 0 5px 5px 0;
@@ -2293,9 +2294,10 @@ label.label__placeholder {
   margin-top: 2em;
   width: 75%;
   display: flex;
-  justify-content: start;
+  justify-content: space-between;
   align-items: center;
   transition: all 0.3s ease-in-out;
+  padding: 0 1em !important;
 }
 .menu-block {
   margin-top: 2em;
@@ -2847,5 +2849,20 @@ label.label__placeholder {
     background: #fff;
     border: solid 2px #ececec;
   }
+}
+
+.campaigns-item{
+  list-style-type: none;
+  font-style: italic;
+  color: $dark-blue;
+  padding-left: 5px;
+}
+
+.check{
+  width: 100% !important;
+}
+
+.saving-at{
+  color: $dark-blue;
 }
 

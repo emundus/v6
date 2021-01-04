@@ -25,8 +25,8 @@
             </h2>
           </div>
         </div>
-      <div class="modalC-content">
-        <div v-if="element != null" class="mb-1">
+      <div v-if="element != null" class="modalC-content">
+        <div class="mb-1">
           <a class="d-flex tool-icon mb-1" @click="publishUnpublishElement()">
             <em :class="[element.publish ? 'fa-eye-slash' : 'fa-eye','far']" style="width: 45px" :id="'publish_icon_' + element.id"></em>
             <span class="ml-10px" v-if="element.publish">{{Unpublish}}</span>
@@ -239,6 +239,10 @@
                 this.label.en = rep.data.en;
               });
 
+          if(this.files != 0 && this.element.plugin != 'birthday'){
+            delete this.plugins.birthday;
+          }
+
           this.loading = false;
         });
       },
@@ -357,11 +361,6 @@
         }
       }
     },
-    created: function() {
-      if(this.files != 0 && this.element.plugin != 'birthday'){
-        delete this.plugins.birthday;
-      }
-    }
   };
 </script>
 

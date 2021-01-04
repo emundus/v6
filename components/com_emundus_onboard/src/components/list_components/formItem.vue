@@ -16,6 +16,12 @@
                 {{ isPublished ? publishedTag : unpublishedTag }}
               </div>
             </div>
+            <div>
+              <p class="pl-30px associated-campaigns">est associé aux campagnes :</p>
+              <ul style="margin-top: 10px">
+                <li v-for="(campaign, index) in campaigns" class="campaigns-item">{{campaign.label}}</li>
+              </ul>
+            </div>
             <div class="stats-block" style="justify-content: end">
               <a class="cta-block pointer"
                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
@@ -46,6 +52,7 @@ export default {
     return {
       selectedData: [],
       updateAccess: false,
+      campaigns: [],
       publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
       unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
       passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
@@ -68,6 +75,22 @@ export default {
       }).then(response => {
         window.location.href = window.location.pathname + response.data.data;
       });
+    },
+
+    getAssociatedCampaigns(){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
+        params: {
+          pid: this.data.id,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        this.campaigns = response.data.data;
+        console.log(response);
+      });
     }
   },
 
@@ -77,6 +100,8 @@ export default {
         this.updateAccess = true;
       }
     });
+
+    this.getAssociatedCampaigns();
   },
 
   computed: {
@@ -93,5 +118,9 @@ export default {
 <style scoped>
   .w-row{
     margin-bottom: 0;
+  }
+  .associated-campaigns{
+    font-style: italic;
+    font-size: 12px;
   }
 </style>

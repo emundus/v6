@@ -72,6 +72,7 @@ export default {
       CreateFile: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_FILE"),
       ChooseCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_CAMPAIGN"),
       FileExistsBeforeTesting: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE_EXIST_BEFORE_TESTING"),
+      testingForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
     };
   },
   methods: {

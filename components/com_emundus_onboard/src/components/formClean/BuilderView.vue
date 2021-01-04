@@ -9,7 +9,7 @@
     />
     <div class="d-flex header-form-page mb-1" v-if="eval == 0 && !updatePage">
       <h2 v-if="object_json.show_title" class="page_header mr-1" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
-      <span @click="this.$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="Edit" class="cta-block pointer" style="font-size: 16px">
+      <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="Edit" class="cta-block pointer" style="font-size: 16px">
         <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
       </span>
     </div>
