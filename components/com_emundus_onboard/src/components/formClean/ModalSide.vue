@@ -47,7 +47,7 @@
           <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>
         </div>
 
-        <div class="col-md-12 d-flex mb-1" style="align-items: center">
+        <div class="form-group d-flex mb-1" id="template_checkbox" style="align-items: center">
           <input type="checkbox" v-model="template">
           <label class="ml-10px mb-0">{{SaveAsTemplate}}</label>
         </div>
@@ -59,17 +59,19 @@
             {{Retour}}
           </button>
           <div class="d-flex">
-            <button class="bouton-sauvergarder-et-continuer w-delete"
-                    @click.prevent="deleteMenu()"
-                    v-if="menus.length > 1 && files == 0">
-            {{Delete}}
-          </button>
           <button
               class="bouton-sauvergarder-et-continuer"
               @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()">
             {{Continuer}}
           </button>
           </div>
+        </div>
+        <div class="form-group d-flex mb-1">
+          <button class="bouton-sauvergarder-et-continuer w-delete"
+                  @click.prevent="deleteMenu()"
+                  v-if="menus.length > 1 && files == 0">
+            {{Delete}}
+          </button>
         </div>
       </div>
     </modal>
@@ -142,8 +144,8 @@ export default {
                 this.informations
         );
         this.changes = false;
-        this.$emit("modalClosed");
       }
+      this.$emit("modalClosed");
     },
     beforeOpen(event) {
       this.initialisation();
@@ -284,4 +286,7 @@ export default {
 </script>
 
 <style scoped>
+#template_checkbox input{
+  margin: 0 !important;
+}
 </style>

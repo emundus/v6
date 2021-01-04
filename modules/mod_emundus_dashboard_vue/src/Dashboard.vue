@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <a style="margin-left: 1em" class="cta-block pointer" @click="enableDrag = !enableDrag">
+<!--    <a style="margin-left: 1em" class="cta-block pointer" @click="enableDrag = !enableDrag">
       <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-    </a>
+    </a>-->
     <draggable
         v-model="widgets"
         :disabled="!enableDrag"

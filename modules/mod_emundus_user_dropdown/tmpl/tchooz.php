@@ -175,6 +175,25 @@ if($user != null) {
             },300);
         }
     });
+
+    function postCProfile() {
+
+        var current_fnum = document.getElementById("profile").value;
+
+        jQuery.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus&task=switchprofile',
+            data: ({
+                profnum: current_fnum
+            }),
+            success: function (result) {
+                location.reload(true);
+            },
+            error : function (jqXHR, status, err) {
+                alert("Error switching porfiles.");
+            }
+        });
+    }
 </script>
 <?php } else { ?>
 <div class="header-right" style="text-align: right;">

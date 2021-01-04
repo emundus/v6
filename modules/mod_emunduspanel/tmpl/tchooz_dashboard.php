@@ -25,8 +25,8 @@ if (!empty($tab)) :?>
             echo '<legend>'.$title.'</legend>';
 
 
-
-            echo "<div class='section-sub-menu' style='margin-bottom: 10px'>
+            if(!$only_applicant) {
+                echo "<div class='section-sub-menu' style='margin-bottom: 10px'>
                 <div class='container-2 w-container' style='max-width: unset'>
                     <div class='d-flex'>
                         <img src='/images/emundus/menus/dashboard.png' class='tchooz-icon-title' alt='dashboard'>
@@ -37,6 +37,7 @@ if (!empty($tab)) :?>
                     </div>
                 </div>
                 </div>";
+            }
 
             $ids_array = array();
             if (isset($user->fnums) && $user->fnums) {
