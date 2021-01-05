@@ -2826,18 +2826,28 @@ div#em-appli-block {
   }
 
   /* FAQ */
-  .com_content.view-category.layout-blog{
-    .blogfaq {
-
+.view-category.layout-blog {
+    .blog {
       h1 {
         margin-top: 50px;
+        margin-bottom: 50px;
       }
     }
 
-    .blogPost {
+    .items-leading > div {
       margin-bottom: 30px;
     }
-}
+
+    #g-sidebar {
+      padding: 0px;
+      margin-top: 50px;
+      background: transparent;
+      ul.nav.menu.mod-list {
+        border: none;
+        padding: 0;
+      }
+    }
+  }
 
 
   /* HEADER */
