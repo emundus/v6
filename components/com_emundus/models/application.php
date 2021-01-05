@@ -3235,23 +3235,39 @@ class EmundusModelApplication extends JModelList {
 	 *
 	 * @return bool
 	 */
-    public function moveApplication($fnum_from, $fnum_to, $campaign, $status = null) {
+    public function moveApplication(string $fnum_from, string $fnum_to, $campaign, $status = null): bool {
         $db = JFactory::getDbo();
+	    $query = $db->getQuery(true);
 
         try {
 
-            $query = 'SELECT * FROM #__emundus_campaign_candidature cc WHERE fnum like ' . $db->Quote($fnum_from);
+        	$query->clear()
+		        ->select('*')
+	            ->from($db->quoteName('#__emundus_campaign_candidature'))
+	            ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum_from));
             $db->setQuery($query);
             $cc_line = $db->loadAssoc();
 
             if (!empty($cc_line)) {
 
-                $query = 'UPDATE #__emundus_campaign_candidature SET `fnum` = '. $db->Quote($fnum_to) .', `campaign_id` = '. $db->Quote($campaign) .', `copied` = 2 WHERE `id` = ' . $db->Quote($cc_line['id']);
-                if (!empty($status)) {
-                	$query .= ' `status` = '.$db->Quote($status);
-                }
+            	$fields = [
+            		$db->quoteName('fnum').' = '.$db->quote($fnum_to),
+		            $db->quoteName('campaign_id').' = '.$db->quote($campaign),
+		            $db->quoteName('copied').' = 2'
+	            ];
+
+	            if (!empty($status)) {
+		            $fields[] = $db->quoteName('status').' = '.$db->quote($status);
+	            }
+
+            	$query->clear()
+		            ->update($db->quoteName('#__emundus_campaign_candidature'))
+		            ->set($fields)
+		            ->where($db->quoteName('id').' = '.$db->quote($cc_line['id']));
+
                 $db->setQuery($query);
                 $db->execute();
+	            return true;
 
             } else {
             	return false;
@@ -3262,10 +3278,7 @@ class EmundusModelApplication extends JModelList {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
-
         }
-
-        return true;
     }
 
     /**
