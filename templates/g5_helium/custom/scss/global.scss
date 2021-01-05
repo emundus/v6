@@ -2826,7 +2826,7 @@ div#em-appli-block {
   }
 
   /* FAQ */
-.view-category.faq, .view-article.faq, .view-form.faq, .view-form.layout-edit {
+.view-category.faq, .view-article.faq, .view-form.faq, .view-form.layout-edit.faq {
   .blogfaq, .item-pagefaq {
     h1 {
       margin-top: 50px;
@@ -2840,7 +2840,7 @@ div#em-appli-block {
 
   .g-block.size-75 {
     padding-right: 20px;
-    border-right: 1px solid #e3e3e3;
+    border-right: 1px solid #eee;
   }
 
   .edit.item-page {
