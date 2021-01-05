@@ -128,6 +128,7 @@
                             @publishUnpublishEvent="publishUnpublishEvent(element)"
                             @updateRequireEvent="updateRequireEvent(element)"
                             @modalClosed="$emit('modalClosed')"
+                            @show="show"
                             :id="element.id"
                             :key="keyElements['element' + element.id]"
                     />
@@ -1092,6 +1093,10 @@ export default {
       });
     },
     //
+
+    show(group, type, text, title) {
+      this.$emit("show", group, type, text, title);
+    },
   },
   created() {
     this.getDataObject();

@@ -270,7 +270,7 @@
         },
         loading: false,
         first_loading: false,
-        lastUpdate: new Date().getHours() + ':' + new Date().getMinutes(),
+        lastUpdate: new Date().getHours() + ':' + (new Date().getMinutes()<10?'0':'') + new Date().getMinutes(),
         //
 
         // Forms variables
@@ -605,8 +605,11 @@
           text,
           type
         });
-        this.lastUpdate = new Date().getHours() + ':' + new Date().getMinutes();
+        this.lastUpdate = new Date().getHours() + ':' + (new Date().getMinutes()<10?'0':'') + new Date().getMinutes();
         document.getElementsByClassName('fa-sync')[0].style.transform = 'rotate(360deg)';
+        setTimeout(() => {
+          document.getElementsByClassName('fa-sync')[0].style.transform = 'unset';
+        },1500);
       },
       showTip(group, text = "", title = "Information") {
         this.$notify({

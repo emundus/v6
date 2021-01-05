@@ -393,17 +393,19 @@ class EmundusonboardModelformbuilder extends JModelList {
                 case 'field':
                     if ($params['password'] == 3) {
                         $key = array_search("isemail", $params['validations']['plugin']);
-                        unset($params['validations']['plugin'][$key]);
-                        unset($params['validations']['plugin_published'][$key]);
-                        unset($params['validations']['validate_in'][$key]);
-                        unset($params['validations']['validation_on'][$key]);
-                        unset($params['validations']['validate_hidden'][$key]);
-                        unset($params['validations']['must_validate'][$key]);
-                        unset($params['validations']['show_icon'][$key]);
-                        unset($params['isemail-message']);
-                        unset($params['isemail-validation_condition']);
-                        unset($params['isemail-allow_empty']);
-                        unset($params['isemail-check_mx']);
+                        if($key != false && $key != null) {
+                            unset($params['validations']['plugin'][$key]);
+                            unset($params['validations']['plugin_published'][$key]);
+                            unset($params['validations']['validate_in'][$key]);
+                            unset($params['validations']['validation_on'][$key]);
+                            unset($params['validations']['validate_hidden'][$key]);
+                            unset($params['validations']['must_validate'][$key]);
+                            unset($params['validations']['show_icon'][$key]);
+                            unset($params['isemail-message']);
+                            unset($params['isemail-validation_condition']);
+                            unset($params['isemail-allow_empty']);
+                            unset($params['isemail-check_mx']);
+                        }
                     }
                     unset($params['placeholder']);
                     unset($params['password']);
@@ -1815,7 +1817,6 @@ class EmundusonboardModelformbuilder extends JModelList {
             $old_params['notempty-validation_condition'] = array("");
             $eval = 1;
         } else {
-            //$element['params']['validations']['plugin'] = array_merge(array_diff($element['params']['validations']['plugin'], array("notempty")));
             $key = array_search("notempty",$old_params['validations']['plugin']);
             unset($old_params['validations']['plugin'][$key]);
             unset($old_params['validations']['plugin_published'][$key]);
@@ -1826,12 +1827,13 @@ class EmundusonboardModelformbuilder extends JModelList {
             unset($old_params['validations']['show_icon'][$key]);
             unset($old_params['notempty-message']);
             unset($old_params['notempty-validation_condition']);
-        }
-
-        foreach ($old_params as $key => $value) {
-            if (!is_array($old_params[$key])) {
-                $old_params[$key] = htmlspecialchars($old_params[$key]);
-            }
+            $old_params['validations']['plugin'] = array_values($old_params['validations']['plugin']);
+            $old_params['validations']['plugin_published'] = array_values($old_params['validations']['plugin_published']);
+            $old_params['validations']['validate_in'] = array_values($old_params['validations']['validate_in']);
+            $old_params['validations']['validation_on'] = array_values($old_params['validations']['validation_on']);
+            $old_params['validations']['validate_hidden'] = array_values($old_params['validations']['validate_hidden']);
+            $old_params['validations']['must_validate'] = array_values($old_params['validations']['must_validate']);
+            $old_params['validations']['show_icon'] = array_values($old_params['validations']['show_icon']);
         }
 
         $fields = array(
@@ -2001,7 +2003,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 }
 
                 if ($element['params']['password'] == 3) {
-                    if($key === false) {
+                    if($key === false || $key === null) {
                         $element['params']['isemail-message'] = array("");
                         $element['params']['isemail-validation_condition'] = array("");
                         $element['params']['isemail-allow_empty'] = array("1");
@@ -2017,17 +2019,19 @@ class EmundusonboardModelformbuilder extends JModelList {
                 } else {
                     //$element['params']['validations']['plugin'] = array_merge(array_diff($element['params']['validations']['plugin'], array("isemail")));
                     $key = array_search("isemail", $element['params']['validations']['plugin']);
-                    unset($element['params']['validations']['plugin'][$key]);
-                    unset($element['params']['validations']['plugin_published'][$key]);
-                    unset($element['params']['validations']['validate_in'][$key]);
-                    unset($element['params']['validations']['validation_on'][$key]);
-                    unset($element['params']['validations']['validate_hidden'][$key]);
-                    unset($element['params']['validations']['must_validate'][$key]);
-                    unset($element['params']['validations']['show_icon'][$key]);
-                    unset($element['params']['isemail-message']);
-                    unset($element['params']['isemail-validation_condition']);
-                    unset($element['params']['isemail-allow_empty']);
-                    unset($element['params']['isemail-check_mx']);
+                    if($key !== false && $key !== null) {
+                        unset($element['params']['validations']['plugin'][$key]);
+                        unset($element['params']['validations']['plugin_published'][$key]);
+                        unset($element['params']['validations']['validate_in'][$key]);
+                        unset($element['params']['validations']['validation_on'][$key]);
+                        unset($element['params']['validations']['validate_hidden'][$key]);
+                        unset($element['params']['validations']['must_validate'][$key]);
+                        unset($element['params']['validations']['show_icon'][$key]);
+                        unset($element['params']['isemail-message']);
+                        unset($element['params']['isemail-validation_condition']);
+                        unset($element['params']['isemail-allow_empty']);
+                        unset($element['params']['isemail-check_mx']);
+                    }
                 }
 
                 $query = "ALTER TABLE " . $db_element->dbtable .
@@ -2337,7 +2341,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $FRequire = false;
                 } else {
                     if(isset($el_params->validations->plugin)){
-                        if(empty($el_params->validations->plugin)){
+                        if(empty($el_params->validations->plugin) || !in_array('notempty',$el_params->validations->plugin)){
                             $FRequire = false;
                         } else {
                             $FRequire = true;
