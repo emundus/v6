@@ -32,12 +32,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      */
     public $storage = null;
 
-
-    /**
-     * @return bool
-     * @throws Exception
-     */
-
     /**
      * @return bool
      */
