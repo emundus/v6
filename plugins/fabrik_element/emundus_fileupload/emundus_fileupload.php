@@ -151,7 +151,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         if (!empty($uploadResult)) {
 
-            if ($fileLimitObtained == false) {
+            if ($fileLimitObtained != false) {
                 $fileNameUpdate = $jinput->post->get($name.'_filename0');
                 if (!empty($fileNameUpdate)) {
                     $this->updateFile($fnum, $cid, $attachId, $fileNameUpdate);
