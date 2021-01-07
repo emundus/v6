@@ -9,6 +9,25 @@
 // Here you can add Anything you want to be present on the entire site AND with variables
 // - Laura.scss
 
+/** VARIABLES **/
+$light-blue: #26CAEA;
+$dark-blue: #16AFE1;
+$light-green: #32EE5F;
+$dark-green: #12DB42;
+$light-yellow: #F0EE6D;
+
+$night-blue: #353544;
+$dark-grey: #5A5A72;
+$grey: #B0B0BF;
+$light-grey: #F4F4F6;
+$white: #FFFFFF;
+
+$red: #e5283B;
+
+$complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rgba(240,238,109,96));
+$simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
+
+
 /* GENERAL */
 body {
   //font-family: "Lato", sans-serif;
@@ -1770,10 +1789,8 @@ button#back,
   &:active,
   &:focus {
     background: #fff;
-    border-color: $base-secondary-color;
-    color: $base-secondary-color;
-    background: #fff;
-    color: $base-secondary-color;
+    border-color: $red;
+    color: $red;
   }
 }
 
@@ -1782,9 +1799,9 @@ button#back,
 }
 
 #filters #quick.form-group input#search.btn.btn-sm.btn-info {
-  background-color: #16AFE1;
+  background-color: $dark-blue;
   color: #fff;
-  border: 1px solid #16AFE1 !important;
+  border: 1px solid $dark-blue !important;
 
   &:hover,
   &:active,
@@ -2194,7 +2211,7 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .g-back-office-emundus-tableau.files-board .panel-info>.panel-heading {
-  background: #12DB42;
+  background: $dark-green;
 }
 
 #em_filters fieldset.em_filters_filedset>p,
@@ -2207,14 +2224,14 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .navbar.navbar-inverse {
-  border: #16AFE1;
-  background: #16AFE1;
+  border: $dark-blue;
+  background: $dark-blue;
 }
 
 #em-files-filters #em_filters fieldset input#save-filter {
   margin-top: 10px;
-  background:  #16AFE1;
-  border: 1px solid #16AFE1 !important;
+  background:  $dark-blue;
+  border: 1px solid $dark-blue !important;
   width: 100%;
   width: -moz-available;
   width: -webkit-fill-available;
@@ -2224,8 +2241,8 @@ ul.unstyled.em-linkForgot li a {
   &:hover,
   &:active {
     background: #fff;
-    border-color: $base-secondary-color !important;
-    color: $base-secondary-color !important;
+    border-color: $dark-blue !important;
+    color: $dark-blue !important;
   }
 }
 
@@ -2237,20 +2254,20 @@ ul.unstyled.em-linkForgot li a {
     &#search,
     &#clear-search,
     &#add-filter {
-      background: #12DB42 none;
+      background: $dark-green none;
 
       &:hover,
       &:focus,
       &:active {
-      background: darken(#12DB42, 10%) none;
+      background: darken($dark-green, 10%) none;
       }
     }
 
     &#showhide {
-     background-color: #12DB42;
+     background-color: $dark-green;
 
       &:hover {
-        background-color: darken(#12DB42, 10%);
+        background-color: darken($dark-green, 10%);
       }
     }
   }
