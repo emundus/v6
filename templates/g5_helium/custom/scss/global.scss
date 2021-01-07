@@ -1777,10 +1777,14 @@ button#back,
   }
 }
 
+#em-files-filters .em-filter .em_label label a {
+  color: #12DB42;
+}
+
 #filters #quick.form-group input#search.btn.btn-sm.btn-info {
-  background-color: $dark-blue;
+  background-color: #16AFE1;
   color: #fff;
-  border: 1px solid $dark-blue !important;
+  border: 1px solid #16AFE1 !important;
 
   &:hover,
   &:active,
@@ -2190,12 +2194,12 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .g-back-office-emundus-tableau.files-board .panel-info>.panel-heading {
-  background: $dark-green;
+  background: #12DB42;
 }
 
 #em_filters fieldset.em_filters_filedset>p,
 #em-user-filters fieldset.em_filters_filedset>p {
-  color: $dark-green;
+  color: #12DB42;
 }
 
 .chosen-container .chosen-results li.highlighted {
@@ -2203,14 +2207,14 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .navbar.navbar-inverse {
-  border: $dark-blue;
-  background: $dark-blue;
+  border: #16AFE1;
+  background: #16AFE1;
 }
 
 #em-files-filters #em_filters fieldset input#save-filter {
   margin-top: 10px;
-  background: $dark-blue;
-  border: 1px solid $dark-blue !important;
+  background:  #16AFE1;
+  border: 1px solid #16AFE1 !important;
   width: 100%;
   width: -moz-available;
   width: -webkit-fill-available;
@@ -2233,20 +2237,20 @@ ul.unstyled.em-linkForgot li a {
     &#search,
     &#clear-search,
     &#add-filter {
-      background: $dark-green none;
+      background: #12DB42 none;
 
       &:hover,
       &:focus,
       &:active {
-        background: darken($base-primary-color, 10%) none;
+      background: darken(#12DB42, 10%) none;
       }
     }
 
     &#showhide {
-      background-color: $base-primary-color;
+     background-color: #12DB42;
 
       &:hover {
-        background-color: darken($base-primary-color, 10%);
+        background-color: darken(#12DB42, 10%);
       }
     }
   }
