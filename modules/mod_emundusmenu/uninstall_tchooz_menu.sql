@@ -40,6 +40,13 @@ WHERE menutype = 'coordinatormenu' AND alias = 'decisions';
 
 UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
 WHERE menutype = 'coordinatormenu' AND alias = 'rapport-d-activite';
+
+UPDATE jos_menu
+SET published = 0
+WHERE menutype = 'coordinatormenu' AND alias = 'homepage';
+
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
+WHERE menutype = 'coordinatormenu' AND alias = 'homepage';
 # END #
 
 # REMOVE ICONS TO EVALUATOR MENU #
@@ -62,4 +69,12 @@ WHERE menutype = 'localcoordinator-menu' AND alias = 'decisions-2';
 
 UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
 WHERE menutype = 'localcoordinator-menu' AND alias = 'users';
+# END #
+
+# ADDING ICONS TO USER MENU #
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
+WHERE menutype = 'usermenu' AND alias = 'rapport-d-erreurs';
+
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '')
+WHERE menutype = 'usermenu' AND alias = 'besoin-d-aide';
 # END #

@@ -40,6 +40,13 @@ WHERE menutype = 'coordinatormenu' AND alias = 'decisions';
 
 UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '\/images\/emundus\/menus\/chart.png')
 WHERE menutype = 'coordinatormenu' AND alias = 'rapport-d-activite';
+
+UPDATE jos_menu
+SET published = 1
+WHERE menutype = 'coordinatormenu' AND alias = 'homepage';
+
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.menu_image', '\/images\/emundus\/menus\/dashboard.png')
+WHERE menutype = 'coordinatormenu' AND alias = 'homepage';
 # END #
 
 # ADDING ICONS TO EVALUATOR MENU #

@@ -457,7 +457,7 @@
                         this.profiles.length != 0 ? this.profileId = this.profiles[0].id : this.profileId = null;
                         if(this.profileId != null){
                             this.formReload += 1;
-                            this.updateProfileCampaign(this.profileId)
+                            //this.updateProfileCampaign(this.profileId)
                         }
                     } else {
                         this.formReload += 1;

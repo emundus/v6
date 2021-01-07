@@ -324,6 +324,7 @@ input[type="text"],
 #g-container-main .g-container {
   padding: 0 10px;
   position: relative;
+  left: 75px;
 }
 
 .g-container.g-flushed{
@@ -1869,6 +1870,16 @@ textarea:hover {
 #em-appli-menu .panel-body .list-group-item:active,
 #em-appli-menu .panel-body .list-group-item:focus {
   color: $base-primary-color;
+}
+
+.em-actions {
+  padding: 5px;
+  a{
+    padding: 5px !important;
+    &:hover{
+      border-radius: 5px;
+    }
+  }
 }
 
 .glyphicon-ban-circle {
