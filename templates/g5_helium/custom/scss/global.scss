@@ -1755,9 +1755,9 @@ button#back,
 
 #em_select_filter #del-filter,
 #em-delete-files.btn.btn-danger.btn-xs.pull-right {
-  background-color: $base-secondary-color;
+  background-color: $red;
   color: #fff;
-  border-color: $base-secondary-color;
+  border-color: $red;
 
   &:hover,
   &:active,
@@ -1771,9 +1771,9 @@ button#back,
 }
 
 #filters #quick.form-group input#search.btn.btn-sm.btn-info {
-  background-color: $base-primary-color;
+  background-color: $dark-blue;
   color: #fff;
-  border: 1px solid $base-primary-color !important;
+  border: 1px solid $dark-blue !important;
 
   &:hover,
   &:active,
@@ -1863,7 +1863,7 @@ textarea:hover {
 
 .candidacy-files-list h2,
 #em-panel h2 {
-  color: $base-primary-color;
+  color: #1f1f1f;
 }
 
 #em-appli-menu .panel-body .list-group-item:hover,
@@ -2183,12 +2183,12 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .g-back-office-emundus-tableau.files-board .panel-info>.panel-heading {
-  background: $base-secondary-color;
+  background: $dark-green;
 }
 
 #em_filters fieldset.em_filters_filedset>p,
 #em-user-filters fieldset.em_filters_filedset>p {
-  color: $base-secondary-color;
+  color: $dark-green;
 }
 
 .chosen-container .chosen-results li.highlighted {
@@ -2196,14 +2196,14 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .navbar.navbar-inverse {
-  border: $base-primary-color;
-  background: $base-primary-color;
+  border: $dark-blue;
+  background: $dark-blue;
 }
 
 #em-files-filters #em_filters fieldset input#save-filter {
   margin-top: 10px;
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color !important;
+  background: $dark-blue;
+  border: 1px solid $dark-blue !important;
   width: 100%;
   width: -moz-available;
   width: -webkit-fill-available;
@@ -2226,7 +2226,7 @@ ul.unstyled.em-linkForgot li a {
     &#search,
     &#clear-search,
     &#add-filter {
-      background: $base-primary-color none;
+      background: $dark-green none;
 
       &:hover,
       &:focus,
