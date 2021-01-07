@@ -2,8 +2,8 @@
   <div class="container-evaluation formulairedepresentation">
     <p class="heading">{{ChooseForm}}</p>
     <div class="heading-block">
-      <select class="dropdown-toggle" id="select_profile" v-model="profileId">
-        <option v-for="(profile, index) in profiles" :key="index" :value="profile.id" @click="updateProfileCampaign(profile.id)">
+      <select class="dropdown-toggle" id="select_profile" v-model="profileId" @change="updateProfileCampaign">
+        <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
           {{profile.form_label}}
         </option>
       </select>
@@ -19,7 +19,7 @@
         </div>
       </a>-->
     </div>
-    <FormCarrousel :formList="this.formList" :visibility="this.visibility" v-if="this.formList" @formbuilder="formbuilder" />
+    <FormCarrousel :formList="this.formList" :visibility="this.visibility" v-if="this.formList" :key="formReload" @formbuilder="formbuilder" />
   </div>
 </template>
 
@@ -36,6 +36,7 @@ export default {
 
   props: {
     profileId: String,
+    campaignId: String,
     profiles: Array,
     formulaireEmundus: Number,
     visibility: Number
@@ -50,6 +51,7 @@ export default {
       AddForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FORM"),
       EmitIndex: "0",
       formList: "",
+      formReload: 0,
 
       form: {
         label: "Nouveau formulaire",
@@ -78,6 +80,7 @@ export default {
       })
         .then(response => {
           this.formList = response.data.data;
+          this.formReload += 1;
         })
         .catch(e => {
           console.log(e);
@@ -117,7 +120,7 @@ export default {
       });
     },
 
-    updateProfileCampaign(profileId){
+    updateProfileCampaign(){
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=campaign&task=updateprofile",
@@ -125,11 +128,11 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          profile: profileId,
+          profile: this.profileId,
           campaign: this.campaignId
         })
       }).then(response => {
-        this.formReload += 1;
+        this.getForms(this.profileId);
       })
     },
 
@@ -152,11 +155,11 @@ export default {
   created() {
     this.getForms(this.profileId);
   },
-  watch: {
+  /*watch: {
     profileId: function() {
       this.getForms(this.profileId);
     }
-  }
+  }*/
 };
 </script>
 
