@@ -1589,4 +1589,21 @@ class EmundusonboardModelprogram extends JModelList {
             return false;
         }
     }
+
+    function getCampaignsByProgram($program){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('c.*')
+                ->from($db->quoteName('#__emundus_setup_campaigns','c'))
+                ->leftJoin($db->quoteName('#__emundus_setup_programmes','sg').' ON '.$db->quoteName('sg.code').' = '.$db->quoteName('c.training'))
+                ->where($db->quoteName('sg.id') . ' = '. $db->quote($program));
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/program | Error at getting campaigns by program ' . $program . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 }

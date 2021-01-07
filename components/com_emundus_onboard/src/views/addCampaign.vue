@@ -817,7 +817,7 @@ export default {
         group,
         title: `${title}`,
         text,
-        duration: 10000
+        duration: 100000
       });
     },
     clean(group) {

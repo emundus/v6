@@ -601,5 +601,24 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function getcampaignsbyprogram() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $m_prog = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $program = $jinput->getInt('pid');
+            $campaigns = $m_prog->getCampaignsByProgram($program);
+
+            $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'campaigns' => $campaigns);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }
 

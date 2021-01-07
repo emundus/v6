@@ -323,6 +323,9 @@ input[type="text"],
 
 #g-container-main .g-container {
   padding: 0 10px;
+}
+
+.g-back-office-emundus-tableau #g-container-main .g-container {
   position: relative;
   left: 75px;
 }
@@ -365,6 +368,10 @@ input[type="text"],
 
 #g-navigation #header-a .logo {
   width: 180px;
+}
+
+#g-navigation .g-main-nav{
+  margin-top: 20px;
 }
 
 /* HEADER */
@@ -1877,7 +1884,7 @@ textarea:hover {
   a{
     padding: 5px !important;
     &:hover{
-      border-radius: 5px;
+      border-radius: 4px;
     }
   }
 }
