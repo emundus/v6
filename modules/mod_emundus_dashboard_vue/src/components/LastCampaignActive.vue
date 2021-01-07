@@ -65,6 +65,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+  h1 {
+    color: #00000;
+  }
   .section-sub-menu {
     display: block;
     width: 100%;
