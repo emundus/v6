@@ -28,7 +28,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-h1 {
+h3 {
   color: #000;
 }
 .section-sub-menu{

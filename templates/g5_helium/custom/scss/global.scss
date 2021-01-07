@@ -29,6 +29,11 @@ $simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
 
 
 /* GENERAL */
+
+*:focus {
+  outline: none;
+}
+
 body {
   //font-family: "Lato", sans-serif;
   //border-top: 5px solid $base-secondary-color;
@@ -2283,7 +2288,7 @@ ul.unstyled.em-linkForgot li a {
   &:active,
   &:focus {
     color: #fff;
-    background: darken($base-secondary-color, 10%) !important;
+    background: darken($dark-green, 10%) !important;
   }
 }
 
