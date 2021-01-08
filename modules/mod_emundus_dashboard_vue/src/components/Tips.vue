@@ -30,6 +30,7 @@ export default {
 <style scoped lang="scss">
 h3 {
   color: #000;
+  font-size: 24px;
 }
 .section-sub-menu{
   display: block;

@@ -65,4 +65,9 @@ export default {
     font-size: 2.5em;
     margin-top: 10%;
   }
+
+  label {
+    font-size: 21px;
+  }
+
 </style>

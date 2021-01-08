@@ -31,9 +31,6 @@ export default {
 
 <style scoped lang="scss">
 
-  h3 {
-    color: #000;
-  }
   .section-sub-menu{
     display: block;
     width: 100%;
@@ -48,8 +45,8 @@ export default {
   .bouton-faq{
     position: absolute;
     bottom: 15px;
-    padding: 5px 20px;
-    height: 36px;
+    padding: 5px 30px;
+    height: 29px;
     border-radius: 25px;
     border: 2px solid #16afe1;
     background-color: #16afe1;
@@ -60,7 +57,7 @@ export default {
     display: flex;
     align-items: center;
     font-size: 14px;
-    font-weight: 300;
+    font-weight: 500;
   }
   .bouton-faq:hover{
     cursor: pointer;
@@ -70,6 +67,8 @@ export default {
 
   h3{
     margin-bottom: 15px;
+    color: #000;
+    font-size: 24px;
   }
 
 </style>

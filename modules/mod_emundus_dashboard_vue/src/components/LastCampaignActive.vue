@@ -66,9 +66,6 @@ export default {
 
 <style scoped lang="scss">
 
-  h1 {
-    color: #00000;
-  }
   .section-sub-menu {
     display: block;
     width: 100%;
@@ -88,10 +85,10 @@ export default {
       h1{
         margin-top: 0;
         margin-bottom: 0 !important;
-        color: #1f1f1f;
-        font-size: 28px;
+        color: #000;
+        font-size: 24px;
         line-height: 35px;
-        font-weight: 400;
+        font-weight: 700;
         width: 75%;
       }
   }
@@ -99,11 +96,12 @@ export default {
     color: #78dc6e;
     border-radius: 25px;
     width: min-content;
-    padding: 5px 20px;
+    padding: 5px 30px;
     text-align: center;
     border: 2px solid #78dc6e;
     font-size: 12px;
     background: #fff;
+    font-weight: 500;
   }
   .date-menu{
     color: #b2b2c1;
@@ -133,11 +131,13 @@ export default {
     background-color: #5a5a72;
     color: #fff;
     font-size: 14px;
+    height: 29px;
     line-height: 19px;
     display: flex;
     justify-content: center;
     align-items: center;
     white-space: nowrap;
-    padding: 5px 20px;
+    padding: 5px 30px;
+    font-weight: 500;
   }
 </style>
