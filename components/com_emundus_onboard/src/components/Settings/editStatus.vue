@@ -157,9 +157,12 @@
     }
     .bouton-sauvergarder-et-continuer{
       justify-content: center;
+        right: 10%;
+        margin-bottom: 14px;
     }
     .create-tag{
       width: max-content;
       margin-bottom: 20px;
     }
+
 </style>

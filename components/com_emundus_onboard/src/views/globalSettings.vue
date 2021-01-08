@@ -312,7 +312,7 @@ export default {
 }
 .bouton-sauvergarder-et-continuer,.loading-form-save{
   position: absolute;
-  right: 4%;
+  right: 1%;
   top: 7%;
   z-index: 999;
   width: auto;

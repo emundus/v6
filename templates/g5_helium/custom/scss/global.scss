@@ -659,8 +659,8 @@ body>.g-container {
   #userDropdownIcon {
     background-color: white;
     //border: 2px solid $base-primary-color;
-    color: $base-primary-color;
-    box-shadow: none;
+    //color: $base-primary-color;
+    //box-shadow: none;
     font-size: 1.5em;
     width: 30px !important;
     height: 30px !important;
@@ -668,13 +668,14 @@ body>.g-container {
     display: flex;
     justify-content: center;
     border: unset !important;
+    margin: 0 10px 10px 10px;
 
-    &:hover,
-    &.active,
-    &:hover:active {
-      background-color: transparent;
-      color: $base-primary-color;
-    }
+   // &:hover,
+   // &:active,
+  //&:hover:active {
+  //  background-color: transparent;
+  //  color: $base-primary-color;
+  //  }
   }
 
   #userDropdownMenu {
