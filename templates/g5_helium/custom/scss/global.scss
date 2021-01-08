@@ -2604,84 +2604,90 @@ div#em-appli-block {
 
 .indicateurs-page {
   .informationStatistique {
-    background-color: $base-secondary-color;
+    background-color: $dark-blue;
   }
 
-  .etiquette label {
-    color: $base-secondary-color;
+  .item-pageindicateurs-page {
+    h1 {
+      color: #000;
+    }
+  }
+
+    .etiquette label {
+    color: $dark-blue;
   }
 
   .etiquette p {
-    color: $base-secondary-color;
+    color: $dark-blue;
   }
 
   .btnQueryBuilder,
   .swal2-confirm {
-    background: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    background: $dark-blue;
+    border: 1px solid $dark-blue;
   }
 
   .btnConsulter {
-    background: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    background: $dark-blue;
+    border: 1px solid $dark-blue;
   }
 
   .btnConsulter:hover {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
     background: transparent;
 
   }
 
   .btnQueryBuilder:hover,
   .swal2-confirm:hover {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
     background: transparent;
   }
 
   .btnExport,
   .swal2-cancel {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
     background: transparent;
   }
 
   .btnExport:hover,
   .swal2-cancel:hover {
     color: #fff;
-    border: 1px solid $base-secondary-color;
-    background: $base-secondary-color;
+    border: 1px solid $dark-blue;
+    background: $dark-blue;
   }
 
   .g-content h1::after,
   .swal2-title::after {
-    background: $base-secondary-color !important;
+    background: $dark-blue !important;
   }
 
   .swal2-progress-step,
   .swal2-progress-steps .swal2-progress-step-line,
   .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
-    background: $base-secondary-color;
+    background: $dark-blue;
   }
 
   .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line {
-    border-top: 1px solid $base-secondary-color;
-    border-bottom: 1px solid $base-secondary-color;
+    border-top: 1px solid $dark-blue;
+    border-bottom: 1px solid $dark-blue;
   }
 
   .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
   }
 
   .input .modif,
   .input .delete {
-    color: $base-secondary-color;
+    color: $dark-blue;
   }
 
   .btnConsulter:hover a {
-    color: $base-secondary-color;
+    color: $dark-blue;
   }
 }
 
