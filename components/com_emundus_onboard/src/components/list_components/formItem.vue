@@ -22,7 +22,7 @@
                 <li v-for="(campaign, index) in campaigns" class="campaigns-item">{{campaign.label}}</li>
               </ul>
             </div>
-            <div class="stats-block" style="justify-content: end">
+            <div class="stats-block" style="justify-content: flex-end">
               <a class="cta-block pointer"
                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
                  :title="Modify">

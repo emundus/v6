@@ -43,18 +43,21 @@
               v-if="menuHighlight == 1 && coordinatorAccess != 0"
               ref="homepage"
               :actualLanguage="actualLanguage"
+              :manyLanguages="manyLanguages"
           ></editHomepage>
 
           <editCGV
               v-if="menuHighlight == 2 && coordinatorAccess != 0"
               ref="cgv"
               :actualLanguage="actualLanguage"
+              :manyLanguages="manyLanguages"
           ></editCGV>
 
           <editFooter
               v-if="menuHighlight == 3 && coordinatorAccess != 0"
               ref="footer"
               :actualLanguage="actualLanguage"
+              :manyLanguages="manyLanguages"
           ></editFooter>
 
           <editStatus

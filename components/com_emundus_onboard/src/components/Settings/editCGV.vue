@@ -1,6 +1,6 @@
 <template>
     <div class="container-evaluation">
-        <ul class="menus-home-row">
+        <ul class="menus-home-row" v-if="manyLanguages !== '0'">
             <li v-for="(value, index) in languages" :key="index" class="MenuFormHome">
                 <a class="MenuFormItemHome"
                    @click="changeTranslation(index)"
@@ -9,10 +9,10 @@
                 </a>
             </li>
         </ul>
-        <div class="form-group controls" v-if="indexHighlight == 0 && this.form.content.fr != null">
+        <div class="form-group controls" style="margin-top: 5em" v-if="indexHighlight == 0 && this.form.content.fr != null">
             <editor :text="form.content.fr" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.fr"></editor>
         </div>
-        <div class="form-group controls" v-if="indexHighlight == 1 && this.form.content.en != null">
+        <div class="form-group controls" style="margin-top: 5em" v-if="indexHighlight == 1 && this.form.content.en != null">
             <editor :text="form.content.en" :lang="actualLanguage" :enable_variables="false" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.en"></editor>
         </div>
     </div>
@@ -32,7 +32,8 @@
         },
 
         props: {
-            actualLanguage: String
+            actualLanguage: String,
+            manyLanguages: Number
         },
 
         data() {
@@ -59,6 +60,11 @@
                     .then(response => {
                         this.form.content.fr = response.data.data.introtext;
                         this.form.content.en = response.data.data.introtext_en;
+                      if(this.actualLanguage == 'fr'){
+                        this.indexHighlight = 0;
+                      } else {
+                        this.indexHighlight = 1;
+                      }
                     });
             },
 

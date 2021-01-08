@@ -20,7 +20,7 @@
       </div>
       <div class="form-group">
         <label>{{maxlength}} :</label>
-        <input type="number" max="255" min="1" class="form__input field-general w-input" v-model="element.params.maxlength" />
+        <input type="number" min="1" class="form__input field-general w-input" v-model="element.params.maxlength" />
       </div>
 
 <!--      v-show - shox this div when option 4 is checked-->

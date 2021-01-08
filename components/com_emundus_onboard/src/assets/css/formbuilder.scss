@@ -19,7 +19,7 @@
     position: relative;
     input.fabrikinput {
       position: relative !important;
-      margin-right: 7px;
+      margin-right: 7px !important;
       max-width: 15px;
     }
   }
@@ -158,6 +158,9 @@ fieldset {
   }
 }
 .checkbox input[type="checkbox"]{
+  margin-bottom: 0 !important;
+}
+.radio input[type="radio"]{
   margin-bottom: 0 !important;
 }
 .translate-icon {
