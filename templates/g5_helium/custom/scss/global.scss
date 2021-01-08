@@ -2350,14 +2350,14 @@ ul.unstyled.em-linkForgot li a {
 
 /* SUPPRIMER EVAL */
 .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
-  background: $base-secondary-color !important;
-  color: #fff !important;
+  background: transparent !important;
+  color: $red !important;
 
   &:hover,
   &:active,
   &:focus {
-    background: #fff !important;
-    color: $base-secondary-color !important;
+    background: transparent !important;
+    color: $red !important;
   }
 }
 
@@ -2416,7 +2416,7 @@ div#em-appli-block {
     border: none;
 
     &:hover {
-      background-color: darken($base-secondary-color, 10%);
+      background-color: darken($dark-blue, 10%);
     }
   }
 
