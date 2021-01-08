@@ -1947,6 +1947,14 @@ textarea:hover {
   }
 }
 
+.alert {
+  a {
+    font-size: 16px;
+    &:hover {
+      font-size: 16px;
+    }
+  }
+}
 .has-error {
 
   .help-block,
