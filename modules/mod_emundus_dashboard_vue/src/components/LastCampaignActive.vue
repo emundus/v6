@@ -77,6 +77,7 @@ export default {
     box-shadow: 0 1px 2px 0 hsla(0, 0%, 41.2%, .19);
     padding: 30px;
   }
+
   .d-flex{
     display: flex;
     align-items: center;
@@ -92,6 +93,14 @@ export default {
         width: 75%;
       }
   }
+
+.section-sub-menu {
+  h1 {
+    color: #000;
+    font-size: 24px;
+    font-weight: 700;
+  }
+}
   .publishedTag{
     color: #78dc6e;
     border-radius: 25px;

@@ -62,7 +62,7 @@ export default {
   }
 
   .big-number{
-    font-size: 2.5em;
+    font-size: 30px;
     margin-top: 10%;
   }
 
