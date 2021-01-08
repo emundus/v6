@@ -165,7 +165,7 @@ export default {
 
 <style scoped>
 #select_profile{
-  width: 20%;
+  width: 23%;
   margin-right: 10px;
 }
 </style>

@@ -859,6 +859,7 @@ input[type="reset"] {
 }
 .tchooz-section-titles{
   margin-top: 0;
+  color: #000;
 }
 .section-sub-menu {
   margin-left: 30px;
@@ -2271,6 +2272,7 @@ textarea {
   padding: 5px;
   margin-bottom: 10px;
   color: $dark-blue;
+  font-weight: 700;
 }
 
 .text-required{
