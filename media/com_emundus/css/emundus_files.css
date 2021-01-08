@@ -752,7 +752,7 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 .g-back-office-emundus-tableau .panel-body {
-    background-color: #fafafa;
+    background-color: #f8f8f8;
 }
 
 .g-back-office-emundus-tableau.view-export_select_columns .panel-body {
@@ -845,7 +845,7 @@ div#em-modal-actions .panel-heading h5 {
 .g-back-office-emundus-tableau .panel-info {
     box-shadow: none;
     border-radius:0;
-    border-right: 2px solid #eee;
+   border-right: 2px solid #eee;
     border-left:none;
     border-bottom:none;
     margin-bottom: 0px !important;

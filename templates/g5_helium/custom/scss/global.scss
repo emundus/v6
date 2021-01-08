@@ -1786,8 +1786,7 @@ button#back,
   }
 }
 
-#em_select_filter #del-filter,
-#em-delete-files.btn.btn-danger.btn-xs.pull-right {
+#em_select_filter #del-filter{
   background-color: $red;
   color: #fff;
   border-color: $red;
@@ -1798,6 +1797,21 @@ button#back,
     background: #fff;
     border-color: $red;
     color: $red;
+  }
+}
+
+
+#em-delete-files.btn.btn-danger.btn-xs.pull-right {
+  background-color: transparent;
+  color: $red;
+  border-color: transparent;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: transparent;
+    color: $red;
+    border-color: transparent;
   }
 }
 
@@ -1824,16 +1838,16 @@ button#back,
 }
 
 #em-see-files.btn.btn-info.btn-xs.pull-right {
-  background-color: $base-primary-color;
-  color: #fff;
-  border-color: $base-primary-color;
+  background-color: transparent;
+  color: $dark-blue;
+  border-color: transparent;
 
   &:hover,
   &:active,
   &:focus {
-    background: #fff;
-    border: 1px solid $base-primary-color;
-    color: $base-primary-color;
+    background-color: transparent;
+    color: $dark-blue;
+    border-color: transparent;
   }
 }
 
@@ -1916,6 +1930,7 @@ textarea:hover {
   padding: 5px;
   a{
     padding: 5px !important;
+    background: $dark-blue;
     &:hover{
       border-radius: 4px;
     }
@@ -2356,16 +2371,22 @@ ul.unstyled.em-linkForgot li a {
 
 .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
 .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
-  height: 40px;
-  background-color: $base-secondary-color;
-  border: 1px solid $base-secondary-color !important;
+  height: 36px;
+  background-color: $dark-blue;
+  border: 1px solid $dark-blue !important;
+  border-radius: 25px !important;
+  padding: 5px 30px !important;
 
   &:hover,
   &:active,
   &:focus {
-    background-color: darken($base-secondary-color, 10%) !important;
-    color: #fff;
-    border: 1px solid darken($base-secondary-color, 10%);
+    background-color: transparent !important;
+    color: $dark-blue;
+    border: 2px solid darken($dark-blue, 10%);
+  }
+
+  i {
+    font-style: initial;
   }
 }
 
@@ -2385,13 +2406,13 @@ ul.unstyled.em-linkForgot li a {
 
 div#em-appli-block {
   .panel-heading {
-    background: $base-primary-color;
+    background: $dark-blue;
     border-radius: 0;
     margin-top: 2px;
   }
 
   button.btn.btn-default {
-    background-color: $base-secondary-color;
+    background-color: $dark-blue;
     border: none;
 
     &:hover {
