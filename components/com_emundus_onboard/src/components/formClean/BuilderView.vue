@@ -1158,7 +1158,6 @@ export default {
     position: absolute;
     cursor: grab;
     left: auto;
-    margin-bottom: 30px;
     right: 50px;
   }
   .icon-handle-group{

@@ -4,7 +4,7 @@
       <div class="col-md-8 form-viewer-builder" style="padding: 30px">
         <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility" v-if="formLinkArray[indexHighlight]" @editPage="EditPage" />
       </div>
-        <ul class="col-md-3">
+        <ul class="col-md-3 sticky-form-pages">
           <h3 class="mb-1" style="padding: 0;">{{ FormPage }} :</h3>
           <div class="form-pages">
             <h4 class="ml-10px form-title" style="margin-bottom: 0"><img src="/images/emundus/menus/form.png" class="mr-1">{{ Form }}</h4>
