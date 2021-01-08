@@ -1808,7 +1808,8 @@ textarea {
   transition: all 0.3s ease-in-out;
 }
 .menu-block {
-  height: 100vh;
+  height: 100%;
+  display: contents;
   margin-top: 2em;
   padding: 0 1em 0 1em;
   transition: all 0.6s ease-in-out;
@@ -2161,6 +2162,16 @@ textarea {
     width: 610px;
   }
 }
+@media (max-width: 1440px) {
+  .actions-block {
+    left: 25% !important;
+    margin-top: 25px !important;
+  }
+  .actions-filters-block{
+    right: 85px !important;
+    top: 255px !important;
+  }
+}
 
 /** TASKS **/
 .task-title{
@@ -2321,8 +2332,9 @@ textarea {
 
 .actions-block{
   position: absolute !important;
-  left: 250px;
-  top: 160px;
+  left: 20%;
+  top: auto;
+  margin-top: 35px;
   background: url('../images/icons/down-arrow.svg');
   background-size: 10px;
   background-repeat: no-repeat;
@@ -2337,6 +2349,7 @@ textarea {
     align-items: center;
     background: #fff;
     border: solid 2px #ececec;
+    margin-top: -30px;
   }
 }
 
@@ -2357,6 +2370,7 @@ textarea {
     align-items: center;
     background: #fff;
     border: solid 2px #ececec;
+    margin-top: -30px;
   }
 }
 
