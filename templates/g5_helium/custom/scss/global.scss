@@ -1800,7 +1800,11 @@ button#back,
 }
 
 #em-files-filters .em-filter .em_label label a {
-  color: #12DB42;
+  color: $dark-green;
+}
+
+.files-board .panel.panel-default.em-data span.em_list_text {
+  color: $dark-blue;
 }
 
 #filters #quick.form-group input#search.btn.btn-sm.btn-info {
