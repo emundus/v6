@@ -255,7 +255,7 @@
   text-align: center;
 }
 .email-sections{
-  width: 50% !important;
+  width: 98% !important;
   margin: 3% auto !important;
 }
 .noPagination{
@@ -773,12 +773,12 @@ input[type="reset"] {
 }
 .description-block {
   width: 70%;
-  margin-top: 15px;
-  margin-bottom: 0;
+  margin-top: 9px;
+  margin-bottom: 8px;
   font-size: 13px;
   line-height: 20px;
   margin-left: 35px;
-  height: 70px;
+  height: 66px;
   -ms-overflow-style: none;
   scrollbar-width: none;
   text-overflow: ellipsis;
@@ -855,9 +855,11 @@ input[type="reset"] {
   margin-top: 10px;
   white-space: nowrap;
   padding: 5px 30px;
+  font-weight: 500;
 }
 .tchooz-section-titles{
   margin-top: 0;
+  color: #000;
 }
 .section-sub-menu {
   margin-left: 30px;
@@ -929,7 +931,7 @@ input[type="reset"] {
   display: flex;
   align-items: center;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 500;
   &:hover{
     cursor: pointer;
     background-color: transparent;
@@ -2270,6 +2272,7 @@ textarea {
   padding: 5px;
   margin-bottom: 10px;
   color: $dark-blue;
+  font-weight: 700;
 }
 
 .text-required{

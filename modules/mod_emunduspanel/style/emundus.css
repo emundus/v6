@@ -122,7 +122,7 @@ div#em-panel legend {
 }
 #em-panel .tchooz-section-titles{
     margin-bottom: 0 !important;
-    margin-top: 0;
+    margin-top: -8px;
 }
 #em-panel .actions-add-block {
     display: flex;

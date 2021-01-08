@@ -58,6 +58,7 @@ export default {
     align-items: center;
     font-size: 14px;
     font-weight: 500;
+    bottom: 30px;
   }
   .bouton-faq:hover{
     cursor: pointer;

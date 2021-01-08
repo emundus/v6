@@ -11,7 +11,7 @@
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }"
                 ></a>
-                <h1 class="nom-campagne-block" :style="data.type != 2 ? 'margin-left: 35px' : ''">{{ data.subject }}</h1>
+                <h2 class="nom-campagne-block" :style="data.type != 2 ? 'margin-left: 35px' : ''">{{ data.subject }}</h2>
               </div>
               <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
                 {{ isPublished ? publishedTag : unpublishedTag }}

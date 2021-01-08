@@ -4,7 +4,7 @@
       <template v-if="campaigns.length > 0">
         <template v-if="campaigns[cindex]">
           <div class='d-flex'>
-            <h1>{{campaigns[cindex].label}}</h1>
+            <h2>{{campaigns[cindex].label}}</h2>
             <div class='publishedTag'>
               Publiée
             </div>
@@ -83,7 +83,7 @@ export default {
     align-items: center;
     margin-bottom: 10px;
     justify-content: space-between;
-      h1{
+      h2{
         margin-top: 0;
         margin-bottom: 0 !important;
         color: #000;
@@ -95,7 +95,7 @@ export default {
   }
 
 .section-sub-menu {
-  h1 {
+  h2 {
     color: #000;
     font-size: 24px;
     font-weight: 700;

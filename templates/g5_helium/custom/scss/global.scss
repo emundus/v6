@@ -1139,8 +1139,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
+  background: $dark-green;
+  border: 1px solid $dark-green;
 }
 
 .fabrikForm legend {
@@ -1786,8 +1786,7 @@ button#back,
   }
 }
 
-#em_select_filter #del-filter,
-#em-delete-files.btn.btn-danger.btn-xs.pull-right {
+#em_select_filter #del-filter{
   background-color: $red;
   color: #fff;
   border-color: $red;
@@ -1801,7 +1800,22 @@ button#back,
   }
 }
 
-#em-files-filters .em-filter .em_label label a {
+
+#em-delete-files.btn.btn-danger.btn-xs.pull-right {
+  background-color: transparent;
+  color: $red;
+  border-color: transparent;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: transparent;
+    color: $red;
+    border-color: transparent;
+  }
+}
+
+#em-files-filters .em-filter .em_label label a, #em-user-filters .em-filter .em_label label a  {
   color: $dark-green;
 }
 
@@ -1824,16 +1838,16 @@ button#back,
 }
 
 #em-see-files.btn.btn-info.btn-xs.pull-right {
-  background-color: $base-primary-color;
-  color: #fff;
-  border-color: $base-primary-color;
+  background-color: transparent;
+  color: $dark-blue;
+  border-color: transparent;
 
   &:hover,
   &:active,
   &:focus {
-    background: #fff;
-    border: 1px solid $base-primary-color;
-    color: $base-primary-color;
+    background-color: transparent;
+    color: $dark-blue;
+    border-color: transparent;
   }
 }
 
@@ -1900,8 +1914,8 @@ textarea:hover {
 }
 
 
-.candidacy-files-list h2,
-#em-panel h2 {
+.candidacy-files-list h1,
+#em-panel h1 {
   color: #000;
   font-weight: 700;
 }
@@ -1916,6 +1930,7 @@ textarea:hover {
   padding: 5px;
   a{
     padding: 5px !important;
+    background: $dark-blue;
     &:hover{
       border-radius: 4px;
     }
@@ -2335,14 +2350,14 @@ ul.unstyled.em-linkForgot li a {
 
 /* SUPPRIMER EVAL */
 .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
-  background: $base-secondary-color !important;
-  color: #fff !important;
+  background: transparent !important;
+  color: $red !important;
 
   &:hover,
   &:active,
   &:focus {
-    background: #fff !important;
-    color: $base-secondary-color !important;
+    background: transparent !important;
+    color: $red !important;
   }
 }
 
@@ -2356,16 +2371,22 @@ ul.unstyled.em-linkForgot li a {
 
 .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
 .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
-  height: 40px;
-  background-color: $base-secondary-color;
-  border: 1px solid $base-secondary-color !important;
+  height: 36px;
+  background-color: $dark-blue;
+  border: 1px solid $dark-blue !important;
+  border-radius: 25px !important;
+  padding: 5px 30px !important;
 
   &:hover,
   &:active,
   &:focus {
-    background-color: darken($base-secondary-color, 10%) !important;
-    color: #fff;
-    border: 1px solid darken($base-secondary-color, 10%);
+    background-color: transparent !important;
+    color: $dark-blue;
+    border: 2px solid darken($dark-blue, 10%);
+  }
+
+  i {
+    font-style: initial;
   }
 }
 
@@ -2385,17 +2406,17 @@ ul.unstyled.em-linkForgot li a {
 
 div#em-appli-block {
   .panel-heading {
-    background: $base-primary-color;
+    background: $dark-blue;
     border-radius: 0;
     margin-top: 2px;
   }
 
   button.btn.btn-default {
-    background-color: $base-secondary-color;
+    background-color: $dark-blue;
     border: none;
 
     &:hover {
-      background-color: darken($base-secondary-color, 10%);
+      background-color: darken($dark-blue, 10%);
     }
   }
 
@@ -2440,45 +2461,45 @@ div#em-appli-block {
 .view-list form.form-search table {
   thead th.fabrik_actions .btn-group {
     a.delete {
-      background: $base-secondary-color;
-      border-color: $base-secondary-color;
+      background: $red;
+      border-color: $red;
 
       &:hover,
       &:active,
       &:focus {
         background: #fff;
-        border-color: $base-secondary-color;
-        color: $base-secondary-color;
+        border-color: $red;
+        color: $red;
       }
     }
   }
 
   tbody td.fabrik_actions .btn-group {
     a.delete {
-      background: $base-secondary-color;
-      border-color: $base-secondary-color;
+      background: $red;
+      border-color: $red;
 
       &:hover,
       &:active,
       &:focus {
         background: #fff;
-        border-color: $base-secondary-color;
-        color: $base-secondary-color;
+        border-color: $red;
+        color: $red;
       }
     }
 
     a.fabrik_edit,
     a.fabrik_view,
     a.listplugin {
-      background: $base-primary-color;
-      border-color: $base-primary-color;
+      background: $dark-blue;
+      border-color: $dark-blue;
 
       &:hover,
       &:active,
       &:focus {
         background: #fff;
-        border-color: $base-primary-color;
-        color: $base-primary-color;
+        border-color: $dark-blue;
+        color: $dark-blue;
       }
     }
   }
@@ -2583,84 +2604,90 @@ div#em-appli-block {
 
 .indicateurs-page {
   .informationStatistique {
-    background-color: $base-secondary-color;
+    background-color: $dark-blue;
   }
 
-  .etiquette label {
-    color: $base-secondary-color;
+  .item-pageindicateurs-page {
+    h1 {
+      color: #000;
+    }
+  }
+
+    .etiquette label {
+    color: $dark-blue;
   }
 
   .etiquette p {
-    color: $base-secondary-color;
+    color: $dark-blue;
   }
 
   .btnQueryBuilder,
   .swal2-confirm {
-    background: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    background: $dark-blue;
+    border: 1px solid $dark-blue;
   }
 
   .btnConsulter {
-    background: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    background: $dark-blue;
+    border: 1px solid $dark-blue;
   }
 
   .btnConsulter:hover {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
     background: transparent;
 
   }
 
   .btnQueryBuilder:hover,
   .swal2-confirm:hover {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
     background: transparent;
   }
 
   .btnExport,
   .swal2-cancel {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
     background: transparent;
   }
 
   .btnExport:hover,
   .swal2-cancel:hover {
     color: #fff;
-    border: 1px solid $base-secondary-color;
-    background: $base-secondary-color;
+    border: 1px solid $dark-blue;
+    background: $dark-blue;
   }
 
   .g-content h1::after,
   .swal2-title::after {
-    background: $base-secondary-color !important;
+    background: $dark-blue !important;
   }
 
   .swal2-progress-step,
   .swal2-progress-steps .swal2-progress-step-line,
   .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
-    background: $base-secondary-color;
+    background: $dark-blue;
   }
 
   .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line {
-    border-top: 1px solid $base-secondary-color;
-    border-bottom: 1px solid $base-secondary-color;
+    border-top: 1px solid $dark-blue;
+    border-bottom: 1px solid $dark-blue;
   }
 
   .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
   }
 
   .input .modif,
   .input .delete {
-    color: $base-secondary-color;
+    color: $dark-blue;
   }
 
   .btnConsulter:hover a {
-    color: $base-secondary-color;
+    color: $dark-blue;
   }
 }
 
@@ -3342,8 +3369,31 @@ footer#g-footer .g-grid {
     }
   }
 
-  .error-report-page .fabrikForm {
-    padding: 1rem 3rem 1rem 3rem;
+  .error-report-page {
+    .fabrikForm {
+      padding: 1rem 3rem 1rem 3rem;
+    }
+    h1, legend {
+      color: #000;
+    }
+
+    fieldset {
+      background: #f8f8f8;
+    }
+    .fabrikActions.form-actions {
+      button {
+        background: $dark-blue;
+        border: 2px solid $dark-blue;
+        padding: 5px 30px !important;
+        font-weight: 500 !important;
+        border-radius: 25px !important;
+        &:active, &:focus, &:hover {
+          background: transparent;
+          border: 2px solid $dark-blue;
+          color: $dark-blue;
+        }
+      }
+    }
   }
 
   .mod-languages {

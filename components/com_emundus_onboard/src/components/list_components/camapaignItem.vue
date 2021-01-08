@@ -10,7 +10,7 @@
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }">
                 </a>
-                <h1 class="nom-campagne-block">{{ data.label }}</h1>
+                <h2 class="nom-campagne-block">{{ data.label }}</h2>
               </div>
               <div :class="isPublished ? 'publishedTag' : isFinish ? 'passeeTag' : 'unpublishedTag'">
                 {{ isPublished ? publishedTag : isFinish ? passeeTag : unpublishedTag }}
@@ -143,19 +143,11 @@ export default {
   .w-row{
     margin-bottom: 0 !important;
   }
-  h1 {
+  h2 {
     color: #000;
     font-size: 24px;
     font-weight: 700;
   }
 
-  .publishedTag {
-    padding: 5px 30px;
-    font-weight: 500;
-  }
 
-  .nb-dossier {
-    padding: 5px 30px;
-    font-weight: 500;
-  }
 </style>
