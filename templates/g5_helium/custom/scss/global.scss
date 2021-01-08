@@ -3369,8 +3369,31 @@ footer#g-footer .g-grid {
     }
   }
 
-  .error-report-page .fabrikForm {
-    padding: 1rem 3rem 1rem 3rem;
+  .error-report-page {
+    .fabrikForm {
+      padding: 1rem 3rem 1rem 3rem;
+    }
+    h1, legend {
+      color: #000;
+    }
+
+    fieldset {
+      background: #f8f8f8;
+    }
+    .fabrikActions.form-actions {
+      button {
+        background: $dark-blue;
+        border: 2px solid $dark-blue;
+        padding: 5px 30px !important;
+        font-weight: 500 !important;
+        border-radius: 25px !important;
+        &:active, &:focus, &:hover {
+          background: transparent;
+          border: 2px solid $dark-blue;
+          color: $dark-blue;
+        }
+      }
+    }
   }
 
   .mod-languages {
