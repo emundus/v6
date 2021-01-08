@@ -19,7 +19,7 @@
             </div>
             <a href="#" class="button-programme" style="margin-left: 35px">{{ type[langue][data.type - 1] }}</a>
             <p class="description-block"><span v-html="data.message"></span></p>
-            <div class="stats-block" style="justify-content: end">
+            <div class="stats-block" style="justify-content: flex-end">
               <a class="cta-block pointer"
                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
                  :title="Modify">

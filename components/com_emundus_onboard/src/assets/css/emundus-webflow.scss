@@ -422,6 +422,7 @@ textarea.w-input {
   border-left: solid 1px #e0e0e5;
   padding: 10px;
   font-size: 14px;
+  max-width: 250px;
   .tchooz-sidebar-menus{
     margin-top: 100px;
   }
@@ -755,6 +756,9 @@ input[type="reset"] {
   line-height: 35px;
   font-weight: 400;
   width: 75%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   &::after {
     content: unset;
   }

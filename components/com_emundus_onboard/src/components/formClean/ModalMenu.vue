@@ -49,7 +49,7 @@
         <div class="form-group mt-1" :class="{'mb-0': translate.intro}">
           <label>{{Intro}} :</label>
           <div class="input-can-translate">
-              <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="300" style="margin: 0"></textarea>
+              <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="2000" style="margin: 0"></textarea>
               <button class="translate-icon" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
           </div>
         </div>
@@ -138,6 +138,14 @@ export default {
             this.dataSaved,
             this.informations
         );
+      }
+      this.label = {
+        fr: '',
+        en: ''
+      }
+      this.intro = {
+        fr: '',
+        en: ''
       }
       this.$emit("modalClosed");
       this.changes = false;
