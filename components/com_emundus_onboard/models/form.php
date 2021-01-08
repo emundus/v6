@@ -945,6 +945,22 @@ class EmundusonboardModelform extends JModelList {
 		}
 	}
 
+	public function updateFormLabel($prid,$label){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update($db->quoteName('#__emundus_setup_profiles'))
+                ->set($db->quoteName('label') . ' = ' . $db->quote($label))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($prid));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/form | Cannot update the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
 
 	public function getAllDocuments($prid, $cid)
 	{

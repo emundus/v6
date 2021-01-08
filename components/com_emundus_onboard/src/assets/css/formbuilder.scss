@@ -157,6 +157,9 @@ fieldset {
     font-weight: normal;
   }
 }
+.checkbox input[type="checkbox"]{
+  margin-bottom: 0 !important;
+}
 .translate-icon {
   background: url('../images/icons/language.svg') no-repeat center;
   background-size: 15px;

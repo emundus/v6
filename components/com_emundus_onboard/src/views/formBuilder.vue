@@ -109,11 +109,21 @@
       </div>
       <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
         <div class="heading-block" :class="addingElement ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
-          <div class="d-flex">
-            <h2 class="form-title" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1">{{profileLabel}}</h2>
-            <a :href="'index.php?option=com_emundus_onboard&view=form&layout=add&pid=' + this.prid" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
+          <div class="d-flex" v-show="!updateFormLabel">
+            <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1">{{profileLabel}}</h2>
+            <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
               <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
             </a>
+          </div>
+          <div style="width: max-content;margin-left: 20px" v-show="updateFormLabel">
+            <div class="input-can-translate">
+              <input v-if="profileLabel" v-model="profileLabel" class="form__input field-general w-input" style="width: 400px;" @keyup.enter="updateLabelForm()" :id="'update_label_form_' + prid"/>
+              <div class="d-flex actions-update-label ml-10px">
+                <a @click="updateLabelForm()" :title="Validate">
+                  <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
+                </a>
+              </div>
+            </div>
           </div>
           <div>
             <label class="saving-at">{{ Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
@@ -257,6 +267,7 @@
         menuHighlight: 0,
         indexHighlight: "0",
         indexGrab: "0",
+        updateFormLabel: false,
         animation: {
           enter: {
             opacity: [1, 0],
@@ -354,6 +365,11 @@
         Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
         Back: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
         Savingat: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVING_AT"),
+        Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+        update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+        updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
+        updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
+        updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
       };
     },
 
@@ -484,6 +500,25 @@
       },
       UpdateUXT() {
         this.UpdateUx = true;
+      },
+      updateLabelForm(){
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=form&task=updateformlabel",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            label: this.profileLabel,
+            prid: this.prid,
+          })
+        }).then((result) => {
+            this.show("foo-velocity", "success", this.updateSuccess, this.update);
+            this.updateFormLabel = false;
+        }).catch(e => {
+          this.show("foo-velocity", "error", this.updateFailed, this.updating);
+          console.log(e);
+        });
       },
       pushGroup(group) {
         if(this.menuHighlight === 0) {
@@ -621,6 +656,12 @@
       },
       clean(group) {
         this.$notify({ group, clean: true });
+      },
+      enableUpdatingForm(){
+        this.updateFormLabel = true;
+        setTimeout(() => {
+          document.getElementById('update_label_form_' + this.prid).focus();
+        }, 100);
       },
 
       async getDataObject() {
@@ -948,6 +989,7 @@
     display: flex;
     align-items: center;
     padding: 1em;
+    color: black !important;
   }
   .form-title img{
     width: 25px;

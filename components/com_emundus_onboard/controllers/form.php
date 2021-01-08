@@ -259,6 +259,31 @@ class EmundusonboardControllerform extends JControllerLegacy {
         exit;
     }
 
+    public function updateformlabel() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+            $jinput = JFactory::getApplication()->input;
+            $prid = $jinput->getInt('prid');
+            $label = $jinput->getString('label');
+            $m_form = $this->model;
+
+            $result = $m_form->updateFormLabel($prid, $label);
+
+            if ($result) {
+                $tab = array('status' => 1, 'msg' => JText::_('FORM_UPDATED'), 'data' => $result);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('FORM_NOT_UPDATED'), 'data' => $result);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
 
     public function getformbyid() {
         $user = JFactory::getUser();
