@@ -576,7 +576,6 @@ input[type="reset"] {
 
 .update-field-header{
   margin-bottom: 1em;
-  margin-top: 3em;
   border-bottom: solid 1px $grey;
   padding-bottom: 10px;
 }
@@ -2227,11 +2226,12 @@ textarea {
 .fixed-header-modal{
   position: fixed;
   background: white;
-  width: -moz-available;
+  width: inherit;
   padding-right: 20px;
   z-index: 11;
   top: 0;
   padding-top: 10px;
+  margin-top: 3em;
 }
 
 .status-field{
