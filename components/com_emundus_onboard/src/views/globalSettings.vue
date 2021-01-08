@@ -315,10 +315,11 @@ export default {
 }
 .bouton-sauvergarder-et-continuer,.loading-form-save{
   position: absolute;
-  right: 1%;
+  right: 10% !important;
   top: 7%;
   z-index: 999;
   width: auto;
+  margin-top: -14px;
 }
 .loading-form-save{
   right: 10% !important;

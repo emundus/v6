@@ -83,7 +83,7 @@ export default {
     align-items: center;
     margin-bottom: 10px;
     justify-content: space-between;
-      h1{
+      h2{
         margin-top: 0;
         margin-bottom: 0 !important;
         color: #000;
@@ -95,7 +95,7 @@ export default {
   }
 
 .section-sub-menu {
-  h1 {
+  h2 {
     color: #000;
     font-size: 24px;
     font-weight: 700;

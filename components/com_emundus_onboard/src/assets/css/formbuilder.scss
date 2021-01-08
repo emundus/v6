@@ -314,8 +314,8 @@ select.fabrikinput.form-control {
   margin: 2em 0 1em 0;
   font-size: 20px;
   padding: 0;
-  justify-content: space-around;
-  width: 100%;
+  justify-content: flex-end;
+  width: 98%;
   list-style: none;
   li {
     padding: 0 1em 0 1em;

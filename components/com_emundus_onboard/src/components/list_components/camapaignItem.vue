@@ -143,7 +143,7 @@ export default {
   .w-row{
     margin-bottom: 0 !important;
   }
-  h1 {
+  h2 {
     color: #000;
     font-size: 24px;
     font-weight: 700;
