@@ -143,4 +143,19 @@ export default {
   .w-row{
     margin-bottom: 0 !important;
   }
+  h1 {
+    color: #000;
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .publishedTag {
+    padding: 5px 30px;
+    font-weight: 500;
+  }
+
+  .nb-dossier {
+    padding: 5px 30px;
+    font-weight: 500;
+  }
 </style>
