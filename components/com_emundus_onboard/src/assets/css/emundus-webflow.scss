@@ -314,7 +314,7 @@ h4{
 input {
   display: block;
   margin-bottom: 10px !important;
-  padding: 5px 20px !important;
+  padding: 5px 30px !important;
   border: 2px solid #cccccc !important;
   border-radius: 4px !important;
   -webkit-transition: border-color 200ms linear !important;
@@ -446,7 +446,7 @@ textarea.w-input {
 .MenuFormItemHome {
   text-decoration: none;
   cursor: pointer;
-  padding: 5px 20px;
+  padding: 5px 30px;
   border-radius: 25px;
   white-space: nowrap;
   border: solid 2px $dark-green;
@@ -850,7 +850,7 @@ input[type="reset"] {
   align-items: center;
   margin-top: 10px;
   white-space: nowrap;
-  padding: 5px 20px;
+  padding: 5px 30px;
 }
 .tchooz-section-titles{
   margin-top: 0;
@@ -892,13 +892,14 @@ input[type="reset"] {
   color: #78dc6e;
   border-radius: 25px;
   width: min-content;
-  padding: 5px 20px;
+  padding: 5px 30px;
   text-align: center;
   margin-left: 1em;
   margin-bottom: 10px;
   border: solid 2px #78dc6e;
   font-size: 12px;
   background: white;
+  font-weight: 500;
 }
 .unpublishedBlock {
   background: #4b4b4b;
@@ -911,7 +912,7 @@ input[type="reset"] {
 }
 .bouton-ajouter {
   position: relative;
-  padding: 5px 20px;
+  padding: 5px 30px;
   height: 36px;
   border-radius: 25px;
   border: solid 2px $dark-blue;
@@ -956,7 +957,7 @@ input[type="reset"] {
   background-color: #696969;
 }
 div.buttonSelectDeselect {
-  margin: 2% 3%;
+  margin: 2% 3.5%;
   align-items: center;
   div {
     font-size: 16px;
@@ -1105,7 +1106,7 @@ span.draggable {
 }
 .container-evaluation {
   position: relative;
-  margin: 0 30px;
+  margin: 0 0 0 30px;
 }
 #email-form {
   .vdatetime {
@@ -1794,12 +1795,11 @@ textarea {
 .heading-block{
   margin-bottom: 1em;
   margin-top: 2em;
-  width: 75%;
+  width: 67%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   transition: all 0.3s ease-in-out;
-  padding: 0 1em !important;
 }
 .menu-block {
   height: 100vh;
@@ -1897,7 +1897,6 @@ textarea {
   padding: 40px;
   border: dashed;
   border-radius: 5px;
-  margin: 10px;
   justify-content: center;
   align-items: center;
   display: flex;
@@ -2376,5 +2375,12 @@ input[type="radio"]{
 .sticky-form-pages{
   position: sticky !important;
   top: 15vh;
+}
+
+.form-page {
+  input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    border: 2px solid #ccc!important;
+    border-radius: 4px!important;
+  }
 }
 
