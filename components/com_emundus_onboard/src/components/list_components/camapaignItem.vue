@@ -10,7 +10,7 @@
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }">
                 </a>
-                <h1 class="nom-campagne-block">{{ data.label }}</h1>
+                <h2 class="nom-campagne-block">{{ data.label }}</h2>
               </div>
               <div :class="isPublished ? 'publishedTag' : isFinish ? 'passeeTag' : 'unpublishedTag'">
                 {{ isPublished ? publishedTag : isFinish ? passeeTag : unpublishedTag }}

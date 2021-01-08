@@ -4,7 +4,7 @@
       <template v-if="campaigns.length > 0">
         <template v-if="campaigns[cindex]">
           <div class='d-flex'>
-            <h1>{{campaigns[cindex].label}}</h1>
+            <h2>{{campaigns[cindex].label}}</h2>
             <div class='publishedTag'>
               Publiée
             </div>
