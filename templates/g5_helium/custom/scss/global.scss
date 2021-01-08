@@ -2206,7 +2206,19 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
-.em-container-comment .form.em-decision-form .btn btn-success {
+.import-csv-page  .fabrikActions.form-actions  button.importation {
+  padding: 5px 30px;
+  border: 2px solid $dark-blue;
+  background: $dark-blue;
+  border-radius: 25px !important;
+  &:hover, &:active, &:focus {
+    border: 2px solid $dark-blue;
+    background: transparent;
+    color: $dark-blue;
+  }
+}
+
+. .form.em-decision-form .btn.btn-success {
   padding: 5px 30px;
   border: 2px solid $dark-blue;
   background: $dark-blue;
@@ -2245,7 +2257,7 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .g-back-office-emundus-tableau.experts-page .panel-info>.panel-heading h3.panel-title {
-  color: $base-secondary-color !important;
+  color: $dark-blue !important;
 }
 
 .g-back-office-emundus-tableau.files-board .panel-info>.panel-heading {
@@ -2731,76 +2743,76 @@ div#em-appli-block {
 /* EXPERTS */
 
 .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="showForm()"] {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
+  background: $dark-green;
+  border: 1px solid $dark-green;
   color: #fff;
   margin-left: 10px;
 
   &:hover,
   &:active,
   &:focus {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-green;
+    border: 1px solid $dark-green;
     background: #fff;
   }
 }
 
 .experts-page div.btn.btn-primary.btn-xs.pull-right[ng-click="addGroup()"] {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
+  background: $dark-green;
+  border: 1px solid $dark-green;
   color: #fff;
   margin-left: 10px;
 
   &:hover,
   &:active,
   &:focus {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-green;
+    border: 1px solid $dark-green;
     background-color: #fff;
   }
 }
 
 .experts-page .ct-view.contact .panel-heading div.btn.btn-default.btn.xs.pull-right:nth-child(3) {
-  background: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: $dark-blue;
+  border: 1px solid $dark-blue;
   color: #fff;
   margin-left: 10px;
 
   &:hover,
   &:active,
   &:focus {
-    color: $base-primary-color;
-    border: 1px solid $base-primary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
     background: #fff;
   }
 }
 
 .experts-page .panel-heading div.btn.btn-default.btn.xs.pull-right:first-of-type {
-  background: $base-secondary-color;
-  border: 1px solid $base-secondary-color;
+  background: $dark-green;
+  border: 1px solid $dark-green;
   color: #fff;
   margin-left: 10px;
 
   &:hover,
   &:active,
   &:focus {
-    color: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    color: $dark-green;
+    border: 1px solid $dark-green;
     background: #fff;
   }
 }
 
 .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="switchSearch()"] {
-  background: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: $dark-blue;
+  border: 1px solid $dark-blue;
   color: #fff;
   margin-left: 10px;
 
   &:hover,
   &:active,
   &:focus {
-    color: $base-primary-color;
-    border: 1px solid $base-primary-color;
+    color: $dark-blue;
+    border: 1px solid $dark-blue;
     background: #fff;
   }
 }

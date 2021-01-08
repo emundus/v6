@@ -1197,6 +1197,14 @@ body.em-formRegistrationCenter  {
    display: inline; 
 }
 
+/* IMPORT CSV */ 
+
+.import-csv-page {
+    h1, legend {
+    color: #000; 
+    }
+}
+
 /* AJOUT APRES MAJ */
 .view-form input[type='radio']  { 
     border: 1px solid #e0e0e5 !important;
