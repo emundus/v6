@@ -28,7 +28,7 @@
                 <i class="fas fa-check"></i><span class="mr-1">{{Saved}}</span>
               </div>
             </transition>
-            <button type="button" v-if="menuHighlight != 0 && menuHighlight != 6  && menuHighlight != 7" @click="saveCurrentPage()" class="bouton-sauvergarder-et-continuer" :style="menuHighlight == 4 || menuHighlight == 5 ? 'right: 14%' : ''">{{ Save }}</button>
+            <button type="button" v-if="menuHighlight != 0 && menuHighlight != 6  && menuHighlight != 7" @click="saveCurrentPage()" class="bouton-sauvergarder-et-continuer" :style="menuHighlight == 4 || menuHighlight == 5 ? 'right: 10%' : ''">{{ Save }}</button>
           </div>
         </div>
         <transition name="slide-right">
@@ -315,7 +315,7 @@ export default {
 }
 .bouton-sauvergarder-et-continuer,.loading-form-save{
   position: absolute;
-  right: 10% !important;
+  right: 1%;
   top: 7%;
   z-index: 999;
   width: auto;

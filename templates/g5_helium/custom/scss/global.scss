@@ -1826,6 +1826,7 @@ button#back,
   background-color: transparent;
   color: $dark-blue;
   border: none;
+  font-size: 21px; !important;
 
   &:hover,
   &:active,
@@ -2548,12 +2549,12 @@ div#em-appli-block {
       th,
       i,
       a {
-        color: $base-secondary-color;
+        color: $dark-blue;
       }
     }
 
     tbody tr>td {
-      color: $base-secondary-color;
+      color: $dark-blue;
     }
   }
 
@@ -2561,25 +2562,25 @@ div#em-appli-block {
 
     a,
     i {
-      color: $base-secondary-color;
+      color: $dark-blue;
     }
 
     b.caret {
-      color: $base-secondary-color;
+      color: $dark-blue;
     }
 
     b.caret {
-      color: $base-secondary-color;
+      color: $dark-blue;
     }
     a:hover b.caret,
     a:hover b.caret,
     a:hover b.caret {
-      color: $base-secondary-color;
-      border-top-color: $base-secondary-color;
-      border-bottom-color: $base-secondary-color;
+      color: $dark-blue;
+      border-top-color: $dark-blue;
+      border-bottom-color: $dark-blue;
     }
       ul.dropdown-menu li a {
-        color: $base-secondary-color;
+        color: $dark-blue;
           &:hover, &:focus, &:active {
             color: #fff;
             i {
