@@ -1815,7 +1815,7 @@ button#back,
   }
 }
 
-#em-files-filters .em-filter .em_label label a {
+#em-files-filters .em-filter .em_label label a, #em-user-filters .em-filter .em_label label a  {
   color: $dark-green;
 }
 
@@ -2461,45 +2461,45 @@ div#em-appli-block {
 .view-list form.form-search table {
   thead th.fabrik_actions .btn-group {
     a.delete {
-      background: $base-secondary-color;
-      border-color: $base-secondary-color;
+      background: $red;
+      border-color: $red;
 
       &:hover,
       &:active,
       &:focus {
         background: #fff;
-        border-color: $base-secondary-color;
-        color: $base-secondary-color;
+        border-color: $red;
+        color: $red;
       }
     }
   }
 
   tbody td.fabrik_actions .btn-group {
     a.delete {
-      background: $base-secondary-color;
-      border-color: $base-secondary-color;
+      background: $red;
+      border-color: $red;
 
       &:hover,
       &:active,
       &:focus {
         background: #fff;
-        border-color: $base-secondary-color;
-        color: $base-secondary-color;
+        border-color: $red;
+        color: $red;
       }
     }
 
     a.fabrik_edit,
     a.fabrik_view,
     a.listplugin {
-      background: $base-primary-color;
-      border-color: $base-primary-color;
+      background: $dark-blue;
+      border-color: $dark-blue;
 
       &:hover,
       &:active,
       &:focus {
         background: #fff;
-        border-color: $base-primary-color;
-        color: $base-primary-color;
+        border-color: $dark-blue;
+        color: $dark-blue;
       }
     }
   }
