@@ -2167,13 +2167,14 @@ div#em-assoc-files .panel > .panel-heading {
     box-shadow: none !important;
     text-shadow: none;
     color: #FFFFFF;
-    padding: 6px 12px !important;
+    padding: 0px 12px !important;
     border-radius: 4px !important;
 }
 
 .g-back-office-emundus-tableau #em_select_filter #del-filter {
-    font-size: 15px !important;
+    font-size: 21px !important;
     border-radius: 4px !important;
+    padding-top: 0px;
 }
 
 .g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {
