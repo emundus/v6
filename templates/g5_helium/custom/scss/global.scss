@@ -1815,7 +1815,7 @@ button#back,
   }
 }
 
-#em-files-filters .em-filter .em_label label a, #em-user-filters .em-filter .em_label label a  {
+#em-files-filters .em-filter .em_label label a, #em-user-filters .em-filter .em_label label a, #em-user-filters .em_label label a  {
   color: $dark-green;
 }
 
@@ -1856,17 +1856,17 @@ button#back,
 
   #em-prev-file.btn.btn-info.btn-xxl,
   #em-next-file.btn.btn-info.btn-xxl {
-    background-color: $base-primary-color;
+    background-color: $dark-blue;
     color: #fff;
-    border-color: $base-primary-color;
+    border-color: $dark-blue;
     margin-top: -5px;
 
     &:hover,
     &:active,
     &:focus {
       background: #fff;
-      border: 1px solid $base-primary-color;
-      color: $base-primary-color;
+      border: 1px solid $dark-blue;
+      color: $dark-blue;
     }
   }
 }
@@ -1931,6 +1931,7 @@ textarea:hover {
   a{
     padding: 5px !important;
     background: $dark-blue;
+    color: #fff;
     &:hover{
       border-radius: 4px;
     }
@@ -2207,6 +2208,18 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
+.em-container-comment .form.em-decision-form .btn btn-success {
+  padding: 5px 30px;
+  border: 2px solid $dark-blue;
+  background: $dark-blue;
+  border-radius: 25px !important;
+  &:hover, &:active, &:focus {
+    border: 2px solid $dark-blue;
+    background: transparent;
+    color: $dark-blue;
+  }
+}
+
 .edit-comment-container button.delete-comment {
   color: white;
   background: $base-secondary-color;
@@ -2346,12 +2359,24 @@ ul.unstyled.em-linkForgot li a {
 }
 
 
+.em-container-attachment .em-collapse-container .borderContentCollapse {
+  .btn.btn-danger.btn-attach {
+    border: none;
+    &:hover, &:focus, &:active {
+      background: transparent;
+    }
+    span {
+      color: $red;
+    }
+  }
+}
 
 
 /* SUPPRIMER EVAL */
 .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
   background: transparent !important;
   color: $red !important;
+  border: none;
 
   &:hover,
   &:active,
@@ -2373,7 +2398,7 @@ ul.unstyled.em-linkForgot li a {
 .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
   height: 36px;
   background-color: $dark-blue;
-  border: 1px solid $dark-blue !important;
+  border: 2px solid $dark-blue !important;
   border-radius: 25px !important;
   padding: 5px 30px !important;
 
