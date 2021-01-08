@@ -1802,6 +1802,7 @@ textarea {
   padding: 0 1em !important;
 }
 .menu-block {
+  height: 100vh;
   margin-top: 2em;
   padding: 0 1em 0 1em;
   transition: all 0.6s ease-in-out;
@@ -2370,5 +2371,10 @@ textarea {
 
 input[type="radio"]{
   margin: 0 !important;
+}
+
+.sticky-form-pages{
+  position: sticky !important;
+  top: 15vh;
 }
 

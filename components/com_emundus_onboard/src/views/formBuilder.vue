@@ -125,9 +125,6 @@
               </div>
             </div>
           </div>
-          <div>
-            <label class="saving-at">{{ Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
-          </div>
         </div>
         <div v-if="menuHighlight === 0">
           <div class="form-viewer-builder" :class="[addingElement ? 'col-md-offset-2 col-md-6' : 'col-md-8',optionsModal ? 'col-md-6' : 'col-md-8']">
@@ -173,8 +170,11 @@
             />
           </div>
         </div>
-        <ul class="col-md-3" style="margin-top: 0" v-if="formObjectArray">
-          <h3 class="mb-1" style="padding: 0;">{{ FormPage }} :</h3>
+        <ul class="col-md-3 sticky-form-pages" style="margin-top: 0" v-if="formObjectArray">
+          <div class="d-flex justify-content-between mb-1">
+            <h3 class="mb-0" style="padding: 0;">{{ FormPage }}</h3>
+            <label class="saving-at">{{ Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
+          </div>
           <div class="form-pages">
             <h4 class="ml-10px form-title" style="margin-bottom: 0;padding: 0"><img src="/images/emundus/menus/form.png" class="mr-1">{{ Form }}</h4>
             <draggable

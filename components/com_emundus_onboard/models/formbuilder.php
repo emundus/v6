@@ -615,7 +615,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 $params['dropdown_populate'] = '';
                 break;
             case 'checkbox':
-                $params['ck_options_per_row'] = 3;
+                $params['ck_options_per_row'] = 1;
                 $params['allow_frontend_addtocheckbox'] = 0;
                 $params['chk-allowadd-onlylabel'] = 0;
                 $params['chk-savenewadditions'] = 0;
