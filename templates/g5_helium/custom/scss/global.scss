@@ -1787,15 +1787,14 @@ button#back,
 }
 
 #em_select_filter #del-filter{
-  background-color: $red;
-  color: #fff;
-  border-color: $red;
+  background-color: transparent;
+  color: $red;
+  border: none;
 
   &:hover,
   &:active,
   &:focus {
-    background: #fff;
-    border-color: $red;
+    background: transparent;
     color: $red;
   }
 }
@@ -1824,16 +1823,15 @@ button#back,
 }
 
 #filters #quick.form-group input#search.btn.btn-sm.btn-info {
-  background-color: $dark-blue;
-  color: #fff;
-  border: 1px solid $dark-blue !important;
+  background-color: transparent;
+  color: $dark-blue;
+  border: none;
 
   &:hover,
   &:active,
   &:focus {
-    background: #fff;
-    border: 1px solid $base-primary-color;
-    color: $base-primary-color;
+    background: transparent;
+    color: $dark-blue;
   }
 }
 
