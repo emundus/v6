@@ -149,13 +149,5 @@ export default {
     font-weight: 700;
   }
 
-  .publishedTag {
-    padding: 5px 30px;
-    font-weight: 500;
-  }
 
-  .nb-dossier {
-    padding: 5px 30px;
-    font-weight: 500;
-  }
 </style>

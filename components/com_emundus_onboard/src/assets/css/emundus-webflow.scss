@@ -855,6 +855,7 @@ input[type="reset"] {
   margin-top: 10px;
   white-space: nowrap;
   padding: 5px 30px;
+  font-weight: 500;
 }
 .tchooz-section-titles{
   margin-top: 0;
@@ -929,7 +930,7 @@ input[type="reset"] {
   display: flex;
   align-items: center;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 500;
   &:hover{
     cursor: pointer;
     background-color: transparent;
