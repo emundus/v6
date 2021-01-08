@@ -65,9 +65,17 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
     }
 
     public function getwidgets(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
         try {
-            $module = JModuleHelper::getModule('mod_emundus_dashboard_vue','Dashboard vue');
-            $params = new JRegistry($module->params);
+            $query->select('params')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_dashboard_vue'));
+
+            $db->setQuery($query);
+            $params = json_decode($db->loadResult(),true);
+
             $widgets[] = $params['widget1'];
             $widgets[] = $params['widget2'];
             $widgets[] = $params['widget3'];
