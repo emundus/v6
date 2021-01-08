@@ -96,6 +96,7 @@ export default {
   display: flex;
   align-items: center;
   padding: 1em;
+  color: black !important;
 }
 .form-title img{
   width: 25px;
