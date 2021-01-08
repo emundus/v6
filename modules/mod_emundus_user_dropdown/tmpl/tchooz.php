@@ -161,7 +161,7 @@ if($user != null) {
         }
     });
 
-    document.addEventListener('click', function (e) {
+    /*document.addEventListener('click', function (e) {
         e.stopPropagation();
         var dropdown = document.getElementById('userDropdown');
         var icon = document.getElementById('userDropdownIcon');
@@ -174,7 +174,7 @@ if($user != null) {
                 icon.classList.remove('active');
             },300);
         }
-    });
+    });*/
 
     function postCProfile() {
 
