@@ -12,7 +12,7 @@
         <div class="container-2 w-container" style="max-width: unset">
           <div class="d-flex">
             <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
-            <h2 class="tchooz-section-titles">{{AddCampaign}}</h2>
+            <h1 class="tchooz-section-titles">{{AddCampaign}}</h1>
           </div>
         </div>
       </div>

@@ -12,7 +12,7 @@
         <div class="container-2 w-container" style="max-width: unset">
           <div class="d-flex">
             <img src="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
-            <h2 class="tchooz-section-titles">{{AddEmail}}</h2>
+            <h1 class="tchooz-section-titles">{{AddEmail}}</h1>
           </div>
         </div>
       </div>

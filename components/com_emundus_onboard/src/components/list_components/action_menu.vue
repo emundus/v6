@@ -5,15 +5,15 @@
       <div>
         <div class="d-flex" v-if="data.type === 'campaign'">
           <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
-          <h2 class="tchooz-section-titles">{{ Campaigns }}</h2>
+          <h1 class="tchooz-section-titles">{{ Campaigns }}</h1>
         </div>
         <div class="d-flex" v-if="data.type === 'email'">
           <img src="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
-          <h2 class="tchooz-section-titles">{{ Emails }}</h2>
+          <h1 class="tchooz-section-titles">{{ Emails }}</h1>
         </div>
         <div class="d-flex" v-if="data.type === 'form'">
           <img src="/images/emundus/menus/form.png" class="tchooz-icon-title" alt="form">
-          <h2 class="tchooz-section-titles">{{ Forms }}</h2>
+          <h1 class="tchooz-section-titles">{{ Forms }}</h1>
         </div>
 
         <div class="actions-add-block">
