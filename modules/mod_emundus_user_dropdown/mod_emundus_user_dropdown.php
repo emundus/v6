@@ -18,6 +18,7 @@ $user = JFactory::getSession()->get('emundusUser');
 
 // Here we get the menu which is defined in the params
 $jooomla_menu_name = $params->get('menu_name', 0);
+$switch_profile_redirect = $params->get('switch_profile_redirect', 'index.php');
 
 $primary_color = $params->get('primary_color', 'ECF0F1');
 $secondary_color = $params->get('secondary_color', 'F89406');

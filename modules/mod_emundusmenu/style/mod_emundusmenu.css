@@ -198,6 +198,14 @@ a {
     transition: opacity 0.3s ease-in-out;
 }
 
+.simple-letter{
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
 
 @media screen and (max-width: 767px) {
     .g-parent.current > .g-menu-parent-indicator {

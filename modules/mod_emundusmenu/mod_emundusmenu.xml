@@ -42,6 +42,10 @@
 					<option value="0">No</option>
 					<option value="1">Yes</option>
 				</field>
+				<field name="displayTchooz" type="radio" default="1" label="Display Tchooz menu" description="Display Tchooz menu for coordinator and sysemundus">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
 				<field name="@spacer" type="spacer" default="" label="" description="" />
 				<field name="window_open" type="text" default="" label="Target Position" 		description="PARAMTARGETPOSITION" />
 			</fieldset>

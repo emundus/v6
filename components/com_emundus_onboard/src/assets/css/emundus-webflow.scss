@@ -737,6 +737,7 @@ input[type="reset"] {
 }
 .cta-block {
   color: $grey;
+  background: transparent;
   font-size: 25px;
   padding: 5px;
   width: 30px;
@@ -1839,6 +1840,7 @@ textarea {
   padding: 10px;
   cursor: pointer;
   filter: brightness(0.2);
+  justify-content: center;
 }
 .action-link:hover > .action-label{
   color: $dark-blue;

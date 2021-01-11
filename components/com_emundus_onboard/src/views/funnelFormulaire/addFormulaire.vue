@@ -133,6 +133,7 @@ export default {
         })
       }).then(response => {
         this.getForms(this.profileId);
+        this.$emit("profileId", this.profileId);
       })
     },
 

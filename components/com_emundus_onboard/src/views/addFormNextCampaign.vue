@@ -113,6 +113,7 @@
               :campaignId="campaignId"
               :profiles="profiles"
               :key="formReload"
+              @profileId="setProfileId"
               :visibility="null"
           ></addFormulaire>
 
@@ -374,6 +375,10 @@ export default {
     changeToCampMenu(index){
       this.menuHighlight = index;
       this.menuHighlightProg = -1;
+    },
+
+    setProfileId(prid){
+      this.profileId = prid;
     },
 
     moment(date) {

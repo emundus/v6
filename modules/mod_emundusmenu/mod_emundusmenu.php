@@ -32,6 +32,7 @@ foreach($files as $file) {
 }
 */
 $display_applicant_menu = $params->get('display_applicant_menu', 1);
+$display_tchooz = $params->get('displayTchooz', 1);
 
 $user = JFactory::getSession()->get('emundusUser');
 

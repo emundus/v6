@@ -1,5 +1,10 @@
 <template class="email-item">
   <div class="main-column-block">
+    <ModalEmailPreview
+        :model="this.email_to_preview"
+        :models="this.models"
+    />
+
     <div class="column-block w-100">
       <div class="block-dash" :class="isPublished ? '' : 'unpublishedBlock'">
         <div class="column-blocks w-row">
@@ -20,6 +25,9 @@
             <a href="#" class="button-programme" style="margin-left: 35px">{{ type[langue][data.type - 1] }}</a>
             <p class="description-block"><span v-html="data.message"></span></p>
             <div class="stats-block" style="justify-content: flex-end">
+              <button class="cta-block mb-0" type="button" @click="$modal.show('modalEmailPreview_' + data.id)">
+                <em class="fas fa-eye"></em>
+              </button>
               <a class="cta-block pointer"
                  @click="redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + data.id)"
                  :title="Modify">
@@ -36,19 +44,24 @@
 <script>
 import { list } from "../../store";
 import axios from "axios";
+import ModalEmailPreview from "@/views/advancedModals/ModalEmailPreview";
+
 
 const qs = require("qs");
 
 export default {
   name: "emailItem",
+  components: {ModalEmailPreview},
   props: {
     data: Object,
     selectItem: Function,
-    actualLanguage: String
+    actualLanguage: String,
+    models: Array
   },
   data() {
     return {
       langue: 0,
+      email_to_preview: -1,
 
       selectedData: [],
       publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
@@ -78,7 +91,7 @@ export default {
       }).then(response => {
         window.location.href = window.location.pathname + response.data.data;
       });
-    }
+    },
   },
 
   computed: {
@@ -95,6 +108,7 @@ export default {
     if (this.actualLanguage == "en") {
       this.langue = 1;
     }
+    this.email_to_preview = this.data.id;
   }
 };
 </script>

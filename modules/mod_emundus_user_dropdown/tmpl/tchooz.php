@@ -95,6 +95,7 @@ if($user != null) {
 <!--        <i class="--><?//= $icon; ?><!--" id="userDropdownIcon"></i>-->
         <img src="/images/emundus/menus/user.png" id="userDropdownIcon">
     </div>
+    <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
         <?php
             $ids_array = array();
@@ -179,6 +180,7 @@ if($user != null) {
     function postCProfile() {
 
         var current_fnum = document.getElementById("profile").value;
+        var redirect_url = document.getElementById("switch_profile_redirect").value;
 
         jQuery.ajax({
             type: 'POST',
@@ -187,7 +189,8 @@ if($user != null) {
                 profnum: current_fnum
             }),
             success: function (result) {
-                location.reload(true);
+                window.location.href = redirect_url;
+                //location.reload(true);
             },
             error : function (jqXHR, status, err) {
                 alert("Error switching porfiles.");

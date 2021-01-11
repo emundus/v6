@@ -38,7 +38,7 @@
             <select v-model="form.model" class="dropdown-toggle" :class="{ 'is-invalid': errors.model}">
               <option v-for="(model, index) in models" :key="index" :value="model.id">{{model.subject}}</option>
             </select>
-            <button class="btnPreview mb-0" type="button" v-if="form.model != -1" @click.prevent="$modal.show('modalEmailPreview')">
+            <button class="btnPreview mb-0" type="button" v-if="form.model != -1" @click.prevent="$modal.show('modalEmailPreview_' + form.model)">
               <em class="fas fa-eye"></em>
             </button>
           </div>
