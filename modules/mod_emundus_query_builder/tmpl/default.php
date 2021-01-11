@@ -78,7 +78,7 @@ jQuery(document).ready(function(){
 	jQuery('.g-content').has('.etiquette').attr('style', 'margin:auto!important');
 	jQuery('.g-content').has('.etiquette').attr('style', 'display:grid;grid-column-gap:15px;grid-row-gap:15px;grid-template-columns:repeat(3, 1fr);margin-bottom:15px!important;');
 	jQuery('.platform-content').attr('style', 'width:100%!important');
-	jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: 0px 0px 47px -13px rgba(163,163,163,1);');
+	jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);');
 	jQuery('.etiquette').attr('style', 'grid-column-end:span 3;');
 	jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;');
 	jQuery('#g-container-main').attr('style', 'padding-left:5%!important;padding-right:5%!important');
@@ -362,7 +362,7 @@ jQuery(document).ready(function(){
 				success : function(data) {
 					if(data.success) {
 						msg = JSON.parse(data.data);
-						if (msg.status) {
+						if (msg.status)
 							window.location.assign("<?= basename($_SERVER['REQUEST_URI']); ?>");
 						} else {
 							console.log(msg.msg);

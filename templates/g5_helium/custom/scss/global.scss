@@ -2219,7 +2219,7 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
-. .form.em-decision-form .btn.btn-success {
+.form.em-decision-form .btn.btn-success {
   padding: 5px 30px;
   border: 2px solid $dark-blue;
   background: $dark-blue;
@@ -2640,7 +2640,10 @@ div#em-appli-block {
 
 .indicateurs-page {
   .informationStatistique {
-    background-color: $dark-blue;
+    background-color: #fff;
+    color: #000 !important;
+    box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);
+    border-radius: 4px;
   }
 
   .item-pageindicateurs-page {
@@ -2657,20 +2660,30 @@ div#em-appli-block {
     color: $dark-blue;
   }
 
+  #validation {
+    background: $dark-green;
+    border: 2px solid $dark-green;
+      &:hover, &:active, &:focus {
+        background: transparent;
+        border: 2px solid $dark-green;
+        color: $dark-green;
+      }
+  }
+
   .btnQueryBuilder,
   .swal2-confirm {
     background: $dark-blue;
-    border: 1px solid $dark-blue;
+    border: 2px solid $dark-blue;
   }
 
   .btnConsulter {
     background: $dark-blue;
-    border: 1px solid $dark-blue;
+    border: 2px solid $dark-blue;
   }
 
   .btnConsulter:hover {
     color: $dark-blue;
-    border: 1px solid $dark-blue;
+    border: 2px solid $dark-blue;
     background: transparent;
 
   }
@@ -2685,14 +2698,14 @@ div#em-appli-block {
   .btnExport,
   .swal2-cancel {
     color: $dark-blue;
-    border: 1px solid $dark-blue;
+    border: 2px solid $dark-blue;
     background: transparent;
   }
 
   .btnExport:hover,
   .swal2-cancel:hover {
     color: #fff;
-    border: 1px solid $dark-blue;
+    border: 2px solid $dark-blue;
     background: $dark-blue;
   }
 
@@ -2820,6 +2833,15 @@ div#em-appli-block {
 
 .experts-page .panel-heading input[type="text"] {
   height: 30px;
+}
+
+.experts-page .contact-group .contact-group-item bg-warning  a {
+ color: $dark-blue;
+  &:hover,
+  &:active,
+  &:focus {
+  color: $dark-blue;
+  }
 }
 
 /* ERREUR 404 */
@@ -3409,10 +3431,6 @@ footer#g-footer .g-grid {
     .fabrikForm {
       padding: 1rem 3rem 1rem 3rem;
     }
-    h1, legend {
-      color: #000;
-    }
-
     fieldset {
       background: #f8f8f8;
     }
