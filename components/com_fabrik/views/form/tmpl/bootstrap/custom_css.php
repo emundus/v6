@@ -1203,6 +1203,10 @@ body.em-formRegistrationCenter  {
     color: #000; 
 }
 
+.import-csv-page select { 
+   border: 2px solid #ccc!important;
+}
+
 /* RAPPRT ERREUR */ 
 
 .error-report-page .page-header h1, .error-report-page form fieldset legend { 
