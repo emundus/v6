@@ -1199,10 +1199,14 @@ body.em-formRegistrationCenter  {
 
 /* IMPORT CSV */ 
 
-.import-csv-page {
-    h1, legend {
+.import-csv-page h1, .import-csv-page legend { 
     color: #000; 
-    }
+}
+
+/* RAPPRT ERREUR */ 
+
+.error-report-page .page-header h1, .error-report-page form fieldset legend { 
+    color: #000; 
 }
 
 /* AJOUT APRES MAJ */
