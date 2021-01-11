@@ -608,5 +608,17 @@ class EmundusonboardControllerform extends JControllerLegacy {
         echo json_encode((object)$submittionpage);
         exit;
     }
+
+    public function getAccess(){
+        $user = JFactory::getUser();
+
+        if (EmundusonboardHelperAccess::asAdministratorAccessLevel($user->id)) {
+            $response = array('status' => 1, 'msg' => JText::_("ACCESS_SYSADMIN"), 'access' => true);
+        } else {
+            $response = array('status' => 0, 'msg' => JText::_("ACCESS_REFUSED"), 'access' => false);
+        }
+        echo json_encode((object)$response);
+        exit;
+    }
 }
 

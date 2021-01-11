@@ -116,7 +116,7 @@ fieldset {
   margin-left: -2.2%;
 }
 .header-form-page{
-  padding: 2em 1em 1em 1em;
+  padding: 2em 1em 0 1em;
 }
 .page_header {
   font-size: 20px;
@@ -126,6 +126,7 @@ fieldset {
 }
 .introP {
   padding-left: 1.5em;
+  padding-bottom: 2em;
 }
 .dpflex {
   display: flex;
@@ -201,7 +202,7 @@ fieldset {
 .actions-item-bar {
   position: absolute;
   right: -50px;
-  margin-top: -95px;
+  //margin-top: -95px;
   a {
     cursor: pointer;
     color: black;

@@ -109,6 +109,7 @@ defined('_JEXEC') or die;
         margin-top: 10px !important;
         position: fixed;
         top: 90px;
+        max-width: 200px;
     }
     /*** END ***/
 
