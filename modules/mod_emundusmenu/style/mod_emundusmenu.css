@@ -224,9 +224,9 @@ a {
         display: none !important;
     }
 
-   #g-navigation .g-container .g-grid #header-b {
+   /*#g-navigation .g-container .g-grid #header-b {
         width: 100%;
-    }
+    }*/
 
     #g-navigation .g-container .g-grid {
         flex-direction: column;

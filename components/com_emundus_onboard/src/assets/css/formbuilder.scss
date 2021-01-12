@@ -408,7 +408,7 @@ input[type="date"].form-control, input[type="time"].form-control, input[type="da
   overflow-x: hidden !important;
 }
 .v--modal{
-  width: 20% !important;
+  width: 25% !important;
   height: 100% !important;
   right: 0 !important;
   left: auto !important;
@@ -417,6 +417,12 @@ input[type="date"].form-control, input[type="time"].form-control, input[type="da
   overflow-y: auto !important;
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@media all and (max-width: 1024px) {
+  .v--modal {
+    width: 50% !important;
+  }
 }
 /**/
 

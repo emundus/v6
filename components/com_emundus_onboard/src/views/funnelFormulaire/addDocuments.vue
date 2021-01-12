@@ -19,7 +19,7 @@
     <transition :name="'slide-down'" type="transition">
       <div class="w-form d-flex" style="align-items: unset">
         <ul style="padding-left: 0" class="ml-0 w-50">
-          <p class="blue-text-instruction">{{documentNoAssigned}}</p>
+          <p class="blue-text-instruction" v-html="documentNoAssigned"></p>
           <draggable
               v-model="undocuments"
               v-bind="dragOptionsUndoc"
@@ -72,7 +72,7 @@
         <hr class="vertical-divider">
 
         <ul style="padding-left: 0" class="ml-0 w-50">
-          <p class="blue-text-instruction">{{documentAssigned}}</p>
+          <p class="blue-text-instruction" v-html="documentAssigned"></p>
           <draggable
               v-model="documents"
               tag="ul"
