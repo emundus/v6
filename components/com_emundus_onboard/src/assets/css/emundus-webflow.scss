@@ -2407,3 +2407,22 @@ input[type="radio"]{
   }
 }
 
+.email-tags{
+  padding: 5px 10px 5px 10px;
+}
+.email-tags a{
+  padding: inherit !important;
+  border-radius: 5px;
+}
+.email-tags.active a{
+  background: #16AFE1 !important;
+}
+.email-tags a:hover{
+  background: #16AFE1 !important;
+  color: white !important;
+}
+.email-tags a:focus{
+  background: #16AFE1 !important;
+  color: white !important;
+}
+
