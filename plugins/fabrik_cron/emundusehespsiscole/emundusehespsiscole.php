@@ -71,7 +71,7 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
                         $query .= ", esc.year ";
                     }
 
-                    $results = $m_files->getFnumArray($fnums,$element,2,0,0,0,$query);
+                    $results = $m_files->getFnumArray($fnums,$element,0,0,0,1,$query);
 
             }
 
@@ -92,7 +92,7 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
                 $fp = fopen($path, 'a');
                 fputs($fp, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) )); // permet l'encodage UTF8
                 foreach ($post as $line) {
-                    fputcsv($fp, $line, ';');
+                    fputcsv($fp, $line, ';',chr(0));
                 }
                 fclose($fp);
             }

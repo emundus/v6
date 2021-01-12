@@ -235,6 +235,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $filename   = $eMConfig->get('filename');
         $url        = 'images'.DS.'emundus'.DS.'files'.DS.'archives';
         $file       = JPATH_BASE.DS.$url.DS.$filename.'.csv';
+
         $file_name = basename($file);
 
         $ip = $_SERVER['HTTP_X_REAL_IP'];
@@ -247,9 +248,9 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
         if(in_array($ip,$filtre_ip)){
 
-            $mime_type = $this->controller->get_mime_type($file);
-            header('Content-type: '.$mime_type);
-            header('Content-Disposition: inline; filename='.basename($file));
+            //$mime_type = $this->controller->get_mime_type($file);
+            header('Content-type: text/csv');
+            header('Content-Disposition: attachment; filename='.$file_name);
             header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
             header('Cache-Control: no-store, no-cache, must-revalidate');
             header('Cache-Control: pre-check=0, post-check=0, max-age=0');
@@ -260,7 +261,8 @@ class EmundusControllerWebhook extends JControllerLegacy {
             ob_clean();
             flush();
 
-            if(file_put_contents($file_name,file_get_contents($file))){
+            //if(file_put_contents($file_name, file_get_contents(JURI::base().$url.DS.$file_name))){
+            if(readfile($file)){
                 $date = date('Y-m-d');
                 $time_date = date('Y-m-d H:i:s');
                 $attachment_id = $eMConfig->get('attachment_id');
@@ -288,6 +290,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
                 }
 
                 JLog::add('File download with the ip address'.$ip, JLog::NOTICE, 'com_emundus.webhook');
+                exit;
             }
         }
         else {
