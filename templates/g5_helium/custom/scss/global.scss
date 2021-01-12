@@ -1929,10 +1929,10 @@ textarea:hover {
   padding: 5px;
   a{
     padding: 5px !important;
-    background: $dark-blue;
     color: #fff;
     &:hover{
       border-radius: 4px;
+      background: $dark-blue !important;
     }
   }
 }
