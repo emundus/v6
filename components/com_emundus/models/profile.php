@@ -376,21 +376,9 @@ class EmundusModelProfile extends JModelList
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $config = new JConfig();
-        $db_name = $config->db;
         $res = array();
 
-        try
-        {
-            //Check if the table exist
-            $query->select('COUNT(*)')
-                ->from($db->quoteName('information_schema.tables'))
-                ->where($db->quoteName('table_schema') . ' = ' . $db->quote($db_name))
-                ->andWhere($db->quoteName('table_name') . ' = ' . $db->quote('jos_emundus_campaign_workflow'));
-            $db->setQuery($query);
-            $exist = $db->loadResult();
-
-            if($exist){
+        try {
                 $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype
                 FROM  #__emundus_campaign_workflow AS ecw
                 LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = ecw.profile
@@ -399,9 +387,8 @@ class EmundusModelProfile extends JModelList
 
                 $this->_db->setQuery( $query );
                 $res = $this->_db->loadAssoc();
-            }
 
-            if(empty($res) || !$exist) {
+            if(empty($res)){
                 $query = 'SELECT esp.id as profile_id, esp.label, esp.menutype 
                 FROM  #__emundus_setup_profiles AS esp
                 LEFT JOIN #__emundus_setup_status AS ess ON ess.profile = esp.id
