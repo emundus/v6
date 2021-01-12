@@ -66,12 +66,12 @@ class EmundusModelEmails extends JModelList {
 
     /**
      * Get email definition to trigger on Status changes
-     * @param   $step           INT The status of application
+     * @param   $step           int The status of application
      * @param   $code           array of programme code
      * @param   $to_applicant   int define if trigger concern selected fnum from list or not. Can be 0, 1
      * @return  array           Emails templates and recipient to trigger
      */
-    public function getEmailTrigger($step, $code, $to_applicant = 0) {
+    public function getEmailTrigger($step, $code = [], $to_applicant = 0): array {
 
         $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template
                   FROM #__emundus_setup_emails_trigger as eset
@@ -82,8 +82,13 @@ class EmundusModelEmails extends JModelList {
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_group_id as eserg ON eserg.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_user_id as eseru ON eseru.parent_id=eset.id
                   LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl
-                  WHERE eset.step='.$step.' AND eset.to_applicant IN ('.$to_applicant.') AND esp.code IN ("'.implode('","', $code).'")';
-        $this->_db->setQuery( $query );
+                  WHERE eset.step='.$step.' AND eset.to_applicant IN ('.$to_applicant.')';
+
+        if (!empty($code)) {
+            $query .= ' AND esp.code IN ("'.implode('","', $code).'")';
+        }
+
+        $this->_db->setQuery($query);
         $triggers = $this->_db->loadObjectList();
 
         $emails_tmpl = array();
@@ -119,32 +124,26 @@ class EmundusModelEmails extends JModelList {
             foreach ($emails_tmpl as $key => $codes) {
                 $trigger_id = $key;
 
-                foreach ($codes as $key => $tmpl) {
+                foreach ($codes as $tmpl) {
                     $code = $key;
                     $recipients = array();
                     $as_where = false;
                     $where = '';
 
-                    if (isset($tmpl['to']['profile'])) {
-                        if (count($tmpl['to']['profile']) > 0) {
-                            $where = ' eu.profile IN ('.implode(',', $tmpl['to']['profile']).')';
-                            $as_where = true;
-                        }
+                    if (isset($tmpl['to']['profile']) && count($tmpl['to']['profile']) > 0) {
+                        $where = ' eu.profile IN ('.implode(',', $tmpl['to']['profile']).')';
+                        $as_where = true;
                     }
 
-                    if (isset($tmpl['to']['group'])) {
-                        if (count($tmpl['to']['group']) > 0) {
-                            $where = ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
-                            $as_where = true;
-                        }
+                    if (isset($tmpl['to']['group']) && count($tmpl['to']['group']) > 0) {
+                        $where = ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
+                        $as_where = true;
                     }
 
-                    if (isset($tmpl['to']['user'])) {
-                        if (count(@$tmpl['to']['user']) > 0) {
-                            $where .= $as_where?' OR ':'';
-                            $where .= 'u.block=0 AND u.id IN ('.implode(',', $tmpl['to']['user']).')';
-                            $as_where = true;
-                        }
+                    if (isset($tmpl['to']['user']) && count(@$tmpl['to']['user']) > 0) {
+                        $where .= $as_where?' OR ':'';
+                        $where .= 'u.block=0 AND u.id IN ('.implode(',', $tmpl['to']['user']).')';
+                        $as_where = true;
                     }
 
                     if ($as_where) {
@@ -154,7 +153,7 @@ class EmundusModelEmails extends JModelList {
                                     LEFT JOIN #__emundus_groups as eg on eg.user_id=u.id
                                     WHERE '.$where.'
                                     GROUP BY u.id';
-                        $this->_db->setQuery( $query );
+                        $this->_db->setQuery($query);
                         $users = $this->_db->loadObjectList();
 
                         foreach ($users as $user) {
