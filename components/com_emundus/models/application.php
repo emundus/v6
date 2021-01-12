@@ -530,13 +530,15 @@ class EmundusModelApplication extends JModelList {
 	 * @since version
 	 */
     public function getAttachmentsProgress($fnum = null) {
+        $session = JFactory::getSession();
+        $current_user = $session->get('emundusUser');
 
         if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
             return false;
         }
 
         // Check if column campaign_id exist in emundus_setup_attachment_profiles
-        $config = new JConfig();
+        /*$config = new JConfig();
         $db_name = $config->db;
 
         $query = $this->_db->getQuery(true);
@@ -546,7 +548,7 @@ class EmundusModelApplication extends JModelList {
             ->andWhere($this->_db->quoteName('table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_attachment_profiles'))
             ->andWhere($this->_db->quoteName('column_name') . ' = ' . $this->_db->quote('campaign_id'));
         $this->_db->setQuery($query);
-        $exist = $this->_db->loadResult();
+        $exist = $this->_db->loadResult();*/
 
         if (!is_array($fnum)) {
 
@@ -566,10 +568,11 @@ class EmundusModelApplication extends JModelList {
 
             $procamp = $this->_db->loadObject();
 
-            $profile_id = $procamp->profile_id;
+            //$profile_id = $procamp->profile_id;
+            $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $procamp->profile_id && $current_user->applicant === 1) ? $current_user->profile : $procamp->profile_id;
             $campaign_id = $procamp->campaign_id;
 
-            if (intval($exist) > 0) {
+            try{
                 $query = 'SELECT COUNT(profiles.id)
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
@@ -580,18 +583,20 @@ class EmundusModelApplication extends JModelList {
 
                 $this->_db->setQuery($query);
                 $attachments = $this->_db->loadResult();
+            } catch (Exception $e){
+                JLog::add("Problem when try to get attachment progress by campaign: ".$e->getMessage(), JLog::ERROR, "com_emundus");
             }
 
-            if (intval($exist) == 0 || intval($attachments) == 0) {
+            if (intval($attachments) == 0) {
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
-                WHERE profiles.profile_id = ' .$profile_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+                WHERE profiles.profile_id = ' .$profile_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
             } else {
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
-                WHERE profiles.campaign_id = ' .$campaign_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+                WHERE profiles.campaign_id = ' .$campaign_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
             }
 
             $this->_db->setQuery($query);
@@ -621,15 +626,17 @@ class EmundusModelApplication extends JModelList {
                 $profile_id = $procamp->profile_id;
                 $campaign_id = $procamp->campaign_id;
 
-                if (intval($exist) > 0) {
+                try{
                     $query = 'SELECT COUNT(profiles.id)
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
                     $this->_db->setQuery($query);
                     $attachments = $this->_db->loadResult();
+                } catch (Exception $e){
+                    JLog::add("Problem when try to get attachment progress by campaign: ".$e->getMessage(), JLog::ERROR, "com_emundus");
                 }
 
-                if (intval($exist) == 0 || intval($attachments) == 0) {
+                if (intval($attachments) == 0) {
                     $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($f) . '
