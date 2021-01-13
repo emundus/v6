@@ -2796,7 +2796,8 @@ if (JFactory::getUser()->id == 63)
                 ->clear()
                 ->select($db->qn('form_id'))
                 ->from($db->qn('#__fabrik_formgroup'))
-                ->where($db->qn('group_id') . ' IN (' . implode(',', $groups) . ')');
+                ->where($db->qn('group_id') . ' IN (' . implode(',', $groups) . ')')
+                ->order('find_in_set( group_id, " '. implode(", ", $groups) .'")');
 
             $db->setQuery($query);
             $res = $db->loadColumn();

@@ -22,8 +22,8 @@
 
                 <p class="heading">{{chooseForm}}</p>
                 <div class="heading-block">
-                    <select class="dropdown-toggle" id="select_profile" v-model="profileId">
-                        <option v-for="(profile, index) in profiles" :key="index" :value="profile.id" @click="updateProfileCampaign(profile.id)">
+                    <select class="dropdown-toggle" id="select_profile" v-model="profileId" @change="updateProfileCampaign">
+                        <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
                             {{profile.form_label}}
                         </option>
                     </select>
@@ -311,7 +311,7 @@
                 this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=add&cid=' + this.campaignId)
             },
 
-            updateProfileCampaign(profileId){
+            updateProfileCampaign(){
                 axios({
                     method: "post",
                     url: "index.php?option=com_emundus_onboard&controller=campaign&task=updateprofile",
@@ -319,7 +319,7 @@
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
                     data: qs.stringify({
-                        profile: profileId,
+                        profile: this.profileId,
                         campaign: this.campaignId
                     })
                 }).then(response => {
