@@ -274,6 +274,30 @@ ul {
   min-height: 90px;
 }
 
+.modal-body {
+  h1, h2, h3, h4, h5, h6 {
+    color: $dark-blue !important;
+  }
+  a {
+    color: $dark-blue !important;
+  }
+}
+
+.contentpane.modal form .fabrikActions.form-actions button{
+  background: $dark-blue !important;
+  background-color: $dark-blue !important;
+  border: 2px solid $dark-blue !important;
+  border-radius: 25px !important;
+  color: #fff;
+   &:active, &:focus, &:hover {
+     background: transparent;
+     background-color: transparent;
+     border: 2px solid $dark-blue !important;
+     border-radius: 25px !important;
+     color: $dark-blue !important;
+   }
+}
+
 .alert-heading {
   display: none;
 }
@@ -1112,16 +1136,16 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 }
 
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active, .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.active.btn-success {
-  background-color: $base-secondary-color;
+  background-color: $dark-blue;
   color: #fff;
-  border-color: $base-secondary-color;
+  border-color: $dark-blue;
 
   &:hover,
   &:active,
   :focus {
     background-color: transparent;
-    color: $base-secondary-color;
-    border-color: $base-secondary-color;
+    color: $dark-blue;
+    border-color: $dark-blue;
   }
 }
 
@@ -1451,12 +1475,12 @@ button.close {
 }
 
 .modal-body .panel-heading button.btn.btn-info.btn-xs {
-  background: $base-secondary-color;
+  background: $dark-blue;
   color: #fff;
 }
 
 .modal-body .panel-heading .btn-xs.btn.btn-elements-success {
-  background-color: $base-primary-color !important;
+  background-color: $dark-green !important;
   color: #fff;
 }
 
