@@ -275,7 +275,7 @@
 }
 .tchooz-dark-blue{
   color: $dark-blue;
-  font-weight: 700;
+  font-weight: 700 !important;
 }
 label{
   cursor: unset !important;
@@ -869,7 +869,7 @@ input[type="reset"] {
   margin-left: 30px;
   background-color: white;
   box-shadow: 0 1px 2px 0 hsla(0, 0%, 41%, 0.19);
-  padding: 30px 50px;
+  padding: 30px 30px;
   border-radius: 4px;
   margin-bottom: 1em;
 }
