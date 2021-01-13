@@ -67,7 +67,7 @@
                     <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
                   </a>
                   <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="testForm">
-                    <em class="far fa-play-circle col-md-offset-1 col-sm-offset-1" style="font-size: 30px"></em>
+                    <em class="far fa-play-circle col-md-offset-1 col-sm-offset-1" style="font-size: 22px"></em>
                     <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{testingForm}}</label>
                   </a>
                 <transition :name="'slide-right'" type="transition">
