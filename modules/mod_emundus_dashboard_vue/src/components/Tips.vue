@@ -1,5 +1,5 @@
 <template>
-  <div class='col-md-4 col-sm-6 col-md-offset-2 tchooz-widget'>
+  <div class='col-md-5 col-sm-6 col-md-offset-2 tchooz-widget'>
     <div class='section-sub-menu' style='margin-bottom: 10px'>
       <h3>Astuces</h3>
     </div>

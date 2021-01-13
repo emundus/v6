@@ -13,7 +13,8 @@
       <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index" :class="enableDrag ? 'jello-horizontal handle' : ''">
         <LastCampaignActive v-if="widget.name === 'last_campaign_active'" :campaigns="campaigns" :cindex="widget.cindex"/>
         <Faq v-if="widget.name === 'faq'"/>
-        <FilesNumberByStatus v-if="widget.name === 'files_number_by_status'" :status="widget.status"/>
+        <FilesNumberByStatus v-if="widget.name === 'files_number_by_status'"/>
+        <UsersByMonth v-if="widget.name === 'users_by_month'"/>
         <Tips v-if="widget.name === 'tips'"/>
       </div>
     </draggable>
@@ -27,11 +28,13 @@ import axios from "axios";
 import Faq from "@/components/Faq";
 import FilesNumberByStatus from "@/components/FilesNumberByStatus";
 import Tips from "@/components/Tips";
+import UsersByMonth from "@/components/UsersByMonth";
 
 export default {
   name: 'App',
   props: {},
   components: {
+    UsersByMonth,
     Tips,
     FilesNumberByStatus,
     Faq,
@@ -58,17 +61,6 @@ export default {
       }).then(response => {
         response.data.data.forEach((data) => {
           switch (data) {
-            case 'files_number_by_status':
-              this.widgets.push({
-                name: data,
-                status: this.status
-              });
-              if(this.status == null){
-                this.status = 0;
-              } else {
-                this.status++;
-              }
-              break;
             case 'last_campaign_active':
               if(this.campaigns.length == 0) {
                 this.getLastCampaignsActive();

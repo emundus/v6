@@ -10,10 +10,12 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "fusioncharts": "^3.16.0",
     "moment": "^2.29.1",
     "sass": "^1.30.0",
     "sass-loader": "^10.1.0",
     "vue": "^2.6.11",
+    "vue-fusioncharts": "^3.1.0",
     "vuedraggable": "^2.24.3"
   },
   "devDependencies": {

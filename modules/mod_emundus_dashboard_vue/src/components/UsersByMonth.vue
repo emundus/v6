@@ -23,15 +23,15 @@ import axios from "axios";
 const qs = require("qs");
 
 export default {
-  name: "FilesNumberByStatus",
+  name: "UsersByMonth",
 
   components: {},
 
   data: () => ({
-    files: {},
-    status: [],
+    usersnumbers: {},
+    days: {},
     label: 'Total',
-    type: "column2d",
+    type: "mssplinearea",
     renderAt: "chart-container",
     dataFormat: "json",
     chartData: [],
@@ -39,35 +39,46 @@ export default {
   }),
 
   methods: {
-    renderFilesByStatus(){
+    renderUsersByDate(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilescountbystatus",
+        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getusersbyday",
       }).then(response => {
-        this.files = response.data.files;
-        this.status = response.data.status;
+        this.usersnumbers = response.data.users;
+        this.days = response.data.days;
+        this.total = response.data.total;
 
         // Render chart
         this.dataSource = {
           chart: {
             animation: 1,
             paletteColors: "#16AFE1, #78dc6e",
-            caption: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS"),
-            subcaption: "",
-            xaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_STATUS"),
-            yaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER"),
+            caption: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_BY_DAY"),
+            subcaption: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_TOTAL") + this.total + Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS"),
+            xaxisname: "",
+            yaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_NUMBER"),
             numbersuffix: "",
             theme: "fusion"
           },
-          data: this.files
+          categories: [
+            {
+              category: this.days
+            }
+          ],
+          dataset: [
+            {
+              seriesname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_REGISTER"),
+              data: this.usersnumbers
+            }
+          ]
         };
         //
       });
-    },
+    }
   },
 
   created() {
-    this.renderFilesByStatus();
+    this.renderUsersByDate();
   },
 }
 </script>

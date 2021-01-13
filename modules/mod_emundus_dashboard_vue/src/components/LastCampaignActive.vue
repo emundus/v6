@@ -6,25 +6,26 @@
           <div class='d-flex'>
             <h2>{{campaigns[cindex].label}}</h2>
             <div class='publishedTag'>
-              Publiée
+              {{translations.Published}}
             </div>
           </div>
           <div class='date-menu'>
-            du {{campaigns[cindex].start_date | formatDate}} au {{campaigns[cindex].end_date | formatDate}}
+            {{translations.From}} {{campaigns[cindex].start_date | formatDate}} {{translations.To}} {{campaigns[cindex].end_date | formatDate}}
           </div>
           <p class='description-block'>{{campaigns[cindex].short_description}}</p>
           <div class='stats-block'>
             <div class='nb-dossier'>
-              <div>200 Dossiers</div>
+              <div v-if="files > 1">{{files}} {{translations.Files}}</div>
+              <div v-else>{{files}} {{translations.FileNumber}}</div>
             </div>
           </div>
         </template>
         <template v-else>
-          <h1>Pas de campagnes en cours</h1>
+          <h1>{{translations.NoCampaign}}</h1>
         </template>
       </template>
       <template v-else>
-        <h1>Pas de campagnes en cours</h1>
+        <h1>{{translations.NoCampaign}}</h1>
       </template>
     </div>
   </div>
@@ -53,14 +54,44 @@ export default {
   components: {},
 
   data: () => ({
+    files: 0,
     translations:{
-      Published: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH")
+      Published: Joomla.JText._("COM_EMUNDUS_DASHBOARD_CAMPAIGN_PUBLISHED"),
+      NoCampaign: Joomla.JText._("COM_EMUNDUS_DASHBOARD_NO_CAMPAIGN"),
+      From: Joomla.JText._("COM_EMUNDUS_DASHBOARD_CAMPAIGN_FROM"),
+      To: Joomla.JText._("COM_EMUNDUS_DASHBOARD_CAMPAIGN_TO"),
+      Files: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FILES"),
+      FileNumber: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FILE_NUMBER")
     },
   }),
 
-  created() {},
+  methods: {
+    getFilesByCampaign(){
+      if(typeof this.campaigns[this.cindex] !== 'undefined'){
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilesbycampaign",
+          params: {
+            cid: this.campaigns[this.cindex].id,
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(response => {
+          this.files = response.data.data;
+        });
+      } else {
+        setTimeout(() => {
+          this.getFilesByCampaign();
+        },500);
+      }
 
-  methods: {},
+    }
+  },
+
+  created() {
+    this.getFilesByCampaign();
+  },
 }
 </script>
 

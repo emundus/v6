@@ -51,6 +51,7 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
                 ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
                 ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $db->quoteName('cc.campaign_id') . ' = ' . $db->quoteName('sc.id'))
                 ->where('sc.published=1 AND "' . $this->now . '" <= sc.end_date and "' . $this->now . '">= sc.start_date')
+                ->group('sc.id')
                 ->order('sc.start_date DESC');
 
             $db->setQuery($query);
@@ -97,26 +98,91 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $jinput = JFactory::getApplication()->input;
-
-        $status = $jinput->getString('status');
-
         try {
-            if($status != null){
-                $condition = 'ss.step=' . $status;
-                $query->select('ss.*,COUNT(cc.id) as files')
-                    ->from($db->quoteName('#__emundus_campaign_candidature','cc'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_status','ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
-                    ->where($condition);
-            } else {
-                $query->select('COUNT(cc.id) as files')
-                    ->from($db->quoteName('#__emundus_campaign_candidature','cc'));
+            $query->select('*')
+                ->from($db->quoteName('#__emundus_setup_status'));
+            $db->setQuery($query);
+            $status = $db->loadObjectList();
+
+            $files = [];
+
+            foreach ($status as $statu) {
+                $file = new stdClass;
+                $file->label = $statu->value;
+
+                $query->clear()
+                    ->select('COUNT(id) as files')
+                    ->from($db->quoteName('#__emundus_campaign_candidature'))
+                    ->where($db->quoteName('status') . '=' . $db->quote($statu->step));
+
+                $db->setQuery($query);
+                $file->value = $db->loadResult();
+                $files[] = $file;
             }
 
-            $db->setQuery($query);
-            $files = $db->loadObject();
+            $tab = array('msg' => 'success', 'files' => $files, 'status' => $status);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 
-            $tab = array('status' => 0, 'msg' => 'success', 'data' => $files);
+    public function getfilesbycampaign(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $jinput = JFactory::getApplication()->input;
+
+        $cid = $jinput->getInt('cid');
+
+        try {
+            $query->select('COUNT(id) as files')
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where($db->quoteName('campaign_id') . '=' . $db->quote($cid));
+
+            $db->setQuery($query);
+            $files = $db->loadResult();
+
+            $tab = array('msg' => 'success', 'data' => $files);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getusersbyday(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+        $dateTime = $dateTime->setTimezone(new DateTimeZone($this->offset));
+
+        try {
+            $users = [];
+            $days = [];
+
+            $query = 'SELECT COUNT(id) as users
+                            FROM jos_users';
+            $db->setQuery($query);
+            $totalUsers = $db->loadResult();
+
+            for ($d = 1;$d < 31;$d++){
+                $user = new stdClass;
+                $day = new stdClass;
+                $query = 'SELECT COUNT(id) as users
+                            FROM jos_users
+                            WHERE YEAR(registerDate) = ' . $dateTime->format('Y') . ' AND MONTH(registerDate) = ' . $dateTime->format('m') . ' AND DAY(registerDate) = ' . $d;
+
+                $db->setQuery($query);
+                $user->value = $db->loadResult();
+                $day->label = $d;
+                $users[] = $user;
+                $days[] = $day;
+            }
+
+            $tab = array('msg' => 'success', 'users' => $users, 'days' => $days, 'total' => $totalUsers);
         } catch (Exception $e) {
             $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
         }
