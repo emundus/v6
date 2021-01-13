@@ -6,6 +6,90 @@
  */
 
 
+/**
+ *
+ * @param {Integer} elementId
+ * @param {Integer} attachId
+ * Loads uploaded attachments linked to an element Id
+ */
+function watch(elementId, attachId) {
+    var myFormData = new FormData();
+    var div = document.querySelector('div#div_'+elementId);
+    var fnum = document.querySelector('input#'+elementId.split('___')[0]+'___fnum').value;
+    myFormData.append('attachId', attachId);
+    myFormData.append('fnum', fnum);
+
+    var xhr = new XMLHttpRequest();
+
+    var divAttachment = document.createElement('div');
+    divAttachment.setAttribute("id", elementId + '_attachment');
+    divAttachment.setAttribute("class", 'em-fileAttachment');
+    div.appendChild(divAttachment);
+
+    xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_attachment', true);
+    xhr.onreadystatechange = function() {
+
+        if (xhr.readyState == 4 && xhr.status == 200) {
+
+            if(xhr.responseText != '') {
+
+                var result = JSON.parse(xhr.responseText);
+
+                if (result != null) {
+
+                    if (result.limitObtained) {
+                        div.querySelector('input#'+elementId).hide();
+                    } else {
+                        div.querySelector('input#'+elementId).show();
+                    }
+
+                    if (result.files) {
+                        if (!div.querySelector('.em-fileAttachmentTitle')) {
+                            var attachmentTitle = document.createElement('p');
+                            attachmentTitle.setAttribute("class", 'em-fileAttachmentTitle');
+                            attachmentTitle.innerText= Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_UPLOADED_FILES');
+                            divAttachment.appendChild(attachmentTitle);
+                        } else {
+                            attachmentTitle = div.querySelector('.em-fileAttachmentTitle');
+                        }
+
+                        for (var i = 0; i < result.files.length; i++) {
+                            var divLink = document.createElement('div');
+                            divLink.setAttribute("id", elementId + '_attachment_link' + i);
+                            divLink.setAttribute("class", 'em-fileAttachment-link');
+
+                            if (!document.getElementById(divLink.id)) {
+                                divAttachment.appendChild(divLink);
+                            }
+
+                            var link = document.createElement('a');
+                            var linkText = document.createTextNode(result.files[i].filename);
+                            link.setAttribute("href", result.files[i].target);
+
+                            divLink.appendChild(link);
+                            link.appendChild(linkText);
+
+                            var deleteButton = document.createElement('a');
+                            deleteButton.setAttribute("class", 'btn goback-btn em-deleteFile far fa-times-circle');
+                            deleteButton.setAttribute('value', result.files[i].filename);
+
+                            var icon = document.createElement('i');
+                            icon.setAttribute('class', 'far fa-times-circle');
+
+                            divLink.appendChild(deleteButton);
+
+                            var button = document.querySelector('#' + elementId + '_attachment_link' + i + ' > a.em-deleteFile');
+                            button.addEventListener('click', () => FbFileUpload.delete(elementId, attachId));
+                        }
+                    }
+
+                }
+            }
+        }
+    };
+    xhr.send(myFormData);
+}
+
 var FbFileUpload = {
     initialize: function (element, options) {
 
@@ -131,6 +215,12 @@ var FbFileUpload = {
         }
     },
 
+
+
+    watchFileAttachment: function(elementId, attachId) {
+        return watch(elementId, attachId);
+    },
+
     upload: function(elementId, attachId, size, encrypt) {
 
         var myFormData = new FormData();
@@ -146,7 +236,7 @@ var FbFileUpload = {
         }
 
         myFormData.append('attachId', attachId);
-        myFormData.append('element', elementId);
+        myFormData.append('elementId', elementId);
         myFormData.append('fnum', fnum);
         myFormData.append('size', size);
         myFormData.append('encrypt', encrypt);
@@ -169,7 +259,7 @@ var FbFileUpload = {
                 }
 
                 for (var j = 0; j < result.length; j++) {
-                    if (result[j].ext == true && result[j].size == true && result[j].nbMax == true) {
+                    if (result[j].ext == true && result[j].size == true && result[j].nbMax == false) {
                         var inputHidden = document.createElement('input');
                         inputHidden.setAttribute("type", "hidden");
                         inputHidden.setAttribute("name", elementId + '_filename' + j);
@@ -177,7 +267,6 @@ var FbFileUpload = {
                         div.appendChild(inputHidden);
 
                         Swal.fire({
-
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_SUCCESS'),
                             text: Joomla.JText._('PLG_ELEMENT_FIELD_UPLOAD'),
                             type: 'success',
@@ -219,7 +308,7 @@ var FbFileUpload = {
                         deleteButton.style.display = 'none';
                     }
 
-                    if (result[j].nbMax == false) {
+                    if (result[j].nbMax == true) {
                         Swal.fire({
                             type: 'error',
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
@@ -230,67 +319,10 @@ var FbFileUpload = {
                         deleteButton.style.display = 'none';
                     }
                 }
+                watch(elementId, attachId);
             }
         };
         xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_upload', true);
-        xhr.send(myFormData);
-    },
-
-    watchFileAttachment: function(elementId, attachId) {
-
-        var myFormData = new FormData();
-        var div = document.querySelector('div#div_'+elementId);
-        var fnum = document.querySelector('input#'+elementId.split('___')[0]+'___fnum').value;
-        myFormData.append('attachId', attachId);
-        myFormData.append('fnum', fnum);
-
-        var xhr = new XMLHttpRequest();
-
-        var divAttachment = document.createElement('div');
-        divAttachment.setAttribute("id", elementId + '_attachment');
-        divAttachment.setAttribute("class", 'em-fileAttachment');
-        div.appendChild(divAttachment);
-
-        xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_attachment', true);
-        xhr.onreadystatechange = function() {
-
-            if (xhr.readyState == 4 && xhr.status == 200) {
-
-                if(xhr.responseText != '') {
-
-                    var result = JSON.parse(xhr.responseText);
-
-                    if (result != null) {
-                        for (var i = 0; i < result.length; i++) {
-
-                            var divLink = document.createElement('div');
-                            divLink.setAttribute("id", elementId + '_attachment_link' + i);
-                            divLink.setAttribute("class", 'em-fileAttachment-link');
-                            divAttachment.appendChild(divLink);
-
-                            var link = document.createElement('a');
-                            var linkText = document.createTextNode(result[i].filename);
-                            link.setAttribute("href", result[i].target);
-
-                            divLink.appendChild(link);
-                            link.appendChild(linkText);
-
-                            var deleteButton = document.createElement('a');
-                            deleteButton.setAttribute("class", 'btn goback-btn em-deleteFile far fa-times-circle');
-                            deleteButton.setAttribute('value', result[i].filename);
-
-                            var icon = document.createElement('i');
-                            icon.setAttribute('class', 'far fa-times-circle');
-
-                            divLink.appendChild(deleteButton);
-
-                            var button = document.querySelector('#' + elementId + '_attachment_link' + i + ' > a.em-deleteFile');
-                            button.addEventListener('click', () => FbFileUpload.delete(elementId, attachId));
-                        }
-                    }
-                }
-            }
-        };
         xhr.send(myFormData);
     },
 
@@ -333,6 +365,13 @@ var FbFileUpload = {
                         var result = JSON.parse(xhr.responseText);
                         if (result.status == true) {
                             parentDiv.remove();
+
+                            var attachmentList = div.querySelectorAll('.em-fileAttachment-link').length;
+                            if (attachmentList === 0) {
+                                document.querySelector('div#'+elementId+'_attachment > .em-fileAttachmentTitle').remove();
+                            }
+
+                            input.value = "";
                             Swal.fire({
                                 title: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE'),
                                 text: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT'),
@@ -340,10 +379,15 @@ var FbFileUpload = {
                                 confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue'
                             });
                         }
+                        document.querySelectorAll('div#'+elementId+'_attachment').forEach(element => {
+                            element.remove();
+                        });
                     }
+
+                    watch(elementId, attachId);
+
                 };
             }
-
             xhr.send(myFormData);
         });
     },

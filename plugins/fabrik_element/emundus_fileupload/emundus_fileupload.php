@@ -32,65 +32,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
      */
     public $storage = null;
 
-
-    /**
-     * @return bool
-     * @throws Exception
-     */
-    /*public function onBeforeStore() {
-
-        jimport('joomla.filesystem.file');
-
-        $current_user = JFactory::getSession()->get('emundusUser');
-        $jinput = JFactory::getApplication()->input;
-        $db = JFactory::getDBO();
-
-        if (JFactory::getUser()->guest) {
-            echo json_encode(['status' => 'false']);
-            return false;
-        }
-
-        $fnum = $jinput->post->get($this->getTableName().'___fnum');
-        $user = (int)substr($fnum, -7);
-
-        $attachId = $this->getAttachId();
-        $name = $this->getFullName();
-        $cid = $this->getCampaignId($fnum);
-
-        $attachmentResult = $this->getAttachment($attachId);
-        $uploadResult = $this->getUploads($attachId, $user, $cid);
-
-        $nbMax = (int)$attachmentResult->nbmax;
-        $insert = [];
-
-        for ($i = 0; $i < $attachmentResult->nbmax; $i++) {
-            $fileName = $jinput->post->get($name.'_filename'.$i);
-
-            if (!empty($fileName)) {
-                $insert[] = $user.' , '.$db->quote($fnum).' , '.$cid.' , '.$attachId.' , '.$db->quote($fileName).' , '.'0'.' , '.'1';
-            }
-        }
-
-        if (empty($uploadResult) && $attachmentResult->nbmax >= 1) {
-            $this->insertFile($insert);
-        }
-
-        if (!empty($uploadResult)) {
-            if ($nbMax == 1) {
-                $fileNameUpdate = $jinput->post->get($name.'_filename0');
-                if (!empty($fileNameUpdate)) {
-                    $this->updateFile($fnum, $cid, $attachId, $fileNameUpdate);
-                }
-            }
-            if ($nbMax > 1 && count($uploadResult) < $nbMax) {
-                $this->insertFile($insert);
-            }
-        }
-
-        return true;
-    }*/
-
-
     /**
      * @return bool
      */
@@ -148,8 +89,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
             $fileName = $this->getFileName($user, $attachId, $label, $file['name'], $fnum);
 
-
-
             $tmp_name = $file['tmp_name'];
             $fileSize = $file['size'];
 
@@ -175,41 +114,29 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
                 // The maximum size is equal to the smallest of the two sizes, either the size configured in the plugin or in the server itself.
                 $postSize = $jinput->post->getInt('size', 0);
                 $iniSize = $this->file_upload_max_size();
-                $sizeMax = ($postSize>=$iniSize)?$iniSize:$postSize;
+                $sizeMax = ($postSize >= $iniSize) ? $iniSize : $postSize;
+
+                if (!empty($fileName)) {
+                    $insert[] = $user.' , '.$db->quote($fnum).' , '.$cid.' , '.$attachId.' , '.$db->quote($fileName).' , '.'0'.' , '.'1';
+                }
 
 
+                $fileLimitObtained = false;
 
-
-                //for ($i = 0; $i < $attachmentResult->nbmax; $i++) {
-                    //$fileName = $jinput->post->get($name.'_filename'.$i);
-
-                    if (!empty($fileName)) {
-                        $insert[] = $user.' , '.$db->quote($fnum).' , '.$cid.' , '.$attachId.' , '.$db->quote($fileName).' , '.'0'.' , '.'1';
-                    }
-                //}
-
-
-
-                if ($lengthFile <= $nbMaxFile) {
-                    if ($nbAttachment < $nbMaxFile) {
-                        $nbMax = true;
-                        if ($fileSize < $sizeMax) {
-                            move_uploaded_file($tmp_name, $target);
-                            $size = true;
-                        } else {
-                            $size = false;
-                        }
+                if (($lengthFile + $nbAttachment) > $nbMaxFile) {
+                    $fileLimitObtained = true;
+                } else {
+                    if ($fileSize < $sizeMax) {
+                        move_uploaded_file($tmp_name, $target);
+                        $size = true;
                     } else {
-                        $nbMax = false;
+                        $size = false;
                     }
                 }
 
                 $sizeMax = $this->formatBytes($sizeMax);
 
-                if ($lengthFile > $nbMaxFile) {
-                    $nbMax = false;
-                }
-                $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $nbMax, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt, 'maxSize' => $sizeMax);
+                $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $fileLimitObtained, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt, 'maxSize' => $sizeMax);
             } else {
                 $size = true;
                 $ext = false;
@@ -218,19 +145,19 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         }
 
-
-        if (empty($uploadResult) && $attachmentResult->nbmax >= 1) {
+        if (empty($uploadResult) && $attachmentResult->nbmax >= 1 && $fileLimitObtained === false) {
             $this->insertFile($insert);
         }
 
         if (!empty($uploadResult)) {
-            if ($nbMax == 1) {
+
+            if ($fileLimitObtained != false) {
                 $fileNameUpdate = $jinput->post->get($name.'_filename0');
                 if (!empty($fileNameUpdate)) {
                     $this->updateFile($fnum, $cid, $attachId, $fileNameUpdate);
                 }
             }
-            if ($nbMax > 1 && count($uploadResult) < $nbMax) {
+            else {
                 $this->insertFile($insert);
             }
         }
@@ -302,13 +229,18 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $cid = $this->getCampaignId($fnum);
         $uploadResult = $this->getUploads($attachId, $user, $cid, $fnum);
 
+        $attachmentResult = $this->getAttachment($attachId);
+        $nbMaxFile = (int)$attachmentResult->nbmax;
+        $result = array('limitObtained' => $nbMaxFile<=sizeof($uploadResult));
+
         foreach ($uploadResult as $upload) {
             if (!empty($upload->filename)) {
                 $fileName = $upload->filename;
             }
 
             $target = '/images'.DS.'emundus'.DS.'files'.DS.$user.DS.$fileName;
-            $result[] = array('filename' => $fileName, 'target' => $target);
+            $result['files'][] = array('filename' => $fileName, 'target' => $target);
+
         }
 
         echo json_encode($result);
@@ -428,7 +360,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         $db = JFactory::getDBO();
 
         $query = $db->getQuery(true);
-        $query->select($db->quoteName(array('esa.lbl', 'esa.allowed_types', 'esa.nbmax')))
+        $query->select($db->quoteName(array('esa.lbl', 'esa.value', 'esa.allowed_types', 'esa.nbmax')))
             ->from($db->quoteName('#__emundus_setup_attachments', 'esa'))
             ->where($db->quoteName('id') . ' = ' . $attachId);
         $db->setQuery($query);
@@ -681,6 +613,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         JText::script('PLG_ELEMENT_FIELD_DELETE_TEXT');
         JText::script('PLG_ELEMENT_FIELD_ACCESS');
         JText::script('PLG_ELEMENT_FIELD_UPLOAD');
+        JText::script('PLG_ELEMENT_FILEUPLOAD_UPLOADED_FILES');
 
         return array('FbField', $id, $opts);
     }

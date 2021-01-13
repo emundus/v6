@@ -60,7 +60,6 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $this->db->quoteName('eu.lastname'),
                 $this->db->quoteName('eu.email'),
                 $this->db->quoteName('eu.tel'),
-                $this->db->quoteName('eu.civility'),
                 $this->db->quoteName('eu.country'),
                 $this->db->quoteName('eu.nationality')
             ];
@@ -68,6 +67,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             // emundus personal details table
             $pd_columns = [
                 $this->db->quoteName('epd.email', 'pd_email'),
+                $this->db->quoteName('epd.civility'),
                 $this->db->quoteName('epd.mobile_1'),
                 $this->db->quoteName('epd.skype_id'),
                 $this->db->quoteName('epd.street_1'),
@@ -203,7 +203,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
                 ->leftJoin($this->db->quoteName('data_aurion_37736495', 'dau') . ' ON ' . $this->db->quoteName('es.mail_excelia') . ' = '. $this->db->quoteName('dau.MailEcole') . ' AND ' . $this->db->quoteName('dau.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_39177663', 'deu') . ' ON ' . $this->db->quoteName('ecc.applicant_id') . ' = '. $this->db->quoteName('deu.emundus_id')  . ' AND ' . $this->db->quoteName('deu.published') . ' = 1')
-                ->leftJoin($this->db->quoteName('data_aurion_35347585', 'dac') . ' ON ' . $this->db->quoteName('eu.civility') . ' = '. $this->db->quoteName('dac.id_Titre') . ' AND ' . $this->db->quoteName('dac.published') . ' = 1')
+                ->leftJoin($this->db->quoteName('data_aurion_35347585', 'dac') . ' ON ' . $this->db->quoteName('epd.civility') . ' = '. $this->db->quoteName('dac.id_Titre') . ' AND ' . $this->db->quoteName('dac.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_35584331', 'dacity') . ' ON ' . $this->db->quoteName('eq.city') . ' = '. $this->db->quoteName('dacity.id_Ville') . ' AND ' . $this->db->quoteName('dacity.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_35616031', 'dad') . ' ON ' . $this->db->quoteName('eu.candidat') . ' = '. $this->db->quoteName('dad.Code_TypeDiplome') . ' AND ' . $this->db->quoteName('dad.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_35581810', 'dan') . ' ON ' . $this->db->quoteName('eu.nationality') . ' = '. $this->db->quoteName('dan.id_Nationalite') . ' AND ' . $this->db->quoteName('dan.published') . ' = 1')
