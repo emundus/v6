@@ -362,7 +362,7 @@ jQuery(document).ready(function(){
 				success : function(data) {
 					if(data.success) {
 						msg = JSON.parse(data.data);
-						if (msg.status)
+						if (msg.status) {
 							window.location.assign("<?= basename($_SERVER['REQUEST_URI']); ?>");
 						} else {
 							console.log(msg.msg);
