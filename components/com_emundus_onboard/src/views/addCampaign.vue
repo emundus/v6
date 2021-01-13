@@ -7,7 +7,7 @@
             :speed="500"
             :classes="'vue-notification-custom'"
     />
-    <div class="w-container">
+    <div class="w-container general-information">
       <div class="section-sub-menu sub-form" v-if="campaign == ''">
         <div class="container-2 w-container" style="max-width: unset">
           <div class="d-flex">
