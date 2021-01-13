@@ -283,7 +283,7 @@ ul {
   }
 }
 
-.contentpane.modal form .fabrikActions.form-actions button{
+.contentpane.modal form .fabrikActions.form-actions button.btn {
   background: $dark-blue !important;
   background-color: $dark-blue !important;
   border: 2px solid $dark-blue !important;
@@ -296,6 +296,20 @@ ul {
      border-radius: 25px !important;
      color: $dark-blue !important;
    }
+}
+
+.files-board form.em-form-message .toggle-editor .btn-group a.btn {
+  background: $dark-blue !important;
+  background-color: $dark-blue !important;
+  border: 2px solid $dark-blue !important;
+  border-radius: 25px !important;
+  &:active, &:focus, &:hover {
+    background: transparent;
+    background-color: transparent;
+    border: 2px solid $dark-blue !important;
+    border-radius: 25px !important;
+    color: $dark-blue !important;
+  }
 }
 
 .alert-heading {
