@@ -585,7 +585,7 @@ input[type="reset"] {
   margin-top: 0;
   display: flex;
   align-items: center;
-  justify-content: end;
+  justify-content: start;
 }
 /**** END ****/
 
@@ -741,6 +741,7 @@ input[type="reset"] {
 }
 .cta-block {
   color: $grey;
+  background: transparent;
   font-size: 25px;
   padding: 5px;
   width: 30px;
@@ -904,7 +905,6 @@ input[type="reset"] {
   padding: 5px 30px;
   text-align: center;
   margin-left: 1em;
-  margin-bottom: 10px;
   border: solid 2px #78dc6e;
   font-size: 12px;
   background: white;
@@ -1843,6 +1843,7 @@ textarea {
   padding: 10px;
   cursor: pointer;
   filter: brightness(0.2);
+  justify-content: center;
 }
 .action-link:hover > .action-label{
   color: $dark-blue;
@@ -2172,7 +2173,7 @@ textarea {
   }
   .actions-filters-block{
     right: 85px !important;
-    top: 255px !important;
+    top: 265px !important;
   }
 }
 
@@ -2234,8 +2235,7 @@ textarea {
   padding-right: 20px;
   z-index: 11;
   top: 0;
-  padding-top: 10px;
-  margin-top: 3em;
+  padding-top: 3em;
 }
 
 .status-field{
@@ -2286,7 +2286,7 @@ textarea {
 .blue-text-instruction{
   padding: 5px;
   margin-bottom: 10px;
-  color: $dark-blue;
+  color: black;
   font-weight: 700;
   font-size: 18px;
 }
@@ -2401,6 +2401,7 @@ input[type="radio"]{
 .sticky-form-pages{
   position: sticky !important;
   top: 15vh;
+  transition: all 0.3s ease-in-out;
 }
 
 .form-page {
@@ -2408,5 +2409,24 @@ input[type="radio"]{
     border: 2px solid #ccc!important;
     border-radius: 4px!important;
   }
+}
+
+.email-tags{
+  padding: 5px 10px 5px 10px;
+}
+.email-tags a{
+  padding: inherit !important;
+  border-radius: 5px;
+}
+.email-tags.active a{
+  background: #16AFE1 !important;
+}
+.email-tags a:hover{
+  background: #16AFE1 !important;
+  color: white !important;
+}
+.email-tags a:focus{
+  background: #16AFE1 !important;
+  color: white !important;
 }
 

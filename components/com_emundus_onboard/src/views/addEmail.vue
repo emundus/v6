@@ -167,7 +167,7 @@
                   onclick="history.go(-1)">
                 {{ retour }}
               </button>
-              <button type="button" class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green">
+              <button type="submit" class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green">
                 {{ continuer }}
               </button>
             </div>

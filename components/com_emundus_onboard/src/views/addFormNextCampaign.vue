@@ -80,7 +80,7 @@
 
       </div>-->
 
-      <div class="col-md-10 col-md-offset-1 p-1" style="padding-left: 2em !important">
+      <div class="col-md-10 col-sm-10 col-sm-offset-4 col-md-offset-3 col-lg-offset-1 p-1" style="padding-left: 2em !important">
         <div class="section-sub-menu">
           <div class="container-2 w-container" style="max-width: unset">
             <div class="d-flex">
@@ -113,6 +113,7 @@
               :campaignId="campaignId"
               :profiles="profiles"
               :key="formReload"
+              @profileId="setProfileId"
               :visibility="null"
           ></addFormulaire>
 
@@ -376,6 +377,10 @@ export default {
       this.menuHighlightProg = -1;
     },
 
+    setProfileId(prid){
+      this.profileId = prid;
+    },
+
     moment(date) {
       return moment(date);
     },
@@ -507,6 +512,12 @@ export default {
 }
 .w-container{
   margin-left: 30px;
+  max-width: unset;
+}
+.section-principale{
+  margin-left: 30px;
+}
+.w-container{
   max-width: unset;
 }
 </style>

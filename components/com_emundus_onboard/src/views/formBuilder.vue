@@ -126,8 +126,8 @@
             </div>
           </div>
         </div>
-        <div v-if="menuHighlight === 0">
-          <div class="form-viewer-builder" :class="[addingElement ? 'col-md-offset-2 col-md-6' : 'col-md-8',optionsModal ? 'col-md-6' : 'col-md-8']">
+        <div v-if="menuHighlight === 0" class="form-builder">
+          <div class="form-viewer-builder" :class="[addingElement ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7 col-md-6' : 'col-md-8',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-8']">
             <Builder
                     :object="formObjectArray[indexHighlight]"
                     v-if="formObjectArray[indexHighlight]"
@@ -148,8 +148,8 @@
             />
           </div>
         </div>
-        <div v-if="menuHighlight === 1">
-          <div class="form-viewer-builder" :class="[addingElement ? 'col-md-offset-2 col-md-6' : 'col-md-8',optionsModal ? 'col-md-6' : 'col-md-8']">
+        <div v-if="menuHighlight === 1" class="form-builder">
+          <div class="form-viewer-builder" :class="[addingElement ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7 col-md-6' : 'col-md-8',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-8']">
             <Builder
                     :object="submittionPages[indexHighlight]"
                     v-if="submittionPages[indexHighlight]"
@@ -170,7 +170,7 @@
             />
           </div>
         </div>
-        <ul class="col-md-3 sticky-form-pages" style="margin-top: 0" v-if="formObjectArray">
+        <ul class="col-md-3 sticky-form-pages" :class="[addingElement ? 'ml-10px col-sm-offset-5 col-sm-7' : '',optionsModal ? 'col-sm-5' : '']" style="margin-top: 0" v-if="formObjectArray">
           <div class="d-flex justify-content-between mb-1">
             <h3 class="mb-0" style="padding: 0;">{{ FormPage }}</h3>
             <label class="saving-at">{{ Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
@@ -1031,5 +1031,48 @@
   }
   .fa-sync{
     transition: all 1s ease-in-out;
+  }
+  @media all and (min-width: 1660px) {
+    .col-lg-offset-1 {
+      margin-left: 13.333%;
+    }
+  }
+  @media all and (min-width: 992px) and (max-width: 1660px) {
+    .col-md-offset-2 {
+      margin-left: 22.667%;
+    }
+    .col-lg-offset-1{
+      margin-left: 29%;
+    }
+  }
+
+  @media all and (min-width: 992px){
+    .ml-10px {
+      margin-left: 10px !important;
+    }
+  }
+
+  @media all and (min-width: 1280px) and (max-width: 1660px)  {
+    .col-lg-offset-1{
+      margin-left: 23%;
+    }
+  }
+
+  @media all and (max-width: 992px) {
+    .menu-block{
+      display: flex;
+      flex-direction: column;
+    }
+    .sticky-form-pages{
+      position: static !important;
+      order: 2;
+    }
+    .heading-block{
+      order: 1;
+    }
+    .form-builder{
+      order: 3;
+      margin-left: 25px;
+    }
   }
 </style>

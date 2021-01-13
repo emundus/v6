@@ -178,26 +178,29 @@
                         </span>
                         <span v-if="element.tipBelow" v-html="element.tipBelow"></span>
                       </div>
-                    </div>
-                    <div class="actions-item-bar" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
-<!--                      <a class="d-flex mr-2" v-if="element.plugin != 'display'">
-                        <div class="toggle">
-                          <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
-                          <strong class="b switch"></strong>
-                          <strong class="b track"></strong>
-                        </div>
-                        <span class="ml-10px">{{Required}}</span>
-                      </a>-->
-                      <a class="d-flex mr-2 mb-1" v-if="element.plugin != 'calc'" @click="openParameters(element)">
-                        <em class="fas fa-cog settings-elt"></em>
-                      </a>
-<!--                      <a class="d-flex mr-2" v-if="element.plugin != 'calc'" @click="openDuplicate(element)">
-                        <em class="fas fa-copy"></em>
-                        <span class="ml-10px">{{Duplicate}}</span>
-                      </a>-->
-                      <a class="d-flex mr-2" style="color: red" @click="deleteElement(element,index)" v-if="files == 0">
-                        <em class="fas fa-trash-alt delete-icon-elt"></em>
-                      </a>
+                      <div class="actions-item-bar" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
+                        <!--                      <a class="d-flex mr-2" v-if="element.plugin != 'display'">
+                                                <div class="toggle">
+                                                  <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
+                                                  <strong class="b switch"></strong>
+                                                  <strong class="b track"></strong>
+                                                </div>
+                                                <span class="ml-10px">{{Required}}</span>
+                                              </a>-->
+                        <a class="d-flex mr-2 mb-1" v-if="element.plugin != 'calc'" @click="openParameters(element)">
+                          <em class="fas fa-cog settings-elt"></em>
+                        </a>
+                        <!--                      <a class="d-flex mr-2" v-if="element.plugin != 'calc'" @click="openDuplicate(element)">
+                                                <em class="fas fa-copy"></em>
+                                                <span class="ml-10px">{{Duplicate}}</span>
+                                              </a>-->
+                        <a class="d-flex mr-2" style="color: red" @click="deleteElement(element,index)" v-if="files == 0">
+                          <em class="fas fa-trash-alt delete-icon-elt"></em>
+                        </a>
+                        <a class="d-flex mr-2 mt-1" target="_blank" :href="'/administrator/index.php?option=com_fabrik&view=element&layout=edit&id=' + element.id" v-if="sysaccess">
+                          <em class="fas fa-link settings-elt"></em>
+                        </a>
+                      </div>
                     </div>
                   </div>
                   </transition-group>
@@ -253,6 +256,7 @@ export default {
   data() {
     return {
       object_json: "",
+      sysaccess: false,
 
       // Page trigger
       updatePage: false,
@@ -1094,12 +1098,22 @@ export default {
     },
     //
 
+    getAccess(){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=form&task=getAccess",
+      }).then(response => {
+        this.sysaccess = response.data.access;
+      });
+    },
+
     show(group, type, text, title) {
       this.$emit("show", group, type, text, title);
     },
   },
   created() {
     this.getDataObject();
+    this.getAccess();
   },
   watch: {
     object: function() {

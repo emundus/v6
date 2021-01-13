@@ -192,4 +192,5 @@ li>a:hover {
 
 div#userDropdown {
     float: initial !important;
+    width: 30px;
 }
