@@ -401,7 +401,7 @@ if ($task == 'getproductpdf') {
 
 if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis')) {
     $controller->execute($task);
-} elseif($user->guest && ($name == 'webhook' && $format='raw') && $secret == $token) { 
+} elseif($user->guest && ($name == 'webhook' && $format=='raw') && $secret == $token) {
     $controller->execute($task);
 }elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest') {
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
