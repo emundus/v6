@@ -1141,6 +1141,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit {
   background: $dark-green;
   border: 1px solid $dark-green;
+  border-radius: 25px;
+  padding: 7px 20px;
 }
 
 .fabrikForm legend {
@@ -2475,6 +2477,14 @@ div#em-appli-block {
     }
   }
 
+  #add-tags {
+    background: $dark-blue;
+    color: #fff;
+    &:hover, &:active, &:focus {
+      color: $dark-blue;
+      background: #fff;
+    }
+  }
 
   span.label.label-info {
     background: #ffffff !important;
@@ -3450,7 +3460,7 @@ footer#g-footer .g-grid {
   }
 
   /* RAPPORT D'ERREUR */
-  .error-report-page  {
+  .error-report-page .error-report-page form  {
       button.submit {
         background: $dark-blue;
         border: 2px solid $dark-blue;
