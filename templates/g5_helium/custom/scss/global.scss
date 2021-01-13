@@ -1546,9 +1546,9 @@ p.readmore .btn,
 .modal-header #can-val {
   button.btn.btn-danger {
     background: transparent;
-    border: 2px solid #5A5A72;
+    border: 2px solid grey;
     border-radius: 25px !important;
-    color: #5A5A72;
+    color: grey;
     margin-right: 10px;
     font-weight: normal;
     padding: 7px 3Opx;
@@ -1556,8 +1556,8 @@ p.readmore .btn,
     &:hover,
     &:active,
     :focus {
-      background: #5A5A72;
-      border: 2px solid #5A5A72;
+      background: grey;
+      border: 2px solid grey;
       color: #fff;
     }
   }
@@ -1761,16 +1761,33 @@ button#back,
 }
 
 #member-profile .controls button.btn.btn-primary.validate {
-  background: $base-primary-color;
-  border: 1px solid $base-primary-color;
+  background: $dark-blue;
+  border: 2px solid $dark-blue;
   text-shadow: none;
   text-transform: initial;
+  border-radius: 25px;
   &:hover,
   &:focus,
   &:active {
     background-color: transparent;
-    color: $base-primary-color;
-    border: 1px solid $base-primary-color;
+    color: $dark-blue;
+    border: 2px solid $dark-blue;
+  }
+}
+
+#member-profile .controls a.btn[title="Annuler"] {
+  background: transparent;
+  border: 2px solid grey;
+  color: grey;
+  text-shadow: none;
+  text-transform: initial;
+  border-radius: 25px;
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: grey;
+    color: #fff;
+    border: 2px solid grey;
   }
 }
 
