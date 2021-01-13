@@ -1546,34 +1546,34 @@ p.readmore .btn,
 .modal-header #can-val {
   button.btn.btn-danger {
     background: transparent;
-    border: 1px solid $base-secondary-color;
-    border-radius: 4px;
-    color: $base-secondary-color;
+    border: 2px solid #5A5A72;
+    border-radius: 25px !important;
+    color: #5A5A72;
     margin-right: 10px;
     font-weight: normal;
 
     &:hover,
     &:active,
     :focus {
-      background: $base-secondary-color;
-      border: 1px solid $base-secondary-color;
+      background: #5A5A72;
+      border: 2px solid #5A5A72;
       color: #fff;
     }
   }
 
   button.btn.btn-success,
   a.btn-success {
-    background: $base-primary-color;
-    border: 1px solid $base-primary-color;
-    border-radius: 4px;
+    background: $dark-blue;
+    border: 2px solid $dark-blue;
+    border-radius: 25px !important;
     color: #fff;
 
     &:hover,
     &:active,
     :focus {
       background: transparent;
-      border: 1px solid $base-primary-color;
-      color: $base-primary-color;
+      border: 2px solid $dark-blue;
+      color: $dark-blue;
     }
   }
 }
@@ -2358,14 +2358,14 @@ ul.unstyled.em-linkForgot li a {
 }
 
 .g-back-office-emundus-tableau #em-hide-filters {
-  border: 0 solid $base-primary-color;
-  background-color: $base-primary-color;
+  border: 0 solid $dark-blue;
+  background-color: $dark-blue;
 
   &:hover,
   &:focus,
   &:active {
-    border: darken($base-primary-color, 10%);
-    background-color: darken($base-primary-color, 10%);
+    border: darken($dark-blue, 10%);
+    background-color: darken($dark-blue, 10%);
   }
 }
 
@@ -2835,7 +2835,7 @@ div#em-appli-block {
   height: 30px;
 }
 
-.experts-page .contact-group .contact-group-item bg-warning  a {
+.experts-page .contact-group .contact-group-item  a {
  color: $dark-blue;
   &:hover,
   &:active,
@@ -3427,15 +3427,9 @@ footer#g-footer .g-grid {
     }
   }
 
-  .error-report-page {
-    .fabrikForm {
-      padding: 1rem 3rem 1rem 3rem;
-    }
-    fieldset {
-      background: #f8f8f8;
-    }
-    .fabrikActions.form-actions {
-      button {
+  /* RAPPORT D'ERREUR */
+  .error-report-page  {
+      button.submit {
         background: $dark-blue;
         border: 2px solid $dark-blue;
         padding: 5px 30px !important;
@@ -3446,7 +3440,6 @@ footer#g-footer .g-grid {
           border: 2px solid $dark-blue;
           color: $dark-blue;
         }
-      }
     }
   }
 

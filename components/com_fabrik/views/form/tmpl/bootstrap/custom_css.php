@@ -1200,7 +1200,7 @@ body.em-formRegistrationCenter  {
 /* IMPORT CSV */ 
 
 .import-csv-page h1, .import-csv-page legend { 
-    color: #000; 
+    color: #000 !important; 
 }
 
 .import-csv-page select { 
