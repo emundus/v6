@@ -1765,7 +1765,7 @@ button#back,
   border: 2px solid $dark-blue;
   text-shadow: none;
   text-transform: initial;
-  border-radius: 25px;
+  border-radius: 25px !important;
   &:hover,
   &:focus,
   &:active {

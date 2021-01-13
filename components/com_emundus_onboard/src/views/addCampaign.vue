@@ -845,4 +845,9 @@ export default {
   height: 30px;
   filter: invert(1);
 }
+
+  .w-container.general-information {
+    max-width: inherit !important;
+  }
+
 </style>
