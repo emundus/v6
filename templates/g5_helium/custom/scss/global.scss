@@ -275,10 +275,13 @@ ul {
 }
 
 .modal-body {
-  h1, h2, h3, h4, h5, h6 {
+  a {
     color: $dark-blue !important;
   }
-  a {
+}
+
+.contentpane.modal {
+  h1, h2, h3, h4, h5, h6 {
     color: $dark-blue !important;
   }
 }
@@ -290,8 +293,8 @@ ul {
   border-radius: 25px !important;
   color: #fff;
    &:active, &:focus, &:hover {
-     background: transparent;
-     background-color: transparent;
+     background: transparent!important;
+     background-color: transparent!important;
      border: 2px solid $dark-blue !important;
      border-radius: 25px !important;
      color: $dark-blue !important;
@@ -303,9 +306,10 @@ ul {
   background-color: $dark-blue !important;
   border: 2px solid $dark-blue !important;
   border-radius: 25px !important;
+  color: #000 !important;
   &:active, &:focus, &:hover {
-    background: transparent;
-    background-color: transparent;
+    background: transparent !important;
+    background-color: transparent !important;
     border: 2px solid $dark-blue !important;
     border-radius: 25px !important;
     color: $dark-blue !important;
@@ -2012,11 +2016,11 @@ textarea:hover {
   transform: scale(2, 1.5);
   font-size: 2em;
   font-weight: 700;
-  color: $base-primary-color;
+  color: $dark-green;
 }
 
 #gototop:hover div::after {
-  color: $base-secondary-color;
+  color: $dark-green;
 }
 
 /* ALERT */
@@ -3504,8 +3508,7 @@ footer#g-footer .g-grid {
   }
 
   /* RAPPORT D'ERREUR */
-  .error-report-page .error-report-page form  {
-      button.submit {
+  .error-report-page button.submit {
         background: $dark-blue;
         border: 2px solid $dark-blue;
         padding: 5px 30px !important;
@@ -3516,7 +3519,6 @@ footer#g-footer .g-grid {
           border: 2px solid $dark-blue;
           color: $dark-blue;
         }
-    }
   }
 
   .mod-languages {

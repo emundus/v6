@@ -279,7 +279,7 @@
         <div class="divider"></div>
 
         <div class="section-sauvegarder-et-continuer">
-          <div class="w-container">
+          <div class="w-container btns-sauvegarder-et-continuer">
             <div class="container-evaluation d-flex justify-content-between">
               <button
                   type="button"
@@ -848,6 +848,14 @@ export default {
 
   .w-container.general-information {
     max-width: inherit !important;
+  }
+
+   .w-container.btns-sauvegarder-et-continuer {
+     max-width: inherit !important;
+  }
+
+  .w-container.btns-sauvegarder-et-continuer .container-evaluation {
+    margin: 0;
   }
 
 </style>
