@@ -2411,6 +2411,7 @@ input[type="radio"]{
   }
 }
 
+/*** EMAIL TAGS TINYMCE EDITOR ***/
 .email-tags{
   padding: 5px 10px 5px 10px;
 }
@@ -2429,4 +2430,19 @@ input[type="radio"]{
   background: #16AFE1 !important;
   color: white !important;
 }
+/*** END ***/
 
+/*** GROUP REPEAT ***/
+.group-repeat-icon{
+  padding: 5px;
+  border-radius: 5px;
+  color: #b0b0bf;
+  &:hover{
+    color: #b0b0bf;
+  }
+}
+.active-repeat{
+  background: $dark-blue;
+  color: white !important;
+}
+/*** END ***/

@@ -66,7 +66,7 @@
                   <a @click="enableUpdatingGroup(group)" style="margin-left: 1em;font-size: 16px" :title="Edit" class="cta-block pointer">
                     <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
                   </a>
-                  <a v-if="group.repeat_group" :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px pointer" :title="RepeatedGroup" @click="enableRepatedGroup(group)">
+                  <a :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px pointer" :title="RepeatedGroup" @click="enableRepatedGroup(group)">
                     <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
                   </a>
                 </div>
@@ -1189,15 +1189,6 @@ export default {
   }
   .hidden{
     display: none;
-  }
-  .active-repeat{
-    background: $dark-blue;
-    color: white !important;
-  }
-  .group-repeat-icon{
-    padding: 5px;
-    border-radius: 5px;
-    color: #1b1f3c;
   }
   .translate-icon-selected{
     top: -5px;
