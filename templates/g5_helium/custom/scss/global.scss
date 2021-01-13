@@ -2835,12 +2835,12 @@ div#em-appli-block {
   height: 30px;
 }
 
-.experts-page .contact-group .contact-group-item  a {
- color: $dark-blue;
+.experts-page ul.contact-group li.contact-group-item.bg-warning  a.row {
+ color: $dark-blue !important;
   &:hover,
   &:active,
   &:focus {
-  color: $dark-blue;
+  color: $dark-blue !important;
   }
 }
 

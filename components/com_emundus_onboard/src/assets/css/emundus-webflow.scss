@@ -275,6 +275,7 @@
 }
 .tchooz-dark-blue{
   color: $dark-blue;
+  font-weight: 700;
 }
 label{
   cursor: unset !important;
@@ -646,6 +647,9 @@ input[type="reset"] {
   padding-top: 20px;
   padding-bottom: 20px;
   background-color: transparent;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
 }
 .date-menu {
   color: #b2b2c1;
