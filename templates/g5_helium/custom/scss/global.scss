@@ -2560,6 +2560,9 @@ div#em-appli-block {
   }
 }
 
+.view-list.task-list.view .page-header  h1 {
+  color: #000;
+}
 
 .view-list {
   .filtertable {
@@ -2618,14 +2621,14 @@ div#em-appli-block {
 
     .fabrik_groupdata,
     thead {
-      border-color: $base-secondary-color;
+      border-color: $dark-blue;
     }
 
     thead tr.fabrik___heading {
 
       th span a,
       th span a i {
-        color: $base-secondary-color;
+        color: $dark-blue;
       }
     }
   }
