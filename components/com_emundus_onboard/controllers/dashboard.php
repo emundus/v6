@@ -75,16 +75,21 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
                 ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_dashboard_vue'));
 
             $db->setQuery($query);
-            $params = json_decode($db->loadResult(),true);
+            $modules = $db->loadColumn();
 
-            $widgets[] = $params['widget1'];
-            $widgets[] = $params['widget2'];
-            $widgets[] = $params['widget3'];
-            $widgets[] = $params['widget4'];
-            $widgets[] = $params['widget5'];
-            $widgets[] = $params['widget6'];
-            $widgets[] = $params['widget7'];
-            $widgets[] = $params['widget8'];
+            foreach ($modules as $module) {
+                $params = json_decode($module, true);
+                if (JFactory::getSession()->get('emundusUser')->profile == $params['profile']) {
+                    $widgets[] = $params['widget1'];
+                    $widgets[] = $params['widget2'];
+                    $widgets[] = $params['widget3'];
+                    $widgets[] = $params['widget4'];
+                    $widgets[] = $params['widget5'];
+                    $widgets[] = $params['widget6'];
+                    $widgets[] = $params['widget7'];
+                    $widgets[] = $params['widget8'];
+                }
+            }
 
             $tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
         } catch (Exception $e) {

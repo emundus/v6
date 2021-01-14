@@ -17,6 +17,11 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
+                <field name="profile" type="list" default="list" label="Profil" description="Profil du dashboard">
+                    <option value="2">Gestionnaire</option>
+                    <option value="6">Evaluateur</option>
+                </field>
+
                 <field name="widget1" type="list" default="list" label="Widget" description="Widget à afficher">
                     <option value="">Pas de widgets</option>
                     <option value="last_campaign_active">Dernière campagne active - 5 cases</option>

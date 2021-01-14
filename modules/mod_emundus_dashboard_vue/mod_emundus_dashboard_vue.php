@@ -12,13 +12,18 @@ $document->addScript('media/mod_emundus_dashboard_vue/chunk-vendors.js');
 $document->addStyleSheet('media/mod_emundus_dashboard_vue/app.css');
 
 
-$widgets[] = $params->get('widget1');
-$widgets[] = $params->get('widget2');
-$widgets[] = $params->get('widget3');
-$widgets[] = $params->get('widget4');
-$widgets[] = $params->get('widget5');
-$widgets[] = $params->get('widget6');
-$widgets[] = $params->get('widget7');
-$widgets[] = $params->get('widget8');
+$profile = $params->get('profile');
 
-require(JModuleHelper::getLayoutPath('mod_emundus_dashboard_vue'));
+if(JFactory::getSession()->get('emundusUser')->profile == $profile) {
+
+    $widgets[] = $params->get('widget1');
+    $widgets[] = $params->get('widget2');
+    $widgets[] = $params->get('widget3');
+    $widgets[] = $params->get('widget4');
+    $widgets[] = $params->get('widget5');
+    $widgets[] = $params->get('widget6');
+    $widgets[] = $params->get('widget7');
+    $widgets[] = $params->get('widget8');
+
+    require(JModuleHelper::getLayoutPath('mod_emundus_dashboard_vue'));
+}
