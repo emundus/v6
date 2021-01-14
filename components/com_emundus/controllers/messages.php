@@ -991,7 +991,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			    'USER_EMAIL'     => $fnum['email']
 		    ];
 	    }
-	    $tags = $m_emails->setTags($fnum['applicant_id'], $post);
+	    $tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum']);
 
 	    // Get default mail sender info
 	    $mail_from_sys = $config->get('mailfrom');

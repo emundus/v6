@@ -716,28 +716,28 @@ class EmundusControllerFiles extends JControllerLegacy
             'select_publish' => JText::_('PLEASE_SELECT_PUBLISH'))));
         exit;
     }
-	
+
 	/**
      *
      */
 	public function getExistEmailTrigger() {
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-		
+
 		$app    = JFactory::getApplication();
         $jinput = $app->input;
         $state  = $jinput->getInt('state', null);
         $fnums  = $jinput->getString('fnums', null);
-		
-		
+
+
 		$m_email = new EmundusModelEmails();
         $m_messages = new EmundusModelMessages();
         $m_files = $this->getModel('Files');
-		
+
 		if($fnums == "all") {
             $fnums = $m_files->getAllFnums();
         }
-        
+
         if (!is_array($fnums)) {
             $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         }
@@ -757,9 +757,9 @@ class EmundusControllerFiles extends JControllerLegacy
 	            $validFnums[] = $fnum;
             }
         }
-		
+
 		$fnumsInfos = $m_files->getFnumsInfos($validFnums);
-		
+
 		$code = array();
 		foreach ($fnumsInfos as $fnum) {
 			$code[] = $fnum['training'];
@@ -924,7 +924,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $mailer = JFactory::getMailer();
 
                                 $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => $file['end_date']);
-                                $tags = $m_email->setTags($file['applicant_id'], $post);
+                                $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum']);
 
                                 $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
                                 $from_id    = 62;
@@ -1194,7 +1194,7 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
- 
+
     /**
      *
      */
@@ -1804,7 +1804,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $html2 = '';
 
         for ($i = 0; $i < count($pages); $i++) {
-            $title = explode('-', $pages[$i]->label); 
+            $title = explode('-', $pages[$i]->label);
             $title = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
 
             if ($i < count($pages)/2)
@@ -1956,7 +1956,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         'FNUM' => $fnum,
                         'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
                     );
-                $tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post);
+                $tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post, $fnum);
 
                 // Format filename
                 $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
@@ -2547,7 +2547,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         'FNUM' => $fnum,
                         'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
                     );
-                $tags = $m_emails->setTags($users[$fnum]->id, $post);
+                $tags = $m_emails->setTags($users[$fnum]->id, $post, $fnum);
                 $application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
                 $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
                 $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));

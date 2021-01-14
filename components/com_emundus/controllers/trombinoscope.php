@@ -136,7 +136,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
         $tab_body = array();
         foreach ($fnums as $fnum) {
             $post = array('FNUM' => $fnum['fnum']);
-            $tags = $emails->setTags($fnum["applicant_id"], $post);
+            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum']);
             $body_tags = preg_replace($tags['patterns'], $tags['replacements'], $template);
             $body_tmp = $emails->setTagsFabrik($body_tags, array($fnum["fnum"]));
             $body .= $body_tmp;
@@ -289,7 +289,7 @@ footer {
         $format = $jinput->get('format');
         $border = $jinput->get('border');
         $headerHeight = $jinput->get('headerHeight');
-        
+
         $fnums = $this->fnums_json_decode($string_fnums);
         $html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader, $border, $headerHeight);
 
