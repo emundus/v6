@@ -99,7 +99,7 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 
 		// These tags will be used for generating signer names and emails programmatically.
 		$post = ['USER_NAME' => $student->name, 'USER_EMAIL' => $student->email];
-		$tags = $m_emails->setTags($student->id, $post);
+		$tags = $m_emails->setTags($student->id, $post, $fnum);
 
 		// Docusign OAuth credentials are saved in the plugin's params.
 		$host = $this->getParam('host');

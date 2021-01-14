@@ -198,7 +198,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 			}
 
 			$m_emails = new EmundusModelEmails();
-			$tags = $m_emails->setTags($fnum['applicant_id'], $post);
+			$tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum']);
 			$chat_contact_request = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_request->message);
 
             // Send a chat message as folder 3 to the user in order to start a conversation thread.
@@ -352,7 +352,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 				'OFFER_NAME' => $offerInformation->titre,
 				'CONTACT_ID' => $contact_id,
 			];
-			$tags = $m_emails->setTags($fnum['applicant_id'], $post);
+			$tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum']);
 
 			$chat_contact_accept = $m_messages->getEmail('chat_contact_accept');
 			$chat_contact_accept = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_accept->message);
@@ -425,7 +425,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 			];
 
 			$fnum = $this->m_files->getFnumInfos($link->fnum_from);
-			$tags = $m_emails->setTags($this->user->id, $post);
+			$tags = $m_emails->setTags($this->user->id, $post, $fnum['fnum']);
 			$chat_contact_accept = $m_messages->getEmail('chat_contact_accept');
 			$chat_contact_accept = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_accept->message);
 			$m_messages->deleteSystemMessages($link->user_to, $link->user_from);

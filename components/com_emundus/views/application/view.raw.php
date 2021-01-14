@@ -83,7 +83,7 @@ class EmundusViewApplication extends JViewLegacy {
                         'APPLICATION_PROGRESS' => $fnum
                     );
 
-                    $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag);
+                    $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
                     $synthesis = new stdClass();
                     $synthesis->program = $program;
                     $synthesis->camp = $campaignInfo;
