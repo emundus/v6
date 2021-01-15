@@ -31,7 +31,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         $em_application_payment = $eMConfig->get('application_payment', 'user');
 
         $session = JFactory::getSession()->get('emundusUser');
-        $order_id = $order->order_id;
+        $order_id = $order->order_parent_id ?: $order->order_id;
 
         if (!empty($session)) {
             $user = $session->id;
@@ -144,7 +144,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
     public function onAfterOrderUpdate(&$order){
         $db         = JFactory::getDbo();
-        $order_id   = $order->order_id;
+        $order_id = $order->order_parent_id ?: $order->order_id;
 
         if ($order_id > 0) {
             $query = 'SELECT * FROM #__emundus_hikashop WHERE order_id='.$order_id;
