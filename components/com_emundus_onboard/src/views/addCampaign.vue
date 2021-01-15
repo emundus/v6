@@ -680,7 +680,7 @@ export default {
         },
         data: qs.stringify({ body: this.programForm })
       }).then(() => {
-          let newsession = false;
+          let newsession = true;
 
           if (this.campaign !== "") {
             if(typeof this.form.start_date == 'object'){
@@ -724,7 +724,7 @@ export default {
           }
         this.years.forEach((elt) => {
           if(elt.schoolyear == this.year.schoolyear){
-            newsession = true;
+            newsession = false;
           }
         });
           if(newsession) {
