@@ -2417,12 +2417,12 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         try {
             $query->clear()
-                ->select('*')
-                ->from($db->quoteName('#__fabrik_elements'))
+                ->update('#__fabrik_elements')
+                ->set($db->quoteName('published') . ' = -2')
                 ->where($db->quoteName('id') . ' = ' . $db->quote($elt));
             $db->setQuery($query);
-            $fabrik_element = $db->loadObject();
-            $gid = $fabrik_element->group_id;
+            return $db->execute();
+            /*$gid = $fabrik_element->group_id;
             $label = $fabrik_element->label;
             $name = $fabrik_element->name;
             $params = json_decode($fabrik_element->params, true);
@@ -2473,7 +2473,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->where($db->quoteName('id') . ' = ' . $db->quote($elt));
 
             $db->setQuery($query);
-            $db->execute();
+            $db->execute();*/
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot delete the element ' . $elt . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
