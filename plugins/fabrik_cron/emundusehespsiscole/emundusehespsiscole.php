@@ -71,7 +71,7 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
                         $query .= ", esc.year ";
                     }
 
-                    $results = $m_files->getFnumArray($fnums,$element,0,0,0,1,$query);
+                    $results[] = $m_files->getFnumArray($fnums,$element,0,0,0,1,$query);
 
             }
 
@@ -79,8 +79,9 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
             $post[0] = $entete;
 
             foreach($results as $key => $result){
-
-                $post[] = array_values($result);
+                foreach ($result as $res){
+                    $post[] = array_values($res);
+                }
             }
 
             $path = JPATH_BASE.DS.'images'.DS.'emundus'.DS.'files'.DS.'archives'.DS.$link.'.csv'; // chemin du lien
