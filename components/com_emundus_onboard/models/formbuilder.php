@@ -1219,15 +1219,15 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
-        $modules = [93,102,103,104,168,170];
+        //$falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+        //$modules = [93,102,103,104,168,170];
 
-        $query->clear()
+        /*$query->clear()
             ->select('*')
             ->from($db->quoteName('#__fabrik_formgroup'))
-            ->where($db->quoteName('form_id') . ' = ' . $db->quote($menu));
+            ->where($db->quoteName('form_id') . ' = ' . $db->quote($menu));*/
         try {
-            $db->setQuery($query);
+            /*$db->setQuery($query);
             $groups = $db->loadObjectList();
 
             $query->clear()
@@ -1265,7 +1265,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->delete($db->quoteName('#__fabrik_lists'))
                 ->where($db->quoteName('form_id') . ' = ' . $db->quote($menu));
             $db->setQuery($query);
-            $db->execute();
+            $db->execute();*/
 
             $query->clear()
                 ->select('*')
@@ -1274,18 +1274,18 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->setQuery($query);
             $jos_menu = $db->loadObject();
 
-            $falang->deleteFalang($jos_menu->id, 'menu', 'title');
+            //$falang->deleteFalang($jos_menu->id, 'menu', 'title');
 
-            foreach ($modules as $module) {
+            /*foreach ($modules as $module) {
                 $query->clear()
                     ->delete($db->quoteName('#__modules_menu'))
                     ->where($db->quoteName('moduleid') . ' = ' . $db->quote($module))
                     ->andWhere($db->quoteName('menuid') . ' = ' . $db->quote($jos_menu->id));
                 $db->setQuery($query);
                 $db->execute();
-            }
+            }*/
 
-            $query->clear()
+            /*$query->clear()
                 ->delete($db->quoteName('#__menu'))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($jos_menu->id));
             $db->setQuery($query);
@@ -1295,9 +1295,14 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->delete($db->quoteName('#__fabrik_forms'))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($menu));
             $db->setQuery($query);
-            $db->execute();
+            $db->execute();*/
 
-            return true;
+            $query->clear()
+                ->update($db->quoteName('#__menu'))
+                ->set($db->quoteName('published') . ' = -2')
+                ->where($db->quoteName('id') . ' = ' . $db->quote($jos_menu->id));
+            $db->setQuery($query);
+            return $db->execute();
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/formbuilder | Error at deleting the menu with the fabrik_form ' . $menu . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
