@@ -1029,15 +1029,13 @@ class EmundusHelperFiles
 
 
         // Quick filter
-        $quick = '<div id="filters">
+       $filters = '<div id="filters">
                  <p>'.JText::_('RAPID_SEARCH').'</p>
                     <div id="quick" class="form-group">
                         <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('SEARCH').' ...">
-                       <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: \'FontAwesome\';" title="<?php echo JText::_(\'SEARCH_BTN\');?>"/>'.
-                    '</div>
-                </div>';
-
-        $filters .= $quick;
+                       <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: \'FontAwesome\';" title="'.JText::_('SEARCH_BTN').'"/>'.
+		        '</div>
+	        </div>';
         $filters .= '<script type="text/javascript">
                         $("#input-tags").selectize({
                             plugins: ["remove_button"],
