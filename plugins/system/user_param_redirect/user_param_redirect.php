@@ -54,7 +54,7 @@ class PlgSystemUser_param_redirect extends JPlugin {
 
 				case 'notempty':
 					// Do not redirect the user if the param is empty
-					if (!empty($user_params->get($conditional_param, ''))) {
+					if (empty($user_params->get($conditional_param, ''))) {
 						return;
 					}
 					break;

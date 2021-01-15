@@ -2432,12 +2432,12 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         try {
             $query->clear()
-                ->select('*')
-                ->from($db->quoteName('#__fabrik_elements'))
+                ->update('#__fabrik_elements')
+                ->set($db->quoteName('published') . ' = -2')
                 ->where($db->quoteName('id') . ' = ' . $db->quote($elt));
             $db->setQuery($query);
-            $fabrik_element = $db->loadObject();
-            $gid = $fabrik_element->group_id;
+            return $db->execute();
+            /*$gid = $fabrik_element->group_id;
             $label = $fabrik_element->label;
             $name = $fabrik_element->name;
             $params = json_decode($fabrik_element->params, true);
@@ -2488,7 +2488,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->where($db->quoteName('id') . ' = ' . $db->quote($elt));
 
             $db->setQuery($query);
-            $db->execute();
+            $db->execute();*/
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot delete the element ' . $elt . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
@@ -3113,6 +3113,7 @@ class EmundusonboardModelformbuilder extends JModelList {
     function enableRepeatGroup($gid){
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+        $user = JFactory::getUser()->id;
 
         // Prepare Fabrik API
         JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
@@ -3181,6 +3182,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 }
             }
 
+            // Insert parent_id in elements
             $query->clear()
                 ->insert($db->quoteName('#__fabrik_elements'))
                 ->set($db->quoteName('name') . ' = ' . $db->quote('parent_id'))
@@ -3190,10 +3192,10 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->set($db->quoteName('checked_out') . ' = 0')
                 ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
                 ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('created_by') . ' = 95')
+                ->set($db->quoteName('created_by') . ' = ' . $db->quote($user))
                 ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
                 ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-                ->set($db->quoteName('modified_by') . ' = 95')
+                ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
                 ->set($db->quoteName('width') . ' = 0')
                 ->set($db->quoteName('default') . ' = ' . $db->quote(''))
                 ->set($db->quoteName('hidden') . ' = 1')
@@ -3205,6 +3207,34 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
             $db->setQuery($query);
             $db->execute();
+            //
+
+            // Insert id in elements
+            $query->clear()
+                ->insert($db->quoteName('#__fabrik_elements'))
+                ->set($db->quoteName('name') . ' = ' . $db->quote('id'))
+                ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                ->set($db->quoteName('plugin') . ' = ' . $db->quote('internalid'))
+                ->set($db->quoteName('label') . ' = ' . $db->quote('id'))
+                ->set($db->quoteName('checked_out') . ' = 0')
+                ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('created_by') . ' = ' . $db->quote($user))
+                ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
+                ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+                ->set($db->quoteName('width') . ' = 0')
+                ->set($db->quoteName('default') . ' = ' . $db->quote(''))
+                ->set($db->quoteName('hidden') . ' = 1')
+                ->set($db->quoteName('eval') . ' = 0')
+                ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
+                ->set($db->quoteName('parent_id') . ' = 0')
+                ->set($db->quoteName('published') . ' = 1')
+                ->set($db->quoteName('access') . ' = 1')
+                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+            $db->setQuery($query);
+            $db->execute();
+            //
 
             $query = "ALTER TABLE " . $newtablename . " ADD COLUMN parent_id int(11) NULL AFTER id";
             $db->setQuery($query);
@@ -3272,7 +3302,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('fg.form_id'))
                 ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
-            $db_table = $db->loadObject()->dbtable;
+            //$db_table = $db->loadObject()->dbtable;
             $group_params = json_decode($group->params);
             $group_params->repeat_group_button = 0;
 
@@ -3281,28 +3311,28 @@ class EmundusonboardModelformbuilder extends JModelList {
                 ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
-            $db->execute();
-            $repeat_table_name = $db_table . "_" . $gid . "_repeat";
+            return $db->execute();
+            //$repeat_table_name = $db_table . "_" . $gid . "_repeat";
             //
 
             // Delete parent_id and join_table
-            $query->clear()
+            /*$query->clear()
                 ->delete($db->quoteName('#__fabrik_elements'))
                 ->where($db->quoteName('name') . ' = ' . $db->quote('parent_id'))
                 ->andWhere($db->quoteName('group_id') . ' = ' . $db->quote($gid));
             $db->setQuery($query);
-            $db->execute();
+            $db->execute();*/
 
-            $query->clear()
+            /*$query->clear()
                 ->delete($db->quoteName('#__fabrik_joins'))
                 ->where($db->quoteName('table_join') . ' = ' . $db->quote($repeat_table_name));
             $db->setQuery($query);
-            $db->execute();
+            $db->execute();*/
             //
 
-            $query = "DROP TABLE IF EXISTS " . $repeat_table_name;
-            $db->setQuery($query);
-            return $db->execute();
+            /*$query = "DROP TABLE IF EXISTS " . $repeat_table_name;
+            $db->setQuery($query);*/
+            //return $db->execute();
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot disable repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;

@@ -20,6 +20,7 @@
       </a>-->
     </div>
     <FormCarrousel :formList="this.formList" :visibility="this.visibility" v-if="this.formList" :key="formReload" @formbuilder="formbuilder" />
+    <FormCarrousel :formList="this.formList" :visibility="this.visibility" :key="formListReload" v-if="this.formList" @getEmitIndex="getEmitIndex" />
   </div>
 </template>
 
@@ -51,7 +52,7 @@ export default {
       AddForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FORM"),
       EmitIndex: "0",
       formList: "",
-      formReload: 0,
+      formListReload: 0,
 
       form: {
         label: "Nouveau formulaire",
@@ -80,7 +81,7 @@ export default {
       })
         .then(response => {
           this.formList = response.data.data;
-          this.formReload += 1;
+          this.formListReload += 1;
         })
         .catch(e => {
           console.log(e);
