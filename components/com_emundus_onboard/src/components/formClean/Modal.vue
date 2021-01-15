@@ -13,7 +13,7 @@
             @closed="beforeClose"
             @before-open="beforeOpen"
     >
-      <div class="modalC-content">
+      <div v-if="element != null" class="modalC-content">
         <div class="update-field-header">
           <div class="topright">
             <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalEditElement' + ID)">
@@ -213,6 +213,10 @@
                 this.label.en = rep.data.en;
               });
 
+          if(this.files != 0 && this.element.plugin != 'birthday'){
+            delete this.plugins.birthday;
+          }
+
           this.loading = false;
         });
       },
@@ -270,11 +274,6 @@
         }
       }
     },
-    created: function() {
-      if(this.files != 0 && this.element.plugin != 'birthday'){
-        delete this.plugins.birthday;
-      }
-    }
   };
 </script>
 
