@@ -2995,9 +2995,8 @@ class EmundusModelApplication extends JModelList {
      * Return the order for current fnum. If an order with confirmed status is found for fnum campaign period, then return the order
      * If $sent is sent to true, the function will search for orders with a status of 'created' and offline paiement methode
      * @param $fnumInfos $sent
-     * @param bool $sent
-     * @param bool $admission
-     * @return bool|mixed
+     * @param bool $cancelled
+     * @return bool|object
      */
     public function getHikashopOrder($fnumInfos, $cancelled = false) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -3030,7 +3029,7 @@ class EmundusModelApplication extends JModelList {
 
         $query
             ->select(['ho.*', $db->quoteName('eh.user', 'user_cms_id')])
-            ->from($db->quoteName('#__emundus_hikashop', 'ho'))
+            ->from($db->quoteName('#__emundus_hikashop', 'eh'))
             ->leftJoin($db->quoteName('#__hikashop_order','ho').' ON '.$db->quoteName('ho.order_id').' = '.$db->quoteName('eh.order_id'))
             ->where($db->quoteName('ho.order_status') . ' IN (' . implode(", ", $db->quote($order_status)) . ')')
             ->order($db->quoteName('order_created') . ' DESC');
@@ -3079,19 +3078,9 @@ class EmundusModelApplication extends JModelList {
     }
 
     /**
-     * Return any cancelled orders for the current fnum. If an order with cancelled status is found for fnum campaign period, then return the order
-     * @param $fnumInfos
-     * @return bool|mixed
-     */
-    public function getHikashopCancelledOrders($fnumInfos) {
-        return $this->getHikashopOrder($fnumInfos, true);
-    }
-
-
-    /**
      * Return the checkout URL order for current fnum.
-     * @param $pid      the applicant's profile_id
-     * @return bool|mixed
+     * @param $pid   string|int   the applicant's profile_id
+     * @return bool|string
      */
     public function getHikashopCheckoutUrl($pid)
     {

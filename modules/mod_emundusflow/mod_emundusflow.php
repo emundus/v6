@@ -84,12 +84,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 	if ($application_fee) {
 		$fnumInfos = $m_files->getFnumInfos($user->fnum);
-        $paid_orders = $m_application->getHikashopOrder($fnumInfos);
 
-		$paid = !empty($paid_orders);
+		$paid = !empty($m_application->getHikashopOrder($fnumInfos));
+
 		if (!$paid) {
-
-            $sentOrder = $m_application->getHikashopOrder($fnumInfos);
 
             // If students with a scholarship have a different fee.
 			// The form ID will be appended to the URL, taking him to a different checkout page.
@@ -121,9 +119,9 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 			$orderCancelled = false;
 			$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url='. urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile.$scholarship_document))).'&usekey=fnum&rowid='.$user->fnum;
 
-            $cancelled_orders = $m_application->getHikashopCancelledOrders($fnumInfos);
+            $cancelled_orders = $m_application->getHikashopOrder($fnumInfos, true);
 
-            if (is_array($cancelled_orders) && count($cancelled_orders) > 0) {
+            if (!empty($cancelled_orders)) {
 				$orderCancelled = true;
 			}
 
