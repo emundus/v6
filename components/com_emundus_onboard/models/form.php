@@ -1380,6 +1380,7 @@ class EmundusonboardModelform extends JModelList {
 			->leftJoin($db->quoteName('#__emundus_setup_profiles', 'sp').' ON '.$db->quoteName('sp.menutype').' = '.$db->quoteName('mt.menutype'))
 			->where($db->quoteName('sp.id') . ' = '.$profile_id)
 			->where($db->quoteName('menu.parent_id') . ' != 1')
+			->where($db->quoteName('menu.published') . ' = 1')
 			->group('menu.rgt')
 			->order('menu.rgt ASC');
 
