@@ -209,8 +209,8 @@
 ​
 @media all and (max-width: 767px) {
 
-    .campaigns-list .below-content a.btn {
-        margin-top: 10px;
+    .homepage .campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {
+        margin-top: 10px !important;
     }
 
     .rotate-me p {
