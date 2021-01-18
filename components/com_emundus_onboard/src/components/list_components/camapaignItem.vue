@@ -27,7 +27,7 @@
                   : ""
               }}
             </div>
-            <p class="description-block">{{ data.short_description }}</p>
+            <p class="description-block" v-html="data.short_description"></p>
             <div class="stats-block">
               <div class="nb-dossier" style="margin-left: 35px">
                 <div>{{ data.nb_files }} <span v-if="data.nb_files > 1">{{ Files }}</span><span v-else>{{ File }}</span></div>
