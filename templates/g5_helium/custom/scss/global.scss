@@ -1911,6 +1911,12 @@ textarea:hover {
   margin: 20px;
 }
 
+.modal .itemContent #csvmsg .alert.alert-success {
+  margin-bottom: 3px;
+  display: flex;
+  flex-direction: column;
+}
+
 .alert {
 
   .close,
