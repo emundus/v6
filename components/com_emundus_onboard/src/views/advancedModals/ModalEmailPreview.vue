@@ -20,11 +20,12 @@
               <em class="fas fa-times"></em>
             </button>
           </div>
-                        <div class="update-field-header">
+
+        <div class="update-field-header">
           <h2 class="update-title-header">
              {{ModelPreview}}
           </h2>
-                        </div>
+        </div>
         </div>
 
       <div class="modalC-content">

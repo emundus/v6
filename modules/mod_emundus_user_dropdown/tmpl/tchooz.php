@@ -182,6 +182,8 @@ if($user != null) {
         var current_fnum = document.getElementById("profile").value;
         var redirect_url = document.getElementById("switch_profile_redirect").value;
 
+        var url = window.location.origin.toString() + '/' + redirect_url;
+
         jQuery.ajax({
             type: 'POST',
             url: 'index.php?option=com_emundus&task=switchprofile',
@@ -189,7 +191,7 @@ if($user != null) {
                 profnum: current_fnum
             }),
             success: function (result) {
-                window.location.href = redirect_url;
+                window.location.href = url;
                 //location.reload(true);
             },
             error : function (jqXHR, status, err) {

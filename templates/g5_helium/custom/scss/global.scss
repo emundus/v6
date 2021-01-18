@@ -478,10 +478,11 @@ input[type="text"],
 #g-navigation {
   //border-bottom: 1px solid #eeeeee;
   width: 100vw;
-  position: relative;
+  position: sticky;
   max-height: 100px;
   height: 100px;
   background: transparent;
+  margin-bottom: 30px;
 
   .g-container {
     padding: 10px;
