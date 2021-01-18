@@ -170,12 +170,6 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 @media all and (min-width: 768px) and (max-width: 959px) {
-.view-featured #content-bottom-a .row {
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-    }
-
     .view-featured .candidacy-files-list .row .main-page-application-title {
         width: 100%;
     }
@@ -186,14 +180,11 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 @media all and (min-width: 768px) and (max-width: 992px) {
-    .view-featured.homepage .list-group.candidacy-files-list > .row {
+    .view-featured .candidacy-files-list .row {
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
         align-items: center;
-    }
-    .main-page-file-progress  {
-        margin-top: 0px;
     }
 }
 
