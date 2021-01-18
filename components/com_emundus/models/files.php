@@ -3615,10 +3615,11 @@ if (JFactory::getUser()->id == 63)
 	public function getFormProgress($fnums) {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+        $fnums_string = implode(',',$fnums);
 
         $query->select('fnum,form_progress')
             ->from ($db->quoteName('#__emundus_campaign_candidature'))
-            ->where($db->quoteName('fnum') . ' IN (' . $db->quote(implode(',',$fnums)) . ')');
+            ->where($db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
         $db->setQuery($query);
         return $db->loadAssocList();
     }
@@ -3626,10 +3627,11 @@ if (JFactory::getUser()->id == 63)
     public function getAttachmentProgress($fnums) {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
+        $fnums_string = implode(',',$fnums);
 
         $query->select('fnum,attachment_progress')
             ->from ($db->quoteName('#__emundus_campaign_candidature'))
-            ->where($db->quoteName('fnum') . ' IN (' . $db->quote(implode(',',$fnums)) . ')');
+            ->where($db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
         $db->setQuery($query);
         return $db->loadAssocList();
     }

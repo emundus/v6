@@ -65,8 +65,9 @@ class PlgFabrik_FormEmundusassigntogroup extends plgFabrik_Form {
 	public function getParam($pname, $default = '') {
 		$params = $this->getParams();
 
-		if ($params->get($pname) == '')
+		if ($params->get($pname) == '') {
 			return $default;
+		}
 
 		return $params->get($pname);
 	}
@@ -75,8 +76,9 @@ class PlgFabrik_FormEmundusassigntogroup extends plgFabrik_Form {
 	 * Main script.
 	 *
 	 * @return  bool
+	 * @throws Exception
 	 */
-	public function onBeforeCalculations() {
+	public function onBeforeCalculations(): bool {
 
 		jimport('joomla.log.log');
 		JLog::addLogger(['text_file' => 'com_emundus.assignToGroup.php'], JLog::ALL, ['com_emundus']);
@@ -90,8 +92,9 @@ class PlgFabrik_FormEmundusassigntogroup extends plgFabrik_Form {
 		$group_id = str_replace(' ', '', $this->getParam('group_id'));
 		$reset = $this->getParam('reset', 0);
 
-		if (empty($fabrik_elt) || empty($value) || empty($group_id))
+		if (empty($fabrik_elt) || empty($value) || empty($group_id)) {
 			return false;
+		}
 
 		$request = explode('___', $fabrik_elt);
 		$repeated_group = strpos($request[0], '_repeat');
@@ -132,10 +135,11 @@ class PlgFabrik_FormEmundusassigntogroup extends plgFabrik_Form {
 			try {
 
 				$db->setQuery($query);
-				$column = $db->loadResult();
+				$column = str_replace(' ', '', $db->loadResult());
 
 			} catch (Exception $e) {
 				JLog::add('Error in script/assign-to-group getting application value at query: '.$query, JLog::ERROR, 'com_emundus');
+				$column = '';
 			}
 
 			// reset previous associations
@@ -157,9 +161,15 @@ class PlgFabrik_FormEmundusassigntogroup extends plgFabrik_Form {
 		foreach ($values as $key => $value) {
 
 			if ($repeated_group) {
-				$match = (in_array($value, $columns)) ? true : false;			
+
+				// Strip out spaces from results.
+				$columns = array_map(function($value) {
+					return str_replace(' ', '', $value);
+				}, $columns);
+
+				$match = in_array($value, $columns);
 			} else {
-				$match = ($column == $value) ? true : false;
+				$match = ($column == $value);
 			}
 			 
 
@@ -175,6 +185,7 @@ class PlgFabrik_FormEmundusassigntogroup extends plgFabrik_Form {
 
 				} catch (Exception $e) {
 					JLog::add('Error in script/assign-to-group getting groups at query: '.$query, JLog::ERROR, 'com_emundus');
+					$cpt = 0;
 				}
 
 				if ($cpt == 0) {
@@ -194,7 +205,6 @@ class PlgFabrik_FormEmundusassigntogroup extends plgFabrik_Form {
 		}
 		
 		$this->syncAllActions();
-
 		return true;
 	}
 
