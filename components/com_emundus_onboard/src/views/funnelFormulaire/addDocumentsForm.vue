@@ -87,7 +87,7 @@ export default {
         addRemoveLinks: true,
         thumbnailWidth: null,
         thumbnailHeight: null,
-        acceptedFiles: 'image/*,application/pdf,.doc,.csv,.xls',
+        acceptedFiles: 'image/*,application/pdf,.doc,.csv,.xls,.xlsx,.docx,.odf',
         previewTemplate: getTemplate(),
         dictCancelUpload: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD"),
         dictCancelUploadConfirmation: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION"),
