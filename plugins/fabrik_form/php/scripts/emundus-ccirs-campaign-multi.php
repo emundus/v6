@@ -14,6 +14,8 @@ defined('_JEXEC') or die();
  */
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 $db = JFactory::getDBO();
 $query = $db->getQuery(true);
@@ -40,12 +42,12 @@ $id_profiles = explode(',', $id_profiles);
 if (EmundusHelperAccess::asAccessAction(1, 'c')) {
 	$applicant_can_renew = 1;
 } else {
-    foreach ($current_user->emProfiles as $profile) {
-        if (in_array($profile->id, $id_profiles)) {
-            $applicant_can_renew = 1;
-            break;
-        }
-    }
+	foreach ($current_user->emProfiles as $profile) {
+		if (in_array($profile->id, $id_profiles)) {
+			$applicant_can_renew = 1;
+			break;
+		}
+	}
 }
 
 $query->select($db->quoteName('profile_id'))
@@ -113,6 +115,7 @@ $option['prefix']   = '';
 
 $dbClaro = JDatabaseDriver::getInstance($option);
 
+$fnums = [];
 foreach ($users as $user) {
 
 	$user_id = $user[0];
@@ -211,6 +214,7 @@ foreach ($users as $user) {
 
 	// Generate new fnum
 	$fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
+	$fnums[] = $fnum;
 
 	$updateClaro = [];
 
@@ -348,10 +352,233 @@ if (!empty($rights_values)) {
 
 	$application->enqueueMessage(JText::_('CAMPAIGN_MULTI_SUCCESS'), 'message');
 }
+
+if (!empty($fnums)) {
+	$m_emails = new EmundusModelEmails();
+	$m_files = new EmundusModelFiles();
+	$trigger_emails = $m_emails->getEmailTrigger(0, [], 0);
+
+	$toAttach = [];
+	if (count($trigger_emails) > 0) {
+
+		$fnumsInfos = $m_files->getFnumsInfos($fnums);
+		$email_from_sys = $application->getCfg('mailfrom');
+
+		foreach ($trigger_emails as $trigger_email) {
+
+			// Manage with default recipient by programme
+			foreach ($trigger_email as $code => $trigger) {
+				if ($trigger['to']['to_applicant'] == 1) {
+
+					// Manage with selected fnum
+					foreach ($fnumsInfos as $file) {
+
+						$query->clear()
+							->select($db->quoteName(['civility', 'lastname', 'firstname', 'birthday', 'adresse', 'code_postale', 'city', 'telephone', 'mobile_phone', 'vous_etes', 'raison_sociale', 'siret', 'de_number', 'opco']))
+							->from($db->quoteName('jos_emundus_users'))
+							->where($db->quoteName('user_id').' = '.$file['applicant_id']);
+						$db->setQuery($query);
+
+						try {
+							$usr = $db->loadObject();
+						} catch (Exception $e) {
+							JLog::add('Error getting user info to be used in trigger email in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+							continue;
+						}
+
+						if ($usr->vous_etes == 1) {
+							$usr->vous_etes = 'Salarié ou Dirigeant salarié';
+						} else if ($usr->vous_etes == 2) {
+							$usr->vous_etes = "Demandeur d'emploi";
+						} else if ($usr->vous_etes == 3) {
+							$usr->vous_etes = "TNS";
+						}
+
+						$mailer = JFactory::getMailer();
+
+						$post = [
+							'FNUM' => $file['fnum'],
+							'CAMPAIGN_LABEL' => $file['label'],
+							'CAMPAIGN_END' => $file['end_date'],
+							'SESSION_CODE' => $session->session_code,
+							'PRODUCT' => $file['training'],
+							'COMPANY' => $data['jos_emundus_campaign_candidature___company_id'][0],
+							'CIVILITY' => $usr->civility,
+							'LAST_NAME' => $usr->lastname,
+							'FIRST_NAME' => $usr->firstname,
+							'BIRTHDAY' => $usr->birthday,
+							'ADDR' => $usr->adresse,
+							'ZIP' => $usr->code_postale,
+							'CITY' => $usr->city,
+							'TEL' => $usr->telephone,
+							'MOBILE' => $usr->mobile_phone,
+							'TYPE' => $usr->vous_etes,
+							'RAISON' => $usr->raison_sociale,
+							'SIRET' => $usr->siret,
+							'DE' => $usr->de_number,
+							'OPCO' => $usr->opco
+						];
+						$tags = $m_emails->setTags($file['applicant_id'], $post, $file['fnum']);
+
+						$from = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
+						$from_id = 62;
+						$fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']);
+						$to = $file['email'];
+						$subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
+						$body = $trigger['tmpl']['message'];
+
+						// Add the email template model.
+						if (!empty($trigger['tmpl']['template'])) {
+							$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger['tmpl']['template']);
+						}
+
+						$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+						$body = $m_emails->setTagsFabrik($body, array($file['fnum']));
+
+						// If the email sender has the same domain as the system sender address.
+						if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+							$mail_from_address = $from;
+						} else {
+							$mail_from_address = $email_from_sys;
+						}
+
+						// Set sender
+						$sender = [
+							$mail_from_address,
+							$fromname
+						];
+
+						$mailer->setSender($sender);
+						$mailer->addReplyTo($from, $fromname);
+						$mailer->addRecipient($to);
+						$mailer->setSubject($subject);
+						$mailer->isHTML(true);
+						$mailer->Encoding = 'base64';
+						$mailer->setBody($body);
+						$mailer->addAttachment($toAttach);
+
+						$send = $mailer->Send();
+						if ($send !== true) {
+							JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
+						} else {
+							$message = array(
+								'user_id_from' => $from_id,
+								'user_id_to' => $file['applicant_id'],
+								'subject' => $subject,
+								'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+							);
+							$m_emails->logEmail($message);
+							JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
+						}
+					}
+				}
+
+				foreach ($trigger['to']['recipients'] as $key => $recipient) {
+
+					// Manage with selected fnum
+					foreach ($fnumsInfos as $file) {
+
+						$mailer = JFactory::getMailer();
+
+						$query->clear()
+							->select($db->quoteName(['civility', 'lastname', 'firstname', 'birthday', 'adresse', 'code_postale', 'city', 'telephone', 'mobile_phone', 'vous_etes', 'raison_sociale', 'siret', 'de_number', 'opco']))
+							->from($db->quoteName('jos_emundus_users'))
+							->where($db->quoteName('user_id').' = '.$file['applicant_id']);
+						$db->setQuery($query);
+
+						try {
+							$usr = $db->loadObject();
+						} catch (Exception $e) {
+							JLog::add('Error getting user info to be used in trigger email in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+							continue;
+						}
+
+						if ($usr->vous_etes == 1) {
+							$usr->vous_etes = 'Salarié ou Dirigeant salarié';
+						} else if ($usr->vous_etes == 2) {
+							$usr->vous_etes = "Demandeur d'emploi";
+						} else if ($usr->vous_etes == 3) {
+							$usr->vous_etes = "TNS";
+						}
+
+						$post = [
+							'FNUM' => $file['fnum'],
+							'CAMPAIGN_LABEL' => $file['label'],
+							'CAMPAIGN_END' => $file['end_date'],
+							'PRODUCT' => $file['training'],
+							'SESSION_CODE' => $session->session_code,
+							'COMPANY' => $data['jos_emundus_campaign_candidature___company_id'][0],
+							'CIVILITY' => $usr->civility,
+							'LAST_NAME' => $usr->lastname,
+							'FIRST_NAME' => $usr->firstname,
+							'BIRTHDAY' => $usr->birthday,
+							'ADDR' => $usr->adresse,
+							'ZIP' => $usr->code_postale,
+							'CITY' => $usr->city,
+							'TEL' => $usr->telephone,
+							'MOBILE' => $usr->mobile_phone,
+							'TYPE' => $usr->vous_etes,
+							'RAISON' => $usr->raison_sociale,
+							'SIRET' => $usr->siret,
+							'DE' => $usr->de_number,
+							'OPCO' => $usr->opco
+						];
+						$tags = $m_emails->setTags($recipient['id'], $post);
+
+						$from = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
+						$from_id = 62;
+						$fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']);
+						$to = $recipient['email'];
+						$subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
+						$body = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['message']);
+						$body = $m_emails->setTagsFabrik($body, $fnums);
+
+						// If the email sender has the same domain as the system sender address.
+						if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+							$mail_from_address = $from;
+						} else {
+							$mail_from_address = $email_from_sys;
+						}
+
+						// Set sender
+						$sender = [
+							$mail_from_address,
+							$fromname
+						];
+
+						$mailer->setSender($sender);
+						$mailer->addReplyTo($from, $fromname);
+						$mailer->addRecipient($to);
+						$mailer->setSubject($subject);
+						$mailer->isHTML(true);
+						$mailer->Encoding = 'base64';
+						$mailer->setBody($body);
+						$mailer->addAttachment($toAttach);
+
+						$send = $mailer->Send();
+						if ($send !== true) {
+							JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
+						} else {
+							$message = array(
+								'user_id_from' => $from_id,
+								'user_id_to' => $recipient['id'],
+								'subject' => $subject,
+								'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+							);
+							$m_emails->logEmail($message);
+							JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 if (!empty($company_id) && $company_id != -1) {
-    $application->redirect('mon-espace-decideur-rh');
+	$application->redirect('mon-espace-decideur-rh');
 } else {
-    $application->redirect('mon-compte');
+	$application->redirect('mon-compte');
 }
 
 
