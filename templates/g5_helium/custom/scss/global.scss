@@ -3392,14 +3392,11 @@ footer#g-footer .g-grid {
   }
 }
 
-@media all and (min-width: 768px) and (max-width: 959px) {
-  button.save {
-    margin-left: 20px !important;
-  }
-}
-
-
   @media screen and (min-width: 768px) and (max-width: 959px) {
+    button.save {
+      margin-left: 20px !important;
+    }
+
     .header-right a.btn:first-child {
       margin-bottom: 10px;
     }
