@@ -40,7 +40,7 @@
       <translation v-if="object_json.intro"  :label="object_json.intro" :actualLanguage="actualLanguage" v-if="translate.intro_page"></translation>
     </div>
 
-    <form method="post" v-on:submit.prevent object_json.attribs class="form-page">
+    <form method="post" v-on:submit.prevent object_json.attribs class="form-page" :id="'form_' + object_json.id" :style="eval == 1 ? 'margin-top: 30px' : ''">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
       <draggable
               handle=".handle"
