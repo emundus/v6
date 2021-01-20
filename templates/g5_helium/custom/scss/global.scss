@@ -284,6 +284,14 @@ ul {
   h1, h2, h3, h4, h5, h6 {
     color: $dark-blue !important;
   }
+  form {
+    legend {
+      color: $dark-blue !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      color: $dark-blue !important;
+    }
+  }
 }
 
 .contentpane.modal form .fabrikActions.form-actions button.btn {
@@ -301,17 +309,30 @@ ul {
    }
 }
 
-.files-board form.em-form-message .toggle-editor .btn-group a.btn {
+.files-board form.em-form-message .toggle-editor .btn-group a.btn, .modal-body form .em_email_block input.btn.btn-success[name="expert"]  {
   background: $dark-blue !important;
   background-color: $dark-blue !important;
   border: 2px solid $dark-blue !important;
   border-radius: 25px !important;
-  color: #000 !important;
+  color: #fff !important;
   &:active, &:focus, &:hover {
     background: transparent !important;
     background-color: transparent !important;
     border: 2px solid $dark-blue !important;
     border-radius: 25px !important;
+    color: $dark-blue !important;
+  }
+}
+
+.modal-body .xclsform-filters button#delfilter , .modal-body .xclsform-filters button#savefilter , .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs  {
+  background: $dark-blue !important;
+  background-color: $dark-blue !important;
+  border: 1px solid $dark-blue !important;
+  color: #fff !important;
+  &:active, &:focus, &:hover {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 1px solid $dark-blue !important;
     color: $dark-blue !important;
   }
 }
@@ -1602,7 +1623,7 @@ p.readmore .btn,
     color: grey;
     margin-right: 10px;
     font-weight: normal;
-    padding: 7px 3Opx;
+    padding: 7px 30px !important;
 
     &:hover,
     &:active,
@@ -1896,7 +1917,7 @@ button#back,
   background-color: transparent;
   color: $dark-blue;
   border: none;
-  font-size: 21px !important;
+  font-size: 19px !important;
 
   &:hover,
   &:active,
@@ -2414,6 +2435,7 @@ ul.unstyled.em-linkForgot li a {
   background: transparent;
   color: #fff !important;
   border-color: transparent;
+  font-size: 19px;
 
   &:hover,
   &:active,
