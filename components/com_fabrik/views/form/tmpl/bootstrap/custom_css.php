@@ -1213,6 +1213,12 @@ body.em-formRegistrationCenter  {
     color: #000; 
 }
 
+.error-report-page  button.submit {
+    padding: 5px 30px !important;
+    font-weight: 500 !important;
+    border-radius: 25px !important;
+}
+
 /* AJOUT APRES MAJ */
 .view-form input[type='radio']  { 
     border: 1px solid #e0e0e5 !important;
