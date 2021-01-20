@@ -126,7 +126,7 @@ export default {
   }
 
 .section-sub-menu {
-  h2 {
+  h2, h1 {
     color: #000;
     font-size: 24px;
     font-weight: 700;

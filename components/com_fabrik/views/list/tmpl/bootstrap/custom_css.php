@@ -43,17 +43,6 @@ echo <<<EOT
     padding-bottom: 30px;
 }
 
-/* CONSULTER LES DONNES - INDICATEURS */
-
-.com_fabrik.view-list.task-list\.view .page-header h1  {
-    color: #000; 
-}
-
-.com_fabrik.view-list.task-list\.view form .filtertable  input.fabrik_filter_submit button {
-    border-radius: 25px; 
-    padding: 5px 30px; 
-}
-
 /* PAGINATION */
 
 .list-footer .limit .input-prepend.input-append span.add-on {

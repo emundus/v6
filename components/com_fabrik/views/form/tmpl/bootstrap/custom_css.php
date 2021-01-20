@@ -1217,7 +1217,22 @@ body.em-formRegistrationCenter  {
     padding: 5px 30px !important;
     font-weight: 500 !important;
     border-radius: 25px !important;
+    border: 2px solid #16afe1; 
+    background: #16afe1; 
+    color: #fff; 
 }
+
+.error-report-page  button.submit:hover, 
+.error-report-page  button.submit:focus, 
+.error-report-page  button.submit:active, 
+ {
+    border-radius: 25px; 
+    padding: 5px 30px; 
+    border: 2px solid #16afe1; 
+    background: transparent; 
+    color: #16afe1; 
+}
+
 
 /* AJOUT APRES MAJ */
 .view-form input[type='radio']  { 
