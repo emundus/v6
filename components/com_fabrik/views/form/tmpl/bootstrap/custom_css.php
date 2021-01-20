@@ -1228,9 +1228,9 @@ body.em-formRegistrationCenter  {
  {
     border-radius: 25px; 
     padding: 5px 30px; 
-    border: 2px solid #16afe1; 
+    border: 2px solid #16afe 1!important; 
     background: transparent; 
-    color: #16afe1; 
+    color: #16afe1 !important; 
 }
 
 
