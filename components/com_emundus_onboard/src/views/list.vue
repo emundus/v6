@@ -81,13 +81,13 @@
         <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
-        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" v-if="data.published != -1" :key="index" class="col-sm-12 col-lg-6 mb-2">
+        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" :models="list" />
         </div>
-        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" v-if="data.published != -1" :key="index" class="col-sm-12 col-lg-6 mb-2">
+        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
-        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" v-if="data.published != -1" :key="index" class="col-sm-12 col-lg-6 mb-2">
+        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
       </transition-group>
