@@ -3349,7 +3349,7 @@ class EmundusModelApplication extends JModelList {
                         if (count($data) > 0) {
                             foreach ($data as $d) {
                                 $q=3;
-                                $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
+                                $query = 'SELECT '.implode(',', $db->quoteName($d['element_name'])).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                 $db->setQuery($query);
                                 $stored = $db->loadAssocList();
 
