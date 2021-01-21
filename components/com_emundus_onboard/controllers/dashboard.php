@@ -194,4 +194,28 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function getfirstcoordinatorconnection(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $user = JFactory::getUser();
+            $table = JTable::getInstance('user', 'JTable');
+            $table->load($user->id);
+
+            $params = $user->getParameters();
+            if ($params->get('first_login_date')) {
+                $register_at = $params->get('first_login_date');
+            } else {
+                $register_at = '0000-00-00 00:00:00';
+            }
+
+            $tab = array('msg' => 'success', 'data' => $register_at);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }

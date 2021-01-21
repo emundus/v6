@@ -12,7 +12,7 @@
           <div class='date-menu'>
             {{translations.From}} {{campaigns[cindex].start_date | formatDate}} {{translations.To}} {{campaigns[cindex].end_date | formatDate}}
           </div>
-          <p class='description-block'>{{campaigns[cindex].short_description}}</p>
+          <p class='description-block' v-html="campaigns[cindex].short_description"></p>
           <div class='stats-block'>
             <div class='nb-dossier'>
               <div v-if="files > 1">{{files}} {{translations.Files}}</div>
@@ -150,7 +150,7 @@ export default {
   .description-block{
     width: 70%;
     margin-top: 10px;
-    margin-bottom: 0;
+    margin-bottom: 15px;
     font-size: 13px;
     line-height: 20px;
     height: 40px;

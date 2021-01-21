@@ -17,7 +17,8 @@
               </div>
             </div>
             <div>
-              <p class="pl-30px associated-campaigns">est associé aux campagnes :</p>
+              <p class="pl-30px associated-campaigns" v-if="campaigns.length == 1">{{campaignAssociated}} :</p>
+              <p class="pl-30px associated-campaigns" v-if="campaigns.length > 1">{{campaignsAssociated}} :</p>
               <ul style="margin-top: 10px">
                 <li v-for="(campaign, index) in campaigns" class="campaigns-item">{{campaign.label}}</li>
               </ul>
@@ -57,7 +58,9 @@ export default {
       unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
       passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
       Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-      Visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE")
+      Visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE"),
+      campaignAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
+      campaignsAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED")
     };
   },
 

@@ -23,7 +23,7 @@
         </div>
 
         <div class="section-sub-menu col-lg-5 col-sm-12">
-          <h2 style="margin: 0">Icône</h2>
+          <h2 style="margin: 0">{{Icon}}</h2>
           <div class="d-flex"></div>
           <img class="logo-settings" style="max-width: 50px" :src="iconLink">
           <a class="settings-edit-icon cta-block pointer" @click="$modal.show('modalUpdateIcon')">
@@ -78,6 +78,7 @@
                 PrimaryColor: Joomla.JText._("COM_EMUNDUS_ONBOARD_PRIMARY_COLOR"),
                 SecondaryColor: Joomla.JText._("COM_EMUNDUS_ONBOARD_SECONDARY_COLOR"),
                 Colors: Joomla.JText._("COM_EMUNDUS_ONBOARD_COLORS"),
+                Icon: Joomla.JText._("COM_EMUNDUS_ONBOARD_ICON"),
             };
         },
 

@@ -17,14 +17,14 @@
 
       <div class="col-md-10 col-md-offset-1 p-1" style="padding-left: 2em !important;">
         <div class="d-flex justify-content-between" style="margin-bottom: 10px">
-          <div class="d-flex" v-if="menuHighlight != 0 && menuHighlight != 6  && menuHighlight != 7">
+          <div class="d-flex" style="width: 100%;justify-content: end;margin-bottom: -90px;" v-if="menuHighlight != 0 && menuHighlight != 6  && menuHighlight != 7">
             <transition name="slide-right">
               <div class="loading-form-save" v-if="saving">
                 <Ring-Loader :color="'#12DB42'" />
               </div>
             </transition>
             <transition name="slide-right">
-              <div class="loading-form-save" v-if="endSaving">
+              <div class="loading-form-save d-flex" v-if="endSaving">
                 <i class="fas fa-check"></i><span class="mr-1">{{Saved}}</span>
               </div>
             </transition>
@@ -178,6 +178,7 @@ export default {
     Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
     Save: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
     Saved: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVED"),
+    Settings: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
   }),
 
   methods: {
@@ -229,7 +230,7 @@ export default {
       });
     },
 
-    updateHomepage(content) {
+    updateHomepage(content,label,color) {
       this.updateLoading(true);
       axios({
         method: "post",
@@ -238,7 +239,9 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
-          content: content
+          content: content,
+          label: label,
+          color: color
         })
       }).then(() => {
         this.updateLoading(false);
@@ -264,7 +267,7 @@ export default {
     saveCurrentPage() {
       switch (this.menuHighlight) {
         case 1:
-          this.updateHomepage(this.$refs.homepage.$data.form.content);
+          this.updateHomepage(this.$refs.homepage.$data.form.content,this.$refs.homepage.$data.form.label,this.$refs.homepage.$data.form.titleColor);
           break;
         case 2:
           this.updateCgv(this.$refs.cgv.$data.form.content);
@@ -298,11 +301,11 @@ export default {
     if (this.actualLanguage == "en") {
       this.langue = 1;
     }
-    this.$nextTick(function () {
+    /*this.$nextTick(function () {
       window.setInterval(() => {
         this.saveCurrentPage();
       },20000);
-    })
+    })*/
   },
 };
 </script>
@@ -314,14 +317,10 @@ export default {
   color: #12DB42;
 }
 .bouton-sauvergarder-et-continuer,.loading-form-save{
-  position: absolute;
-  right: 1%;
-  top: 7%;
-  z-index: 999;
+  position: static;
+  z-index: 10;
   width: auto;
   margin-top: -14px;
-}
-.loading-form-save{
-  right: 10% !important;
+  margin-right: 20px;
 }
 </style>

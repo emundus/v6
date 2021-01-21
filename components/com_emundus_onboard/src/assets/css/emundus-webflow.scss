@@ -910,8 +910,12 @@ input[type="reset"] {
   background: white;
   font-weight: 500;
 }
+.unpublishedTag{
+  color: $red !important;
+  border: solid 2px $red !important;
+}
 .unpublishedBlock {
-  background: #4b4b4b;
+  background: #6c6c6c;
 }
 .passeeTag {
   background: #4b4b4b;
@@ -1479,7 +1483,7 @@ textarea {
 }
 .loading-form-save {
   position: relative;
-  right: 1em;
+  right: 2em;
   width: 50%;
   .lds-ring {
     width: 35px !important;

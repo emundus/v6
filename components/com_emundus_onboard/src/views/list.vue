@@ -16,6 +16,7 @@
     ></actions>
 
     <ul class="form-section email-sections" v-if="type == 'email' && !loading && total != 0">
+      <li>{{Categories}} : </li>
       <li>
         <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{All}}</a>
       </li>
@@ -80,13 +81,13 @@
         <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
-        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
+        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" v-if="data.published != -1" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" :models="list" />
         </div>
-        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
+        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" v-if="data.published != -1" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
-        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-6 mb-2">
+        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" v-if="data.published != -1" :key="index" class="col-sm-12 col-lg-6 mb-2">
           <component v-bind:is="type" :data="data" :selectItem="selectItem" />
         </div>
       </transition-group>
@@ -213,6 +214,7 @@ export default {
     noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
     All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
     System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
+    Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
     total: 0,
     filtersCount: "",
     filters: "",

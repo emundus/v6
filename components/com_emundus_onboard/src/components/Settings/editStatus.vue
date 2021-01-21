@@ -35,7 +35,7 @@
                     popover-x="left"
                     popover-y="top"
             ></v-swatches>
-          <button type="button" v-if="statu.step != 0 && statu.step != 1" @click="removeStatus(statu,index)" class="remove-tag"><i class="fas fa-times"></i></button>
+          <button type="button" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1" @click="removeStatus(statu,index)" class="remove-tag"><i class="fas fa-times"></i></button>
         </div>
     </div>
 </template>
@@ -163,6 +163,9 @@
     .create-tag{
       width: max-content;
       margin-bottom: 20px;
+    }
+    .loading-form-save{
+      right: 21%;
     }
 
 </style>

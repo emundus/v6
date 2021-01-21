@@ -29,6 +29,7 @@
                     <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
                     <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
                     <option value="tips">Astuces - 5 cases</option>
+                    <option value="demo_counter">Compteur de démo - 2 cases</option>
                 </field>
                 <field name="widget2" type="list" default="list" label="Widget" description="Widget à afficher">
                     <option value="">Pas de widgets</option>
@@ -37,6 +38,7 @@
                     <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
                     <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
                     <option value="tips">Astuces - 5 cases</option>
+                    <option value="demo_counter">Compteur de démo - 2 cases</option>
                 </field>
                 <field name="widget3" type="list" default="list" label="Widget" description="Widget à afficher">
                     <option value="">Pas de widgets</option>
@@ -45,6 +47,7 @@
                     <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
                     <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
                     <option value="tips">Astuces - 5 cases</option>
+                    <option value="demo_counter">Compteur de démo - 2 cases</option>
                 </field>
                 <field name="widget4" type="list" default="list" label="Widget" description="Widget à afficher">
                     <option value="">Pas de widgets</option>
@@ -53,6 +56,7 @@
                     <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
                     <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
                     <option value="tips">Astuces - 5 cases</option>
+                    <option value="demo_counter">Compteur de démo - 2 cases</option>
                 </field>
                 <field name="widget5" type="list" default="list" label="Widget" description="Widget à afficher">
                     <option value="">Pas de widgets</option>
@@ -61,6 +65,7 @@
                     <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
                     <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
                     <option value="tips">Astuces - 5 cases</option>
+                    <option value="demo_counter">Compteur de démo - 2 cases</option>
                 </field>
                 <field name="widget6" type="list" default="list" label="Widget" description="Widget à afficher">
                     <option value="">Pas de widgets</option>
@@ -69,6 +74,7 @@
                     <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
                     <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
                     <option value="tips">Astuces - 5 cases</option>
+                    <option value="demo_counter">Compteur de démo - 2 cases</option>
                 </field>
                 <field name="widget7" type="list" default="list" label="Widget" description="Widget à afficher">
                     <option value="">Pas de widgets</option>
@@ -77,6 +83,7 @@
                     <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
                     <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
                     <option value="tips">Astuces - 5 cases</option>
+                    <option value="demo_counter">Compteur de démo - 2 cases</option>
                 </field>
                 <field name="widget8" type="list" default="list" label="Widget" description="Widget à afficher">
                     <option value="">Pas de widgets</option>
@@ -85,6 +92,7 @@
                     <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
                     <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
                     <option value="tips">Astuces - 5 cases</option>
+                    <option value="demo_counter">Compteur de démo - 2 cases</option>
                 </field>
             </fieldset>
         </fields>

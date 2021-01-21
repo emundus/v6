@@ -16,6 +16,7 @@
         <FilesNumberByStatus v-if="widget.name === 'files_number_by_status'"/>
         <UsersByMonth v-if="widget.name === 'users_by_month'"/>
         <Tips v-if="widget.name === 'tips'"/>
+        <DemoCounter v-if="widget.name === 'demo_counter'"/>
       </div>
     </draggable>
   </div>
@@ -29,11 +30,13 @@ import Faq from "@/components/Faq";
 import FilesNumberByStatus from "@/components/FilesNumberByStatus";
 import Tips from "@/components/Tips";
 import UsersByMonth from "@/components/UsersByMonth";
+import DemoCounter from "@/components/DemoCounter";
 
 export default {
   name: 'App',
   props: {},
   components: {
+    DemoCounter,
     UsersByMonth,
     Tips,
     FilesNumberByStatus,

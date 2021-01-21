@@ -1,32 +1,44 @@
 <template>
   <div class='col-md-2 col-sm-4 tchooz-widget'>
     <div class='section-sub-menu' style='margin-bottom: 10px'>
-      <h3>{{translations.Question}}</h3>
-      <p class="faq-intro">{{translations.Redirect}}</p>
-      <a href='https://www.emundus.fr/ressources/centre-aide' target='_blank' rel="noopener noreferrer"><button class='bouton-faq'>F.A.Q</button></a>
+      <h3>Essai Tchooz</h3>
+      <p class="faq-intro"><span class="big-number">{{counter}}</span> jours</p>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 const qs = require("qs");
 
 export default {
-  name: "Faq",
+  name: "DemoCounter",
 
   props: {},
 
   components: {},
 
   data: () => ({
-    translations: {
-      Question: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FAQ_QUESTION"),
-      Redirect: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FAQ_REDIRECT"),
-    }
+    today: new Date(),
+    end: null,
+    counter: 0
   }),
 
   created() {
-
+    axios({
+      method: "get",
+      url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfirstcoordinatorconnection",
+    }).then(response => {
+      const register = response.data.data;
+      if(register != '0000-00-00 00:00:00') {
+        this.end = new Date(register);
+        this.end.setDate(this.end.getDate() + 90);
+        const diffTime = Math.abs(this.end - this.today);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        this.counter = diffDays;
+      }
+    });
   },
 
   methods: {},
@@ -48,7 +60,6 @@ export default {
   }
   .bouton-faq{
     position: absolute;
-    bottom: 15px;
     padding: 5px 30px;
     height: 29px;
     border-radius: 25px;
@@ -74,6 +85,11 @@ export default {
     margin-bottom: 15px;
     color: #000;
     font-size: 24px;
+  }
+
+  .big-number{
+    font-size: 5em;
+    color: #16afe1;
   }
 
   @media (max-width: 1440px) {
