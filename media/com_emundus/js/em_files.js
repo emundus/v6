@@ -4693,7 +4693,8 @@ $(document).ready(function() {
                     mail_subject    : $('#mail_subject').text(),
                     message         : $('#mail_body').val(),
                     bcc             : [],
-                    cc              : []
+                    cc              : [],
+                    tags            : $('#tags').val(),
                 };
 
                 $('#cc-bcc div[data-value]').each(function () {

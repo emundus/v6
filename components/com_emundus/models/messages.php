@@ -206,7 +206,7 @@ class EmundusModelMessages extends JModelList {
 		$db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
-        $select = 'e.*, et.*';
+        $select = 'e.*, et.*, GROUP_CONCAT(etr.tags) as tags';
 
         if ($candidateAttachments) {
 	        $select .= ', GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments';
@@ -218,7 +218,8 @@ class EmundusModelMessages extends JModelList {
 
         $query->select($select)
                 ->from($db->quoteName('#__emundus_setup_emails','e'))
-                ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'));
+                ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags','etr').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('etr.parent_id'));
 
         if ($candidateAttachments) {
             $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'));
