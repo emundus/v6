@@ -368,12 +368,12 @@ class EmundusModelProfile extends JModelList {
 	/**
 	 * Gets the list of profiles from array of programmes
 	 *
-	 * @param       $code    array    list of programmes code
-	 * @param array $camps
+	 * @param array $code    list of programmes code
+	 * @param array $camps   list of campaigns
 	 *
-	 * @return    string The greeting to be displayed to the user
+	 * @return array The profile IDs found
 	 */
-    function getProfileIDByCourse($code = array(), $camps = array()) {
+    function getProfileIDByCourse($code = array(), $camps = array()) : array {
 
         if (!empty($code)>0 && isset($camps[0]) && $camps[0] != 0) {
 
@@ -386,9 +386,12 @@ class EmundusModelProfile extends JModelList {
                 $res = $this->_db->loadColumn();
             } catch(Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+                $res = [];
                 JError::raiseError(500, $e->getMessage());
             }
+
         } elseif (!empty($code)>0) {
+
             $query = 'SELECT DISTINCT(esc.profile_id)
 						FROM  #__emundus_setup_campaigns AS esc
 						WHERE esc.published = 1 AND esc.training IN ("'.implode("','", $code).'") LIMIT 1';
@@ -398,6 +401,7 @@ class EmundusModelProfile extends JModelList {
                 $res = $this->_db->loadColumn();
             } catch(Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+	            $res = [];
                 JError::raiseError(500, $e->getMessage());
             }
         } else {
@@ -410,11 +414,11 @@ class EmundusModelProfile extends JModelList {
 	/**
 	 * Gets the list of profiles from array of programmes
 	 *
-	 * @param $campaign_id
+	 * @param array $campaign_id
 	 *
-	 * @return    string The greeting to be displayed to the user
+	 * @return array The profile list for the campaigns
 	 */
-    function getProfileIDByCampaign($campaign_id) {
+    function getProfileIDByCampaign(array $campaign_id) : array {
 
         $res = false;
 
@@ -433,7 +437,7 @@ class EmundusModelProfile extends JModelList {
                 $res = $this->_db->loadColumn();
             } catch(Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-                JError::raiseError(500, $e->getMessage());
+                return [];
             }
         }
 
