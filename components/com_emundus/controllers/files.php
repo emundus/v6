@@ -3629,9 +3629,9 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         $query = $this->_db->getQuery(true);
         $query
             ->select(['DISTINCT(tu.session_code) AS session_code',
-                $this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'), $this->_db->quoteName('p.evaluation', 'evaluation'),
+                $this->_db->quoteName('p.label','name'), $this->_db->quoteName('p.numcpf','cpf'), $this->_db->quoteName('p.prerequisite','prerec'), $this->_db->quoteName('p.audience','audience'), $this->_db->quoteName('p.tagline','tagline'), $this->_db->quoteName('p.objectives','objectives'), $this->_db->quoteName('p.content','content'), $this->_db->quoteName('p.manager_firstname','manager_firstname'), $this->_db->quoteName('p.manager_lastname','manager_lastname'), $this->_db->quoteName('p.pedagogie', 'pedagogie'), $this->_db->quoteName('p.partner', 'partner'), $this->_db->quoteName('p.evaluation', 'evaluation'), $this->_db->quoteName('p.temoignagesclients', 'temoignagesclients'),$this->_db->quoteName('p.accrochecom', 'accrochecom'),
                 $this->_db->quoteName('t.label','theme'), $this->_db->quoteName('t.color','class'),
-                $this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours','hours'), $this->_db->quoteName('tu.time_in_company', 'time_in_company'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
+                $this->_db->quoteName('tu.price','price'), $this->_db->quoteName('tu.date_start', 'date_start'), $this->_db->quoteName('tu.date_end', 'date_end'), $this->_db->quoteName('tu.days','days'), $this->_db->quoteName('tu.hours','hours'), $this->_db->quoteName('tu.time_in_company', 'time_in_company'), $this->_db->quoteName('tu.min_occupants','min_o'), $this->_db->quoteName('tu.max_occupants','max_o'), $this->_db->quoteName('tu.occupants','occupants'), $this->_db->quoteName('tu.location_city','city'), $this->_db->quoteName('tu.location_title'), $this->_db->quoteName('tu.tax_rate','tax_rate'), $this->_db->quoteName('tu.intervenant', 'intervenant'), $this->_db->quoteName('tu.label', 'session_label')
             ])
             ->from($this->_db->quoteName('#__emundus_setup_programmes','p'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_thematiques','t').' ON '.$this->_db->quoteName('t.id').' = '.$this->_db->quoteName('p.programmes'))
@@ -3642,6 +3642,24 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         try {
             $product = $this->_db->loadAssocList();
+
+            //GET Taux de satisfaction from GESCOF
+            $http = new JHttp();
+
+            try {
+                $result = $http->get('https://ccirochefort.evaluations.ovh/Facett3?Societe=1&Mode=Evaluations&ExtractionDonnees=TauxSatisfaction&CodeProduit='.$product_code);
+
+                $res = json_decode($result->body);
+
+
+                $taux = number_format((float)$res->Taux*100, 2, '.', '');
+                $nbAvis = $res->NbAvis;
+
+                $indicateursFormation = "<p><b>Taux de satisfaction : </b>$taux%</p><p><b>Nombre d'avis : </b>$nbAvis</p>";
+            }
+            catch (Exception $e) {
+                $indicateursFormation = "";
+            }
         } catch (Exception $e) {
             echo json_encode((object)['status' => false, 'msg' => 'Error getting product information.']);
             exit;
@@ -3672,8 +3690,8 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
                     }
                 }
 
-                $sessions .= ' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))).' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';
-            }
+                $sessionCity = !empty($session['city']) ?' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))) : ' '.$session['location_title'];
+                $sessions .= $sessionCity.' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';            }
         }
         $sessions .= '</ul>';
 
@@ -3712,7 +3730,8 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
             '/{CPF}/' => (!empty($product[0]['cpf']))?'<h2 style="padding-left: 30px;">'.JText::_('CODE').'</h2><p style="padding-left: 30px;">'.$product[0]['cpf'].' </p>':'',
             '/{EVALUATION}/' => $product[0]['evaluation'],
             '/{TEMOINAGE}/' => $product[0]['temoignagesclients'],
-            '/{ACCROCHECOM}/' => ucfirst(mb_strtolower(strip_tags($product[0]['accrochecom'])))
+            '/{ACCROCHECOM}/' => ucfirst(mb_strtolower(strip_tags($product[0]['accrochecom']))),
+            '/{INDICATEURS}/' => $indicateursFormation
         ];
 
         $export_date = strftime('%e')." ".strftime('%B')." ".date('Y');
