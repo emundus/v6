@@ -1911,6 +1911,12 @@ textarea:hover {
   margin: 20px;
 }
 
+.modal .itemContent #csvmsg .alert.alert-success {
+  margin-bottom: 3px;
+  display: flex;
+  flex-direction: column;
+}
+
 .alert {
 
   .close,
@@ -3392,14 +3398,12 @@ footer#g-footer .g-grid {
   }
 }
 
-@media all and (min-width: 768px) and (max-width: 959px) {
-  button.save {
-    margin-left: 20px !important;
-  }
-}
-
 
   @media screen and (min-width: 768px) and (max-width: 959px) {
+    button.save {
+      margin-left: 20px !important;
+    }
+
     .header-right a.btn:first-child {
       margin-bottom: 10px;
     }
