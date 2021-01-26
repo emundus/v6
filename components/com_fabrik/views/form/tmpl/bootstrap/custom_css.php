@@ -81,6 +81,10 @@ echo <<<EOT
     display: inline-block;
 }
 
+.view-form form .row-fluid .control-group.fabrikElementContainer label.fabrikLabel.control-label.fabrikTip i.icon-star.small {
+    top: -5px;
+}
+
 
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn:not(.active) {
     background-color: #c6c6c6;
