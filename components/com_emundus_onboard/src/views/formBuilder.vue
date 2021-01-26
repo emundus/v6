@@ -54,25 +54,25 @@
           <div class="actions-menu menu-block">
             <div>
               <div class="action-links">
-                  <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')">
+                  <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="addMenu">
                     <em class="add-page-icon col-md-offset-1 col-sm-offset-1"></em>
                     <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{addMenu}}</label>
                   </a>
-                  <a class="d-flex action-link" @click="createGroup()">
+                  <a class="d-flex action-link" @click="createGroup()" :title="addGroup">
                     <em class="add-group-icon col-md-offset-1 col-sm-offset-1"></em>
                     <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{addGroup}}</label>
                   </a>
-                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements">
+                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="addItem">
                     <em class="add-element-icon col-md-offset-1 col-sm-offset-1"></em>
                     <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
                   </a>
-                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="testForm">
+                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="testForm" :title="testingForm">
                     <em class="far fa-play-circle col-md-offset-1 col-sm-offset-1" style="font-size: 22px"></em>
                     <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{testingForm}}</label>
                   </a>
                 <transition :name="'slide-right'" type="transition">
                   <div class="plugins-list" v-if="addingElement">
-                    <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement">
+                    <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement" :title="Back">
                       <em class="fas fa-arrow-left mr-1"></em>
                       {{ Back }}
                     </a>
@@ -189,12 +189,13 @@
                   </span>
                 <a @click="changeGroup(index,value.rgt);menuHighlight = 0"
                    class="MenuFormItem"
+                   :title="value.object.show_title.value"
                    :class="indexHighlight == index && menuHighlight === 0 ? 'MenuFormItem_current' : ''">
                   {{value.object.show_title.value}}
                 </a>
               </li>
             </draggable>
-            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 10px">{{addMenu}}</button>
+            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 10px" :title="addMenu">{{addMenu}}</button>
           </div>
           <div class="form-pages" style="padding-top: 20px" v-if="submittionPages">
             <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><img src="/images/emundus/menus/confirmation.png" class="mr-1">{{SubmitPage}}</h4>
@@ -202,6 +203,7 @@
               <a @click="menuHighlight = 1;indexHighlight = index"
                  class="MenuFormItem"
                  style="margin-left: 5px"
+                 :title="value.object.show_title.value"
                  :class="indexHighlight == index && menuHighlight === 1 ? 'MenuFormItem_current' : ''">
                 {{value.object.show_title.value}}
               </a>

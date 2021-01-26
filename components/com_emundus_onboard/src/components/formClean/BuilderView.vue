@@ -187,14 +187,14 @@
                                                 </div>
                                                 <span class="ml-10px">{{Required}}</span>
                                               </a>-->
-                        <a class="d-flex mr-2 mb-1" v-if="element.plugin != 'calc'" @click="openParameters(element)">
+                        <a class="d-flex mr-2 mb-1" v-if="element.plugin != 'calc'" @click="openParameters(element)" :title="Settings">
                           <em class="fas fa-cog settings-elt"></em>
                         </a>
                         <!--                      <a class="d-flex mr-2" v-if="element.plugin != 'calc'" @click="openDuplicate(element)">
                                                 <em class="fas fa-copy"></em>
                                                 <span class="ml-10px">{{Duplicate}}</span>
                                               </a>-->
-                        <a class="d-flex mr-2" style="color: red" @click="deleteElement(element,index)" v-if="files == 0">
+                        <a class="d-flex mr-2" style="color: red" @click="deleteElement(element,index)" v-if="files == 0" :title="Delete">
                           <em class="fas fa-trash-alt delete-icon-elt"></em>
                         </a>
                         <a class="d-flex mr-2 mt-1" target="_blank" :href="'/administrator/index.php?option=com_fabrik&view=element&layout=edit&id=' + element.id" v-if="sysaccess">

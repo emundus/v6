@@ -338,6 +338,23 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         }
     }
 
+    public function removeicon(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $target_dir = "images/custom/";
+            unlink($target_dir . 'favicon.png');
+
+            $tab = array('status' => 1, 'msg' => JText::_('ICON_REMOVED'));
+
+            echo json_encode((object)$tab);
+            exit;
+        }
+    }
+
     public function updatehomebackground() {
         $user = JFactory::getUser();
 
@@ -452,17 +469,14 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $tab = array('status' => '0', 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $type = $jinput->post->getString('type');
-            $color = $jinput->post->getString('color');
+            $preset = $jinput->post->getRaw('preset');
 
             $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
-            if($type == 'primary'){
-                $yaml['base']['primary-color'] = $color;
-                $yaml['accent']['color-1'] = $color;
-            } else {
-                $yaml['base']['secondary-color'] = $color;
-                $yaml['accent']['color-2'] = $color;
-            }
+
+            $yaml['base']['primary-color'] = $preset['primary'];
+            $yaml['accent']['color-1'] = $preset['primary'];
+            $yaml['base']['secondary-color'] = $preset['secondary'];
+            $yaml['accent']['color-2'] = $preset['secondary'];
 
             $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 5);
 
