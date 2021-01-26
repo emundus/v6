@@ -1052,6 +1052,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 /* FORMULAIRE  */
 
+/*EVAL*/
+.contentpane.modal form .fabrikGroup .row-fluid .control-group.fabrikElementContainer  .fabrikLabel.control-label {
+  width: 100%;
+}
+
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn.active, .plg-radiobutton label.btn.active {
   background-color: $base-secondary-color;
   color: #fff;
