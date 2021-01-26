@@ -1002,32 +1002,44 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 /*BOUTONS + ET _ */
 
 .view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success,
-.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger {
+.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger,
+.view-form .fabrikGroup td.fabrikGroupRepeater{
   border: none !important;
+  background-color: transparent !important;
 }
 
 .view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn.btn-small.btn-success,
-.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger {
+.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-small.btn.btn-danger,
+.view-form .fabrikGroup td.fabrikGroupRepeater
+{
   &:hover, &:focus, &active {
     border: none !important;
     background-color: transparent !important;
   }
 }
 
-.view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i:hover {
+.view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i:hover,
+.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right a i
+{
   color: darken(#3e8ac5, 10%);
 
 }
 
-.view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i {
+.view-form .fabrikGroupRepeater.pull-right.btn-group .addGroup.btn-success i,
+.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right a i
+{
   color: #3e8ac5;
 }
 
-.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-danger i {
+.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-danger i,
+.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right a i
+{
   color: #E03C35;
 }
 
-.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-danger i:hover {
+.view-form .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn-danger i:hover,
+.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right a i
+{
   color: darken(#E03C35, 10%);
 }
 

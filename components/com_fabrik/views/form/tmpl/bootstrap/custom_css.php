@@ -1096,10 +1096,6 @@ footer#g-footer {
 .fabrikForm .fabrikSubGroup{
     position: relative;
 }
-.fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
-    position: absolute;
-    right: 10px;
-}
 
 .radio input[type="radio"], .checkbox input[type="checkbox"] {
     margin-left: 0px !important;
@@ -1346,11 +1342,22 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
     padding-right: 0%;
 }
 
-.fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
+.fabrikForm .fabrikSubGroup .fabrikGroupRepeater  {
   position: absolute;
   top: -5px;
   right: 10px;
   display: flex;
+}
+
+.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right a {
+    margin-right: 10px !important;
+    font-size: 11.9px;
 }
 
 .form-actions .row-fluid {
@@ -1497,7 +1504,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 .view-form .fabrikGroupRepeater .pull-right .addGroup i {
-  color: #37828e !important;
+  color: #3e8ac5 !important;
 }
 
 form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm label.radio {
@@ -1532,6 +1539,11 @@ form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
 
 
 /* BOUTONS + et - */
+
+.view-form form .table-striped tbody tr:nth-child(2n+1) td, .view-form form .table-striped tbody tr:nth-child(2n+1) th  {
+    border: none; 
+    background: transparent; 
+}
 
 .view-form .fabrikGroupRepeater .addGroup {
   cursor: pointer !important;
