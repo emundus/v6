@@ -77,6 +77,11 @@ echo <<<EOT
 
 /* FORMULAIRE */
 
+.view-form form .row-fluid .control-group.fabrikElementContainer label.fabrikLabel.control-label.fabrikTip  {
+    display: inline-block;
+}
+
+
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn:not(.active) {
     background-color: #c6c6c6;
         margin-left: 0px;
