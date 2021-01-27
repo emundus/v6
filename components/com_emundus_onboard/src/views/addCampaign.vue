@@ -46,8 +46,9 @@
           <div class="d-flex justify-content-between">
             <div class="w-col col-md-5">
               <div class="w-form">
-                <label for="campLabel">{{StartDate}} <span style="color: #E5283B">*</span></label>
+                <label for="startDate">{{StartDate}} <span style="color: #E5283B">*</span></label>
                 <datetime
+                    id="startDate"
                   :placeholder="StartDate"
                   type="datetime"
                   :input-id="'start_date'"
@@ -58,8 +59,9 @@
             </div>
             <div class="w-col col-md-5">
               <div class="w-form">
-                <label for="campLabel">{{EndDate}} <span style="color: #E5283B">*</span></label>
+                <label for="endDate">{{EndDate}} <span style="color: #E5283B">*</span></label>
                 <datetime
+                    id="endDate"
                   :placeholder="EndDate + ' *'"
                   type="datetime"
                   :input-id="'end_date'"
@@ -71,13 +73,13 @@
             </div>
           </div>
           <div class="form-group campaign-label">
-            <label for="campLabel">{{PickYear}} <span style="color: #E5283B">*</span></label>
+            <label for="year">{{PickYear}} <span style="color: #E5283B">*</span></label>
             <autocomplete
-                    :id="'year'"
-                    @searched="onSearchYear"
-                    :items="this.session"
-                    :year="form.year"
-                    :name="'2020 - 2021'"
+                :id="'year'"
+                @searched="onSearchYear"
+                :items="this.session"
+                :year="form.year"
+                :name="'2020 - 2021'"
             />
           </div>
           <div class="form-group d-flex">
@@ -203,7 +205,7 @@
                 {{ item.label }}
               </option>
             </select>
-            <button v-if="coordinatorAccess != 0" type="button" @click="displayProgram" class="buttonAddDoc" id="add-program">
+            <button v-if="coordinatorAccess != 0" :title="AddProgram" type="button" @click="displayProgram" class="buttonAddDoc" id="add-program">
               <em class="fas fa-plus"></em>
             </button>
           </div>

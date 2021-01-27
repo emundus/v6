@@ -19,7 +19,7 @@
     <transition :name="'slide-down'" type="transition">
       <div class="w-form d-flex" style="align-items: unset">
         <ul style="padding-left: 0" class="ml-0 w-50">
-          <p class="blue-text-instruction" v-html="documentNoAssigned"></p>
+          <h2 class="blue-text-instruction" v-html="documentNoAssigned"></h2>
           <draggable
               v-model="undocuments"
               v-bind="dragOptionsUndoc"
@@ -50,10 +50,10 @@
                     </span>
                   </div>
                   <div :id="'spanDoc' + undocument.id" class="text-no-assigned">
-                    <button type="button" @click="addUndoc(indexUndoc)" class="buttonAddDoc">
+                    <button type="button" @click="addUndoc(indexUndoc)" class="buttonAddDoc" :title="addDoc">
                       <em class="fas fa-plus"></em>
                     </button>
-                    <button type="button" v-show="undocument.can_be_deleted" class="ml-10px buttonDeleteDoc" @click="deleteDocument(undocument.id,indexUndoc)">
+                    <button type="button" v-show="undocument.can_be_deleted" class="ml-10px buttonDeleteDoc" :title="deleteDoc" @click="deleteDocument(undocument.id,indexUndoc)">
                       <em class="fas fa-trash-alt" style="color: white"></em>
                     </button>
                   </div>
@@ -72,7 +72,7 @@
         <hr class="vertical-divider">
 
         <ul style="padding-left: 0" class="ml-0 w-50">
-          <p class="blue-text-instruction" v-html="documentAssigned"></p>
+          <h2 class="blue-text-instruction" v-html="documentAssigned"></h2>
           <draggable
               v-model="documents"
               tag="ul"
@@ -119,7 +119,7 @@
                         {{ Mandatory }}
                       </div>
                     </div>
-                    <button type="button" @click="deleteDoc(indexDoc)" class="buttonDeleteDoc">
+                    <button type="button" @click="deleteDoc(indexDoc)" :title="removeDoc" class="buttonDeleteDoc">
                       <em class="fas fa-times"></em>
                     </button>
                   </div>
@@ -191,6 +191,9 @@ export default {
       Mandatory: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
       Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
       createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),
+      deleteDoc: Joomla.JText._("COM_EMUNDUS_ONBOARD_DELETE_DOCUMENT"),
+      removeDoc: Joomla.JText._("COM_EMUNDUS_ONBOARD_REMOVE_DOCUMENT"),
+      addDoc: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_DOCUMENT"),
       documentAssigned: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENT_ASSIGNED_TO_FORM"),
       documentNoAssigned: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENT_NO_ASSIGNED_TO_FORM")
     };

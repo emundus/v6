@@ -19,7 +19,6 @@
         </div>
       </a>-->
     </div>
-    <FormCarrousel :formList="this.formList" :visibility="this.visibility" v-if="this.formList" :key="formReload" @formbuilder="formbuilder" />
     <FormCarrousel :formList="this.formList" :visibility="this.visibility" :key="formListReload" v-if="this.formList" @getEmitIndex="getEmitIndex" />
   </div>
 </template>

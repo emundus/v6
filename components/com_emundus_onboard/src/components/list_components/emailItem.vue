@@ -25,7 +25,7 @@
             <a href="#" class="button-programme" style="margin-left: 35px">{{ type[langue][data.type - 1] }}</a>
             <p class="description-block"><span v-html="data.message"></span></p>
             <div class="stats-block" style="justify-content: flex-end">
-              <button class="cta-block mb-0" type="button" @click="$modal.show('modalEmailPreview_' + data.id)">
+              <button class="cta-block mb-0" type="button" :title="Visualize" @click="$modal.show('modalEmailPreview_' + data.id)">
                 <em class="fas fa-eye"></em>
               </button>
               <a class="cta-block pointer"

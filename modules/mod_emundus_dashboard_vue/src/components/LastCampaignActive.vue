@@ -133,18 +133,18 @@ export default {
   }
 }
   .publishedTag{
-    color: #78dc6e;
+    color: #298721;
     border-radius: 25px;
     width: min-content;
     padding: 5px 30px;
     text-align: center;
-    border: 2px solid #78dc6e;
+    border: 2px solid #298721;
     font-size: 12px;
     background: #fff;
     font-weight: 500;
   }
   .date-menu{
-    color: #b2b2c1;
+    color: #575766;
     font-size: 12px;
   }
   .description-block{

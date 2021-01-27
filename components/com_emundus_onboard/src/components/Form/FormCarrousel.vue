@@ -7,7 +7,7 @@
         <ul class="col-md-3 sticky-form-pages">
           <h3 class="mb-1" style="padding: 0;">{{ FormPage }} :</h3>
           <div class="form-pages">
-            <h4 class="ml-10px form-title" style="margin-bottom: 0"><img src="/images/emundus/menus/form.png" class="mr-1">{{ Form }}</h4>
+            <h4 class="ml-10px form-title" style="margin-bottom: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="Form">{{ Form }}</h4>
             <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
               <a
                 class="MenuFormItem"

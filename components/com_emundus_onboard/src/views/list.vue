@@ -68,6 +68,7 @@
         <div v-show="total > 0" class="buttonSelectDeselect">
           <button @click="!isEmpty ? selectAllItem() : deselectItem()"
             class="btn-selectAll"
+            :title="Select"
             :class="[isEmpty ? 'active' : '']">
           </button>
           <div v-show="!isEmpty" id="buttonLabelSelect">

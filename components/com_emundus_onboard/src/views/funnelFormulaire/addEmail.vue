@@ -41,7 +41,7 @@
           <p>{{Status}} {{trigger.status}}</p>
         </div>
         <div style="display: grid">
-          <button type="button" @click="removeTrigger(trigger.trigger_id)" class="buttonDeleteDoc"><em class="fas fa-times"></em></button>
+          <button type="button" @click="removeTrigger(trigger.trigger_id)" class="buttonDeleteDoc" :title="removeTrig"><em class="fas fa-times"></em></button>
           <a @click="editTrigger(trigger)" class="cta-block pointer">
             <em class="fas fa-pen"></em>
           </a>
@@ -104,6 +104,7 @@ export default {
       manual_trigger: 0,
       candidate_trigger: 0,
       addTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER"),
+      removeTrig: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_REMOVETRIGGER"),
       affectTriggers: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_AFFECTTRIGGERS"),
       ChooseEmailTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_EMAIL_TRIGGER"),
       Target: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
