@@ -136,9 +136,9 @@ class EmundusonboardControllerprogram extends JControllerLegacy {
         } else {
 	        $jinput = JFactory::getApplication()->input;
 	        $data = $jinput->getRaw('body');
-	        $code = $jinput->getString('code');
+	        $id = $jinput->getString('id');
 	        $m_prog = $this->model;
-            $result = $m_prog->updateProgram($code, $data);
+            $result = $m_prog->updateProgram($id, $data);
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result);

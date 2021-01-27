@@ -49,37 +49,6 @@
         </transition>
       </div>
 
-
-      <!--<div class="col-md-4 p-1">
-          <div class="mb-1">
-              <h1 class="nom-campagne">{{ CAMPAIGN }} : {{ form.label }}</h1>
-              <div class="date-menu orange">
-                  {{ form.end_date != null ? From : Since + " " }}
-                  {{ form.start_date }}
-                  {{ form.end_date != null ? To + " " + form.end_date : "" }}
-              </div>
-          </div>
-
-          <p class="heading">{{chooseForm}}</p>
-          <div class="heading-block">
-              <select class="dropdown-toggle" id="select_profile" v-model="profileId">
-                  <option v-for="(profile, index) in profiles" :key="index" :value="profile.id" @click="updateProfileCampaign(profile.id)">
-                      {{profile.form_label}}
-                  </option>
-              </select>
-              <button @click.prevent="addNewForm()" class="w-inline-block edit-icon">
-                  <em class="fas fa-plus"></em>
-              </button>
-              <button @click.prevent="formbuilder()" class="w-inline-block edit-icon" v-if="profileId != null">
-                  <em class="fas fa-edit"></em>
-              </button>
-          </div>
-
-          <div class="divider-menu"></div>
-
-
-      </div>-->
-
       <div class="col-md-10 col-sm-10 col-sm-offset-4 col-md-offset-3 col-lg-offset-1 p-1" style="padding-left: 2em !important">
         <div class="section-sub-menu">
           <div class="container-2 w-container" style="max-width: unset">
@@ -106,6 +75,7 @@
               :actualLanguage="actualLanguage"
               :manyLanguages="manyLanguages"
               @nextSection="menuHighlight++"
+              @getInformations="initInformations"
           ></add-campaign>
           <addFormulaire
               v-if="menuHighlight == 2"
@@ -321,12 +291,7 @@ export default {
       ]
     ],
 
-    form: {
-      label: "",
-      profile_id: "",
-      start_date: "",
-      end_date: ""
-    },
+    form: {},
 
     program: {
       id: 0,
@@ -367,7 +332,81 @@ export default {
   }),
 
   methods: {
+    initInformations(campaign){
+      this.form.label = campaign.label;
+      this.form.profile_id = campaign.profile_id;
+      this.form.program_id = campaign.progid;
+      this.form.start_date = campaign.start_date;
+      this.form.end_date = campaign.end_date;
+      this.form.start_date = moment(this.form.start_date).format(
+          "DD/MM/YYYY"
+      );
+      if (this.form.end_date == "0000-00-00 00:00:00") {
+        this.form.end_date = null;
+      } else {
+        this.form.end_date = moment(this.form.end_date).format("DD/MM/YYYY");
+      }
+
+      axios.get(
+          `index.php?option=com_emundus_onboard&controller=form&task=getallformpublished`
+      ).then(profiles => {
+        this.profiles = profiles.data.data;
+        if(this.form.profile_id == null) {
+          this.profiles.length != 0 ? this.profileId = this.profiles[0].id : this.profileId = null;
+          if(this.profileId != null){
+            this.formReload += 1;
+            //this.updateProfileCampaign(this.profileId)
+          }
+        } else {
+          this.formReload += 1;
+          this.profileId = this.form.profile_id;
+        }
+        this.loading = false;
+      });
+      setTimeout(() => {
+        this.menuHighlight = this.index;
+      },500);
+    },
+
     changeToProgMenu(index){
+      axios.get(`index.php?option=com_emundus_onboard&controller=program&task=getprogrambyid&id=${this.form.program_id}`)
+          .then(rep => {
+            this.program.id = response.data.data.campaign.progid;
+            this.program.code = rep.data.data.code;
+            this.program.label = rep.data.data.label;
+            this.program.notes = rep.data.data.notes;
+            this.program.programmes = rep.data.data.programmes;
+            this.program.tmpl_badge = rep.data.data.tmpl_badge;
+            this.program.published = rep.data.data.published;
+            this.program.apply_online = rep.data.data.apply_online;
+            if (rep.data.data.synthesis != null) {
+              this.program.synthesis = rep.data.data.synthesis.replace(/>\s+</g, "><");
+            }
+            if (rep.data.data.tmpl_trombinoscope != null) {
+              this.program.tmpl_trombinoscope = rep.data.data.tmpl_trombinoscope.replace(
+                  />\s+</g,
+                  "><"
+              );
+            }
+            this.prog_group.prog = rep.data.data.group;
+            this.prog_group.evaluator = rep.data.data.evaluator_group;
+            this.prog_group.manager = rep.data.data.manager_group;
+            axios({
+              method: "get",
+              url: "index.php?option=com_emundus_onboard&controller=program&task=getcampaignsbyprogram",
+              params: {
+                pid: this.program.id,
+              },
+              paramsSerializer: params => {
+                return qs.stringify(params);
+              }
+            }).then(repcampaigns => {
+              this.campaignsByProgram = repcampaigns.data.campaigns;
+            });
+          }).catch(e => {
+        console.log(e);
+      });
+
       this.menuHighlightProg = index;
       this.menuHighlight = -1;
     },
@@ -426,81 +465,6 @@ export default {
     if (this.actualLanguage == "en") {
       this.langue = 1;
     }
-
-    axios.get(`index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaignId}`
-    ).then(response => {
-      console.log(response);
-      this.form.label = response.data.data.campaign.label;
-      this.form.profile_id = response.data.data.campaign.profile_id;
-      this.form.start_date = response.data.data.campaign.start_date;
-      this.form.end_date = response.data.data.campaign.end_date;
-      this.form.start_date = moment(this.form.start_date).format(
-          "DD/MM/YYYY"
-      );
-      if (this.form.end_date == "0000-00-00 00:00:00") {
-        this.form.end_date = null;
-      } else {
-        this.form.end_date = moment(this.form.end_date).format("DD/MM/YYYY");
-      }
-      axios.get(`index.php?option=com_emundus_onboard&controller=program&task=getprogrambyid&id=${response.data.data.campaign.progid}`)
-          .then(rep => {
-            this.program.id = response.data.data.campaign.progid;
-            this.program.code = rep.data.data.code;
-            this.program.label = rep.data.data.label;
-            this.program.notes = rep.data.data.notes;
-            this.program.programmes = rep.data.data.programmes;
-            this.program.tmpl_badge = rep.data.data.tmpl_badge;
-            this.program.published = rep.data.data.published;
-            this.program.apply_online = rep.data.data.apply_online;
-            if (rep.data.data.synthesis != null) {
-              this.program.synthesis = rep.data.data.synthesis.replace(/>\s+</g, "><");
-            }
-            if (rep.data.data.tmpl_trombinoscope != null) {
-              this.program.tmpl_trombinoscope = rep.data.data.tmpl_trombinoscope.replace(
-                  />\s+</g,
-                  "><"
-              );
-            }
-            this.prog_group.prog = rep.data.data.group;
-            this.prog_group.evaluator = rep.data.data.evaluator_group;
-            this.prog_group.manager = rep.data.data.manager_group;
-            axios({
-              method: "get",
-              url: "index.php?option=com_emundus_onboard&controller=program&task=getcampaignsbyprogram",
-              params: {
-                pid: this.program.id,
-              },
-              paramsSerializer: params => {
-                return qs.stringify(params);
-              }
-            }).then(repcampaigns => {
-              this.campaignsByProgram = repcampaigns.data.campaigns;
-            });
-          }).catch(e => {
-        console.log(e);
-      });
-      axios.get(
-          `index.php?option=com_emundus_onboard&controller=form&task=getallformpublished`
-      ).then(profiles => {
-        this.profiles = profiles.data.data;
-        if(this.form.profile_id == null) {
-          this.profiles.length != 0 ? this.profileId = this.profiles[0].id : this.profileId = null;
-          if(this.profileId != null){
-            this.formReload += 1;
-            //this.updateProfileCampaign(this.profileId)
-          }
-        } else {
-          this.formReload += 1;
-          this.profileId = this.form.profile_id;
-        }
-        this.loading = false;
-      });
-    }).then(() => {}).catch(e => {
-      console.log(e);
-    });
-    setTimeout(() => {
-      this.menuHighlight = this.index;
-    },500);
   },
 };
 </script>
