@@ -1215,19 +1215,19 @@ class EmundusModelEvaluation extends JModelList {
 
 					//possibly fnum ou uid
 					if (!empty($queryGroups['all'])) {
-						$queryGroups['all'] .= ' or (u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+						$queryGroups['all'] .= ' or (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
 					} else {
 						if ($first) {
-							$queryGroups['all'] .= ' and (((u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+							$queryGroups['all'] .= ' and (((u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
 							$first = false;
 						} else {
-							$queryGroups['all'] .= ' and ((u.id = ' . $val[1] . ' or jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+							$queryGroups['all'] .= ' and ((u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
 						}
 
 					}
 
 					if (!in_array('jos_users', $tableAlias)) {
-						$q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+						$q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
 					}
 
 					$q['users'] = true;
@@ -1249,7 +1249,7 @@ class EmundusModelEvaluation extends JModelList {
 						}
 
 						if (!in_array('jos_users', $tableAlias)) {
-							$q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+							$q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
 						}
 
 						$q['users'] = true;
@@ -1269,12 +1269,12 @@ class EmundusModelEvaluation extends JModelList {
 						}
 
 						if (!in_array('jos_users', $tableAlias)) {
-							$q['join'][] .= ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id';
+							$q['join'][] .= ' left join #__users as u on u.id = c.applicant_id';
 							$q['users'] = true;
 						}
 
 						if (!in_array('jos_emundus_users', $tableAlias)){
-							$q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
+							$q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
 							$q['em_user'] = true;
 						}
 					}
@@ -1285,18 +1285,18 @@ class EmundusModelEvaluation extends JModelList {
 			if ($val[0] == "FNUM" && is_numeric($val[1])) {
 				//possibly fnum ou uid
 				if (!empty($queryGroups['fnum'])) {
-					$queryGroups['fnum'] .= ' or (jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+					$queryGroups['fnum'] .= ' or (c.fnum like "'.$val[1].'%") ';
 				} else {
 					if ($first) {
-						$queryGroups['fnum'] .= ' and (((jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+						$queryGroups['fnum'] .= ' and (((c.fnum like "'.$val[1].'%") ';
 						$first = false;
 					} else {
-						$queryGroups['fnum'] .= ' and ((jos_emundus_campaign_candidature.fnum like "'.$val[1].'%") ';
+						$queryGroups['fnum'] .= ' and ((c.fnum like "'.$val[1].'%") ';
 					}
 				}
 
 				if (!in_array('jos_users', $tableAlias)) {
-					$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+					$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
 				}
 				$q['users'] = true;
 			}
@@ -1316,7 +1316,7 @@ class EmundusModelEvaluation extends JModelList {
 				}
 
 				if (!in_array('jos_users', $tableAlias)) {
-					$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+					$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
 				}
 				$q['users'] = true;
 			}
@@ -1336,7 +1336,7 @@ class EmundusModelEvaluation extends JModelList {
 				}
 
 				if (!in_array('jos_users', $tableAlias)) {
-					$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+					$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
 				}
 
 				$q['users'] = true;
@@ -1357,7 +1357,7 @@ class EmundusModelEvaluation extends JModelList {
 				}
 
 				if (!in_array('jos_users', $tableAlias)) {
-					$q['join'][] = ' left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id ';
+					$q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
 				}
 				$q['users'] = true;
 			}
@@ -1376,7 +1376,7 @@ class EmundusModelEvaluation extends JModelList {
 				}
 
 				if (!in_array('jos_emundus_users', $tableAlias)){
-					$q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
+					$q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
 					$q['em_user'] = true;
 				}
 			}
@@ -1395,7 +1395,7 @@ class EmundusModelEvaluation extends JModelList {
 				}
 
 				if (!in_array('jos_emundus_users', $tableAlias)) {
-					$q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = jos_emundus_campaign_candidature.applicant_id ';
+					$q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
 					$q['em_user'] = true;
 				}
 			}
