@@ -22,7 +22,7 @@
       <div class="section-sub-menu col-lg-7 col-sm-12" style="overflow: hidden" v-if="enableBackground == 1">
         <h2 style="margin: 0">{{Background}}</h2>
         <div class="d-flex"></div>
-        <img class="logo-settings" :src="backgroundLink" alt="Homepage background">
+        <img class="logo-settings" :src="backgroundLink" :alt="InsertHeaderImage">
         <a class="settings-edit-icon cta-block pointer" @click="$modal.show('modalUpdateImage')">
           <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
         </a>
@@ -117,6 +117,7 @@
                 Background: Joomla.JText._("COM_EMUNDUS_ONBOARD_BACKGROUND"),
                 HomeTitle: Joomla.JText._("COM_EMUNDUS_ONBOARD_HOME_TITLE"),
                 HomeContent: Joomla.JText._("COM_EMUNDUS_ONBOARD_HOME_CONTENT"),
+                InsertHeaderImage: Joomla.JText._("COM_EMUNDUS_ONBOARD_INSERT_HEADER_IMAGE"),
             };
         },
 

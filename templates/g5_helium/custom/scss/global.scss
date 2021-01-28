@@ -457,7 +457,9 @@ input[type="text"],
 }
 
 #g-navigation #header-a .logo {
-  width: 180px;
+  width: auto;
+  max-height: 65px;
+  max-width: 180px;
 }
 
 #g-navigation .g-main-nav{
