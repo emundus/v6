@@ -216,14 +216,14 @@
             })
           }).then(() => {
             if (quit == 0) {
-              window.location.href = '/configuration-forms'
+              this.redirectJRoute('index.php?option=com_emundus_onboard&view=form');
             } else if (quit == 1) {
               this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=' + this.campaignId);
             }
           });
         } else {
           if (quit == 0) {
-            window.location.href = '/configuration-forms'
+            this.redirectJRoute('index.php?option=com_emundus_onboard&view=form');
           } else if (quit == 1) {
             this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=');
           }

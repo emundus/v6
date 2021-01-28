@@ -428,7 +428,7 @@ export default {
       if (this.menuHighlight < 1) {
         this.menuHighlight++;
       } else {
-        window.location.href = '/configuration-campaigns'
+        this.redirectJRoute('index.php?option=com_emundus_onboard&view=campaign');
       }
     },
 
@@ -436,7 +436,7 @@ export default {
       if (this.menuHighlight > 0) {
         this.menuHighlight--;
       } else {
-        window.location.href = '/configuration-campaigns'
+        this.redirectJRoute('index.php?option=com_emundus_onboard&view=campaign');
       }
     },
 

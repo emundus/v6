@@ -387,7 +387,7 @@
             },
             data: qs.stringify({ body: this.form, code: this.email })
           }).then(response => {
-            window.location.href = '/configuration-emails'
+            this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
           }).catch(error => {
             console.log(error);
           });
@@ -412,7 +412,7 @@
                 users: this.selectedUsers
               })
             }).then((rep) => {
-              window.location.href = '/configuration-emails'
+              this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
             });
           }).catch(error => {
             console.log(error);
@@ -429,6 +429,21 @@
           this.enableTip = true;
           this.tip();
         }
+      },
+
+      redirectJRoute(link) {
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+          params: {
+            link: link,
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(response => {
+          window.location.href = window.location.pathname + response.data.data;
+        });
       },
 
       /**
