@@ -210,7 +210,7 @@
             </button>
           </div>
           <div class="form-group controls">
-            <editor :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" v-if="form.training" :placeholder="ProgramResume" :id="'program_campaign'"></editor>
+            <editor :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" v-if="form.training" :placeholder="ProgramResume" :id="'program_campaign_'" :key="editorKey"></editor>
           </div>
 
           <transition name="slide-fade">
@@ -232,7 +232,7 @@
                   <span class="error">{{ProgLabelRequired}}</span>
                 </p>
                 <div class="form-group controls">
-                  <editor :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="ProgramResume" :id="'new_program_campaign'"></editor>
+                  <editor :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="ProgramResume" :id="'new_program_campaign_'" :key="editorKey"></editor>
                 </div>
               </div>
             </div>
@@ -320,6 +320,7 @@ export default {
     session: [],
     old_training: "",
     old_program_form: "",
+    editorKey: 0,
 
     form: {
       label: {
@@ -495,6 +496,7 @@ export default {
     setCategory(e) {
       this.year.programmes = e.target.options[e.target.options.selectedIndex].dataset.category;
       this.programForm = this.programs.find(program => program.code == this.form.training);
+      this.editorKey++;
     },
 
     updateCode() {

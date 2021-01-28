@@ -1,5 +1,5 @@
 .advanced-dropdown form{
-    margin: 10px 0 !important;
+    margin: 3px 0 !important;
     padding: 0 !important;
     width: auto !important;
 }
@@ -7,6 +7,7 @@
 div.advanced-dropdown{
     width: max-content;
     margin-left: 25px;
+    margin-right: 3em;
 }
 
 div.mod-languages.advanced-dropdown ul{
@@ -28,7 +29,6 @@ div.mod-languages a{
     width: 100%;
     padding: 0;
     align-items: baseline;
-    margin-left: 5px;
     color: black;
 }
 
@@ -43,7 +43,7 @@ div.mod-languages img{
 div.advanced-dropdown a.langChoose:link, div.advanced-dropdown a.langChoose:visited{
     width: 100%;
     margin-top: unset;
-    padding: 10px;
+    padding: 5px;
     justify-content: space-between;
     align-items: center;
     margin-left: 15px;

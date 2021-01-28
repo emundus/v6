@@ -26,7 +26,7 @@ if ($item->menu_image) {
 }
 
 if($item->deeper) {
-    echo '<span class="g-menu-parent-indicator parent-indicator-close" style="display: none;" id="parent_' . $item->id .'" data-g-menuparent="" onclick="enableSubLevel(' . $item->id . ')"></span>';
+    $linktype .= '<span class="g-menu-parent-indicator parent-indicator-close" style="display: none;" id="parent_' . $item->id .'" data-g-menuparent="" onclick="enableSubLevel(' . $item->id . ')"></span>';
 }
 
 switch ($item->browserNav) :

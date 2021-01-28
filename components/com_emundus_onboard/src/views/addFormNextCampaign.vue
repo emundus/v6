@@ -118,22 +118,22 @@
           ></add-documents-form>
 
           <add-gestionnaires
-              v-if="menuHighlightProg == 0"
+              v-if="menuHighlightProg == 0 && program.id != 0"
               :funnelCategorie="formPrograms[langue][menuHighlight]"
-              :group="this.prog_group"
+              :group="prog_group"
               :coordinatorAccess="true"
           ></add-gestionnaires>
 
           <add-evaluation-grid
-              v-if="menuHighlightProg == 1"
+              v-if="menuHighlightProg == 1 && program.id != 0"
               :funnelCategorie="formPrograms[langue][menuHighlight]"
-              :prog="this.program.id"
+              :prog="program.id"
           ></add-evaluation-grid>
 
           <add-email
-              v-if="menuHighlightProg == 2"
+              v-if="menuHighlightProg == 2 && program.id != 0"
               :funnelCategorie="formPrograms[langue][menuHighlight]"
-              :prog="this.program.id"
+              :prog="program.id"
           ></add-email>
 
           <!--          <addEvalEval
@@ -371,7 +371,7 @@ export default {
     changeToProgMenu(index){
       axios.get(`index.php?option=com_emundus_onboard&controller=program&task=getprogrambyid&id=${this.form.program_id}`)
           .then(rep => {
-            this.program.id = response.data.data.campaign.progid;
+            this.program.id = rep.data.data.id;
             this.program.code = rep.data.data.code;
             this.program.label = rep.data.data.label;
             this.program.notes = rep.data.data.notes;
