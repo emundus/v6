@@ -420,7 +420,7 @@ class EmundusModelProfile extends JModelList {
 	 */
     function getProfileIDByCampaign(array $campaign_id) : array {
 
-        $res = false;
+        $res = [];
 
         if (!empty($campaign_id)) {
             if (in_array('%', $campaign_id)) {
