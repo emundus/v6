@@ -182,7 +182,7 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
 
                 $db->setQuery($query);
                 $user->value = $db->loadResult();
-                $day->label = $d;
+                $day->label = (string) $d;
                 $users[] = $user;
                 $days[] = $day;
             }

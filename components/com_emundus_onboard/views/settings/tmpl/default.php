@@ -111,6 +111,17 @@ JText::script('COM_EMUNDUS_ONBOARD_INSERT_LOGO');
 JText::script('COM_EMUNDUS_ONBOARD_INSERT_ICON');
 ## END ##
 
+## eMUNDUS CONFIG ##
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_RENEW');
+JText::script('JNO');
+JText::script('JYES');
+JText::script('COM_EMUNDUS_APPLICANT_CAN_RENEW_CAMPAIGN');
+JText::script('COM_EMUNDUS_APPLICANT_CAN_RENEW_YEAR');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_EDIT_UNTIL_DEADLINE');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANTS_DESC');
+JText::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANTS');
+## END ##
+
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0 , 2);
 $languages = JLanguageHelper::getLanguages();

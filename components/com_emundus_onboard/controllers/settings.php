@@ -477,6 +477,8 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $yaml['accent']['color-1'] = $preset['primary'];
             $yaml['base']['secondary-color'] = $preset['secondary'];
             $yaml['accent']['color-2'] = $preset['secondary'];
+            $yaml['link']['regular'] = $preset['secondary'];
+            $yaml['link']['hover'] = $preset['secondary'];
 
             $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 5);
 
@@ -837,11 +839,55 @@ class EmundusonboardControllersettings extends JControllerLegacy {
 
             // Save user data
             if (!$table->store()) {
-                JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'mod_emundus.saas');
+                JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'com_emundus');
                 echo json_encode(array('status' => true));
             }
 
             echo json_encode(array('status' => true));
+        }
+        exit;
+    }
+
+    public function getemundusparams(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+
+            echo json_encode(array('config' => $eMConfig));
+        }
+        exit;
+    }
+
+    public function updateemundusparam(){
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $param = $jinput->getString('param');
+            $value = $jinput->getInt('value');
+
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $eMConfig->set($param, $value);
+
+            $componentid = JComponentHelper::getComponent('com_emundus')->id;
+            $db = JFactory::getDBO();
+
+            $query = "UPDATE #__extensions SET params = ".$db->Quote($eMConfig->toString())." WHERE extension_id = ".$componentid;
+
+            try {
+                $db->setQuery($query);
+                $status = $db->execute();
+            } catch (Exception $e) {
+                JLog::add('Error set param '.$param, JLog::ERROR, 'com_emundus');
+            }
+            echo json_encode(array('status' => $status));
         }
         exit;
     }

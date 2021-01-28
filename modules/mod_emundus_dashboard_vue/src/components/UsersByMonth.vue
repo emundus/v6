@@ -55,8 +55,10 @@ export default {
             paletteColors: "#16AFE1, #78dc6e",
             caption: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_BY_DAY"),
             subcaption: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_TOTAL") + this.total + Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS"),
-            xaxisname: "",
+            xaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_DAYS"),
             yaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_NUMBER"),
+            yaxisminvalue: "0",
+            setAdaptiveYMin: "0",
             numbersuffix: "",
             theme: "fusion"
           },

@@ -17,7 +17,7 @@
 
       <div class="col-md-10 col-md-offset-1 p-1" style="padding-left: 2em !important;">
         <div class="d-flex justify-content-between" style="margin-bottom: 10px">
-          <div class="d-flex" style="width: 100%;justify-content: end;margin-bottom: -90px;" v-if="menuHighlight != 0 && menuHighlight != 6  && menuHighlight != 7">
+          <div class="d-flex" style="width: 100%;justify-content: end;margin-bottom: -90px;" v-if="menuHighlight != 0 && menuHighlight != 7  && menuHighlight != 8">
             <transition name="slide-right">
               <div class="loading-form-save" v-if="saving">
                 <Ring-Loader :color="'#12DB42'" />
@@ -71,20 +71,27 @@
 
           <editTags
               v-if="menuHighlight == 5"
-              @LaunchLoading="runLoading"
-              @StopLoading="stopLoading"
+              @LaunchLoading="updateLoading"
+              @StopLoading="updateLoading"
               ref="tags"
           ></editTags>
 
+          <edit-applicants
+              v-if="menuHighlight == 6"
+              @LaunchLoading="updateLoading"
+              @StopLoading="updateLoading"
+              ref="applicants"
+          ></edit-applicants>
+
           <editDatas
-                  v-if="menuHighlight == 6 && coordinatorAccess != 0"
+                  v-if="menuHighlight == 7 && coordinatorAccess != 0"
                   ref="datas"
                   :actualLanguage="actualLanguage"
                   :manyLanguages="manyLanguages"
           ></editDatas>
 
           <help-settings
-              v-if="menuHighlight == 7"
+              v-if="menuHighlight == 8"
               ref="help"
               :actualLanguage="actualLanguage"
               :manyLanguages="manyLanguages"
@@ -120,6 +127,7 @@ import editFooter from "../components/Settings/editFooter";
 import helpSettings from "@/components/Settings/helpSettings";
 import Tasks from "@/views/tasks";
 import HelpSettings from "@/components/Settings/helpSettings";
+import EditApplicants from "@/components/Settings/editApplicants";
 
 const qs = require("qs");
 
@@ -127,6 +135,7 @@ export default {
   name: "globalSettings",
 
   components: {
+    EditApplicants,
     HelpSettings,
     Tasks,
     editStatus,
@@ -159,6 +168,7 @@ export default {
         "Pied de page",
         "Statuts",
         "Etiquettes",
+        "Candidats",
         "Référentiels de données",
         "Aide"
       ],
@@ -169,6 +179,7 @@ export default {
         "Footer",
         "Status",
         "Tags",
+        "Applicants",
         "Data repository",
         "Help"
       ]
