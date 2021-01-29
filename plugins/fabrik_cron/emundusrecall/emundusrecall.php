@@ -53,6 +53,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 		$reminder_mail_id = $params->get('reminder_mail_id', '15');
 		$reminder_programme_code = $params->get('reminder_programme_code', '');
 		$reminder_days = $params->get('reminder_days', '30');
+		$reminder_choice = $params->get('reminder_option', '1');
 		$reminder_deadline = $params->get('reminder_deadline', '30, 15, 7, 1, 0');
 
 		$status_for_send = $params->get('reminder_status', '');
@@ -64,12 +65,22 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 
 		// Get list of applicants to notify
 		$db = FabrikWorker::getDbo();
-		$query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, esc.start_date, esc.end_date, esc.label, DATEDIFF( esc.end_date , now()) as left_days
+		if($reminder_choice == 1){
+            $query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, esc.start_date, esc.end_date, esc.label, DATEDIFF( esc.end_date , now()) as left_days
 					FROM #__emundus_campaign_candidature as ecc
 					LEFT JOIN #__users as u ON u.id=ecc.applicant_id
 					LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
 					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
 					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DATEDIFF( esc.end_date , now()) IN ('.$reminder_deadline.')';
+        }
+		else{
+            $query = 'SELECT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, esc.start_date, esc.end_date, esc.label, DAY(now()) as dayOfMonth
+					FROM #__emundus_campaign_candidature as ecc
+					LEFT JOIN #__users as u ON u.id=ecc.applicant_id
+					LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
+					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
+					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DAY(now()) IN ('.$reminder_deadline.')';
+        }
 
 		if (!empty($reminder_programme_code)) {
 			$query .= ' AND esc.training IN ('.$reminder_programme_code.')';
@@ -150,6 +161,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
                 sleep(0.1);
 
 			}
+
 		}
 
 		$this->log .= "\n process " . count($applicants) . " applicant(s)";

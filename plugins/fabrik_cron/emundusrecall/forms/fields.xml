@@ -23,7 +23,10 @@
 				label="PLG_CRON_NUMBER_OF_DAYS_BETWEEN_EACH_REMIND"
 				size="30" 
 				default="30" />
-
+			<field name="reminder_option" menu="hide" type="list" default="1" label="PLG_CRON_REMIND_OPTION" description="PLG_CRON_REMIND_OPTION_DESC">
+				<option value="0">PLG_CRON_DAY_OF_MONTH</option>
+				<option value="1">PLG_CRON_DAY_BEFORE_DEALINE</option>
+			</field>
 			<field name="reminder_deadline"
 				type="text"
 				cols="60"
