@@ -387,289 +387,298 @@ class EmundusonboardModelformbuilder extends JModelList {
     }
 
     function updateElementParams($plugin, $oldplugin, $params){
-        // Reset params
-        if($oldplugin != null){
-            switch ($oldplugin){
-                case 'field':
-                    if ($params['password'] == 3) {
-                        $key = array_search("isemail", $params['validations']['plugin']);
-                        if($key != false && $key != null) {
-                            unset($params['validations']['plugin'][$key]);
-                            unset($params['validations']['plugin_published'][$key]);
-                            unset($params['validations']['validate_in'][$key]);
-                            unset($params['validations']['validation_on'][$key]);
-                            unset($params['validations']['validate_hidden'][$key]);
-                            unset($params['validations']['must_validate'][$key]);
-                            unset($params['validations']['show_icon'][$key]);
-                            unset($params['isemail-message']);
-                            unset($params['isemail-validation_condition']);
-                            unset($params['isemail-allow_empty']);
-                            unset($params['isemail-check_mx']);
+        try {
+            // Reset params
+            if ($oldplugin != null) {
+                switch ($oldplugin) {
+                    case 'field':
+                        if ($params['password'] == 3) {
+                            $key = array_search("isemail", $params['validations']['plugin']);
+                            if ($key != false && $key != null) {
+                                unset($params['validations']['plugin'][$key]);
+                                unset($params['validations']['plugin_published'][$key]);
+                                unset($params['validations']['validate_in'][$key]);
+                                unset($params['validations']['validation_on'][$key]);
+                                unset($params['validations']['validate_hidden'][$key]);
+                                unset($params['validations']['must_validate'][$key]);
+                                unset($params['validations']['show_icon'][$key]);
+                                unset($params['isemail-message']);
+                                unset($params['isemail-validation_condition']);
+                                unset($params['isemail-allow_empty']);
+                                unset($params['isemail-check_mx']);
+                            }
                         }
+                        unset($params['placeholder']);
+                        unset($params['password']);
+                        unset($params['maxlength']);
+                        unset($params['disable']);
+                        unset($params['readonly']);
+                        unset($params['autocomplete']);
+                        unset($params['speech']);
+                        unset($params['advanced_behavior']);
+                        unset($params['text_format']);
+                        unset($params['integer_length']);
+                        unset($params['decimal_length']);
+                        unset($params['field_use_number_format']);
+                        unset($params['field_thousand_sep']);
+                        unset($params['field_decimal_sep']);
+                        unset($params['text_format_string']);
+                        unset($params['field_format_string_blank']);
+                        unset($params['text_input_mask']);
+                        unset($params['text_input_mask_autoclear']);
+                        break;
+                    case 'textarea':
+                        unset($params['textarea_placeholder']);
+                        unset($params['width']);
+                        unset($params['height']);
+                        unset($params['use_wysiwyg']);
+                        unset($params['maxlength']);
+                        unset($params['wysiwyg_extra_buttons']);
+                        unset($params['textarea_field_type']);
+                        unset($params['textarea-showmax']);
+                        unset($params['textarea_limit_type']);
+                        unset($params['textarea-tagify']);
+                        unset($params['textarea_tagifyurl']);
+                        unset($params['textarea-truncate-where']);
+                        unset($params['textarea-truncate-html']);
+                        unset($params['textarea-truncate']);
+                        unset($params['textarea-hover']);
+                        unset($params['textarea_hover_location']);
+                        unset($params['textarea-maxlength']);
+                        break;
+                    case 'dropdown':
+                        unset($params['multiple']);
+                        unset($params['dropdown_multisize']);
+                        unset($params['allow_frontend_addtodropdown']);
+                        unset($params['dd-allowadd-onlylabel']);
+                        unset($params['dd-savenewadditions']);
+                        unset($params['options_split_str']);
+                        unset($params['dropdown_populate']);
+                        if (isset($params['join_db_name'])) {
+                            unset($params['join_conn_id']);
+                            unset($params['join_val_column_concat']);
+                            unset($params['database_join_where_sql']);
+                            unset($params['database_join_where_access']);
+                            unset($params['database_join_where_when']);
+                            unset($params['databasejoin_where_ajax']);
+                            unset($params['database_join_filter_where_sql']);
+                            unset($params['database_join_show_please_select']);
+                            unset($params['database_join_noselectionvalue']);
+                            unset($params['database_join_noselectionlabel']);
+                            unset($params['databasejoin_popupform']);
+                            unset($params['fabrikdatabasejoin_frontend_add']);
+                            unset($params['join_popupwidth']);
+                            unset($params['databasejoin_readonly_link']);
+                            unset($params['fabrikdatabasejoin_frontend_select']);
+                            unset($params['dbjoin_options_per_row']);
+                            unset($params['dbjoin_multiselect_max']);
+                            unset($params['dbjoin_multilist_size']);
+                            unset($params['dbjoin_autocomplete_size']);
+                            unset($params['dbjoin_autocomplete_rows']);
+                            unset($params['dabase_join_label_eval']);
+                            unset($params['join_desc_column']);
+                            unset($params['dbjoin_autocomplete_how']);
+                        }
+                        break;
+                    case 'checkbox':
+                        unset($params['ck_options_per_row']);
+                        unset($params['allow_frontend_addtocheckbox']);
+                        unset($params['chk-allowadd-onlylabel']);
+                        unset($params['chk-savenewadditions']);
+                        unset($params['options_split_str']);
+                        unset($params['dropdown_populate']);
+                        break;
+                    case 'radiobutton':
+                        unset($params['options_per_row']);
+                        unset($params['btnGroup']);
+                        unset($params['rad-allowadd-onlylabel']);
+                        unset($params['rad-savenewadditions']);
+                        unset($params['options_split_str']);
+                        unset($params['dropdown_populate']);
+                        break;
+                    case 'birthday':
+                        unset($params['birthday_daylabel']);
+                        unset($params['birthday_monthlabel']);
+                        unset($params['birthday_yearlabel']);
+                        unset($params['birthday_yearopt']);
+                        unset($params['birthday_yearstart']);
+                        unset($params['birthday_forward']);
+                        unset($params['details_date_format']);
+                        unset($params['details_dateandage']);
+                        unset($params['list_date_format']);
+                        unset($params['list_age_format']);
+                        unset($params['empty_is_null']);
+                        break;
+                    case 'date':
+                        unset($params['date_showtime']);
+                        unset($params['date_time_format']);
+                        unset($params['bootstrap_time_class']);
+                        unset($params['placeholder']);
+                        unset($params['date_store_as_local']);
+                        unset($params['date_table_format']);
+                        unset($params['date_form_format']);
+                        unset($params['date_defaulttotoday']);
+                        unset($params['date_alwaystoday']);
+                        unset($params['date_firstday']);
+                        unset($params['date_allow_typing_in_field']);
+                        unset($params['date_csv_offset_tz']);
+                        unset($params['date_advanced']);
+                        unset($params['date_allow_func']);
+                        unset($params['date_allow_php_func']);
+                        unset($params['date_observe']);
+                        $params['bootstrap_class'] = 'input-xlarge';
+                        break;
+                    case 'display':
+                        unset($params['display_showlabel']);
+                        $params['store_in_db'] = 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            //
+
+            // Prepare new params
+            switch ($plugin) {
+                case 'field':
+                    // User params
+                    if (!isset($params['placeholder'])) {
+                        $params['placeholder'] = '';
                     }
-                    unset($params['placeholder']);
-                    unset($params['password']);
-                    unset($params['maxlength']);
-                    unset($params['disable']);
-                    unset($params['readonly']);
-                    unset($params['autocomplete']);
-                    unset($params['speech']);
-                    unset($params['advanced_behavior']);
-                    unset($params['text_format']);
-                    unset($params['integer_length']);
-                    unset($params['decimal_length']);
-                    unset($params['field_use_number_format']);
-                    unset($params['field_thousand_sep']);
-                    unset($params['field_decimal_sep']);
-                    unset($params['text_format_string']);
-                    unset($params['field_format_string_blank']);
-                    unset($params['text_input_mask']);
-                    unset($params['text_input_mask_autoclear']);
+                    if (!isset($params['password'])) {
+                        $params['password'] = 0;
+                    }
+                    if (!isset($params['maxlength'])) {
+                        $params['maxlength'] = 255;
+                    }
+                    if (!isset($params['text_input_mask'])) {
+                        $params['text_input_mask'] = '';
+                    }
+                    //
+
+                    // Default params
+                    $params['disable'] = 0;
+                    $params['readonly'] = 0;
+                    $params['autocomplete'] = 0;
+                    $params['speech'] = 0;
+                    $params['advanced_behavior'] = 0;
+                    $params['text_format'] = 'text';
+                    $params['integer_length'] = 11;
+                    $params['decimal_length'] = 2;
+                    $params['field_use_number_format'] = 0;
+                    $params['field_thousand_sep'] = ',';
+                    $params['field_decimal_sep'] = '.';
+                    $params['text_format_string'] = '';
+                    $params['field_format_string_blank'] = 1;
+                    $params['text_input_mask_autoclear'] = 0;
+                    //
                     break;
                 case 'textarea':
-                    unset($params['textarea_placeholder']);
-                    unset($params['width']);
-                    unset($params['height']);
-                    unset($params['use_wysiwyg']);
-                    unset($params['maxlength']);
-                    unset($params['wysiwyg_extra_buttons']);
-                    unset($params['textarea_field_type']);
-                    unset($params['textarea-showmax']);
-                    unset($params['textarea_limit_type']);
-                    unset($params['textarea-tagify']);
-                    unset($params['textarea_tagifyurl']);
-                    unset($params['textarea-truncate-where']);
-                    unset($params['textarea-truncate-html']);
-                    unset($params['textarea-truncate']);
-                    unset($params['textarea-hover']);
-                    unset($params['textarea_hover_location']);
-                    unset($params['textarea-maxlength']);
+                    // User params
+                    if (!isset($params['textarea_placeholder'])) {
+                        $params['textarea_placeholder'] = '';
+                    }
+                    if (!isset($params['height'])) {
+                        $params['height'] = 6;
+                    }
+                    if (!isset($params['use_wysiwyg'])) {
+                        $params['use_wysiwyg'] = 0;
+                    }
+                    if (!isset($params['maxlength'])) {
+                        $params['maxlength'] = 255;
+                    }
+                    if (!isset($params['textarea-showmax'])) {
+                        $params['textarea-showmax'] = 0;
+                    }
+                    //
+
+                    // Default params
+                    $params['width'] = 60;
+                    $params['wysiwyg_extra_buttons'] = 1;
+                    $params['textarea_field_type'] = 'TEXT';
+                    $params['textarea_limit_type'] = 'char';
+                    $params['textarea-tagify'] = 0;
+                    $params['textarea_tagifyurl'] = '';
+                    $params['textarea-truncate-where'] = 0;
+                    $params['textarea-truncate-html'] = 0;
+                    $params['textarea-truncate'] = 0;
+                    $params['textarea-hover'] = 1;
+                    $params['textarea_hover_location'] = 'top';
+                    //
                     break;
                 case 'dropdown':
-                    unset($params['multiple']);
-                    unset($params['dropdown_multisize']);
-                    unset($params['allow_frontend_addtodropdown']);
-                    unset($params['dd-allowadd-onlylabel']);
-                    unset($params['dd-savenewadditions']);
-                    unset($params['options_split_str']);
-                    unset($params['dropdown_populate']);
-                    if(isset($params['join_db_name'])){
-                        unset($params['join_conn_id']);
-                        unset($params['join_val_column_concat']);
-                        unset($params['database_join_where_sql']);
-                        unset($params['database_join_where_access']);
-                        unset($params['database_join_where_when']);
-                        unset($params['databasejoin_where_ajax']);
-                        unset($params['database_join_filter_where_sql']);
-                        unset($params['database_join_show_please_select']);
-                        unset($params['database_join_noselectionvalue']);
-                        unset($params['database_join_noselectionlabel']);
-                        unset($params['databasejoin_popupform']);
-                        unset($params['fabrikdatabasejoin_frontend_add']);
-                        unset($params['join_popupwidth']);
-                        unset($params['databasejoin_readonly_link']);
-                        unset($params['fabrikdatabasejoin_frontend_select']);
-                        unset($params['dbjoin_options_per_row']);
-                        unset($params['dbjoin_multiselect_max']);
-                        unset($params['dbjoin_multilist_size']);
-                        unset($params['dbjoin_autocomplete_size']);
-                        unset($params['dbjoin_autocomplete_rows']);
-                        unset($params['dabase_join_label_eval']);
-                        unset($params['join_desc_column']);
-                        unset($params['dbjoin_autocomplete_how']);
-                    }
+                    $params['multiple'] = 0;
+                    $params['dropdown_multisize'] = 3;
+                    $params['allow_frontend_addtodropdown'] = 0;
+                    $params['dd-allowadd-onlylabel'] = 0;
+                    $params['dd-savenewadditions'] = 0;
+                    $params['options_split_str'] = '';
+                    $params['dropdown_populate'] = '';
                     break;
                 case 'checkbox':
-                    unset($params['ck_options_per_row']);
-                    unset($params['allow_frontend_addtocheckbox']);
-                    unset($params['chk-allowadd-onlylabel']);
-                    unset($params['chk-savenewadditions']);
-                    unset($params['options_split_str']);
-                    unset($params['dropdown_populate']);
+                    $params['ck_options_per_row'] = 1;
+                    $params['allow_frontend_addtocheckbox'] = 0;
+                    $params['chk-allowadd-onlylabel'] = 0;
+                    $params['chk-savenewadditions'] = 0;
+                    $params['options_split_str'] = '';
+                    $params['dropdown_populate'] = '';
                     break;
                 case 'radiobutton':
-                    unset($params['options_per_row']);
-                    unset($params['btnGroup']);
-                    unset($params['rad-allowadd-onlylabel']);
-                    unset($params['rad-savenewadditions']);
-                    unset($params['options_split_str']);
-                    unset($params['dropdown_populate']);
+                    $params['options_per_row'] = 1;
+                    $params['btnGroup'] = 0;
+                    $params['rad-allowadd-onlylabel'] = 0;
+                    $params['rad-savenewadditions'] = 0;
+                    $params['options_split_str'] = '';
+                    $params['dropdown_populate'] = '';
                     break;
                 case 'birthday':
-                    unset($params['birthday_daylabel']);
-                    unset($params['birthday_monthlabel']);
-                    unset($params['birthday_yearlabel']);
-                    unset($params['birthday_yearopt']);
-                    unset($params['birthday_yearstart']);
-                    unset($params['birthday_forward']);
-                    unset($params['details_date_format']);
-                    unset($params['details_dateandage']);
-                    unset($params['list_date_format']);
-                    unset($params['list_age_format']);
-                    unset($params['empty_is_null']);
+                    $params['birthday_daylabel'] = '';
+                    $params['birthday_monthlabel'] = '';
+                    $params['birthday_yearlabel'] = '';
+                    $params['birthday_yearopt'] = '';
+                    $params['birthday_yearstart'] = 1950;
+                    $params['birthday_forward'] = 0;
+                    $params['details_date_format'] = 'd.m.Y';
+                    $params['details_dateandage'] = 0;
+                    $params['list_date_format'] = 'd.m.Y';
+                    $params['list_age_format'] = 'no';
+                    $params['empty_is_null'] = 1;
+                    break;
+                case 'years':
+                    $params['birthday_yearopt'] = 'number';
+                    $params['birthday_forward'] = '0';
+                    $params['birthday_yearstart'] = '100';
                     break;
                 case 'date':
-                    unset($params['date_showtime']);
-                    unset($params['date_time_format']);
-                    unset($params['bootstrap_time_class']);
-                    unset($params['placeholder']);
-                    unset($params['date_store_as_local']);
-                    unset($params['date_table_format']);
-                    unset($params['date_form_format']);
-                    unset($params['date_defaulttotoday']);
-                    unset($params['date_alwaystoday']);
-                    unset($params['date_firstday']);
-                    unset($params['date_allow_typing_in_field']);
-                    unset($params['date_csv_offset_tz']);
-                    unset($params['date_advanced']);
-                    unset($params['date_allow_func']);
-                    unset($params['date_allow_php_func']);
-                    unset($params['date_observe']);
-                    $params['bootstrap_class'] = 'input-xlarge';
+                    $params['date_showtime'] = 0;
+                    $params['date_time_format'] = 'H:i';
+                    $params['bootstrap_time_class'] = 'input-medium';
+                    $params['placeholder'] = 'dd\/mm\/yyyy';
+                    $params['date_store_as_local'] = 0;
+                    $params['date_table_format'] = 'd\/m\/Y';
+                    $params['date_form_format'] = 'Y-m-d';
+                    $params['date_defaulttotoday'] = 0;
+                    $params['date_alwaystoday'] = 0;
+                    $params['date_firstday'] = 0;
+                    $params['date_allow_typing_in_field'] = 1;
+                    $params['date_csv_offset_tz'] = 0;
+                    $params['date_advanced'] = 0;
+                    $params['date_allow_func'] = '';
+                    $params['date_allow_php_func'] = '';
+                    $params['date_observe'] = '';
+                    $params['bootstrap_class'] = 'input-medium';
                     break;
                 case 'display':
-                    unset($params['display_showlabel']);
-                    $params['store_in_db'] = 1;
+                    $params['display_showlabel'] = 1;
+                    $params['store_in_db'] = 0;
                     break;
                 default:
                     break;
             }
+            //
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/formbuilder | Error update params of the element '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
-        //
-
-        // Prepare new params
-        switch ($plugin){
-            case 'field':
-                // User params
-                if(!isset($params['placeholder'])) {
-                    $params['placeholder'] = '';
-                }
-                if(!isset($params['password'])) {
-                    $params['password'] = 0;
-                }
-                if(!isset($params['maxlength'])) {
-                    $params['maxlength'] = 255;
-                }
-                if(!isset($params['text_input_mask'])) {
-                    $params['text_input_mask'] = '';
-                }
-                //
-
-                // Default params
-                $params['disable'] = 0;
-                $params['readonly'] = 0;
-                $params['autocomplete'] = 0;
-                $params['speech'] = 0;
-                $params['advanced_behavior'] = 0;
-                $params['text_format'] = 'text';
-                $params['integer_length'] = 11;
-                $params['decimal_length'] = 2;
-                $params['field_use_number_format'] = 0;
-                $params['field_thousand_sep'] = ',';
-                $params['field_decimal_sep'] = '.';
-                $params['text_format_string'] = '';
-                $params['field_format_string_blank'] = 1;
-                $params['text_input_mask_autoclear'] = 0;
-                //
-                break;
-            case 'textarea':
-                // User params
-                if(!isset($params['textarea_placeholder'])) {
-                    $params['textarea_placeholder'] = '';
-                }
-                if(!isset($params['height'])) {
-                    $params['height'] = 6;
-                }
-                if(!isset($params['use_wysiwyg'])) {
-                    $params['use_wysiwyg'] = 0;
-                }
-                if(!isset($params['maxlength'])) {
-                    $params['maxlength'] = 255;
-                }
-                if(!isset($params['textarea-showmax'])) {
-                    $params['textarea-showmax'] = 0;
-                }
-                //
-
-                // Default params
-                $params['width'] = 60;
-                $params['wysiwyg_extra_buttons'] = 1;
-                $params['textarea_field_type'] = 'TEXT';
-                $params['textarea_limit_type'] = 'char';
-                $params['textarea-tagify'] = 0;
-                $params['textarea_tagifyurl'] = '';
-                $params['textarea-truncate-where'] = 0;
-                $params['textarea-truncate-html'] = 0;
-                $params['textarea-truncate'] = 0;
-                $params['textarea-hover'] = 1;
-                $params['textarea_hover_location'] = 'top';
-                //
-                break;
-            case 'dropdown':
-                $params['multiple'] = 0;
-                $params['dropdown_multisize'] = 3;
-                $params['allow_frontend_addtodropdown'] = 0;
-                $params['dd-allowadd-onlylabel'] = 0;
-                $params['dd-savenewadditions'] = 0;
-                $params['options_split_str'] = '';
-                $params['dropdown_populate'] = '';
-                break;
-            case 'checkbox':
-                $params['ck_options_per_row'] = 1;
-                $params['allow_frontend_addtocheckbox'] = 0;
-                $params['chk-allowadd-onlylabel'] = 0;
-                $params['chk-savenewadditions'] = 0;
-                $params['options_split_str'] = '';
-                $params['dropdown_populate'] = '';
-                break;
-            case 'radiobutton':
-                $params['options_per_row'] = 1;
-                $params['btnGroup'] = 0;
-                $params['rad-allowadd-onlylabel'] = 0;
-                $params['rad-savenewadditions'] = 0;
-                $params['options_split_str'] = '';
-                $params['dropdown_populate'] = '';
-                break;
-            case 'birthday':
-                $params['birthday_daylabel'] = '';
-                $params['birthday_monthlabel'] = '';
-                $params['birthday_yearlabel'] = '';
-                $params['birthday_yearopt'] = '';
-                $params['birthday_yearstart'] = 1950;
-                $params['birthday_forward'] = 0;
-                $params['details_date_format'] = 'd.m.Y';
-                $params['details_dateandage'] = 0;
-                $params['list_date_format'] = 'd.m.Y';
-                $params['list_age_format'] = 'no';
-                $params['empty_is_null'] = 1;
-                break;
-            case 'date':
-                $params['date_showtime'] = 0;
-                $params['date_time_format'] = 'H:i';
-                $params['bootstrap_time_class'] = 'input-medium';
-                $params['placeholder'] = 'dd\/mm\/yyyy';
-                $params['date_store_as_local'] = 0;
-                $params['date_table_format'] = 'd\/m\/Y';
-                $params['date_form_format'] = 'Y-m-d';
-                $params['date_defaulttotoday'] = 0;
-                $params['date_alwaystoday'] = 0;
-                $params['date_firstday'] = 0;
-                $params['date_allow_typing_in_field'] = 1;
-                $params['date_csv_offset_tz'] = 0;
-                $params['date_advanced'] = 0;
-                $params['date_allow_func'] = '';
-                $params['date_allow_php_func'] = '';
-                $params['date_observe'] = '';
-                $params['bootstrap_class'] = 'input-medium';
-                break;
-            case 'display':
-                $params['display_showlabel'] = 1;
-                $params['store_in_db'] = 0;
-                break;
-            default:
-                break;
-        }
-        //
 
         return $params;
     }
@@ -1985,7 +1994,9 @@ class EmundusonboardModelformbuilder extends JModelList {
                 foreach ($element['params']['sub_options']['sub_labels'] as $index => $sub_label) {
                     $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
                 }
-                unset($element['params']['sub_options']);
+                if(isset($element['params']['sub_options'])) {
+                    unset($element['params']['sub_options']);
+                }
             }
 
             if ($element['plugin'] === 'birthday' || $element['plugin'] === 'date') {

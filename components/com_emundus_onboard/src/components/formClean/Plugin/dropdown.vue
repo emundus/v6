@@ -251,7 +251,7 @@ export default {
   margin-bottom: 0.5em;
 }
 #dropdownF{
-  padding: 10px;
+  padding: 10px 0;
 }
 .icon-handle{
   color: #cecece;

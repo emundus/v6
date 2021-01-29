@@ -116,7 +116,7 @@ export default {
 }
 
   #textareaF{
-    padding: 10px;
+    padding: 10px 0;
   }
 
 button{

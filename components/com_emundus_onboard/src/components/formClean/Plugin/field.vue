@@ -27,7 +27,7 @@
       <div class="form-group" v-if="element.params.password == 0">
         <label>{{inputmasktitle}}</label>
         <input type="text" id="format" class="form__input field-general w-input" v-model="element.params.text_input_mask" :placeholder="[[ inputmaskplaceholder ]]"/>
-        <label style="font-size: xx-small">{{tipData}}</label>
+        <label style="font-size: small">{{tipData}}</label>
       </div>
     </div>
   </div>
@@ -95,6 +95,6 @@ export default {
     background: transparent;
   }
 #fieldF{
-  padding: 10px;
+  padding: 10px 0;
 }
 </style>

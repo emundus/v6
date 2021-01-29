@@ -49,27 +49,28 @@
             @modalClosed="optionsModal = false"
     />
     <div class="row">
-      <div class="sidebar-formbuilder">
+      <div class="sidebar-formbuilder" :style="actions_menu ? 'width: 15%' : ''">
         <transition name="move-right">
           <div class="actions-menu menu-block">
+            <button class="g-menu-item g-standard burger-button"><img src="/images/emundus/menus/menu.png" @click="enableActionsMenu" style="width: 30px" alt="Menu"></button>
             <div>
               <div class="action-links">
                   <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="addMenu">
-                    <em class="add-page-icon col-md-offset-1 col-sm-offset-1"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{addMenu}}</label>
+                    <em class="add-page-icon"></em>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{addMenu}}</label>
                   </a>
                   <a class="d-flex action-link" @click="createGroup()" :title="addGroup">
-                    <em class="add-group-icon col-md-offset-1 col-sm-offset-1"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{addGroup}}</label>
+                    <em class="add-group-icon"></em>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{addGroup}}</label>
                   </a>
                   <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="addItem">
-                    <em class="add-element-icon col-md-offset-1 col-sm-offset-1"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
+                    <em class="add-element-icon"></em>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
                   </a>
-                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="testForm" :title="testingForm">
-                    <em class="far fa-play-circle col-md-offset-1 col-sm-offset-1" style="font-size: 22px"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1" v-show="actions_menu">{{testingForm}}</label>
-                  </a>
+<!--                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="testForm" :title="testingForm">
+                    <em class="far fa-play-circle" style="font-size: 22px"></em>
+                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{testingForm}}</label>
+                  </a>-->
                 <transition :name="'slide-right'" type="transition">
                   <div class="plugins-list" v-if="addingElement">
                     <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement" :title="Back">
@@ -108,7 +109,7 @@
         </transition>
       </div>
       <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
-        <div class="heading-block" :class="addingElement ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
+        <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-offset-2 col-md-6' : 'col-md-8'">
           <div class="d-flex" v-show="!updateFormLabel">
             <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="profileLabel">{{profileLabel}}</h2>
             <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
@@ -117,7 +118,7 @@
           </div>
           <div style="width: max-content;margin-left: 20px" v-show="updateFormLabel">
             <div class="input-can-translate">
-              <input v-if="profileLabel" v-model="profileLabel" class="form__input field-general w-input" style="width: 400px;" @keyup.enter="updateLabelForm()" :id="'update_label_form_' + prid"/>
+              <input v-model="profileLabel" class="form__input field-general w-input" style="width: 400px;" @keyup.enter="updateLabelForm()" :id="'update_label_form_' + prid"/>
               <div class="d-flex actions-update-label ml-10px">
                 <a @click="updateLabelForm()" :title="Validate">
                   <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
@@ -127,7 +128,7 @@
           </div>
         </div>
         <div v-if="menuHighlight === 0" class="form-builder">
-          <div class="form-viewer-builder" :class="[addingElement ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7 col-md-6' : 'col-md-8',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-8']">
+          <div class="form-viewer-builder" :class="[addingElement || actions_menu ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7 col-md-6' : 'col-md-8',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-8']">
             <Builder
                     :object="formObjectArray[indexHighlight]"
                     v-if="formObjectArray[indexHighlight]"
@@ -149,7 +150,7 @@
           </div>
         </div>
         <div v-if="menuHighlight === 1" class="form-builder">
-          <div class="form-viewer-builder" :class="[addingElement ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7 col-md-6' : 'col-md-8',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-8']">
+          <div class="form-viewer-builder" :class="[addingElement || actions_menu ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7 col-md-6' : 'col-md-8',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-8']">
             <Builder
                     :object="submittionPages[indexHighlight]"
                     v-if="submittionPages[indexHighlight]"
@@ -170,7 +171,7 @@
             />
           </div>
         </div>
-        <ul class="col-md-3 sticky-form-pages" :class="[addingElement ? 'ml-10px col-sm-offset-5 col-sm-7' : '',optionsModal ? 'col-sm-5' : '']" style="margin-top: 0" v-if="formObjectArray">
+        <ul class="col-md-3 sticky-form-pages" :class="[addingElement || actions_menu? 'ml-10px col-sm-offset-5 col-sm-7' : '',optionsModal ? 'col-sm-5' : '']" style="margin-top: 0" v-if="formObjectArray">
           <div class="d-flex justify-content-between mb-1">
             <h3 class="mb-0" style="padding: 0;">{{ FormPage }}</h3>
             <label class="saving-at">{{ Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
@@ -954,6 +955,22 @@
           document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #16afe1';
           document.getElementsByClassName('no-elements-tip')[0].innerHTML = '';
         }
+      },
+      enableActionsMenu(){
+        const labels = document.getElementsByClassName('action-label');
+        this.actions_menu = !this.actions_menu;
+        this.addingElement = false;
+        if(!this.actions_menu) {
+          labels.forEach((label) => {
+            label.style.display = 'none';
+          });
+        } else {
+          setTimeout(() => {
+            labels.forEach((label) => {
+              label.style.display = 'block';
+            });
+          }, 300);
+        }
       }
       //
     },
@@ -1076,5 +1093,9 @@
       order: 3;
       margin-left: 25px;
     }
+  }
+
+  .action-label{
+    display: none;
   }
 </style>
