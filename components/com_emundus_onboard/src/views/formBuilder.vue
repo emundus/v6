@@ -210,6 +210,7 @@
               </a>
             </li>
           </div>
+          <button class="bouton-sauvergarder-et-continuer mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{Validate}}</button>
         </ul>
       </div>
     </div>
@@ -803,7 +804,7 @@
             method: "get",
             url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
             params: {
-              link: 'index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=1',
+              link: 'index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=4',
             },
             paramsSerializer: params => {
               return qs.stringify(params);
