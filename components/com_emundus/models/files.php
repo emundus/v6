@@ -2423,60 +2423,83 @@ if (JFactory::getUser()->id == 63)
                 $if = array();
                 $endif = '';
 
-                if ($raw == 1) {
-	                $query .= ', '.$select.' AS '.$tableAlias[$elt->tab_name].'___'.$elt->element_name.'_raw';
-                }
-                else {
 
-                    if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
+                if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
+                    if($raw == 1){
+                        $select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
+                    }
+                    else{
                         $element_attribs = json_decode($elt->element_attribs);
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                             $if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
                             $endif .= ')';
                         }
                         $select = implode(',', $if) . ',' . $select . $endif;
+                    }
+                } elseif ($elt->element_plugin == 'databasejoin') {
 
-                    } elseif ($elt->element_plugin == 'databasejoin') {
+                    $element_attribs = json_decode($elt->element_attribs);
 
-                        $element_attribs = json_decode($elt->element_attribs);
+                    if ($element_attribs->database_join_display_type == "checkbox") {
+                        $select_check = $element_attribs->join_val_column;
+                        if (!empty($element_attribs->join_val_column_concat)) {
+                            $select_check = $element_attribs->join_val_column_concat;
+                            $select_check = preg_replace('#{thistable}#', 'jd', $select_check);
+                            $select_check = preg_replace('#{shortlang}#', $this->locales, $select_check);
+                        }
 
-                        if ($element_attribs->database_join_display_type == "checkbox") {
-                            $select_check = $element_attribs->join_val_column;
-                            if (!empty($element_attribs->join_val_column_concat)) {
-                                $select_check = $element_attribs->join_val_column_concat;
-                                $select_check = preg_replace('#{thistable}#', 'jd', $select_check);
-                                $select_check = preg_replace('#{shortlang}#', $this->locales, $select_check);
-                            }
-
-                            $t = $tableAlias[$elt->tab_name] . '_repeat_' . $elt->element_name;
+                        $t = $tableAlias[$elt->tab_name] . '_repeat_' . $elt->element_name;
+                        if($raw == 1){
                             $select = '(
-                            SELECT GROUP_CONCAT(' . $select_check . ' SEPARATOR ", ")
-                            FROM ' . $t . ' AS t
-                            LEFT JOIN ' . $element_attribs->join_db_name . ' AS jd ON jd.' . $element_attribs->join_key_column . ' = t.' . $elt->element_name . '
-                            WHERE ' . $tableAlias[$elt->tab_name] . '.id = t.parent_id
-                          )';
-                        } else {
+                                SELECT GROUP_CONCAT(' . $elt->element_name . ' SEPARATOR ", ")
+                                FROM ' . $t . ' AS t
+                                WHERE ' . $tableAlias[$elt->tab_name] . '.id = t.parent_id
+                                )';
+                        }else{
+                            $select = '(
+                                SELECT GROUP_CONCAT(' . $select_check . ' SEPARATOR ", ")
+                                FROM ' . $t . ' AS t
+                                LEFT JOIN ' . $element_attribs->join_db_name . ' AS jd ON jd.' . $element_attribs->join_key_column . ' = t.' . $elt->element_name . '
+                                WHERE ' . $tableAlias[$elt->tab_name] . '.id = t.parent_id
+                                )';
+                        }
+                    } else {
+                        if($raw == 1){
+                            $select = '(SELECT '. $elt->element_name .'
+                            FROM ' . $tableAlias[$elt->tab_name] . ' as t
+                            WHERE t.fnum LIKE '.$db->quote($fnums['fnum']).')';
+                        }
+                        else {
                             $join_val_column = !empty($element_attribs->join_val_column_concat) ? 'CONCAT(' . str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)) . ')' : 't.' . $element_attribs->join_val_column;
 
                             $select = '(SELECT GROUP_CONCAT(DISTINCT(' . $join_val_column . ') SEPARATOR ", ")
                             FROM ' . $element_attribs->join_db_name . ' as t
                             WHERE t.' . $element_attribs->join_key_column . '=' . $tableAlias[$elt->tab_name] . '.' . $elt->element_name . ')';
                         }
-
-                    } elseif ($elt->element_plugin == 'cascadingdropdown') {
-
-                        $element_attribs = json_decode($elt->element_attribs);
-                        $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
-                        $where = explode('___', $element_attribs->cascadingdropdown_id)[1] . '=' . $elt->tab_name . '.' . $elt->element_name;
-                        $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat) ? 'CONCAT(' . str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)) . ')' : 't.' . explode('___', $element_attribs->cascadingdropdown_label)[1];
-
-                        $select = '(SELECT GROUP_CONCAT(DISTINCT(' . $join_val_column . ') SEPARATOR ", ")
-                            FROM ' . $from . ' as t
-                            WHERE t.' . $where . ')';
                     }
 
-                    $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
+                } elseif ($elt->element_plugin == 'cascadingdropdown') {
+
+                    $element_attribs = json_decode($elt->element_attribs);
+                    $from = explode('___', $element_attribs->cascadingdropdown_label)[0];
+                    $where = explode('___', $element_attribs->cascadingdropdown_id)[1] . '=' . $elt->tab_name . '.' . $elt->element_name;
+                    $join_val_column = !empty($element_attribs->cascadingdropdown_label_concat) ? 'CONCAT(' . str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->join_val_column_concat)) . ')' : 't.' . explode('___', $element_attribs->cascadingdropdown_label)[1];
+
+                    if($raw == 1){
+                        $select = '(SELECT '. $elt->element_name .'
+                        FROM ' . $tableAlias[$elt->tab_name] . ' as t
+                        WHERE t.fnum LIKE '.$db->quote($fnums['fnum']).')';
+
+                    }
+                    else{
+                        $select = '(SELECT GROUP_CONCAT(DISTINCT(' . $join_val_column . ') SEPARATOR ", ")
+                        FROM ' . $from . ' as t
+                        WHERE t.' . $where . ')';
+                    }
                 }
+
+                $query .= ', ' . $select . ' AS ' . $tableAlias[$elt->tab_name] . '___' . $elt->element_name;
+
             }
         }
 
