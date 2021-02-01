@@ -516,7 +516,7 @@ class EmundusHelperFiles
 	 *
 	 * @return array
 	 */
-    public static function getElements($code = array(), $camps = array(), $fabrik_elements = array()) {
+    public static function getElements($code = array(), $camps = array(), $fabrik_elements = array()) : array {
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
@@ -539,8 +539,7 @@ class EmundusHelperFiles
             }
 
             // get profiles for selected programmes or campaigns
-            $plist = $m_profile->getProfileIDByCourse((array)$programme);
-            $plist = count($plist) == 0 ? $m_profile->getProfileIDByCampaign($campaigns) : $plist;
+            $plist = $m_profile->getProfileIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
 
         } else {
             $plist = $m_profile->getProfileIDByCourse($code, $camps);
@@ -564,7 +563,7 @@ class EmundusHelperFiles
                 }
             }
 
-            if (count($fl) == 0) {
+            if (!empty($fl)) {
 	            return array();
             }
 
