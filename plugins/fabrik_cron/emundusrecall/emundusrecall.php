@@ -79,7 +79,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
 					LEFT JOIN #__users as u ON u.id=ecc.applicant_id
 					LEFT JOIN #__emundus_users as eu ON eu.user_id=u.id
 					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DAY(now()) IN ('.$reminder_deadline.')';
+					WHERE ecc.published = 1 AND u.block = 0 AND esc.published = 1 AND ecc.status in ('.$status_for_send.') AND DAY(now()) IN ('.$reminder_deadline.') AND esc.end_date > NOW()';
         }
 
 		if (!empty($reminder_programme_code)) {
