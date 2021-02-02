@@ -1434,6 +1434,15 @@ button.close {
   color: #fff;
 }
 
+.modal-body #data  {
+  #forms.panel{
+    background: transparent;
+  }
+  #methode{
+    padding-top:30px;
+  }
+}
+
 .modal-body .panel-heading .btn-xs.btn.btn-elements-success {
   background-color: $base-primary-color !important;
   color: #fff;
