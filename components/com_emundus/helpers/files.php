@@ -563,7 +563,7 @@ class EmundusHelperFiles
                 }
             }
 
-            if (!empty($fl)) {
+            if (empty($fl)) {
 	            return array();
             }
 
