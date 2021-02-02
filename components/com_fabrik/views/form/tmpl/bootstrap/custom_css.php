@@ -77,6 +77,15 @@ echo <<<EOT
 
 /* FORMULAIRE */
 
+.view-form #g-sidebar{
+  position: sticky;
+  top: 0;
+}
+
+.view-form #g-page-surround{
+  overflow: visible;
+}
+
 .view-form form .row-fluid .control-group.fabrikElementContainer label.fabrikLabel.control-label.fabrikTip  {
     display: inline-block;
 }
