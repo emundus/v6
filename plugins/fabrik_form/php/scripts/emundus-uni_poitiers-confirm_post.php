@@ -52,11 +52,11 @@ try {
 $emails = new EmundusModelEmails;
 
 $post = array(  'FNUM'      => $student->fnum,
-                'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign['end_date'])),
+                'DEADLINE' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
                 'CAMPAIGN_LABEL' => $campaign['label'],
                 'CAMPAIGN_YEAR' => $campaign['year'],
-                'CAMPAIGN_START' => $campaign['start_date'],
-                'CAMPAIGN_END' => $campaign['end_date'],
+                'CAMPAIGN_START' => JHTML::_('date', $campaign['start_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+                'CAMPAIGN_END' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
                 'CAMPAIGN_CODE' => $campaign['training'],
                 'FIRSTNAME' => $student->firstname,
                 'LASTNAME' => strtoupper($student->lastname)
@@ -188,7 +188,7 @@ $mailer->addReplyTo($from, $fromname);
                     $emails->logEmail($message);
                     JLog::add($to.' '.$body, JLog::INFO, 'com_emundus');
                 }
-                
+
             }
         }
     }

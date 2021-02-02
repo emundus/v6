@@ -34,14 +34,14 @@ $campaign = $campaigns->getCampaignByID($student->campaign_id);
 
 $emails = new EmundusModelEmails;
 
-$post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign['end_date'])),
+$post = array(  'DEADLINE' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
 				'APPLICANTS_LIST' => '',
 				'EVAL_CRITERIAS' => '',
 				'EVAL_PERIOD' => '',
 				'CAMPAIGN_LABEL' => $campaign['label'],
 				'CAMPAIGN_YEAR' => $campaign['year'],
-				'CAMPAIGN_START' => $campaign['start_date'],
-				'CAMPAIGN_END' => $campaign['end_date'],
+				'CAMPAIGN_START' => JHTML::_('date', $campaign['start_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+				'CAMPAIGN_END' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
 				'CAMPAIGN_CODE' => $campaign['training']
 			);
 $tags = $emails->setTags($student->id, $post);
@@ -83,14 +83,14 @@ try {
 	// catch any database errors.
 }
 
-// Mail 
+// Mail
 $from = $email->emailfrom;
 $from_id = 62;
 $fromname =$email->name;
 $recipient[] = $student->email;
 $subject = $email->subject;
 //$body = preg_replace($patterns, $replacements, $email->message);
-$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message); 
+$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
 $mode = 1;
 
 //$attachment[] = $path_file;
@@ -148,14 +148,14 @@ if ($alert_new_applicant == 1) {
 
 			$eval_user = & JFactory::getUser($evaluator);
 			$tags = $emails->setTags($eval_user->id, $post);
-			// Mail 
+			// Mail
 			$from = $email->emailfrom;
 			$from_id = 62;
 			$fromname =$email->name;
-			$recipient = $eval_user->email; 
+			$recipient = $eval_user->email;
 			$subject = $email->subject;
 			//$body = preg_replace($patterns, $replacements, $email->message);
-			$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message); 
+			$body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
 			$mode = 1;
 
 			//$attachment[] = $path_file;
