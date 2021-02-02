@@ -2051,7 +2051,7 @@ if (JFactory::getUser()->id == 63)
             }
 
             $db->setQuery($query);
-            return $db->query() ;
+            return $db->execute() ;
         }
         catch(Exception $e)
         {
@@ -3374,7 +3374,7 @@ if (JFactory::getUser()->id == 63)
         try {
 
 	        $db->setQuery($query);
-	        $res = $db->query();
+	        $res = $db->execute();
 	        $dispatcher->trigger('onAfterDeleteFile', $fnum);
             return $res;
         } catch(Exception $e) {
