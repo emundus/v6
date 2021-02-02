@@ -95,6 +95,41 @@ class EmundusModelProfile extends JModelList {
         }
     }
 
+    function affectNoProfile($aid){
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->select('id')
+                ->from($this->_db->quoteName('#__emundus_setup_profiles'))
+                ->where($this->_db->quoteName('label') . ' = ' . $this->_db->quote('noprofile'));
+            $this->_db->setQuery($query);
+            $noprofile = $this->_db->loadResult();
+
+            if(!isset($noprofile)){
+                $query->clear()
+                    ->insert($this->_db->quoteName('#__emundus_setup_profiles'));
+                $query->set($this->_db->quoteName('label') . ' = ' . $this->_db->quote('noprofile'))
+                    ->set($this->_db->quoteName('published') . ' = 1')
+                    ->set($this->_db->quoteName('acl_aro_groups') . ' = 2')
+                    ->set($this->_db->quoteName('status') . ' = 1');
+                $this->_db->setQuery($query);
+                $this->_db->execute();
+                $noprofile = $this->_db->insertid();
+            }
+
+            $query->clear()
+                ->update($this->_db->quoteName('#__emundus_users'))
+                ->set($this->_db->quoteName('profile') . ' = ' . $noprofile)
+                ->where($this->_db->quoteName('user_id') . ' = ' . $aid);
+
+            $this->_db->setQuery($query);
+            return $this->_db->execute();
+        } catch(Exception $e) {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+            JError::raiseError(500, $e->getMessage());
+        }
+    }
+
 	/**
 	 * This is used to replace getProfileByApplicant when using an fnum.
 	 * @param $fnum
@@ -538,6 +573,10 @@ class EmundusModelProfile extends JModelList {
 	        $profile = $this->getProfileByApplicant($current_user->id);
         } else {
 	        $profile = $this->getFullProfileByFnum($fnum);
+        }
+
+        if($profile["profile"] == 0){
+            $this->affectNoProfile($current_user->id);
         }
 
         $emundusSession = new stdClass();
