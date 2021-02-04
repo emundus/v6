@@ -1981,9 +1981,6 @@ label[for="em-file_to_upload"]:hover {
     justify-content: space-between;
     align-items: center;
 }
-.countCheckedCheckbox{
-    margin-left: 30%;
-}
 
 .tooltipSelectAttachments{
     display:none;
