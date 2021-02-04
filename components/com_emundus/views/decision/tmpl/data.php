@@ -22,6 +22,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 			<?= $this->pagination->getResultsCounter(); ?>
 		</div>
         <div id="countCheckedCheckbox" class="countCheckedCheckbox"></div>
+        <?php echo $this->pageNavigation; ?>
     </div>
 		<div class="em-data-container">
 			<table class="table table-striped table-hover" id="em-data">
@@ -142,38 +143,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 				<option value="50" <?php if($this->pagination->limit == 50){echo "selected=true";}?>>50</option>
 				<option value="100" <?php if($this->pagination->limit == 100){echo "selected=true";}?>>100</option>
 			</select>
-			<div class="em-container-pagination-selectPage">
-				<ul class="pagination pagination-sm">
-					<li><a href="#em-data" id="<?= $this->pagination->{'pagesStart'}?>"><<</a></li>
-					<?php if ($this->pagination->{'pagesTotal'} > 15) :?>
-
-						<?php for ($i = 1; $i <= 5; $i++ ) :?>
-							<li <?= ($this->pagination->{'pagesCurrent'} == $i)?'class="active"':''; ?>><a id="<?= $i; ?>" href="#em-data"><?= $i; ?></a></li>
-						<?php endfor;?>
-						<li class="disabled"><span>...</span></li>
-						<?php if ($this->pagination->{'pagesCurrent'} <= 5) :?>
-							<?php for ($i = 6; $i <= 10; $i++ ) :?>
-								<li <?= ($this->pagination->{'pagesCurrent'} == $i)?'class="active"':''; ?>><a id="<?= $i; ?>" href="#em-data"><?= $i; ?></a></li>
-							<?php endfor;?>
-						<?php else: ?>
-							<?php for ($i = ($this->pagination->{'pagesCurrent'} - 2); $i <= ($this->pagination->{'pagesCurrent'} + 2); $i++ ) :?>
-								<?php if ($i <= $this->pagination->{'pagesTotal'}) :?>
-                                    <li <?= ($this->pagination->{'pagesCurrent'} == $i)?'class="active"':''; ?>><a id="<?= $i; ?>" href="#em-data"><?= $i; ?></a></li>
-								<?php endif; ?>
-                            <?php endfor;?>
-						<?php endif;?>
-						<li class="disabled"><span>...</span></li>
-						<?php for ($i = ($this->pagination->{'pagesTotal'} - 4); $i <= $this->pagination->{'pagesTotal'}; $i++ ) :?>
-							<li <?= ($this->pagination->{'pagesCurrent'} == $i)?'class="active"':''; ?>><a id="<?= $i; ?>" href="#em-data"><?= $i; ?></a></li>
-						<?php endfor;?>
-					<?php else: ?>
-						<?php for ($i = 1; $i <= $this->pagination->{'pagesStop'}; $i++) :?>
-							<li <?= ($this->pagination->{'pagesCurrent'} == $i)?'class="active"':''; ?>><a id="<?= $i; ?>" href="#em-data"><?= $i; ?></a></li>
-						<?php endfor;?>
-					<?php endif;?>
-					<li><a href="#em-data" id="<?= $this->pagination->{'pagesTotal'}; ?>">>></a></li>
-				</ul>
-			</div>
+            <?php echo $this->pageNavigation; ?>
 		</div>
 	<?php else:?>
 		<?= $this->datas; ?>
