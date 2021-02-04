@@ -163,18 +163,20 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             </table>
 		</div>
 		<div class="em-container-pagination">
-			<label for="pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
-			<select name="pager-select" class="chzn-select" id="pager-select">
-				<option value="0" <?php echo ($this->pagination->limit == 0)?"selected=true":'';?>><?php echo JText::_('ALL')?></option>
-				<option value="5" <?php echo ($this->pagination->limit == 5)?"selected=true":'';?>>5</option>
-				<option value="10" <?php echo ($this->pagination->limit == 10)?"selected=true":'';?>>10</option>
-				<option value="15" <?php echo ($this->pagination->limit == 15)?"selected=true":'';?>>15</option>
-				<option value="20" <?php echo ($this->pagination->limit == 20)?"selected=true":'';?>>20</option>
-				<option value="25" <?php echo ($this->pagination->limit == 25)?"selected=true":'';?>>25</option>
-				<option value="30" <?php echo ($this->pagination->limit == 30)?"selected=true":'';?>>30</option>
-				<option value="50" <?php echo ($this->pagination->limit == 50)?"selected=true":'';?>>50</option>
-				<option value="100" <?php echo ($this->pagination->limit == 100)?"selected=true":'';?>>100</option>
-			</select>
+            <div class="em-container-pagination-select">
+                <label for="pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
+                <select name="pager-select" class="chzn-select" id="pager-select">
+                    <option value="0" <?php echo ($this->pagination->limit == 0)?"selected=true":'';?>><?php echo JText::_('ALL')?></option>
+                    <option value="5" <?php echo ($this->pagination->limit == 5)?"selected=true":'';?>>5</option>
+                    <option value="10" <?php echo ($this->pagination->limit == 10)?"selected=true":'';?>>10</option>
+                    <option value="15" <?php echo ($this->pagination->limit == 15)?"selected=true":'';?>>15</option>
+                    <option value="20" <?php echo ($this->pagination->limit == 20)?"selected=true":'';?>>20</option>
+                    <option value="25" <?php echo ($this->pagination->limit == 25)?"selected=true":'';?>>25</option>
+                    <option value="30" <?php echo ($this->pagination->limit == 30)?"selected=true":'';?>>30</option>
+                    <option value="50" <?php echo ($this->pagination->limit == 50)?"selected=true":'';?>>50</option>
+                    <option value="100" <?php echo ($this->pagination->limit == 100)?"selected=true":'';?>>100</option>
+                </select>
+            </div>
             <?php echo $this->pageNavigation; ?>
 		</div>
 	<?php else :?>
