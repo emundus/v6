@@ -88,8 +88,9 @@
                             chosen-class="plugin-chosen"
                             ghost-class="plugin-ghost"
                             style="padding-bottom: 2em;margin-top: 10%">
-                        <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
-                          <em :class="plugin.icon"></em>
+<!--                        <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :id="plugin.type ? 'plugin_' + plugin.value + '_' + plugin.: 'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">-->
+                      <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value + '_' + plugin.type" dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name" :property="plugin.type">
+                      <em :class="plugin.icon"></em>
                           <span class="ml-10px">{{plugin.name}}</span>
                         </div>
                     </draggable>
@@ -250,7 +251,8 @@
       index: Number,
       cid: Number,
       actualLanguage: String,
-      manyLanguages: Number
+      manyLanguages: Number,
+      // type: String,
     },
     components: {
       Tasks,
@@ -314,12 +316,45 @@
         elementDisabled: false,
         addingElement: false,
         plugins: {
-          field: {
-            id: 0,
+          // field: {
+          //   id: 0,
+          //   value: 'field',
+          //   icon: 'fas fa-font',
+          //   name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
+          // },
+
+          textfield:{
+            id: 7,
             value: 'field',
+            type: 'text',
             icon: 'fas fa-font',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTFIELD")
           },
+
+          emailfield:{
+            id: 8,
+            value: 'field',
+            type: 'email',
+            icon: 'fas fa-envelope-open-text',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_EMAILFIELD")
+          },
+
+          numberfield:{
+            id: '9',
+            value: 'field',
+            type: 'number',
+            icon: 'fas fa-sort-numeric-up-alt',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_NUMBERFIELD")
+          },
+
+          telephonefield:{
+            id: '10',
+            value: 'field',
+            type: 'telephone',
+            icon: 'fas fa-phone-alt',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TELEPHONEFIELD")
+          },
+
           textarea: {
             id: 5,
             value: 'textarea',
@@ -378,7 +413,7 @@
     },
 
     methods: {
-      createElement(gid,plugin,order) {
+      createElement(gid,plugin,order,type) {
         let list = this.formObjectArray;
         if(this.menuHighlight === 1){
           list = this.submittionPages;
@@ -394,7 +429,8 @@
             },
             data: qs.stringify({
               gid: gid,
-              plugin: plugin
+              plugin: plugin,
+              type: type,
             })
           }).then((result) => {
             axios({
@@ -402,7 +438,8 @@
               url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
               params: {
                 element: result.data.scalar,
-                gid: gid
+                gid: gid,
+                type: type,
               },
               paramsSerializer: params => {
                 return qs.stringify(params);
@@ -437,16 +474,23 @@
           document.getElementsByClassName('no-elements-tip')[0].innerHTML = Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS");
         }
         let plugin = evt.clone.id.split('_')[1];
+        let type = evt.clone.id.split('_')[2];
+        console.log(type);
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
+
+
         if(typeof gid != 'undefined'){
-          this.createElement(gid, plugin, evt.newIndex);
+          this.createElement(gid, plugin, evt.newIndex, type);
         }
       },
       addingNewElementByDblClick: _.debounce(function(plugin) {
         let gid = Object.keys(this.formObjectArray[this.indexHighlight].object.Groups)[Object.keys(this.formObjectArray[this.indexHighlight].object.Groups).length-1].split('_')[1];
         let index = this.formObjectArray[this.indexHighlight].object.Groups['group_' + gid].elts.length;
+        let type = Object.keys(this.formObjectArray[this.indexHighlight].object.Groups)[Object.keys(this.formObjectArray[this.indexHighlight].object.Groups).length-1].split('_')[2];
+        console.log(type);
+
         if(typeof gid != 'undefined'){
-          this.createElement(gid,plugin,index)
+          this.createElement(gid,plugin,index,type)
         }
       }, 250, { 'maxWait': 1000 }),
       createGroup() {
@@ -613,7 +657,7 @@
           url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
           params: {
             element: element,
-            gid: gid
+            gid: gid,
           },
           paramsSerializer: params => {
             return qs.stringify(params);

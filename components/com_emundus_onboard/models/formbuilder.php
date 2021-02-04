@@ -1588,7 +1588,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param int $evaluation
      * @return mixed
      */
-    function createSimpleElement($gid,$plugin,$evaluation = 0) {
+    function createSimpleElement($gid,$plugin,$evaluation = 0,$type=null) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -1611,7 +1611,31 @@ class EmundusonboardModelformbuilder extends JModelList {
 
         // Prepare parameters
         $params = $this->prepareElementParameters($plugin);
-        //
+
+    if ($plugin === 'field') {
+        if (isset($type)) {
+            if ($type == 'email') {
+                $params['isemail-message'] = array("");
+                $params['isemail-validation_condition'] = array("");
+                $params['isemail-allow_empty'] = array("1");
+                $params['isemail-check_mx'] = array("0");
+                $params['validations']['plugin'][] = "isemail";
+                $params['validations']['plugin_published'][] = "1";
+                $params['validations']['validate_in'][] = "both";
+                $params['validations']['validation_on'][] = "both";
+                $params['validations']['validate_hidden'][] = "0";
+                $params['validations']['must_validate'][] = "0";
+                $params['validations']['show_icon'][] = "0";
+                $params['password'] = "3";
+            }
+            elseif ($type == 'number') {
+                $params['password'] = "6";
+            }
+            elseif ($type == 'telephone') {
+                $params['password'] = "2";
+            }
+        }
+    }
 
         $query->clear()
             ->select('*')
@@ -2312,7 +2336,7 @@ class EmundusonboardModelformbuilder extends JModelList {
      * @param $gid
      * @return mixed
      */
-    function getElement($element,$gid) {
+    function getElement($element,$gid,$type=null) {
         JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
         $group = JModelLegacy::getInstance('Group', 'FabrikFEModel');
         $group->setId(intval($gid));
