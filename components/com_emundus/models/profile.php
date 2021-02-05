@@ -111,7 +111,7 @@ class EmundusModelProfile extends JModelList {
                 $query->set($this->_db->quoteName('label') . ' = ' . $this->_db->quote('noprofile'))
                     ->set($this->_db->quoteName('published') . ' = 1')
                     ->set($this->_db->quoteName('acl_aro_groups') . ' = 2')
-                    ->set($this->_db->quoteName('status') . ' = 1');
+                    ->set($this->_db->quoteName('status') . ' = 0');
                 $this->_db->setQuery($query);
                 $this->_db->execute();
                 $noprofile = $this->_db->insertid();
