@@ -343,7 +343,7 @@ class EmundusModelGroups extends JModelList
 
 			$db->setQuery($query);
 			try {
-				$db->Query();
+				$db->execute();
 			} catch (Exception $e) {
 				// catch any database errors.
 			}

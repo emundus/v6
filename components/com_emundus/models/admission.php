@@ -1832,7 +1832,7 @@ class EmundusModelAdmission extends JModelList
             $query .= ')';
 
             $db->setQuery($query);
-            $db->Query() or die($db->getErrorMsg());
+            $db->execute() or die($db->getErrorMsg());
 
         } catch (Exception $e) {
             echo $e->getMessage();
@@ -1857,7 +1857,7 @@ class EmundusModelAdmission extends JModelList
 
             $query = 'UPDATE '.$element_details[0]->tab_name.' SET '.$element_details[0]->element_name.' = '.$db->Quote($value).' WHERE fnum like'.$db->Quote($fnum);
             $db->setQuery($query);
-            $db->Query() or die($db->getErrorMsg());
+            $db->execute() or die($db->getErrorMsg());
 
         } catch (Exception $e) {
             echo $e->getMessage();
