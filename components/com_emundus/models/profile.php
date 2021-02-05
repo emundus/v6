@@ -575,7 +575,7 @@ class EmundusModelProfile extends JModelList {
 	        $profile = $this->getFullProfileByFnum($fnum);
         }
 
-        if($profile["profile"] == 0){
+        if (empty($profile["profile"])) {
             $this->affectNoProfile($current_user->id);
         }
 
