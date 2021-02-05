@@ -354,12 +354,6 @@ class EmundusModelProfile extends JModelList {
         $res = array();
 
         try {
-                /*$query = 'SELECT esp.id as profile_id, esp.label, esp.menutype
-                FROM  #__emundus_campaign_workflow AS ecw
-                LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = ecw.profile
-                WHERE ecw.campaign='.$campaign_id.'
-                AND ecw.status='.$step;*/
-
             $query->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published')
                 ->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
                 ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
@@ -367,8 +361,8 @@ class EmundusModelProfile extends JModelList {
                 ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ecw.profile'))
                 ->where($this->_db->quoteName('cc.fnum').' LIKE '.$this->_db->quote($fnum));
 
-                $this->_db->setQuery( $query );
-                $res = $this->_db->loadAssoc();
+            $this->_db->setQuery($query);
+            $res = $this->_db->loadAssoc();
 
             if(empty($res['profile'])){
                 $query->clear()
