@@ -934,7 +934,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     try {
         $fnumInfo = $m_files->getFnumInfos($fnum);
-        $payment = $m_application->getHikashopOrder($fnumInfo,true);
+        $payment = $m_application->getHikashopOrder($fnumInfo);
 
         $query = $db->getQuery(true);
 

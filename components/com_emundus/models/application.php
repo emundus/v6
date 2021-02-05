@@ -3002,165 +3002,81 @@ class EmundusModelApplication extends JModelList {
      * Return the order for current fnum. If an order with confirmed status is found for fnum campaign period, then return the order
      * If $sent is sent to true, the function will search for orders with a status of 'created' and offline paiement methode
      * @param $fnumInfos $sent
-     * @param bool $sent
-     * @param bool $admission
-     * @return bool|mixed
+     * @param bool $cancelled
+     * @return bool|object
      */
-    public function getHikashopOrder($fnumInfos, $sent = false, $admission = false) {
+    public function getHikashopOrder($fnumInfos, $cancelled = false) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        if ($admission) {
-            $startDate = $fnumInfos['admission_start_date'];
-            $endDate = $fnumInfos['admission_end_date'];
-        } else {
-            $startDate = $fnumInfos['start_date'];
-            $endDate = $fnumInfos['end_date'];
-        }
-
-        $dbo = $this->getDbo();
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
 
         $em_application_payment = $eMConfig->get('application_payment', 'user');
-        $em_application_payment_status = $eMConfig->get('application_payment_status', '0');
+
+        if ($cancelled) {
+            $order_status = array('cancelled');
+        } else {
+            $order_status = array('confirmed');
+            switch ($eMConfig->get('accept_other_payments', 0)) {
+                case 1:
+                    array_push($order_status, 'created');
+                    break;
+                case 3:
+                    array_push($order_status, 'pending');
+                    break;
+                case 4:
+                    array_push($order_status, 'created', 'pending');
+                    break;
+                default:
+                    // No need to push to the array
+                break;
+
+            }
+        }
+
+        $query
+            ->select(['ho.*', $db->quoteName('eh.user', 'user_cms_id')])
+            ->from($db->quoteName('#__emundus_hikashop', 'eh'))
+            ->leftJoin($db->quoteName('#__hikashop_order','ho').' ON '.$db->quoteName('ho.order_id').' = '.$db->quoteName('eh.order_id'))
+            ->where($db->quoteName('ho.order_status') . ' IN (' . implode(", ", $db->quote($order_status)) . ')')
+            ->order($db->quoteName('order_created') . ' DESC');
 
         switch ($em_application_payment) {
 
+            default :
+            case 'fnum' :
+                $query
+                    ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
+                break;
 
             case 'user' :
-                if ($sent) {
-
-                    $query = 'SELECT ho.*, hu.user_cms_id
-                                FROM #__hikashop_order ho
-                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-
-                }
-                else {
-
-                    $query = 'SELECT ho.*, hu.user_cms_id
-                                FROM #__hikashop_order ho
-                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                                AND ho.order_status like "confirmed"
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-
-                }
-            break;
-
-            case 'fnum' :
-                if ($sent) {
-                    $query = 'SELECT ho.*, eh.user as user_cms_id
-                                FROM #__emundus_hikashop eh
-                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-                }
-                else {
-                    $query = 'SELECT ho.*, eh.user as user_cms_id
-                                FROM #__emundus_hikashop eh
-                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                AND ho.order_status like "confirmed"
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-                }
+                $query
+                    ->where($db->quoteName('eh.user') . ' = ' . $fnumInfos['applicant_id']);
             break;
 
             case 'campaign' :
-                if ($sent) {
-                    $query = 'SELECT ho.*, hu.user_cms_id
-                                FROM #__emundus_hikashop eh
-                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                                WHERE eh.campaign_id = '.$fnumInfos['id'].' 
-                                AND hu.user_cms_id = '.$fnumInfos['applicant_id'].' 
-                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-                }
-                else {
-                    $query = 'SELECT ho.*, hu.user_cms_id
-                                FROM #__emundus_hikashop eh
-                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                                WHERE eh.campaign_id= '.$fnumInfos['id'].' 
-                                AND hu.user_cms_id = '.$fnumInfos['applicant_id'].' 
-                                AND ho.order_status like "confirmed"
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-                }
-                break;
+                $query
+                    ->where($db->quoteName('eh.campaign_id') . ' = ' . $fnumInfos['id'])
+                    ->where($db->quoteName('eh.user') . ' = ' . $fnumInfos['applicant_id']);
+            break;
 
-                case 'status' :
-                    $payment_status = explode(',', $em_application_payment_status);
+            case 'status' :
+                $em_application_payment_status = $eMConfig->get('application_payment_status', '0');
+                $payment_status = explode(',', $em_application_payment_status);
 
-                    if(in_array($fnumInfos['status'], $payment_status)) {
-
-                        if ($sent) {
-                            $query = 'SELECT ho.*, eh.user as user_cms_id
-                                        FROM #__emundus_hikashop eh
-                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                        WHERE eh.status='.$fnumInfos['status'].' 
-                                        AND eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                        AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                        AND ho.order_created >= '.strtotime($startDate).'
-                                        AND ho.order_created <= '.strtotime($endDate).'
-                                        ORDER BY ho.order_created desc';
-                        }
-                        else {
-                            $query = 'SELECT ho.*, eh.user as user_cms_id
-                                        FROM #__emundus_hikashop eh
-                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                        WHERE eh.status='.$fnumInfos['status'].' 
-                                        AND eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                        AND ho.order_status like "confirmed"
-                                        AND ho.order_created >= '.strtotime($startDate).'
-                                        AND ho.order_created <= '.strtotime($endDate).'
-                                        ORDER BY ho.order_created desc';
-                        }
+                    if (in_array($fnumInfos['status'], $payment_status)) {
+                        $query
+                            ->where($db->quoteName('eh.status') . ' = ' . $fnumInfos['status'])
+                            ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
                     } else{
-
-                        if ($sent) {
-                            $query = 'SELECT ho.*, eh.user as user_cms_id
-                                        FROM #__emundus_hikashop eh
-                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                        WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                        AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                        AND ho.order_created >= '.strtotime($startDate).'
-                                        AND ho.order_created <= '.strtotime($endDate).'
-                                        ORDER BY ho.order_created desc';
-                        }
-                        else {
-                            $query = 'SELECT ho.*, eh.user as user_cms_id
-                                        FROM #__emundus_hikashop eh
-                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                        WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                        AND ho.order_status like "confirmed"
-                                        AND ho.order_created >= '.strtotime($startDate).'
-                                        AND ho.order_created <= '.strtotime($endDate).'
-                                        ORDER BY ho.order_created desc';
-                        }
+                        $query
+                            ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
                     }
-                    break;
+            break;
         }
-
-
         try {
-
-            $dbo->setQuery($query);
-            return $dbo->loadObject();
-
+            $db->setQuery($query);
+            return $db->loadObject();
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -3169,48 +3085,9 @@ class EmundusModelApplication extends JModelList {
     }
 
     /**
-     * Return any cancelled orders for the current fnum. If an order with cancelled status is found for fnum campaign period, then return the order
-     * @param $fnumInfos
-     * @return bool|mixed
-     */
-    public function getHikashopCancelledOrders($fnumInfos, $admission = false) {
-
-        if($admission) {
-            $startDate = $fnumInfos['admission_start_date'];
-            $endDate = $fnumInfos['admission_end_date'];
-        }
-        else {
-            $startDate = $fnumInfos['start_date'];
-            $endDate = $fnumInfos['end_date'];
-        }
-
-        $db = $this->getDBo();
-
-        try {
-
-            $query = 'SELECT ho.*, hu.user_cms_id
-                FROM #__hikashop_order ho
-                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                AND ho.order_status like "canceled"
-                AND ho.order_created >= '.strtotime($startDate).'
-                AND ho.order_created <= '.strtotime($endDate);
-
-            $db->setQuery($query);
-            return $db->loadObject();
-
-        } catch (Exception $e) {
-            JLog::add('Error in model/application at query : '.$query, JLog::ERROR, 'com_emundus');
-            return false;
-        }
-
-    }
-
-
-    /**
      * Return the checkout URL order for current fnum.
-     * @param $pid      the applicant's profile_id
-     * @return bool|mixed
+     * @param $pid   string|int   the applicant's profile_id
+     * @return bool|string
      */
     public function getHikashopCheckoutUrl($pid)
     {
