@@ -4,7 +4,6 @@ require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.
 require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
 require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
-// require_once('thecodingmachine'.DS.'gotenberg-php-client');
 ini_set("xdebug.var_display_max_children", -1);
 ini_set("xdebug.var_display_max_data", -1);
 ini_set("xdebug.var_display_max_depth", -1);
@@ -115,7 +114,7 @@ class modEmundusQueryBuilderHelper {
 
 		try {
 			for ($i = $order1 ; $i < count($tabId)+$order1 ; $i++) {
-				$query = "UPDATE `jos_modules` SET `ordering` = ".$db->quote($i)." WHERE `jos_modules`.`module` = 'mod_emundus_stat' AND `jos_modules`.`id` = ".substr($tabId[$i-$order1], 3);
+				$query = "UPDATE `jos_modules` SET `ordering` = ".$i." WHERE `jos_modules`.`module` = 'mod_emundus_stat' AND `jos_modules`.`id` = ".substr($tabId[$i-$order1], 3);
 				$db->setQuery($query);
 				$db->execute();
 			}
