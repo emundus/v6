@@ -503,7 +503,7 @@ class EmundusModelProfile extends JModelList {
     public function getApplicantFnums(int $aid, $submitted = null, $start_date = null, $end_date = null) {
         $db = JFactory::getDBO();
 
-        $query = 'SELECT ecc.*, esc.label, esc.start_date, esc.end_date, esc.training, esc.year, esc.profile_id
+        $query = 'SELECT ecc.*, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id
                     FROM #__emundus_campaign_candidature as ecc
                     LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
                     WHERE ecc.published=1 AND ecc.applicant_id='.$aid;
@@ -570,9 +570,9 @@ class EmundusModelProfile extends JModelList {
 		        $campaign = $this->getCampaignInfoByFnum($fnum);
 	        }
 
-            if (!empty($campaign)) {
+            /*if (!empty($campaign)) {
                 $profile = $this->getProfileByCampaign($campaign["id"]);
-            }
+            }*/
 
             // If the user is admitted then we fill the session with information about the admitted file
             // regardeless of the current campaign
@@ -586,16 +586,16 @@ class EmundusModelProfile extends JModelList {
             $emundusSession->menutype = $profile["menutype"];
             $emundusSession->university_id = null;
             $emundusSession->applicant = 1;
-            $emundusSession->start_date = $profile["start_date"];
-            $emundusSession->end_date = $profile["end_date"];
-            $emundusSession->candidature_start = $profile["start_date"];
-            $emundusSession->candidature_end = $profile["end_date"];
-            $emundusSession->admission_start = $profile["admission_start_date"];
-            $emundusSession->admission_end = $profile["admission_end_date"];
+            $emundusSession->start_date = $campaign["start_date"];
+            $emundusSession->end_date = $campaign["end_date"];
+            $emundusSession->candidature_start = $campaign["start_date"];
+            $emundusSession->candidature_end = $campaign["end_date"];
+            $emundusSession->admission_start_date = $campaign["admission_start_date"];
+            $emundusSession->admission_end_date = $campaign["admission_end_date"];
             $emundusSession->candidature_posted = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] == 0  || @$profile["date_submitted"] == NULL)?0:1;
-            $emundusSession->schoolyear = $profile["year"];
-            $emundusSession->code = $profile["training"];
-            $emundusSession->campaign_name = $profile["label"];
+            $emundusSession->schoolyear = $campaign["year"];
+            $emundusSession->code = $campaign["training"];
+            $emundusSession->campaign_name = $campaign["label"];
 
         } else {
             $emundusSession->profile                = $profile["profile"];
