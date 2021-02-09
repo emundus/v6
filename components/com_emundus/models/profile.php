@@ -104,13 +104,6 @@ class EmundusModelProfile extends JModelList {
 	function getFullProfileByFnum($fnum) : array {
 
 		$query = $this->_db->getQuery(true);
-		// This is the part in common between the two queries.
-		/*$query->select('eu.firstname, eu.lastname, esp.id AS profile, eu.university_id, esp.label, esp.menutype, esp.published')
-			->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
-			->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
-			->leftJoin($this->_db->quoteName('jos_emundus_setup_status', 'ss').' ON '.$this->_db->quoteName('ss.step').' = '.$this->_db->quoteName('cc.status'))
-			->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ss.profile'))
-			->where($this->_db->quoteName('cc.fnum').' LIKE '.$this->_db->quote($fnum));*/
 
 		try {
             $res = $this->getProfileByStatus($fnum);
@@ -347,7 +340,7 @@ class EmundusModelProfile extends JModelList {
      * @param   int $step application file status
      * @return  array
      **/
-    function getProfileByStatus($fnum) : array {
+    function getProfileByStatus($fnum) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -359,7 +352,7 @@ class EmundusModelProfile extends JModelList {
                 ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
                 ->leftJoin($this->_db->quoteName('jos_emundus_campaign_workflow', 'ecw').' ON '.$this->_db->quoteName('ecw.campaign').' = '.$this->_db->quoteName('cc.campaign_id').' AND '.$this->_db->quoteName('ecw.status').' = '.$this->_db->quoteName('cc.status'))
                 ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ecw.profile'))
-                ->where($this->_db->quoteName('cc.fnum').' LIKE '.$this->_db->quote($fnum));
+                ->where($this->_db->quoteName('cc.fnum').' LIKE '.$fnum);
 
             $this->_db->setQuery($query);
             $res = $this->_db->loadAssoc();
@@ -371,7 +364,7 @@ class EmundusModelProfile extends JModelList {
                     ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
                     ->leftJoin($this->_db->quoteName('jos_emundus_setup_status', 'ss').' ON '.$this->_db->quoteName('ss.step').' = '.$this->_db->quoteName('cc.status'))
                     ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ss.profile'))
-                    ->where($this->_db->quoteName('cc.fnum').' LIKE '.$this->_db->quote($fnum));
+                    ->where($this->_db->quoteName('cc.fnum').' LIKE '.$fnum);
 
                 $this->_db->setQuery( $query );
                 $res = $this->_db->loadAssoc();

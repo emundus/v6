@@ -426,22 +426,9 @@ class EmundusModelApplication extends JModelList {
         }
 
         $session = JFactory::getSession();
-        $current_user = $session->get('emundusUser');
-
 
         if (!is_array($fnum)) {
-
-            $query = 'SELECT ess.profile AS profile_id, ecc.campaign_id AS campaign_id, ess.step as step
-                    FROM #__emundus_setup_status AS ess
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
-                    WHERE ecc.fnum like '.$this->_db->Quote($fnum);
-            $this->_db->setQuery($query);
-            $procamp = $this->_db->loadObject();
-
-            $step = $procamp->step;
-            $campaign_id = $procamp->campaign_id;
-
-            $profile_by_status = $m_profile->getProfileByStatus($step,$campaign_id);
+            $profile_by_status = $m_profile->getProfileByStatus($fnum);
 
             if (empty($profile_by_status)) {
                 $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
@@ -482,24 +469,13 @@ class EmundusModelApplication extends JModelList {
 
             $result = array();
             foreach ($fnum as $f) {
+                $profile_by_status = $m_profile->getProfileByStatus($f);
 
-                $query = 'SELECT ecc.campaign_id AS campaign_id, ess.step as step
-                    FROM #__emundus_setup_status AS ess
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
-                    WHERE ecc.fnum like '.$this->_db->Quote($fnum);
-                $this->_db->setQuery($query);
-                $procamp = $this->_db->loadObject();
-
-                $step = $procamp->step;
-                $campaign_id = $procamp->campaign_id;
-
-                $profile_by_status = $m_profile->getProfileByStatus($step,$campaign_id);
-
-                if(empty($profile_by_status)){
+                if(empty($profile_by_status["profile"])){
                     $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
                 FROM #__emundus_setup_campaigns AS esc
                 LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
-                WHERE ecc.fnum like '.$this->_db->Quote($fnum);
+                WHERE ecc.fnum like '.$this->_db->Quote($f);
                     $this->_db->setQuery($query);
 
                     $profile_by_status = $this->_db->loadAssoc();
@@ -557,19 +533,9 @@ class EmundusModelApplication extends JModelList {
         }
 
         if (!is_array($fnum)) {
-            $query = 'SELECT ecc.campaign_id AS campaign_id, ess.step as step
-                    FROM #__emundus_setup_status AS ess
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
-                    WHERE ecc.fnum like '.$this->_db->Quote($fnum);
-            $this->_db->setQuery($query);
-            $procamp = $this->_db->loadObject();
+            $profile_by_status = $m_profile->getProfileByStatus($fnum);
 
-            $step = $procamp->step;
-            $campaign_id = $procamp->campaign_id;
-
-            $profile_by_status = $m_profile->getProfileByStatus($step,$campaign_id);
-
-            if(empty($profile_by_status)){
+            if(empty($profile_by_status["profile"])){
                 $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
                 FROM #__emundus_setup_campaigns AS esc
                 LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
@@ -611,26 +577,15 @@ class EmundusModelApplication extends JModelList {
             return floor($doc_result);
 
         } else {
-
             $result = array();
             foreach ($fnum as $f) {
-                $query = 'SELECT ecc.campaign_id AS campaign_id, ess.step as step
-                    FROM #__emundus_setup_status AS ess
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.status = ess.step
-                    WHERE ecc.fnum like '.$this->_db->Quote($fnum);
-                $this->_db->setQuery($query);
-                $procamp = $this->_db->loadObject();
+                $profile_by_status = $m_profile->getProfileByStatus($f);
 
-                $step = $procamp->step;
-                $campaign_id = $procamp->campaign_id;
-
-                $profile_by_status = $m_profile->getProfileByStatus($step,$campaign_id);
-
-                if(empty($profile_by_status)){
+                if(empty($profile_by_status["profile"])){
                     $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
                 FROM #__emundus_setup_campaigns AS esc
                 LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
-                WHERE ecc.fnum like '.$this->_db->Quote($fnum);
+                WHERE ecc.fnum like '.$this->_db->Quote($f);
                     $this->_db->setQuery($query);
 
                     $profile_by_status = $this->_db->loadAssoc();
