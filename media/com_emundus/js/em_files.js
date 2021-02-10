@@ -755,7 +755,7 @@ function generate_pdf(json) {
     var formids     = json.formids;
     var attachids   = json.attachids;
     var options     = json.options;
-    //console.log(attachids);
+
     $.ajaxQ.abortAll();
 
     if (start+limit < maxfiles) {
@@ -779,6 +779,7 @@ function generate_pdf(json) {
                 options:options
             },
             success: function(result) {
+
                 var json = result.json;
 
                 if (result.status) {
