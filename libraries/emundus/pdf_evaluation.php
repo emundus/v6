@@ -1,15 +1,74 @@
 <?php
 
+function getLogo($campaign_id) {
+    $db = JFactory::getDBO();
+    $app = JFactory::getApplication();
+
+    try {
+
+        // Users informations
+        $query = 'SELECT training
+					FROM #__emundus_setup_campaigns AS esc ON esc.id = '.$campaign_id.'
+					WHERE id = '.$campaign_id;
+        $db->setQuery($query);
+        $item = $db->loadObject();
+
+    } catch (Exception $e) {
+        JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+    }
+
+    //get logo
+    $template = $app->getTemplate(true);
+    $params = $template->params;
+
+    if (!empty($params->get('logo')->custom->image)) {
+
+        $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+        $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
+
+    } else {
+
+        if(file_exists(JPATH_ROOT.DS.'images'.DS.'custom'.DS.@$item->training.'.png')) {
+            $logo = JPATH_ROOT.DS.'images'.DS.'custom'.DS.$item->training.'.png';
+        } else {
+
+            $logo_module = JModuleHelper::getModuleById('90');
+            preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+
+            $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+            (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+            (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+            (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+            if ((bool) preg_match($pattern, $tab[1])) {
+                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+            }
+
+            $logo = JPATH_BASE.DS.$tab[1];
+
+        }
+    }
+
+    // manage logo by programme
+    $ext = substr($logo, -3);
+    $logo_prg = substr($logo, 0, -4).'-'.@$item->training.'.'.$ext;
+    if (is_file($logo_prg)) {
+	    $logo = $logo_prg;
+    }
+
+    return $logo;
+}
+
 function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $options = null) {
     jimport( 'joomla.html.parameter' );
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
-    require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+    //require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
+    //require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
     require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
     $m_profile = new EmundusModelProfile;
     $m_files = new EmundusModelFiles;
@@ -54,36 +113,16 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
         throw $e;
     }
    
-
-    //get logo
-    $template = $app->getTemplate(true);
-    $params = $template->params;
-
-    if (!empty($params->get('logo')->custom->image)) {
-        $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-        $logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
-    } else {
-        $logo_module = JModuleHelper::getModuleById('90');
-        preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-
-	    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-	    if ((bool) preg_match($pattern, $tab[1])) {
-		    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
-	    }
-
-        $logo = JPATH_BASE.DS.$tab[1];
-    }
-
     //get title
     $title = $config->get('sitename');
-    if (is_file($logo)) {
-	    $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
-    }
-    unset($logo);
-    unset($title);
+    $pdf->logo = getLogo($campaign_id);
+    $pdf->header = $title;
+
+    if (is_file(@$logo)) {
+        //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $title, $item->label);
+        $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+	}
     
     $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
     $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
