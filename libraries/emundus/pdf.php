@@ -70,7 +70,7 @@ function getLogo($campaign_id) {
 
     } else {
 
-        if(file_exists(JPATH_ROOT.DS.'images'.DS.'custom'.DS.$item->training.'.png')) {
+        if(file_exists(JPATH_ROOT.DS.'images'.DS.'custom'.DS.@$item->training.'.png')) {
             $logo = JPATH_ROOT.DS.'images'.DS.'custom'.DS.$item->training.'.png';
         } else {
 
@@ -93,7 +93,7 @@ function getLogo($campaign_id) {
 
     // manage logo by programme
     $ext = substr($logo, -3);
-    $logo_prg = substr($logo, 0, -4).'-'.$item->training.'.'.$ext;
+    $logo_prg = substr($logo, 0, -4).'-'.@$item->training.'.'.$ext;
     if (is_file($logo_prg)) {
 	    $logo = $logo_prg;
     }
@@ -255,7 +255,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
     // set default font subsetting mode
     $pdf->setFontSubsetting(true);
     // set font
-    $pdf->SetFont('freeserif', '', 8);
+    $pdf->SetFont('freeserif', '', 10);
 
     $letter->body = $m_emails->setTagsFabrik($letter->body, array($fnum));
 
@@ -787,9 +787,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
-    //require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
-    //require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
-
     if (empty($file_lbl)) {
     	$file_lbl = "_application";
     }
@@ -798,8 +795,11 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25'); //déclaration couleur principale
 
     $config = JFactory::getConfig();
-    $offset = $config->get('offset');
-
+    $timezone = new DateTimeZone( $config->get('offset') );
+	$now = JFactory::getDate()->setTimezone($timezone);
+    // format date without timezone conversion (already done before)
+    $date_published = JHTML::_('date', $now, JText::_('DATE_FORMAT_LC2'), null);
+    
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
     $m_files = new EmundusModelFiles;
@@ -854,12 +854,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $pdf->logo = getLogo($campaign_id);
     $pdf->header = $title;
 
-    if (is_file($logo)) {
+    if (is_file(@$logo)) {
         //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $title, $item->label);
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
 	}
-    
+    $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted, JText::_('DATE_FORMAT_LC2'), null):JText::_('NOT_SENT').'-'.$item->date_submitted;
+
 	unset($logo);
 	unset($title);
 
@@ -870,7 +871,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 	$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-    $pdf->setCellPaddings('L');//Set Padding
+    //$pdf->setCellPaddings('L');//Set Padding
     //$pdf->SetLineWidth();
 
 	// set default monospaced font
@@ -891,13 +892,13 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     .idcandidat {color: '.$cTitle.';}
     .statut {color: '.$cTitle.';}
     h2 {color: '.$cTitle.';}
-
 </style>';
 
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+        $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+        
 	    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
 
 	        $htmldata .= '
@@ -915,16 +916,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	        }
         }
 
-        $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted, JText::_('DATE_FORMAT_LC2')):JText::_('NOT_SENT');
-
-        // create a $dt object with the UTC timezone
-        $dt = new DateTime('NOW', new DateTimeZone('UTC'));
-        // change the timezone of the object without changing it's time
-        $dt->setTimezone(new DateTimeZone($offset));
-
         if (!$anonymize_data && in_array("aemail", $options)) {
-            $htmldata .= '<tr class="birthday"><td>'.JText::_('EMAIL').' : '.@$item->email.'</td></tr>';
+            $htmldata .= '<tr class="email"><td>'.JText::_('EMAIL').' : '.@$item->email.'</td></tr>';
         }
+
         if (in_array("aid", $options)) {
             $htmldata .= '<tr><td class="idcandidat">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</td></tr></td>';
         }
@@ -932,25 +927,27 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         $htmldata .=  '<h3>'.JText::_('PDF_HEADER_INFO_DOSSIER').'</h3><tr><td class="name">'.@$item->label.' ('.@$item->cb_schoolyear.')</td></tr>';
 
         if (in_array("afnum", $options)) {
-            $htmldata .= '<tr class="nationality"><td>'.JText::_('FNUM').' : '.$fnum.'</td></tr>';
+            $htmldata .= '<tr class="fnum"><td>'.JText::_('FNUM').' : '.$fnum.'</td></tr>';
         }
 
         if (in_array("aapp-sent", $options)) {
-            $htmldata .= '<tr><td class="statut">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</td></tr>';
+            $htmldata .= '<tr><td class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</td></tr>';
         }
+
         if (in_array("adoc-print", $options)) {
-            $htmldata .= '<tr class="sent"><td>'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('DATE_FORMAT_LC5').'</td></tr>';
+            $htmldata .= '<tr class="printed"><td>'.JText::_('DOCUMENT_PRINTED_ON').' : '.$date_published.'</td></tr>';
         }
+
         if (in_array("status", $options)) {
             $status = $m_files->getStatusByFnums(explode(',', $fnum));
-            $htmldata .= '<tr class="sent"><td>'.JText::_('PDF_STATUS').' : '.$status[$fnum]['value'].'</td></tr>';
+            $htmldata .= '<tr class="status"><td>'.JText::_('PDF_STATUS').' : <span class="label-'.$status[$fnum]['class'].'" >'.$status[$fnum]['value'].'</span></td></tr>';
         }
 
 	    if (in_array("tags", $options)) {
             $tags = $m_files->getTagsByFnum(explode(',', $fnum));
             $htmldata .='<br/><table><tr><td style="display: inline;"> ';
             foreach($tags as $tag){
-                $htmldata .= '<span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
+                $htmldata .= JText::_('TAGS').' : <span class="label '.$tag['class'].'" >'.$tag['label'].'</span>&nbsp;';
             }
             $htmldata .='</td></tr></table>';
         }
@@ -962,7 +959,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 	    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
-        $htmldata .= '    
+            $htmldata .= '    
         <table class="en-tete"> 
             <tr>
             ';
@@ -970,24 +967,21 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     $htmldata .= ' 
                     <td class="candidat"> 
                     <h3>'.JText::_('PDF_HEADER_INFO_CANDIDAT').'</h3>
-                    <table>
-                    <tr><td class="name">'.@$item->firstname.' '.strtoupper(@$item->lastname).'</td></tr>';
+                    <table>';
 
-                        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
                         if (!$anonymize_data) {
                             $htmldata .= '
-                            <tr><td class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</td></tr>
+                            <tr><td class="name">'.@$item->firstname.' '.strtoupper(@$item->lastname).'</td></tr>
+                            <tr><td class="email">'.JText::_('EMAIL').' : '.@$item->email.'</td></tr>
                             <tr><td class="idcandidat">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</td></tr>';
+                            
+                            if (isset($item->maiden_name)) {
+                                $htmldata .= ' <tr><td class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</td></tr>';
+                            }
                         }
-
-
-                    if (isset($item->maiden_name)) {
-                        $htmldata .= ' <tr><td class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</td></tr>';
-                    }
                 }
 
                 $htmldata .= ' </table></td>';
-
 
                  /* td image */
                 $htmldata .= '<td class="avatar">';
@@ -1001,22 +995,15 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $htmldata .= '</td>';
                 $htmldata .= '</tr>';
 
-                $date_submitted = (!empty($item->date_submitted) && $item->date_submitted != '0000-00-00 00:00:00')?JHTML::_('date',$item->date_submitted):JText::_('NOT_SENT');
-
-                // create a $dt object with the UTC timezone
-                $dt = new DateTime('NOW', new DateTimeZone('UTC'));
-                // change the timezone of the object without changing it's time
-                $dt->setTimezone(new DateTimeZone($offset));
-
                 $htmldata .= '
                     <tr>
                     <td class="dossier">          
                     <h3>'.JText::_('PDF_HEADER_INFO_DOSSIER').'</h3>
                         <table>
                             <tr><td class="name">'.@$item->label.' ('.@$item->cb_schoolyear.')</td></tr>
-                            <tr><td class="nationality">'.JText::_('FNUM').' : '.$fnum.'</td></tr>
+                            <tr><td class="fnum">'.JText::_('FNUM').' : '.$fnum.'</td></tr>
                             <tr><td class="statut">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</td></tr>
-                            <tr><td class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</td></tr>   
+                            <tr><td class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$date_published.'</td></tr>   
                         </table>
                     </td>
                     </tr>
@@ -1111,7 +1098,10 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
     $config = JFactory::getConfig();
-    $offset = $config->get('offset');
+    $timezone = new DateTimeZone( $config->get('offset') );
+	$now = JFactory::getDate()->setTimezone($timezone);
+    // format date without timezone conversion (already done before)
+    $date_published = JHTML::_('date', $now, JText::_('DATE_FORMAT_LC2'), null);
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25'); //déclaration couleur principale
@@ -1169,8 +1159,10 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     if (is_file($logo)) {
         //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $title, $item->label);
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
-
     }
+
+    $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date',$item->date_submitted, JText::_('DATE_FORMAT_LC2'), null):JText::_('NOT_SENT').'-'.$item->date_submitted;
+
 
     unset($logo);
     unset($title);
@@ -1184,18 +1176,16 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 	// set default monospaced font
 	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-	// set default font subsetting mode
-	$pdf->setFontSubsetting(true);
-	// set font
-	$pdf->SetFont('freeserif', '', 10);
+    // set default font subsetting mode
+    $pdf->setFontSubsetting(true);
+    // set font
+    $pdf->SetFont('freeserif', '', 10);
 	$pdf->AddPage();
 	$dimensions = $pdf->getPageDimensions();
 
 
     /*** Applicant   ***/
     $css_file = JURI::base().'media/com_emundus/css/emundus_pdf.css';
-
-	/*** Applicant   ***/
     $htmldata .= '
 <style> 
     '.file_get_contents($css_file).'
@@ -1203,61 +1193,57 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     .statut {color: '.$cTitle.';}
     h2 {color: '.$cTitle.';}
 </style>';
-  
 
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
+
 	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
-	    if (!$anonymize_data) {
-	    	if ($allowed_attachments === true || in_array('10', $allowed_attachments)) {
-			        $htmldata .= '<div class="card">
-								<table width="100%"><tr>';
-			        if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-				        $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="left" /></td>';
-			        } elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-				        $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="left" /></td>';
-			        }
-		        }
+        $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+        
+	    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
 
 	        $htmldata .= '
-			<td width="80%">
-	
-			<div class="name">'.@$item->firstname.' '.strtoupper(@$item->lastname).', '.@$item->label.' ('.@$item->cb_schoolyear.')</div>';
+						<table width="100%"><tr>';
+	        if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+	            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" align="right" /></td>';
+	        } elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+	            $htmldata .= '<td width="20%"><img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" align="right" /></td>';
+	        }
+
+	        $htmldata .= '<td><h3>'.JText::_('PDF_HEADER_INFO_CANDIDAT').'</h3><tr><td class="name">'.@$item->firstname.' '.strtoupper(@$item->lastname).'</td></tr>';
 
 	        if (isset($item->maiden_name)) {
-		        $htmldata .= '<div class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</div>';
+		        $htmldata .= '<tr class="maidename"><td>'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</td></tr>';
 	        }
         }
 
-        $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000'))?JHTML::_('date', $item->date_submitted, JText::_('DATE_FORMAT_LC2')):JText::_('NOT_SENT');
-
-        // create a $dt object with the UTC timezone
-        $dt = new DateTime('NOW', new DateTimeZone('UTC'));
-        // change the timezone of the object without changing it's time
-        $dt->setTimezone(new DateTimeZone($offset));
-
         if (!$anonymize_data && in_array("aemail", $options)) {
-            $htmldata .= '<div class="birthday">'.JText::_('EMAIL').' : '.@$item->email.'</div>';
+            $htmldata .= '<tr class="email"><td>'.JText::_('EMAIL').' : '.@$item->email.'</td></tr>';
         }
 
         if (in_array("aid", $options)) {
-            $htmldata .= '<div class="nationality">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</div>';
+            $htmldata .= '<tr><td class="idcandidat">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</td></tr></td>';
         }
+
+        $htmldata .=  '<h3>'.JText::_('PDF_HEADER_INFO_DOSSIER').'</h3><tr><td class="name">'.@$item->label.' ('.@$item->cb_schoolyear.')</td></tr>';
+
         if (in_array("afnum", $options)) {
-            $htmldata .= '<div class="nationality">'.JText::_('FNUM').' : '.$fnum.'</div>';
+            $htmldata .= '<tr class="fnum"><td>'.JText::_('FNUM').' : '.$fnum.'</td></tr>';
         }
 
         if (in_array("aapp-sent", $options)) {
-            $htmldata .= '<div class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</div>';
+            $htmldata .= '<tr><td class="sent">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</td></tr>';
         }
+
         if (in_array("adoc-print", $options)) {
-            $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$dt->format('d/m/Y H:i').'</div>';
+            $htmldata .= '<tr class="printed"><td>'.JText::_('DOCUMENT_PRINTED_ON').' : '.$date_published.'</td></tr>';
         }
+
         if (in_array("status", $options)) {
             $status = $m_files->getStatusByFnums(explode(',', $fnum));
-            $htmldata .= '<div class="sent">'.JText::_('PDF_STATUS').' : '.$status[$fnum]['value'].'</div>';
+            $htmldata .= '<tr class="status"><td>'.JText::_('PDF_STATUS').' : '.$status[$fnum]['value'].'</td></tr>';
         }
-        if (in_array("tags", $options)) {
+
+	    if (in_array("tags", $options)) {
             $tags = $m_files->getTagsByFnum(explode(',', $fnum));
             $htmldata .='<br/><table><tr><td style="display: inline;"> ';
             foreach($tags as $tag){
@@ -1265,11 +1251,66 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
             }
             $htmldata .='</td></tr></table>';
         }
-        $htmldata .= '</td></tr></table></div>';
-    } elseif($options[0] == "0") {
+        $htmldata .= '</td></tr></table><br/>';
+    } elseif ($options[0] == "0") {
         $htmldata .= '';
-    }
+    } else {
 
+	    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+	    if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
+            $htmldata .= '    
+        <table class="en-tete"> 
+            <tr>
+            ';
+                     /* td candidat */
+                    $htmldata .= ' 
+                    <td class="candidat"> 
+                    <h3>'.JText::_('PDF_HEADER_INFO_CANDIDAT').'</h3>
+                    <table>';
+
+                        if (!$anonymize_data) {
+                            $htmldata .= '
+                            <tr><td class="name">'.@$item->firstname.' '.strtoupper(@$item->lastname).'</td></tr>
+                            <tr><td class="email">'.JText::_('EMAIL').' : '.@$item->email.'</td></tr>
+                            <tr><td class="idcandidat">'.JText::_('ID_CANDIDAT').' : '.@$item->user_id.'</td></tr>';
+                            
+                            if (isset($item->maiden_name)) {
+                                $htmldata .= ' <tr><td class="maidename">'.JText::_('MAIDEN_NAME').' : '.$item->maiden_name.'</td></tr>';
+                            }
+                        }
+                }
+
+                $htmldata .= ' </table></td>';
+
+                 /* td image */
+                $htmldata .= '<td class="avatar">';
+
+                if (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                    $htmldata .= '<img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/tn_'.@$item->avatar.'" width="100" />';
+                } elseif (file_exists(EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                        $htmldata .= '<img src="'.EMUNDUS_PATH_REL.@$item->user_id.'/'.@$item->avatar.'" width="100" />';
+                }
+
+                $htmldata .= '</td>';
+                $htmldata .= '</tr>';
+
+                $htmldata .= '
+                    <tr>
+                    <td class="dossier">          
+                    <h3>'.JText::_('PDF_HEADER_INFO_DOSSIER').'</h3>
+                        <table>
+                            <tr><td class="name">'.@$item->label.' ('.@$item->cb_schoolyear.')</td></tr>
+                            <tr><td class="fnum">'.JText::_('FNUM').' : '.$fnum.'</td></tr>
+                            <tr><td class="statut">'.JText::_('APPLICATION_SENT_ON').' : '.$date_submitted.'</td></tr>
+                            <tr><td class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$date_published.'</td></tr>   
+                        </table>
+                    </td>
+                    </tr>
+        </table>
+        ';
+
+    }
     /**  END APPLICANT   ****/
 
     // Listes des fichiers chargés
