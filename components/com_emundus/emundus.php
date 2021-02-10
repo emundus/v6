@@ -372,6 +372,12 @@ JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
 
 $app = JFactory::getApplication();
 
+if (!function_exists('set_magic_quotes_runtime')) {
+    function set_magic_quotes_runtime($new_setting) {
+        return true;
+    }
+}
+
 // Require specific controller if requested
 if ($controller = $app->input->get('controller', '', 'WORD')) {
     $path = JPATH_COMPONENT.DS.'controllers'.DS.$controller.'.php';
