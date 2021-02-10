@@ -1908,7 +1908,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums_post = $session->get('fnums_export');
 
         if (count($fnums_post) == 0) {
-	     $fnums_post = array($session->get('application_fnum'));
+	        $fnums_post = array($session->get('application_fnum'));
         }
 
         $jinput     = JFactory::getApplication()->input;
@@ -1980,7 +1980,6 @@ class EmundusControllerFiles extends JControllerLegacy
 	        $files_list = array();
         }
 
-
         for ($i = $start; $i < ($start+$limit) && $i < $totalfile; $i++) {
             $fnum = $validFnums[$i];
             if (is_numeric($fnum) && !empty($fnum)) {
@@ -1995,10 +1994,18 @@ class EmundusControllerFiles extends JControllerLegacy
                         }
                     }
                     if ($forms || !empty($forms_to_export)) {
-	                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options);
+                        // remove display upload file list if documents are added to export file
+                        if ($attachment || !empty($attachids)) {
+                            $options_tmp = $options;
+                            if (($key = array_search('upload', $options_tmp)) !== false) {
+                                unset($options_tmp[$key]);
+                            }
+                        }
+                        
+	                    $files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options_tmp);
                     }
                 }
-
+                
                 if ($attachment || !empty($attachids)) {
                     $tmpArray = array();
                     $m_application = $this->getModel('application');
@@ -2034,12 +2041,12 @@ class EmundusControllerFiles extends JControllerLegacy
 
         }
         $start = $i;
-
+        
         if (count($files_list) > 0) {
 
             // all PDF in one file
             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
-
+            
             $pdf = new ConcatPdf();
 
             $pdf->setFiles($files_list);
@@ -2072,6 +2079,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
             $result = array('status' => false, 'json' => $dataresult);
         }
+//var_dump($result); die();
         echo json_encode((object) $result);
         exit();
     }
@@ -3159,7 +3167,7 @@ class EmundusControllerFiles extends JControllerLegacy
         case 4 :
             //require_once JPATH_LIBRARIES.DS.'phpspreadsheet'.DS.'phpspreadsheet.php';
             //require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
-require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+            require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
             $inputFileName = JPATH_BASE . $tmpl[0]['file'];
             $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
