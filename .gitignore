@@ -49,6 +49,7 @@ administrator/templates/isis/images/logo.png
 
 ### VisualStudioCode ###
 .vscode/*
+.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -66,4 +67,4 @@ components/com_emundus_onboard/src/components/formClean/Plugin/cascadingdropdown
 
 components/com_emundus_onboard/src/components/formClean/Plugin/media.vue
 
-.vscode/
+
