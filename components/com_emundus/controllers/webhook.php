@@ -33,11 +33,139 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		$this->m_files = new EmundusModelFiles;
 		$this->controller = new EmundusController;
 
+		// Attach logging system.
+		jimport('joomla.log.log');
+		JLog::addLogger(['text_file' => 'com_emundus.webhook.php'], JLog::ALL, array('com_emundus.webhook'));
+
 		parent::__construct($config);
         // Attach logging system.
         jimport('joomla.log.log');
         JLog::addLogger(['text_file' => 'com_emundus.webhook.php'], JLog::ALL, array('com_emundus.webhook'));
 	}
+
+
+	/**
+	 * Downloads the file associated to the YouSign procedure that was pushed.
+	 */
+	public function yousign() {
+
+		// For some absolutely MAGICAL reason, webhook data does not appear in $_POST or $jinput->post
+		// It does appear however with file_get_contents('php://input'), so we're using that.
+		$post = json_decode(file_get_contents('php://input'));
+		if ($post === null) {
+			JLog::add('YouSign bad JSON : '.file_get_contents('php://input'), JLog::ERROR, 'com_emundus.webhook');
+			return;
+		}
+
+		JLog::add('Reveived WebHook : '.print_r(file_get_contents('php://input'), true), JLog::INFO, 'com_emundus.webhook');
+
+		// 'procedure.finished' runs when all signatures are done and blissful harmony is restored to the universe.
+		if ($post->eventName === 'procedure.finished') {
+
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$eMConfig = JComponentHelper::getParams('com_emundus');
+
+			$procedure = $post->procedure;
+
+			JLog::add('YouSign procedure : '.print_r($procedure, true), JLog::INFO, 'com_emundus.webhook');
+
+			// Now that the procedure is signed, we can remove the member ID used for loading the iFrame.
+			foreach ($procedure->members as $member) {
+				$this->setUserParam($member->email, 'yousignMemberId', false);
+			}
+
+			$files = [];
+			foreach ($procedure->files as $file) {
+				$files[] = $file->id;
+				JLog::add('YouSign procedure file : '.$file->id, JLog::INFO, 'com_emundus.webhook');
+			}
+
+			$query->clear()
+				->select([$db->quoteName('fr.fnum'), $db->quoteName('a.lbl'), $db->quoteName('fr.attachment_id')])
+				->from($db->quoteName('jos_emundus_files_request', 'fr'))
+				->leftJoin($db->quoteName('jos_emundus_setup_attachments', 'a').' ON '.$db->quoteName('fr.attachment_id').' = '.$db->quoteName('a.id'))
+				->where($db->quoteName('filename').' IN ("'.implode('","', $files).'")');
+			$db->setQuery($query);
+			try {
+				$attachments = $db->loadObjectList();
+			} catch (Exception $e) {
+				JLog::add('Could not load files_requests : '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+				return;
+			}
+
+			$http = new JHttp();
+
+			$host = $eMConfig->get('yousign_prod', 'https://staging-api.yousign.com');
+			$api_key = $eMConfig->get('yousign_api_key', 'https://staging-api.yousign.com');
+			if (empty($host) || empty($api_key)) {
+				JLog::add('Missing YouSign info.', JLog::ERROR, 'com_emundus.webhook');
+				return;
+			}
+
+			$frQuery = $db->getQuery(true);
+			foreach ($files as $file) {
+
+				// Time to download the files from the WebService.
+				$response = $http->get($host.$file.'/download?alt=media', [
+					'Content-Type' => 'application/json',
+					'Authorization' => 'Bearer '.$api_key
+				]);
+
+				// File exists, time to write it to the right place.
+				if ($response->code === 200) {
+
+					// Prepare the query to save the files into the upload table.
+					$query->clear()
+						->insert($db->quoteName('jos_emundus_uploads'))
+						->columns($db->quoteName(['user_id', 'fnum', 'campaign_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed']));
+
+					$success = [];
+					foreach ($attachments as $attachment) {
+
+						// Save the signed file into the users folder.
+						$fileName = $attachment->lbl.'_signed.pdf';
+						$uid = (int)substr($attachment->fnum, -7);
+						if (file_put_contents(EMUNDUS_PATH_ABS.$uid.DS.$fileName, $response->body) !== false) {
+
+							// Set the filerequest as uploaded.
+							$frQuery->clear()
+								->update($db->quoteName('jos_emundus_files_request'))
+								->set([
+									$db->quoteName('uploaded').' = 1',
+									$db->quoteName('signed_file').' = '.$db->quote($fileName)
+								])
+								->where($db->quoteName('filename').' LIKE '.$db->quote($file).'');
+							$db->setQuery($frQuery);
+							try {
+								$db->execute();
+							} catch (Exception $e) {
+								JLog::add('Could not update files_requests : '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+								return;
+							}
+
+							$success[] = $attachment->fnum;
+							$query->values(implode(',', [$uid, $db->quote($attachment->fnum), (int)substr($attachment->fnum, 14, 7), $attachment->attachment_id, $db->quote($fileName), $db->quote('YouSign signed document'), '0', '0']));
+
+						} else {
+							JLog::add('Error downloading file from YouSign -> RESPONSE ('.$response->code.') '.$response->body, JLog::ERROR, 'com_emundus.webhook');
+						}
+					}
+
+					// Link the files to the users' files.
+					$db->setQuery($query);
+					try {
+						$db->execute();
+						JLog::add('Saved YouSigned saved file "'.$file.'" to fnums : '.implode(', ', $success), JLog::INFO, 'com_emundus.webhook');
+					} catch (Exception $e) {
+						JLog::add('Error adding attachemnts to files: '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+					}
+				}
+			}
+		}
+	}
+
+
 
 	/**
 	 * Gets video info from addpipe webhook
@@ -68,45 +196,45 @@ class EmundusControllerWebhook extends JControllerLegacy {
 			$payload = $_POST["payload"];
 
 			//the data is JSON encoded, so we must decode it in an associative array
-	        $webhookData = json_decode($payload, true);
-	        $webhookDataApplication = json_decode($webhookData["data"]["payload"], true);
+			$webhookData = json_decode($payload, true);
+			$webhookDataApplication = json_decode($webhookData["data"]["payload"], true);
 
-	        $vidName = $webhookData["data"]["videoName"].'.'.$webhookData["data"]["type"];
+			$vidName = $webhookData["data"]["videoName"].'.'.$webhookData["data"]["type"];
 
-	        //you can get the webhook type by accessing the event element in the array
-	        //$type = $webhookData["event"];
+			//you can get the webhook type by accessing the event element in the array
+			//$type = $webhookData["event"];
 
-	        if (empty($webhookDataApplication["userId"])) {
-	        	$error = JUri::getInstance().' APPLICANT_ID is NULL';
-                JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
+			if (empty($webhookDataApplication["userId"])) {
+				$error = JUri::getInstance().' APPLICANT_ID is NULL';
+				JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
 
-                return false;
-	        }
+				return false;
+			}
 
 			//move video from ftp to applicant documents
 			if (!file_exists(EMUNDUS_PATH_ABS.$webhookDataApplication["userId"])) {
-	            // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
-	            if (!file_exists(EMUNDUS_PATH_ABS.'index.html')) {
-	            	touch(EMUNDUS_PATH_ABS.'index.html');
-	            }
+				// An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
+				if (!file_exists(EMUNDUS_PATH_ABS.'index.html')) {
+					touch(EMUNDUS_PATH_ABS.'index.html');
+				}
 
-	            if (!mkdir(EMUNDUS_PATH_ABS.$webhookDataApplication["userId"]) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.'index.html')){
-	                $error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> Unable to create user file';
-	                JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
+				if (!mkdir(EMUNDUS_PATH_ABS.$webhookDataApplication["userId"]) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.'index.html')){
+					$error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> Unable to create user file';
+					JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
 
-	                return false;
-	            }
-	        }
-	        chmod(EMUNDUS_PATH_ABS.$webhookDataApplication["userId"], 0755);
+					return false;
+				}
+			}
+			chmod(EMUNDUS_PATH_ABS.$webhookDataApplication["userId"], 0755);
 
-	        if (!file_exists($ftp_path.DS.$vidName)) {
-	        	$error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> File not found: '.$ftp_path.DS.$vidName;
-                JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
+			if (!file_exists($ftp_path.DS.$vidName)) {
+				$error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> File not found: '.$ftp_path.DS.$vidName;
+				JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
 
-                return false;
-	        }
+				return false;
+			}
 
-	        if (!copy($ftp_path.DS.$vidName, EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.$vidName)) {
+			if (!copy($ftp_path.DS.$vidName, EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.$vidName)) {
 
                 $error = JUri::getInstance().' :: USER ID : '.$webhookDataApplication["userId"].' -> Cannot move file: '.$ftp_path.DS.$vidName.' to '.EMUNDUS_PATH_ABS.$webhookDataApplication["userId"].DS.$vidName;
                 JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
@@ -135,12 +263,12 @@ class EmundusControllerWebhook extends JControllerLegacy {
 			JLog::add('Unable to handle addpipe webhook: '.$payload, JLog::ERROR, 'com_emundus.webhook');
 			return false;
 		}
-		
+
 		//log webhook
 		JLog::add('Webhook START: '.$webhookDataApplication["aid"].' :: '.$webhookDataApplication["userId"].' :: '.$webhookDataApplication["fnum"].' :: '.$webhookDataApplication["jobId"].' :: '.$vidName.' :: '.$payload, JLog::WARNING, 'com_emundus.webhook');
 		return true;
 	}
-	
+
 
 	/**
 	* Converts bytes into human readable file size.
@@ -186,7 +314,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 	/**
 	 * Check if video upladed by addpipe has been moved to applicant files.
-	 * @return boolean
+	 * @return void
 	 * @throws Exception
 	 */
 	public function is_file_uploaded() {
@@ -222,7 +350,59 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	
 		    echo json_encode((object)(array('status' => false)));
 			exit();
-        }
+		}
+	}
+
+
+	/**
+	 * @param string $user_email
+	 * @param        $param
+	 * @param string $value
+	 *
+	 * @return bool
+	 * @since version
+	 */
+	private function setUserParam(string $user_email, $param, string $value) : bool {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('id'))
+			->from($db->quoteName('jos_users'))
+			->where($db->quoteName('email').' LIKE '.$db->quote($user_email));
+		$db->setQuery($query);
+
+		try {
+			$user_id = $db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('Error getting user by email when saving param : '.$e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
+			return false;
+		}
+
+		if (empty($user_id)) {
+			JLog::add('User not found', JLog::ERROR, 'com_emundus.yousign');
+			return false;
+		}
+
+		$user = JFactory::getUser($user_id);
+
+		$table = JTable::getInstance('user', 'JTable');
+		$table->load($user->id);
+
+		// Store token in User's Parameters
+		$user->setParam($param, $value);
+
+		// Get the raw User Parameters
+		$params = $user->getParameters();
+
+		// Set the user table instance to include the new token.
+		$table->params = $params->toString();
+
+		// Save user data
+		if (!$table->store()) {
+			JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'com_emundus.yousign');
+			return false;
+		}
+		return true;
 	}
 	public function export_siscole(){
 

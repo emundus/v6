@@ -1,6 +1,6 @@
 <template>
   <div class="container-evaluation formulairedepresentation">
-    <FormCarrousel :formList="this.formList" :visibility="this.visibility" v-if="this.formList" @getEmitIndex="getEmitIndex" />
+    <FormCarrousel :formList="this.formList" :visibility="this.visibility" :key="formListReload" v-if="this.formList" @getEmitIndex="getEmitIndex" />
   </div>
 </template>
 
@@ -29,6 +29,7 @@ export default {
       ChooseForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
       EmitIndex: "0",
       formList: "",
+      formListReload: 0,
 
       formdescription: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION")
     };
@@ -59,6 +60,7 @@ export default {
       })
         .then(response => {
           this.formList = response.data.data;
+          this.formListReload += 1;
         })
         .catch(e => {
           console.log(e);

@@ -166,6 +166,9 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
+        $element = $jinput->getInt('element');
+        $group = $jinput->getInt('group');
+        $page = $jinput->getInt('page');
         $labelTofind = $jinput->getString('labelTofind');
         $newLabel = $jinput->getRaw('NewSubLabel');
 
@@ -173,7 +176,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
 	        $result = 0;
 	        $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $results = $m_form->formsTrad($labelTofind, $newLabel);
+            $results = $m_form->formsTrad($labelTofind, $newLabel, $element, $group, $page);
             $changeresponse = array('status' => 1, 'msg' => 'Traductions effectués avec succès', 'data' => $results);
         }
 

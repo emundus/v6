@@ -28,7 +28,7 @@ form[action="/connexion-candidater"] .em_label-user, .em_label-passwd{
     border: none;
     margin-bottom: 0 !important;
     border-radius: 0;
-    padding: 20px !important;
+    padding: 20px;
     box-shadow: none;
     width: 50%;
     margin-left: auto !important;
@@ -70,6 +70,10 @@ ul.unstyled.em-linkForgot li {
     border: none;
 }
 
+ul.unstyled.em-linkForgot li:nth-child(1) {
+    display: none;
+}
+
 ul.unstyled.em-linkForgot li a::before {
     content: "\f101";
     font-family: FontAwesome;
@@ -88,7 +92,7 @@ ul.unstyled.em-linkForgot li a span::before {
     justify-content: flex-start;
     align-items: flex-end;
     flex-direction: row;
-    width: 52%;
+    width: 59%;
     margin-left: auto;
     margin-right: auto;
 }

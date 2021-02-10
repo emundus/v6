@@ -410,7 +410,7 @@ class EmundusModelCalendar extends JModelLegacy {
         );
 
         // An array containing the tag names is created.
-        $tags = $m_emails->setTags($user->id, $post);
+        $tags = $m_emails->setTags($user->id, $post, $user->fnum);
 
         $from_id = 62;
 
@@ -496,7 +496,7 @@ class EmundusModelCalendar extends JModelLegacy {
                 );
 
                 // An array containing the tag names is created.
-                $tags = $m_emails->setTags($recipient->id, $post);
+                $tags = $m_emails->setTags($recipient->id, $post, $user->fnum);
 
                 // Tags are replaced with their corresponding values using the PHP preg_replace function.
                 $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
@@ -694,7 +694,7 @@ class EmundusModelCalendar extends JModelLegacy {
             'APPLICATION_PROGRESS' => $fnum
         );
 
-        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag);
+        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
 
         $synthesis = new stdClass();
         $synthesis->program = $program;

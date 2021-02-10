@@ -60,7 +60,6 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $this->db->quoteName('eu.lastname'),
                 $this->db->quoteName('eu.email'),
                 $this->db->quoteName('eu.tel'),
-                $this->db->quoteName('eu.civility'),
                 $this->db->quoteName('eu.country'),
                 $this->db->quoteName('eu.nationality')
             ];
@@ -68,6 +67,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             // emundus personal details table
             $pd_columns = [
                 $this->db->quoteName('epd.email', 'pd_email'),
+                $this->db->quoteName('epd.civility'),
                 $this->db->quoteName('epd.mobile_1'),
                 $this->db->quoteName('epd.skype_id'),
                 $this->db->quoteName('epd.street_1'),
@@ -102,7 +102,8 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 $this->db->quoteName('es.fnum', 'es_fnum'),
                 $this->db->quoteName('es.mail_excelia'),
                 $this->db->quoteName('es.is_hadicap'),
-                $this->db->quoteName('es.formation')
+                $this->db->quoteName('es.formation'),
+                $this->db->quoteName('win_sum_repeat.parent_id', 'win_parent_id')
             ];
 
             $spe_columns = [
@@ -202,7 +203,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
                 ->leftJoin($this->db->quoteName('data_aurion_37736495', 'dau') . ' ON ' . $this->db->quoteName('es.mail_excelia') . ' = '. $this->db->quoteName('dau.MailEcole') . ' AND ' . $this->db->quoteName('dau.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_39177663', 'deu') . ' ON ' . $this->db->quoteName('ecc.applicant_id') . ' = '. $this->db->quoteName('deu.emundus_id')  . ' AND ' . $this->db->quoteName('deu.published') . ' = 1')
-                ->leftJoin($this->db->quoteName('data_aurion_35347585', 'dac') . ' ON ' . $this->db->quoteName('eu.civility') . ' = '. $this->db->quoteName('dac.id_Titre') . ' AND ' . $this->db->quoteName('dac.published') . ' = 1')
+                ->leftJoin($this->db->quoteName('data_aurion_35347585', 'dac') . ' ON ' . $this->db->quoteName('epd.civility') . ' = '. $this->db->quoteName('dac.id_Titre') . ' AND ' . $this->db->quoteName('dac.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_35584331', 'dacity') . ' ON ' . $this->db->quoteName('eq.city') . ' = '. $this->db->quoteName('dacity.id_Ville') . ' AND ' . $this->db->quoteName('dacity.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_35616031', 'dad') . ' ON ' . $this->db->quoteName('eu.candidat') . ' = '. $this->db->quoteName('dad.Code_TypeDiplome') . ' AND ' . $this->db->quoteName('dad.published') . ' = 1')
                 ->leftJoin($this->db->quoteName('data_aurion_35581810', 'dan') . ' ON ' . $this->db->quoteName('eu.nationality') . ' = '. $this->db->quoteName('dan.id_Nationalite') . ' AND ' . $this->db->quoteName('dan.published') . ' = 1')
@@ -211,6 +212,8 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                 ->leftJoin($this->db->quoteName('data_aurion_35616195', 'spe_fr_alt') . ' ON ' . $this->db->quoteName('es.spe_fr_alt') . ' = '. $this->db->quoteName('spe_fr_alt.id'))
                 ->leftJoin($this->db->quoteName('data_aurion_37203247', 'spe_int_cla') . ' ON ' . $this->db->quoteName('es.spe_int_cla') . ' = '. $this->db->quoteName('spe_int_cla.id'))
                 ->leftJoin($this->db->quoteName('data_aurion_37130437', 'spe_int_alt') . ' ON ' . $this->db->quoteName('es.spe_int_alt') . ' = '. $this->db->quoteName('spe_int_alt.id'))
+                ->leftJoin($this->db->quoteName('jos_emundus_scholarship_repeat_spe_win_sum', 'win_sum_repeat') . ' ON ' . $this->db->quoteName('es.id') . ' = '. $this->db->quoteName('win_sum_repeat.parent_id'))
+
                 // Get Rentrees
                 ->leftJoin($this->db->quoteName('data_aurion_35584301', 'rentree') . ' ON '
                     . $this->db->quoteName('es.rentree_fr_cla') . ' = '. $this->db->quoteName('rentree.id')
@@ -247,8 +250,8 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             // Now we are going to check if the user
             foreach ($users as $user) {
 
-                // Set the user's spe and entrance value by getting the unique value from the 4 different possibilities
-                $user->speciality = array_values(array_filter([$user->spe_int_alt, $user->spe_int_cla, $user->spe_fr_alt, $user->spe_fr_cla]))[0];
+                // Set the user's spe and entrance value by getting the unique value from the 5 different possibilities
+                $user->speciality = array_values(array_filter([$user->spe_int_alt, $user->spe_int_cla, $user->spe_fr_alt, $user->spe_fr_cla, $user->spe_win_sum]))[0];
 
                 // Build the xml file depending if the user exists in Aurion
                 if (empty($user->id_Individu) && empty($user->aurion_user)) {
@@ -350,6 +353,8 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         // $user_key = LASTNAME_FIRSTNAME_SEX_BIRTHDATE
         $user_key = strtoupper($this->replaceUserName($user->lastname)) . "_" . strtoupper($this->replaceUserName($user->firstname)) . "_" . $user->Sexe . "_" . date('dmY', strtotime($user->birth_date));
+        // Check if the candidat is applying for the Winter/Summer school
+        $winter_spes = $this->winterSummerSpes($user->win_parent_id);
 
         //Only import skype_id if there is one
         if (!empty($user->skype_id)) {
@@ -410,6 +415,14 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             $type_diplome = !empty($user->type_diplome) ? "<typediplome_emundus.client objet_id='" . $user->type_diplome . "' ForceDest='typediplome_emundus.client§48130556' ForceImport='true'/>" : '';
             $eq_country = !empty($user->eq_country) ? "<pays objet_id='" . $user->eq_country . "' ForceDest='pays§37765785' ForceImport='true'/>" : "";
 
+            $cours = "<cours ForceDest='cours§99785' objet_id='" . $user->speciality . "' ForceImport='true' />";
+
+            // Check if the candidat is applying for the Winter/Summer school
+            if (!empty($winter_spes)) {
+                $cours = "";
+                $cours .= "<cours ForceDest='cours§99785' objet_id='" . $winter_spes[0]->speciality . "' ForceImport='true' />";
+            }
+
             $inscription_module = "
                 <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A46372499='" . $user->is_hadicap . "' " . $other_etabs . "  A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
                     
@@ -432,10 +445,9 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
       
                     <typediplome_fr_int_.client ForceDest='typediplome_fr_int_.client§101204' objet_id='" . $user->id_TypeDiplome . "' ForceImport='true' />
                     
-                    <rentree.client ForceDest='rentree.client§2954426' objet_id='" . $user->entrance . "' ForceImport='true' />
+                    <rentree.client ForceDest='rentree.client§2954426' objet_id='" . ((!empty($winter_spes[0])) ? $winter_spes[0]->win_rentree : $user->entrance) . "' ForceImport='true' />
                    
-                    <cours ForceDest='cours§99785' objet_id='" . $user->speciality . "' ForceImport='true' />
-                    
+                    " . $cours . "
                     <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? $this->getAlternance($user->es_fnum) : 103503) . "' ForceImport='true' />
                     
                     <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
@@ -450,7 +462,29 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
         // Check if the the user has filled out their scholarship form, don't import if no fnum
         if (!empty($user->es_fnum)) {
 
-            $inscription_cours = "
+            if (!empty($winter_spes)) {
+                $inscription_cours = "";
+                foreach ($winter_spes as $spe) {
+                    $inscription_cours .= "
+                        <inscription_cours ForceImport='true' key='" . $spe->speciality . "_" . $user_key . "'  A2244='" . date('d-m-Y') . "' >
+                            
+                            <individu key='" . $user_key . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
+                                <cours objet_id='" . $spe->speciality . "' ForceSource='apprenant'/>
+                            </individu>
+                            
+                            <cours objet_id='" . $spe->speciality . "' ForceImport='true'/>
+                            
+                            <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? $this->getAlternance($user->es_fnum) : 103503) . "' ForceImport='true' />
+                            
+                            <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
+                            
+                            <statut_inscription objet_id='46311' ForceImport='true' />
+                        
+                        </inscription_cours>";
+                }
+
+            } else {
+                $inscription_cours = "
                 <inscription_cours ForceImport='true' key='" . $user->speciality . "_" . $user_key . "'  A2244='" . date('d-m-Y') . "' >
                         
                     <individu  key='" . $user_key . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
@@ -466,6 +500,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     <statut_inscription objet_id='46311' ForceImport='true' />
                     
                 </inscription_cours>";
+            }
         } else {
             $inscription_cours = "";
         }
@@ -546,10 +581,11 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         // $user_key = LASTNAME_FIRSTNAME_SEX_DATE_BIRHTDATE
         $user_key = strtoupper($this->replaceUserName($user->lastname)) . "_" . strtoupper($this->replaceUserName($user->firstname)) . "_" . $user->Sexe . "_" . date('dmY', strtotime($user->birth_date));
+        // Check if the candidat is applying for the Winter/Summer school
+        $winter_spes = $this->winterSummerSpes($user->win_parent_id);
 
         // get the user's aurion id
         $user_id = !empty($user->id_Individu) ? $user->id_Individu : $user->aurion_user;
-
 
         // Check if the the user has filled out their qualification form AND their scholarship form, don't import if one of them doesn't have a fnum
         if (!empty($user->es_fnum)) {
@@ -567,6 +603,14 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
             $type_diplome = !empty($user->type_diplome) ? "<typediplome_emundus.client objet_id='" . $user->type_diplome . "' ForceDest='typediplome_emundus.client§48130556' ForceImport='true'/>" : '';
             $eq_country = !empty($user->eq_country) ? "<pays objet_id='" . $user->eq_country . "' ForceDest='pays§37765785' ForceImport='true'/>" : "";
+
+            $cours = "<cours ForceDest='cours§99785' objet_id='" . $user->speciality . "' ForceImport='true' />";
+
+            // Check if the candidat is applying for the Winter/Summer school
+            if (!empty($winter_spes)) {
+                $cours = "";
+                $cours .= "<cours ForceDest='cours§99785' objet_id='" . $spe[0] . "' ForceImport='true' />";
+            }
 
             $inscription_module = "
                 <inscription_module ForceImport='true' key='" . $user->aurion_id . "_" . $user_key . "'  A3310='" . date('d-m-Y') . "' A87232='true' A46372499='" . $user->is_hadicap . "' " . $other_etabs . "  A37765709='" . $user->state. "' A37765733='" . $qualification_city . "' >
@@ -592,7 +636,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     
                     <rentree.client ForceDest='rentree.client§2954426' objet_id='" . $user->entrance . "' ForceImport='true' />
                     
-                    <cours ForceDest='cours§99785' objet_id='" . $user->speciality . "' ForceImport='true' />
+                    " . $cours. "
                     
                     <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? $this->getAlternance($user->es_fnum) : 103503) . "' ForceImport='true' />
                     
@@ -607,7 +651,31 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
         // Check if the the user has filled out their scholarship form, don't import if no fnum
         if (!empty($user->es_fnum)) {
-            $inscription_cours = "
+
+            if (!empty($winter_spes)) {
+
+                $inscription_cours = "";
+                foreach ($winter_spes as $spe) {
+                    $inscription_cours .= "
+                        <inscription_cours ForceImport='true' key='" . $spe . "_" . $user_key . "'  A2244='" . date('d-m-Y') . "' >
+                            
+                            <individu objet_id='" . $user_id . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
+                                <cours objet_id='" . $spe . "' ForceSource='apprenant'/>
+                            </individu>
+                            
+                            <cours objet_id='" . $spe . "' ForceImport='true'/>
+                            
+                            <type_apprenant objet_id='" . (empty($user->formation) ? '' : $user->formation==1 ? $this->getAlternance($user->es_fnum) : 103503) . "' ForceImport='true' />
+                            
+                            <type_convention objet_id='" . $user->id_TypeDeConvention . "' ForceImport='true' />
+                            
+                            <statut_inscription objet_id='46311' ForceImport='true' />
+                        
+                        </inscription_cours>";
+                }
+
+            } else {
+                $inscription_cours = "
                 <inscription_cours ForceImport='true' key='" . $user->speciality . "_" . $user_key . "'  A2244='" . date('d-m-Y') . "' >
                     
                     <individu objet_id='" . $user_id . "' ForceDest='apprenant' Inverted='true' UpdateMode='none' >
@@ -623,6 +691,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
                     <statut_inscription objet_id='46311' ForceImport='true' />
                 
                 </inscription_cours>";
+            }
         } else {
             $inscription_cours = "";
         }
@@ -732,7 +801,7 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
             $db->setQuery($query);
             return $db->loadResult();
         } catch(Exception $e) {
-            JLog::add('Query error '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus_exceliaAurionExport');
+            JLog::add('Query error '. $query->__toString(), JLog::ERROR, 'com_emundus_exceliaAurionExport');
             return $input;
         }
     }
@@ -759,5 +828,27 @@ class plgEmundusExcelia_aurion_export extends JPlugin {
 
     }
 
+    function winterSummerSpes($val) {
 
+        if (empty($val)) {
+            return null;
+        }
+
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->select([$this->db->qn('win_sum.id_Module_Specialisation', 'speciality'),$this->db->qn('win_sum.id_RentreesPossibleINT', 'win_rentree')])
+            ->from($this->db->qn('jos_emundus_scholarship_repeat_spe_win_sum', 'win_sum_repeat'))
+            ->leftJoin($this->db->quoteName('data_aurion_42539590', 'win_sum') . ' ON ' . $this->db->quoteName('win_sum.id') . ' = '. $this->db->quoteName('win_sum_repeat.spe_win_sum'))
+            ->where($this->db->qn('win_sum_repeat.parent_id') . ' = ' . $val);
+
+        $this->db->setQuery($query);
+
+        try {
+            return $this->db->loadObjectList();
+        } catch(Execption $e) {
+            JLog::add('Query error getting winter/summer school speacialities : '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus_exceliaAurionExport');
+            return null;
+        }
+    }
 }

@@ -157,31 +157,58 @@ a.btn.btn-success:not(.btn-xs) {
 .g-block.size-100.content-bottom-a hr:last-child {
     display: none !important;
 }
-
-@media all and (max-width: 767px) {
-    .main-page-application-title {
-        text-align: center;
-    }
-
+@media all and (max-width: 479px) {
     .main-page-file-info a {
         margin-bottom: 4px;
     }
 
-}
-
-@media all and (max-width: 768px) and (max-width: 959px) {
-.view-featured #content-bottom-a .row {
-        align-items: center;
+    .view-featured .candidacy-files-list .row {
         display: flex;
         flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
+    .view-featured .candidacy-files-list .row .main-page-application-title  {
+        align-self: flex-start;
+        text-align: left;
+    }
+
+    .view-featured .candidacy-files-list .row .main-page-file-info {
+        text-align: left;
+    }
+
+}
+
+@media all and (min-width: 480px) and (max-width: 767px) {
+    .main-page-file-info a {
+        margin-bottom: 4px;
+    }
+
+    .view-featured .candidacy-files-list .row {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+@media all and (min-width: 768px) and (max-width: 959px) {
     .view-featured .candidacy-files-list .row .main-page-application-title {
         width: 100%;
     }
 
     .view-featured .candidacy-files-list .row .main-page-file-info {
         width: 100%;
+    }
+}
+
+@media all and (min-width: 768px) and (max-width: 992px) {
+    .view-featured .candidacy-files-list .row {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: center;
     }
 }
 
