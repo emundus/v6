@@ -754,9 +754,12 @@ class EmundusModelApplication extends JModelList {
                             if (!empty($element->label) && $element->label!=' ') {
 
                                 if ($element->plugin == 'date' && $element->content > 0) {
-
-                                    $date_params = json_decode($element->params);
-                                    $elt = date($date_params->date_form_format, strtotime($element->content));
+                                    if(!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                        $date_params = json_decode($element->params);
+                                        $elt = date($date_params->date_form_format, strtotime($element->content));
+                                    } else {
+                                        $elt = '';
+                                    }
 
                                 } elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content > 0) {
                                     preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
@@ -889,9 +892,12 @@ class EmundusModelApplication extends JModelList {
                                     if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
                                         if ($elements[$j]->plugin == 'date') {
-
-                                            $date_params = json_decode($elements[$j]->params);
-                                            $elt = date($date_params->date_form_format, strtotime($r_elt));
+                                            if(!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
+                                                $date_params = json_decode($elements[$j]->params);
+                                                $elt = date($date_params->date_form_format, strtotime($r_elt));
+                                            } else {
+                                                $elt = '';
+                                            }
 
                                         } elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt > 0) {
                                             preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
@@ -1006,9 +1012,12 @@ class EmundusModelApplication extends JModelList {
                                     continue;
                                 }
                                 if ($element->plugin == 'date' && $element->content > 0) {
-
-                                    $date_params = json_decode($element->params);
-                                    $elt = date($date_params->date_form_format, strtotime($element->content));
+                                    if(!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                        $date_params = json_decode($element->params);
+                                        $elt = date($date_params->date_form_format, strtotime($element->content));
+                                    } else {
+                                        $elt = '';
+                                    }
 
                                 } elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content > 0) {
                                     preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
@@ -1281,7 +1290,11 @@ class EmundusModelApplication extends JModelList {
                                                 if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
                                                     if ($elements[$j]->plugin == 'date') {
-                                                        $elt = date($params->date_form_format, strtotime($r_elt));
+                                                        if(!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
+                                                            $elt = date($params->date_form_format, strtotime($r_elt));
+                                                        } else {
+                                                            $elt = '';
+                                                        }
                                                     }
 
                                                     elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt>0) {
@@ -1450,8 +1463,12 @@ class EmundusModelApplication extends JModelList {
 		                                }
 
 	                                    if ($element->plugin=='date' && $element->content>0) {
-	                                        $date_params = json_decode($element->params);
-	                                        $elt = date($date_params->date_form_format, strtotime($element->content));
+                                            if(!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                                $date_params = json_decode($element->params);
+                                                $elt = date($date_params->date_form_format, strtotime($element->content));
+                                            } else {
+                                                $elt = '';
+                                            }
 	                                    }
 	                                    elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content>0) {
                                             preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
@@ -1768,16 +1785,20 @@ class EmundusModelApplication extends JModelList {
                                             if ($key != 'id' && $key != 'parent_id' && isset($elements[$j]) && $elements[$j]->plugin != 'display') {
 
                                                 // Do not display elements with no value inside them.
-                                                if ($show_empty_fields == 0 && trim($r_elt) == '') {
+                                               /* if ($show_empty_fields == 0 && trim($r_elt) == '') {
                                                     continue;
-                                                }
+                                                }*/
 
                                                 $params = json_decode($elements[$j]->params);
 
                                                 if ($elements[$j]->plugin == 'date') {
-                                                    $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
-                                                    $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
-                                                    $elt = $dt->format($params->date_form_format);
+                                                    if(!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
+                                                        $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
+                                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+                                                        $elt = $dt->format($params->date_form_format);
+                                                    } else {
+                                                        $elt = '';
+                                                    }
                                                 }
                                                 elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt > 0) {
                                                     preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
@@ -1963,10 +1984,14 @@ class EmundusModelApplication extends JModelList {
                                             if (!empty($r_elt) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
 
                                                 if ($elements[$j]->plugin == 'date') {
-                                                    $date_params = json_decode($elements[$j]->params);
-                                                    $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
-                                                    $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
-                                                    $elt = $dt->format($date_params->date_form_format);
+                                                    if(!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
+                                                        $date_params = json_decode($elements[$j]->params);
+                                                        $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
+                                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+                                                        $elt = $dt->format($date_params->date_form_format);
+                                                    } else {
+                                                        $elt = '';
+                                                    }
                                                 }
                                                 elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt > 0) {
                                                     preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
@@ -2125,10 +2150,13 @@ class EmundusModelApplication extends JModelList {
                                         	if ($show_empty_fields == 0 && $element->content == '0000-00-00 00:00:00') {
                                         		continue;
 	                                        }
-
-                                        	$dt = new DateTime($element->content, new DateTimeZone('UTC'));
-	                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
-	                                        $elt = $dt->format($params->date_form_format);
+                                            if(!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                                $dt = new DateTime($element->content, new DateTimeZone('UTC'));
+                                                $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+                                                $elt = $dt->format($params->date_form_format);
+                                            } else {
+                                                $elt = '';
+                                            }
                                         }
 
                                         elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content > 0) {
@@ -2326,7 +2354,9 @@ class EmundusModelApplication extends JModelList {
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
-                                    } else $elt = $element->content;
+                                    } else {
+                                        $elt = $element->content;
+                                    }
                                     $forms .= '<p class="form-element"><b>'.JText::_($element->label).': </b>'.JText::_($elt).'</p>';
                                 }
                             }
@@ -2369,8 +2399,13 @@ class EmundusModelApplication extends JModelList {
                                     if ($key != 'id' && $key != 'parent_id' && isset($elements[$j]) && $elements[$j]->plugin != 'display') {
 
                                         if ($elements[$j]->plugin=='date') {
-                                            $date_params = json_decode($elements[$j]->params);
-                                            $elt = date($date_params->date_form_format, strtotime($r_elt));
+                                            if(!empty($elements[$j]->content) && $r_elt != '0000-00-00 00:00:00') {
+                                                $date_params = json_decode($elements[$j]->params);
+                                                $elt = date($date_params->date_form_format, strtotime($r_elt));
+                                            } else {
+                                                $elt = '';
+                                            }
+
                                         }
                                         elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt>0) {
                                             preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
@@ -2463,9 +2498,12 @@ class EmundusModelApplication extends JModelList {
                                 if(!empty($element->label) && $element->label!=' ' && $element->plugin != 'display') {
 
                                     if ($element->plugin=='date' && $element->content>0) {
-                                        $date_params = json_decode($element->params);
-                                        // $elt = strftime($date_params->date_form_format, strtotime($element->content));
-                                        $elt = date($date_params->date_form_format, strtotime($element->content));
+                                        if(!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                            $date_params = json_decode($element->params);
+                                            $elt = date($date_params->date_form_format, strtotime($element->content));
+                                        } else {
+                                            $elt = '';
+                                        }
 
                                     }
                                     elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content>0) {
