@@ -445,6 +445,15 @@ body.view-reset label#jform_username-lbl::after,
     .view-checklist  .fabrikActions.form-actions .span4:not(.offset1){
         justify-content: flex-end;
     }
+    /* save button */
+    .gantry.view-form .form-actions .row-fluid {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+    .gantry.view-form .form-actions .row-fluid .btn.goback-btn.button {
+        margin-right: 0px !important;
+        margin-top: 5px;
+    }
 }
 @media screen and (max-width: 550px){
     .view-checklist .input-group{

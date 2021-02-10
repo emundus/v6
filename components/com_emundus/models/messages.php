@@ -206,7 +206,7 @@ class EmundusModelMessages extends JModelList {
 		$db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
-        $select = 'e.*, et.*';
+        $select = 'e.*, et.*, GROUP_CONCAT(etr.tags) as tags';
 
         if ($candidateAttachments) {
 	        $select .= ', GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments';
@@ -218,7 +218,8 @@ class EmundusModelMessages extends JModelList {
 
         $query->select($select)
                 ->from($db->quoteName('#__emundus_setup_emails','e'))
-                ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'));
+                ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags','etr').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('etr.parent_id'));
 
         if ($candidateAttachments) {
             $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'));
@@ -446,9 +447,9 @@ class EmundusModelMessages extends JModelList {
 
         //require_once (JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php');
         require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'vendor'.DS.'autoload.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'export.php');
+        require_once (JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        require_once (JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'export.php');
 
         $m_export = new EmundusModelExport;
 

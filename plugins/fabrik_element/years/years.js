@@ -6,11 +6,10 @@
  */
 
 define(['jquery', 'fab/element'], function (jQuery, FbElement) {
-    window.FbBirthday = new Class({
+    window.FbYears = new Class({
         Extends   : FbElement,
         initialize: function (element, options) {
             this.setPlugin('years');
-            this.default_sepchar = '-';
             this.parent(element, options);
         },
 
@@ -21,7 +20,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
         getFocusEvent: function () {
             return 'click';
         },
-        
+
         getValue: function () {
             var v = [];
             if (!this.options.editable) {
@@ -50,5 +49,5 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
         }
     });
 
-    return window.FbBirthday;
+    return window.FbYears;
 });

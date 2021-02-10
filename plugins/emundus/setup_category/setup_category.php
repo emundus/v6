@@ -44,8 +44,8 @@ class plgEmundusSetup_category extends JPlugin {
                 ->clear()
                 ->select($this->db->quoteName('id'))
                 ->from($this->db->quoteName('jos_categories'))
-                ->where('json_extract(`params`, "$.idCampaign") LIKE ' . $this->db->quote('"'.$id.'"'))
-                ->andWhere($this->db->quoteName('extension') . ' LIKE ' .$this->db->quote('com_dropfiles'));
+                ->where($this->db->quoteName('extension') . ' LIKE ' .$this->db->quote('com_dropfiles'))
+                ->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->db->quote('"'.$id.'"'));
 
             $this->db->setQuery($this->query);
 

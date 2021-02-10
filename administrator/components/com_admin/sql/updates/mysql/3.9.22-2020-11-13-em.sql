@@ -1,4 +1,4 @@
-SET GLOBAL log_bin_trust_function_creators = 1;
+/*SET GLOBAL log_bin_trust_function_creators = 1;
 
 DROP PROCEDURE IF EXISTS addFieldIfNotExists;
 DROP FUNCTION IF EXISTS isFieldExisting;
@@ -30,7 +30,9 @@ BEGIN
     END IF;
 END;
 
-CALL addFieldIfNotExists ('jos_emundus_hikashop', 'status', 'INT(2) NULL DEFAULT NULL AFTER `order_id`');
+CALL addFieldIfNotExists ('jos_emundus_hikashop', 'status', 'INT(2) NULL DEFAULT NULL AFTER `order_id`');*/
+
+ALTER TABLE `jos_emundus_hikashop` ADD COLUMN `status` INT(2) NULL DEFAULT NULL AFTER `order_id`;
 
 ALTER TABLE `jos_emundus_hikashop` ADD INDEX(`status`);
 
@@ -40,4 +42,4 @@ ALTER TABLE `jos_emundus_hikashop` DROP INDEX `fnum`, ADD INDEX `fnum` (`fnum`) 
 
 ALTER TABLE `jos_emundus_hikashop` ADD UNIQUE (`fnum`, `status`);
 
-ALTER TABLE `jos_emundus_setup_campaigns` ADD CONSTRAINT jos_emundus_setup_campaigns_ibfk_2 FOREIGN KEY if not exists (`profile_id`) REFERENCES `jos_emundus_setup_profiles`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE; 
+ALTER TABLE `jos_emundus_setup_campaigns` ADD CONSTRAINT jos_emundus_setup_campaigns_ibfk_2 FOREIGN KEY if not exists (`profile_id`) REFERENCES `jos_emundus_setup_profiles`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

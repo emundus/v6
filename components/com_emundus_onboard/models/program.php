@@ -1206,12 +1206,17 @@ class EmundusonboardModelprogram extends JModelList {
                 $query->clear();
                 $query->update($db->quoteName('#__fabrik_groups'));
 
-                foreach ($languages as $language) {
-                    $duplicate_translation = $formbuilder->duplicateFileTranslation($group_model->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'GROUP_' . $formid . '_' . $newgroupid,$language->lang_code);
-                    if(!$duplicate_translation){
-                        $formbuilder->addTranslation('GROUP_' . $formid . '_' . $newgroupid . '=' . "\"" . $group_model->label . "\"", $path_to_files[$language->sef],$language->lang_code);
-                    }
+                $labels_to_duplicate = array(
+                    'fr' => $formbuilder->getTranslation($group_model->label, $Content_Folder['fr']),
+                    'en' => $formbuilder->getTranslation($group_model->label, $Content_Folder['en'])
+                );
+                if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
+                    $labels_to_duplicate = array(
+                        'fr' => $group_model->label,
+                        'en' => $group_model->label
+                    );
                 }
+                $formbuilder->translate('GROUP_' . $formid . '_' . $newgroupid,$labels_to_duplicate);
                 //
 
                 $query->set('label = ' . $db->quote('GROUP_' . $formid . '_' . $newgroupid));
@@ -1244,24 +1249,35 @@ class EmundusonboardModelprogram extends JModelList {
                         if(($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options){
                             $sub_labels = [];
                             foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
-                                foreach ($languages as $language) {
-                                    $duplicate_translation = $formbuilder->duplicateFileTranslation($sub_label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index,$language->lang_code);
-                                    if(!$duplicate_translation){
-                                        $formbuilder->addTranslation('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index . '=' . "\"" . $sub_label . "\"", $path_to_files[$language->sef],$language->lang_code);
-                                    }
+                                $labels_to_duplicate = array(
+                                    'fr' => $formbuilder->getTranslation($sub_label, $Content_Folder['fr']),
+                                    'en' => $formbuilder->getTranslation($sub_label, $Content_Folder['en'])
+                                );
+                                if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
+                                    $labels_to_duplicate = array(
+                                        'fr' => $sub_label,
+                                        'en' => $sub_label
+                                    );
                                 }
+                                $formbuilder->translate('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index,$labels_to_duplicate);
                                 $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
                             }
                             $el_params->sub_options->sub_labels = $sub_labels;
                         }
                         $query->clear();
                         $query->update($db->quoteName('#__fabrik_elements'));
-                        foreach ($languages as $language) {
-                            $duplicate_translation = $formbuilder->duplicateFileTranslation($element->element->label, $Content_Folder[$language->sef], $path_to_files[$language->sef], 'ELEMENT_' . $newgroupid . '_' . $newelementid,$language->lang_code);
-                            if(!$duplicate_translation){
-                                $formbuilder->addTranslation('ELEMENT_' . $newgroupid. '_' . $newelementid . '=' . "\"" . $element->element->label . "\"", $path_to_files[$language->sef],$language->lang_code);
-                            }
+
+                        $labels_to_duplicate = array(
+                            'fr' => $formbuilder->getTranslation($element->element->label, $Content_Folder['fr']),
+                            'en' => $formbuilder->getTranslation($element->element->label, $Content_Folder['en'])
+                        );
+                        if($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
+                            $labels_to_duplicate = array(
+                                'fr' => $element->element->label,
+                                'en' => $element->element->label
+                            );
                         }
+                        $formbuilder->translate('ELEMENT_' . $newgroupid . '_' . $newelementid,$labels_to_duplicate);
                         //
 
                         $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));

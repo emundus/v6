@@ -517,11 +517,12 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
+          element: element.id,
           labelTofind: element.label_tag,
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateelementlabelwithouttranslation",
@@ -646,11 +647,12 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
+          group: group.group_id,
           labelTofind: group.group_tag,
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updategrouplabelwithouttranslation",
@@ -860,11 +862,12 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({
+          page: page.id,
           labelTofind: page.show_title.titleraw,
           NewSubLabel: labels
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepagelabelwithouttranslation",
@@ -928,7 +931,7 @@ export default {
           NewSubLabel: intros
         })
       }).then((rep) => {
-        if(rep.data.data.every(x => x = false)){
+        if(rep.data.status == 0){
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepageintrowithouttranslation",

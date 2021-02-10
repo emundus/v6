@@ -126,7 +126,7 @@ class EmundusonboardModelform extends JModelList {
             $query
                 ->select('id')
                 ->from($db->quoteName('#__emundus_setup_profiles'))
-                ->where($db->quoteName('id') . ' > 1000')
+                ->where($db->quoteName('published') . ' = 1')
                 ->andWhere($db->quoteName('status') . ' = 1')
                 ->andWhere($db->quoteName('acl_aro_groups') . ' = ' . $db->quote(2));
             $db->setQuery($query);
@@ -786,7 +786,7 @@ class EmundusonboardModelform extends JModelList {
 
                 // Create submittion page
                 $label = array(
-                    'fr' => 'Confirmation d\'envoi de dossier',
+                    'fr' => "Confirmation d'envoi de dossier",
                     'en' => 'Data & disclaimer confirmation'
                 );
                 $intro = array(
@@ -1380,6 +1380,7 @@ class EmundusonboardModelform extends JModelList {
 			->leftJoin($db->quoteName('#__emundus_setup_profiles', 'sp').' ON '.$db->quoteName('sp.menutype').' = '.$db->quoteName('mt.menutype'))
 			->where($db->quoteName('sp.id') . ' = '.$profile_id)
 			->where($db->quoteName('menu.parent_id') . ' != 1')
+			->where($db->quoteName('menu.published') . ' = 1')
 			->group('menu.rgt')
 			->order('menu.rgt ASC');
 

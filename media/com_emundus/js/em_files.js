@@ -339,7 +339,7 @@ function openFiles(fnum, page = 0) {
     var cid = parseInt(fnum.fnum.substr(14, 7));
     var sid = parseInt(fnum.fnum.substr(21, 7));
 
-    
+
     $('#em-assoc-files .panel-body').empty();
 
     $.ajax({
@@ -378,7 +378,7 @@ function openFiles(fnum, page = 0) {
             $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
             $('#em-synthesis .panel-body').empty();
             $('#em-synthesis .panel-body').append(panel);
-			
+
 			$.ajax({
 				type:'get',
 				url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&fnum='+fnum.fnum,
@@ -408,7 +408,7 @@ function openFiles(fnum, page = 0) {
                                 break;
                             }
                         }
-						
+
 						var firstMenu = menus[numMenu].link;
 						var menuList = '';
 
@@ -439,7 +439,7 @@ function openFiles(fnum, page = 0) {
 								$('.em-dimmer').remove();
 								$('#em-files-filters').hide();
 								$(".main-panel .panel.panel-default").hide();
-								
+
 								$('#em-appli-block').empty();
 								$('#em-appli-block').append(result);
 								$('#accordion .panel.panel-default').show();
@@ -586,7 +586,7 @@ function getUserCheck() {
 
         myJSONObject = myJSONObject.substr(0, myJSONObject.length-1);
         myJSONObject += '}';
-        
+
         if (myJSONObject.length <= 2) {
             alert('SELECT_FILES');
             return null;
@@ -599,18 +599,18 @@ function getUserCheck() {
 }
 
 // Looks up checked items and adds them to a array or return all if the "check all" box is ticked
-function getUserCheckArray() {   
+function getUserCheckArray() {
 
     if ($('#em-check-all-all').is(':checked')) {
         return 'all';
     } else {
         var fnums = [];
-        
+
         if ($('.em-check:checked').length === 0) {
             var hash = $(location).attr('hash');
             var fnum = hash.replace("#", "");
             fnum = fnum.replace("|open", "");
-                    
+
             if (fnum == "") {
                  return null;
             } else {
@@ -627,7 +627,7 @@ function getUserCheckArray() {
                 sid = parseInt(fnum.substr(21, 7));
                 fnums.push({fnum: fnum, cid: cid, sid:sid});
             });
-        }   
+        }
     }
 
     return JSON.stringify(fnums);
@@ -1173,13 +1173,13 @@ $(document).ready(function() {
                     addDimmer();
                     fnum.sid = parseInt(fnum.fnum.substr(21, 7));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
-					
+
 					page = Array.from(document.querySelector('#em-appli-block .panel[class*="em-container-"]').classList).filter(
 						function x (p) {
 							return p.startsWith('em-container');
 						}
 					)[0].split('-')[2];
-					
+
                     $.ajax({
                         type: 'get',
                         url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
@@ -1238,7 +1238,7 @@ $(document).ready(function() {
                             }
                         )[0].split('-')[2];
                     }
-					
+
                     $.ajax({
                         type: 'get',
                         url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
@@ -4693,7 +4693,8 @@ $(document).ready(function() {
                     mail_subject    : $('#mail_subject').text(),
                     message         : $('#mail_body').val(),
                     bcc             : [],
-                    cc              : []
+                    cc              : [],
+                    tags            : $('#tags').val(),
                 };
 
                 $('#cc-bcc div[data-value]').each(function () {
@@ -4716,7 +4717,7 @@ $(document).ready(function() {
                         if (REGEX_EMAIL.test(val)) {
                             data.cc.push(val);
                         }
-                        
+
                     }
                 });
 
@@ -4815,9 +4816,22 @@ $(document).ready(function() {
                                                 $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
                                             }
                                         },
-                                        error: function () {
-                                            $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
-                                        }
+                                        error: function (jqXHR, textStatus) {
+                                            if(textStatus == 'timeout') {
+                                                $('#em-modal-sending-emails').css('display', 'none');
+
+                                                var sent_to = '<p>' + Joomla.JText._('EMAIL_SENDING') + '</p>';
+
+                                                Swal.fire({
+                                                    type: 'success',
+                                                    title: Joomla.JText._('EMAILS_SENT'),
+                                                    html: sent_to
+                                                });
+                                            } else {
+                                                $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
+                                            }
+                                        },
+                                        timeout: 5000
                                     });
                                 }
                             });

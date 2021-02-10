@@ -120,7 +120,7 @@ class EmundusModelApplication extends JModelList {
             FROM #__emundus_uploads AS eu
             LEFT JOIN #__emundus_setup_attachments AS esa ON  eu.attachment_id=esa.id
             LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=eu.campaign_id
-            WHERE eu.user_id = '.$id;'
+            WHERE eu.user_id = '.$id.'
             ORDER BY esa.category,esa.ordering,esa.value';
         $this->_db->setQuery($query);
         return $this->_db->loadObjectList();
@@ -451,6 +451,10 @@ class EmundusModelApplication extends JModelList {
             $nb = 0;
             $formLst = array();
 
+            if(empty($forms)){
+                return 100;
+            }
+
             foreach ($forms as $form) {
                 $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($fnum);
                 $this->_db->setQuery($query);
@@ -462,6 +466,7 @@ class EmundusModelApplication extends JModelList {
                 }
             }
 
+            $this->updateFormProgressByFnum(@floor(100*$nb/count($forms)),$fnum);
             return  @floor(100*$nb/count($forms));
 
         } else {
@@ -486,20 +491,35 @@ class EmundusModelApplication extends JModelList {
                 $forms = @EmundusHelperMenu::buildMenuQuery($this->_db->loadResult());
                 $nb = 0;
                 $formLst = array();
-                foreach ($forms as $form) {
-                    $query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE fnum like '.$this->_db->Quote($f);
-                    $this->_db->setQuery($query);
-                    $cpt = $this->_db->loadResult();
-                    if ($cpt==1) {
-                        $nb++;
-                    } else {
-                        $formLst[] = $form->label;
+
+                if(empty($forms)){
+                    $result[$f] = 100;
+                } else {
+                    foreach ($forms as $form) {
+                        $query = 'SELECT count(*) FROM ' . $form->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($f);
+                        $this->_db->setQuery($query);
+                        $cpt = $this->_db->loadResult();
+                        if ($cpt == 1) {
+                            $nb++;
+                        } else {
+                            $formLst[] = $form->label;
+                        }
                     }
+                    $this->updateFormProgressByFnum(@floor(100 * $nb / count($forms)), $f);
+                    $result[$f] = @floor(100 * $nb / count($forms));
                 }
-                $result[$f] = @floor(100*$nb/count($forms));
             }
             return $result;
         }
+    }
+
+    public function updateFormProgressByFnum($result,$fnum){
+        $query = $this->_db->getQuery(true);
+        $query->update($this->_db->quoteName('#__emundus_campaign_candidature'))
+            ->set($this->_db->quoteName('form_progress') . ' = ' . $this->_db->quote($result))
+            ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+        $this->_db->setQuery($query);
+        return $this->_db->execute();
     }
 
 	/**
@@ -510,13 +530,15 @@ class EmundusModelApplication extends JModelList {
 	 * @since version
 	 */
     public function getAttachmentsProgress($fnum = null) {
+        $session = JFactory::getSession();
+        $current_user = $session->get('emundusUser');
 
         if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
             return false;
         }
 
         // Check if column campaign_id exist in emundus_setup_attachment_profiles
-        $config = new JConfig();
+        /*$config = new JConfig();
         $db_name = $config->db;
 
         $query = $this->_db->getQuery(true);
@@ -526,7 +548,7 @@ class EmundusModelApplication extends JModelList {
             ->andWhere($this->_db->quoteName('table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_attachment_profiles'))
             ->andWhere($this->_db->quoteName('column_name') . ' = ' . $this->_db->quote('campaign_id'));
         $this->_db->setQuery($query);
-        $exist = $this->_db->loadResult();
+        $exist = $this->_db->loadResult();*/
 
         if (!is_array($fnum)) {
 
@@ -546,31 +568,41 @@ class EmundusModelApplication extends JModelList {
 
             $procamp = $this->_db->loadObject();
 
-            $profile_id = $procamp->profile_id;
+            //$profile_id = $procamp->profile_id;
+            $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $procamp->profile_id && $current_user->applicant === 1) ? $current_user->profile : $procamp->profile_id;
             $campaign_id = $procamp->campaign_id;
 
-            if (intval($exist) > 0) {
+            try{
                 $query = 'SELECT COUNT(profiles.id)
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
+
+                if (!empty($profile_id)) {
+                    $query .= ' AND profile_id = ' . $profile_id;
+                }
+
                 $this->_db->setQuery($query);
                 $attachments = $this->_db->loadResult();
+            } catch (Exception $e){
+                JLog::add("Problem when try to get attachment progress by campaign: ".$e->getMessage(), JLog::ERROR, "com_emundus");
             }
 
-            if (intval($exist) == 0 || intval($attachments) == 0) {
+            if (intval($attachments) == 0) {
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
-                WHERE profiles.profile_id = ' .$profile_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+                WHERE profiles.profile_id = ' .$profile_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
             } else {
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
-                WHERE profiles.campaign_id = ' .$campaign_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+                WHERE profiles.campaign_id = ' .$campaign_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
             }
 
             $this->_db->setQuery($query);
-            return floor($this->_db->loadResult());
+            $doc_result = $this->_db->loadResult();
+            $this->updateAttachmentProgressByFnum(floor($doc_result),$fnum);
+            return floor($doc_result);
 
         } else {
 
@@ -594,15 +626,17 @@ class EmundusModelApplication extends JModelList {
                 $profile_id = $procamp->profile_id;
                 $campaign_id = $procamp->campaign_id;
 
-                if (intval($exist) > 0) {
+                try{
                     $query = 'SELECT COUNT(profiles.id)
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
                     $this->_db->setQuery($query);
                     $attachments = $this->_db->loadResult();
+                } catch (Exception $e){
+                    JLog::add("Problem when try to get attachment progress by campaign: ".$e->getMessage(), JLog::ERROR, "com_emundus");
                 }
 
-                if (intval($exist) == 0 || intval($attachments) == 0) {
+                if (intval($attachments) == 0) {
                     $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($f) . '
@@ -615,10 +649,21 @@ class EmundusModelApplication extends JModelList {
                 }
 
                 $this->_db->setQuery($query);
-                $result[$f] = floor($this->_db->loadResult());
+                $doc_result = $this->_db->loadResult();
+                $this->updateAttachmentProgressByFnum(floor($doc_result),$f);
+                $result[$f] = floor($doc_result);
             }
             return $result;
         }
+    }
+
+    public function updateAttachmentProgressByFnum($result,$fnum){
+        $query = $this->_db->getQuery(true);
+        $query->update($this->_db->quoteName('#__emundus_campaign_candidature'))
+            ->set($this->_db->quoteName('attachment_progress') . ' = ' . $this->_db->quote($result))
+            ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+        $this->_db->setQuery($query);
+        return $this->_db->execute();
     }
 
 
@@ -676,7 +721,8 @@ class EmundusModelApplication extends JModelList {
         $query = 'SELECT fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name
                     FROM #__fabrik_forms AS fbforms
                     LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
-                    WHERE fbforms.id IN ('.implode(',', $formID) . ')';
+                    WHERE fbforms.id IN ('.implode(',', $formID) . ')
+                    ORDER BY find_in_set(fbforms.id, "'.implode(',', $formID) . '")';
 
         try {
             $this->_db->setQuery($query);
@@ -2325,15 +2371,15 @@ class EmundusModelApplication extends JModelList {
                                       fe.group_id = "'.$itemg->group_id.'" AND
                                       fe.id IN ('.implode(',', $elts).')
                                 ORDER BY fe.ordering';
-                    
+
                     $this->_db->setQuery( $query );
 
                     $elements = $this->_db->loadObjectList();
 
                     if(count($elements)>0) {
                         $forms .= ($options['show_group_label']==1)?'<h3>'.JText::_($itemg->label).'</h3>':'';
-                        
-                        foreach($elements as &$iteme) {                            
+
+                        foreach($elements as &$iteme) {
                             $where = $options['rowid']>0 ? ' id='.$options['rowid'] : ' 1=1 ';
 
                             if($checklevel) {
@@ -2694,7 +2740,7 @@ class EmundusModelApplication extends JModelList {
 	            $query .= " AND eu.id in ($ids)";
             }
 
-            $query .= "ORDER BY sa.category,sa.ordering,sa.value ASC";
+            $query .= " ORDER BY sa.category,sa.ordering,sa.value ASC";
 
             $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();
@@ -3047,165 +3093,81 @@ class EmundusModelApplication extends JModelList {
      * Return the order for current fnum. If an order with confirmed status is found for fnum campaign period, then return the order
      * If $sent is sent to true, the function will search for orders with a status of 'created' and offline paiement methode
      * @param $fnumInfos $sent
-     * @param bool $sent
-     * @param bool $admission
-     * @return bool|mixed
+     * @param bool $cancelled
+     * @return bool|object
      */
-    public function getHikashopOrder($fnumInfos, $sent = false, $admission = false) {
+    public function getHikashopOrder($fnumInfos, $cancelled = false) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        if ($admission) {
-            $startDate = $fnumInfos['admission_start_date'];
-            $endDate = $fnumInfos['admission_end_date'];
-        } else {
-            $startDate = $fnumInfos['start_date'];
-            $endDate = $fnumInfos['end_date'];
-        }
-
-        $dbo = $this->getDbo();
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
 
         $em_application_payment = $eMConfig->get('application_payment', 'user');
-        $em_application_payment_status = $eMConfig->get('application_payment_status', '0');
+
+        if ($cancelled) {
+            $order_status = array('cancelled');
+        } else {
+            $order_status = array('confirmed');
+            switch ($eMConfig->get('accept_other_payments', 0)) {
+                case 1:
+                    array_push($order_status, 'created');
+                    break;
+                case 3:
+                    array_push($order_status, 'pending');
+                    break;
+                case 4:
+                    array_push($order_status, 'created', 'pending');
+                    break;
+                default:
+                    // No need to push to the array
+                break;
+
+            }
+        }
+
+        $query
+            ->select(['ho.*', $db->quoteName('eh.user', 'user_cms_id')])
+            ->from($db->quoteName('#__emundus_hikashop', 'eh'))
+            ->leftJoin($db->quoteName('#__hikashop_order','ho').' ON '.$db->quoteName('ho.order_id').' = '.$db->quoteName('eh.order_id'))
+            ->where($db->quoteName('ho.order_status') . ' IN (' . implode(", ", $db->quote($order_status)) . ')')
+            ->order($db->quoteName('order_created') . ' DESC');
 
         switch ($em_application_payment) {
 
+            default :
+            case 'fnum' :
+                $query
+                    ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
+                break;
 
             case 'user' :
-                if ($sent) {
-
-                    $query = 'SELECT ho.*, hu.user_cms_id
-                                FROM #__hikashop_order ho
-                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-
-                }
-                else {
-
-                    $query = 'SELECT ho.*, hu.user_cms_id
-                                FROM #__hikashop_order ho
-                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                                AND ho.order_status like "confirmed"
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-
-                }
-            break;
-
-            case 'fnum' :
-                if ($sent) {
-                    $query = 'SELECT ho.*, eh.user as user_cms_id
-                                FROM #__emundus_hikashop eh
-                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-                }
-                else {
-                    $query = 'SELECT ho.*, eh.user as user_cms_id
-                                FROM #__emundus_hikashop eh
-                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                AND ho.order_status like "confirmed"
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-                }
+                $query
+                    ->where($db->quoteName('eh.user') . ' = ' . $fnumInfos['applicant_id']);
             break;
 
             case 'campaign' :
-                if ($sent) {
-                    $query = 'SELECT ho.*, hu.user_cms_id
-                                FROM #__emundus_hikashop eh
-                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                                WHERE eh.campaign_id = '.$fnumInfos['id'].' 
-                                AND hu.user_cms_id = '.$fnumInfos['applicant_id'].' 
-                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-                }
-                else {
-                    $query = 'SELECT ho.*, hu.user_cms_id
-                                FROM #__emundus_hikashop eh
-                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                                WHERE eh.campaign_id= '.$fnumInfos['id'].' 
-                                AND hu.user_cms_id = '.$fnumInfos['applicant_id'].' 
-                                AND ho.order_status like "confirmed"
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-                }
-                break;
+                $query
+                    ->where($db->quoteName('eh.campaign_id') . ' = ' . $fnumInfos['id'])
+                    ->where($db->quoteName('eh.user') . ' = ' . $fnumInfos['applicant_id']);
+            break;
 
-                case 'status' :
-                    $payment_status = explode(',', $em_application_payment_status);
-    
-                    if(in_array($fnumInfos['status'], $payment_status)) {
-    
-                        if ($sent) {
-                            $query = 'SELECT ho.*, eh.user as user_cms_id
-                                        FROM #__emundus_hikashop eh
-                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                        WHERE eh.status='.$fnumInfos['status'].' 
-                                        AND eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                        AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                        AND ho.order_created >= '.strtotime($startDate).'
-                                        AND ho.order_created <= '.strtotime($endDate).'
-                                        ORDER BY ho.order_created desc';
-                        }
-                        else {
-                            $query = 'SELECT ho.*, eh.user as user_cms_id
-                                        FROM #__emundus_hikashop eh
-                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                        WHERE eh.status='.$fnumInfos['status'].' 
-                                        AND eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                        AND ho.order_status like "confirmed"
-                                        AND ho.order_created >= '.strtotime($startDate).'
-                                        AND ho.order_created <= '.strtotime($endDate).'
-                                        ORDER BY ho.order_created desc';
-                        }
+            case 'status' :
+                $em_application_payment_status = $eMConfig->get('application_payment_status', '0');
+                $payment_status = explode(',', $em_application_payment_status);
+
+                    if (in_array($fnumInfos['status'], $payment_status)) {
+                        $query
+                            ->where($db->quoteName('eh.status') . ' = ' . $fnumInfos['status'])
+                            ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
                     } else{
-                        
-                        if ($sent) {
-                            $query = 'SELECT ho.*, eh.user as user_cms_id
-                                        FROM #__emundus_hikashop eh
-                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                        WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                        AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                        AND ho.order_created >= '.strtotime($startDate).'
-                                        AND ho.order_created <= '.strtotime($endDate).'
-                                        ORDER BY ho.order_created desc';
-                        }
-                        else {
-                            $query = 'SELECT ho.*, eh.user as user_cms_id
-                                        FROM #__emundus_hikashop eh
-                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                        WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                        AND ho.order_status like "confirmed"
-                                        AND ho.order_created >= '.strtotime($startDate).'
-                                        AND ho.order_created <= '.strtotime($endDate).'
-                                        ORDER BY ho.order_created desc';
-                        }
+                        $query
+                            ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
                     }
-                    break;
+            break;
         }
-
-
         try {
-
-            $dbo->setQuery($query);
-            return $dbo->loadObject();
-
+            $db->setQuery($query);
+            return $db->loadObject();
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -3214,48 +3176,9 @@ class EmundusModelApplication extends JModelList {
     }
 
     /**
-     * Return any cancelled orders for the current fnum. If an order with cancelled status is found for fnum campaign period, then return the order
-     * @param $fnumInfos
-     * @return bool|mixed
-     */
-    public function getHikashopCancelledOrders($fnumInfos, $admission = false) {
-
-        if($admission) {
-            $startDate = $fnumInfos['admission_start_date'];
-            $endDate = $fnumInfos['admission_end_date'];
-        }
-        else {
-            $startDate = $fnumInfos['start_date'];
-            $endDate = $fnumInfos['end_date'];
-        }
-
-        $db = $this->getDBo();
-
-        try {
-
-            $query = 'SELECT ho.*, hu.user_cms_id
-                FROM #__hikashop_order ho
-                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                AND ho.order_status like "canceled"
-                AND ho.order_created >= '.strtotime($startDate).'
-                AND ho.order_created <= '.strtotime($endDate);
-
-            $db->setQuery($query);
-            return $db->loadObject();
-
-        } catch (Exception $e) {
-            JLog::add('Error in model/application at query : '.$query, JLog::ERROR, 'com_emundus');
-            return false;
-        }
-
-    }
-
-
-    /**
      * Return the checkout URL order for current fnum.
-     * @param $pid      the applicant's profile_id
-     * @return bool|mixed
+     * @param $pid   string|int   the applicant's profile_id
+     * @return bool|string
      */
     public function getHikashopCheckoutUrl($pid)
     {
@@ -3288,23 +3211,39 @@ class EmundusModelApplication extends JModelList {
 	 *
 	 * @return bool
 	 */
-    public function moveApplication($fnum_from, $fnum_to, $campaign, $status = null) {
+    public function moveApplication(string $fnum_from, string $fnum_to, $campaign, $status = null): bool {
         $db = JFactory::getDbo();
+	    $query = $db->getQuery(true);
 
         try {
 
-            $query = 'SELECT * FROM #__emundus_campaign_candidature cc WHERE fnum like ' . $db->Quote($fnum_from);
+        	$query->clear()
+		        ->select('*')
+	            ->from($db->quoteName('#__emundus_campaign_candidature'))
+	            ->where($db->quoteName('fnum').' LIKE '.$db->quote($fnum_from));
             $db->setQuery($query);
             $cc_line = $db->loadAssoc();
 
             if (!empty($cc_line)) {
 
-                $query = 'UPDATE #__emundus_campaign_candidature SET `fnum` = '. $db->Quote($fnum_to) .', `campaign_id` = '. $db->Quote($campaign) .', `copied` = 2 WHERE `id` = ' . $db->Quote($cc_line['id']);
-                if (!empty($status)) {
-                	$query .= ' `status` = '.$db->Quote($status);
-                }
+            	$fields = [
+            		$db->quoteName('fnum').' = '.$db->quote($fnum_to),
+		            $db->quoteName('campaign_id').' = '.$db->quote($campaign),
+		            $db->quoteName('copied').' = 2'
+	            ];
+
+	            if (!empty($status)) {
+		            $fields[] = $db->quoteName('status').' = '.$db->quote($status);
+	            }
+
+            	$query->clear()
+		            ->update($db->quoteName('#__emundus_campaign_candidature'))
+		            ->set($fields)
+		            ->where($db->quoteName('id').' = '.$db->quote($cc_line['id']));
+
                 $db->setQuery($query);
                 $db->execute();
+	            return true;
 
             } else {
             	return false;
@@ -3315,10 +3254,7 @@ class EmundusModelApplication extends JModelList {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
-
         }
-
-        return true;
     }
 
     /**
@@ -3388,7 +3324,7 @@ class EmundusModelApplication extends JModelList {
                         if (count($data) > 0) {
                             foreach ($data as $d) {
                                 $q=3;
-                                $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
+                                $query = 'SELECT '.implode(',', $db->quoteName($d['element_name'])).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                 $db->setQuery($query);
                                 $stored = $db->loadAssocList();
 

@@ -209,9 +209,14 @@
 ​
 @media all and (max-width: 767px) {
 
+    .homepage .campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {
+        margin-top: 10px !important;
+    }
+
     .rotate-me p {
         transform: rotate(0deg);
         right: 0;
+        padding-right: 30px;
     }
     ​
     #depositor-select {
@@ -343,6 +348,10 @@
         text-align: left;
     }
 
+    .left-side, .right-side {
+        padding: 10px 10px 10px 10px !important;
+    }
+
 }
 
 @media all and (max-width: 959px) {
@@ -381,7 +390,7 @@
     }
 
     .left-side, .right-side {
-        padding: 10px 10px 10px 40px !important;
+        padding: 10px 10px 10px 40px;
     }
 
     .below-content {

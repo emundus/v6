@@ -69,6 +69,7 @@
                     @searched="onSearchYear"
                     :items="this.session"
                     :year="form.year"
+                    :name="'2020 - 2021'"
             />
           </div>
           <div class="form-group d-flex">
@@ -671,9 +672,6 @@ export default {
 
       this.submitted = true;
 
-      this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-      this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
-
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=program&task=createprogram",
@@ -682,7 +680,15 @@ export default {
         },
         data: qs.stringify({ body: this.programForm })
       }).then(() => {
+          let newsession = true;
+
           if (this.campaign !== "") {
+            if(typeof this.form.start_date == 'object'){
+              this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+            }
+            if(typeof this.form.end_date == 'object'){
+              this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+            }
             axios({
               method: "post",
               url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatecampaign",
@@ -696,6 +702,12 @@ export default {
                 console.log(error);
               });
           } else {
+            if(typeof this.form.start_date == 'object'){
+              this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+            }
+            if(typeof this.form.end_date == 'object'){
+              this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+            }
             axios({
               method: "post",
               url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
@@ -710,17 +722,24 @@ export default {
                 console.log(error);
               });
           }
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=campaign&task=createyear",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({ body: this.year })
-          }).then(response => {})
-            .catch(error => {
-              console.log(error);
-            });
+        this.years.forEach((elt) => {
+          if(elt.schoolyear == this.year.schoolyear){
+            newsession = false;
+          }
+        });
+          if(newsession) {
+            axios({
+              method: "post",
+              url: "index.php?option=com_emundus_onboard&controller=campaign&task=createyear",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              data: qs.stringify({body: this.year})
+            }).then(response => {})
+                .catch(error => {
+                  console.log(error);
+                });
+          }
         }).catch(error => {
           console.log(error);
         });
@@ -819,7 +838,9 @@ export default {
   watch: {
     'form.start_date': function (val, oldVal) {
       this.minDate = LuxonDateTime.fromISO(val).plus({ days: 1 });
-      this.form.end_date = LuxonDateTime.fromISO(val).plus({ days: 1 });
+      if(this.form.end_date == "") {
+        this.form.end_date = LuxonDateTime.fromISO(val).plus({days: 1});
+      }
     }
   }
 };

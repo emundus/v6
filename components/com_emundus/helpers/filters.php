@@ -353,8 +353,8 @@ class EmundusHelperFilters {
 					AND groupe.id IN ('.$groups.') ';
 		$query .= isset($show_in_list_summary) ?' AND element.show_in_list_summary = '.$show_in_list_summary : '';
 		$query .= isset($hidden) ?' AND element.hidden = '.$hidden : '';
-		$query .= ' ORDER BY formgroup.ordering, groupe.id, element.ordering';
-	//die(str_replace("#_", "jos", $query));
+        $query .= ' ORDER BY find_in_set(groupe.id, "'. $groups . '"), element.ordering';
+
 		$db->setQuery( $query );
 		return $db->loadObjectList();
 	}
@@ -405,7 +405,9 @@ class EmundusHelperFilters {
 				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
 				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
 				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-				WHERE element.id IN ('.$elements_id.')';
+				WHERE element.id IN ('.$elements_id.')
+            	ORDER BY find_in_set(element.ordering, "'. $elements_id . '")';
+
 		$db->setQuery($query);
 		return  $db->loadObjectList();
 	}

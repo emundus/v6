@@ -145,8 +145,8 @@
 	</div>
 <?php endif;?>
 <?php if(!empty($this->access['users'])):?>
-	<div class="row">
-		<div class="col-md-2 table-left em-container-share-table-left">
+	<div class="row" style="display: flex;">
+		<div class="table-left em-container-share-table-left">
 			<table class="table table-bordered" id="users-table">
 				<thead>
 				<tr>

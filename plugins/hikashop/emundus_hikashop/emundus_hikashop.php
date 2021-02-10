@@ -31,7 +31,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         $em_application_payment = $eMConfig->get('application_payment', 'user');
 
         $session = JFactory::getSession()->get('emundusUser');
-        $order_id = $order->order_id;
+        $order_id = $order->order_parent_id ?: $order->order_id;
 
         if (!empty($session)) {
             $user = $session->id;
@@ -47,8 +47,6 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         $db = JFactory::getDbo();
         $config = hikashop_config();
         $confirmed_statuses = explode(',', trim($config->get('invoice_order_statuses','confirmed,shipped'), ','));
-
-
 
         if(empty($confirmed_statuses)) {
             $confirmed_statuses = array('confirmed','shipped');
@@ -146,7 +144,7 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
     public function onAfterOrderUpdate(&$order){
         $db         = JFactory::getDbo();
-        $order_id   = $order->order_id;
+        $order_id = $order->order_parent_id ?: $order->order_id;
 
         if ($order_id > 0) {
             $query = 'SELECT * FROM #__emundus_hikashop WHERE order_id='.$order_id;
@@ -177,7 +175,10 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         // get the step of paiement
         $key = array_search($status, $application_payment_status);
 
-        if ($status_after_payment[$key] > 0) {
+        $config = hikashop_config();
+        $confirmed_statuses = explode(',', trim($config->get('invoice_order_statuses','confirmed,shipped'), ','));
+
+        if ($status_after_payment[$key] > 0 && in_array($order->order_status, $confirmed_statuses)) {
             require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
             $m_files = new EmundusModelFiles();
             $m_files->updateState($fnum, $status_after_payment[$key]);

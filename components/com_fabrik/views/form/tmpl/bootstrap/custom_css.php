@@ -77,6 +77,24 @@ echo <<<EOT
 
 /* FORMULAIRE */
 
+.view-form #g-sidebar{
+  position: sticky;
+  top: 0;
+}
+
+.view-form #g-page-surround{
+  overflow: visible;
+}
+
+.view-form form .row-fluid .control-group.fabrikElementContainer label.fabrikLabel.control-label.fabrikTip  {
+    display: inline-block;
+}
+
+.view-form form .row-fluid .control-group.fabrikElementContainer label.fabrikLabel.control-label.fabrikTip i.icon-star.small {
+    top: -5px;
+}
+
+
 .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn:not(.active) {
     background-color: #c6c6c6;
         margin-left: 0px;
@@ -100,6 +118,11 @@ echo <<<EOT
     padding-right: 5%;
 }
 
+.view-registration main#g-main-mainbody {
+    padding-right: 0;
+}
+
+
 .view-form .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions{
     padding: 0;
 }
@@ -109,6 +132,10 @@ echo <<<EOT
     margin-bottom: 20px;
     border-radius: 0;
     padding: 20px;
+}
+
+.view-form.view-registration .fabrikGroup {
+    padding: 0px;
 }
 
 .view-form p.select-program + form .fabrikGroup {
@@ -121,6 +148,10 @@ echo <<<EOT
 
 .view-form:not(.em-formRegistrationCenter) .size-100 .size-100 .fabrikGroup {
     background: #fff;
+}
+
+.view-form.view-registration .size-100 .size-100 .fabrikGroup {
+    background: #fafafa;
 }
 
 .view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
@@ -456,6 +487,18 @@ form#member-profile .form-horizontal .control-label {
     color: #c30505;
     font-size: 5px;
 }
+
+.view-registration .icon-star.small {
+    margin-top: 0px;
+    padding-top: 0px;
+    position: relative;
+    padding-left: 2px;
+    color: #c30505;
+    font-size: 5px;
+    order: 2;
+    top: -10px;
+}
+
 .icon-.small {
     display: none;
 }
@@ -508,21 +551,39 @@ form#member-profile .form-horizontal .control-label {
 
 /* Inscription */
 
-  .view-registration .login.em-formRegistrationCenter,  .view-form .em-formRegistrationCenter:not(.componentheading) {
+  .view-registration .login.em-formRegistrationCenter,  .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) {
      display: flex !important;
     flex-direction: column;
     align-items: center;
     background: #fafafa;
-    width: 60%;
+    width: 59%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 50px;
     padding-bottom: 50px;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
 }
 
-  .view-registration .login.em-formRegistrationCenter .row-fluid {
+ .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .span4 .btn-group {
+        width: 100% !important; 
+}
+
+.view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .row-fluid .span4  {
+        width: 100% !important; 
+}
+
+.view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .row-fluid .span4 button {
+        width: 100% !important; 
+}
+
+
+.view-registration .login.em-formRegistrationCenter .row-fluid {
     background: #fafafa;
+}
+
+  .view-registration form .row-fluid .plg-password span, .view-form.em-formRegistrationCenter form .row-fluid .plg-password span {
+    color: #000; 
+    margin-top: 5px;
 }
 
   /* ICON  TITRE INSCRIPTION */
@@ -1053,13 +1114,10 @@ footer#g-footer {
 .fabrikForm .fabrikSubGroup{
     position: relative;
 }
-.fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
-    position: absolute;
-    right: 10px;
-}
 
 .radio input[type="radio"], .checkbox input[type="checkbox"] {
     margin-left: 0px !important;
+    margin-top: 5px !important;
 }
 
 .header-right a.btn.btn-danger.connexion, .header-right a.btn.btn-danger.inscription  {
@@ -1087,18 +1145,20 @@ ol li {
    margin-bottom: 10px;
 }
 
-.view-registration form .button.btn.btn-primary.save-btn.sauvegarder.button.register, .view-form .em-formRegistrationCenter .button.btn.btn-primary.save-btn.sauvegarder.button.register {
+.view-registration form .button.btn.btn-primary, .view-form .em-formRegistrationCenter #login-form #form-login-submit button {
     height: 50px !important;
-    text-transform: capitalize;
+    text-transform: initial;
     width:100%;
+    padding: 8px 12px; 
 }
 
-.view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input {
+.view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input:not([type="radio"]) {
    border-radius : 4px; 
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid .controls input[type="radio"] {
    margin-top: 5px;
+      border-radius : 20px; 
 }
 
 .view-registration form.fabrikForm fieldset.fabrikGroup.form-horizontal .row-fluid:nth-child(4) .controls label.radio {
@@ -1109,7 +1169,7 @@ ol li {
     height: 50px !important;
 }
 
-.view-registration form .fabrikActions.form-actions{
+.view-registration form .fabrikActions.form-actions {
     padding: 0 !important;
 }
 .view-registration form .span4{
@@ -1118,7 +1178,7 @@ ol li {
 .view-registration form .btn-group{
     width:100%;
 }
-.view-registration form button.register{
+.view-registration form button.register {
     width:100% !important;
     font-weight: 300; 
 }
@@ -1206,6 +1266,11 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
 .view-form input[type='radio']:checked {
       height: 12px;
       width: 12px;
+    
+}
+
+.view-form form.fabrikForm .row-fluid .plg-date .input-append {
+    display: flex;
 }
 
 /* FORMULAIRE D'INSCRIPTION */
@@ -1287,18 +1352,30 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   padding: 2px 30px;
 }
 
-.fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
+.view-form.view-registration .fabrikForm fieldset > .row-fluid, .view-form.em-formRegistrationCenter .fabrikForm fieldset > .row-fluid {
+  padding: 0px;
+}
+
+.view-form.em-formRegistrationCenter main#g-main-mainbody {
+    padding-right: 0%;
+}
+
+.fabrikForm .fabrikSubGroup .fabrikGroupRepeater  {
   position: absolute;
-  top: -10px;
+  top: -5px;
   right: 10px;
   display: flex;
 }
 
-.fabrikForm .fabrikSubGroup .fabrikGroupRepeater {
-  position: absolute;
-  top: -10px;
-  right: 10px;
-  display: flex;
+.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.view-form .fabrikGroup td.fabrikGroupRepeater .pull-right a {
+    margin-right: 10px !important;
+    font-size: 11.9px;
 }
 
 .form-actions .row-fluid {
@@ -1445,7 +1522,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 .view-form .fabrikGroupRepeater .pull-right .addGroup i {
-  color: #37828e !important;
+  color: #3e8ac5 !important;
 }
 
 form.fabrikForm label.fabrikTip, form.fabrikForm label.checkbox, form.fabrikForm label.radio {
@@ -1480,6 +1557,11 @@ form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
 
 
 /* BOUTONS + et - */
+
+.view-form form .table-striped tbody tr:nth-child(2n+1) td, .view-form form .table-striped tbody tr:nth-child(2n+1) th  {
+    border: none; 
+    background: transparent; 
+}
 
 .view-form .fabrikGroupRepeater .addGroup {
   cursor: pointer !important;
@@ -1626,9 +1708,9 @@ a.btn-attach:active {
     border-radius: 0;
     background: #fafafa;
     border-radius: 0;
-    padding: 0px;
+    padding: 0px !important;
     box-shadow: none;
-    width: 58%;
+    width: 59%;
     margin-left: auto;
     margin-right: auto;
 }
@@ -1814,6 +1896,15 @@ a.btn-attach:active {
     .view-registration form {
           padding-left: 1rem;
           padding-right: 1rem;
+    }
+    
+    .view-form.em-formRegistrationCenter form {
+          width:100%;
+          padding: 20px;
+    }
+    
+    .view-form.em-formRegistrationCenter .fabrikForm fieldset > .row-fluid {
+          padding: 0px;
     }
 
     .view-registration .em-register-table {

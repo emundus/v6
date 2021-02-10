@@ -434,7 +434,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
          if ($fnums == "all") {
              $fnums = $m_files->getAllFnums();
 		 }
-		 
+
          $validFnums = array();
 
          foreach($fnums as $fnum) {
@@ -451,23 +451,23 @@ class EmundusControllerEvaluation extends JControllerLegacy
          exit;
      }
 
-   
+
      public function deletetags()
      {
          $jinput = JFactory::getApplication()->input;
          $fnums  = $jinput->getString('fnums', null);
          $tags    = $jinput->getVar('tag', null);
- 
+
          //var_dump($fnums);
          $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
- 
+
          $m_files = $this->getModel('Files');
          $m_application = $this->getModel('application');
- 
+
          if ($fnums == "all") {
              $fnums = $m_files->getAllFnums();
 		 }
-		 
+
          foreach ($fnums as $fnum)
          {
              foreach ($tags as $tag){
@@ -484,7 +484,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
          }
          unset($fnums);
          unset($tags);
- 
+
          echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAGS_DELETE_SUCCESS'))));
          exit;
      }
@@ -634,7 +634,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 							    $mailer = JFactory::getMailer();
 
 							    $post = array('FNUM' => $file['fnum']);
-							    $tags = $m_email->setTags($file['applicant_id'], $post);
+							    $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum']);
 
 							    $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
 							    $from_id    = 62;
@@ -902,7 +902,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         if ($fnums == 'all') {
             $fnums = $m_files->getAllFnums();
 		}
-		
+
         $validFnums = array();
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum))
@@ -963,7 +963,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $ids = $jinput->getString('ids', null);
         $ids = json_decode(stripslashes($ids));
         $res = new stdClass();
-        
+
         $m_evaluation = $this->getModel('evaluation');
         foreach($ids as $id)
         {
@@ -981,8 +981,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
                     $res->msg = JText::_("ACCESS_DENIED");
                 }
             }
-            
-            
+
+
         }
         echo json_encode($res);
         exit();
@@ -993,7 +993,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
         $student_id = $jinput->getString('student_id', null);
-        
+
         if( !EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('RESTRICTED_ACCESS'));
 
@@ -1089,13 +1089,13 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $fnums = $jinput->getVar('fnums', null);
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         $m_files = $this->getModel('Files');
-        
+
 		if($fnums == "all"){
             $fnums = $m_files->getAllFnums();
         }
-        
+
 		$validFnums = array();
-        
+
 		foreach($fnums as $fnum)
         {
             if(EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)&& $fnum != 'em-check-all-all' && $fnum != 'em-check-all')
@@ -1340,7 +1340,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 /*
 	public function export_xls_from_csv()
     {
-        // PHPExcel 
+        // PHPExcel
         ini_set('include_path', JPATH_BASE . DS . 'libraries' . DS);
         include 'PHPExcel.php';
         include 'PHPExcel/Writer/Excel5.php';
@@ -1459,7 +1459,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         @set_time_limit(10800);
         jimport( 'joomla.user.user' );
         error_reporting(0);
-        // PHPExcel 
+        // PHPExcel
         ini_set('include_path', JPATH_BASE.DS.'libraries'.DS);
 
         include 'PHPExcel.php';

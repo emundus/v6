@@ -37,7 +37,7 @@ class EmundusViewFiles extends JViewLegacy {
 	}
 
     public function display($tpl = null) {
-		
+
 		$current_user = JFactory::getUser();
 		$h_files = new EmundusHelperFiles;
 
@@ -52,7 +52,7 @@ class EmundusViewFiles extends JViewLegacy {
 	    $this->itemId = $app->input->getInt('Itemid', null);
 	    $this->cfnum = $app->input->getString('cfnum', null);
 		$layout = $app->input->getString('layout', null);
-		
+
 		$m_files = $this->getModel('Files');
 		$h_files->setMenuFilter();
 
@@ -121,7 +121,7 @@ class EmundusViewFiles extends JViewLegacy {
                 $m_user = new EmundusModelUsers();
 
                 $m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
-				
+
                 // get all fnums manually associated to user
 		        $groups = $m_user->getUserGroups($current_user->id, 'Column');
         		$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
@@ -130,7 +130,7 @@ class EmundusViewFiles extends JViewLegacy {
 
                 $this->assignRef('code', $m_files->code);
 				$this->assignRef('fnum_assoc', $m_files->fnum_assoc);
-				
+
 				// reset filter
 				$filters = $h_files->resetFilter();
 			    $this->assignRef('filters', $filters);
@@ -181,10 +181,10 @@ class EmundusViewFiles extends JViewLegacy {
 
 				$this->assignRef('code', $m_files->code);
                 $this->assignRef('fnum_assoc', $m_files->fnum_assoc);
-				
+
 			    // get applications files
 				$users = $this->get('Users');
-				
+
 				// Get elements from model and proccess them to get an easy to use array containing the element type
 				$elements = $m_files->getElementsVar();
 				foreach ($elements as $elt) {
@@ -203,7 +203,7 @@ class EmundusViewFiles extends JViewLegacy {
 
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
-				
+
 			    $defaultElements = $this->get('DefaultElements');
 			    $data = array(array('check' => '#', 'name' => JText::_('APPLICATION_FILES'), 'status' => JText::_('STATUS')));
 			    $fl = array();
@@ -240,6 +240,14 @@ class EmundusViewFiles extends JViewLegacy {
                                 break;
                             case 'photos':
                                 $displayPhoto = true;
+                                break;
+                            case 'form_progress':
+                                $data[0]['form_progress'] = JText::_('COM_EMUNDUS_FORM_PROGRESS');
+                                $colsSup['form_progress'] = array();
+                                break;
+                            case 'attachment_progress':
+                                $data[0]['attachment_progress'] = JText::_('COM_EMUNDUS_ATTACHMENT_PROGRESS');
+                                $colsSup['attachment_progress'] = array();
                                 break;
 						    case 'module':
 						    	// Get every module without a positon.
@@ -312,7 +320,6 @@ class EmundusViewFiles extends JViewLegacy {
 						    foreach ($colsSup as $key => $obj) {
 							    $userObj = new stdClass();
 							    if (!is_null($obj)) {
-
 							    	if (array_key_exists($user['fnum'], $obj)) {
 									    $userObj->val = $obj[$user['fnum']];
 									    $userObj->type = 'html';
@@ -346,6 +353,16 @@ class EmundusViewFiles extends JViewLegacy {
 					    $objAccess = $m_files->getAccessorByFnums($fnumArray);
 				    }
 
+                    if (isset($colsSup['form_progress'])) {
+                        $forms_progress = $m_files->getFormProgress($fnumArray);
+                        $colsSup['form_progress'] = $h_files->createFormProgressList($forms_progress);
+                    }
+
+                    if (isset($colsSup['attachment_progress'])) {
+                        $attachments_progress = $m_files->getAttachmentProgress($fnumArray);
+                        $colsSup['attachment_progress'] = $h_files->createAttachmentProgressList($attachments_progress);
+                    }
+
 				    if (!empty($mod_emundus_custom)) {
 				    	foreach ($mod_emundus_custom as $key => $module) {
 				    		if (isset($colsSup[$key])) {
@@ -365,6 +382,8 @@ class EmundusViewFiles extends JViewLegacy {
 			    $this->assignRef('actions', $actions);
 			    $pagination = $this->get('Pagination');
 			    $this->assignRef('pagination', $pagination);
+                $pageNavigation = $this->get('PageNavigation');
+                $this->assignRef('pageNavigation', $pageNavigation);
 			    $this->assignRef('users', $users);
 			    $this->assignRef('datas', $data);
 
