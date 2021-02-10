@@ -1403,7 +1403,17 @@ class EmundusModelApplication extends JModelList {
                                                         }
                                                     } elseif ($elements[$j]->plugin == 'internalid') {
                                                         $elt = '';
-                                                    } else {
+                                                    } elseif ($elements[$j]->plugin == 'field') {  
+                                                        if ($params->password == 1) {
+                                                            $elt = '******';
+                                                        } elseif ($params->password == 3) {
+                                                            $elt = '<a href="mailto:'.$r_elt.'">'.$r_elt.'</a>';
+                                                        } elseif ($params->password == 5) {
+                                                            $elt = '<a href="'.$r_elt.'" target="_blank">'.$r_elt.'</a>';
+                                                        } else {
+                                                            $elt = JText::_($r_elt);
+                                                        }
+                                                    }else {
                                                         $elt = $r_elt;
                                                     }
 
@@ -1544,7 +1554,21 @@ class EmundusModelApplication extends JModelList {
                                             }
 	                                    } elseif ($element->plugin == 'internalid') {
 		                                    $elt = '';
-	                                    } else {
+	                                    } 
+                                        elseif ($element->plugin == 'field') {
+                                            $params = json_decode($element->params);
+
+                                            if ($params->password == 1) {
+                                                $elt = '******';
+                                            } elseif ($params->password == 3) {
+                                                $elt = '<a href="mailto:'.$element->content.'" title="'.JText::_($element->label).'">'.$element->content.'</a>';
+                                            } elseif ($params->password == 5) {
+                                                $elt = '<a href="'.$element->content.'" target="_blank" title="'.JText::_($element->label).'">'.$element->content.'</a>';
+                                            } else {
+                                                $elt = $element->content;
+                                            }
+                                        }
+                                        else {
 		                                    $elt = $element->content;
 	                                    }
 
@@ -1579,7 +1603,7 @@ class EmundusModelApplication extends JModelList {
     // @param   int applicant user id
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
-    function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) {
+    function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) { 
            /* COULEURS*/
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
 	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
@@ -1688,9 +1712,6 @@ class EmundusModelApplication extends JModelList {
                         }
 
                         elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements) < 6 && !$asTextArea) {
-
-
-
                             //-- Entrée du tableau -- */
                             $t_elt = array();
                             foreach ($elements as &$element) {
@@ -1865,6 +1886,16 @@ class EmundusModelApplication extends JModelList {
                                                     }
                                                 } elseif ($elements[$j]->plugin == 'internalid') {
                                                     $elt = '';
+                                                } elseif ($elements[$j]->plugin == 'field') {  
+                                                    if ($params->password == 1) {
+                                                        $elt = '******';
+                                                    } elseif ($params->password == 3) {
+                                                        $elt = '<a href="mailto:'.$r_elt.'">'.$r_elt.'</a>';
+                                                    } elseif ($params->password == 5) {
+                                                        $elt = '<a href="'.$r_elt.'" target="_blank">'.$r_elt.'</a>';
+                                                    } else {
+                                                        $elt = JText::_($r_elt);
+                                                    }
                                                 } else {
                                                     $elt = JText::_($r_elt);
                                                 }
@@ -2025,7 +2056,17 @@ class EmundusModelApplication extends JModelList {
                                                     }
                                                 } elseif ($elements[$j]->plugin == 'internalid') {
                                                     $elt = '';
-                                                } else {
+                                                } elseif ($elements[$j]->plugin == 'field') {  
+                                                    if ($params->password == 1) {
+                                                        $elt = '******';
+                                                    } elseif ($params->password == 3) {
+                                                        $elt = '<a href="mailto:'.$r_elt.'">'.$r_elt.'</a>';
+                                                    } elseif ($params->password == 5) {
+                                                        $elt = '<a href="'.$r_elt.'" target="_blank">'.$r_elt.'</a>';
+                                                    } else {
+                                                        $elt = JText::_($r_elt);
+                                                    }
+                                                }else {
                                                     $elt = JText::_($r_elt);
                                                 }
 
@@ -2177,7 +2218,19 @@ class EmundusModelApplication extends JModelList {
                                             }
                                         } elseif ($element->plugin == 'internalid') {
 		                                    $elt = '';
-                                        } else {
+                                        } elseif ($element->plugin == 'field') {
+                                            $params = json_decode($element->params);
+
+                                            if ($params->password == 1) {
+                                                $elt = '******';
+                                            } elseif ($params->password == 3) {
+                                                $elt = '<a href="mailto:'.$element->content.'" title="'.JText::_($element->label).'">'.$element->content.'</a>';
+                                            } elseif ($params->password == 5) {
+                                                $elt = '<a href="'.$element->content.'" target="_blank" title="'.JText::_($element->label).'">'.$element->content.'</a>';
+                                            } else {
+                                                $elt = $element->content;
+                                            }
+                                        }else {
                                             $elt = JText::_($element->content);
                                         }
 
