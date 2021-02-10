@@ -1,5 +1,5 @@
 <?php 
-require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
+//require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'fpdf.php');
 require_once(JPATH_LIBRARIES.DS.'FPDI'.DS.'fpdi.php');
 require_once(JPATH_LIBRARIES.DS.'FPDI'.DS.'fpdi_pdf_parser.php');
@@ -31,6 +31,7 @@ class ConcatPdf extends FPDI {
 
      function concat() {
           foreach($this->files AS $file) {
+
                $pagecount = $this->setSourceFile($file);
                for ($i = 1; $i <= $pagecount; $i++) {
                     $tplidx = $this->ImportPage($i);
