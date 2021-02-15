@@ -21,11 +21,13 @@ $site_offset = $config->get('offset');
 <?= $mod_em_campaign_intro; ?>
 
 <form action="index.php" method="post" id="search_program">
-	<?php if (isset($searchword) && !empty($searchword)) :?>
-		<div class="g-block size-100">
-			<p><b><?php echo JText::_("RESULT_FOR")." : ".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8'); ?></b></p>
-		</div>
-	<?php endif; ?>
+    <?php if($mod_em_campaign_show_search): ?>
+        <?php if (isset($searchword) && !empty($searchword)) :?>
+            <div class="g-block size-100">
+                <p><b><?php echo JText::_("RESULT_FOR")." : ".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8'); ?></b></p>
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
 	<div class="g-grid" id="navfilter">
 		<div class="g-block size-30 navrowtabs">
 			<ul id="tabslist" class="nav nav-tabs">
@@ -81,27 +83,29 @@ $site_offset = $config->get('offset');
 			</p>
 		</div>
         <?php endif; ?>
-		<div class="g-block size-30 navsearch">
-			<div class="navsearch-content">
-				<div class="g-block size-100">
-					<div class="input-group">
-                        <label for="searchword" style="display: inline-block">
-                            <input name="searchword" type="text" class="form-control" placeholder="<?php  echo JText::_("SEARCH")."..." ; ?>" <?php if (isset($searchword) && !empty($searchword)) { echo "value=".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');}; ?>>
-                        </label>
-						<span class="input-group-btn">
-                            <button class="btn btn-default sch" type="submit"><?php  echo JText::_("SEARCH"); ?></button>
-                        </span>
-					</div><!-- /input-group -->
-				</div><!-- /.col-lg-6 -->
-			</div>
-		</div>
+        <?php if($mod_em_campaign_show_search): ?>
+            <div class="g-block size-30 navsearch">
+                <div class="navsearch-content">
+                    <div class="g-block size-100">
+                        <div class="input-group">
+                            <label for="searchword" style="display: inline-block">
+                                <input name="searchword" type="text" class="form-control" placeholder="<?php  echo JText::_("SEARCH")."..." ; ?>" <?php if (isset($searchword) && !empty($searchword)) { echo "value=".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');}; ?>>
+                            </label>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default sch" type="submit"><?php  echo JText::_("SEARCH"); ?></button>
+                            </span>
+                        </div><!-- /input-group -->
+                    </div><!-- /.col-lg-6 -->
+                </div>
+            </div>
+        <?php endif; ?>
 	</div>
 
 	<div class="tab-content">
         <?php if (in_array('current', $mod_em_campaign_list_tab)) : ?>
 		<div id="current" class="tab-pane fade in active">
 			<div class="campaigns-list">
-				<p class="campaigns-list-result"><?php echo $paginationCurrent->getResultsCounter(); ?></p>
+                <?php if($mod_em_campaign_show_results): ?><p class="campaigns-list-result"><?php echo $paginationCurrent->getResultsCounter(); ?></p><?php endif; ?>
 				<?php if (empty($currentCampaign)) {?>
 					<div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
 				<?php } else {
@@ -255,7 +259,7 @@ $site_offset = $config->get('offset');
     <?php if (in_array('futur', $mod_em_campaign_list_tab)) : ?>
 	<div id="futur" class="tab-pane fade in active">
 		<div class="campaigns-list">
-            <p class="campaigns-list-result"><?php echo $paginationFutur->getResultsCounter(); ?></p>
+            <?php if($mod_em_campaign_show_results): ?><p class="campaigns-list-result"><?php echo $paginationFutur->getResultsCounter(); ?></p><?php endif; ?>
 			<?php if (empty($futurCampaign)) { ?>
 				<div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
 			<?php } else {
@@ -371,7 +375,7 @@ $site_offset = $config->get('offset');
     <?php if (in_array('past', $mod_em_campaign_list_tab)) : ?>
 	<div id="past" class="tab-pane fade in active">
 		<div class="campaigns-list">
-            <p class="campaigns-list-result"><?php echo $paginationPast->getResultsCounter(); ?></p>
+            <?php if($mod_em_campaign_show_results): ?><p class="campaigns-list-result"><?php echo $paginationPast->getResultsCounter(); ?></p><?php endif; ?>
 			<?php if (empty($pastCampaign)) { ?>
 				<div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
 			<?php } else {
