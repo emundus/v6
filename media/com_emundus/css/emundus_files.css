@@ -1430,6 +1430,20 @@ thead th:hover {
     background-color: #fff !important;
 }
 
+.em-container-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.em-container-pagination-select {
+    display: flex;
+    align-items: center;
+}
+
+.em-container-pagination-label {
+    margin-right: 15px;
+}
+
 .well blockquote {
     border-color: #ddd !important;
     border-color: rgba(0, 0, 0, 0.15) !important;
@@ -1964,11 +1978,8 @@ label[for="em-file_to_upload"]:hover {
 .container-result{
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
-}
-.countCheckedCheckbox{
-    margin-left: 30%;
 }
 
 .tooltipSelectAttachments{

@@ -85,7 +85,7 @@ if (!empty($program_code)) {
 }
 
 // Get single campaign
-$cid = JFactory::getApplication()->input->getInt('id', 0);
+$cid = JFactory::getApplication()->input->getInt('cid', 0);
 if (!empty($cid)) {
     $condition = ' AND ca.id = ' . $cid;
 }

@@ -530,13 +530,15 @@ class EmundusModelApplication extends JModelList {
 	 * @since version
 	 */
     public function getAttachmentsProgress($fnum = null) {
+        $session = JFactory::getSession();
+        $current_user = $session->get('emundusUser');
 
         if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
             return false;
         }
 
         // Check if column campaign_id exist in emundus_setup_attachment_profiles
-        $config = new JConfig();
+        /*$config = new JConfig();
         $db_name = $config->db;
 
         $query = $this->_db->getQuery(true);
@@ -546,7 +548,7 @@ class EmundusModelApplication extends JModelList {
             ->andWhere($this->_db->quoteName('table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_attachment_profiles'))
             ->andWhere($this->_db->quoteName('column_name') . ' = ' . $this->_db->quote('campaign_id'));
         $this->_db->setQuery($query);
-        $exist = $this->_db->loadResult();
+        $exist = $this->_db->loadResult();*/
 
         if (!is_array($fnum)) {
 
@@ -566,10 +568,11 @@ class EmundusModelApplication extends JModelList {
 
             $procamp = $this->_db->loadObject();
 
-            $profile_id = $procamp->profile_id;
+            //$profile_id = $procamp->profile_id;
+            $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $procamp->profile_id && $current_user->applicant === 1) ? $current_user->profile : $procamp->profile_id;
             $campaign_id = $procamp->campaign_id;
 
-            if (intval($exist) > 0) {
+            try{
                 $query = 'SELECT COUNT(profiles.id)
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
@@ -580,18 +583,20 @@ class EmundusModelApplication extends JModelList {
 
                 $this->_db->setQuery($query);
                 $attachments = $this->_db->loadResult();
+            } catch (Exception $e){
+                JLog::add("Problem when try to get attachment progress by campaign: ".$e->getMessage(), JLog::ERROR, "com_emundus");
             }
 
-            if (intval($exist) == 0 || intval($attachments) == 0) {
+            if (intval($attachments) == 0) {
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
-                WHERE profiles.profile_id = ' .$profile_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+                WHERE profiles.profile_id = ' .$profile_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
             } else {
                 $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                 FROM #__emundus_setup_attachment_profiles AS profiles
                 LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like '.$this->_db->Quote($fnum).'
-                WHERE profiles.campaign_id = ' .$campaign_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1' ;
+                WHERE profiles.campaign_id = ' .$campaign_id. ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
             }
 
             $this->_db->setQuery($query);
@@ -621,15 +626,17 @@ class EmundusModelApplication extends JModelList {
                 $profile_id = $procamp->profile_id;
                 $campaign_id = $procamp->campaign_id;
 
-                if (intval($exist) > 0) {
+                try{
                     $query = 'SELECT COUNT(profiles.id)
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     WHERE profiles.campaign_id = ' . intval($campaign_id) . ' AND profiles.displayed = 1';
                     $this->_db->setQuery($query);
                     $attachments = $this->_db->loadResult();
+                } catch (Exception $e){
+                    JLog::add("Problem when try to get attachment progress by campaign: ".$e->getMessage(), JLog::ERROR, "com_emundus");
                 }
 
-                if (intval($exist) == 0 || intval($attachments) == 0) {
+                if (intval($attachments) == 0) {
                     $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
                     FROM #__emundus_setup_attachment_profiles AS profiles
                     LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($f) . '
@@ -793,9 +800,12 @@ class EmundusModelApplication extends JModelList {
                             if (!empty($element->label) && $element->label!=' ') {
 
                                 if ($element->plugin == 'date' && $element->content > 0) {
-
-                                    $date_params = json_decode($element->params);
-                                    $elt = date($date_params->date_form_format, strtotime($element->content));
+                                    if(!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                        $date_params = json_decode($element->params);
+                                        $elt = date($date_params->date_form_format, strtotime($element->content));
+                                    } else {
+                                        $elt = '';
+                                    }
 
                                 } elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content > 0) {
                                     preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
@@ -928,9 +938,12 @@ class EmundusModelApplication extends JModelList {
                                     if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
                                         if ($elements[$j]->plugin == 'date') {
-
-                                            $date_params = json_decode($elements[$j]->params);
-                                            $elt = date($date_params->date_form_format, strtotime($r_elt));
+                                            if(!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
+                                                $date_params = json_decode($elements[$j]->params);
+                                                $elt = date($date_params->date_form_format, strtotime($r_elt));
+                                            } else {
+                                                $elt = '';
+                                            }
 
                                         } elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt > 0) {
                                             preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
@@ -1045,9 +1058,12 @@ class EmundusModelApplication extends JModelList {
                                     continue;
                                 }
                                 if ($element->plugin == 'date' && $element->content > 0) {
-
-                                    $date_params = json_decode($element->params);
-                                    $elt = date($date_params->date_form_format, strtotime($element->content));
+                                    if(!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                        $date_params = json_decode($element->params);
+                                        $elt = date($date_params->date_form_format, strtotime($element->content));
+                                    } else {
+                                        $elt = '';
+                                    }
 
                                 } elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content > 0) {
                                     preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
@@ -1320,7 +1336,11 @@ class EmundusModelApplication extends JModelList {
                                                 if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
                                                     if ($elements[$j]->plugin == 'date') {
-                                                        $elt = date($params->date_form_format, strtotime($r_elt));
+                                                        if(!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
+                                                            $elt = date($params->date_form_format, strtotime($r_elt));
+                                                        } else {
+                                                            $elt = '';
+                                                        }
                                                     }
 
                                                     elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt>0) {
@@ -1442,7 +1462,17 @@ class EmundusModelApplication extends JModelList {
                                                         }
                                                     } elseif ($elements[$j]->plugin == 'internalid') {
                                                         $elt = '';
-                                                    } else {
+                                                    } elseif ($elements[$j]->plugin == 'field') {  
+                                                        if ($params->password == 1) {
+                                                            $elt = '******';
+                                                        } elseif ($params->password == 3) {
+                                                            $elt = '<a href="mailto:'.$r_elt.'">'.$r_elt.'</a>';
+                                                        } elseif ($params->password == 5) {
+                                                            $elt = '<a href="'.$r_elt.'" target="_blank">'.$r_elt.'</a>';
+                                                        } else {
+                                                            $elt = JText::_($r_elt);
+                                                        }
+                                                    }else {
                                                         $elt = $r_elt;
                                                     }
 
@@ -1479,8 +1509,12 @@ class EmundusModelApplication extends JModelList {
 		                                }
 
 	                                    if ($element->plugin=='date' && $element->content>0) {
-	                                        $date_params = json_decode($element->params);
-	                                        $elt = date($date_params->date_form_format, strtotime($element->content));
+                                            if(!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                                $date_params = json_decode($element->params);
+                                                $elt = date($date_params->date_form_format, strtotime($element->content));
+                                            } else {
+                                                $elt = '';
+                                            }
 	                                    }
 	                                    elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content>0) {
                                             preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $element->content, $matches);
@@ -1583,7 +1617,21 @@ class EmundusModelApplication extends JModelList {
                                             }
 	                                    } elseif ($element->plugin == 'internalid') {
 		                                    $elt = '';
-	                                    } else {
+	                                    } 
+                                        elseif ($element->plugin == 'field') {
+                                            $params = json_decode($element->params);
+
+                                            if ($params->password == 1) {
+                                                $elt = '******';
+                                            } elseif ($params->password == 3) {
+                                                $elt = '<a href="mailto:'.$element->content.'" title="'.JText::_($element->label).'">'.$element->content.'</a>';
+                                            } elseif ($params->password == 5) {
+                                                $elt = '<a href="'.$element->content.'" target="_blank" title="'.JText::_($element->label).'">'.$element->content.'</a>';
+                                            } else {
+                                                $elt = $element->content;
+                                            }
+                                        }
+                                        else {
 		                                    $elt = $element->content;
 	                                    }
 
@@ -1618,7 +1666,7 @@ class EmundusModelApplication extends JModelList {
     // @param   int applicant user id
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
-    function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) {
+    function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null) { 
            /* COULEURS*/
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
 	    $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
@@ -1727,9 +1775,6 @@ class EmundusModelApplication extends JModelList {
                         }
 
                         elseif (($itemg->repeated > 0 || $itemg->repeated_1 > 0) && count($elements) < 6 && !$asTextArea) {
-
-
-
                             //-- Entrée du tableau -- */
                             $t_elt = array();
                             foreach ($elements as &$element) {
@@ -1786,16 +1831,20 @@ class EmundusModelApplication extends JModelList {
                                             if ($key != 'id' && $key != 'parent_id' && isset($elements[$j]) && $elements[$j]->plugin != 'display') {
 
                                                 // Do not display elements with no value inside them.
-                                                if ($show_empty_fields == 0 && trim($r_elt) == '') {
+                                               /* if ($show_empty_fields == 0 && trim($r_elt) == '') {
                                                     continue;
-                                                }
+                                                }*/
 
                                                 $params = json_decode($elements[$j]->params);
 
                                                 if ($elements[$j]->plugin == 'date') {
-                                                    $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
-                                                    $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
-                                                    $elt = $dt->format($params->date_form_format);
+                                                    if(!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
+                                                        $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
+                                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+                                                        $elt = $dt->format($params->date_form_format);
+                                                    } else {
+                                                        $elt = '';
+                                                    }
                                                 }
                                                 elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt > 0) {
                                                     preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
@@ -1904,6 +1953,16 @@ class EmundusModelApplication extends JModelList {
                                                     }
                                                 } elseif ($elements[$j]->plugin == 'internalid') {
                                                     $elt = '';
+                                                } elseif ($elements[$j]->plugin == 'field') {  
+                                                    if ($params->password == 1) {
+                                                        $elt = '******';
+                                                    } elseif ($params->password == 3) {
+                                                        $elt = '<a href="mailto:'.$r_elt.'">'.$r_elt.'</a>';
+                                                    } elseif ($params->password == 5) {
+                                                        $elt = '<a href="'.$r_elt.'" target="_blank">'.$r_elt.'</a>';
+                                                    } else {
+                                                        $elt = JText::_($r_elt);
+                                                    }
                                                 } else {
                                                     $elt = JText::_($r_elt);
                                                 }
@@ -1971,10 +2030,14 @@ class EmundusModelApplication extends JModelList {
                                             if (!empty($r_elt) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])  && $elements[$j]->plugin != 'display') {
 
                                                 if ($elements[$j]->plugin == 'date') {
-                                                    $date_params = json_decode($elements[$j]->params);
-                                                    $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
-                                                    $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
-                                                    $elt = $dt->format($date_params->date_form_format);
+                                                    if(!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
+                                                        $date_params = json_decode($elements[$j]->params);
+                                                        $dt = new DateTime($r_elt, new DateTimeZone('UTC'));
+                                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+                                                        $elt = $dt->format($date_params->date_form_format);
+                                                    } else {
+                                                        $elt = '';
+                                                    }
                                                 }
                                                 elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt > 0) {
                                                     preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
@@ -2064,7 +2127,17 @@ class EmundusModelApplication extends JModelList {
                                                     }
                                                 } elseif ($elements[$j]->plugin == 'internalid') {
                                                     $elt = '';
-                                                } else {
+                                                } elseif ($elements[$j]->plugin == 'field') {  
+                                                    if ($params->password == 1) {
+                                                        $elt = '******';
+                                                    } elseif ($params->password == 3) {
+                                                        $elt = '<a href="mailto:'.$r_elt.'">'.$r_elt.'</a>';
+                                                    } elseif ($params->password == 5) {
+                                                        $elt = '<a href="'.$r_elt.'" target="_blank">'.$r_elt.'</a>';
+                                                    } else {
+                                                        $elt = JText::_($r_elt);
+                                                    }
+                                                }else {
                                                     $elt = JText::_($r_elt);
                                                 }
 
@@ -2123,10 +2196,13 @@ class EmundusModelApplication extends JModelList {
                                         	if ($show_empty_fields == 0 && $element->content == '0000-00-00 00:00:00') {
                                         		continue;
 	                                        }
-
-                                        	$dt = new DateTime($element->content, new DateTimeZone('UTC'));
-	                                        $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
-	                                        $elt = $dt->format($params->date_form_format);
+                                            if(!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                                $dt = new DateTime($element->content, new DateTimeZone('UTC'));
+                                                $dt->setTimezone(new DateTimeZone(JFactory::getConfig()->get('offset')));
+                                                $elt = $dt->format($params->date_form_format);
+                                            } else {
+                                                $elt = '';
+                                            }
                                         }
 
                                         elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content > 0) {
@@ -2216,7 +2292,19 @@ class EmundusModelApplication extends JModelList {
                                             }
                                         } elseif ($element->plugin == 'internalid') {
 		                                    $elt = '';
-                                        } else {
+                                        } elseif ($element->plugin == 'field') {
+                                            $params = json_decode($element->params);
+
+                                            if ($params->password == 1) {
+                                                $elt = '******';
+                                            } elseif ($params->password == 3) {
+                                                $elt = '<a href="mailto:'.$element->content.'" title="'.JText::_($element->label).'">'.$element->content.'</a>';
+                                            } elseif ($params->password == 5) {
+                                                $elt = '<a href="'.$element->content.'" target="_blank" title="'.JText::_($element->label).'">'.$element->content.'</a>';
+                                            } else {
+                                                $elt = $element->content;
+                                            }
+                                        }else {
                                             $elt = JText::_($element->content);
                                         }
 
@@ -2312,7 +2400,9 @@ class EmundusModelApplication extends JModelList {
                                     if ($element->plugin=='date' && $element->content>0) {
                                         $date_params = json_decode($element->params);
                                         $elt = date($date_params->date_form_format, strtotime($element->content));
-                                    } else $elt = $element->content;
+                                    } else {
+                                        $elt = $element->content;
+                                    }
                                     $forms .= '<p class="form-element"><b>'.JText::_($element->label).': </b>'.JText::_($elt).'</p>';
                                 }
                             }
@@ -2355,8 +2445,13 @@ class EmundusModelApplication extends JModelList {
                                     if ($key != 'id' && $key != 'parent_id' && isset($elements[$j]) && $elements[$j]->plugin != 'display') {
 
                                         if ($elements[$j]->plugin=='date') {
-                                            $date_params = json_decode($elements[$j]->params);
-                                            $elt = date($date_params->date_form_format, strtotime($r_elt));
+                                            if(!empty($elements[$j]->content) && $r_elt != '0000-00-00 00:00:00') {
+                                                $date_params = json_decode($elements[$j]->params);
+                                                $elt = date($date_params->date_form_format, strtotime($r_elt));
+                                            } else {
+                                                $elt = '';
+                                            }
+
                                         }
                                         elseif (($elements[$j]->plugin=='birthday' || $elements[$j]->plugin=='birthday_remove_slashes') && $r_elt>0) {
                                             preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
@@ -2449,9 +2544,12 @@ class EmundusModelApplication extends JModelList {
                                 if(!empty($element->label) && $element->label!=' ' && $element->plugin != 'display') {
 
                                     if ($element->plugin=='date' && $element->content>0) {
-                                        $date_params = json_decode($element->params);
-                                        // $elt = strftime($date_params->date_form_format, strtotime($element->content));
-                                        $elt = date($date_params->date_form_format, strtotime($element->content));
+                                        if(!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
+                                            $date_params = json_decode($element->params);
+                                            $elt = date($date_params->date_form_format, strtotime($element->content));
+                                        } else {
+                                            $elt = '';
+                                        }
 
                                     }
                                     elseif (($element->plugin=='birthday' || $element->plugin=='birthday_remove_slashes') && $element->content>0) {
@@ -2995,165 +3093,81 @@ class EmundusModelApplication extends JModelList {
      * Return the order for current fnum. If an order with confirmed status is found for fnum campaign period, then return the order
      * If $sent is sent to true, the function will search for orders with a status of 'created' and offline paiement methode
      * @param $fnumInfos $sent
-     * @param bool $sent
-     * @param bool $admission
-     * @return bool|mixed
+     * @param bool $cancelled
+     * @return bool|object
      */
-    public function getHikashopOrder($fnumInfos, $sent = false, $admission = false) {
+    public function getHikashopOrder($fnumInfos, $cancelled = false) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        if ($admission) {
-            $startDate = $fnumInfos['admission_start_date'];
-            $endDate = $fnumInfos['admission_end_date'];
-        } else {
-            $startDate = $fnumInfos['start_date'];
-            $endDate = $fnumInfos['end_date'];
-        }
-
-        $dbo = $this->getDbo();
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
 
         $em_application_payment = $eMConfig->get('application_payment', 'user');
-        $em_application_payment_status = $eMConfig->get('application_payment_status', '0');
+
+        if ($cancelled) {
+            $order_status = array('cancelled');
+        } else {
+            $order_status = array('confirmed');
+            switch ($eMConfig->get('accept_other_payments', 0)) {
+                case 1:
+                    array_push($order_status, 'created');
+                    break;
+                case 3:
+                    array_push($order_status, 'pending');
+                    break;
+                case 4:
+                    array_push($order_status, 'created', 'pending');
+                    break;
+                default:
+                    // No need to push to the array
+                break;
+
+            }
+        }
+
+        $query
+            ->select(['ho.*', $db->quoteName('eh.user', 'user_cms_id')])
+            ->from($db->quoteName('#__emundus_hikashop', 'eh'))
+            ->leftJoin($db->quoteName('#__hikashop_order','ho').' ON '.$db->quoteName('ho.order_id').' = '.$db->quoteName('eh.order_id'))
+            ->where($db->quoteName('ho.order_status') . ' IN (' . implode(", ", $db->quote($order_status)) . ')')
+            ->order($db->quoteName('order_created') . ' DESC');
 
         switch ($em_application_payment) {
 
+            default :
+            case 'fnum' :
+                $query
+                    ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
+                break;
 
             case 'user' :
-                if ($sent) {
-
-                    $query = 'SELECT ho.*, hu.user_cms_id
-                                FROM #__hikashop_order ho
-                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-
-                }
-                else {
-
-                    $query = 'SELECT ho.*, hu.user_cms_id
-                                FROM #__hikashop_order ho
-                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                                AND ho.order_status like "confirmed"
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-
-                }
-            break;
-
-            case 'fnum' :
-                if ($sent) {
-                    $query = 'SELECT ho.*, eh.user as user_cms_id
-                                FROM #__emundus_hikashop eh
-                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-                }
-                else {
-                    $query = 'SELECT ho.*, eh.user as user_cms_id
-                                FROM #__emundus_hikashop eh
-                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                AND ho.order_status like "confirmed"
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-                }
+                $query
+                    ->where($db->quoteName('eh.user') . ' = ' . $fnumInfos['applicant_id']);
             break;
 
             case 'campaign' :
-                if ($sent) {
-                    $query = 'SELECT ho.*, hu.user_cms_id
-                                FROM #__emundus_hikashop eh
-                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                                WHERE eh.campaign_id = '.$fnumInfos['id'].' 
-                                AND hu.user_cms_id = '.$fnumInfos['applicant_id'].' 
-                                AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-                }
-                else {
-                    $query = 'SELECT ho.*, hu.user_cms_id
-                                FROM #__emundus_hikashop eh
-                                LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                                WHERE eh.campaign_id= '.$fnumInfos['id'].' 
-                                AND hu.user_cms_id = '.$fnumInfos['applicant_id'].' 
-                                AND ho.order_status like "confirmed"
-                                AND ho.order_created >= '.strtotime($startDate).'
-                                AND ho.order_created <= '.strtotime($endDate).'
-                                ORDER BY ho.order_created desc';
-                }
-                break;
+                $query
+                    ->where($db->quoteName('eh.campaign_id') . ' = ' . $fnumInfos['id'])
+                    ->where($db->quoteName('eh.user') . ' = ' . $fnumInfos['applicant_id']);
+            break;
 
-                case 'status' :
-                    $payment_status = explode(',', $em_application_payment_status);
+            case 'status' :
+                $em_application_payment_status = $eMConfig->get('application_payment_status', '0');
+                $payment_status = explode(',', $em_application_payment_status);
 
-                    if(in_array($fnumInfos['status'], $payment_status)) {
-
-                        if ($sent) {
-                            $query = 'SELECT ho.*, eh.user as user_cms_id
-                                        FROM #__emundus_hikashop eh
-                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                        WHERE eh.status='.$fnumInfos['status'].' 
-                                        AND eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                        AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                        AND ho.order_created >= '.strtotime($startDate).'
-                                        AND ho.order_created <= '.strtotime($endDate).'
-                                        ORDER BY ho.order_created desc';
-                        }
-                        else {
-                            $query = 'SELECT ho.*, eh.user as user_cms_id
-                                        FROM #__emundus_hikashop eh
-                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                        WHERE eh.status='.$fnumInfos['status'].' 
-                                        AND eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                        AND ho.order_status like "confirmed"
-                                        AND ho.order_created >= '.strtotime($startDate).'
-                                        AND ho.order_created <= '.strtotime($endDate).'
-                                        ORDER BY ho.order_created desc';
-                        }
+                    if (in_array($fnumInfos['status'], $payment_status)) {
+                        $query
+                            ->where($db->quoteName('eh.status') . ' = ' . $fnumInfos['status'])
+                            ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
                     } else{
-
-                        if ($sent) {
-                            $query = 'SELECT ho.*, eh.user as user_cms_id
-                                        FROM #__emundus_hikashop eh
-                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                        WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                        AND (ho.order_status like "created" OR ho.order_status like "confirmed")
-                                        AND ho.order_created >= '.strtotime($startDate).'
-                                        AND ho.order_created <= '.strtotime($endDate).'
-                                        ORDER BY ho.order_created desc';
-                        }
-                        else {
-                            $query = 'SELECT ho.*, eh.user as user_cms_id
-                                        FROM #__emundus_hikashop eh
-                                        LEFT JOIN #__hikashop_order ho on ho.order_id = eh.order_id
-                                        WHERE eh.fnum LIKE "'.$fnumInfos['fnum'].'" 
-                                        AND ho.order_status like "confirmed"
-                                        AND ho.order_created >= '.strtotime($startDate).'
-                                        AND ho.order_created <= '.strtotime($endDate).'
-                                        ORDER BY ho.order_created desc';
-                        }
+                        $query
+                            ->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos['fnum']);
                     }
-                    break;
+            break;
         }
-
-
         try {
-
-            $dbo->setQuery($query);
-            return $dbo->loadObject();
-
+            $db->setQuery($query);
+            return $db->loadObject();
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -3162,48 +3176,9 @@ class EmundusModelApplication extends JModelList {
     }
 
     /**
-     * Return any cancelled orders for the current fnum. If an order with cancelled status is found for fnum campaign period, then return the order
-     * @param $fnumInfos
-     * @return bool|mixed
-     */
-    public function getHikashopCancelledOrders($fnumInfos, $admission = false) {
-
-        if($admission) {
-            $startDate = $fnumInfos['admission_start_date'];
-            $endDate = $fnumInfos['admission_end_date'];
-        }
-        else {
-            $startDate = $fnumInfos['start_date'];
-            $endDate = $fnumInfos['end_date'];
-        }
-
-        $db = $this->getDBo();
-
-        try {
-
-            $query = 'SELECT ho.*, hu.user_cms_id
-                FROM #__hikashop_order ho
-                LEFT JOIN #__hikashop_user hu on hu.user_id=ho.order_user_id
-                WHERE hu.user_cms_id='.$fnumInfos['applicant_id'].'
-                AND ho.order_status like "canceled"
-                AND ho.order_created >= '.strtotime($startDate).'
-                AND ho.order_created <= '.strtotime($endDate);
-
-            $db->setQuery($query);
-            return $db->loadObject();
-
-        } catch (Exception $e) {
-            JLog::add('Error in model/application at query : '.$query, JLog::ERROR, 'com_emundus');
-            return false;
-        }
-
-    }
-
-
-    /**
      * Return the checkout URL order for current fnum.
-     * @param $pid      the applicant's profile_id
-     * @return bool|mixed
+     * @param $pid   string|int   the applicant's profile_id
+     * @return bool|string
      */
     public function getHikashopCheckoutUrl($pid)
     {
@@ -3349,7 +3324,7 @@ class EmundusModelApplication extends JModelList {
                         if (count($data) > 0) {
                             foreach ($data as $d) {
                                 $q=3;
-                                $query = 'SELECT '.implode(',', $d['element_name']).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
+                                $query = 'SELECT '.implode(',', $db->quoteName($d['element_name'])).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                 $db->setQuery($query);
                                 $stored = $db->loadAssocList();
 

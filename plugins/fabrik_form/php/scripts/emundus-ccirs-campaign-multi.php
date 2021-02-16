@@ -481,7 +481,7 @@ if (!empty($fnums)) {
 						$mailer = JFactory::getMailer();
 
 						$query->clear()
-							->select($db->quoteName(['civility', 'lastname', 'firstname', 'birthday', 'adresse', 'code_postale', 'city', 'telephone', 'mobile_phone', 'vous_etes', 'raison_sociale', 'siret', 'de_number', 'opco']))
+							->select($db->quoteName(['civility', 'lastname', 'firstname', 'birthday', 'adresse', 'code_postale', 'city', 'telephone', 'mobile_phone', 'vous_etes', 'raison_sociale', 'siret', 'de_number', 'opco', 'email']))
 							->from($db->quoteName('jos_emundus_users'))
 							->where($db->quoteName('user_id').' = '.$file['applicant_id']);
 						$db->setQuery($query);
@@ -521,7 +521,8 @@ if (!empty($fnums)) {
 							'RAISON' => $usr->raison_sociale,
 							'SIRET' => $usr->siret,
 							'DE' => $usr->de_number,
-							'OPCO' => $usr->opco
+							'OPCO' => $usr->opco,
+							'CANDIDATE_EMAIL' => $usr->email
 						];
 						$tags = $m_emails->setTags($recipient['id'], $post);
 

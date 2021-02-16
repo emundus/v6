@@ -44,7 +44,7 @@ class plgUserEmundus extends JPlugin
             'DELETE FROM '.$db->quoteName('#__session') .
             ' WHERE '.$db->quoteName('userid').' = '.(int) $user['id']
         );
-        $db->Query();
+        $db->execute();
 
         $db->setQuery('SHOW TABLES');
         $tables = $db->loadColumn();
@@ -64,7 +64,7 @@ class plgUserEmundus extends JPlugin
                 $db->setQuery('DELETE FROM '.$table.' WHERE user_id = '.(int) $user['id']);
             elseif (strpos($table, '_emundus_comments')>0 || strpos($table, '_emundus_campaign_candidature')>0)
                 $db->setQuery('DELETE FROM '.$table.' WHERE applicant_id = '.(int) $user['id']);
-            $db->Query();
+            $db->execute();
         }
         $dir = EMUNDUS_PATH_ABS.$user['id'].DS;
         if (!$dh = @opendir($dir))
@@ -219,7 +219,7 @@ class plgUserEmundus extends JPlugin
             if ($isnew) {
 
                 // Update name and firstname from #__users
-                $db->setQuery(' UPDATE #__users SET name="'.ucfirst($firstname).' '.strtoupper($lastname).'",
+                $db->setQuery(' UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).',
                                 usertype = (SELECT u.title FROM #__usergroups AS u
                                                 LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
                                                 WHERE uum.user_id='.$user['id'].' ORDER BY uum.group_id DESC LIMIT 1) 
@@ -250,7 +250,7 @@ class plgUserEmundus extends JPlugin
 
                 $db->setQuery($query);
                 try {
-                    $db->Query();
+                    $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
                 }
@@ -267,7 +267,7 @@ class plgUserEmundus extends JPlugin
 
                 $db->setQuery($query);
                 try {
-                    $db->Query();
+                    $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
                 }
@@ -277,7 +277,7 @@ class plgUserEmundus extends JPlugin
                     $query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `campaign_id`, `fnum`) VALUES ('.$user['id'].','.$campaign_id.', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
                     $db->setQuery($query);
                     try {
-                        $db->Query();
+                        $db->execute();
                     } catch (Exception $e) {
                         // catch any database errors.
                     }
@@ -285,14 +285,14 @@ class plgUserEmundus extends JPlugin
 
             } elseif (!empty($lastname) && !empty($firstname)) {
                 // Update name and firstname from #__users
-                $db->setQuery('UPDATE #__users SET name="'.ucfirst($firstname).' '.strtoupper($lastname).'" WHERE id='.$user['id']);
-                $db->Query();
+                $db->setQuery('UPDATE #__users SET name='.$db->quote(ucfirst($firstname)).' '.$db->quote(strtoupper($lastname)).' WHERE id='.$user['id']);
+                $db->execute();
 
-                $db->setQuery('UPDATE #__emundus_users SET lastname="'.strtoupper($lastname).'", firstname="'.ucfirst($firstname).'" WHERE user_id='.$user['id']);
-                $db->Query();
+                $db->setQuery('UPDATE #__emundus_users SET lastname='.$db->quote(strtoupper($lastname)).', firstname='.$db->quote(ucfirst($firstname)).' WHERE user_id='.$user['id']);
+                $db->execute();
 
-                $db->setQuery('UPDATE #__emundus_personal_detail SET last_name="'.strtoupper($lastname).'", first_name="'.ucfirst($firstname).'" WHERE user='.$user['id']);
-                $db->Query();
+                $db->setQuery('UPDATE #__emundus_personal_detail SET last_name='.$db->quote(strtoupper($lastname)).', first_name='.$db->quote(ucfirst($firstname)).' WHERE user='.$user['id']);
+                $db->execute();
 
                 $this->onUserLogin($user);
 
@@ -553,7 +553,7 @@ class plgUserEmundus extends JPlugin
             ' WHERE '.$db->quoteName('userid').' = '.(int) $user['id'] .
             ' AND '.$db->quoteName('client_id').' = '.(int) $options['clientid']
         );
-        $db->query();
+        $db->execute();
 
         $app->redirect($url);
         return true;
