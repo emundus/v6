@@ -1307,6 +1307,10 @@ body.error-page p {
 
 
 /* BOUTONS */
+.btn-success:active:hover, .btn-warning:active:hover, .btn-danger:active:hover {
+  color: $base-primary-color !important;
+  border-color: $base-primary-color !important;
+}
 
 .view-form p.select-program a {
   border: 1px solid $base-secondary-color !important;
