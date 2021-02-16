@@ -13,7 +13,7 @@
 body {
   font-family: "Lato", sans-serif;
   border-top: 5px solid $base-secondary-color;
-  line-height: normal;
+  line-height: 1.8;
 
   p {
     margin: 0;
@@ -82,11 +82,7 @@ div,
 legend {
   font-weight: 300;
   font-style: normal;
-  line-height: normal;
-}
-
-a:focus {
-  outline: none;
+  line-height: 1.8;
 }
 
 a {
