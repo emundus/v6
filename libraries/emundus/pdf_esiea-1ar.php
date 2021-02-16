@@ -136,7 +136,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
 			$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter->attachment_id.' AND campaign_id='.$campaign['id']. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 
 		} catch (Exception $e) {
 			JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -204,7 +204,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
 			$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter->attachment_id.', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign['id'].', '.$db->Quote($fnum).')';
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 
 		} catch (Exception $e) {
 			JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -411,7 +411,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 				$query = 'DELETE FROM #__emundus_uploads WHERE user_id='.$user_id.' AND attachment_id='.$letter['attachment_id'].' AND campaign_id='.$campaign_id. ' AND fnum like '.$db->Quote($fnum).' AND filename NOT LIKE "%lock%"';
 				$db->setQuery($query);
-				$db->query();
+				$db->execute();
 
 			} catch (Exception $e) {
 				JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
@@ -549,7 +549,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
 					$query = 'INSERT INTO #__emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) VALUES ('.$user_id.', '.$letter['attachment_id'].', "'.$name.'","'.$training.' '.date('Y-m-d H:i:s').'", 0, 1, '.$campaign_id.', '.$db->Quote($fnum).')';
 					$db->setQuery($query);
-					$db->query();
+					$db->execute();
 					$id = $db->insertid();
 
 				} catch (Exception $e) {
@@ -893,7 +893,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	try {
 		$fnumInfo = $m_files->getFnumInfos($fnum);
-		$payment = $m_application->getHikashopOrder($fnumInfo,true);
+		$payment = $m_application->getHikashopOrder($fnumInfo);
 
 		// Users informations
 		$query = 'SELECT u.id, c.user_id, u.email as user_email, c.civility, c.firstname, c.lastname,c.mobile_phone, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.nationality, epd.birth_date, epd.street_1, epd.city_1, epd.city_other, epd.zipcode_1, epd.country_1, ea.*

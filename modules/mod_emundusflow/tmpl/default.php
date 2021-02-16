@@ -6,7 +6,7 @@ $deadline = !empty($admission) ? new JDate($user->fnums[$user->fnum]->admission_
 $renew='';
 $step_form = $forms<100?'':'completed';
 $step_attachment = $attachments<100?'':'completed';
-$step_paiement = @$paid==0?'':'completed';
+$step_paiement = (@$paid == false) ? '' : 'completed';
 $btn_send = '';
 if ($forms>=100 && $attachments>=100 && $sent == 0) {
   $btn_send = '
@@ -49,13 +49,13 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
     <?php } ?>
 <?php if ($application_fee == 1) { ?>
   <div class="<?php echo ($option=="com_hikashop")?"active":""; ?> <?php echo $step_paiement; ?> step">
-    <?php if ($paid == 0 && !empty($sentOrder) && !$orderCancelled): ?>
+    <?php if ($paid == false && !empty($sentOrder) && !$orderCancelled): ?>
       <?php if ($sentOrder->order_payment_method == 'paybox') :?>
         <i class="large credit card alternative icon"></i>
       <?php else: ?>
         <i class="large time outline icon"></i>
       <?php endif; ?>
-    <?php elseif ($paid == 0 && $orderCancelled): ?>
+    <?php elseif ($paid == false && $orderCancelled): ?>
       <i class="large ban outline icon"></i>
     <?php elseif (isset($scholarship) && $scholarship) :?>
       <i class="large student icon"></i>
@@ -67,16 +67,16 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
         <?php if (isset($scholarship) && $scholarship) :?>
           <div class="description"> <?php echo JText::_('HAS_SCHOLARSHIP'); ?> </div>
         <?php else: ?>
-          <div class="description"> <?php echo  ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?> </div>
+          <div class="description"> <?php echo  ($paid)?JText::_('APPLICATION_PAID'):JText::_('APPLICATION_NOT_PAID'); ?> </div>
         <?php endif; ?>
       <?php else :?>
-        <div class="description"> <?php echo  ($paid>0)?JText::_('APPLICATION_PAID'):JText::_('PAID_VIA_CARD'); ?> </div>
+        <div class="description"> <?php echo  ($paid)?JText::_('APPLICATION_PAID'):JText::_('PAID_VIA_CARD'); ?> </div>
       <?php endif; ?>
-      <div class="description"> <?php echo  ($paid==0 && !empty($sentOrder) && ($sentOrder->order_payment_method == 'banktransfer' || $sentOrder->order_payment_method == 'check'))?JText::_('AWAITING_PAYMENT'):'' ?> </div>
+      <div class="description"> <?php echo  ($paid == false && !empty($sentOrder) && ($sentOrder->order_payment_method == 'banktransfer' || $sentOrder->order_payment_method == 'check'))?JText::_('AWAITING_PAYMENT'):'' ?> </div>
       <div class="description">
-        <?php echo  ($paid==0 && !empty($sentOrder))?'<a href="'.$checkout_url.'" title="'.JText::_('RETRY_PAYMENT').'">'.JText::_('RETRY_PAYMENT').'</a>':''; ?>
-        <?php echo  ($paid==0 && !empty($sentOrder)==0 && $forms>=100 && $attachments>=100 && !$orderCancelled && !isset($scholarship))?'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?>
-        <?php echo  ($paid==0 && !empty($sentOrder)==0 && $forms>=100 && $attachments>=100 && $orderCancelled)?'<a href="'.$checkout_url.'" title="'.JText::_('PAYMENT_DECLINED').'">'.JText::_('PAYMENT_DECLINED').'</a>':''; ?>
+        <?php echo  ($paid == false && !empty($sentOrder))?'<a href="'.$checkout_url.'" title="'.JText::_('RETRY_PAYMENT').'">'.JText::_('RETRY_PAYMENT').'</a>':''; ?>
+        <?php echo  ($paid == false && !empty($sentOrder)==0 && $forms>=100 && $attachments>=100 && !$orderCancelled && !isset($scholarship))?'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?>
+        <?php echo  ($paid == false && !empty($sentOrder)==0 && $forms>=100 && $attachments>=100 && $orderCancelled)?'<a href="'.$checkout_url.'" title="'.JText::_('PAYMENT_DECLINED').'">'.JText::_('PAYMENT_DECLINED').'</a>':''; ?>
       </div>
     </div>
   </div>

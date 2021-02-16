@@ -1579,6 +1579,60 @@ class EmundusModelAdmission extends JModelList
         return $this->_pagination;
     }
 
+    public function getPageNavigation() : string {
+        $pageNavigation = "<div class='em-container-pagination-selectPage'>";
+        $pageNavigation .= "<ul class='pagination pagination-sm'>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        if ($this->getPagination()->pagesTotal > 15) {
+            for ($i = 1; $i <= 5; $i++ ) {
+                $pageNavigation .= "<li ";
+                if ($this->getPagination()->pagesCurrent == $i) {
+                    $pageNavigation .= "class='active'";
+                }
+                $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+            }
+            $pageNavigation .= "<li class='disabled'><span>...</span></li>";
+            if ($this->getPagination()->pagesCurrent <= 5) {
+                for ($i = 6; $i <= 10; $i++ ) {
+                    $pageNavigation .= "<li ";
+                    if ($this->getPagination()->pagesCurrent == $i) {
+                        $pageNavigation .= "class='active'";
+                    }
+                    $pageNavigation .= "><a id=" . $i . " href='#em-data'>" . $i . "</a></li>";
+                }
+            } else {
+                for ( $i = $this->getPagination()->pagesCurrent - 2 ; $i <= $this->getPagination()->pagesCurrent + 2 ; $i++) {
+                    if ( $i <= $this->getPagination()->pagesTotal ) {
+                        $pageNavigation .= "<li ";
+                        if ( $this->getPagination()->pagesCurrent == $i ) {
+                            $pageNavigation .= "class='active'";
+                        }
+                        $pageNavigation .= "><a id=" . $i . " href='#em-data'>" . $i . "</a></li>";
+                    }
+                }
+            }
+            $pageNavigation .= "<li class='disabled'><span>...</span></li>";
+            for ( $i = $this->getPagination()->pagesTotal - 4 ; $i <= $this->getPagination()->pagesTotal ; $i++ ) {
+                $pageNavigation .= "<li ";
+                if ( $this->getPagination()->pagesCurrent == $i ) {
+                    $pageNavigation .= "class='active'";
+                }
+                $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+            }
+        } else {
+            for ( $i = 1 ; $i <= $this->getPagination()->pagesStop ; $i++) {
+                $pageNavigation .= "<li ";
+                if ( $this->getPagination()->pagesCurrent == $i ) {
+                    $pageNavigation .= "class='active'";
+                }
+                $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+            }
+        }
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+
+        return $pageNavigation;
+    }
+
     // get applicant columns
     public function getApplicantColumns() {
 
@@ -1832,7 +1886,7 @@ class EmundusModelAdmission extends JModelList
             $query .= ')';
 
             $db->setQuery($query);
-            $db->Query() or die($db->getErrorMsg());
+            $db->execute() or die($db->getErrorMsg());
 
         } catch (Exception $e) {
             echo $e->getMessage();
@@ -1857,7 +1911,7 @@ class EmundusModelAdmission extends JModelList
 
             $query = 'UPDATE '.$element_details[0]->tab_name.' SET '.$element_details[0]->element_name.' = '.$db->Quote($value).' WHERE fnum like'.$db->Quote($fnum);
             $db->setQuery($query);
-            $db->Query() or die($db->getErrorMsg());
+            $db->execute() or die($db->getErrorMsg());
 
         } catch (Exception $e) {
             echo $e->getMessage();
