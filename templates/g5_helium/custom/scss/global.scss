@@ -488,7 +488,6 @@ footer#g-footer {
   bottom: 0;
   width: 100vw;
   position: relative;
-  height: 250px;
   margin-top: auto !important;
 }
 
@@ -511,7 +510,6 @@ footer#g-footer img {
 #g-page-surround>.g-container:not(.g-flushed) {
   width: 100vw;
   margin-top: auto;
-  height: 250px;
 }
 
 .g-container>#g-footer {
@@ -528,7 +526,6 @@ body>.g-container {
 }
 
 #g-footer .g-grid {
-  height: 140px;
   flex-direction: row;
   align-items: center;
     justify-content: center;
