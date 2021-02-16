@@ -119,7 +119,7 @@
                         {{ Mandatory }}
                       </div>
                     </div>
-                    <button type="button" @click="deleteDoc(indexDoc)" :title="removeDoc" class="buttonDeleteDoc">
+                    <button type="button" @click="deleteDocFromForm(indexDoc)" :title="removeDoc" class="buttonDeleteDoc">
                       <em class="fas fa-times"></em>
                     </button>
                   </div>
@@ -294,7 +294,6 @@ export default {
     },
 
     removeDocument(id) {
-      console.log(id);
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=form&task=removedocument",
@@ -339,7 +338,7 @@ export default {
       });
     },
 
-    deleteDoc(index) {
+    deleteDocFromForm(index) {
       let newIndex = this.undocuments.push(this.documents[index])-1;
       this.documents.splice(index,1);
       this.removeDocument(this.undocuments[newIndex].id);
