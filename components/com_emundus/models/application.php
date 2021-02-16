@@ -430,7 +430,7 @@ class EmundusModelApplication extends JModelList {
         if (!is_array($fnum)) {
             $profile_by_status = $m_profile->getProfileByStatus($fnum);
 
-            if (empty($profile_by_status)) {
+            if (empty($profile_by_status['profile'])) {
                 $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
                     FROM #__emundus_setup_campaigns AS esc
                     LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
