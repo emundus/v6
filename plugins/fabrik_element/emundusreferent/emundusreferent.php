@@ -270,7 +270,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 					LEFT JOIN #__emundus_email_templates AS et ON se.email_tmpl = et.id
                 	WHERE se.lbl="referent_letter"';
 		$db->setQuery($query);
-		$db->query();
+		$db->execute();
 		$obj = $db->loadObject() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_SETUP_EMAIL').'</span>')));
 
 		// Récupèration de la pièce jointe : modele de lettre
@@ -280,7 +280,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 						LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = esc.id
 						WHERE cc.id = '.$cc_id;
 		$db->setQuery($query);
-		$db->query() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_REFERENCE_LETTER').'</span>')));
+		$db->execute() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_REFERENCE_LETTER').'</span>')));
 		$obj_letter = $db->loadResult();
 
 		// Reference  /////////////////////////////////////////////////////////////
@@ -366,7 +366,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$db = JFactory::getDBO();
 		$query = 'SELECT count(id) as cpt FROM #__emundus_uploads WHERE fnum LIKE '.$db->quote($fnum).' AND attachment_id='.$attachment_id;
 		$db->setQuery($query);
-		$db->query();
+		$db->execute();
 		return ($db->loadResult() > 0);
 	}
 

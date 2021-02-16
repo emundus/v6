@@ -492,7 +492,7 @@ footer#g-footer {
   bottom: 0;
   width: 100vw;
   position: relative;
-  height: 200px;
+  height: 250px;
   margin-top: auto !important;
 }
 
@@ -515,7 +515,7 @@ footer#g-footer img {
 #g-page-surround>.g-container:not(.g-flushed) {
   width: 100vw;
   margin-top: auto;
-  height: 180px;
+  height: 250px;
 }
 
 .g-container>#g-footer {
@@ -1432,6 +1432,15 @@ button.close {
 .modal-body .panel-heading button.btn.btn-info.btn-xs {
   background: $base-secondary-color;
   color: #fff;
+}
+
+.modal-body #data  {
+  #forms.panel{
+    background: transparent;
+  }
+  #methode{
+    padding-top:30px;
+  }
 }
 
 .modal-body .panel-heading .btn-xs.btn.btn-elements-success {

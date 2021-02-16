@@ -41,7 +41,7 @@ try {
     echo $e->getMessage() . '<br />';
 }
 
-$query = "UPDATE `jos_emundus_qcm` set qcm_date_submitted='".$now."', result=".$result.", qcm_time_elapsed=ROUND(time_to_sec((TIMEDIFF('".$now."', time_date))) / 60) WHERE fnum like ".$db->Quote($user->fnum);
+$query = "UPDATE `jos_emundus_qcm` set qcm_date_submitted=".$db->quote($now).", result=".$result.", qcm_time_elapsed=ROUND(time_to_sec((TIMEDIFF('".$now."', time_date))) / 60) WHERE fnum like ".$db->Quote($user->fnum);
 $db->setQuery( $query );
 $db->execute();
 

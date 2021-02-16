@@ -5,7 +5,7 @@
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
 */
- 
+
 // No direct access
 defined('_JEXEC') or die('ACCESS_DENIED');
 
@@ -324,6 +324,7 @@ JText::script('EMAILS_SENT');
 JText::script('EMAILS_FAILED');
 JText::script('SEND_FAILED');
 JText::script('SEND_TO');
+JText::script('EMAIL_SENDING');
 JText::script('CANCEL_EMAIL');
 
 //view application layout share

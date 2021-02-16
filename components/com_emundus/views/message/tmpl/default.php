@@ -94,6 +94,7 @@ if ($allowed_attachments !== true) {
 
         <input name="mail_from_id" type="hidden" class="inputbox" id="mail_from_id" value="<?= $current_user->id; ?>" /><br>
         <input name="fnums" type="hidden" class="inputbox" id="fnums" value="<?= implode(',',$this->fnums); ?>" />
+        <input name="tags" type="hidden" class="inputbox" id="tags" value="" />
 
         <!-- Add current user to Bcc -->
         <div id="cc-bcc" class="input-group form-inline col-md-12">
@@ -230,7 +231,7 @@ if ($allowed_attachments !== true) {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script type="text/javascript">
 
-    $("#cc-bcc-mails").selectize({
+    var $selectize = $("#cc-bcc-mails").selectize({
         plugins: ["remove_button"],
         persist: false,
         create: true,
@@ -244,6 +245,7 @@ if ($allowed_attachments !== true) {
             return true;
         }
     });
+    var cci = $selectize[0].selectize;
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(function() {
@@ -269,6 +271,17 @@ if ($allowed_attachments !== true) {
             success: function (email) {
 
                 email = JSON.parse(email);
+
+                if(email.tmpl.cci != null){
+                    let cci_emails = email.tmpl.cci.split(',');
+                    cci_emails.forEach((elt) => {
+                        cci.createItem("BCC: Bcc: <"+elt+">");
+                    });
+                } else {
+                    cci.clear();
+                }
+
+                $("#tags").val(email.tmpl.tags);
 
                 var email_block = document.getElementById("em_email_block");
                 $("#mail_subject").text(email.tmpl.subject);
