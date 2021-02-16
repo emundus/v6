@@ -133,9 +133,7 @@ if($user != null) {
 </div>
 
 <script>
-    // This counters all of the issues linked to using BootstrapJS.
-    document.getElementById('userDropdownLabel').addEventListener('click', function (e) {
-        e.stopPropagation();
+    function displayUserOptions(){
         var dropdown = document.getElementById('userDropdown');
         var icon = document.getElementById('userDropdownIcon');
 
@@ -160,6 +158,12 @@ if($user != null) {
             dropdown.classList.add('open');
             icon.classList.add('open');
         }
+    }
+
+    // This counters all of the issues linked to using BootstrapJS.
+    document.getElementById('userDropdownLabel').addEventListener('click', function (e) {
+        e.stopPropagation();
+        displayUserOptions();
     });
 
     /*document.addEventListener('click', function (e) {

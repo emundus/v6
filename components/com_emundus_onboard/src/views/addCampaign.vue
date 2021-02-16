@@ -150,12 +150,12 @@
             <h2 class="heading">{{ Information }}</h2>
           </div>
           <div class="form-group campaign-label">
-            <label for="campResume" style="top: 5em">{{Resume}} <span style="color: #E5283B">*</span></label>
+            <label for="campResume" style="top: 5em">{{Resume}} <span style="color: #E5283B"></span></label>
             <textarea
               type="textarea"
               rows="2"
               id="campResume"
-              maxlength="200"
+              maxlength="500"
               class="form__input field-general w-input"
               placeholder=" "
               v-model="form.short_description"
@@ -579,13 +579,6 @@ export default {
         }
       }
 
-      if (this.form.short_description == "") {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        document.getElementById('campResume').focus();
-        this.errors.short_description = true;
-        return 0;
-      }
-
       if (this.form.training == "") {
         if(this.isHiddenProgram){
           if (this.programForm.label == "") {
@@ -708,6 +701,7 @@ export default {
       if (quit == 0) {
         this.redirectJRoute('index.php?option=com_emundus_onboard&view=campaign');
       } else if (quit == 1) {
+        document.cookie = 'campaign_'+this.campaign+'_menu = 2; expires=Session; path=/'
         this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.campaign + '&index=0')
       }
     },

@@ -1894,16 +1894,27 @@ class EmundusonboardModelformbuilder extends JModelList {
             //
 
             // Default parameters
-            $dbtype = 'VARCHAR(255)';
             $dbnull = 'NULL';
             //
 
-            if ($element['plugin'] === 'birthday') {
-                $dbtype = 'DATE';
-            } elseif ($element['plugin'] === 'textarea') {
-                $dbtype = 'TEXT';
-            } elseif ($element['plugin'] === 'date') {
-                $dbtype = 'DATETIME';
+            switch ($element['plugin']) {
+                case 'birthday':
+                    $dbtype = 'DATE';
+                    break;
+                case 'textarea':
+                    $dbtype = 'TEXT';
+                    break;
+                case 'date':
+                    $dbtype = 'DATETIME';
+                    break;
+                case 'years':
+                    $dbtype = 'VARCHAR(4)';
+                    break;
+                case 'databasejoin':
+                    $dbtype = 'INT';
+                    break;
+                default:
+                    $dbtype = 'VARCHAR(255)';
             }
 
             if($db_element->plugin == 'display' && $element['plugin'] != 'display'){
@@ -1985,11 +1996,6 @@ class EmundusonboardModelformbuilder extends JModelList {
                         'sub_initial_selection' => $sub_initial_selection,
                     );
                 }
-
-                $query = "ALTER TABLE " . $db_element->dbtable .
-                    " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
-                $db->setQuery($query);
-                $db->execute();
             } else {
                 foreach ($element['params']['sub_options']['sub_labels'] as $index => $sub_label) {
                     $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
@@ -1999,12 +2005,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                 }
             }
 
-            if ($element['plugin'] === 'birthday' || $element['plugin'] === 'date') {
-                $query = "ALTER TABLE " . $db_element->dbtable .
-                    " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
-                $db->setQuery($query);
-                $db->execute();
-            } elseif ($element['plugin'] === 'field') {
+            if ($element['plugin'] === 'field') {
                 $key = array_search("isemail", $element['params']['validations']['plugin']);
 
                 if ($element['params']['password'] != 6) {
@@ -2044,17 +2045,12 @@ class EmundusonboardModelformbuilder extends JModelList {
                         unset($element['params']['isemail-check_mx']);
                     }
                 }
-
-                $query = "ALTER TABLE " . $db_element->dbtable .
-                    " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
-                $db->setQuery($query);
-                $db->execute();
-            } elseif ($element['plugin'] === 'textarea') {
-                $query = "ALTER TABLE " . $db_element->dbtable .
-                    " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
-                $db->setQuery($query);
-                $db->execute();
             }
+
+            $query = "ALTER TABLE " . $db_element->dbtable .
+                " MODIFY COLUMN `" . $db_element->name . "` " . $dbtype . " " . $dbnull;
+            $db->setQuery($query);
+            $db->execute();
 
             // Update the element
             $query = $db->getQuery(true);

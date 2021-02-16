@@ -17,7 +17,7 @@ if ($item->menu_image) {
 		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" /><span class="image-title" style="display: none;opacity: 0">'.$item->title.'</span>' :
 		$linktype = '<img src="'.$item->menu_image.'" alt="'.$item->title.'" />';
 } else {
-    if($item->deeper) {
+    if($item->deeper || $item->level == 1) {
         $linktype = '<span class="simple-letter">' . $item->title[0] . '</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
     } else {
         //$linktype = 'test';
@@ -26,7 +26,7 @@ if ($item->menu_image) {
 }
 
 if($item->deeper) {
-    $linktype .= '<span class="g-menu-parent-indicator parent-indicator-close" style="display: none;" id="parent_' . $item->id .'" data-g-menuparent="" onclick="enableSubLevel(' . $item->id . ')"></span>';
+    $linktype .= '<span class="g-menu-parent-indicator parent-indicator-close" style="display: none;" id="parent_' . $item->id .'" data-g-menuparent=""></span>';
 }
 
 switch ($item->browserNav) :

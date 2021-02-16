@@ -52,8 +52,20 @@ defined('_JEXEC') or die;
     }
 
     #header-b #em_user_menu li:hover a, #header-b #em_user_menu li:active a, #header-b #em_user_menu li:focus a{
-        color: #12DB42;
+        color: black;
         filter: brightness(90%);
+    }
+    .g-sublevel .g-menu-item-title span:hover,.g-sublevel .g-menu-item-title span:focus,.g-sublevel .g-menu-item-title span:active {
+        color: black;
+    }
+    .g-sublevel-list{
+        margin-top: 10px;
+    }
+    .g-sublevel-list::before{
+        position: absolute;
+        height: 50%;
+        border: solid 3px #16AFE1;
+        border-radius: 25px;
     }
     /*** END ***/
 
@@ -104,13 +116,13 @@ defined('_JEXEC') or die;
         transition: opacity 0.2s ease-in-out;
     }
 
-    .g-sublevel-list{
+    /*.g-sublevel-list{
         margin-left: 40px !important;
         margin-top: 10px !important;
         position: fixed;
         top: 90px;
         max-width: 200px;
-    }
+    }*/
     /*** END ***/
 
     /*** Back button ***/
@@ -129,6 +141,45 @@ defined('_JEXEC') or die;
         padding: 0;width: 30px
     }
     /*** END ***/
+    .message-tooltip{
+        background: #fff;
+        width: auto;
+        height: auto;
+        position: fixed;
+        margin-left: 60px;
+        color: black;
+        padding: 10px;
+        align-items: center;
+        border-radius: 5px;
+        border: solid 2px #16afe1;
+        display: none;
+        margin-top: -38px;
+    }
+    .message-tooltip::after {
+        content: "";
+        position: absolute;
+        height: 0;
+        width: 0;
+        right: 100%;
+        top: 10px;
+        border: 10px solid transparent;
+        border-right-color: transparent;
+        border-right-style: solid;
+        border-right-width: 10px;
+        border-right: 10px solid #16afe1;
+    }
+
+    .g-sublevel{
+        margin-top: 10px !important;
+    }
+    .g-sublevel::before {
+        height: 40%;
+        position: absolute;
+        display: block;
+        border: solid 2px #16AFE1;
+        border-radius: 5px;
+        content: "";
+    }
 </style>
 <nav class="g-main-nav <?php echo $class_sfx;?>" data-g-hover-expand="true"
     <?php
@@ -225,7 +276,7 @@ defined('_JEXEC') or die;
                     $class = ' class="tchooz-vertical-item g-menu-item g-menu-'.trim($class) .'"';
                 }
 
-                echo '<li'.$class.'>';
+                echo '<li' . $class . 'onmouseenter="enableTooltip(' . $item->id . ')" onmouseleave="disableTooltip(' . $item->id . ')">';
 
                 // Render the menu item.
                 switch ($item->type) :
@@ -248,11 +299,13 @@ defined('_JEXEC') or die;
                 }
                 // The next item is shallower.
                 elseif ($item->shallower) {
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'">'.$item->title.'</div>';
                     echo '</li>';
                     echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
                 }
                 // The next item is on the same level.
                 else {
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'">'.$item->title.'</div>';
                     echo '</li>';
                 }
             endforeach;
@@ -291,7 +344,11 @@ defined('_JEXEC') or die;
                     $class = ' class="tchooz-vertical-item g-menu-item g-menu-'.trim($class) .'"';
                 }
 
-                echo '<li'.$class.'>';
+                if($item->level == 1) {
+                    echo '<li' . $class . 'onmouseenter="enableTooltip(' . $item->id . ')" onmouseleave="disableTooltip(' . $item->id . ')">';
+                } else {
+                    echo '<li' . $class.'>';
+                }
 
                 // Render the menu item.
                 switch ($item->type) :
@@ -308,17 +365,20 @@ defined('_JEXEC') or die;
 
                 // The next item is deeper.
                 if ($item->deeper) {
-                    echo '<ul class="g-sublevel-list" id="sublevel_list_' . $item->id . '" style="display: none">';
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'" style="height: auto"><p>'.$item->title.'</p>';
+                    echo '<ul class="g-sublevel-list" id="sublevel_list_' . $item->id . '">';
                     echo '<li class="g-dropdown-column">';
-                    echo '<div class="g-grid"><div class="g-block size-100"><ul class="g-sublevel"><li class="g-level-'.($item->level).' g-go-back"><a class="g-menu-item-container" href="#" onclick="backToParentMenu(' . $item->id . ')" data-g-menuparent=""><span class="g-menu-item-content"><span class="g-menu-item-title">' . JText::_("COM_EMUNDUS_BACK") . '</span></span></a></li>';
+                    echo '<div class="g-grid"><div class="g-block size-100"><ul class="g-sublevel">';
                 }
                 // The next item is shallower.
                 elseif ($item->shallower) {
+                    //echo '<div class="message-tooltip" id="tooltip-'.$item->id.'">'.$item->title.'</div>';
                     echo '</li>';
                     echo str_repeat('</ul></div></div></li></ul>', $item->level_diff);
                 }
                 // The next item is on the same level.
                 else {
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'">'.$item->title.'</div>';
                     echo '</li>';
                 }
             endif;
@@ -355,7 +415,7 @@ defined('_JEXEC') or die;
                     $class = ' class="tchooz-vertical-item g-menu-item g-menu-'.trim($class) .'"';
                 }
 
-                echo '<li'.$class.'>';
+                echo '<li'.$class.'onmouseenter="enableTooltip('.$item->id.')" onmouseleave="disableTooltip('.$item->id.')">';
 
                 // Render the menu item.
                 switch ($item->type) :
@@ -383,6 +443,7 @@ defined('_JEXEC') or die;
                 }
                 // The next item is on the same level.
                 else {
+                    echo '<div class="message-tooltip" id="tooltip-'.$item->id.'">'.$item->title.'</div>';
                     echo '</li>';
                 }
             endif;
@@ -413,35 +474,43 @@ defined('_JEXEC') or die;
         });
     });
 
-    function enableTitles(){
-        // Check if a sublevel is open
-        let ids = [];
-        let close_menu = false;
-        Object.values(jQuery('ul[id^=sublevel_list_]')).forEach((elt) => {
-            if(typeof elt.id === 'string') {
-                ids.push(elt.id.split('_')[2]);
+    function enableTooltip(menu){
+        if(jQuery(".image-title").css("display") != 'none') {
+            console.log(jQuery("#sublevel_list_" + menu)[0])
+            if(typeof jQuery("#sublevel_list_" + menu)[0] != 'undefined'){
+                jQuery("#tooltip-" + menu).css('margin-left', '250px');
+                jQuery("#tooltip-" + menu).css('display', 'block');
             }
-        });
-        ids.forEach((id) => {
-           if(jQuery("#sublevel_list_" + id).css("display") == 'block'){
-               enableSubLevel(id)
-               close_menu = true;
-           }
-        });
-        //
+        } else {
+            jQuery("#tooltip-" + menu).css('margin-left', '60px');
+            jQuery("#tooltip-" + menu).css('display', 'block');
+        }
+    }
 
-        if(jQuery(".image-title").css("display") == 'none' && close_menu == false){
+    function disableTooltip(menu){
+        jQuery("#tooltip-" + menu).css('display', 'none');
+    }
+
+    function enableTitles(state = null){
+        if(jQuery(".image-title").css("display") == 'none' && state == null){
+            localStorage.setItem('menu', 'true');
             jQuery(".tchooz-vertical-toplevel").css("width","250px")
             jQuery(".tchooz-vertical-item").css("width","auto")
-            jQuery("#g-container-main").css("padding-left","200px");
-            jQuery("#header-a").css("padding-left","200px");
-            //Check for formbuilder
-            if(jQuery(".tchooz-vertical-item").css("transform") == 'matrix(1, 0, 0, 1, -100, 0)') {
-                jQuery(".sidebar-formbuilder").css("transform", "translateX(-100px)")
-                jQuery(".plugins-list").css("transform", "translateX(-300px)")
-                jQuery(".tchooz-vertical-item").css("transform", "translateX(0)")
-                jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(0)")
-            }
+            jQuery("#g-footer").css("padding-left","300px");
+            jQuery("#g-container-main").css("padding-left","180px");
+            jQuery(".grey-navbar-icons").css("opacity","1")
+            setTimeout(() =>{
+                jQuery(".image-title").css("display","block");
+                jQuery(".image-title").css("opacity","1");
+                setTimeout(() => {
+                    jQuery(".g-menu-parent-indicator").css("display","block");
+                },50);
+            },250)
+        } else if(state == 'true'){
+            jQuery(".tchooz-vertical-toplevel").css("width","250px")
+            jQuery(".tchooz-vertical-item").css("width","auto")
+            jQuery("#g-footer").css("padding-left","300px");
+            jQuery("#g-container-main").css("padding-left","180px");
             jQuery(".grey-navbar-icons").css("opacity","1")
             setTimeout(() =>{
                 jQuery(".image-title").css("display","block");
@@ -451,47 +520,16 @@ defined('_JEXEC') or die;
                 },50);
             },250)
         } else {
+            localStorage.setItem('menu', 'false');
             jQuery(".tchooz-vertical-toplevel").css("width","55px")
             jQuery(".image-title").css("opacity","0");
             jQuery(".g-menu-parent-indicator").css("display","none");
             jQuery("#g-container-main").css("padding-left","0");
-            jQuery("#header-a").css("padding-left","0");
+            jQuery("#g-footer").css("padding-left","80px");
             setTimeout(() =>{
                 jQuery(".image-title").css("display","none");
                 jQuery(".grey-navbar-icons").css("opacity","0")
-                setTimeout(() => {
-                    jQuery(".tchooz-vertical-item").css("width","50px")
-                    //Check for formbuilder
-                    if(jQuery(".tchooz-vertical-item").css("transform") == 'matrix(1, 0, 0, 1, 0, 0)') {
-                        jQuery(".tchooz-vertical-item").css("transform", "translateX(-100px)")
-                        jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)")
-                        jQuery(".sidebar-formbuilder").css("transform", "unset")
-                        jQuery(".plugins-list").css("transform", "unset")
-                    }
-                },200)
             },50)
-        }
-    }
-
-    function enableSubLevel(id){
-        if(jQuery("#sublevel_list_" + id).css("display") == 'none') {
-            jQuery(".tchooz-vertical-toplevel").css("width","250px")
-            jQuery(".grey-navbar-icons").css("opacity","1")
-            jQuery(".image-title").css("display","none");
-            jQuery(".g-menu-parent-indicator").css("display","none");
-            jQuery(".g-menu-item-" + id).addClass('parent-active')
-            jQuery("#menu_separator").css('width','55px');
-            setTimeout(() => {
-                jQuery("#sublevel_list_" + id).css("display", "block");
-            },250);
-        } else {
-            jQuery(".tchooz-vertical-toplevel").css("width","55px")
-            jQuery(".grey-navbar-icons").css("opacity","0")
-            jQuery(".g-menu-item-" + id).removeClass('parent-active')
-            jQuery("#sublevel_list_" + id).css("display", "none");
-            setTimeout(() => {
-                jQuery("#menu_separator").css('width','auto');
-            },250)
         }
     }
 
@@ -512,4 +550,8 @@ defined('_JEXEC') or die;
             enableTitles();
         }
     });
+
+    window.onload = function () {
+        this.enableTitles(localStorage.getItem('menu'));
+    }
 </script>

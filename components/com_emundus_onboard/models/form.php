@@ -18,9 +18,16 @@ jimport('joomla.database.table');
 class EmundusonboardModelform extends JModelList {
 
     var $model_campaign = null;
+    var $model_menus = null;
     public function __construct($config = array()) {
         parent::__construct($config);
         $this->model_campaign = JModelLegacy::getInstance('campaign', 'EmundusonboardModel');
+
+        // Get MenuItemModel.
+        JLoader::register('MenusHelper', JPATH_ADMINISTRATOR . '/components/com_menus/helpers/menus.php');
+        JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_menus/models/', 'MenusModel');
+        JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_menus/tables/');
+        $this->model_menus = JModelLegacy::getInstance('Item', 'MenusModel');
     }
 
 	function getFormCount($filter, $recherche) {
@@ -1208,34 +1215,35 @@ class EmundusonboardModelform extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        // Create checklist menu if documents are asked
-        $query->clear()
-            ->select('*')
-            ->from($db->quoteName('#__menu'))
-            ->where($db->quoteName('alias') . ' = ' . $db->quote('checklist-' . $prid));
-        $db->setQuery($query);
-        $checklist = $db->loadObject();
-
-        if ($checklist == null) {
-            $this->addChecklistMenu($prid);
-        }
-
-        $query->clear()
-            ->insert($db->quoteName('#__emundus_setup_attachment_profiles'))
-            ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
-            ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign))
-            ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
-            ->set($db->quoteName('displayed') . ' = ' . $db->quote(1))
-            ->set($db->quoteName('mandatory') . ' = ' . $db->quote(0))
-            ->set($db->quoteName('ordering') . ' = ' . $db->quote(0));
         try {
+            // Create checklist menu if documents are asked
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__menu'))
+                ->where($db->quoteName('alias') . ' = ' . $db->quote('checklist-' . $profile));
+            $db->setQuery($query);
+            $checklist = $db->loadObject();
+
+            if ($checklist == null) {
+                $this->addChecklistMenu($profile);
+            }
+            //
+
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_setup_attachment_profiles'))
+                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($profile))
+                ->set($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign))
+                ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($did))
+                ->set($db->quoteName('displayed') . ' = ' . $db->quote(1))
+                ->set($db->quoteName('mandatory') . ' = ' . $db->quote(0))
+                ->set($db->quoteName('ordering') . ' = ' . $db->quote(0));
             $db->setQuery($query);
             $db->execute();
 
-            $documents_campaign = EmundusonboardModelform::getAllDocuments($prid, $cid);
+            $documents_campaign = EmundusonboardModelform::getAllDocuments($profile, $campaign);
 
             if (empty($documents_campaign)) {
-                $this->removeChecklistMenu($prid);
+                $this->removeChecklistMenu($profile);
             }
 
             return true;
@@ -1280,65 +1288,107 @@ class EmundusonboardModelform extends JModelList {
 
         $modules = [93,102,103,104,168,170];
 
-        $query->clear()
-            ->select('*')
-            ->from($db->quoteName('#__menu'))
-            ->where($db->quoteName('alias') . ' = ' . $db->quote('checklist'));
         try {
-            $db->setQuery($query);
-            $checklist_model = $db->loadObject();
+            // Create the menu
+            $menu_form = array(
+                'id' => 0,
+                'title' => "Documents",
+                'alias' => "checklist-" . $prid,
+                'note' => "",
+                'link' => "index.php?option=com_emundus&view=checklist",
+                'menutype' => "menu-profile" . $prid,
+                'type' => "component",
+                'published' => 1,
+                'parent_id' => 1,
+                'component_id' => 11369,
+                'browserNav' => 0,
+                'access' => 1,
+                'template_style_id' => 22,
+                'home' => 0,
+                'language' => "*",
+                'toggle_modules_assigned' => 1,
+                'toggle_modules_published' => 1,
+                'params' => array(
+                    'custom_title' => "",
+                    'show_info_panel' => "0",
+                    'show_info_legend' => "1",
+                    'show_browse_button' => "0",
+                    'show_shortdesc_input' => "0",
+                    'required_desc' => "0",
+                    'show_nb_column' => "1",
+                    'is_admission' => "0",
+                    'notify_complete_file' => 0,
+                    'menu-anchor_title' => "Documents",
+                    'menu-anchor_css' => "huge circular inverted blue upload outline icon",
+                    'menu_image' => "0",
+                    'menu_image_css' => "0",
+                    'menu_text' => 1,
+                    'menu_show' => 1,
+                    'page_title' => "Documents",
+                    'show_page_heading' => "",
+                    'page_heading' => "",
+                    'pageclass_sfx' => "applicant-form",
+                    'meta_description' => "",
+                    'meta_keywords' => "",
+                    'robots' => "",
+                    'secure' => 0,
+                )
+            );
+            $this->model_menus->setState('item.id', 0);
 
-            $query->clear()
-                ->insert($db->quoteName('#__menu'));
+            if ($this->model_menus->save($menu_form)) {
+                $newmenuid = $this->model_menus->getstate('item.id');
 
-            foreach ($checklist_model as $key => $row) {
-                if ($key != 'id' && $key != 'alias' && $key != 'path' && $key != 'menutype') {
-                    $query->set($key . ' = ' . $db->quote($row));
-                } elseif ($key == 'alias' || $key == 'path') {
-                    $query->set($key . ' = ' . $db->quote('checklist-' . $prid));
-                } elseif ($key == 'menutype') {
-                    $query->set($key . ' = ' . $db->quote('menu-profile' . $prid));
+                $submittion_page = $this->getSubmittionPage($prid);
+
+                $query->clear()
+                    ->update($db->quoteName('#__menu'))
+                    ->set($db->quoteName('lft') . ' = ' . $db->quote($submittion_page->rgt-3))
+                    ->set($db->quoteName('rgt') . ' = ' . $db->quote($submittion_page->rgt-2))
+                    ->where($db->quoteName('id') . ' = ' . $newmenuid);
+                $db->setQuery($query);
+                $db->execute();
+
+                // Affect modules to this menu
+                foreach ($modules as $module) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__modules_menu'))
+                        ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                        ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
+                    $db->setQuery($query);
+                    $db->execute();
                 }
-            }
-            $db->setQuery($query);
-            $db->execute();
-            $newmenuid = $db->insertid();
 
-            // Affect modules to this menu
-            foreach ($modules as $module) {
+                // Affect documents module to each menus of profile
                 $query->clear()
-                    ->insert($db->quoteName('#__modules_menu'))
-                    ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
-                    ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
+                    ->select('*')
+                    ->from($db->quoteName('#__menu'))
+                    ->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile' . $prid));
                 $db->setQuery($query);
-                $db->execute();
+                $menus = $db->loadObjectList();
+
+                foreach ($menus as $menu) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__modules_menu'))
+                        ->set($db->quoteName('moduleid') . ' = 103')
+                        ->set($db->quoteName('menuid') . ' = ' . $db->quote($menu->id));
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    $query->clear()
+                        ->insert($db->quoteName('#__modules_menu'))
+                        ->set($db->quoteName('moduleid') . ' = 104')
+                        ->set($db->quoteName('menuid') . ' = ' . $db->quote($menu->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+                //
+                return $newmenuid;
+            } else {
+                JLog::add('component/com_emundus_onboard/models/form | Error at menu creation of the profile ' . $prid, JLog::ERROR, 'com_emundus');
+                return false;
             }
-
-            $query->clear()
-                ->select('*')
-                ->from($db->quoteName('#__menu'))
-                ->where($db->quoteName('menutype') . ' = ' . $db->quote('menu-profile' . $prid));
-            $db->setQuery($query);
-            $menus = $db->loadObjectList();
-
-            foreach ($menus as $menu) {
-                $query->clear()
-                    ->insert($db->quoteName('#__modules_menu'))
-                    ->set($db->quoteName('moduleid') . ' = 103')
-                    ->set($db->quoteName('menuid') . ' = ' . $db->quote($menu->id));
-                $db->setQuery($query);
-                $db->execute();
-
-                $query->clear()
-                    ->insert($db->quoteName('#__modules_menu'))
-                    ->set($db->quoteName('moduleid') . ' = 104')
-                    ->set($db->quoteName('menuid') . ' = ' . $db->quote($menu->id));
-                $db->setQuery($query);
-                $db->execute();
-            }
-
-            return $newmenuid;
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/form | Error to add the checklist module to form (' . $prid . ') menus : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }

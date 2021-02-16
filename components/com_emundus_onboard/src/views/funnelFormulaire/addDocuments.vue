@@ -269,11 +269,11 @@ export default {
         },
         data: qs.stringify({ did: doc.id, prid: this.profileId, cid: this.campaignId })
       }).then(() => {
-        if(doc.need == 0){
+        /*if(doc.need == 0){
           doc.need = 1;
         } else {
           doc.need = 0;
-        }
+        }*/
       }).catch(error => {
         console.log(error);
       });
@@ -346,8 +346,7 @@ export default {
     },
 
     addingToDocs: function(evt) {
-      let index = evt.newIndex;
-      this.addUndoc(index);
+      this.addDocument(this.documents[evt.newIndex]);
     },
 
     removeToDocs: function(evt) {

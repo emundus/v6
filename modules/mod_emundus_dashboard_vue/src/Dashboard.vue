@@ -10,8 +10,7 @@
         drag-class="plugin-drag"
         chosen-class="plugin-chosen"
         ghost-class="plugin-ghost">
-      <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index" :class="enableDrag ? 'jello-horizontal handle' : ''">
-        <LastCampaignActive v-if="widget.name === 'last_campaign_active'" :campaigns="campaigns" :cindex="widget.cindex"/>
+      <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index" :class="enableDrag ? 'jello-horizontal handle' : ''" :key="widget.name + '_' + index">
         <Faq v-if="widget.name === 'faq'"/>
         <FilesNumberByStatus v-if="widget.name === 'files_number_by_status'"/>
         <UsersByMonth v-if="widget.name === 'users_by_month'"/>
@@ -23,7 +22,6 @@
 </template>
 
 <script>
-import LastCampaignActive from "@/components/LastCampaignActive";
 import draggable from "vuedraggable";
 import axios from "axios";
 import Faq from "@/components/Faq";
@@ -41,7 +39,6 @@ export default {
     Tips,
     FilesNumberByStatus,
     Faq,
-    LastCampaignActive,
     draggable,
   },
   data() {
