@@ -28,7 +28,7 @@
                 <i class="fas fa-check"></i><span class="mr-1">{{Saved}}</span>
               </div>
             </transition>
-            <button type="button" v-if="menuHighlight != 0 && menuHighlight != 6  && menuHighlight != 7" @click="saveCurrentPage()" class="bouton-sauvergarder-et-continuer" :style="menuHighlight == 4 || menuHighlight == 5 ? 'right: 10%' : ''">{{ Save }}</button>
+            <button type="button" v-if="menuHighlight != 0 && menuHighlight != 7" @click="saveCurrentPage()" class="bouton-sauvergarder-et-continuer" :style="menuHighlight == 4 || menuHighlight == 5 ? 'right: 10%' : ''">{{ Save }}</button>
           </div>
         </div>
         <transition name="slide-right">
@@ -291,6 +291,12 @@ export default {
           break;
         case 5:
           this.updateTags(this.$refs.tags.$data.tags);
+          break;
+        case 6:
+          this.updateLoading(true);
+          setTimeout(() => {
+            this.updateLoading(false);
+          },500);
           break;
       }
     },

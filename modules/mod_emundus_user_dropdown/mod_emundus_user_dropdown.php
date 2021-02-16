@@ -54,6 +54,7 @@ foreach ($user->emProfiles as $prof) {
 
 // If all of the user's profiles are found in the list of applicant profiles, then the user is only an applicant.
 $only_applicant = !array_diff($user_prof, $app_prof);
+$applicant_option = false;
 
 
 // used for getting the page we are currently on.

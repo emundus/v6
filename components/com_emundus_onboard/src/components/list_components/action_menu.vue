@@ -75,7 +75,7 @@
                class="action-submenu w-dropdown-link" style="border-left: 0;border-right: 0">
               {{ ActionDuplicate }}
             </a>
-            <a v-on:click="deleteSelected(checkItem)" class="action-submenu w-dropdown-link" v-if="data.type !== 'form'">
+            <a v-on:click="deleteSelected(checkItem)" class="action-submenu w-dropdown-link" v-if="data.type !== 'form' && data.type !== 'campaign'">
               {{ ActionDelete }}
             </a>
             <a v-on:click="unpublishSelected(checkItem)" class="action-submenu w-dropdown-link" style="border-left: 0"  v-if="data.type === 'form'">

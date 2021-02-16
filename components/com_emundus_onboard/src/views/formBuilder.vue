@@ -210,7 +210,10 @@
               </a>
             </li>
           </div>
-          <button class="bouton-sauvergarder-et-continuer mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{Validate}}</button>
+          <div class="d-flex">
+            <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{Validate}}</button>
+            <button class="bouton-sauvergarder-et-continuer mt-1" @click="exitForm" style="margin-left: 10px" :title="Validate">{{ExitFormbuilder}}</button>
+          </div>
         </ul>
       </div>
     </div>
@@ -374,6 +377,7 @@
         updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
         updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
         updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
+        ExitFormbuilder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER"),
       };
     },
 
@@ -796,6 +800,21 @@
                 .catch(e => {
                   console.log(e);
                 });
+      },
+
+      exitForm(){
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+          params: {
+            link: 'index.php?option=com_emundus_onboard&view=form',
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(response => {
+          window.location.href = window.location.pathname + response.data.data;
+        });
       },
 
       sendForm() {

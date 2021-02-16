@@ -28,7 +28,7 @@
         <div class="section-sub-menu col-lg-5 col-sm-12">
           <h2 style="margin: 0">{{Icon}}</h2>
           <div class="d-flex"></div>
-          <img class="logo-settings" style="max-width: 50px" :src="iconLink" :alt="InsertIcon">
+          <img class="logo-settings" :src="iconLink" :alt="InsertIcon">
           <a class="settings-edit-icon cta-block pointer" style="top: 20px" @click="removeIcon">
             <em class="fas fa-times" data-toggle="tooltip" data-placement="top"></em>
           </a>

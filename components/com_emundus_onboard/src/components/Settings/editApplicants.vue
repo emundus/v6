@@ -75,6 +75,36 @@
                     ],
                     value: 0,
                   },
+                  copy_application_form: {
+                    label: Joomla.JText._("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_COPY_APPLICATION_FORM"),
+                    param: 'copy_application_form',
+                    options: [
+                      {
+                        label: Joomla.JText._("JNO"),
+                        value: 0,
+                      },
+                      {
+                        label: Joomla.JText._("JYES"),
+                        value: 1,
+                      },
+                    ],
+                    value: 0,
+                  },
+                  can_submit_encrypted: {
+                    label: Joomla.JText._("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ENCRYPTED"),
+                    param: 'can_submit_encrypted',
+                    options: [
+                      {
+                        label: Joomla.JText._("JNO"),
+                        value: 0,
+                      },
+                      {
+                        label: Joomla.JText._("JYES"),
+                        value: 1,
+                      },
+                    ],
+                    value: 0,
+                  }
                 },
                 config: {},
                 Desc: Joomla.JText._("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANTS_DESC"),
@@ -89,6 +119,8 @@
                       this.config = response.data.config;
                       this.params.applicant_can_renew.value = parseInt(this.config.applicant_can_renew);
                       this.params.can_edit_until_deadline.value = parseInt(this.config.can_edit_until_deadline);
+                      this.params.copy_application_form.value = parseInt(this.config.copy_application_form);
+                      this.params.can_submit_encrypted.value = parseInt(this.config.can_submit_encrypted);
                     });
             },
 

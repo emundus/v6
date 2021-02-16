@@ -110,9 +110,10 @@ if($user != null) {
                 echo '<br/><div class="select">';
                 echo '<select class="profile-select" id="profile" name="profiles" onchange="postCProfile()"> ';
                 foreach ($user->emProfiles as $profile) {
-                    if (array_key_exists($profile->id, $ids_array)) {
-                        echo '<option  value="'.$profile->id.".".$ids_array[$profile->id].'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
-                    } else {
+                    if (array_key_exists($profile->id, $ids_array) && $profile->published && !$applicant_option) {
+                        echo '<option  value="'.$profile->id.".".$ids_array[$profile->id].'"' .(in_array($user->profile, $app_prof)?'selected="selected"':"").'>'.JText::_('APPLICANT').'</option>';
+                        $applicant_option = true;
+                    } elseif (!$profile->published) {
                         echo '<option  value="'.$profile->id.".".'"' .(($user->profile == $profile->id)?'selected="selected"':"").'>'.trim($profile->label).'</option>';
                     }
                 }
@@ -182,7 +183,6 @@ if($user != null) {
     });*/
 
     function postCProfile() {
-
         var current_fnum = document.getElementById("profile").value;
         var redirect_url = document.getElementById("switch_profile_redirect").value;
 
