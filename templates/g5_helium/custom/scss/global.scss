@@ -13,7 +13,7 @@
 body {
   font-family: "Lato", sans-serif;
   border-top: 5px solid $base-secondary-color;
-  line-height: normal;
+  line-height: 1.8;
 
   p {
     margin: 0;
@@ -82,11 +82,7 @@ div,
 legend {
   font-weight: 300;
   font-style: normal;
-  line-height: normal;
-}
-
-a:focus {
-  outline: none;
+  line-height: 1.8;
 }
 
 a {
@@ -492,7 +488,6 @@ footer#g-footer {
   bottom: 0;
   width: 100vw;
   position: relative;
-  height: 250px;
   margin-top: auto !important;
 }
 
@@ -515,7 +510,6 @@ footer#g-footer img {
 #g-page-surround>.g-container:not(.g-flushed) {
   width: 100vw;
   margin-top: auto;
-  height: 250px;
 }
 
 .g-container>#g-footer {
@@ -532,7 +526,6 @@ body>.g-container {
 }
 
 #g-footer .g-grid {
-  height: 140px;
   flex-direction: row;
   align-items: center;
     justify-content: center;
@@ -710,7 +703,6 @@ body>.g-container {
 /* BOUTON RADIO SELECTIONNE- COULEUR */
 .view-form input[type='radio']:checked {
   background: $base-secondary-color;
-  outline: none;
 }
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
@@ -1315,6 +1307,10 @@ body.error-page p {
 
 
 /* BOUTONS */
+.btn-success:active:hover, .btn-warning:active:hover, .btn-danger:active:hover {
+  color: $base-primary-color !important;
+  border-color: $base-primary-color !important;
+}
 
 .view-form p.select-program a {
   border: 1px solid $base-secondary-color !important;
@@ -1400,7 +1396,6 @@ button.btn-primary {
   &:hover {
     background-color: transparent;
     color: $base-secondary-color;
-    outline: none;
   }
 }
 
@@ -1417,7 +1412,6 @@ span.btn {
   &:active {
     background-color: transparent;
     color: $base-primary-color;
-    outline: none;
     border: 1px solid $base-primary-color;
   }
 }
@@ -1676,7 +1670,6 @@ a#em-doc-zip:focus,
 .choice-statut-btn:focus {
   background-color: transparent;
   color: $base-primary-color;
-  outline: none;
   border: 1px solid $base-primary-color;
 }
 
@@ -1690,7 +1683,6 @@ a#em-doc-zip:focus,
   &:active {
     background-color: transparent;
     color: $base-primary-color;
-    outline: none;
   }
 }
 
@@ -1708,7 +1700,6 @@ a#em-doc-zip:focus,
     background-color: transparent;
     color: $base-primary-color;
     border: 1px solid $base-primary-color;
-    outline: none;
   }
 }
 
@@ -1720,7 +1711,6 @@ a#em-doc-zip:focus,
   &:hover {
     background-color: transparent !important;
     color: $base-secondary-color !important;
-    outline: none;
   }
 }
 
@@ -1750,7 +1740,6 @@ button#back,
   &:focus {
     background-color: $base-secondary-color;
     color: #fff;
-    outline: none;
   }
 }
 
@@ -1778,7 +1767,6 @@ button#back,
   &:focus &:active {
     background-color: darken($base-primary-color, 10%);
     color: #fff;
-    outline: none;
   }
 }
 

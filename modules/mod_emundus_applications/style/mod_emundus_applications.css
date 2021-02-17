@@ -6,6 +6,13 @@ button.save-btn, .btn-success, button.save, button.save_continue, button.send, a
     text-transform: none;
     max-height: 38px;
 }
+
+.btn-success:active:hover, .btn-warning:active:hover, .btn-danger:active:hover  {
+    background-color: transparent !important;
+}
+
+
+
 button.save-btn:hover, button.save-btn:active, button.save-btn:focus,
 .btn-success:hover, .btn-success:focus, .btn-success:active,
 button.save:hover, button.save:active, button.save:focus,
