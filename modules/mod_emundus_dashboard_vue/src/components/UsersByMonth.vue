@@ -31,7 +31,7 @@ export default {
     usersnumbers: {},
     days: {},
     label: 'Total',
-    type: "mssplinearea",
+    type: "line",
     renderAt: "chart-container",
     dataFormat: "json",
     chartData: [],
@@ -57,8 +57,10 @@ export default {
             subcaption: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_TOTAL") + this.total + Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS"),
             xaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_DAYS"),
             yaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_NUMBER"),
-            yaxisminvalue: "0",
-            setAdaptiveYMin: "0",
+            yAxisMinValue: 0,
+            setAdaptiveYMin: 0,
+            adjustDiv: 0,
+            yAxisValuesStep: 10,
             numbersuffix: "",
             theme: "fusion"
           },
@@ -67,12 +69,7 @@ export default {
               category: this.days
             }
           ],
-          dataset: [
-            {
-              seriesname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_REGISTER"),
-              data: this.usersnumbers
-            }
-          ]
+          data: this.usersnumbers,
         };
         //
       });

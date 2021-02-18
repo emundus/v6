@@ -98,7 +98,7 @@ export default {
 
 <style scoped>
 .tchooz-widget{
-  height: 200px;
+  height: 25vh;
   margin-bottom: 30px !important;
   margin-left: 0px !important;
   padding-left: 30px !important;
