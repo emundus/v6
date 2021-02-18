@@ -2,26 +2,6 @@
   <div class="container-evaluation">
     <transition :name="'slide-down'" type="transition">
       <div class="w-form">
-        <ul style="padding-left: 0">
-          <li class="list-group-item"
-              v-for="(document, indexDoc) in documents"
-              :key="indexDoc">
-            <div style="display: inline;">
-                <span class="draggable">
-                  {{ document.name }}
-                </span>
-              <button type="button" class="buttonDeleteDoc" @click="editName(document)" style="margin-left: 0">
-                <em class="fas fa-pencil-alt"></em>
-              </button>
-              <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
-                <em class="fas fa-times"></em>
-              </button>
-            </div>
-          </li>
-        </ul>
-
-        <hr>
-
         <vue-dropzone
             ref="dropzone"
             id="customdropzone"
@@ -37,6 +17,26 @@
             {{DropHere}}
           </div>
         </vue-dropzone>
+
+        <hr>
+
+        <ul style="padding-left: 0;margin: 0" class="w-100">
+          <li class="list-group-item"
+              v-for="(document, indexDoc) in documents"
+              :key="indexDoc">
+            <div class="d-flex justify-content-between">
+                <span class="draggable">
+                  {{ document.name }}
+                </span>
+                <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
+                  <em class="fas fa-times"></em>
+                </button>
+            </div>
+            <a @click="editName(document)" class="cta-block pointer" style="font-size: 27px;float: right;position: relative;bottom: -20px;">
+              <em class="fas fa-pen"></em>
+            </a>
+          </li>
+        </ul>
       </div>
     </transition>
   </div>
@@ -87,7 +87,7 @@ export default {
         addRemoveLinks: true,
         thumbnailWidth: null,
         thumbnailHeight: null,
-        acceptedFiles: 'image/*,application/pdf,.doc,.csv,.xls',
+        acceptedFiles: 'image/*,application/pdf,.doc,.csv,.xls,.xlsx,.docx,.odf',
         previewTemplate: getTemplate(),
         dictCancelUpload: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD"),
         dictCancelUploadConfirmation: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION"),
@@ -204,5 +204,12 @@ export default {
 .fa-file-upload{
   font-size: 25px;
   margin-right: 20px;
+}
+
+.list-group-item{
+  border: 2px solid #ececec;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  height: 100px;
 }
 </style>

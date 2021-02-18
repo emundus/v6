@@ -549,7 +549,7 @@ class EmundusonboardModelcampaign extends JModelList
                 } else if ($key == 'limit_status') {
                     $limit_status = $data['limit_status'];
                 }
-                else if ($key !== 'profileLabel') {
+                else if ($key !== 'profileLabel' && $key !== 'progid') {
                     $insert = $db->quoteName($key) . ' = ' . $db->quote($val);
                     $fields[] = $insert;
                 }
@@ -632,12 +632,13 @@ class EmundusonboardModelcampaign extends JModelList
 
         $results = new stdClass();
 
-        $query->select(['sc.*', 'spr.label AS profileLabel'])
-            ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
-            ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'spr').' ON '.$db->quoteName('spr.id').' = '.$db->quoteName('sc.profile_id'))
-            ->where($db->quoteName('sc.id') . ' = ' . $id);
-
         try {
+            $query->select(['sc.*', 'spr.label AS profileLabel','sp.id as progid'])
+                ->from($db->quoteName('#__emundus_setup_campaigns', 'sc'))
+                ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'spr').' ON '.$db->quoteName('spr.id').' = '.$db->quoteName('sc.profile_id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'sp').' ON '.$db->quoteName('sp.code').' = '.$db->quoteName('sc.training'))
+                ->where($db->quoteName('sc.id') . ' = ' . $id);
+
             $db->setQuery($query);
             $results->campaign = $db->loadObject();
             $results->label = $falang->getFalang($id,'emundus_setup_campaigns','label');
@@ -649,6 +650,13 @@ class EmundusonboardModelcampaign extends JModelList
                 $db->setQuery($query);
                 $results->campaign->status = $db->loadObjectList();
             }
+
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__emundus_setup_programmes'))
+                ->where($db->quoteName('code') . ' LIKE ' . $db->quote($results->campaign->training));
+            $db->setQuery($query);
+            $results->program = $db->loadObject();
             return $results;
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/campaign | Error at getting the campaign by id ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');

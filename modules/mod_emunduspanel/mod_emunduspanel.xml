@@ -13,7 +13,7 @@
 		<filename module="mod_emunduspanel">mod_emunduspanel.php</filename>
 		<filename module="mod_emunduspanel">mod_emunduspanel.xml</filename>
 		<filename module="mod_emunduspanel">index.html</filename>
-		<filename module="mod_emunduspanel">tmpl/default.php</filename>	
+		<filename module="mod_emunduspanel">tmpl/default.php</filename>
 		<filename module="mod_emunduspanel">elements/multilist.php</filename>
 		<folder>language</folder>
 
@@ -23,12 +23,16 @@
 	<config>
 		<fields name="params">
 			<fieldset addfieldpath="/modules/mod_emunduspanel/elements" name="basic">
+				<field name="panel_style" type="list" default="list" label="Panel Style" description="The panel style">
+					<option value="default">Default</option>
+					<option value="tchooz_dashboard">Tchooz Dashboard</option>
+				</field>
 				<field
 					name="show_title"
 					type="text"
 					default="My Forms"
 					label="MOD_EMUNDUSPANEL_TITLE_LABEL"
-					description="MOD_EMUNDUSPANEL_TITLE_DESC" 
+					description="MOD_EMUNDUSPANEL_TITLE_DESC"
 					size="60">
 				</field>
 				<field
@@ -65,8 +69,8 @@
 						value="1">JYes</option>
 				</field>
 				<field name="@spacer" type="spacer" default="&lt;b&gt;Folder to find pictures&lt;b&gt;" label="" description="" />
-				<field name="folder" type="text" default="media/com_emundus/images/icones/" label="Enter the folder for all pictures" description="" size="60" />	
-		
+				<field name="folder" type="text" default="media/com_emundus/images/icones/" label="Enter the folder for all pictures" description="" size="60" />
+
 				<field name="@spacer" type="spacer" default="&lt;b&gt;Guest home page&lt;b&gt;" label="" description="" />
 				<field name="mainmenu" type="multilist" default="" label="Guest menu"/>
 				<field name="mainmenu_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
@@ -74,7 +78,7 @@
                     <option value="0">No</option>
                     <option value="1">Yes</option>
                 </field>
-		
+
 				<field name="@spacer" type="spacer" default="&lt;b&gt;System administrator&lt;b&gt;" label="" description="" />
 				<field name="adminmenu" type="multilist" default="" label="adminmenu"/>
 				<field name="adminmenu_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
@@ -82,7 +86,7 @@
                     <option value="0">No</option>
                     <option value="1">Yes</option>
                 </field>
-                
+
 				<field name="@spacer" type="spacer" default="&lt;b&gt;Coordinator&lt;b&gt;" label="" description="" />
 				<field name="coordinatormenu" type="multilist" default="" label="coordinatormenu"/>
 				<field name="coordinatormenu_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
@@ -90,7 +94,7 @@
                     <option value="0">No</option>
                     <option value="1">Yes</option>
                 </field>
-		
+
 				<field name="@spacer" type="spacer" default="&lt;b&gt;Local coordinator&lt;b&gt;" label="" description="" />
 				<field name="localcoordinator_menu" type="multilist" default="" label="localcoordinator_menu"/>
 				<field name="localcoordinator_menu_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
@@ -98,7 +102,7 @@
                     <option value="0">No</option>
                     <option value="1">Yes</option>
                 </field>
-		
+
 				<field name="@spacer" type="spacer" default="&lt;b&gt;Partner&lt;b&gt;" label="" description="" />
 				<field name="partnermenu" type="multilist" default="" label="partnermenu"/>
 				<field name="partnermenu_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
@@ -106,7 +110,7 @@
                     <option value="0">No</option>
                     <option value="1">Yes</option>
                 </field>
-		
+
 				<field name="@spacer" type="spacer" default="&lt;b&gt;Selected student&lt;b&gt;" label="" description="" />
 				<field name="menu_profile8" type="multilist" default="" label="menu_profile8"/>
 				<field name="menu_profile8_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />
@@ -114,7 +118,7 @@
                     <option value="0">No</option>
                     <option value="1">Yes</option>
                 </field>
-						
+
 				<field name="@spacer" type="spacer" default="&lt;b&gt;Applicant profile 9 &lt;b&gt;" label="" description="" />
 				<field name="menu-profile9" type="multilist" default="" label="menu-profile9"/>
 				<field name="menu-profile9_img" type="textarea" default="" label="Enter some pictures names" description="Separated by comma (picture1.png, picture2.png, picture3.png ...)" rows="5" cols="25" />

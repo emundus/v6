@@ -127,7 +127,7 @@ export default {
           return '<span>[' + item.tag + ']</span>';
         },
         render: function(item) {
-          return '<li>' +
+          return '<li class="email-tags">' +
               '<a href="javascript:;"><span>' + item.tag + '</span><p>' + item.description + '</p></a>' +
               '</li>';
         },

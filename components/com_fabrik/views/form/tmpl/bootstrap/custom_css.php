@@ -128,10 +128,11 @@ echo <<<EOT
 }
 
 .view-form:not(.em-formRegistrationCenter) .fabrikGroup {
-    background: #fafafa;
+    background: #fff;
     margin-bottom: 20px;
-    border-radius: 0;
+    border-radius: 5px !important;
     padding: 20px;
+    margin-top: 20px;
 }
 
 .view-form.view-registration .fabrikGroup {
@@ -151,7 +152,7 @@ echo <<<EOT
 }
 
 .view-form.view-registration .size-100 .size-100 .fabrikGroup {
-    background: #fafafa;
+    background: #fff;
 }
 
 .view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
@@ -555,15 +556,18 @@ form#member-profile .form-horizontal .control-label {
      display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: #fafafa;
-    width: 59%;
+    background: #fff;
+    width: 60%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 50px;
+    margin-top: 150px;
     padding-bottom: 50px;
     margin-bottom: 50px;
 }
 
+  .view-registration .login.em-formRegistrationCenter .row-fluid {
+    background: #fff;
+  }
  .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .span4 .btn-group {
         width: 100% !important; 
 }
@@ -573,13 +577,11 @@ form#member-profile .form-horizontal .control-label {
 }
 
 .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .row-fluid .span4 button {
-        width: 100% !important; 
+        width: 100% !important;
+        height: 50px !important;
 }
 
 
-.view-registration .login.em-formRegistrationCenter .row-fluid {
-    background: #fafafa;
-}
 
   .view-registration form .row-fluid .plg-password span, .view-form.em-formRegistrationCenter form .row-fluid .plg-password span {
     color: #000; 
@@ -627,7 +629,7 @@ button.register {
   border: none;
     margin-bottom: 0 !important;
     border-radius: 0;
-    background: #fafafa;
+    background: #fff;
     border-radius: 0;
     padding: 0px;
     box-shadow: none;
@@ -1209,6 +1211,43 @@ body.em-formRegistrationCenter  {
    display: inline; 
 }
 
+/* IMPORT CSV */ 
+
+.import-csv-page h1, .import-csv-page legend { 
+    color: #000 !important; 
+}
+
+.import-csv-page select { 
+   border: 2px solid #ccc!important;
+}
+
+/* RAPPRT ERREUR */ 
+
+.error-report-page .page-header h1, .error-report-page form fieldset legend { 
+    color: #000; 
+}
+
+.error-report-page  button.submit {
+    padding: 5px 30px !important;
+    font-weight: 500 !important;
+    border-radius: 25px !important;
+    border: 2px solid #16afe1; 
+    background: #16afe1; 
+    color: #fff; 
+}
+
+.error-report-page  button.submit:hover, 
+.error-report-page  button.submit:focus, 
+.error-report-page  button.submit:active, 
+ {
+    border-radius: 25px; 
+    padding: 5px 30px; 
+    border: 2px solid #16afe 1!important; 
+    background: transparent; 
+    color: #16afe1 !important; 
+}
+
+
 /* AJOUT APRES MAJ */
 .view-form input[type='radio']  { 
     border: 1px solid #e0e0e5 !important;
@@ -1694,19 +1733,19 @@ a.btn-attach:active {
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    background: #fafafa;
+    background: #fff;
     width: 60%;
     margin-left: auto !important;
     margin-right: auto !important;
     padding-bottom: 50px !important;
-    margin-top: 50px !important; 
+    margin-top: 150px !important; 
 }
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {
     border: none;
     margin-bottom: 0 !important;
     border-radius: 0;
-    background: #fafafa;
+    background: #fff;
     border-radius: 0;
     padding: 0px !important;
     box-shadow: none;

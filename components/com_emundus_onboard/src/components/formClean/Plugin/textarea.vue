@@ -35,7 +35,7 @@
         <input type="number" max="255" min="1" class="form__input field-general w-input" v-model="element.params['textarea-maxlength']" />
       </div>
       <div class="form-group dpflex">
-        <input type="checkbox" class="form__input field-general w-input" value="1" v-model="showmax" />
+        <input type="checkbox" class="form__input field-general w-input" style="margin: 0 !important;" value="1" v-model="showmax" />
         <label class="ml-10px mb-0">{{DisplayMaxLength}}</label>
       </div>
     </div>
@@ -116,7 +116,7 @@ export default {
 }
 
   #textareaF{
-    padding: 10px;
+    padding: 10px 0;
   }
 
 button{
