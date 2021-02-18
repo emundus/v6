@@ -47,6 +47,7 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 	public function process(&$data, &$listModel) {
 		jimport('joomla.mail.helper');
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
 
 		// LOGGER
@@ -55,9 +56,16 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 		JLog::addLogger(['text_file' => 'com_emundus.emundusexportpdf.error.php'], JLog::ERROR, 'com_emundus.emundusexportpdf');
 
 		$m_files = new EmundusModelFiles;
+		$m_application  = new EmundusModelApplication;
 
 		$params = $this->getParams();
+
+		// Get params set in eMundus component configuration
 		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$application_form_order     = $eMConfig->get('application_form_order', null);
+		$attachment_order           = $eMConfig->get('attachment_order', null);
+		$application_form_name      = $eMConfig->get('application_form_name', "application_form_pdf");
+		$export_path                = $eMConfig->get('export_path', null);
 
 		$export_campaign = $params->get('export_campaign', '');
 		$export_status = $params->get('export_status', '1');
@@ -86,15 +94,15 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 		$db->setQuery($query);
 
 		try {
-			$files = $db->loadObjectList();
+			$fnums = $db->loadObjectList();
 		} catch (Exception $e) {
 			JLog::add('Error getting files to be exported : '.$query, JLog::ERROR, 'com_emundus.emundusexportpdf');
 			return false;
 		}
 
 		// Generate emails from template and store it in message table
-		foreach ($files as $key => $file) {
-			$fnum = $file->fnum;
+		foreach ($fnums as $key => $value) {
+			$fnum = $value->fnum;
 			$fnumInfo = $m_files->getFnumInfos($fnum);
 			$files_list = array();
 
@@ -152,12 +160,12 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 				$application_form_name = strtolower($application_form_name);
 
 				// If a file exists with that name, delete it
-				if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $application_form_name)) {
-					unlink(JPATH_BASE . DS . 'tmp' . DS . $application_form_name);
+				if (file_exists(JPATH_SITE . DS . 'tmp' . DS . $application_form_name)) {
+					unlink(JPATH_SITE . DS . 'tmp' . DS . $application_form_name);
 				}
 
 				// Ouput pdf with desired file name
-				$pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $application_form_name.".pdf", 'F');
+				$pdf->Output(JPATH_SITE . DS . 'tmp' . DS . $application_form_name.".pdf", 'F');
 
 				// If export path is defined
 				if (!empty($export_path)) {
@@ -174,22 +182,22 @@ class PlgFabrik_Cronemundusexportpdf extends PlgFabrik_Cron {
 					$d = '';
 					foreach ($directories as $dir) {
 						$d .= $dir.'/';
-						if (!file_exists(JPATH_BASE.DS.$d)) {
-							mkdir(JPATH_BASE.DS.$d);
-							chmod(JPATH_BASE.DS.$d, 0755);
+						if (!file_exists(JPATH_SITE.DS.$d)) {
+							mkdir(JPATH_SITE.DS.$d);
+							chmod(JPATH_SITE.DS.$d, 0755);
 						}
 					}
-					if (file_exists(JPATH_BASE.DS.$export_path.$application_form_name.".pdf")) {
-						unlink(JPATH_BASE.DS.$export_path.$application_form_name.".pdf");
+					if (file_exists(JPATH_SITE.DS.$export_path.$application_form_name.".pdf")) {
+						unlink(JPATH_SITE.DS.$export_path.$application_form_name.".pdf");
 					}
-					copy(JPATH_BASE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_BASE.DS.$export_path.$application_form_name.".pdf");
+					copy(JPATH_SITE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_SITE.DS.$export_path.$application_form_name.".pdf");
 				}
-				if (file_exists(JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf")) {
-					unlink(JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
+				if (file_exists(JPATH_SITE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf")) {
+					unlink(JPATH_SITE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
 				}
-				copy(JPATH_BASE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
+				copy(JPATH_SITE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_SITE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
 
-				JLog::add('File generated: '.JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf", JLog::INFO, 'com_emundus.emundusexportpdf');
+				JLog::add('File generated: '.JPATH_SITE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf", JLog::INFO, 'com_emundus.emundusexportpdf');
 			}
 		}
 
