@@ -221,8 +221,8 @@ class EmundusHelperList{
     // @param	int applicant user id
     // @return 	array Menu links of all forms needed to apply
     function getFormsList($user_id, $fnum="0", $formids=null, $profile_id = null){
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
         $m_profile 	= new EmundusModelProfile();
         $h_menu 	= new EmundusHelperMenu();
         $infos 		= $m_profile->getFnumDetails($fnum);

@@ -28,9 +28,9 @@ class EmundusModelApplication extends JModelList {
     public function __construct() {
         parent::__construct();
         global $option;
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
         $this->_mainframe = JFactory::getApplication();
 
@@ -1676,7 +1676,7 @@ class EmundusModelApplication extends JModelList {
 
 
 
-    	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+    	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $h_list = new EmundusHelperList;
 
         $tableuser  = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
@@ -2749,7 +2749,7 @@ class EmundusModelApplication extends JModelList {
             return false;
         }
 
-	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 	    // Sort the docs out that are not allowed to be exported by the user.
 	    $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 	    if ($allowed_attachments !== true) {
